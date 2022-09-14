@@ -3350,6 +3350,13 @@
         {}
        ]
       ],
+      "felighting-display-none-mutation-crash.html": [
+       "bc3e2333bf6ebb7abd064d4f02ff084198204b2e",
+       [
+        null,
+        {}
+       ]
+      ],
       "multiple-references-id-crash-001.html": [
        "9ee04e1015d3c9fc04e8fab240a15d59ae92892d",
        [
@@ -94020,7 +94027,7 @@
       ]
      ],
      "at-supports-font-tech-001.html": [
-      "329201af4d973573758ea8a109f68486279bb82e",
+      "5248312b89f30b529470a3cf8a2ea45e88f5a572",
       [
        null,
        [
@@ -105183,6 +105190,32 @@
        {}
       ]
      ],
+     "align-items-baseline-column-horz.html": [
+      "2e599afda020bd797bd960958bbd6db2e19d24d0",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/align-items-baseline-column-horz-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "align-items-baseline-column-vert.html": [
+      "3e4a32207300cdf0b6938e33ea71bc59a8f962c5",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/align-items-baseline-column-vert-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "align-items-baseline-overflow-non-visible.html": [
       "48c34b365ec80754ee4d39578b6a25acd7f9725d",
       [
@@ -105190,6 +105223,32 @@
        [
         [
          "/css/css-flexbox/reference/align-items-baseline-overflow-non-visible-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "align-items-baseline-row-horz.html": [
+      "394e9f70cdf93b235d1af674bd42b7fb37b8372c",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/align-items-baseline-row-horz-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "align-items-baseline-row-vert.html": [
+      "4a6eb60e1d933c67b8ac8ee649d51dc559349ca4",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/align-items-baseline-row-vert-ref.html",
          "=="
         ]
        ],
@@ -268713,10 +268772,6 @@
        "2e621a2f0ec3509e414ecdf7693d621c4de5c361",
        []
       ],
-      "CSS-supports-L5-expected.txt": [
-       "d44ac341c7e58a58e59cd1e9a8d3af0269bf2e27",
-       []
-      ],
       "supports-conditionText-expected.txt": [
        "8c41303fcd5b39af695b6b934cf90dee6bf792aa",
        []
@@ -271094,7 +271149,7 @@
        []
       ],
       "flex-abspos-staticpos-align-self-006-expected.txt": [
-       "0014cbbeda698064be13c06d8511b827f7261aa4",
+       "757dc7249bd198ee6c27a0158e03e454f6983527",
        []
       ],
       "flex-abspos-staticpos-align-self-007-expected.txt": [
@@ -271102,7 +271157,7 @@
        []
       ],
       "flex-abspos-staticpos-align-self-008-expected.txt": [
-       "bfb1cf9262026085b12160bd2b7628a7c4dab046",
+       "78b97dba01a52a02481a1917853b048e68ab701c",
        []
       ],
       "flex-abspos-staticpos-align-self-rtl-001-expected.txt": [
@@ -271190,6 +271245,22 @@
        []
       ]
      },
+     "align-items-baseline-column-horz-ref.html": [
+      "be74007df44aa1bc00c2c75c09f7e139b78a0f23",
+      []
+     ],
+     "align-items-baseline-column-vert-ref.html": [
+      "a62c65b85895af0b4aad31081a7f4909c6bf94bd",
+      []
+     ],
+     "align-items-baseline-row-horz-ref.html": [
+      "5dae0a362e8921e813e2383fef66b2421c80729f",
+      []
+     ],
+     "align-items-baseline-row-vert-ref.html": [
+      "dec8ac3b353c97f55a40df7965a23b642c53149f",
+      []
+     ],
      "anonymous-flex-item-split-ref.html": [
       "163efd401c4d24ce205dc9c39431b79598a7fb6f",
       []
@@ -272758,7 +272829,7 @@
      ],
      "reference": {
       "align-baseline-ref.html": [
-       "d5b88e8c7dae73b57c7f993260d7cce363eeebaa",
+       "d1c579045ef64d5f25e3f440b0f93a46ecdf2dd8",
        []
       ],
       "align-content-001-ref.html": [
@@ -281302,7 +281373,7 @@
        []
       ],
       "grid-justify-baseline-001-ref.html": [
-       "17a59d6edc5df5e0de8c364a988d1fc8afb8168a",
+       "d3529dd010aae74eaaedbc9ffb184f643ae3303b",
        []
       ],
       "grid-self-alignment-baseline-with-grid-001-ref.html": [
@@ -283028,11 +283099,11 @@
      ],
      "parsing": {
       "gradient-interpolation-method-computed-expected.txt": [
-       "a3717673e82d0598741ad312b7bc4ec828563717",
+       "0e9a8dfbbdbf093e91abea914223780edf76b276",
        []
       ],
       "gradient-interpolation-method-valid-expected.txt": [
-       "971057a423f3bf0344970781f5ed6a5b591c6e9b",
+       "c52e9224a773d85192bb727bf9b3061e7a4deea9",
        []
       ],
       "image-rendering-computed-expected.txt": [
@@ -310066,7 +310137,7 @@
        []
       ],
       "preflight.py": [
-       "41daebf08d35c165512c9f745fe1252bb844a42f",
+       "925b120033d9d0789594e65e896dd392f34697ee",
        []
       ],
       "service-worker-bridge.html": [
@@ -310108,6 +310179,10 @@
      },
      "service-worker-fetch.https.window-expected.txt": [
       "716cc67bdef69bfb4a99cafcc8e0af6c16e94787",
+      []
+     ],
+     "service-worker-update.https.window-expected.txt": [
+      "2884c271eecfd46ee3fee89707cbd5c81c624939",
       []
      ],
      "websocket.window-expected.txt": [
@@ -347782,7 +347857,7 @@
      []
     ],
     "RTCConfiguration-iceServers-expected.txt": [
-     "806ca587252bd32487f4c6d27eaf30dd68656500",
+     "3ad5b66f049894c5e95fd82d2669d3c5447fc349",
      []
     ],
     "RTCConfiguration-iceTransportPolicy-expected.txt": [
@@ -389135,7 +389210,7 @@
        ]
       ],
       "CSS-supports-L5.html": [
-       "77947bf22845f8b7ad146bc90540e335989ca404",
+       "3c8fbe684a32c95debf632634c6f9f6db900bdaf",
        [
         null,
         {}
@@ -397084,7 +397159,7 @@
      ],
      "parsing": {
       "gradient-interpolation-method-computed.html": [
-       "b6a91784d644aff899eef654c939553c91537973",
+       "050fb43e7c30932153658070eb8806d70ce2ddca",
        [
         null,
         {}
@@ -449625,7 +449700,7 @@
       ]
      ],
      "service-worker-update.https.window.js": [
-      "fe2bf58f6600470650b9a19707a98ca895b2d86c",
+      "aa0a770ba0ed8e80e27339262dc89f82466b51fd",
       [
        "fetch/private-network-access/service-worker-update.https.window.html",
        {
@@ -480385,7 +480460,7 @@
       ]
      ],
      "popup-redirect-cache.https.html": [
-      "e56e1d551345bcecab3d89a34fd98424583898e0",
+      "6568ac3fdbfcfb193e65c6f6e78ad472517c52be",
       [
        "html/cross-origin-opener-policy/popup-redirect-cache.https.html?0-1",
        {
@@ -571386,7 +571461,7 @@
      ]
     ],
     "RTCConfiguration-iceServers.html": [
-     "0bbaf75f83e04cec05919f97108fcde38a435778",
+     "1893ba02f3042abe14db2cce50903f917b9280ff",
      [
       null,
       {}
