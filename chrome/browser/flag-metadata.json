@@ -4092,7 +4092,7 @@
   {
     "name": "ios-shared-highlighting-v2",
     "owners": ["tmartino", "cheickcisse@google.com"],
-    "expiry_milestone": 100
+    "expiry_milestone": 109
   },
   {
     "name": "ios-synthetic-crash-reports",
