@@ -25,7 +25,7 @@ namespace ui {
 
 namespace {
 
-std::unique_ptr<LinuxUi> CreateGtkUi() {
+std::unique_ptr<LinuxUiAndTheme> CreateGtkUi() {
 #if BUILDFLAG(USE_GTK)
   auto gtk_ui = BuildGtkUi();
   if (gtk_ui->Initialize())
@@ -34,15 +34,15 @@ std::unique_ptr<LinuxUi> CreateGtkUi() {
   return nullptr;
 }
 
-LinuxUi* GetGtkUi() {
+LinuxUiAndTheme* GetGtkUi() {
   // LinuxUi creation will fail without a delegate.
   if (!ui::LinuxUiDelegate::GetInstance())
     return nullptr;
-  static LinuxUi* gtk_ui = CreateGtkUi().release();
+  static LinuxUiAndTheme* gtk_ui = CreateGtkUi().release();
   return gtk_ui;
 }
 
-std::unique_ptr<LinuxUi> CreateQtUi() {
+std::unique_ptr<LinuxUiAndTheme> CreateQtUi() {
   if (!base::FeatureList::IsEnabled(kAllowQt))
     return nullptr;
 #if BUILDFLAG(USE_QT)
@@ -53,19 +53,15 @@ std::unique_ptr<LinuxUi> CreateQtUi() {
   return nullptr;
 }
 
-LinuxUi* GetQtUi() {
+LinuxUiAndTheme* GetQtUi() {
   // LinuxUi creation will fail without a delegate.
   if (!ui::LinuxUiDelegate::GetInstance())
     return nullptr;
-  static LinuxUi* qt_ui = CreateQtUi().release();
+  static LinuxUiAndTheme* qt_ui = CreateQtUi().release();
   return qt_ui;
 }
 
-}  // namespace
-
-const base::Feature kAllowQt{"AllowQt", base::FEATURE_DISABLED_BY_DEFAULT};
-
-LinuxUi* GetDefaultLinuxUi() {
+LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
 
   switch (GetDefaultSystemTheme()) {
@@ -81,12 +77,24 @@ LinuxUi* GetDefaultLinuxUi() {
   }
 }
 
+}  // namespace
+
+const base::Feature kAllowQt{"AllowQt", base::FEATURE_DISABLED_BY_DEFAULT};
+
+LinuxUi* GetDefaultLinuxUi() {
+  return GetDefaultLinuxUiAndTheme();
+}
+
+LinuxUiTheme* GetDefaultLinuxUiTheme() {
+  return GetDefaultLinuxUiAndTheme();
+}
+
 LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme) {
   switch (system_theme) {
     case SystemTheme::kQt:
-      return GetQtUi()->AsLinuxUiTheme();
+      return GetQtUi();
     case SystemTheme::kGtk:
-      return GetGtkUi()->AsLinuxUiTheme();
+      return GetGtkUi();
     case SystemTheme::kDefault:
       return nullptr;
   }

@@ -67,10 +67,6 @@ void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observer_list_.RemoveObserver(observer);
 }
 
-const LinuxUiTheme* LinuxUi::AsLinuxUiTheme() const {
-  return const_cast<LinuxUi*>(this)->AsLinuxUiTheme();
-}
-
 // static
 LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
     const base::CommandLine& command_line) {

@@ -161,12 +161,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // Indicates if animations are enabled by the toolkit.
   virtual bool AnimationsEnabled() const = 0;
 
-  // Casts `this` to a LinuxUiTheme.  Should only be used by tests or LinuxUi
-  // internals. Otherwise, use the accessors in LinuxUiTheme instead.
-  virtual LinuxUiTheme* AsLinuxUiTheme() = 0;
-
-  const LinuxUiTheme* AsLinuxUiTheme() const;
-
  protected:
   struct CmdLineArgs {
     CmdLineArgs();
@@ -290,6 +284,14 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   // Objects to notify when the window frame button order changes.
   base::ObserverList<WindowButtonOrderObserver>::Unchecked
       window_button_order_observer_list_;
+};
+
+// This is used internally by LinuxUi implementations and linux_ui_factory to allow
+// converting a LinuxUi to a LinuxUiTheme.  Users should not use (and have no way of
+// obtaining) an instance of this class.
+class LinuxUiAndTheme : public LinuxUi, public LinuxUiTheme {
+ public:
+  ~LinuxUiAndTheme() override = default;
 };
 
 }  // namespace ui

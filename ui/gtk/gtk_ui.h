@@ -37,7 +37,7 @@ class NativeThemeGtk;
 class SettingsProvider;
 
 // Interface to GTK desktop features.
-class GtkUi : public ui::LinuxUi, public ui::LinuxUiTheme {
+class GtkUi : public ui::LinuxUiAndTheme {
  public:
   GtkUi();
 
@@ -88,7 +88,6 @@ class GtkUi : public ui::LinuxUi, public ui::LinuxUiTheme {
       int* weight_out,
       gfx::FontRenderParams* params_out) const override;
   bool AnimationsEnabled() const override;
-  LinuxUiTheme* AsLinuxUiTheme() override;
 
   // ui::LinuxUiTheme:
   ui::NativeTheme* GetNativeTheme() const override;

@@ -143,8 +143,4 @@ gfx::Size FakeLinuxUi::GetPdfPaperSize(
 }
 #endif
 
-LinuxUiTheme* FakeLinuxUi::AsLinuxUiTheme() {
-  return this;
-}
-
 }  // namespace ui

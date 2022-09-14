@@ -131,8 +131,8 @@ void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
 void ThemeServiceAuraLinux::UseSystemTheme() {
   if (UsingSystemTheme())
     return;
-  if (auto* linux_ui = ui::LinuxUi::instance()) {
-    if (auto* native_theme = linux_ui->AsLinuxUiTheme()->GetNativeTheme()) {
+  if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
+    if (auto* native_theme = linux_ui_theme->GetNativeTheme()) {
       UseTheme(native_theme->system_theme());
       return;
     }

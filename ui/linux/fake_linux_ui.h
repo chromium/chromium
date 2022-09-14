@@ -12,7 +12,7 @@ namespace ui {
 // This class is meant to be overridden by tests.  It's provided as a
 // convenience so that tests don't have to stub lots of methods just to override
 // a single one.
-class FakeLinuxUi : public LinuxUi, public LinuxUiTheme {
+class FakeLinuxUi : public LinuxUiAndTheme {
  public:
   FakeLinuxUi();
   ~FakeLinuxUi() override;
@@ -60,7 +60,6 @@ class FakeLinuxUi : public LinuxUi, public LinuxUiTheme {
       printing::PrintingContextLinux* context) override;
   gfx::Size GetPdfPaperSize(printing::PrintingContextLinux* context) override;
 #endif
-  LinuxUiTheme* AsLinuxUiTheme() override;
 };
 
 }  // namespace ui

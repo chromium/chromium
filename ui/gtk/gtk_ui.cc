@@ -626,10 +626,6 @@ gfx::Size GtkUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 }
 #endif
 
-ui::LinuxUiTheme* GtkUi::AsLinuxUiTheme() {
-  return this;
-}
-
 void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
   colors_.clear();
   custom_frame_colors_.clear();

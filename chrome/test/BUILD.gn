@@ -2459,7 +2459,10 @@ if (!is_android) {
         "../browser/ozone_platform_browsertest.cc",
         "../browser/ui/views/frame/desktop_browser_frame_aura_linux_browsertest.cc",
       ]
-      deps += [ "//ui/linux:linux_ui" ]
+      deps += [
+        "//ui/linux:linux_ui",
+        "//ui/linux:linux_ui_factory",
+      ]
     }
 
     if (is_linux || is_chromeos) {

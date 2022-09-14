@@ -38,6 +38,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_factory.h"
 #include "ui/linux/linux_ui_getter.h"
 
 class FakeLinuxUiGetter : public ui::LinuxUiGetter {
@@ -50,8 +51,7 @@ class FakeLinuxUiGetter : public ui::LinuxUiGetter {
   }
 
   ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
-    return use_system_theme_ ? ui::LinuxUi::instance()->AsLinuxUiTheme()
-                             : nullptr;
+    return use_system_theme_ ? ui::GetDefaultLinuxUiTheme() : nullptr;
   }
 
  private:

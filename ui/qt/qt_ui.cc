@@ -323,10 +323,6 @@ gfx::Size QtUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 }
 #endif
 
-ui::LinuxUiTheme* QtUi::AsLinuxUiTheme() {
-  return this;
-}
-
 void QtUi::FontChanged() {
   auto params = shim_->GetFontRenderParams();
   auto desc = shim_->GetFontDescription();
@@ -496,7 +492,8 @@ absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
   }
 }
 
-std::unique_ptr<ui::LinuxUi> CreateQtUi(ui::LinuxUi* fallback_linux_ui) {
+std::unique_ptr<ui::LinuxUiAndTheme> CreateQtUi(
+    ui::LinuxUi* fallback_linux_ui) {
   return std::make_unique<QtUi>(fallback_linux_ui);
 }
 

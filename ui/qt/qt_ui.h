@@ -25,9 +25,7 @@ namespace qt {
 class QtNativeTheme;
 
 // Interface to QT desktop features.
-class QtUi : public ui::LinuxUi,
-             public ui::LinuxUiTheme,
-             QtInterface::Delegate {
+class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
  public:
   explicit QtUi(ui::LinuxUi* fallback_linux_ui);
 
@@ -67,7 +65,6 @@ class QtUi : public ui::LinuxUi,
       int* weight_out,
       gfx::FontRenderParams* params_out) const override;
   bool AnimationsEnabled() const override;
-  LinuxUiTheme* AsLinuxUiTheme() override;
 
   // ui::LinuxUiTheme:
   ui::NativeTheme* GetNativeTheme() const override;
@@ -116,7 +113,7 @@ class QtUi : public ui::LinuxUi,
 
 // This should be the only symbol exported from this component.
 COMPONENT_EXPORT(QT)
-std::unique_ptr<ui::LinuxUi> CreateQtUi(ui::LinuxUi* fallback_linux_ui);
+std::unique_ptr<ui::LinuxUiAndTheme> CreateQtUi(ui::LinuxUi* fallback_linux_ui);
 
 }  // namespace qt
 
