@@ -1386,34 +1386,6 @@ class MockUkmRecorder : public ukm::MojoUkmRecorder {
   int calls_ = 0;
 };
 
-// Subclass of BlinkAXTreeSource that retains the functionality but
-// enables simulating a serialize operation taking an arbitrarily long
-// amount of time (using simulated time).
-class TimeDelayBlinkAXTreeSource : public BlinkAXTreeSource {
- public:
-  TimeDelayBlinkAXTreeSource(RenderFrameImpl* rfi,
-                             ui::AXMode mode,
-                             base::test::TaskEnvironment* task_environment)
-      : BlinkAXTreeSource(rfi, mode), task_environment_(task_environment) {}
-
-  void SetTimeDelayForNextSerialize(int time_delay_ms) {
-    time_delay_ms_ = time_delay_ms;
-  }
-
-  void SerializeNode(blink::WebAXObject node,
-                     ui::AXNodeData* out_data) const override {
-    BlinkAXTreeSource::SerializeNode(node, out_data);
-    if (time_delay_ms_) {
-      task_environment_->FastForwardBy(base::Milliseconds(time_delay_ms_));
-      time_delay_ms_ = 0;
-    }
-  }
-
- private:
-  mutable int time_delay_ms_ = 0;
-  base::test::TaskEnvironment* task_environment_;
-};
-
 // Tests for URL-keyed metrics.
 class RenderAccessibilityImplUKMTest : public RenderAccessibilityImplTest {
  public:
@@ -1421,14 +1393,6 @@ class RenderAccessibilityImplUKMTest : public RenderAccessibilityImplTest {
     RenderAccessibilityImplTest::SetUp();
     GetRenderAccessibilityImpl()->ukm_recorder_ =
         std::make_unique<MockUkmRecorder>();
-    GetRenderAccessibilityImpl()->tree_source_ =
-        std::make_unique<TimeDelayBlinkAXTreeSource>(
-            GetRenderAccessibilityImpl()->render_frame_,
-            GetRenderAccessibilityImpl()->GetAccessibilityMode(),
-            &task_environment_);
-    GetRenderAccessibilityImpl()->serializer_ =
-        std::make_unique<BlinkAXTreeSerializer>(
-            GetRenderAccessibilityImpl()->tree_source_.get());
   }
 
   void TearDown() override { RenderAccessibilityImplTest::TearDown(); }
@@ -1438,10 +1402,9 @@ class RenderAccessibilityImplUKMTest : public RenderAccessibilityImplTest {
         GetRenderAccessibilityImpl()->ukm_recorder_.get());
   }
 
-  void SetTimeDelayForNextSerialize(int time_delay_ms) {
-    static_cast<TimeDelayBlinkAXTreeSource*>(
-        GetRenderAccessibilityImpl()->tree_source_.get())
-        ->SetTimeDelayForNextSerialize(time_delay_ms);
+  void SetTimeDelayForNextSerialize(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+    GetRenderAccessibilityImpl()->slowest_serialization_time_ = delta;
   }
 };
 
@@ -1471,10 +1434,10 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
   // No URL-keyed metrics should be fired even after an event that takes
   // 300 ms, but we should now have something to send.
   // This must be >= kMinSerializationTimeToSendInMS
-  SetTimeDelayForNextSerialize(300);
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();
+  SetTimeDelayForNextSerialize(base::Milliseconds(300));
   EXPECT_EQ(0, ukm_recorder()->calls());
   histogram_tester.ExpectTotalCount(
       "Accessibility.Performance.SendPendingAccessibilityEvents", 2);
@@ -1490,8 +1453,8 @@ TEST_F(RenderAccessibilityImplUKMTest, TestFireUKMs) {
       "Accessibility.Performance.SendPendingAccessibilityEvents", 3);
 
   // Send another event that takes a long (simulated) time to serialize.
-  // This must be >= kMinSerializationTimeToSendInMS
-  SetTimeDelayForNextSerialize(200);
+  // This must be >= kMinSerializationTimeToSend
+  SetTimeDelayForNextSerialize(base::Milliseconds(200));
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kChildrenChanged));
   SendPendingAccessibilityEvents();

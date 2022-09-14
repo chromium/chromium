@@ -154,13 +154,6 @@ int WebAXObject::AxID() const {
   return private_->AXObjectID();
 }
 
-int WebAXObject::GenerateAXID() const {
-  if (IsDetached())
-    return -1;
-
-  return private_->AXObjectCache().GenerateAXID();
-}
-
 // This method must be called before serializing any accessibility nodes, in
 // order to ensure that layout calls are not made at an unsafe time in the
 // document lifecycle.
@@ -238,8 +231,63 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   private_->Serialize(node_data, accessibility_mode);
 }
 
-BLINK_EXPORT void WebAXObject::SerializerClearedNode(int node_id) const {
+void WebAXObject::SerializerClearedNode(int node_id) const {
   private_->AXObjectCache().SerializerClearedNode(node_id);
+}
+
+void WebAXObject::InvalidateSerializerSubtree() const {
+  if (IsDetached())
+    return;
+  private_->AXObjectCache().InvalidateSerializerSubtree(*private_);
+}
+
+bool WebAXObject::SerializeChanges(ui::AXTreeUpdate* update) {
+  if (IsDetached())
+    return true;
+  return private_->AXObjectCache().SerializeChanges(*private_, update);
+}
+
+bool WebAXObject::IsInClientTree() {
+  if (IsDetached())
+    return false;
+  return private_->AXObjectCache().IsInClientTree(*private_);
+}
+
+void WebAXObject::OnLoadInlineTextBoxes() const {
+  if (IsDetached())
+    return;
+  private_->AXObjectCache().OnLoadInlineTextBoxes(*private_);
+}
+
+bool WebAXObject::ShouldLoadInlineTextBoxes() const {
+  if (IsDetached())
+    return false;
+  return private_->AXObjectCache().ShouldLoadInlineTextBoxes(*private_);
+}
+
+BLINK_EXPORT void WebAXObject::GetChildren(
+    std::vector<WebAXObject>* out_children) {
+  if (IsDetached())
+    return;
+  std::vector<AXObject*> children;
+  private_->AXObjectCache().GetChildren(*private_, &children);
+  for (auto* child : children) {
+    out_children->push_back(WebAXObject(child));
+  }
+}
+
+BLINK_EXPORT void WebAXObject::SetImageAsDataNodeId(
+    const gfx::Size& max_size) const {
+  if (IsDetached())
+    return;
+  private_->AXObjectCache().SetImageAsDataNodeId(private_->AXObjectID(),
+                                                 max_size);
+}
+
+BLINK_EXPORT int WebAXObject::ImageDataNodeId() const {
+  if (IsDetached())
+    return -1;
+  return private_->AXObjectCache().image_data_node_id();
 }
 
 WebString WebAXObject::AutoComplete() const {
@@ -1145,13 +1193,6 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
                               clips_children);
   offset_container = WebAXObject(container);
   bounds_in_container = bounds;
-}
-
-void WebAXObject::SerializeLocationChanges() const {
-  if (IsDetached())
-    return;
-
-  private_->AXObjectCache().SerializeLocationChanges();
 }
 
 bool WebAXObject::ScrollToMakeVisible() const {

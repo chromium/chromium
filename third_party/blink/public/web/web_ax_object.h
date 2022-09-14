@@ -49,6 +49,7 @@ class Transform;
 namespace ui {
 struct AXActionData;
 struct AXNodeData;
+struct AXTreeUpdate;
 }
 
 namespace blink {
@@ -103,11 +104,6 @@ class BLINK_EXPORT WebAXObject {
 
   int AxID() const;
 
-  // Get a new AXID that's not used by any accessibility node in this process,
-  // for when the client needs to insert additional nodes into the accessibility
-  // tree.
-  int GenerateAXID() const;
-
   // Update layout if necessary on the underlying tree and return true if the
   // object is valid. Note that calling this and other methods can cause other
   // WebAXObjects to become invalid, so always check validity of an object
@@ -133,6 +129,15 @@ class BLINK_EXPORT WebAXObject {
 
   void SerializerClearedNode(int node_id) const;
 
+  void InvalidateSerializerSubtree() const;
+  bool SerializeChanges(ui::AXTreeUpdate* update);
+  bool IsInClientTree();
+  void OnLoadInlineTextBoxes() const;
+  bool ShouldLoadInlineTextBoxes() const;
+  void GetChildren(std::vector<WebAXObject>* out_children);
+  void SetImageAsDataNodeId(const gfx::Size& max_size) const;
+  int ImageDataNodeId() const;
+
   ax::mojom::CheckedState CheckedState() const;
   bool IsCheckable() const;
   bool IsClickable() const;
@@ -141,6 +146,7 @@ class BLINK_EXPORT WebAXObject {
   bool IsLineBreakingObject() const;
   bool IsLinked() const;
   bool IsModal() const;
+
   // Returns true if this object is an input element of a text field type, such
   // as type="text" or type="tel", or a textarea.
   bool IsAtomicTextField() const;

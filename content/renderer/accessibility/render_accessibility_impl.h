@@ -16,7 +16,6 @@
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/renderer/accessibility/blink_ax_tree_source.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "third_party/blink/public/web/web_ax_context.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -100,9 +99,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   ~RenderAccessibilityImpl() override;
 
-  ui::AXMode GetAccessibilityMode() {
-    return tree_source_->accessibility_mode();
-  }
+  ui::AXMode GetAccessibilityMode() { return accessibility_mode_; }
 
   // RenderAccessibility implementation.
   int GenerateAXID() override;
@@ -235,6 +232,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Returns an empty WebAXObject if no root object is present.
   blink::WebAXObject GetPluginRoot();
 
+  blink::WebAXObject ComputeRoot();
+
   // Cancels scheduled events that are not yet in flight
   void CancelScheduledEvents();
 
@@ -285,12 +284,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // an event fired.
   std::list<std::unique_ptr<AXDirtyObject>> dirty_objects_;
 
-  // The adapter that exposes Blink's accessibility tree to AXTreeSerializer.
-  std::unique_ptr<BlinkAXTreeSource> tree_source_;
-
-  // The serializer that sends accessibility messages to the browser process.
-  std::unique_ptr<BlinkAXTreeSerializer> serializer_;
-
   using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
   PluginAXTreeSource* plugin_tree_source_;
@@ -338,6 +331,14 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Used to ensure that the tutor message that explains to screen reader users
   // how to turn on automatic image labels is provided only once.
   mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
+
+  // Note: this is the accessibility mode communicated to this object.
+  // The actual accessibility mode on a Document is the combination of this
+  // mode and any other active AXContext objects' accessibility modes.
+  ui::AXMode accessibility_mode_;
+
+  // A set of IDs for which we should always load inline text boxes.
+  std::set<int32_t> load_inline_text_boxes_ids_;
 
   // So we can queue up tasks to be executed later.
   base::WeakPtrFactory<RenderAccessibilityImpl>

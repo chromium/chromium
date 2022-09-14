@@ -646,7 +646,10 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       relation_cache_(std::make_unique<AXRelationCache>(this)),
       accessibility_event_permission_(mojom::blink::PermissionStatus::ASK),
       permission_service_(document.GetExecutionContext()),
-      permission_observer_receiver_(this, document.GetExecutionContext()) {
+      permission_observer_receiver_(this, document.GetExecutionContext()),
+      ax_tree_source_(BlinkAXTreeSource::Create(*this)),
+      ax_tree_serializer_(
+          std::make_unique<ui::AXTreeSerializer<AXObject*>>(ax_tree_source_)) {
   if (document_->LoadEventFinished())
     AddPermissionStatusListener();
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
@@ -710,7 +713,20 @@ Node* AXObjectCacheImpl::FocusedElement() {
   return focused_node;
 }
 
+void AXObjectCacheImpl::UpdateLifecycleIfNeeded() {
+  if (GetDocument().Lifecycle().GetState() < DocumentLifecycle::kLayoutClean) {
+    // Node is in a different, unclean document. This can occur in an open
+    // popup. Ensure the popup document has a clean layout before trying to
+    // create an AXObject from a node in it.
+    if (auto* view = GetDocument().View()) {
+      view->UpdateAllLifecyclePhasesExceptPaint(
+          DocumentUpdateReason::kAccessibility);
+    }
+  }
+}
+
 AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
+  // TODO(chrishtr): refactor to use UpdateLifecycleIfNeeded.
   if (node->GetDocument() != GetDocument() &&
       node->GetDocument().Lifecycle().GetState() <
           DocumentLifecycle::kLayoutClean) {
@@ -3062,6 +3078,7 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
   if (!node || !node->GetDocument().View())
     return;
 
+  // TODO(chrishtr): refactor to use UpdateLifecycleIfNeeded.
   if (node->GetDocument().NeedsLayoutTreeUpdateForNode(*node)) {
     // This should only occur when focus goes into a popup document. The main
     // document has an updated layout, but the popup does not.
@@ -3614,8 +3631,11 @@ void AXObjectCacheImpl::PostPlatformNotification(
   }
 }
 
-void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj,
-                                                               bool subtree) {
+void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
+    AXObject* obj,
+    bool subtree,
+    ax::mojom::blink::EventFrom event_from,
+    ax::mojom::blink::Action event_from_action) {
   obj = GetSerializationTarget(obj);
   if (!obj)
     return;
@@ -3624,8 +3644,7 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj,
       obj->GetDocument()->AXObjectCacheOwner().GetFrame());
   if (webframe && webframe->Client()) {
     webframe->Client()->MarkWebAXObjectDirty(WebAXObject(obj), subtree,
-                                             active_event_from_,
-                                             active_event_from_action_);
+                                             event_from, event_from_action);
   }
 
   obj->UpdateCachedAttributeValuesIfNeeded(true);
@@ -3633,12 +3652,22 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj,
     agent->AXObjectModified(obj, subtree);
 }
 
+void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutAndEvent(
+    AXObject* obj,
+    ax::mojom::blink::EventFrom event_from,
+    ax::mojom::blink::Action event_from_action) {
+  MarkAXObjectDirtyWithCleanLayoutHelper(obj, false, event_from,
+                                         event_from_action);
+}
+
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
-  MarkAXObjectDirtyWithCleanLayoutHelper(obj, false);
+  MarkAXObjectDirtyWithCleanLayoutHelper(obj, false, active_event_from_,
+                                         active_event_from_action_);
 }
 
 void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
-  MarkAXObjectDirtyWithCleanLayoutHelper(obj, true);
+  MarkAXObjectDirtyWithCleanLayoutHelper(obj, true, active_event_from_,
+                                         active_event_from_action_);
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
@@ -3832,6 +3861,40 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
         std::move(changes));
   }
+}
+
+bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
+                                            size_t max_node_count,
+                                            base::TimeDelta timeout,
+                                            ui::AXTreeUpdate* response) {
+  BlinkAXTreeSource tree_source(*this);
+
+  tree_source.set_exclude_offscreen(exclude_offscreen);
+
+  // The serializer returns an ui::AXTreeUpdate, which can store a complete
+  // or a partial accessibility tree. AXTreeSerializer is stateful, but the
+  // first time you serialize from a brand-new tree you're guaranteed to get a
+  // complete tree.
+  ui::AXTreeSerializer<AXObject*> serializer(&tree_source);
+
+  if (max_node_count)
+    serializer.set_max_node_count(max_node_count);
+  if (!timeout.is_zero())
+    serializer.set_timeout(timeout);
+
+  tree_source.Freeze();
+  if (serializer.SerializeChanges(tree_source.GetRoot(), response)) {
+    tree_source.Thaw();
+    return true;
+  }
+
+  // It's possible for the page to fail to serialize the first time due to
+  // aria-owns rearranging the page while it's being scanned. Try a second
+  // time.
+  *response = ui::AXTreeUpdate();
+  bool result = serializer.SerializeChanges(tree_source.GetRoot(), response);
+  tree_source.Thaw();
+  return result;
 }
 
 mojo::Remote<blink::mojom::blink::RenderAccessibilityHost>&
@@ -4229,6 +4292,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(tree_update_callback_queue_popup_);
   visitor->Trace(nodes_with_pending_children_changed_);
   visitor->Trace(nodes_with_spelling_or_grammar_markers_);
+  visitor->Trace(ax_tree_source_);
   AXObjectCache::Trace(visitor);
 }
 

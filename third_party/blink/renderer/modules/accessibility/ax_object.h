@@ -1338,6 +1338,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
                                 bool* clips_children) const;
 
+  void MarkAllImageAXObjectsDirty(ax::mojom::blink::Action event_from_action);
+
  protected:
   AXID id_;
   // Any parent, regardless of whether it's ignored or not included in the tree.

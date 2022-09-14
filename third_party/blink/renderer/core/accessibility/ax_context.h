@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class AXObjectCache;
-
 // An AXContext enables accessibility support in a Document for as
 // long as the AXContext is alive. While the AXContext exists,
 // Document::ExistingAXObjectCache will always return a valid

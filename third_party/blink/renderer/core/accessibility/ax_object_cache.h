@@ -40,6 +40,7 @@ class Point;
 
 namespace ui {
 class AXMode;
+struct AXTreeUpdate;
 }
 
 namespace blink {
@@ -73,8 +74,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void SetAXMode(const ui::AXMode&) = 0;
 
   // A Freeze() occurs during a serialization run.
-  // Used here as a hint for DCHECKS to enforce the following behavior:
-  // objects in the ax hierarchy should not be destroyed during serialization.
   virtual void Freeze() = 0;
   virtual void Thaw() = 0;
 
@@ -186,6 +185,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   virtual AXObject* ObjectFromAXID(AXID) const = 0;
 
+  virtual AXID GenerateAXID() const = 0;
+
   typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
                                                         const ui::AXMode&);
   static void Init(AXObjectCacheCreateFunction);
@@ -195,6 +196,20 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
 
   // Returns true if there are any pending updates that need processing.
   virtual bool IsDirty() const = 0;
+
+  virtual void ResetSerializer() = 0;
+
+  virtual void SerializeLocationChanges() = 0;
+
+  virtual AXObject* GetPluginRoot() = 0;
+
+  virtual bool SerializeEntireTree(bool exclude_offscreen,
+                                   size_t max_node_count,
+                                   base::TimeDelta timeout,
+                                   ui::AXTreeUpdate*) = 0;
+
+  virtual void MarkAllImageAXObjectsDirty(
+      ax::mojom::blink::Action event_from_action) = 0;
 
  protected:
   friend class ScopedBlinkAXEventIntent;

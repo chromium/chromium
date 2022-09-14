@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/accessibility/blink_ax_tree_source.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_tree_serializer.h"
 
 namespace blink {
 
@@ -96,8 +98,14 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void Dispose() override;
 
-  void Freeze() override { is_frozen_ = true; }
-  void Thaw() override { is_frozen_ = false; }
+  void Freeze() override {
+    is_frozen_ = true;
+    ax_tree_source_->Freeze();
+  }
+  void Thaw() override {
+    is_frozen_ = false;
+    ax_tree_source_->Thaw();
+  }
   bool IsFrozen() { return is_frozen_; }
 
   //
@@ -268,7 +276,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // needs to be reserialized. Use the |*WithCleanLayout| versions when layout
   // is already known to be clean.
   void MarkAXObjectDirty(AXObject*);
+
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
+  void MarkAXObjectDirtyWithCleanLayoutAndEvent(
+      AXObject*,
+      ax::mojom::blink::EventFrom event_from,
+      ax::mojom::blink::Action event_from_action);
+
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
 
   // Set the parent of |child|. If no parent is possible, this means the child
@@ -302,7 +316,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void RemoveAXID(AXObject*);
 
-  AXID GenerateAXID() const;
+  AXID GenerateAXID() const override;
 
   // Counts the number of times the document has been modified. Some attribute
   // values are cached as long as the modification count hasn't changed.
@@ -387,9 +401,59 @@ class MODULES_EXPORT AXObjectCacheImpl
   // since the last query. Sends the resulting vector over mojo to the browser
   // process. Clears the vector so that the next time it's
   // called, it will only retrieve objects that have changed since now.
-  void SerializeLocationChanges();
+  void SerializeLocationChanges() override;
+
+  // Searches the accessibility tree for plugin's root object and returns it.
+  // Returns an empty WebAXObject if no root object is present.
+  AXObject* GetPluginRoot() override {
+    return ax_tree_source_->GetPluginRoot();
+  }
+
+  bool SerializeEntireTree(bool exclude_offscreen,
+                           size_t max_node_count,
+                           base::TimeDelta timeout,
+                           ui::AXTreeUpdate*) override;
+
+  void MarkAllImageAXObjectsDirty(
+      ax::mojom::blink::Action event_from_action) override {
+    return Root()->MarkAllImageAXObjectsDirty(event_from_action);
+  }
+
+  void ResetSerializer() override { ax_tree_serializer_->Reset(); }
+
+  void InvalidateSerializerSubtree(AXObject& obj) {
+    ax_tree_serializer_->InvalidateSubtree(&obj);
+  }
+
+  bool SerializeChanges(AXObject& obj, ui::AXTreeUpdate* update) {
+    return ax_tree_serializer_->SerializeChanges(&obj, update);
+  }
+
+  bool IsInClientTree(AXObject& obj) {
+    return ax_tree_serializer_->IsInClientTree(&obj);
+  }
+
+  void OnLoadInlineTextBoxes(AXObject& obj) {
+    ax_tree_source_->OnLoadInlineTextBoxes(obj);
+  }
+
+  bool ShouldLoadInlineTextBoxes(AXObject& obj) {
+    return ax_tree_source_->ShouldLoadInlineTextBoxes(&obj);
+  }
+
+  void GetChildren(AXObject& parent, std::vector<AXObject*>* out_children) {
+    return ax_tree_source_->GetChildren(&parent, out_children);
+  }
+
+  void SetImageAsDataNodeId(int id, const gfx::Size& max_size) {
+    ax_tree_source_->set_image_data_node_id(id, max_size);
+  }
+
+  int image_data_node_id() { return ax_tree_source_->image_data_node_id(); }
 
   static constexpr int kDataTableHeuristicMinRows = 20;
+
+  void UpdateLifecycleIfNeeded();
 
  protected:
   void PostPlatformNotification(
@@ -484,7 +548,11 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
-  void MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj, bool subtree);
+  void MarkAXObjectDirtyWithCleanLayoutHelper(
+      AXObject* obj,
+      bool subtree,
+      ax::mojom::blink::EventFrom event_from,
+      ax::mojom::blink::Action event_from_action);
   void MarkAXSubtreeDirty(AXObject*);
   void MarkElementDirty(const Node*);
   void MarkElementDirtyWithCleanLayout(const Node*);
@@ -732,6 +800,9 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   mojo::Remote<mojom::blink::RenderAccessibilityHost>
       render_accessibility_host_;
+
+  Member<BlinkAXTreeSource> ax_tree_source_;
+  std::unique_ptr<ui::AXTreeSerializer<AXObject*>> ax_tree_serializer_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
 };

@@ -54,6 +54,8 @@ blink_modules_sources("accessibility") {
     "ax_validation_message.h",
     "ax_virtual_object.cc",
     "ax_virtual_object.h",
+    "blink_ax_tree_source.cc",
+    "blink_ax_tree_source.h",
     "inspector_accessibility_agent.cc",
     "inspector_accessibility_agent.h",
     "inspector_type_builder_helper.cc",
@@ -65,6 +67,7 @@ blink_modules_sources("accessibility") {
     "//third_party/blink/public/strings:strings_grit",
     "//third_party/blink/renderer/modules/media_controls:media_controls",
     "//third_party/blink/renderer/modules/permissions:permissions",
+    "//ui/accessibility",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo_blink",
   ]

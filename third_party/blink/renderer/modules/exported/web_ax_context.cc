@@ -36,8 +36,46 @@ const ui::AXMode& WebAXContext::GetAXMode() const {
   return private_->GetAXMode();
 }
 
-void WebAXContext::SetAXMode(const ui::AXMode& mode) {
+void WebAXContext::SetAXMode(const ui::AXMode& mode) const {
   private_->SetAXMode(mode);
+}
+
+void WebAXContext::ResetSerializer() {
+  private_->GetAXObjectCache().ResetSerializer();
+}
+
+int WebAXContext::GenerateAXID() const {
+  return private_->GetAXObjectCache().GenerateAXID();
+}
+
+void WebAXContext::SerializeLocationChanges() const {
+  private_->GetAXObjectCache().SerializeLocationChanges();
+}
+
+WebAXObject WebAXContext::GetPluginRoot() {
+  return WebAXObject(private_->GetAXObjectCache().GetPluginRoot());
+}
+
+void WebAXContext::Freeze() {
+  private_->GetAXObjectCache().Freeze();
+}
+
+void WebAXContext::Thaw() {
+  private_->GetAXObjectCache().Thaw();
+}
+
+bool WebAXContext::SerializeEntireTree(bool exclude_offscreen,
+                                       size_t max_node_count,
+                                       base::TimeDelta timeout,
+                                       ui::AXTreeUpdate* response) {
+  return private_->GetAXObjectCache().SerializeEntireTree(
+      exclude_offscreen, max_node_count, timeout, response);
+}
+
+void WebAXContext::MarkAllImageAXObjectsDirty(
+    ax::mojom::blink::Action event_from_action) {
+  return private_->GetAXObjectCache().MarkAllImageAXObjectsDirty(
+      event_from_action);
 }
 
 }  // namespace blink

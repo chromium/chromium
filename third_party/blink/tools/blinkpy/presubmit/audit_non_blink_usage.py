@@ -662,9 +662,15 @@ _CONFIG = [
             'ui::AXMode',
             'ui::AXNodeData',
             'ui::AXRelativeBounds',
+            'ui::AXTreeData',
+            'ui::AXTreeSerializer',
+            'ui::AXTreeSource',
+            'ui::AXTreeUpdate',
             'ui::AXTreeID',
+            'ui::AXTreeIDUnknown',
             'ui::kAXModeBasic',
             'ui::kAXModeComplete',
+            'ui::ToString',
             'ax::mojom::BoolAttribute',
             'ax::mojom::HasPopup',
             'ax::mojom::State',
@@ -1466,6 +1472,17 @@ _CONFIG = [
         ],
         'allowed': [
             'ui::LatencyInfo',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/accessibility',
+        ],
+        # These are necessary because BlinkAXTreeSource inherits from
+        # ui::AXTreeSource, which has these in its interface.
+        'allowed': [
+            'std::vector',
+            'std::set',
         ],
     },
     {
