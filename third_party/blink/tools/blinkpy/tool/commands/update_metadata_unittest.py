@@ -10,7 +10,7 @@ import textwrap
 import unittest
 from unittest.mock import patch
 
-from blinkpy.common.path_finder import PathFinder
+from blinkpy.common import path_finder
 from blinkpy.common.net.git_cl import TryJobStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.rpc import Build, RPCError
@@ -18,6 +18,9 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.update_metadata import UpdateMetadata, MetadataUpdater
 from blinkpy.web_tests.builder_list import BuilderList
+
+path_finder.bootstrap_wpt_imports()
+from manifest.manifest import Manifest
 
 
 @patch('concurrent.futures.ThreadPoolExecutor.map', new=map)
@@ -27,7 +30,7 @@ class BaseUpdateMetadataTest(LoggingTestCase):
         self.maxDiff = None
 
         self.tool = MockBlinkTool()
-        self.finder = PathFinder(self.tool.filesystem)
+        self.finder = path_finder.PathFinder(self.tool.filesystem)
         self.tool.filesystem.write_text_file(
             self.finder.path_from_web_tests('external', 'wpt',
                                             'MANIFEST.json'),
@@ -75,11 +78,28 @@ class BaseUpdateMetadataTest(LoggingTestCase):
                 },
             }))
 
+    def _manifest_load_and_update(self,
+                                  tests_root,
+                                  manifest_path,
+                                  url_base,
+                                  types=None,
+                                  **_):
+        with self.tool.filesystem.open_text_file_for_reading(
+                manifest_path) as manifest_file:
+            manifest = json.load(manifest_file)
+        return Manifest.from_json(tests_root,
+                                  manifest,
+                                  types=types,
+                                  callee_owns_obj=True)
+
     @contextlib.contextmanager
     def _patch_builtins(self):
         with contextlib.ExitStack() as stack:
             stack.enter_context(self.tool.filesystem.patch_builtins())
             stack.enter_context(self.tool.executive.patch_builtins())
+            stack.enter_context(
+                patch('manifest.manifest.load_and_update',
+                      self._manifest_load_and_update))
             yield stack
 
 
