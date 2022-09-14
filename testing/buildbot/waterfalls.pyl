@@ -6771,6 +6771,16 @@
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
       },
+      'mac-chrome-reclient': {
+        'additional_compile_targets': [
+           # same build target as mac-chrome even if it doesn't run the tests
+          'chrome',
+          'chrome/installer/mac',
+          'chrome_sizes',
+          'variations_smoke_tests',
+        ],
+        # no tests, stay compile only.
+      },
       'win-chrome-reclient': {
         'additional_compile_targets': [
            # same build target as win-chrome even if it doesn't run the tests

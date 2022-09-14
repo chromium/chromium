@@ -91,6 +91,14 @@
       }
     ]
   },
+  "mac-chrome-reclient": {
+    "additional_compile_targets": [
+      "chrome",
+      "chrome/installer/mac",
+      "chrome_sizes",
+      "variations_smoke_tests"
+    ]
+  },
   "win-chrome-reclient": {
     "additional_compile_targets": [
       "base_unittests",
