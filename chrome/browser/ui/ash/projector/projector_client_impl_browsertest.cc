@@ -188,7 +188,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
   Browser* app_browser =
@@ -213,7 +212,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DISABLED_SendFilesToProjectorApp) {
 
   // Launch the app for the first time.
   client()->OpenProjectorApp();
-  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
   Browser* app_browser1 =
@@ -225,7 +223,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DISABLED_SendFilesToProjectorApp) {
   // Launch the app again with files. This operation should recycle the same
   // window.
   SendFilesToProjectorApp({file1, file2});
-  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that the Projector App is still open.
   Browser* app_browser2 =
@@ -246,7 +243,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
   Browser* app_browser =
@@ -268,7 +264,6 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
   Browser* app_browser =
@@ -380,7 +375,6 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
   Browser* app_browser =
@@ -410,7 +404,6 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
-  FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify the user can open the Projector App when the policy is enabled.
   Browser* app_browser =

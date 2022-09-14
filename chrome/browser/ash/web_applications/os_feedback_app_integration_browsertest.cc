@@ -136,13 +136,11 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, UserFeedbackNotAllowed) {
 
   // Try to navigate to the feedback app in the browser.
   ui_test_utils::SendToOmniboxAndSubmit(browser(), feedback_url_.spec());
-  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
   ExpectNoFeedbackAppLaunched(old_url);
 
   // Try to press keyboard shortcut to open Feedback app.
   SendKeyPressAltShiftI(browser());
-  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
   ExpectNoFeedbackAppLaunched(old_url);
 }

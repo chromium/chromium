@@ -650,7 +650,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   audio_params.launch_paths.push_back(TestFile(kFilePng800x600));
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
                                audio_params);
-  ash::FlushSystemWebAppLaunchesForTesting(profile());
   Browser* first_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* app = PrepareActiveBrowserForTest();
 
@@ -662,7 +661,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   image_params.launch_paths.push_back(TestFile(kFileJpeg640x480));
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
                                image_params);
-  ash::FlushSystemWebAppLaunchesForTesting(profile());
   app = PrepareActiveBrowserForTest(3);
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
 
@@ -679,7 +677,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
 
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
                                image_params);
-  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
@@ -698,7 +695,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
 
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
                                pdf_params);
-  ash::FlushSystemWebAppLaunchesForTesting(profile());
 
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
   const BrowserList* browser_list = BrowserList::GetInstance();

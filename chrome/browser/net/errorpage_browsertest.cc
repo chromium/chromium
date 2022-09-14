@@ -1083,7 +1083,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
 
   // Click to open diagnostics app.
   ClickDiagnosticsLink(browser());
-  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 

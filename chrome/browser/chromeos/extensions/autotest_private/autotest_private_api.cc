@@ -2397,7 +2397,6 @@ void AutotestPrivateLaunchSystemWebAppFunction::OnSystemWebAppsInstalled() {
   ash::SystemAppLaunchParams swa_params;
   swa_params.url = GURL(params->url);
   ash::LaunchSystemWebAppAsync(profile, *app_type, swa_params);
-  ash::FlushSystemWebAppLaunchesForTesting(profile);
 
   Respond(NoArguments());
 }

@@ -47,10 +47,6 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
   } else {
     GetManager().InstallSystemAppsForTesting();
   }
-
-  // Ensure apps are registered with the |AppService| and populated in
-  // |AppListModel|.
-  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 }
 
 apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(

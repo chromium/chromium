@@ -103,8 +103,6 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ash::LaunchSystemWebAppAsync(incognito_profile,
                                ash::SystemWebAppType::SETTINGS);
-  ash::FlushSystemWebAppLaunchesForTesting(
-      incognito_profile->GetOriginalProfile());
 
   // There should be a browser for the original profile, but not the incognito
   // profile.

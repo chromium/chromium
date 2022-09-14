@@ -39,10 +39,6 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientTabletModePartTest,
   auto* settings = chrome::SettingsWindowManager::GetInstance();
   settings->ShowOSSettings(profile);
 
-  // The above ShowOSSettings() should trigger an asynchronous call to launch
-  // OS Settings SWA. Flush Mojo calls so the browser window is created.
-  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-
   // The OS settings window still uses the default font sizes.
   Browser* browser = settings->FindBrowserForProfile(profile);
   auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();

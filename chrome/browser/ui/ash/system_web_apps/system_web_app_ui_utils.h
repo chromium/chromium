@@ -68,18 +68,13 @@ struct SystemAppLaunchParams {
 //   - Other unsuitable profiles (e.g. Sign-in profile): Don't launch, and send
 //     a crash report
 //
-// In tests, remember to call FlushSystemWebAppLaunchesForTesting on the same
-// |profile|, or use content::TestNavigationObserver to wait the navigation.
+// In tests, remember to use content::TestNavigationObserver to wait the
+// navigation.
 void LaunchSystemWebAppAsync(
     Profile* profile,
     SystemWebAppType type,
     const SystemAppLaunchParams& params = SystemAppLaunchParams(),
     apps::WindowInfoPtr window_info = nullptr);
-
-// When this method returns, it makes sure all previous LaunchSystemWebAppAsync
-// calls on |profile| are processed (i.e. LaunchSystemWebAppImpl finishes
-// executing). Useful for testing SWA launch behaviors.
-void FlushSystemWebAppLaunchesForTesting(Profile* profile);
 
 // Implementation of LaunchSystemWebApp. Do not use this before discussing your
 // use case with the System Web Apps team.

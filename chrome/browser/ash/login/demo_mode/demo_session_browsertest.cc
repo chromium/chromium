@@ -19,6 +19,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "components/prefs/pref_service.h"
@@ -231,12 +233,16 @@ class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
 // this feature enablement into a subclass if non-SWA tests are needed
 class DemoSessionLoginTest : public LoginManagerTest,
                              public LocalStateMixin::Delegate,
+                             public BrowserListObserver,
                              public user_manager::UserManager::Observer {
  public:
   DemoSessionLoginTest() {
     login_manager_mixin_.set_should_launch_browser(true);
     scoped_feature_list_.InitAndEnableFeature(ash::features::kDemoModeSWA);
+    BrowserList::AddObserver(this);
   }
+
+  ~DemoSessionLoginTest() override { BrowserList::RemoveObserver(this); }
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
@@ -274,10 +280,23 @@ class DemoSessionLoginTest : public LoginManagerTest,
     LoginManagerTest::SetUpOnMainThread();
   }
 
+  void WaitForBrowserAdded() {
+    base::RunLoop run_loop;
+    on_browser_added_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
  protected:
   // LocalStateMixin::Delegate
   void SetUpLocalState() override {
     SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
+  }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    if (on_browser_added_callback_) {
+      std::move(on_browser_added_callback_).Run();
+    }
   }
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
@@ -285,6 +304,7 @@ class DemoSessionLoginTest : public LoginManagerTest,
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::OnceClosure on_browser_added_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
@@ -298,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
   login_manager_mixin_.WaitForActiveSession();
   auto* profile = ProfileManager::GetActiveUserProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
-  ash::FlushSystemWebAppLaunchesForTesting(profile);
+  WaitForBrowserAdded();
 
   // Verify that the Demo SWA has been opened
   Browser* demo_app_browser =

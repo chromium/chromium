@@ -243,7 +243,6 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
                           : kHelpWindowId;
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       std::move(params));
-  ash::FlushSystemWebAppLaunchesForTesting(profile);
   return app_id;
 }
 

@@ -254,9 +254,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
     SearchAndWaitForProviders("verycomplicatedsearchquery",
                               {ResultType::kHelpApp});
 
-    // This gives a chance for the icon to load between searches.
-    ash::FlushSystemWebAppLaunchesForTesting(GetProfile());
-
     result = FindResult("chrome://help-app/help/id/test");
   }
 

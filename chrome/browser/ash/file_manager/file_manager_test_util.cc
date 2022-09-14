@@ -73,19 +73,6 @@ OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
       }));
   run_loop.Run();
 
-  // On ChromeOS, the OpenOperationResult is determined in
-  // OpenFileMimeTypeAfterTasksListed() which also invokes
-  // ExecuteFileTaskForUrl(). For WebApps like chrome://media-app, that invokes
-  // WebApps::LaunchAppWithFiles() via AppServiceProxy.
-  // Depending how the mime type of |path| is determined (e.g. extension,
-  // metadata sniffing), there may be a number of asynchronous steps involved
-  // before the call to ExecuteFileTaskForUrl(). After that, the OpenItem
-  // callback is invoked, which exits the RunLoop above.
-  // That used to be enough to also launch a Browser for the WebApp. However,
-  // since https://crrev.com/c/2121860, ExecuteFileTaskForUrl() goes through the
-  // mojoAppService, so it's necessary to flush those calls for WebApps to open.
-  ash::FlushSystemWebAppLaunchesForTesting(profile_);
-
   return open_result;
 }
 

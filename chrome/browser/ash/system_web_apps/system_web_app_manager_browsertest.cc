@@ -1808,7 +1808,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppAbortsLaunchTest, LaunchAborted) {
 
   ash::LaunchSystemWebAppAsync(browser()->profile(),
                                maybe_installation_->GetType());
-  ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
   EXPECT_EQ(0U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
 }

@@ -131,10 +131,6 @@ void TestOpenSettingFromArc(Browser* browser,
 
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
 
-  // The above OpenChromePageFromArc() should trigger an asynchronous call to
-  // launch OS Settings SWA. Flush Mojo calls so the browser window is created.
-  ash::FlushSystemWebAppLaunchesForTesting(GetLastActiveBrowser()->profile());
-
   EXPECT_EQ(expected_setting_window_count, GetNumberOfSettingsWindows());
 
   // The right settings are loaded (not just the settings main page).
@@ -288,8 +284,6 @@ void TestOpenOSSettingsChromePage(ChromePage page, const GURL& expected_url) {
   chrome::SettingsWindowManager::SetInstanceForTesting(&test_manager);
 
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
-  ash::FlushSystemWebAppLaunchesForTesting(
-      ProfileManager::GetActiveUserProfile());
 
   EXPECT_EQ(expected_url, test_manager.last_navigation_url());
 
