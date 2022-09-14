@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -140,6 +141,9 @@ absl::optional<std::string> GetDeviceDMToken() {
 
 const base::Feature kEnterpriseConnectorsEnabled{
     "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kEnterpriseConnectorsEnabledOnMGS{
+    "EnterpriseConnectorsEnabledOnMGS", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // --------------------------------
 // ConnectorsService implementation
@@ -536,6 +540,10 @@ bool ConnectorsService::ConnectorsEnabled() const {
   if (!base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled))
     return false;
 
+  if (profiles::IsPublicSession() &&
+      !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS))
+    return false;
+
   return !Profile::FromBrowserContext(context_)->IsOffTheRecord();
 }
 
@@ -595,13 +603,20 @@ ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 
 KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  bool observe_prefs =
+      base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled);
+
+  if (profiles::IsPublicSession()) {
+    observe_prefs &=
+        base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS);
+  }
+
   return new ConnectorsService(
-      context,
-      std::make_unique<ConnectorsManager>(
-          std::make_unique<BrowserCrashEventRouter>(context),
-          ExtensionInstallEventRouter(context),
-          user_prefs::UserPrefs::Get(context), GetServiceProviderConfig(),
-          base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabled)));
+      context, std::make_unique<ConnectorsManager>(
+                   std::make_unique<BrowserCrashEventRouter>(context),
+                   ExtensionInstallEventRouter(context),
+                   user_prefs::UserPrefs::Get(context),
+                   GetServiceProviderConfig(), observe_prefs));
 }
 
 content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(

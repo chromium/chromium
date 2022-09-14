@@ -106,6 +106,14 @@ bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
     return false;
   }
 
+  if (profiles::IsPublicSession() &&
+      !base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseConnectorsEnabledOnMGS)) {
+    DVLOG(2) << "Safe browsing real-time reporting is not enabled in Managed "
+                "Guest Sessions.";
+    return false;
+  }
+
   return true;
 }
 

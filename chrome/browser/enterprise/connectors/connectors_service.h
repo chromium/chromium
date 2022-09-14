@@ -33,6 +33,10 @@ namespace enterprise_connectors {
 // ConnectorsManager.
 extern const base::Feature kEnterpriseConnectorsEnabled;
 
+// Controls whether the Enterprise Connectors policies should be read by
+// ConnectorsManager in Managed Guest Sessions.
+extern const base::Feature kEnterpriseConnectorsEnabledOnMGS;
+
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public KeyedService {
  public:
