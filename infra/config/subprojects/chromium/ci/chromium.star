@@ -152,8 +152,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "off-x64",
+            category = "ci|x64",
+            short_name = "off",
         ),
     ],
     cores = 32,

@@ -340,13 +340,13 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuchsia|x64",
-            short_name = "wst",
+            short_name = "work",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fyi",
-            short_name = "wst",
+            short_name = "work",
         ),
     ],
     notifies = ["cr-fuchsia"],
@@ -1835,7 +1835,7 @@ fyi_coverage_builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "misc",
+            category = "fyi",
             short_name = "cov",
         ),
     ],

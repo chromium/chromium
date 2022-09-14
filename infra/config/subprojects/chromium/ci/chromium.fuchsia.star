@@ -45,7 +45,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci",
+            category = "ci|x64",
             short_name = "det",
         ),
     ],
@@ -65,8 +65,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "arm64",
+            category = "ci|arm64",
+            short_name = "rel",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -101,8 +101,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "x64",
+            category = "ci|x64",
+            short_name = "rel",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -125,6 +125,8 @@ ci.builder(
     ),
 )
 
+# TODO(crbug.com/1294938): Rename the category to "cast-receiver" when replacing
+# with the -cast-receiver bots. Same for the x64 bot.
 ci.builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
@@ -136,8 +138,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "arm64-cast",
+            category = "ci|arm64",
+            short_name = "cast",
         ),
     ],
     # Set tree_closing to false to disable the default tree closer, which
@@ -176,8 +178,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "x64-cast",
+            category = "ci|x64",
+            short_name = "cast",
         ),
     ],
     # Set tree_closing to false to disable the default tree closer, which
@@ -215,8 +217,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "x64-dbg",
+            category = "ci|x64",
+            short_name = "dbg",
         ),
     ],
     builder_spec = builder_config.builder_spec(

@@ -33,10 +33,11 @@ consoles.console_view(
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
-    ("fuchsia-fyi-arm64-size", "release", "a64-size"),
-    ("fuchsia-builder-perf-fyi", "perf", "arm64 builder"),
-    ("fuchsia-builder-perf-x64", "perf", "x64 builder"),
-    ("fuchsia-x64", "release", "chrome-x64"),
+    ("fuchsia-arm64", "fuchsia|arm64", "chrome"),
+    ("fuchsia-builder-perf-fyi", "fuchsia|arm64", "perf-bld"),
+    ("fuchsia-builder-perf-x64", "fuchsia|x64", "perf-bld"),
+    ("fuchsia-fyi-arm64-size", "fuchsia|arm64", "size"),
+    ("fuchsia-x64", "fuchsia|x64", "chrome"),
 )]
 
 ci.builder(
@@ -49,8 +50,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "a64-cast-ng",
+            category = "fuchsia ci|arm64",
+            short_name = "cast-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -90,8 +91,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "a64-ng",
+            category = "fuchsia ci|arm64",
+            short_name = "rel-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -130,8 +131,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "a64-dbg",
+            category = "fuchsia ci|arm64",
+            short_name = "dbg",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -170,7 +171,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
+            category = "fuchsia ci|x64",
             short_name = "asan",
         ),
     ],
@@ -208,8 +209,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "x64-dbg",
+            category = "fuchsia ci|x64",
+            short_name = "dbg",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -247,8 +248,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "x64-cast-ng",
+            category = "fuchsia ci|x64",
+            short_name = "cast-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -285,8 +286,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "x64-ng",
+            category = "fuchsia ci|x64",
+            short_name = "rel-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
