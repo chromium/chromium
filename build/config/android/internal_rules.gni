@@ -22,6 +22,7 @@ assert(is_android)
 
 default_android_sdk_dep = "//third_party/android_sdk:android_sdk_java"
 _jacoco_dep = "//third_party/jacoco:jacocoagent_java"
+_jacoco_host_jar = "$root_build_dir/lib.java/third_party/jacoco/jacocoagent.jar"
 
 # The following _java_*_types variables capture all the existing target types.
 # If a new type is introduced, please add it to one of these categories,
@@ -88,6 +89,7 @@ java_library_patterns = [
 java_target_patterns = java_library_patterns + java_resource_patterns
 
 _r8_path = "//third_party/r8/lib/r8.jar"
+
 # This duplication is intentional, so we avoid updating the r8.jar used by
 # dexing unless necessary, since each update invalidates all incremental dexing
 # and unnecessarily slows down all bots.
@@ -1407,11 +1409,7 @@ if (enable_java_templates) {
   #
   template("java_binary_script") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker,
-                             TESTONLY_AND_VISIBILITY + [
-                                   "data",
-                                   "deps",
-                                 ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
 
       _main_class = invoker.main_class
       _build_config = invoker.build_config
@@ -1427,16 +1425,16 @@ if (enable_java_templates) {
         rebase_path(_java_script, root_build_dir),
         "--main-class",
         _main_class,
-      ]
-      args += [
         "--classpath=@FileArg($_rebased_build_config:deps_info:host_classpath)",
       ]
+      data = []
 
       if (use_jacoco_coverage) {
         args += [
           "--classpath",
-          "lib.java/third_party/jacoco/jacocoagent.jar",
+          rebase_path(_jacoco_host_jar, root_build_dir),
         ]
+        data += [ _jacoco_host_jar ]
       }
       if (use_jacoco_coverage || !treat_warnings_as_errors) {
         args += [ "--noverify" ]
@@ -1449,6 +1447,7 @@ if (enable_java_templates) {
         _rebased_extra_classpath_jars =
             rebase_path(invoker.extra_classpath_jars, root_build_dir)
         args += [ "--classpath=${_rebased_extra_classpath_jars}" ]
+        data += invoker.extra_classpath_jars
       }
       if (defined(invoker.wrapper_script_args)) {
         args += [ "--" ] + invoker.wrapper_script_args
@@ -4025,7 +4024,10 @@ if (enable_java_templates) {
         if (defined(invoker.wrapper_script_name)) {
           script_name = invoker.wrapper_script_name
         }
-        deps = [ ":$_build_config_target_name" ]
+        deps = [
+          ":$_build_config_target_name",
+          "//third_party/jdk:java_data",
+        ]
         if (_is_robolectric) {
           # An uninstrumented robolectric platform .jar is needed by the test
           # runner to provide a copy of org.json - we could pull from maven
@@ -4040,7 +4042,6 @@ if (enable_java_templates) {
             _robolectric_jar_path,
             android_sdk_jar,
           ]
-          data = extra_classpath_jars
         }
       }
     }

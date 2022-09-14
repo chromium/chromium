@@ -1317,10 +1317,6 @@ if (enable_java_templates) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       type = "java_binary"
-      if (!defined(data_deps)) {
-        data_deps = []
-      }
-      data_deps += [ "//third_party/jdk:java_data" ]
     }
   }
 
