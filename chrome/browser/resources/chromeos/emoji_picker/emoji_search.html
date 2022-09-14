@@ -3,7 +3,7 @@
     --emoji-picker-search-margins: 14px;
     --emoji-picker-search-height: 40px;
     --emoji-picker-top-bar-bottom-padding: 8px;
-    --v2-emoji-picker-top-bar-bottom-padding: 16px;
+    --v2-emoji-picker-top-bar-bottom-padding: 12px;
     --v2-search-content-width:
       calc(var(--v2-emoji-picker-width) - 2*var(--emoji-picker-side-padding));
     display: flex;
@@ -18,12 +18,6 @@
   :host(:not([v2-enabled])) emoji-button {
     --emoji-hover-background: transparent;
     margin-inline-end: 12px;
-  }
-
-  /* The following needs to be in sync with emoji_picker.html */
-  :host([v2-enabled]) emoji-group[category='emoji'] {
-    --emoji-size: var(--v2-emoji-size);
-    --emoji-spacing: var(--v2-emoji-spacing);
   }
 
   cr-search-field {

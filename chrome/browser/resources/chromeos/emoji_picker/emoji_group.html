@@ -64,10 +64,13 @@
   #heading {
     color: var(--cros-text-color-secondary);
     display: flex;
-    /* TODO(b/233133645): The sizes need to match the design. */
     font-size: 10pt;
     padding-bottom: var(--emoji-group-heading-padding-bottom);
     padding-top: var(--emoji-group-heading-padding-top);
+  }
+
+  :host([v2-enabled]) #heading {
+    font-size: 12px;
   }
 
   #heading:focus,

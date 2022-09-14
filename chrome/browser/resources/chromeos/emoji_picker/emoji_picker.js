@@ -179,12 +179,10 @@ export class EmojiPicker extends PolymerElement {
       '--v2-emoji-picker-height': constants.V2_EMOJI_PICKER_HEIGHT_PX,
       '--v2-emoji-picker-side-padding':
           constants.V2_EMOJI_PICKER_SIDE_PADDING_PX,
-      '--v2-emoji-size': constants.V2_EMOJI_ICON_SIZE_PX,
       '--v2-emoji-group-spacing': constants.V2_EMOJI_GROUP_SPACING_PX,
       '--v2-tab-button-margin': constants.V2_TAB_BUTTON_MARGIN_PX,
       '--v2-text-group-button-padding':
           constants.V2_TEXT_GROUP_BUTTON_PADDING_PX,
-      '--v2-emoji-spacing': constants.V2_EMOJI_SPACING_PX,
     });
   }
 
@@ -227,6 +225,13 @@ export class EmojiPicker extends PolymerElement {
             (response) => this.initHistoryUI(response.incognito)),
       ],
     ).then(values => values[0]); // Map to the fetched data only.
+
+    if (this.v2Enabled) {
+      this.updateStyles({
+        '--emoji-size': constants.V2_EMOJI_ICON_SIZE_PX,
+        '--emoji-spacing': constants.V2_EMOJI_SPACING_PX,
+      });
+    }
 
     // Update UI and relevant features based on the initial data.
     this.updateCategoryData(
@@ -585,11 +590,11 @@ export class EmojiPicker extends PolymerElement {
     const groupElements =
         Array.from(this.$.groups.querySelectorAll('[data-group]'));
 
-    // activate the first group which is visible for at least 10 pixels,
-    // i.e. whose bottom edge is at least 10px below the top edge of the
+    // activate the first group which is visible for at least 20 pixels,
+    // i.e. whose bottom edge is at least 20px below the top edge of the
     // scrollable region.
     const activeGroup = groupElements.find(
-        el => el.getBoundingClientRect().bottom - thisRect.top >= 10);
+        el => el.getBoundingClientRect().bottom - thisRect.top >= 20);
 
     const activeGroupId = activeGroup ?
         activeGroup.dataset.group : 'emoji-history';

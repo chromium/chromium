@@ -35,6 +35,11 @@
     width: var(--emoji-picker-width);
   }
 
+  :host([v2-enabled]) {
+    --emoji-group-heading-padding-bottom: 6px;
+    --emoji-group-heading-padding-top: 10px;
+  }
+
   .side-padding {
     flex-grow: 1;
     flex-shrink: 0;
@@ -76,11 +81,6 @@
   :host(:not([v2-enabled])) #tabs :nth-child(14) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
-  }
-
-  :host([v2-enabled]) emoji-group[category='emoji'] {
-    --emoji-size: var(--v2-emoji-size);
-    --emoji-spacing: var(--v2-emoji-spacing);
   }
 
   :host([v2-enabled]) #tabs {
@@ -210,8 +210,8 @@
   }
 
   :host([text-subcategory-bar-enabled]) .chevron {
-    --cr-icon-button-size: var(--v2-emoji-size);
-    width: var(--v2-emoji-size);
+    --cr-icon-button-size: var(--emoji-size);
+    width: var(--emoji-size);
   }
 
   :host([text-subcategory-bar-enabled]) #left-chevron {
@@ -220,7 +220,7 @@
   }
 
   :host([text-subcategory-bar-enabled]) #right-chevron {
-    left: calc(var(--v2-emoji-picker-width) - var(--v2-emoji-size)
+    left: calc(var(--v2-emoji-picker-width) - var(--emoji-size)
     - var(--emoji-picker-subcategory-bar-inline-margin));
     padding-inline-end: 0;
   }
@@ -369,7 +369,8 @@
           preferred="[[item.preferences]]"
           clearable$="[[item.isHistory]]"
           category$="[[item.category]]"
-          class$="[[getEmojiGroupClassNames(item.isHistory,item.emoji)]]">
+          class$="[[getEmojiGroupClassNames(item.isHistory,item.emoji)]]"
+          v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </div>
     </template>

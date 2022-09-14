@@ -129,7 +129,7 @@ const CATEGORY_TABS = {
   'emoticon': [
     {name: 'Classic', pagination: 1},
     {name: 'Smiling'},
-    {name: 'Loving'},
+    {name: 'Love'},
     {name: 'Hugging'},
     {name: 'Flexing'},
     {name: 'Animals', pagination: 2},
