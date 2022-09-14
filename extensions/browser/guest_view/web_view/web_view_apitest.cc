@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
@@ -26,6 +27,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -179,6 +181,44 @@ std::unique_ptr<net::test_server::HttpResponse> EmptyResponseHandler(
 
   return nullptr;
 }
+
+class RenderWidgetHostVisibilityObserver
+    : public content::RenderWidgetHostObserver {
+ public:
+  RenderWidgetHostVisibilityObserver(content::RenderWidgetHost* host,
+                                     base::OnceClosure hidden_callback)
+      : hidden_callback_(std::move(hidden_callback)) {
+    observation_.Observe(host);
+  }
+  ~RenderWidgetHostVisibilityObserver() override = default;
+  RenderWidgetHostVisibilityObserver(
+      const RenderWidgetHostVisibilityObserver&) = delete;
+  RenderWidgetHostVisibilityObserver& operator=(
+      const RenderWidgetHostVisibilityObserver&) = delete;
+
+  bool hidden_observed() const { return hidden_observed_; }
+
+ private:
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* host,
+                                         bool became_visible) override {
+    if (!became_visible) {
+      hidden_observed_ = true;
+      std::move(hidden_callback_).Run();
+    }
+  }
+
+  void RenderWidgetHostDestroyed(content::RenderWidgetHost* host) override {
+    EXPECT_TRUE(observation_.IsObservingSource(host));
+    observation_.Reset();
+  }
+
+  base::OnceClosure hidden_callback_;
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHostObserver>
+      observation_{this};
+  bool hidden_observed_ = false;
+};
 
 }  // namespace
 
@@ -355,8 +395,11 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, EmbedderVisibilityChanged) {
   LaunchApp("web_view/visibility_changed");
 
   base::RunLoop run_loop;
-  WebContentsHiddenObserver observer(GetGuestWebContents(),
-                                     run_loop.QuitClosure());
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  EXPECT_TRUE(guest_view);
+  RenderWidgetHostVisibilityObserver observer(
+      guest_view->GetGuestMainFrame()->GetRenderWidgetHost(),
+      run_loop.QuitClosure());
 
   // Handled in web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-embedder");
