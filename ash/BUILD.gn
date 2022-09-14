@@ -2543,6 +2543,7 @@ test("ash_unittests") {
     "accelerators/accelerator_history_unittest.cc",
     "accelerators/accelerator_table_unittest.cc",
     "accelerators/accelerator_unittest.cc",
+    "accelerators/ash_accelerator_configuration_unittest.cc",
     "accelerators/magnifier_key_scroller_unittest.cc",
     "accelerators/spoken_feedback_toggler_unittest.cc",
     "accelerometer/accelerometer_provider_mojo_unittest.cc",

@@ -5,11 +5,14 @@
 #ifndef ASH_ACCELERATORS_ASH_ACCELERATOR_CONFIGURATION_H_
 #define ASH_ACCELERATORS_ASH_ACCELERATOR_CONFIGURATION_H_
 
+#include <map>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerator_configuration.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
+#include "base/containers/span.h"
 
 namespace ash {
 
@@ -42,8 +45,19 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
       AcceleratorActionId action_id) override;
   AcceleratorConfigResult RestoreAllDefaults() override;
 
+  void InitializeAcceleratorMapping(
+      base::span<const AcceleratorData> accelerators);
+
+  const std::vector<AcceleratorInfo>& GetAllAcceleratorInfos() {
+    return accelerator_infos_;
+  }
+
  private:
   std::vector<AcceleratorInfo> accelerator_infos_;
+  // One accelerator action ID can potentially have multiple accelerators
+  // associated with it.
+  std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
+      id_to_accelerator_infos_;
 };
 
 }  // namespace ash
