@@ -809,26 +809,23 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
   GURL::Replacements replace_host;
   replace_host.SetHostStr("localhost");
 
-  // Run the test and wait until the guest WebContents is available and has
-  // finished loading.
+  // Run the test and wait until the guest is available and has finished
+  // loading.
   ExtensionTestMessageListener guest_loaded_listener("guest-loaded");
   EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
                                      "runTest('testRemoveWebviewOnExit')"));
 
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  EXPECT_TRUE(guest_web_contents->GetPrimaryMainFrame()
-                  ->GetProcess()
-                  ->IsForGuestsOnly());
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  EXPECT_TRUE(guest_view);
+  EXPECT_TRUE(guest_view->GetGuestMainFrame()->GetProcess()->IsForGuestsOnly());
   ASSERT_TRUE(guest_loaded_listener.WaitUntilSatisfied());
-
-  content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);
 
   // Tell the embedder to kill the guest.
   EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
                                      "removeWebviewOnExitDoCrash()"));
 
-  // Wait until the guest WebContents is destroyed.
-  destroyed_watcher.Wait();
+  // Wait until the guest is destroyed.
+  GetGuestViewManager()->WaitForLastGuestDeleted();
   StopTestServer();
 }
 
