@@ -70,6 +70,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_radio_demo.html',
             },
             {
+              name: 'Select menu',
+              path: 'select-menu',
+              src: 'md_select/md_select_demo.html',
+            },
+            {
               name: 'Sliders',
               path: 'sliders',
               src: 'cr_slider/cr_slider_demo.html',
