@@ -189,18 +189,17 @@ TEST_P(NetworkEventsObserverTest, ConnectionState) {
             MetricEventType::NETWORK_CONNECTION_STATE_CHANGE);
   ASSERT_TRUE(result_metric_data.has_telemetry_data());
   ASSERT_TRUE(result_metric_data.telemetry_data().has_networks_telemetry());
-  ASSERT_EQ(result_metric_data.telemetry_data()
-                .networks_telemetry()
-                .network_telemetry_size(),
-            1);
+  ASSERT_TRUE(result_metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .has_network_connection_change_event_data());
   EXPECT_EQ(result_metric_data.telemetry_data()
                 .networks_telemetry()
-                .network_telemetry(0)
+                .network_connection_change_event_data()
                 .guid(),
             kWifiGuid);
   EXPECT_EQ(result_metric_data.telemetry_data()
                 .networks_telemetry()
-                .network_telemetry(0)
+                .network_connection_change_event_data()
                 .connection_state(),
             test_case.expected_state);
 }

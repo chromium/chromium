@@ -45,27 +45,30 @@ void NetworkEventsObserver::OnConnectionStateChanged(
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
       MetricEventType::NETWORK_CONNECTION_STATE_CHANGE);
-  auto* const network_telemetry = metric_data.mutable_telemetry_data()
-                                      ->mutable_networks_telemetry()
-                                      ->add_network_telemetry();
-  network_telemetry->set_guid(guid);
+  auto* const connection_change_data =
+      metric_data.mutable_telemetry_data()
+          ->mutable_networks_telemetry()
+          ->mutable_network_connection_change_event_data();
+  connection_change_data->set_guid(guid);
   switch (state) {
     case NetworkStateMojom::kOnline:
-      network_telemetry->set_connection_state(NetworkConnectionState::ONLINE);
+      connection_change_data->set_connection_state(
+          NetworkConnectionState::ONLINE);
       break;
     case NetworkStateMojom::kConnected:
-      network_telemetry->set_connection_state(
+      connection_change_data->set_connection_state(
           NetworkConnectionState::CONNECTED);
       break;
     case NetworkStateMojom::kPortal:
-      network_telemetry->set_connection_state(NetworkConnectionState::PORTAL);
+      connection_change_data->set_connection_state(
+          NetworkConnectionState::PORTAL);
       break;
     case NetworkStateMojom::kConnecting:
-      network_telemetry->set_connection_state(
+      connection_change_data->set_connection_state(
           NetworkConnectionState::CONNECTING);
       break;
     case NetworkStateMojom::kNotConnected:
-      network_telemetry->set_connection_state(
+      connection_change_data->set_connection_state(
           NetworkConnectionState::NOT_CONNECTED);
       break;
     default:
