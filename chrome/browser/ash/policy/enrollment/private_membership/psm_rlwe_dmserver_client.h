@@ -25,8 +25,8 @@ enum class PsmResult {
   kEmptyQueryResponseError = 6,
   kConnectionError = 7,
   kServerError = 8,
-  kTimeout = 9,
-  kMaxValue = kTimeout,
+  // [deleted] kTimeout = 9,
+  kMaxValue = kServerError,
 };
 
 // Interface for the PSM RLWE Client which uses DMServer, allowing to replace

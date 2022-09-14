@@ -1946,8 +1946,7 @@ INSTANTIATE_TEST_SUITE_P(
                        PsmResult::kCreateQueryRequestLibraryError,
                        PsmResult::kProcessingQueryResponseLibraryError,
                        PsmResult::kEmptyOprfResponseError,
-                       PsmResult::kEmptyQueryResponseError,
-                       PsmResult::kTimeout}));
+                       PsmResult::kEmptyQueryResponseError}));
 
 }  // namespace
 }  // namespace policy

@@ -517,7 +517,6 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
       case PsmResult::kProcessingQueryResponseLibraryError:
       case PsmResult::kEmptyOprfResponseError:
       case PsmResult::kEmptyQueryResponseError:
-      case PsmResult::kTimeout:
         DCHECK(!GetServerStateIfObtained());
         RunCallback(ServerStateAvailabilityResult::kPsmInternalError);
         break;
