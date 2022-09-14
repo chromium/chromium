@@ -195,12 +195,12 @@ struct PopupView: View {
         toolbarConfiguration: uiConfiguration.toolbarConfiguration,
         selectionHandler: {
           model.delegate?.autocompleteResultConsumer(
-            model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
+            model, didSelect: match.suggestion, inRow: UInt(matchIndex))
         },
         trailingButtonHandler: {
           model.delegate?.autocompleteResultConsumer(
-            model, didTapTrailingButtonForRow: UInt(matchIndex),
-            inSection: UInt(sectionIndex))
+            model, didTapTrailingButtonOn: match.suggestion,
+            inRow: UInt(matchIndex))
           shouldIgnoreScrollEvents = true
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             shouldIgnoreScrollEvents = false
@@ -223,7 +223,8 @@ struct PopupView: View {
     .onDelete { indexSet in
       for matchIndex in indexSet {
         model.delegate?.autocompleteResultConsumer(
-          model, didSelectRowForDeletion: UInt(matchIndex), inSection: UInt(sectionIndex))
+          model, didSelectSuggestionForDeletion: section.matches[matchIndex].suggestion,
+          inRow: UInt(matchIndex))
       }
     }
   }

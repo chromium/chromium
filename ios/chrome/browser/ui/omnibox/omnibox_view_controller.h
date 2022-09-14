@@ -40,9 +40,9 @@ class OmniboxTextChangeDelegate;
 
 @end
 
-@interface OmniboxViewController : UIViewController<EditViewAnimatee,
-                                                    LocationBarOffsetProvider,
-                                                    OmniboxConsumer>
+@interface OmniboxViewController : UIViewController <EditViewAnimatee,
+                                                     LocationBarOffsetProvider,
+                                                     OmniboxConsumer>
 
 // The textfield used by this view controller.
 @property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;

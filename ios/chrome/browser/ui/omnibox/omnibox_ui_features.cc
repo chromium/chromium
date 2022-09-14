@@ -42,11 +42,5 @@ bool IsOmniboxActionsVisualTreatment2() {
 }
 
 bool IsSwiftUIPopupEnabled() {
-  if (!IsOmniboxActionsEnabled()) {
-    return false;
-  }
-  auto param = base::GetFieldTrialParamValueByFeature(
-      kIOSOmniboxUpdatedPopupUI, kIOSOmniboxUpdatedPopupUIVariationName);
-  return param == kIOSOmniboxUpdatedPopupUIVariation1 ||
-         param == kIOSOmniboxUpdatedPopupUIVariation2;
+  return false;
 }

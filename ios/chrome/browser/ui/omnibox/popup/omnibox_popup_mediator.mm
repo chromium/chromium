@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
+#import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -32,6 +34,16 @@
 namespace {
 const CGFloat kOmniboxIconSize = 16;
 }  // namespace
+
+@interface OmniboxPopupMediator () <PedalSectionExtractorDelegate>
+
+// Extracts pedals from AutocompleSuggestions.
+@property(nonatomic, strong) PedalSectionExtractor* pedalSectionExtractor;
+// List of suggestions without the pedal group. Used to debouce pedals.
+@property(nonatomic, strong)
+    NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestions;
+
+@end
 
 @implementation OmniboxPopupMediator {
   // Fetcher for Answers in Suggest images.
@@ -59,6 +71,8 @@ const CGFloat kOmniboxIconSize = 16;
     _imageFetcher = std::move(imageFetcher);
     _faviconLoader = faviconLoader;
     _open = NO;
+    _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
+    _pedalSectionExtractor.delegate = self;
   }
   return self;
 }
@@ -66,6 +80,7 @@ const CGFloat kOmniboxIconSize = 16;
 - (void)updateMatches:(const AutocompleteResult&)result {
   _currentResult.Reset();
   _currentResult.CopyFrom(result);
+  self.nonPedalSuggestions = nil;
 
   self.hasResults = !_currentResult.empty();
   if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
@@ -107,71 +122,90 @@ const CGFloat kOmniboxIconSize = 16;
   [self groupCurrentSuggestionsFrom:visibleSuggestions
                                  to:_currentResult.size()];
 
-  NSArray<id<AutocompleteSuggestion>>* matches = [self wrappedMatches];
+  NSArray<id<AutocompleteSuggestionGroup>>* groups = [self wrappedMatches];
 
-  [self.consumer updateMatches:@[ [AutocompleteSuggestionGroupImpl
-                                   groupWithTitle:nil
-                                      suggestions:matches] ]
-      preselectedMatchGroupIndex:0];
+  // When pressing down arrow with pedal, skip the pedal to select search
+  // suggestions first.
+  NSUInteger preselectedGroupIndex = 0;
+  if (groups.count > 1) {
+    preselectedGroupIndex = 1;
+  }
+
+  [self.consumer updateMatches:groups
+      preselectedMatchGroupIndex:preselectedGroupIndex];
 
   [self loadModelImages];
 }
 
 #pragma mark - AutocompleteResultConsumerDelegate
 
-- (void)autocompleteResultConsumerCancelledHighlighting:
-    (id<AutocompleteResultConsumer>)sender {
-}
-
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-                   didHighlightRow:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-                      didSelectRow:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-  // OpenMatch() may close the popup, which will clear the result set and, by
-  // extension, `match` and its contents.  So copy the relevant match out to
-  // make sure it stays alive until the call completes.
-  const AutocompleteMatch& match =
-      ((const AutocompleteResult&)_currentResult).match_at(row);
-
-  // Don't log pastes in incognito.
-  if (!self.incognito && match.type == AutocompleteMatchType::CLIPBOARD_URL) {
-    [self.promoScheduler logUserPastedInOmnibox];
-  }
-
-  _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-        didTapTrailingButtonForRow:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-  const AutocompleteMatch& match =
-      ((const AutocompleteResult&)_currentResult).match_at(row);
-
-  if (match.has_tab_match.value_or(false)) {
-    _delegate->OnMatchSelected(match, row,
-                               WindowOpenDisposition::SWITCH_TO_TAB);
-  } else {
-    if (AutocompleteMatch::IsSearchType(match.type)) {
-      base::RecordAction(
-          base::UserMetricsAction("MobileOmniboxRefineSuggestion.Search"));
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("MobileOmniboxRefineSuggestion.Url"));
+               didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
+                             inRow:(NSUInteger)row {
+  if ([suggestion isKindOfClass:[PedalSuggestionWrapper class]]) {
+    PedalSuggestionWrapper* pedalSuggestionWrapper =
+        (PedalSuggestionWrapper*)suggestion;
+    if (pedalSuggestionWrapper.innerPedal.action) {
+      pedalSuggestionWrapper.innerPedal.action();
     }
-    _delegate->OnMatchSelectedForAppending(match);
+  } else if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
+    AutocompleteMatchFormatter* autocompleteMatchFormatter =
+        (AutocompleteMatchFormatter*)suggestion;
+    const AutocompleteMatch& match =
+        autocompleteMatchFormatter.autocompleteMatch;
+
+    // Don't log pastes in incognito.
+    if (!self.incognito && match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+      [self.promoScheduler logUserPastedInOmnibox];
+    }
+
+    _delegate->OnMatchSelected(match, row, WindowOpenDisposition::CURRENT_TAB);
+  } else {
+    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
+                 << " not handled for selection.";
   }
 }
 
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-           didSelectRowForDeletion:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-  const AutocompleteMatch& match =
-      ((const AutocompleteResult&)_currentResult).match_at(row);
-  _delegate->OnMatchSelectedForDeletion(match);
+    didTapTrailingButtonOnSuggestion:(id<AutocompleteSuggestion>)suggestion
+                               inRow:(NSUInteger)row {
+  if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
+    AutocompleteMatchFormatter* autocompleteMatchFormatter =
+        (AutocompleteMatchFormatter*)suggestion;
+    const AutocompleteMatch& match =
+        autocompleteMatchFormatter.autocompleteMatch;
+    if (match.has_tab_match.value_or(false)) {
+      _delegate->OnMatchSelected(match, row,
+                                 WindowOpenDisposition::SWITCH_TO_TAB);
+    } else {
+      if (AutocompleteMatch::IsSearchType(match.type)) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileOmniboxRefineSuggestion.Search"));
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("MobileOmniboxRefineSuggestion.Url"));
+      }
+      _delegate->OnMatchSelectedForAppending(match);
+    }
+  } else {
+    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
+                 << " not handled for trailing button tap.";
+  }
+}
+
+- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+    didSelectSuggestionForDeletion:(id<AutocompleteSuggestion>)suggestion
+                             inRow:(NSUInteger)row {
+  if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
+    AutocompleteMatchFormatter* autocompleteMatchFormatter =
+        (AutocompleteMatchFormatter*)suggestion;
+    const AutocompleteMatch& match =
+        autocompleteMatchFormatter.autocompleteMatch;
+    _delegate->OnMatchSelectedForDeletion(match);
+  } else {
+    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
+                 << " not handled for deletion.";
+  }
 }
 
 - (void)autocompleteResultConsumerDidScroll:
@@ -241,10 +275,22 @@ const CGFloat kOmniboxIconSize = 16;
       });
 }
 
+#pragma mark - PedalSectionExtractorDelegate
+
+// Removes the pedal group from suggestions. Pedal are removed from suggestions
+// with a debouce timer in `PedalSectionExtractor`. When the timer ends the
+// pedal group is removed.
+- (void)invalidatePedals {
+  if (self.nonPedalSuggestions) {
+    [self.consumer updateMatches:self.nonPedalSuggestions
+        preselectedMatchGroupIndex:0];
+  }
+}
+
 #pragma mark - Private methods
 
-- (NSArray<id<AutocompleteSuggestion>>*)wrappedMatches {
-  NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
+- (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
+  NSMutableArray<id<AutocompleteSuggestion>>* wrappedSuggestions =
       [[NSMutableArray alloc] init];
 
   size_t size = _currentResult.size();
@@ -258,10 +304,22 @@ const CGFloat kOmniboxIconSize = 16;
     formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
     formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
                                                    incognito:_incognito];
-    [wrappedMatches addObject:formatter];
+    [wrappedSuggestions addObject:formatter];
   }
 
-  return wrappedMatches;
+  id<AutocompleteSuggestionGroup> pedalGroup =
+      [self.pedalSectionExtractor extractPedals:wrappedSuggestions];
+  id<AutocompleteSuggestionGroup> suggestionGroup =
+      [[AutocompleteSuggestionGroupImpl alloc]
+          initWithTitle:nil
+            suggestions:wrappedSuggestions];
+
+  self.nonPedalSuggestions = @[ suggestionGroup ];
+  if (pedalGroup) {
+    return @[ pedalGroup, suggestionGroup ];
+  } else {
+    return self.nonPedalSuggestions;
+  }
 }
 
 - (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end {

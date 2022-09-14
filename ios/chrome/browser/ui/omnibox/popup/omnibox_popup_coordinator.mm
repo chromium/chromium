@@ -43,8 +43,7 @@
   std::unique_ptr<OmniboxPopupViewIOS> _popupView;
 }
 
-@property(nonatomic, strong)
-    UIViewController<ContentProviding>* popupViewController;
+@property(nonatomic, strong) OmniboxPopupViewController* popupViewController;
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
 @property(nonatomic, strong) PopupModel* model;
 @property(nonatomic, strong) PopupUIConfiguration* uiConfiguration;
@@ -52,9 +51,6 @@
 @end
 
 @implementation OmniboxPopupCoordinator
-
-@synthesize mediator = _mediator;
-@synthesize popupViewController = _popupViewController;
 
 #pragma mark - Public
 
@@ -65,7 +61,8 @@
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     _popupView = std::move(popupView);
-    self.pedalExtractor = [[PedalSectionExtractor alloc] init];
+    _popupViewController = [[OmniboxPopupViewController alloc] init];
+    _popupReturnDelegate = _popupViewController;
   }
   return self;
 }
@@ -96,68 +93,21 @@
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
   if (IsSwiftUIPopupEnabled()) {
-    self.model = [[PopupModel alloc] initWithMatches:@[]
-                                             headers:@[]
-                                          dataSource:self.mediator
-                                            delegate:self.pedalExtractor];
-    ToolbarConfiguration* toolbarConfiguration = [[ToolbarConfiguration alloc]
-        initWithStyle:isIncognito ? INCOGNITO : NORMAL];
-    self.uiConfiguration = [[PopupUIConfiguration alloc]
-        initWithToolbarConfiguration:toolbarConfiguration];
-    if (@available(iOS 16, *)) {
-      self.uiConfiguration.shouldDismissKeyboardOnScroll =
-          (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
-           base::FeatureList::IsEnabled(kEnableSuggestionsScrollingOnIPad));
-    }
-
-    BOOL popupShouldSelfSize =
-        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
-    self.mediator.model = self.model;
-
-    PopupUIVariation popupUIVariation = IsOmniboxActionsVisualTreatment1()
-                                            ? PopupUIVariationOne
-                                            : PopupUIVariationTwo;
-
-    std::string pasteButtonVariationName =
-        base::GetFieldTrialParamValueByFeature(
-            kOmniboxPasteButton, kOmniboxPasteButtonParameterName);
-
-    PopupPasteButtonVariation popupPasteButtonVariation =
-        (pasteButtonVariationName ==
-         kOmniboxPasteButtonParameterBlueFullCapsule)
-            ? PopupPasteButtonVariationIconText
-            : PopupPasteButtonVariationIcon;
-
-    self.popupViewController = [OmniboxPopupViewProvider
-        makeViewControllerWithModel:self.model
-                    uiConfiguration:self.uiConfiguration
-                   popupUIVariation:popupUIVariation
-          popupPasteButtonVariation:popupPasteButtonVariation
-                popupShouldSelfSize:popupShouldSelfSize
-            appearanceContainerType:[OmniboxPopupContainerView class]];
-    [self.browser->GetCommandDispatcher()
-        startDispatchingToTarget:self.model
-                     forProtocol:@protocol(OmniboxSuggestionCommands)];
-    self.mediator.consumer = self.pedalExtractor;
-    self.pedalExtractor.dataSink = self.model;
-    self.pedalExtractor.delegate = self.mediator;
+    NOTREACHED() << "Swift version not supported anymore.";
   } else {
-    OmniboxPopupViewController* popupViewController =
-        [[OmniboxPopupViewController alloc] init];
-    popupViewController.imageRetriever = self.mediator;
-    popupViewController.faviconRetriever = self.mediator;
-    popupViewController.delegate = self.pedalExtractor;
-    popupViewController.dataSource = self.mediator;
-    popupViewController.incognito = isIncognito;
+    self.popupViewController.imageRetriever = self.mediator;
+    self.popupViewController.faviconRetriever = self.mediator;
+    self.popupViewController.delegate = self.mediator;
+    self.popupViewController.dataSource = self.mediator;
+    self.popupViewController.incognito = isIncognito;
     [self.browser->GetCommandDispatcher()
-        startDispatchingToTarget:popupViewController
+        startDispatchingToTarget:self.popupViewController
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
 
-    self.mediator.consumer = self.pedalExtractor;
-    self.pedalExtractor.dataSink = popupViewController;
-    self.pedalExtractor.delegate = self.mediator;
-
-    self.popupViewController = popupViewController;
+    self.mediator.consumer = self.popupViewController;
+    self.popupViewController.matchPreviewDelegate =
+        self.popupMatchPreviewDelegate;
+    self.popupViewController.acceptReturnDelegate = self.acceptReturnDelegate;
   }
 
   if (IsOmniboxActionsEnabled()) {

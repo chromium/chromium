@@ -27,238 +27,20 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
 
 @interface PedalSectionExtractor ()
 
-@property(nonatomic, strong)
-    NSArray<id<OmniboxPedal, OmniboxIcon>>* extractedPedals;
+@property(nonatomic, strong) id<AutocompleteSuggestionGroup> previousPedalGroup;
 // Timer for pedal debouncing.
 @property(nonatomic, strong) NSTimer* removePedalsTimer;
 @property(nonatomic, strong)
-    NSArray<id<AutocompleteSuggestionGroup>>* originalResult;
-@property(nonatomic, assign) NSInteger highlightedPedalIndex;
-// Currently highlighted index path, if any.
-// This is index path in `consumer` numeration, not in `originalResult` one.
-@property(nonatomic, assign) NSIndexPath* highlightedIndexPath;
+    NSArray<id<AutocompleteSuggestion>>* originalResult;
 
 @end
 
 @implementation PedalSectionExtractor
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _highlightedPedalIndex = NSNotFound;
-  }
-  return self;
-}
-
-#pragma mark - AutocompleteResultConsumer
-
-- (void)updateMatches:(NSArray<id<AutocompleteSuggestionGroup>>*)result
-    preselectedMatchGroupIndex:(NSInteger)groupIndex {
-  NSMutableArray* extractedPedals = [[NSMutableArray alloc] init];
-  self.highlightedPedalIndex = NSNotFound;
-  self.highlightedIndexPath = nil;
-  self.originalResult = result;
-
-  if (result.count > 0 && result[groupIndex].suggestions.count > 0) {
-    id<AutocompleteSuggestion> preselectedSuggestion =
-        result[groupIndex].suggestions[0];
-    [self.matchPreviewDelegate setPreviewSuggestion:preselectedSuggestion
-                                      isFirstUpdate:YES];
-  } else {
-    [self.matchPreviewDelegate setPreviewSuggestion:nil isFirstUpdate:YES];
-  }
-
-  NSInteger totalSuggestionCount = 0;
-  for (id<AutocompleteSuggestionGroup> group in result) {
-    totalSuggestionCount += group.suggestions.count;
-    for (NSUInteger i = 0; i < group.suggestions.count; i++) {
-      id<AutocompleteSuggestion> suggestion = group.suggestions[i];
-
-      if (suggestion.pedal != nil) {
-        [extractedPedals addObject:suggestion.pedal];
-      }
-    }
-  }
-
-  if (extractedPedals.count == 0 && self.extractedPedals.count > 0 &&
-      totalSuggestionCount > 0) {
-    // If no pedals, display old pedal for a duration of `kPedalDebouceTimer`
-    // with new suggestion. This avoids pedal flickering because the pedal
-    // results are async. (cf. crbug.com/1316404).
-    [self updateMatchesWithPedals:self.extractedPedals suggestionGroup:result];
-    if (!self.removePedalsTimer) {
-      self.removePedalsTimer =
-          [NSTimer scheduledTimerWithTimeInterval:kPedalDebouceTimer
-                                           target:self
-                                         selector:@selector(removePedals:)
-                                         userInfo:nil
-                                          repeats:NO];
-    }
-    return;
-  } else {
-    [self.removePedalsTimer invalidate];
-    self.removePedalsTimer = nil;
-  }
-
-  self.extractedPedals = extractedPedals;
-
-  [self updateMatchesWithPedals:extractedPedals suggestionGroup:result];
-}
-
-- (void)setTextAlignment:(NSTextAlignment)alignment {
-  [self.dataSink setTextAlignment:alignment];
-}
-
-- (void)setSemanticContentAttribute:
-    (UISemanticContentAttribute)semanticContentAttribute {
-  [self.dataSink setSemanticContentAttribute:semanticContentAttribute];
-}
-
-- (void)newResultsAvailable {
-  return [self.dataSink newResultsAvailable];
-}
-
-#pragma mark - AutocompleteResultConsumerDelegate
-
-- (void)autocompleteResultConsumerCancelledHighlighting:
-    (id<AutocompleteResultConsumer>)sender {
-  self.highlightedPedalIndex = NSNotFound;
-  self.highlightedIndexPath = nil;
-  [self.delegate autocompleteResultConsumerCancelledHighlighting:self];
-  [self.matchPreviewDelegate setPreviewSuggestion:nil isFirstUpdate:NO];
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-                   didHighlightRow:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-  self.highlightedIndexPath = [NSIndexPath indexPathForRow:row
-                                                 inSection:section];
-  if (self.extractedPedals.count > 0) {
-    if (section == 0) {
-      [self.delegate autocompleteResultConsumerCancelledHighlighting:self];
-      [self.matchPreviewDelegate
-          setPreviewSuggestion:[[PedalSuggestionWrapper alloc]
-                                   initWithPedal:self.extractedPedals[row]]
-                 isFirstUpdate:NO];
-      self.highlightedPedalIndex = row;
-      return;
-    } else {
-      self.highlightedPedalIndex = NSNotFound;
-      section -= 1;
-    }
-  }
-
-  id<AutocompleteSuggestion> match =
-      self.originalResult[section].suggestions[row];
-  [self.matchPreviewDelegate setPreviewSuggestion:match isFirstUpdate:NO];
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-                      didSelectRow:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-  if (self.extractedPedals.count > 0) {
-    if (section == 0) {
-      id<OmniboxPedal> pedal = self.extractedPedals[row];
-      if (pedal.action) {
-        for (id<OmniboxPedal> displayedPedal in self.extractedPedals) {
-          base::UmaHistogramEnumeration(
-              "Omnibox.PedalShown",
-              static_cast<OmniboxPedalId>(displayedPedal.type),
-              OmniboxPedalId::TOTAL_COUNT);
-        }
-
-        base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
-                                      static_cast<OmniboxPedalId>(pedal.type),
-                                      OmniboxPedalId::TOTAL_COUNT);
-        pedal.action();
-      }
-      return;
-    } else {
-      section -= 1;
-    }
-  }
-
-  [self.delegate autocompleteResultConsumer:self
-                               didSelectRow:row
-                                  inSection:section];
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-        didTapTrailingButtonForRow:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-  if (self.extractedPedals.count > 0) {
-    // Pedals do not have trailing buttons.
-    DCHECK(section > 0);
-    section -= 1;
-  }
-
-  [self.delegate autocompleteResultConsumer:self
-                 didTapTrailingButtonForRow:row
-                                  inSection:section];
-}
-
-- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
-           didSelectRowForDeletion:(NSUInteger)row
-                         inSection:(NSUInteger)section {
-  if (self.extractedPedals.count > 0) {
-    // Pedals do not support deletion.
-    DCHECK(section > 0);
-    section -= 1;
-  }
-
-  [self.delegate autocompleteResultConsumer:self
-                    didSelectRowForDeletion:row
-                                  inSection:section];
-}
-
-- (void)autocompleteResultConsumerDidScroll:
-    (id<AutocompleteResultConsumer>)sender {
-  [self.delegate autocompleteResultConsumerDidScroll:self];
-}
-
-#pragma mark - OmniboxReturnDelegate
-
-- (void)omniboxReturnPressed:(id)sender {
-  if (self.highlightedPedalIndex != NSNotFound) {
-    id<OmniboxPedal> pedal = self.extractedPedals[self.highlightedPedalIndex];
-    if (pedal.action) {
-      pedal.action();
-    }
-    return;
-  }
-
-  if (self.highlightedIndexPath) {
-    // Pretend that the consumer actually selected the highlighted row.
-    [self autocompleteResultConsumer:nil
-                        didSelectRow:self.highlightedIndexPath.row
-                           inSection:self.highlightedIndexPath.section];
-    return;
-  }
-
-  [self.acceptDelegate omniboxReturnPressed:sender];
-}
-
-#pragma mark - Private methods
-
-// Removes pedals from suggestions. This is used to debouce pedal with a timer
-// to avoid pedal flickering.
-- (void)removePedals:(NSTimer*)timer {
-  [self.dataSink updateMatches:self.originalResult
-      preselectedMatchGroupIndex:0];
-
-  self.extractedPedals = nil;
-  self.removePedalsTimer = nil;
-}
-
-// Updates matches in `self.dataSink` with pedals from `extractedPedals` and
-// suggestions from `result`.
-- (void)updateMatchesWithPedals:
-            (NSArray<id<OmniboxPedal, OmniboxIcon>>*)extractedPedals
-                suggestionGroup:
-                    (NSArray<id<AutocompleteSuggestionGroup>>*)result {
++ (id<AutocompleteSuggestionGroup>)wrapPedals:
+    (NSArray<id<OmniboxPedal, OmniboxIcon>>*)extractedPedals {
   if (extractedPedals.count == 0) {
-    [self.dataSink updateMatches:result preselectedMatchGroupIndex:0];
-    return;
+    return nil;
   }
 
   NSMutableArray* wrappedPedals = [[NSMutableArray alloc] init];
@@ -270,12 +52,59 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
   AutocompleteSuggestionGroupImpl* pedalGroup =
       [AutocompleteSuggestionGroupImpl groupWithTitle:nil
                                           suggestions:wrappedPedals];
-  NSArray* combinedGroups = @[ pedalGroup ];
-  combinedGroups = [combinedGroups arrayByAddingObjectsFromArray:result];
-  const NSInteger suggestionGroupIndexInCombinedGroups = 1;
+  return pedalGroup;
+}
 
-  [self.dataSink updateMatches:combinedGroups
-      preselectedMatchGroupIndex:suggestionGroupIndexInCombinedGroups];
+- (id<AutocompleteSuggestionGroup>)extractPedals:
+    (NSArray<id<AutocompleteSuggestion>>*)suggestions {
+  self.originalResult = suggestions;
+  // Extract pedals
+  NSMutableArray* extractedPedals = [[NSMutableArray alloc] init];
+  for (NSUInteger i = 0; i < suggestions.count; i++) {
+    id<AutocompleteSuggestion> suggestion = suggestions[i];
+    if (suggestion.pedal != nil) {
+      [extractedPedals addObject:suggestion.pedal];
+    }
+  }
+
+  if (extractedPedals.count > 0) {
+    [self.removePedalsTimer invalidate];
+    self.removePedalsTimer = nil;
+
+    id<AutocompleteSuggestionGroup> pedalGroup =
+        [PedalSectionExtractor wrapPedals:extractedPedals];
+    self.previousPedalGroup = pedalGroup;
+    return pedalGroup;
+  } else if (self.previousPedalGroup && suggestions.count > 0) {
+    // If no pedals, display old pedal for a duration of `kPedalDebouceTimer`
+    // with new suggestion. This avoids pedal flickering because the pedal
+    // results are async. (cf. crbug.com/1316404).
+    if (!self.removePedalsTimer) {
+      self.removePedalsTimer = [NSTimer
+          scheduledTimerWithTimeInterval:kPedalDebouceTimer
+                                  target:self
+                                selector:@selector(expirePreviousPedals:)
+                                userInfo:nil
+                                 repeats:NO];
+    }
+    return self.previousPedalGroup;
+  } else {
+    // Remove cached pedals when the popup is closed.
+    if (suggestions.count == 0) {
+      [self expirePreviousPedals:nil];
+    }
+    return nil;
+  }
+}
+
+// Removes pedals from suggestions. This is used to debouce pedal with a timer
+// to avoid pedal flickering.
+- (void)expirePreviousPedals:(NSTimer*)timer {
+  [self.removePedalsTimer invalidate];
+  self.previousPedalGroup = nil;
+  self.removePedalsTimer = nil;
+
+  [self.delegate invalidatePedals];
 }
 
 @end

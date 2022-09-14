@@ -98,11 +98,7 @@ extension PopupModel: OmniboxSuggestionCommands {
     }
 
     if indexPath.section == 0 && indexPath.row == 0 {
-      // Can't move up from first row. Call the delegate again so that the inline
-      // autocomplete text is set again (in case the user exited the inline
-      // autocomplete).
-      self.delegate?.autocompleteResultConsumer(
-        self, didHighlightRow: UInt(indexPath.row), inSection: UInt(indexPath.section))
+      // Can't move up from first row.
       return
     }
 
@@ -116,8 +112,6 @@ extension PopupModel: OmniboxSuggestionCommands {
     }
 
     self.highlightedMatchIndexPath = indexPath
-    self.delegate?.autocompleteResultConsumer(
-      self, didHighlightRow: UInt(indexPath.row), inSection: UInt(indexPath.section))
   }
 
   public func highlightNextSuggestion() {
@@ -140,10 +134,6 @@ extension PopupModel: OmniboxSuggestionCommands {
       indexPath.section += 1
     }
 
-    // We call the delegate again even if we stayed on the last row so that the inline
-    // autocomplete text is set again (in case the user exited the inline autocomplete).
-    self.delegate?.autocompleteResultConsumer(
-      self, didHighlightRow: UInt(indexPath.row), inSection: UInt(indexPath.section))
     self.highlightedMatchIndexPath = indexPath
   }
 }

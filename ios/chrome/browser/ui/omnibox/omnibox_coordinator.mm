@@ -232,9 +232,9 @@
   self.returnDelegate = [[ForwardingReturnDelegate alloc] init];
   self.returnDelegate.acceptDelegate = _editView.get();
 
-  coordinator.pedalExtractor.matchPreviewDelegate = self.mediator;
-  coordinator.pedalExtractor.acceptDelegate = self.returnDelegate;
-  self.viewController.returnKeyDelegate = coordinator.pedalExtractor;
+  coordinator.popupMatchPreviewDelegate = self.mediator;
+  coordinator.acceptReturnDelegate = self.returnDelegate;
+  self.viewController.returnKeyDelegate = coordinator.popupReturnDelegate;
 
   return coordinator;
 }

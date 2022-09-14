@@ -63,7 +63,6 @@ source_set("popup") {
     "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.h",
     "pedal_suggestion_wrapper.mm",
-    "popup_match_preview_delegate.h",
   ]
   deps = [
     ":popup_internal",
@@ -161,6 +160,7 @@ source_set("popup_ui") {
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
+    "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
@@ -209,6 +209,7 @@ source_set("popup_ui_protocols") {
     "content_providing.h",
     "omnibox_icon.h",
     "omnibox_pedal.h",
+    "popup_match_preview_delegate.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

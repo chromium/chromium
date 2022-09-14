@@ -7,30 +7,28 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 
 @protocol PopupMatchPreviewDelegate;
 
-// Extractor can be inserted in between the OmniboxPopupMediator and its
-// consumer. It acts as a consumer and a consumer delegate, and is intended to
-// intercept any calls in these protocols.
-// It extracts any pedals being pushed to it, wraps them to look like
-// suggestions, and passes it down to `dataSink`.
-// It also intercepts the return key (by proxying OmniboxReturnDelegate) to
-// allow "return" key to execute the pedal whenever it selected; if a non-pedal
-// is highlighted, it forwards the call to its accept delegate.
-// When a pedal is highlighted, it also tells the match preview delegate
-// to display the corresponding image and text.
-@interface PedalSectionExtractor : NSObject <AutocompleteResultConsumer,
-                                             AutocompleteResultConsumerDelegate,
-                                             OmniboxReturnDelegate>
+// Delegate for PedalSectionExtractor.
+@protocol PedalSectionExtractorDelegate <NSObject>
 
-// The sink to forward AutocompleteResultConsumer calls.
-@property(nonatomic, weak) id<AutocompleteResultConsumer> dataSink;
-// The delegate to forward AutocompleteResultConsumerDelegate calls to.
-@property(nonatomic, weak) id<AutocompleteResultConsumerDelegate> delegate;
-// The delegate that receives text/image when a pedal is highlighted.
-@property(nonatomic, weak) id<PopupMatchPreviewDelegate> matchPreviewDelegate;
-@property(nonatomic, weak) id<OmniboxReturnDelegate> acceptDelegate;
+// Removes the pedal group from suggestions. Pedal are removed from suggestions
+// with a debouce timer in `PedalSectionExtractor`. When the timer ends the
+// pedal group is removed.
+- (void)invalidatePedals;
+
+@end
+
+// Extract pedal from AutocompleteSuggestion and wrap them in new
+// AutocompleteSuggestion.
+@interface PedalSectionExtractor : NSObject
+
+@property(nonatomic, weak) id<PedalSectionExtractorDelegate> delegate;
+
+- (id<AutocompleteSuggestionGroup>)extractPedals:
+    (NSArray<id<AutocompleteSuggestion>>*)suggestions;
 
 @end
 

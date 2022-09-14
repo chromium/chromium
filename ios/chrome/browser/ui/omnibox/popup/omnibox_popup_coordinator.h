@@ -9,11 +9,12 @@
 
 #include <memory>
 
-@protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxCommands;
-@class OmniboxTextFieldIOS;
-@class PedalSectionExtractor;
+@protocol OmniboxPopupPresenterDelegate;
 class OmniboxPopupViewIOS;
+@protocol OmniboxReturnDelegate;
+@class OmniboxTextFieldIOS;
+@protocol PopupMatchPreviewDelegate;
 
 // Coordinator for the Omnibox Popup.
 @interface OmniboxPopupCoordinator : ChromeCoordinator
@@ -33,8 +34,15 @@ class OmniboxPopupViewIOS;
 @property(nonatomic, assign, readonly) BOOL hasResults;
 // Whether the popup is open.
 @property(nonatomic, assign, readonly) BOOL isOpen;
-// The pedal extractor that wraps pedals as a separate suggestion section.
-@property(nonatomic, strong) PedalSectionExtractor* pedalExtractor;
+
+// Object implementing OmniboxReturnDelegate in OmniboxPopupCoordinator.
+@property(nonatomic, weak, readonly) id<OmniboxReturnDelegate>
+    popupReturnDelegate;
+// Delegate for OmniboxReturnDelegate used in OmniboxPopupCoordinator.
+@property(nonatomic, weak) id<OmniboxReturnDelegate> acceptReturnDelegate;
+// Delegate for PopupMatchPreviewDelegate used in OmniboxPopupCoordinator.
+@property(nonatomic, weak) id<PopupMatchPreviewDelegate>
+    popupMatchPreviewDelegate;
 
 @end
 

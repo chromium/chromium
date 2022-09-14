@@ -31,7 +31,7 @@ bool IsOmniboxActionsEnabled();
 bool IsOmniboxActionsVisualTreatment1();
 // Same as above, but for "version 2".
 bool IsOmniboxActionsVisualTreatment2();
-// Returns true when Actions are set to one of the SwiftUI variations.
+// Returns false, swift version not supported anymore.
 bool IsSwiftUIPopupEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

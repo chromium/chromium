@@ -257,6 +257,10 @@ UIColor* DimColorIncognito() {
   return [[CrURL alloc] initWithGURL:_match.destination_url];
 }
 
+- (const AutocompleteMatch&)autocompleteMatch {
+  return _match;
+}
+
 #pragma mark tail suggest
 
 - (BOOL)isTailSuggestion {
