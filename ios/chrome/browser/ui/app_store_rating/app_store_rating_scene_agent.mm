@@ -4,7 +4,12 @@
 
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 
+#import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -78,7 +83,12 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
 }
 
 - (BOOL)isCPEEnabled {
-  return NO;
+  DCHECK(self.sceneState.interfaceProvider.mainInterface.browser);
+  PrefService* pref_service =
+      self.sceneState.interfaceProvider.mainInterface.browser->GetBrowserState()
+          ->GetPrefs();
+  return password_manager_util::IsCredentialProviderEnabledOnStartup(
+      pref_service);
 }
 
 #pragma mark - Private

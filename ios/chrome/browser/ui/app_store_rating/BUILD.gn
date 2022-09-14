@@ -11,7 +11,11 @@ source_set("app_store_rating") {
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//base",
+    "//components/password_manager/core/browser",
+    "//components/prefs",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
   ]
 }
