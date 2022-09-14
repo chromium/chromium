@@ -624,7 +624,9 @@ enum class PasswordViewPageInteractions {
   // The password view page is closed while the edit dialog is closed after
   // an authentication timeout.
   kTimedOutInViewPage = 10,
-  kMaxValue = kTimedOutInViewPage,
+  // The credential is requested by typing the URL.
+  kCredentialRequestedByUrl = 11,
+  kMaxValue = kCredentialRequestedByUrl,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(

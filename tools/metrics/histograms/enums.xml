@@ -77289,6 +77289,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="10"
       label="The password view page authentication timed out while the edit
              dialog is closed"/>
+  <int value="11" label="The credential is requested by typing the URL."/>
 </enum>
 
 <enum name="PasswordWeaknessScore">

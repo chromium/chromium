@@ -98,8 +98,9 @@ export enum PasswordViewPageInteractions {
   CREDENTIAL_EDITED = 8,
   TIMED_OUT_IN_EDIT_DIALOG = 9,
   TIMED_OUT_IN_VIEW_PAGE = 10,
+  CREDENTIAL_REQUESTED_BY_URL = 11,
   // Must be last.
-  COUNT = 11,
+  COUNT = 12,
 }
 
 export class PasswordViewElement extends PasswordViewElementBase {
@@ -251,6 +252,9 @@ export class PasswordViewElement extends PasswordViewElementBase {
           composed: true,
           detail: eventDetail,
         }));
+
+    recordPasswordViewInteraction(
+        PasswordViewPageInteractions.CREDENTIAL_REQUESTED_BY_URL);
   }
 
   /** Gets the title text for the show/hide icon. */
