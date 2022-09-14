@@ -22,31 +22,22 @@ AppServiceTest::AppServiceTest() = default;
 AppServiceTest::~AppServiceTest() = default;
 
 void AppServiceTest::SetUp(Profile* profile) {
-  app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
+  app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile);
   app_service_proxy_->ReInitializeForTesting(profile);
-
-  // Allow async callbacks to run.
-  WaitForAppService();
 }
 
 void AppServiceTest::UninstallAllApps(Profile* profile) {
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  std::vector<apps::mojom::AppPtr> apps;
+  auto* app_service_proxy = AppServiceProxyFactory::GetForProfile(profile);
+  std::vector<AppPtr> apps;
   app_service_proxy->AppRegistryCache().ForEachApp(
       [&apps](const apps::AppUpdate& update) {
-        apps::mojom::AppPtr app = apps::mojom::App::New();
-        app->app_type = ConvertAppTypeToMojomAppType(update.AppType());
-        app->app_id = update.AppId();
-        app->readiness = apps::mojom::Readiness::kUninstalledByUser;
-        apps.push_back(app.Clone());
+        AppPtr app = std::make_unique<App>(update.AppType(), update.AppId());
+        app->readiness = Readiness::kUninstalledByUser;
+        apps.push_back(std::move(app));
       });
   app_service_proxy->AppRegistryCache().OnApps(
-      std::move(apps), apps::mojom::AppType::kUnknown,
+      std::move(apps), AppType::kUnknown,
       false /* should_notify_initialized */);
-
-  // Allow async callbacks to run.
-  WaitForAppService();
 }
 
 std::string AppServiceTest::GetAppName(const std::string& app_id) const {
@@ -54,7 +45,7 @@ std::string AppServiceTest::GetAppName(const std::string& app_id) const {
   if (!app_service_proxy_)
     return name;
   app_service_proxy_->AppRegistryCache().ForOneApp(
-      app_id, [&name](const apps::AppUpdate& update) { name = update.Name(); });
+      app_id, [&name](const AppUpdate& update) { name = update.Name(); });
   return name;
 }
 

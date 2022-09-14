@@ -222,6 +222,8 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
     app_service_test_.UninstallAllApps(profile());
     testing_profile()->SetGuestSession(guest_mode);
     app_service_test_.SetUp(profile());
+    // Wait for some default apps added to AppService.
+    base::RunLoop().RunUntilIdle();
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
@@ -661,6 +663,8 @@ class WebAppBuilderDemoModeTest : public WebAppBuilderTest {
     demo_mode_test_helper_->InitializeSession();
 
     app_service_test_.SetUp(profile_.get());
+    // Wait for some default apps added to AppService.
+    base::RunLoop().RunUntilIdle();
     RemoveApps(apps::AppType::kWeb, profile(), model_updater_.get());
   }
 
