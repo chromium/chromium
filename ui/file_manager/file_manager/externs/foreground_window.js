@@ -6,6 +6,9 @@
  * @fileoverview External objects and functions required for compiling tests.
  */
 
+import {Crostini} from './background/crostini.js';
+import {FileManagerBaseInterface} from './background/file_manager_base.js';
+
 /** @interface */
 class FileManagerTestDeps {
   constructor() {
@@ -17,9 +20,14 @@ class FileManagerTestDeps {
 /**
  * @extends {Window}
  */
-class ForegroundWindow {
+export class ForegroundWindow {
   constructor() {
     /** @type {FileManagerTestDeps} */
     this.fileManager;
+
+    /**
+     * @type {!FileManagerBaseInterface}
+     */
+    this.background;
   }
 }

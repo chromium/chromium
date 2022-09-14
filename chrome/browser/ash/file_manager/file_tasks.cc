@@ -847,7 +847,7 @@ bool ExecuteFileTask(Profile* profile,
     }
   }
 
-  // When the FilesSWA is enabled: Open Files SWA if the task is for Files app.
+  // Open Files SWA if the task is for Files app.
   if (IsFilesAppId(task.app_id)) {
     std::u16string title;
     const GURL destination_entry =

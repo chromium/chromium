@@ -19,9 +19,9 @@ import {Crostini} from '../../externs/background/crostini.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {BackgroundWindow} from '../../externs/background_window.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {getStore} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';
@@ -912,7 +912,7 @@ export class FileManager extends EventTarget {
     metrics.startInterval('Load.InitBackgroundPage');
 
     this.fileBrowserBackground_ =
-        /** @type {!FileManagerBaseInterface} */ (window.background);
+        /** @type {!ForegroundWindow} */ (window).background;
 
     await new Promise(resolve => this.fileBrowserBackground_.ready(resolve));
 
