@@ -7052,7 +7052,6 @@ crbug.com/1352248 virtual/disable-frequency-capping-for-overlay-popup-detection/
 crbug.com/1352545 [ Linux ] external/wpt/html/cross-origin-opener-policy/coop-sandbox-redirects-cuts-opener.https.html [ Failure Pass ]
 crbug.com/1352545 [ Linux ] external/wpt/html/interaction/focus/chrome-object-tab-focus-bug.html [ Failure Pass ]
 crbug.com/1352566 [ Mac ] external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/before-load-hash-twice.html [ Failure Pass ]
-crbug.com/1352576 [ Linux ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Pass ]
 crbug.com/1352607 external/wpt/css/css-transitions/transition-base-response-002.html [ Failure Pass ]
 
 # Sheriff 2022-08-17
@@ -7131,6 +7130,10 @@ crbug.com/1359541 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scr
 crbug.com/1363259 [ Mac11 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
 crbug.com/1363259 [ Mac12 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
 crbug.com/1363259 [ Mac10.15 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
+
+# Disable media security policy test on Linux (dbg, ASAN) and Mac12 (dbg)
+crbug.com/1349180 [ Linux ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Timeout Pass ]
+crbug.com/1349180 [ Debug Mac12 ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Timeout Pass ]
 
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]
