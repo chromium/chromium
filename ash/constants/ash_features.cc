@@ -811,9 +811,9 @@ const base::Feature kGlanceables{"Glanceables",
 const base::Feature kGuestOsFiles{"GuestOsFiles",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the Gaia reauth endpoint with deleted user customization page.
+// Enables the Gaia reauth endpoint.
 const base::Feature kGaiaReauthEndpoint{"GaiaReauthEndpoint",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls gamepad vibration in Exo.
 const base::Feature kGamepadVibration{"ExoGamepadVibration",

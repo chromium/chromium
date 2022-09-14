@@ -54,10 +54,10 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
   if (!view_)
     return;
   auto gaia_path = GaiaView::GaiaPath::kDefault;
-  if (!account.empty() && features::IsGaiaReauthEndpointEnabled()) {
+  if (!account.empty()) {
     auto* user = user_manager::UserManager::Get()->FindUser(account);
     DCHECK(user);
-    if (user && user->IsChild())
+    if (user && (user->IsChild() || features::IsGaiaReauthEndpointEnabled()))
       gaia_path = GaiaView::GaiaPath::kReauth;
   }
   view_->SetGaiaPath(gaia_path);

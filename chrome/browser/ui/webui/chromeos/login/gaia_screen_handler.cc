@@ -534,7 +534,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   public_saml_url_fetcher_.reset();
 
   bool is_reauth = !context.email.empty();
-  if (is_reauth && features::IsGaiaReauthEndpointEnabled()) {
+  if (is_reauth) {
     const AccountId account_id =
         GetAccountId(context.email, context.gaia_id, AccountType::GOOGLE);
     auto* user = user_manager::UserManager::Get()->FindUser(account_id);

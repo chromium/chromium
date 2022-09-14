@@ -818,9 +818,8 @@ class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
     // TODO(https://crbug.com/1153912) Makes tests work with
     // kParentAccessCodeForOnlineLogin enabled.
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGaiaReauthEndpoint},
-        {::features::kParentAccessCodeForOnlineLogin});
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kParentAccessCodeForOnlineLogin);
   }
   ~ReauthEndpointWebviewLoginTest() override = default;
 
