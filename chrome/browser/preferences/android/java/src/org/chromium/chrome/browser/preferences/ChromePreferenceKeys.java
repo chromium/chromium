@@ -250,6 +250,11 @@ public final class ChromePreferenceKeys {
     public static final String DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE =
             "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledShowMessage";
     /**
+     * Indicates whether the device qualifies for default-enabling the desktop site global setting.
+     */
+    public static final String DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT =
+            "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledCohort";
+    /**
      * Indicates whether an opt-in message was shown for the desktop site global setting based on
      * device conditions.
      */
@@ -1045,6 +1050,7 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE,
+                DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
                 DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED,
                 DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN,

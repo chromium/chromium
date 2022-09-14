@@ -510,6 +510,8 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_SEARCHES_SIMPLIFIED_UX = "RelatedSearchesSimplifiedUx";
     public static final String RELATED_SEARCHES_UI = "RelatedSearchesUi";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS = "RequestDesktopSiteDefaults";
+    public static final String REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL =
+            "RequestDesktopSiteDefaultsControl";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE =
             "RequestDesktopSiteDefaultsDowngrade";
     public static final String REQUEST_DESKTOP_SITE_FOR_TABLETS = "RequestDesktopSiteForTablets";

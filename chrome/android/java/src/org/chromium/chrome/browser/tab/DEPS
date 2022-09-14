@@ -77,6 +77,7 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/page_info/SiteSettingsHelper.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
   ],
   'TabImpl\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",

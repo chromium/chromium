@@ -43,10 +43,12 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
+import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowCriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
@@ -93,11 +95,10 @@ import java.util.Map.Entry;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowCriticalPersistedTabData.class,
-                ShadowProfile.class})
+                ShadowProfile.class, ShadowUmaSessionStats.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
-
     @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
@@ -148,7 +149,35 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Implements(UmaSessionStats.class)
+    static class ShadowUmaSessionStats {
+        private static boolean sMetricsServiceAvailable;
+
+        public static void setMetricsServiceAvailable(boolean metricsServiceAvailable) {
+            sMetricsServiceAvailable = metricsServiceAvailable;
+        }
+
+        public static void reset() {
+            sMetricsServiceAvailable = false;
+            sGlobalDefaultsExperimentTrialName = null;
+            sGlobalDefaultsExperimentGroupName = null;
+        }
+
+        @Implementation
+        public static boolean isMetricsServiceAvailable() {
+            return sMetricsServiceAvailable;
+        }
+
+        @Implementation
+        public static void registerSyntheticFieldTrial(String trialName, String groupName) {
+            sGlobalDefaultsExperimentTrialName = trialName;
+            sGlobalDefaultsExperimentGroupName = groupName;
+        }
+    }
+
     private static final String GOOGLE_COM = "[*.]google.com/";
+    private static String sGlobalDefaultsExperimentTrialName;
+    private static String sGlobalDefaultsExperimentGroupName;
 
     @Before
     public void setup() {
@@ -158,6 +187,7 @@ public class RequestDesktopUtilsUnitTest {
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         ShadowCriticalPersistedTabData.setCriticalPersistedTabData(mCriticalPersistedTabData);
         ShadowProfile.setProfile(mProfile);
+        ShadowUmaSessionStats.setMetricsServiceAvailable(true);
 
         doAnswer(invocation -> mRdsDefaultValue)
                 .when(mWebsitePreferenceBridgeJniMock)
@@ -198,6 +228,10 @@ public class RequestDesktopUtilsUnitTest {
         when(mRegularTabModel.getProfile()).thenReturn(mProfile);
 
         TrackerFactory.setTrackerForTests(mTracker);
+
+        enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaults_Synthetic", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsControl_Synthetic", null, false);
     }
 
     @After
@@ -206,6 +240,7 @@ public class RequestDesktopUtilsUnitTest {
         ShadowSysUtils.setLowEndDevice(false);
         ShadowCriticalPersistedTabData.reset();
         ShadowProfile.reset();
+        ShadowUmaSessionStats.reset();
         mSharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
         mSharedPreferencesManager.removeKey(
@@ -216,6 +251,9 @@ public class RequestDesktopUtilsUnitTest {
         mSharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED);
         TrackerFactory.setTrackerForTests(null);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaults_Synthetic", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsControl_Synthetic", null, false);
     }
 
     @Test
@@ -381,6 +419,55 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
+    public void testShouldDefaultEnableGlobalSetting_ExperimentControlGroup() {
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, false);
+        enableFeatureWithParams(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_CONTROL, null, true);
+        boolean shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
+                RequestDesktopUtils
+                        .DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
+        Assert.assertFalse(
+                "Desktop site global setting should not be default-enabled in the control experiment group.",
+                shouldDefaultEnable);
+        Assert.assertTrue(
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be true.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)
+                        && mSharedPreferencesManager.readBoolean(
+                                ChromePreferenceKeys
+                                        .DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
+                                false));
+    }
+
+    @Test
+    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnEnabled10Inches() {
+        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 10.0, false);
+        Assert.assertEquals("Trial name is incorrect.", "RequestDesktopSiteDefaultsSyntheticTrial",
+                sGlobalDefaultsExperimentTrialName);
+        Assert.assertEquals("Group name is incorrect.", "DefaultOn_10_0_Enabled",
+                sGlobalDefaultsExperimentGroupName);
+    }
+
+    @Test
+    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnControl10Inches() {
+        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(true, 10.0, false);
+        Assert.assertEquals("Trial name is incorrect.",
+                "RequestDesktopSiteDefaultsControlSyntheticTrial",
+                sGlobalDefaultsExperimentTrialName);
+        Assert.assertEquals("Group name is incorrect.", "DefaultOn_10_0_Control",
+                sGlobalDefaultsExperimentGroupName);
+    }
+
+    @Test
+    public void testMaybeRegisterSyntheticFieldTrials_DoNothingWhenExperimentIsActive() {
+        enableFeatureWithParams("RequestDesktopSiteDefaults_Synthetic", null, true);
+        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 10.0, false);
+        Assert.assertTrue("Synthetic trial should not be registered.",
+                sGlobalDefaultsExperimentTrialName == null
+                        && sGlobalDefaultsExperimentGroupName == null);
+    }
+
+    @Test
     public void testMaybeDefaultEnableGlobalSetting() {
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
         boolean didDefaultEnable = RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
@@ -406,6 +493,14 @@ public class RequestDesktopUtilsUnitTest {
                         && mSharedPreferencesManager.readBoolean(
                                 ChromePreferenceKeys
                                         .DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE,
+                                false));
+        Assert.assertTrue(
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be true.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)
+                        && mSharedPreferencesManager.readBoolean(
+                                ChromePreferenceKeys
+                                        .DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
                                 false));
 
         // Verify that the desktop site global setting will be default-enabled at most once.
@@ -518,6 +613,10 @@ public class RequestDesktopUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys
                                 .DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE));
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
     }
 
     @Test
