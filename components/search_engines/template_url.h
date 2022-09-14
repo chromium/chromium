@@ -721,6 +721,14 @@ class TemplateURL {
   const std::string& side_image_search_param() const {
     return data_.side_image_search_param;
   }
+  const std::string& image_search_favicon_url() const {
+    return data_.image_search_favicon_url;
+  }
+  const std::u16string& image_search_branding_label() const {
+    return !data_.image_search_branding_label.empty()
+               ? data_.image_search_branding_label
+               : short_name();
+  }
   const std::vector<std::string>& alternate_urls() const {
     return data_.alternate_urls;
   }

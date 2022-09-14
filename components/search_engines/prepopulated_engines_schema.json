@@ -54,6 +54,11 @@
     // The parameter appended to the engine's |image_url| URL when constructing the
     // URL for the image search entry in the side panel.
     { "field": "side_image_search_param", "type": "string", "optional": true },
+    // The label to use for image search related queries. If omitted, will use the
+    // value under the "name" field for image search queries.
+    { "field": "image_search_branding_label", "type": "string16", "optional": true},
+    // The URL to a Favicon Icon that will be used for branding image search queries.
+    { "field": "image_search_favicon_url", "type": "string", "optional": true },
     // A list of URL patterns that can be used, in addition to |search_url|,
     // to extract search terms from a URL.
     // If "search_url_post_params" is not empty, then all alternate URLs are

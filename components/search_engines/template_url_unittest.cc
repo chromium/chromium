@@ -2260,3 +2260,16 @@ TEST_F(TemplateURLTest, SideImageSearchParams) {
   EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=&sideimagesearch=2",
             result.spec());
 }
+
+TEST_F(TemplateURLTest, ImageSearchBrandingLabel) {
+  TemplateURLData data;
+  data.SetShortName(u"foo");
+  TemplateURL no_image_branding_url(data);
+
+  // Without an image_search_branding_label set, should return short_name
+  EXPECT_EQ(u"foo", no_image_branding_url.image_search_branding_label());
+
+  data.image_search_branding_label = u"fooimages";
+  TemplateURL image_branding_url(data);
+  EXPECT_EQ(u"fooimages", image_branding_url.image_search_branding_label());
+}
