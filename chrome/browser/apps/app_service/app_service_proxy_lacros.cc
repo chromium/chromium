@@ -20,7 +20,9 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -132,10 +134,8 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
     return;
   }
 
-  remote_crosapi_app_service_proxy_->Launch(
-      CreateCrosapiLaunchParamsWithEventFlags(this, app_id, event_flags,
-                                              launch_source,
-                                              display::kInvalidDisplayId));
+  ProxyLaunch(CreateCrosapiLaunchParamsWithEventFlags(
+      this, app_id, event_flags, launch_source, display::kInvalidDisplayId));
 }
 
 void AppServiceProxyLacros::Launch(const std::string& app_id,
@@ -168,7 +168,7 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
       this, app_id, event_flags, launch_source, display::kInvalidDisplayId);
   params->intent =
       apps_util::CreateCrosapiIntentForViewFiles(std::move(file_paths));
-  remote_crosapi_app_service_proxy_->Launch(std::move(params));
+  ProxyLaunch(std::move(params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithFiles(
@@ -206,7 +206,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(const std::string& app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId);
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
-  remote_crosapi_app_service_proxy_->Launch(std::move(params));
+  ProxyLaunch(std::move(params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithIntent(
@@ -236,7 +236,8 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
       window_info ? window_info->display_id : display::kInvalidDisplayId);
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
-  remote_crosapi_app_service_proxy_->Launch(std::move(params));
+
+  ProxyLaunch(std::move(params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
@@ -275,8 +276,7 @@ void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
     return;
   }
 
-  remote_crosapi_app_service_proxy_->Launch(
-      ConvertLaunchParamsToCrosapi(params, profile_));
+  ProxyLaunch(ConvertLaunchParamsToCrosapi(params, profile_));
 
   // TODO(crbug.com/1244506): Add params on crosapi and implement this.
   std::move(callback).Run(LaunchResult());
@@ -665,6 +665,20 @@ void AppServiceProxyLacros::OnPreferredAppsChanged(
 void AppServiceProxyLacros::InitializePreferredApps(
     PreferredApps preferred_apps) {
   preferred_apps_list_.Init(std::move(preferred_apps));
+}
+
+void AppServiceProxyLacros::ProxyLaunch(
+    crosapi::mojom::LaunchParamsPtr params) {
+  // Extensions that run in both the OS and standalone browser are not published
+  // to the app service. Thus launching must happen directly.
+  if (extensions::ExtensionRunsInBothOSAndStandaloneBrowser(params->app_id) ||
+      extensions::ExtensionAppRunsInBothOSAndStandaloneBrowser(
+          params->app_id)) {
+    OpenApplication(profile_,
+                    ConvertCrosapiToLaunchParams(std::move(params), profile_));
+    return;
+  }
+  remote_crosapi_app_service_proxy_->Launch(std::move(params));
 }
 
 }  // namespace apps
