@@ -364,7 +364,8 @@ void PostProcessFoundTasks(
         });
     if (it != result_list->end()) {
       FullTaskDescriptor office_task(*it);
-      office_task.task_descriptor.action_id = kActionIdOpenInOffice;
+      office_task.task_descriptor.action_id =
+          base::StrCat({kChromeUIFileManagerURL, "?", kActionIdOpenInOffice});
       result_list->push_back(office_task);
     }
   }
