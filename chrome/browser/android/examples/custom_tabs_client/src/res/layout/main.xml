@@ -51,7 +51,7 @@
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/spinner"
+                android:id="@+id/package_spinner"
                 android:layout_margin="3dp"
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>
@@ -63,6 +63,69 @@
             android:layout_gravity="center"
             android:layout_marginBottom="8dp"
             style="?attr/textAppearanceTitleMedium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="@string/color"/>
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/color_spinner"
+                android:layout_margin="3dp"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/theme_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/theme_toggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/system_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_button_system"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/light_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_button_light"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/dark_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_button_dark"
+                    style="?attr/materialButtonOutlinedStyle" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -97,6 +160,49 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/close_button_end_text"
+                    style="?attr/materialButtonOutlinedStyle" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:text="@string/close_button_icon_text"
+                android:layout_marginEnd="16dp"
+                style="?attr/textAppearanceLabelLarge" />
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/close_button_icon_toggle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <Button
+                    android:id="@+id/x_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_X"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_back"
+                    style="?attr/materialButtonOutlinedStyle" />
+                <Button
+                    android:id="@+id/check_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_button_check"
                     style="?attr/materialButtonOutlinedStyle" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
@@ -172,6 +278,27 @@
             android:checked = "true"
             android:text="@string/pcct_resizable_text" />
 
+        <CheckBox
+            android:id="@+id/show_title_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/show_title_text" />
+
+        <CheckBox
+            android:id="@+id/url_hiding_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/url_hiding_text" />
+
+        <CheckBox
+            android:id="@+id/bottom_toolbar_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/bottom_toolbar_toggle" />
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="5dp" />
@@ -195,15 +322,6 @@
             android:enabled="false" />
 
         <Button
-            android:id="@+id/may_launch_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/may_launch_button_text"
-            android:enabled="false" />
-
-        <Button
             android:id="@+id/launch_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -211,6 +329,14 @@
             android:textAllCaps="false"
             android:text="@string/launch_button_text"
             android:enabled="true" />
+
+        <Button
+            android:id="@+id/launch_pcct_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:textAllCaps="false"
+            android:text="@string/launch_pcct_text" />
 
         <Button
             android:id="@+id/launch_incognito_button"
@@ -236,14 +362,6 @@
             android:layout_margin="3dp"
             android:textAllCaps="false"
             android:text="@string/register_twa_service" />
-
-        <Button
-            android:id="@+id/launch_pcct_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/launch_pcct_text" />
 
     </LinearLayout>
 
