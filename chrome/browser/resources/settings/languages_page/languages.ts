@@ -29,23 +29,24 @@ interface SpellCheckLanguages {
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
 
-// Translate server treats some language codes the same.
-// See also: components/translate/core/common/translate_util.cc.
-const kLanguageCodeToTranslateCode: {[key: string]: string} = {
-  'nb': 'no',
-  'fil': 'tl',
-  'zh-HK': 'zh-TW',
-  'zh-MO': 'zh-TW',
-  'zh-SG': 'zh-CN',
-};
+// For some codes translate uses a different version from Chrome.  Some are
+// ISO 639 codes that have been renamed (e.g. "he" to "iw"). Wile others are
+// languages that Translate considers similar (e.g. "nb" and "no").
+// See also: components/language/core/common/language_util.cc.
+const kChromeToTranslateCode: Map<string, string> = new Map([
+  ['nb', 'no'],
+  ['fil', 'tl'],
+  ['he', 'iw'],
+  ['jv', 'jw'],
+]);
 
-// Some ISO 639 language codes have been renamed, e.g. "he" to "iw", but
-// Translate still uses the old versions. TODO(michaelpg): Chrome does too.
-// Follow up with Translate owners to understand the right thing to do.
-const kTranslateLanguageSynonyms: {[key: string]: string} = {
-  'he': 'iw',
-  'jv': 'jw',
-};
+// Reverse of the map above. Just the languages code that translate uses but
+// Chrome has a different code for.
+const kTranslateToChromeCode: Map<string, string> = new Map([
+  ['tl', 'fil'],
+  ['iw', 'he'],
+  ['jw', 'jv'],
+]);
 
 // The fake language name used for ARC IMEs. The value must be in sync with the
 // one in ui/base/ime/ash/extension_ime_util.h.
@@ -550,7 +551,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     const alwaysTranslateLanguages =
         args.alwaysTranslateCodes.map(code => this.getLanguage(code)!);
 
-    const neverTranslateLangauges =
+    const neverTranslateLanguages =
         args.neverTranslateCodes.map(code => this.getLanguage(code)!);
 
     const model = {
@@ -558,7 +559,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
       enabled: enabledLanguageStates,
       translateTarget: args.translateTarget,
       alwaysTranslate: alwaysTranslateLanguages,
-      neverTranslate: neverTranslateLangauges,
+      neverTranslate: neverTranslateLanguages,
       neverTranslateSites: args.neverTranslateSites,
       spellCheckOnLanguages,
       spellCheckOffLanguages,
@@ -771,20 +772,31 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   }
 
   /**
-   *  @return True if the language can be translated by Chrome.
+   *  @return True if the language is supported by Translate as a base and not
+   * an extended sub-code (i.e. "it-CH" and "es-MX" are both marked as
+   * supporting translation but only "it" and "es" are actually supported by the
+   * Translate server.
    */
-  isLanguageTranslatable(language: chrome.languageSettingsPrivate.Language):
+  isTranslateBaseLanguage(language: chrome.languageSettingsPrivate.Language):
       boolean {
+    // The language must be marked as translatable.
+    if (!language.supportsTranslate) {
+      return false;
+    }
+
     if (language.code === 'zh-CN' || language.code === 'zh-TW') {
       // In Translate, general Chinese is not used, and the sub code is
       // necessary as a language code for the Translate server.
       return true;
     }
-    if (language.code === this.getLanguageCodeWithoutRegion(language.code) &&
-        language.supportsTranslate) {
-      return true;
+    const baseLanguage = this.getBaseLanguage(language.code);
+    if (baseLanguage === 'nb') {
+      // Norwegian Bokmål (nb) is listed as supporting translate but the
+      // Translate server only supports Norwegian (no).
+      return false;
     }
-    return false;
+    // For all other languages only base languages are supported
+    return language.code === baseLanguage;
   }
 
   /**
@@ -933,61 +945,44 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   }
 
   /**
-   * Converts the language code for translate. There are some differences
-   * between the language set the Translate server uses and that for
-   * Accept-Language.
+   * Converts the language code to Translate server format where some deprecated
+   * ISO 639 codes are used. The only sub-codes that Translate supports are for
+   * "zh" where zh-HK is equivalent to zh-TW. For all other languages only
+   * the base language is returned.
    */
   convertLanguageCodeForTranslate(languageCode: string): string {
-    if (languageCode in kLanguageCodeToTranslateCode) {
-      return kLanguageCodeToTranslateCode[languageCode];
+    const base = this.getBaseLanguage(languageCode);
+    if (base === 'zh') {
+      return languageCode === 'zh-HK' ? 'zh-TW' : languageCode;
     }
 
-    const main = languageCode.split('-')[0];
-    if (main === 'zh') {
-      // In Translate, general Chinese is not used, and the sub code is
-      // necessary as a language code for the Translate server.
-      return languageCode;
-    }
-    if (main in kTranslateLanguageSynonyms) {
-      return kTranslateLanguageSynonyms[main];
-    }
-
-    return main;
+    return kChromeToTranslateCode.get(base) || base;
   }
 
   /**
-   * Given a language code, returns just the base language. E.g., converts
-   * 'en-GB' to 'en'.
+   * Converts deprecated ISO 639 language codes to Chrome format.
    */
-  getLanguageCodeWithoutRegion(languageCode: string): string {
-    // The Norwegian languages fall under the 'no' macrolanguage.
-    if (languageCode === 'nb' || languageCode === 'nn') {
-      return 'no';
-    }
+  convertLanguageCodeForChrome(languageCode: string): string {
+    return kTranslateToChromeCode.get(languageCode) || languageCode;
+  }
 
-    // The installer still uses the old language code "iw", instead of "he",
-    // for Hebrew. It needs to be converted to "he", otherwise it will not be
-    // found in supportedLanguageMap_.
-    //
-    // Note that this value is saved in the user's local state. Even
-    // if the installer is changed to use "he", because the installer does not
-    // overwrite this value, the conversion is still needed for old users.
-    if (languageCode === 'iw') {
-      return 'he';
-    }
-
-    // Match the characters before the hyphen.
-    const result = languageCode.match(/^([^-]+)-?/)!;
-    assert(result.length === 2);
-    return result[1];
+  /**
+   * Given a language code, returns just the base language without sub-codes.
+   */
+  getBaseLanguage(languageCode: string): string {
+    return languageCode.split('-')[0];
   }
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language
       |undefined {
-    // If a languageCode is not found, try language without location.
-    return this.supportedLanguageMap_.get(languageCode) ||
-        this.supportedLanguageMap_.get(
-            this.getLanguageCodeWithoutRegion(languageCode));
+    if (this.supportedLanguageMap_.has(languageCode)) {
+      return this.supportedLanguageMap_.get(languageCode);
+    }
+
+    // If no languageCode is found, try the base Chrome format.
+    const chromeLanguage =
+        this.convertLanguageCodeForChrome(this.getBaseLanguage(languageCode));
+    return this.supportedLanguageMap_.get(chromeLanguage);
   }
 
   /**

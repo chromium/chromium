@@ -100,7 +100,7 @@ export interface LanguageHelper {
 
   isLanguageCodeForArcIme(languageCode: string): boolean;
 
-  isLanguageTranslatable(language: chrome.languageSettingsPrivate.Language):
+  isTranslateBaseLanguage(language: chrome.languageSettingsPrivate.Language):
       boolean;
   isLanguageEnabled(languageCode: string): boolean;
 
@@ -171,10 +171,15 @@ export interface LanguageHelper {
   convertLanguageCodeForTranslate(languageCode: string): string;
 
   /**
+   * Converts the language code to Chrome format.
+   */
+  convertLanguageCodeForChrome(languageCode: string): string;
+
+  /**
    * Given a language code, returns just the base language. E.g., converts
    * 'en-GB' to 'en'.
    */
-  getLanguageCodeWithoutRegion(languageCode: string): string;
+  getBaseLanguage(languageCode: string): string;
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language
       |undefined;

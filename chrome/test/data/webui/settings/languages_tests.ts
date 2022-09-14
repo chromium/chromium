@@ -83,9 +83,69 @@ suite('settings-languages', function() {
     lang = languageHelper.getLanguage('iw')!;
     assertEquals('he', lang.code);
 
-    // The 'no' macrolanguage is returned for Norsk Nynorsk.
-    lang = languageHelper.getLanguage('nn')!;
-    assertEquals('no', lang.code);
+    // tl is converted to fil
+    lang = languageHelper.getLanguage('tl')!;
+    assertEquals('fil', lang.code);
+  });
+
+  test('is translate base language', function() {
+    assertFalse(languageHelper.isTranslateBaseLanguage(
+        languageHelper.getLanguage('nb')!));
+    assertFalse(languageHelper.isTranslateBaseLanguage(
+        languageHelper.getLanguage('en-US')!));
+    assertTrue(languageHelper.isTranslateBaseLanguage(
+        languageHelper.getLanguage('en')!));
+    assertTrue(languageHelper.isTranslateBaseLanguage(
+        languageHelper.getLanguage('sw')!));
+  });
+
+  test('get language code without region', function() {
+    const cases: Array<[string, string]> = [
+      ['en', 'en'],
+      ['en-us', 'en'],
+      ['fil', 'fil'],
+      ['iw', 'iw'],
+      ['a', 'a'],
+      ['a-b', 'a'],
+      ['a-b-c', 'a'],
+      ['', ''],
+    ];
+
+    for (const [code, base] of cases) {
+      assertEquals(languageHelper.getBaseLanguage(code), base);
+    }
+  });
+
+  test('to translate format', function() {
+    const cases: Array<[string, string]> = [
+      ['en', 'en'],
+      ['en-AU', 'en'],
+      ['zh-HK', 'zh-TW'],
+      ['zh-TW', 'zh-TW'],
+      ['fil', 'tl'],
+      ['nb', 'no'],
+      ['nn', 'nn'],
+      ['he', 'iw'],
+    ];
+
+    for (const [code, converted] of cases) {
+      assertEquals(
+          languageHelper.convertLanguageCodeForTranslate(code), converted);
+    }
+  });
+
+  test('to chrome format', function() {
+    const cases: Array<[string, string]> = [
+      ['en-US', 'en-US'],
+      ['iw', 'he'],
+      ['tl', 'fil'],
+      ['jw', 'jv'],
+    ];
+
+    for (const [code, converted] of cases) {
+      assertEquals(
+          languageHelper.convertLanguageCodeForChrome(code), converted);
+    }
   });
 
   test('modifying languages', function() {

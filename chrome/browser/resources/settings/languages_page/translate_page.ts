@@ -220,7 +220,7 @@ export class SettingsTranslatePageElement extends
   private getTranslatableLanguages_():
       chrome.languageSettingsPrivate.Language[] {
     return this.languages!.supported.filter(language => {
-      return this.languageHelper.isLanguageTranslatable(language);
+      return this.isTranslateSupported_(language);
     });
   }
 
@@ -229,7 +229,7 @@ export class SettingsTranslatePageElement extends
    */
   private isTranslateSupported_(
       language: chrome.languageSettingsPrivate.Language): boolean {
-    return this.languageHelper.isLanguageTranslatable(language);
+    return this.languageHelper.isTranslateBaseLanguage(language);
   }
 }
 

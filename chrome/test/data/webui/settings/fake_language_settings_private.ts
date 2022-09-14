@@ -74,6 +74,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
         nativeDisplayName: 'English (United States)',
         supportsSpellcheck: true,
         supportsUI: true,
+        supportsTranslate: true,
       },
       {
         // A standalone language.
@@ -106,6 +107,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
         displayName: 'Norwegian Bokmål',
         nativeDisplayName: 'norsk bokmål',
         supportsSpellcheck: true,
+        supportsTranslate: true,
         supportsUI: true,
       },
       {
@@ -130,6 +132,13 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
         code: 'he',
         displayName: 'Hebrew',
         nativeDisplayName: 'Hebrew',
+        supportsUI: true,
+      },
+      {
+        // Filipino. This is used to test that 'tl' is converted to 'fil'
+        code: 'fil',
+        displayName: 'Filipino',
+        nativeDisplayName: 'Filipino',
         supportsUI: true,
       },
     ];
