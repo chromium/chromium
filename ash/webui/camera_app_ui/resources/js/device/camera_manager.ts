@@ -184,6 +184,10 @@ export class CameraManager implements EventListener {
   getPreviewResolution(): Resolution {
     const {video} = this.getPreviewVideo();
     const {videoWidth, videoHeight} = video;
+    if (this.preferSquarePhoto()) {
+      const size = Math.min(videoWidth, videoHeight);
+      return new Resolution(size, size);
+    }
     return new Resolution(videoWidth, videoHeight);
   }
 
