@@ -26,10 +26,17 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // tree manager for that child tree. Otherwise, return nullptr.
   static AXTreeManager* ForChildTree(const AXNode& parent_node);
 
+  // For testing only, register a function to be called when focus changes
+  // in any AXTreeManager.
+  static void SetFocusChangeCallbackForTesting(base::RepeatingClosure callback);
+
   AXTreeManager(const AXTreeManager&) = delete;
   AXTreeManager& operator=(const AXTreeManager&) = delete;
 
   ~AXTreeManager() override;
+
+  // Subclasses override these methods to send native event notifications.
+  virtual void FireFocusEvent(AXNode* node);
 
   // Returns the AXNode with the given |node_id| from the tree that has the
   // given |tree_id|. This allows for callers to access nodes outside of their

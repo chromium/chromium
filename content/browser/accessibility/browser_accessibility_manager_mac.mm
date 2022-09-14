@@ -76,11 +76,10 @@ BrowserAccessibility* BrowserAccessibilityManagerMac::GetFocus() const {
   return GetActiveDescendant(focus);
 }
 
-void BrowserAccessibilityManagerMac::FireFocusEvent(
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireFocusEvent(node);
+void BrowserAccessibilityManagerMac::FireFocusEvent(ui::AXNode* node) {
+  ui::AXTreeManager::FireFocusEvent(node);
   FireNativeMacNotification(NSAccessibilityFocusedUIElementChangedNotification,
-                            node);
+                            GetFromAXNode(node));
 }
 
 void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,

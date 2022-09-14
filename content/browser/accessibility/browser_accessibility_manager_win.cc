@@ -114,12 +114,12 @@ BrowserAccessibility* BrowserAccessibilityManagerWin::GetFocus() const {
   return GetActiveDescendant(focus);
 }
 
-void BrowserAccessibilityManagerWin::FireFocusEvent(
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireFocusEvent(node);
+void BrowserAccessibilityManagerWin::FireFocusEvent(ui::AXNode* node) {
+  ui::AXTreeManager::FireFocusEvent(node);
   DCHECK(node);
-  FireWinAccessibilityEvent(EVENT_OBJECT_FOCUS, node);
-  FireUiaAccessibilityEvent(UIA_AutomationFocusChangedEventId, node);
+  BrowserAccessibility* wrapper = GetFromAXNode(node);
+  FireWinAccessibilityEvent(EVENT_OBJECT_FOCUS, wrapper);
+  FireUiaAccessibilityEvent(UIA_AutomationFocusChangedEventId, wrapper);
 }
 
 void BrowserAccessibilityManagerWin::FireBlinkEvent(ax::mojom::Event event_type,

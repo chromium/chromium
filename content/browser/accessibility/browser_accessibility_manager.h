@@ -177,8 +177,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   virtual BrowserAccessibility* RetargetForEvents(BrowserAccessibility* node,
                                                   RetargetEventType type) const;
 
-  // Subclasses override these methods to send native event notifications.
-  virtual void FireFocusEvent(BrowserAccessibility* node);
   virtual void FireBlinkEvent(ax::mojom::Event event_type,
                               BrowserAccessibility* node,
                               int action_request_id) {}
@@ -244,10 +242,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   bool hidden_by_interstitial_page() const {
     return hidden_by_interstitial_page_;
   }
-
-  // For testing only, register a function to be called when focus changes
-  // in any BrowserAccessibilityManager.
-  static void SetFocusChangeCallbackForTesting(base::RepeatingClosure callback);
 
   // For testing only, register a function to be called when
   // a generated event is fired from this BrowserAccessibilityManager.

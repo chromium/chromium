@@ -48,7 +48,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   bool IsIgnoredChangedNode(const BrowserAccessibility* node) const;
   bool CanFireEvents() const override;
 
-  void FireFocusEvent(BrowserAccessibility* node) override;
+  void FireFocusEvent(ui::AXNode* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
                       BrowserAccessibility* node,
                       int action_request_id) override;

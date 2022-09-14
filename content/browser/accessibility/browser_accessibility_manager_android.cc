@@ -156,9 +156,8 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
   return updated;
 }
 
-void BrowserAccessibilityManagerAndroid::FireFocusEvent(
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireFocusEvent(node);
+void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
+  ui::AXTreeManager::FireFocusEvent(node);
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;
@@ -173,7 +172,7 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(
   }
 
   BrowserAccessibilityAndroid* android_node =
-      static_cast<BrowserAccessibilityAndroid*>(node);
+      static_cast<BrowserAccessibilityAndroid*>(GetFromAXNode(node));
   wcax->HandleFocusChanged(android_node->unique_id());
 }
 

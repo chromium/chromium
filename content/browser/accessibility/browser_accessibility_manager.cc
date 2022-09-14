@@ -263,7 +263,7 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
 
   ui::AXNode* last_focused_node = GetLastFocusedNode();
   if (focus != GetFromAXNode(last_focused_node))
-    FireFocusEvent(focus);
+    FireFocusEvent(focus->node());
   SetLastFocusedNode(focus->node());
 }
 
@@ -313,11 +313,6 @@ BrowserAccessibility* BrowserAccessibilityManager::RetargetForEvents(
     BrowserAccessibility* node,
     RetargetEventType type) const {
   return node;
-}
-
-void BrowserAccessibilityManager::FireFocusEvent(BrowserAccessibility* node) {
-  if (g_focus_change_callback_for_testing.Get())
-    g_focus_change_callback_for_testing.Get().Run();
 }
 
 void BrowserAccessibilityManager::FireGeneratedEvent(
@@ -931,12 +926,6 @@ void BrowserAccessibilityManager::SetSequentialFocusNavigationStartingPoint(
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
   BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
-}
-
-// static
-void BrowserAccessibilityManager::SetFocusChangeCallbackForTesting(
-    base::RepeatingClosure callback) {
-  g_focus_change_callback_for_testing.Get() = std::move(callback);
 }
 
 void BrowserAccessibilityManager::SetGeneratedEventCallbackForTesting(

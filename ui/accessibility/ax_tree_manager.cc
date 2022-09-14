@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_tree_manager.h"
 
+#include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node.h"
@@ -12,6 +13,13 @@
 #include "ui/accessibility/ax_tree_observer.h"
 
 namespace ui {
+
+namespace {
+// A function to call when focus changes, for testing only.
+base::LazyInstance<base::RepeatingClosure>::DestructorAtExit
+    g_focus_change_callback_for_testing = LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
 
 // static
 AXTreeManagerMap& AXTreeManager::GetMap() {
@@ -45,6 +53,12 @@ AXTreeManager* AXTreeManager::ForChildTree(const AXNode& parent_node) {
   return child_tree_manager;
 }
 
+// static
+void AXTreeManager::SetFocusChangeCallbackForTesting(
+    base::RepeatingClosure callback) {
+  g_focus_change_callback_for_testing.Get() = std::move(callback);
+}
+
 AXTreeManager::AXTreeManager()
     : ax_tree_id_(AXTreeIDUnknown()),
       ax_tree_(nullptr),
@@ -67,6 +81,11 @@ AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
   GetMap().AddTreeManager(ax_tree_id_, this);
   if (ax_tree())
     tree_observation_.Observe(ax_tree());
+}
+
+void AXTreeManager::FireFocusEvent(AXNode* node) {
+  if (g_focus_change_callback_for_testing.Get())
+    g_focus_change_callback_for_testing.Get().Run();
 }
 
 void AXTreeManager::Initialize(const ui::AXTreeUpdate& initial_tree) {

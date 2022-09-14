@@ -54,10 +54,9 @@ ui::AXTreeUpdate BrowserAccessibilityManagerAuraLinux::GetEmptyDocument() {
   return update;
 }
 
-void BrowserAccessibilityManagerAuraLinux::FireFocusEvent(
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireFocusEvent(node);
-  FireEvent(node, ax::mojom::Event::kFocus);
+void BrowserAccessibilityManagerAuraLinux::FireFocusEvent(ui::AXNode* node) {
+  ui::AXTreeManager::FireFocusEvent(node);
+  FireEvent(GetFromAXNode(node), ax::mojom::Event::kFocus);
 }
 
 void BrowserAccessibilityManagerAuraLinux::FireSelectedEvent(

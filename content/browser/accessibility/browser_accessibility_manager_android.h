@@ -85,6 +85,9 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // Consume hover event if necessary, and return true if it did.
   bool OnHoverEvent(const ui::MotionEventAndroid& event);
 
+  // AXTreeManager overrides.
+  void FireFocusEvent(ui::AXNode* node) override;
+
   // BrowserAccessibilityManager overrides.
   BrowserAccessibility* GetFocus() const override;
   void SendLocationChangeEvents(
@@ -92,7 +95,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   BrowserAccessibility* RetargetForEvents(
       BrowserAccessibility* node,
       RetargetEventType type) const override;
-  void FireFocusEvent(BrowserAccessibility* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
                       BrowserAccessibility* node,
                       int action_request_id) override;
