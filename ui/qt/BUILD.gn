@@ -18,8 +18,10 @@ pkg_config("qt5_config") {
 }
 
 config("qt_internal_config") {
-  # libstdc++ headers are incompatible with -fcomplete-member-pointers.
-  cflags = [ "-fno-complete-member-pointers" ]
+  if (is_clang) {
+    # libstdc++ headers are incompatible with -fcomplete-member-pointers.
+    cflags = [ "-fno-complete-member-pointers" ]
+  }
 
   # It's OK to depend on the system libstdc++ since it's a dependency of QT, so
   # it will get loaded into the process anyway.
