@@ -243,7 +243,7 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
   // metric. Adding a string requires you update the apps histogram.xml as well.
   switch (source) {
     case kSearchKey:
-    case kSearchKeyFullscreen:
+    case kSearchKeyFullscreen_DEPRECATED:
       return "SearchKey";
     case kShelfButton:
     case kShelfButtonFullscreen:

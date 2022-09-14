@@ -2037,11 +2037,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::MaybeTakeWindowScreenshot();
       break;
     case TOGGLE_APP_LIST: {
-      // TODO(crbug.com/1361531): Unify the two show source states.
-      AppListShowSource source = features::IsProductivityLauncherEnabled()
-                                     ? kSearchKey
-                                     : kSearchKeyFullscreen;
-      HandleToggleAppList(accelerator, source);
+      HandleToggleAppList(accelerator, kSearchKey);
       break;
     }
     case TOGGLE_CALENDAR:

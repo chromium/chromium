@@ -84,7 +84,7 @@ enum AppListShowSource : uint8_t {
   kShelfButton = 1,
   kSwipeFromShelf = 2,
   kTabletMode = 3,
-  kSearchKeyFullscreen = 4,
+  kSearchKeyFullscreen_DEPRECATED = 4,  // Migrated to kSearchKey.
   kShelfButtonFullscreen = 5,
   kAssistantEntryPoint = 6,
   kScrollFromShelf = 7,

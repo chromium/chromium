@@ -328,20 +328,9 @@ ShelfAction AppListPresenterImpl::ToggleAppList(
     int64_t display_id,
     AppListShowSource show_source,
     base::TimeTicks event_time_stamp) {
-  bool request_fullscreen = show_source == kSearchKeyFullscreen ||
-                            show_source == kShelfButtonFullscreen;
   // Dismiss or show based on the target visibility because the show/hide
   // animation can be reversed.
   if (is_target_visibility_show_ && GetDisplayId() == display_id) {
-    if (request_fullscreen) {
-      if (view_->app_list_state() == AppListViewState::kPeeking) {
-        view_->SetState(AppListViewState::kFullscreenAllApps);
-        return SHELF_ACTION_APP_LIST_SHOWN;
-      } else if (view_->app_list_state() == AppListViewState::kHalf) {
-        view_->SetState(AppListViewState::kFullscreenSearch);
-        return SHELF_ACTION_APP_LIST_SHOWN;
-      }
-    }
     Dismiss(event_time_stamp);
     return SHELF_ACTION_APP_LIST_DISMISSED;
   }
