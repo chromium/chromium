@@ -5,6 +5,7 @@
 
 """Compare the artifacts from two builds."""
 
+from __future__ import division
 from __future__ import print_function
 
 import ast
@@ -103,7 +104,7 @@ def diff_binary(first_filepath, second_filepath, file_len):
   """Returns a compact binary diff if the diff is small enough."""
   BLOCK_SIZE = 8192
   CHUNK_SIZE = 32
-  NUM_CHUNKS_IN_BLOCK = BLOCK_SIZE / CHUNK_SIZE
+  NUM_CHUNKS_IN_BLOCK = BLOCK_SIZE // CHUNK_SIZE
   MAX_STREAMS = 10
   num_diffs = 0
   streams = []
