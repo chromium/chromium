@@ -839,7 +839,7 @@ TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
   // been already initialized with |output_|'s scale.
   wl_surface_send_leave(surface_->resource(), output_->resource());
   Sync();
-  EXPECT_FALSE(window_->GetPreferredEnteredOutputId());
+  ASSERT_EQ(0u, window_->GetPreferredEnteredOutputId());
 
   // Change |output_|'s scale and make sure |window_|'s scale is update
   // accordingly.

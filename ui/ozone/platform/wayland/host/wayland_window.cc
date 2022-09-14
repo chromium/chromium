@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -38,7 +37,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
@@ -109,19 +107,21 @@ void WaylandWindow::OnWindowLostCapture() {
 void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   DCHECK(connection_->wayland_output_manager());
 
-  const auto* output_manager = connection_->wayland_output_manager();
   auto preferred_outputs_id = GetPreferredEnteredOutputId();
-  if (!preferred_outputs_id.has_value()) {
-    // If no output was entered yet, use primary output. This is similar to what
-    // PlatformScreen implementation is expected to return to higher layer.
-    auto* primary_output = output_manager->GetPrimaryOutput();
-    // Primary output is unknown. i.e: WaylandScreen was not created yet.
+  if (preferred_outputs_id == 0) {
+    // If non of the output are entered, use primary output. This is what
+    // WaylandScreen returns back to ScreenOzone.
+    auto* primary_output =
+        connection_->wayland_output_manager()->GetPrimaryOutput();
+    // We don't know our primary output - WaylandScreen hasn't been created
+    // yet.
     if (!primary_output)
       return;
     preferred_outputs_id = primary_output->output_id();
   }
 
-  auto* output = output_manager->GetOutput(preferred_outputs_id.value());
+  auto* output =
+      connection_->wayland_output_manager()->GetOutput(preferred_outputs_id);
   // There can be a race between sending leave output event and destroying
   // wl_outputs. Thus, explicitly check if the output exist.
   if (!output)
@@ -150,7 +150,7 @@ bool WaylandWindow::SetWindowScale(float new_scale) {
   return changed;
 }
 
-absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
+uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
   // Child windows don't store entered outputs. Instead, take the window's
   // root parent window and use its preferred output.
   if (parent_window_)
@@ -160,38 +160,38 @@ absl::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
   // still a non toplevel window that doesn't have a parent (for example, a
   // wl_surface that is being dragged).
   if (root_surface_->entered_outputs().empty())
-    return absl::nullopt;
+    return 0;
 
   // PlatformWindowType::kPopup are created as toplevel windows as well.
   DCHECK(type() == PlatformWindowType::kWindow ||
          type() == PlatformWindowType::kPopup);
 
-  WaylandOutput::Id preferred_id = root_surface_->entered_outputs().front();
-  const auto* output_manager = connection_->wayland_output_manager();
-
   // A window can be located on two or more displays. Thus, return the id of the
   // output that has the biggest scale factor. Otherwise, use the very first one
   // that was entered. This way, we can be sure that the contents of the Window
   // are rendered at correct dpi when a user moves the window between displays.
-  for (WaylandOutput::Id output_id : root_surface_->entered_outputs()) {
+  uint32_t preferred_output_id = *root_surface_->entered_outputs().begin();
+  for (uint32_t output_id : root_surface_->entered_outputs()) {
+    auto* output_manager = connection_->wayland_output_manager();
     auto* output = output_manager->GetOutput(output_id);
-    auto* preferred_output = output_manager->GetOutput(preferred_id);
+    auto* preferred_output = output_manager->GetOutput(preferred_output_id);
     // The compositor may have told the surface to enter the output that the
     // client is not aware of.  In such an event, we cannot evaluate scales, and
     // can only return the default, which means falling back to the primary
-    // display in the code that calls this. DCHECKS below are kept for trying to
-    // catch the situation in developer's builds and find the way to reproduce
-    // the issue. See crbug.com/1323635.
+    // display in the code that calls this.
+    // DCHECKS below are kept for trying to catch the situation in developer's
+    // builds and find the way to reproduce the issue.
+    // See crbug.com/1323635
     DCHECK(output) << " output " << output_id << " not found!";
-    DCHECK(preferred_output) << " output " << preferred_id << " not found!";
+    DCHECK(preferred_output)
+        << " output " << preferred_output_id << " not found!";
     if (!output || !preferred_output)
-      return absl::nullopt;
-
+      return 0;
     if (output->scale_factor() > preferred_output->scale_factor())
-      preferred_id = output_id;
+      preferred_output_id = output_id;
   }
 
-  return preferred_id;
+  return preferred_output_id;
 }
 
 void WaylandWindow::OnPointerFocusChanged(bool focused) {

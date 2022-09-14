@@ -4,9 +4,9 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
-#include <string>
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
@@ -31,7 +31,7 @@ bool WaylandOutputManager::IsOutputReady() const {
   return false;
 }
 
-void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
+void WaylandOutputManager::AddWaylandOutput(uint32_t output_id,
                                             wl_output* output) {
   // Make sure an output with |output_id| has not been added yet. It's very
   // unlikely to happen, unless a compositor has a bug in the numeric names
@@ -59,7 +59,7 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
   output_list_[output_id] = std::move(wayland_output);
 }
 
-void WaylandOutputManager::RemoveWaylandOutput(WaylandOutput::Id output_id) {
+void WaylandOutputManager::RemoveWaylandOutput(uint32_t output_id) {
   // Check the comment in the WaylandConnection::GlobalRemove.
   if (!GetOutput(output_id))
     return;
@@ -126,7 +126,7 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
   }
 }
 
-WaylandOutput* WaylandOutputManager::GetOutput(WaylandOutput::Id id) const {
+WaylandOutput* WaylandOutputManager::GetOutput(uint32_t id) const {
   auto it = output_list_.find(id);
   if (it == output_list_.end())
     return nullptr;
@@ -145,7 +145,7 @@ const WaylandOutputManager::OutputList& WaylandOutputManager::GetAllOutputs()
   return output_list_;
 }
 
-void WaylandOutputManager::OnOutputHandleMetrics(WaylandOutput::Id output_id,
+void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Point& origin,
                                                  const gfx::Size& logical_size,
                                                  const gfx::Size& physical_size,
@@ -167,7 +167,7 @@ void WaylandOutputManager::OnOutputHandleMetrics(WaylandOutput::Id output_id,
   const bool is_primary =
       wayland_screen_ && output_id == wayland_screen_->GetPrimaryDisplay().id();
   for (auto* window : connection_->wayland_window_manager()->GetAllWindows()) {
-    auto entered_output = window->GetPreferredEnteredOutputId();
+    uint32_t entered_output = window->GetPreferredEnteredOutputId();
     if (entered_output == output_id || (!entered_output && is_primary))
       window->UpdateWindowScale(true);
   }

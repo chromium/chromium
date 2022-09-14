@@ -24,8 +24,7 @@ class WaylandOutput;
 
 class WaylandOutputManager : public WaylandOutput::Delegate {
  public:
-  using OutputList =
-      base::flat_map<WaylandOutput::Id, std::unique_ptr<WaylandOutput>>;
+  using OutputList = base::flat_map<uint32_t, std::unique_ptr<WaylandOutput>>;
 
   explicit WaylandOutputManager(WaylandConnection* connection);
 
@@ -38,8 +37,8 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   // compositor.
   bool IsOutputReady() const;
 
-  void AddWaylandOutput(WaylandOutput::Id output_id, wl_output* output);
-  void RemoveWaylandOutput(WaylandOutput::Id output_id);
+  void AddWaylandOutput(const uint32_t output_id, wl_output* output);
+  void RemoveWaylandOutput(const uint32_t output_id);
 
   void InitializeAllXdgOutputs();
   void InitializeAllZAuraOutputs();
@@ -51,7 +50,7 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   // Feeds a new platform screen with existing outputs.
   void InitWaylandScreen(WaylandScreen* screen);
 
-  WaylandOutput* GetOutput(WaylandOutput::Id id) const;
+  WaylandOutput* GetOutput(uint32_t id) const;
   WaylandOutput* GetPrimaryOutput() const;
   const OutputList& GetAllOutputs() const;
 
@@ -59,7 +58,7 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
 
  private:
   // WaylandOutput::Delegate:
-  void OnOutputHandleMetrics(WaylandOutput::Id output_id,
+  void OnOutputHandleMetrics(uint32_t output_id,
                              const gfx::Point& origin,
                              const gfx::Size& logical_size,
                              const gfx::Size& physical_size,

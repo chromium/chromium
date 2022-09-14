@@ -55,7 +55,7 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
   connection->wayland_output_manager_->AddWaylandOutput(name, output.release());
 }
 
-WaylandOutput::WaylandOutput(Id output_id,
+WaylandOutput::WaylandOutput(uint32_t output_id,
                              wl_output* output,
                              WaylandConnection* connection)
     : output_id_(output_id), output_(output), connection_(connection) {

@@ -28,7 +28,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
-#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
@@ -123,7 +122,7 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
 
 WaylandScreen::~WaylandScreen() = default;
 
-void WaylandScreen::OnOutputAddedOrUpdated(WaylandOutput::Id output_id,
+void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
                                            const gfx::Point& origin,
                                            const gfx::Size& logical_size,
                                            const gfx::Size& physical_size,
@@ -136,7 +135,7 @@ void WaylandScreen::OnOutputAddedOrUpdated(WaylandOutput::Id output_id,
                      scale, panel_transform, logical_transform, label);
 }
 
-void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
+void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
   if (output_id == GetPrimaryDisplay().id()) {
     // First, set a new primary display as required by the |display_list_|. It's
     // safe to set any of the displays to be a primary one. Once the output is
@@ -162,7 +161,7 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
   }
 }
 
-void WaylandScreen::AddOrUpdateDisplay(WaylandOutput::Id output_id,
+void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Point& origin,
                                        const gfx::Size& logical_size,
                                        const gfx::Size& physical_size,
@@ -293,12 +292,12 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   // enter events immediately, which can result in empty container of entered
   // ids (check comments in WaylandWindow::OnEnteredOutputIdRemoved). In this
   // case, it's also safe to return the primary display.
-  if (!entered_output_id.has_value())
+  if (entered_output_id == 0)
     return GetPrimaryDisplay();
 
   DCHECK(!display_list_.displays().empty());
   for (const auto& display : display_list_.displays()) {
-    if (display.id() == entered_output_id.value())
+    if (display.id() == entered_output_id)
       return display;
   }
 
