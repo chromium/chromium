@@ -1222,10 +1222,6 @@ const base::Feature kOsSettingsAppNotificationsPage{
 const base::Feature kOverviewButton{"OverviewButton",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the option to snap windows by thirds for split view.
-const base::Feature kPartialSplit{"PartialSplit",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
 const base::Feature kPcieBillboardNotification{
@@ -2331,10 +2327,6 @@ bool IsOobeRemoveShutdownButtonEnabled() {
 
 bool IsOobeThemeSelectionEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeThemeSelection);
-}
-
-bool IsPartialSplitEnabled() {
-  return base::FeatureList::IsEnabled(kPartialSplit);
 }
 
 bool IsPcieBillboardNotificationEnabled() {

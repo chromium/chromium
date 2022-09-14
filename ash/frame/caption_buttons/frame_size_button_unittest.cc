@@ -678,16 +678,20 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
 
   void SetUp() override {
     // Ensure float feature is enabled.
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::wm::features::kFloatWindow);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::wm::features::kFloatWindow,
+         chromeos::wm::features::kPartialSplit},
+        {});
     FrameSizeButtonTest::SetUp();
   }
 
   MultitaskMenu* multitask_menu() { return multitask_menu_; }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   MultitaskMenu* multitask_menu_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test Float Button Functionality.

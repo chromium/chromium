@@ -14,6 +14,7 @@
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/split_button.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -80,7 +81,8 @@ MultitaskMenuView::MultitaskMenuView(
   }
 
   // Partial button.
-  if (buttons & kPartialSplit) {
+  if (buttons & kPartialSplit &&
+      chromeos::wm::features::IsPartialSplitEnabled()) {
     auto partial_button = std::make_unique<SplitButtonView>(
         SplitButton::SplitButtonType::kPartialButtons,
         base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,

@@ -15,11 +15,22 @@ namespace chromeos::wm::features {
 const base::Feature kFloatWindow{"CrOSLabsFloatWindow",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPartialSplit{"PartialSplit",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsFloatWindowEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(kFloatWindow);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsFloatWindowEnabled();
+#else
+  return false;
+#endif
+}
+
+bool IsPartialSplitEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(kPartialSplit);
 #else
   return false;
 #endif

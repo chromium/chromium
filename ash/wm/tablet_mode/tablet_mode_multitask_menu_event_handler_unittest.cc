@@ -79,8 +79,10 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::wm::features::kFloatWindow);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::wm::features::kFloatWindow,
+         chromeos::wm::features::kPartialSplit},
+        {});
 
     AshTestBase::SetUp();
 
