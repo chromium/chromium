@@ -3276,12 +3276,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return;
   }
 
-  BOOL inBackground = !activating;
-  if (IsStartSurfaceSplashStartupEnabled()) {
-    inBackground =
-        inBackground ||
-        NewTabPageTabHelper::FromWebState(webState)->ShouldShowStartSurface();
-  }
+  BOOL inBackground =
+      !activating ||
+      NewTabPageTabHelper::FromWebState(webState)->ShouldShowStartSurface();
   [self initiateNewTabAnimationForWebState:webState
                       willOpenInBackground:inBackground];
 }

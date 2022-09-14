@@ -80,10 +80,8 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   }
   if (level >= SceneActivationLevelForegroundInactive &&
       self.previousActivationLevel < SceneActivationLevelForegroundInactive) {
-    if (IsStartSurfaceSplashStartupEnabled()) {
-      [self logBackgroundDurationMetricForActivationLevel:level];
-      [self showStartSurfaceIfNecessary];
-    }
+    [self logBackgroundDurationMetricForActivationLevel:level];
+    [self showStartSurfaceIfNecessary];
   }
   self.previousActivationLevel = level;
 }

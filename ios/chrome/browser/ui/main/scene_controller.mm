@@ -507,54 +507,6 @@ bool IsSigninForcedByPolicy() {
   MoveTabToBrowser(tabID, interface.browser, /*destination_tab_index=*/0);
 }
 
-// TODO(crbug.com/1173160): Split and move to the StartSurfaceSceneAgent after
-// refactoring the scene states.
-- (void)handleShowStartSurfaceIfNecessary {
-  if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
-    return;
-  }
-
-  // Do not show the Start Surface no matter whether it is enabled or not when
-  // the Tab grid is active by design.
-  if (self.mainCoordinator.isTabGridActive) {
-    return;
-  }
-
-  // If there is no active tab, a NTP will be added, and since there is no
-  // recent tab, there is not need to mark `modifytVisibleNTPForStartSurface`.
-  // Keep showing the last active NTP tab no matter whether the Start Surface is
-  // enabled or not by design.
-  // Note that currentWebState could only be nullptr when the Tab grid is active
-  // for now.
-  web::WebState* currentWebState =
-      self.mainInterface.browser->GetWebStateList()->GetActiveWebState();
-  if (!currentWebState || IsURLNtp(currentWebState->GetVisibleURL())) {
-    return;
-  }
-
-  base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
-  self.sceneState.modifytVisibleNTPForStartSurface = YES;
-  Browser* browser = self.currentInterface.browser;
-  StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
-
-  // Activate the existing NTP tab for the Start surface.
-  WebStateList* webStateList = browser->GetWebStateList();
-  for (int i = 0; i < webStateList->count(); i++) {
-    if (IsURLNtp(webStateList->GetWebStateAt(i)->GetVisibleURL())) {
-      webStateList->ActivateWebStateAt(i);
-      return;
-    }
-  }
-
-  // Open a new NTP tab if there is no existing NTP tab for the Start Surface.
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithIncognito:self.currentInterface.incognito];
-  command.userInitiated = NO;
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler openURLInNewTab:command];
-}
-
 - (void)recordWindowCreationForSceneState:(SceneState*)sceneState {
   // Don't record window creation for single-window environments
   if (!base::ios::IsMultipleScenesSupported())
@@ -751,10 +703,6 @@ bool IsSigninForcedByPolicy() {
           browser->GetCommandDispatcher(), ApplicationCommands);
       [applicationHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher:YES];
-    }
-
-    if (!IsStartSurfaceSplashStartupEnabled()) {
-      [self handleShowStartSurfaceIfNecessary];
     }
   }
 
@@ -1034,14 +982,6 @@ bool IsSigninForcedByPolicy() {
   } else {
     browser = self.mainInterface.browser;
     [self setCurrentInterfaceForMode:ApplicationMode::NORMAL];
-  }
-
-  // Call this right after `setCurrentInterfaceForMode:` to ensure the
-  // currentInterface is set in case a new tab needs to be opened. Since this is
-  // synchronous with `setActivePage:` above, then the user should not see the
-  // last tab if the Start Surface is opened.
-  if (!IsStartSurfaceSplashStartupEnabled()) {
-    [self handleShowStartSurfaceIfNecessary];
   }
 
   // Figure out what UI to show initially.

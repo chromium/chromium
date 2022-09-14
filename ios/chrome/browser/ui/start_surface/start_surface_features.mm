@@ -12,9 +12,6 @@
 const base::Feature kStartSurface{"StartSurface",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kStartSurfaceSplashStartup{
-    "StartSurfaceSplashStartup", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =
     "ReturnToStartSurfaceInactiveDurationInSeconds";
 
@@ -24,10 +21,6 @@ const char kStartSurfaceReturnToRecentTabParam[] = "show_return_to_recent_tab";
 
 bool IsStartSurfaceEnabled() {
   return base::FeatureList::IsEnabled(kStartSurface);
-}
-
-bool IsStartSurfaceSplashStartupEnabled() {
-  return base::FeatureList::IsEnabled(kStartSurfaceSplashStartup);
 }
 
 double GetReturnToStartSurfaceDuration() {
