@@ -218,8 +218,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
   return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      /*dxgi_keyed_mutex_state=*/{}, /*shared_memory_handle=*/{},
-      std::move(swap_chain), is_back_buffer));
+      /*dxgi_keyed_mutex_state=*/{}, std::move(swap_chain), is_back_buffer));
 }
 
 // static
@@ -329,7 +328,7 @@ D3DImageBacking::CreateFromVideoTexture(
 }
 
 // static
-std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSharedMemoryHandle(
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateForSharedMemory(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -337,9 +336,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSharedMemoryHandle(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    gfx::GpuMemoryBufferHandle shared_memory_handle) {
-  DCHECK_EQ(shared_memory_handle.type, gfx::SHARED_MEMORY_BUFFER);
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture) {
   auto gl_texture = CreateGLTexture(format, size, color_space, d3d11_texture);
   if (!gl_texture) {
     LOG(ERROR) << "Failed to create GL texture";
@@ -348,7 +345,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSharedMemoryHandle(
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      /*dxgi_keyed_mutex_state=*/{}, std::move(shared_memory_handle)));
+      /*dxgi_keyed_mutex_state=*/{}));
   return backing;
 }
 
@@ -363,7 +360,6 @@ D3DImageBacking::D3DImageBacking(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<gles2::TexturePassthrough> gl_texture,
     scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state,
-    gfx::GpuMemoryBufferHandle shared_memory_handle,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer)
     : ClearTrackingSharedImageBacking(
@@ -381,7 +377,6 @@ D3DImageBacking::D3DImageBacking(
       d3d11_texture_(std::move(d3d11_texture)),
       gl_texture_(std::move(gl_texture)),
       dxgi_keyed_mutex_state_(std::move(dxgi_keyed_mutex_state)),
-      shared_memory_handle_(std::move(shared_memory_handle)),
       swap_chain_(std::move(swap_chain)),
       is_back_buffer_(is_back_buffer) {
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
@@ -441,25 +436,12 @@ SharedImageBackingType D3DImageBacking::GetType() const {
 }
 
 void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  DCHECK(!in_fence);
-  if (!shared_memory_handle_.is_null())
-    needs_upload_to_gpu_ = true;
+  NOTREACHED();
 }
 
-bool D3DImageBacking::UploadToGpuIfNeeded() {
-  if (!needs_upload_to_gpu_)
-    return true;
-
-  gpu::SharedMemoryRegionWrapper mapped_shared_memory;
-  mapped_shared_memory.Initialize(shared_memory_handle_, size(), format());
-
-  if (!mapped_shared_memory.IsValid()) {
-    LOG(ERROR) << "Failed to map shared memory";
-    return false;
-  }
-
-  const uint8_t* source_memory = mapped_shared_memory.GetMemory();
-  const size_t source_stride = mapped_shared_memory.GetStride();
+bool D3DImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
+  const uint8_t* source_memory = static_cast<const uint8_t*>(pixmap.addr());
+  const size_t source_stride = pixmap.info().minRowBytes();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   DCHECK(d3d11_texture_);
@@ -506,27 +488,12 @@ bool D3DImageBacking::UploadToGpuIfNeeded() {
     device_context->CopySubresourceRegion(d3d11_texture_.Get(), 0, 0, 0, 0,
                                           staging_texture, 0, nullptr);
   }
-  needs_upload_to_gpu_ = false;
   return true;
 }
 
-bool D3DImageBacking::CopyToGpuMemoryBuffer() {
-  if (shared_memory_handle_.is_null()) {
-    LOG(ERROR)
-        << "Called CopyToGpuMemoryBuffer for backing without shared memory GMB";
-    return false;
-  }
-
-  gpu::SharedMemoryRegionWrapper mapped_shared_memory;
-  mapped_shared_memory.Initialize(shared_memory_handle_, size(), format());
-
-  if (!mapped_shared_memory.IsValid()) {
-    LOG(ERROR) << "Failed to map shared memory";
-    return false;
-  }
-
-  uint8_t* dest_memory = mapped_shared_memory.GetMemory();
-  const size_t dest_stride = mapped_shared_memory.GetStride();
+bool D3DImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
+  uint8_t* dest_memory = static_cast<uint8_t*>(pixmap.writable_addr());
+  const size_t dest_stride = pixmap.info().minRowBytes();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   DCHECK(d3d11_texture_);
@@ -764,10 +731,6 @@ std::unique_ptr<GLTexturePassthroughImageRepresentation>
 D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                              MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "D3DImageBacking::ProduceGLTexturePassthrough");
-  if (!UploadToGpuIfNeeded()) {
-    LOG(ERROR) << "UploadToGpuIfNeeded failed";
-    return nullptr;
-  }
   // Lazily create a GL texture if it wasn't provided on initialization.
   auto gl_texture = gl_texture_;
   if (!gl_texture) {
@@ -795,20 +758,6 @@ std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "D3DImageBacking::ProduceOverlay");
-  // Prefer GLImageMemory for shared memory case so that we don't upload to a
-  // texture if it ends up in an overlay.
-  if (!shared_memory_handle_.is_null()) {
-    auto gl_image = base::MakeRefCounted<gl::GLImageSharedMemory>(size());
-    if (!gl_image->Initialize(
-            shared_memory_handle_.region, shared_memory_handle_.id,
-            viz::BufferFormat(format()), shared_memory_handle_.offset,
-            shared_memory_handle_.stride)) {
-      LOG(ERROR) << "Failed to initialize GLImageSharedMemory";
-      return nullptr;
-    }
-    return std::make_unique<OverlayD3DImageRepresentation>(
-        manager, this, tracker, std::move(gl_image));
-  }
   return std::make_unique<OverlayD3DImageRepresentation>(manager, this, tracker,
                                                          GetGLImage());
 }

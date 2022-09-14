@@ -36,6 +36,7 @@ class TestImageBacking : public SharedImageBacking {
   ~TestImageBacking() override;
 
   bool GetUploadFromMemoryCalledAndReset();
+  bool GetReadbackToMemoryCalledAndReset();
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -43,6 +44,7 @@ class TestImageBacking : public SharedImageBacking {
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {}
   bool UploadFromMemory(const SkPixmap& pixmap) override;
+  bool ReadbackToMemory(SkPixmap& pixmap) override;
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,
@@ -85,6 +87,7 @@ class TestImageBacking : public SharedImageBacking {
   bool can_access_ = true;
 
   bool upload_from_memory_called_ = false;
+  bool readback_to_memory_called_ = true;
 };
 
 }  // namespace gpu

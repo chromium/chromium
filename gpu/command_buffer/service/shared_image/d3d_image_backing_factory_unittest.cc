@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -946,13 +947,23 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   if (!IsD3DSharedImageSupported())
     return;
 
-  EXPECT_TRUE(shared_image_factory_->CanImportGpuMemoryBuffer(
-      gfx::DXGI_SHARED_HANDLE, viz::RGBA_8888));
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto format = gfx::BufferFormat::RGBA_8888;
+  const gfx::Size size(1, 1);
+  const auto plane = gfx::BufferPlane::DEFAULT;
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY;
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  const GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  const SkAlphaType alpha_type = kPremul_SkAlphaType;
+
+  EXPECT_TRUE(shared_image_factory_->IsSupported(
+      usage, viz::GetResourceFormat(format), size, /*thread_safe=*/false,
+      gfx::DXGI_SHARED_HANDLE, GrContextType::kGL, /*pixel_data=*/{}));
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       shared_image_factory_->GetDeviceForTesting();
 
-  const gfx::Size size(1, 1);
   D3D11_TEXTURE2D_DESC desc;
   desc.Width = size.width();
   desc.Height = size.height();
@@ -988,14 +999,6 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   // Clone before moving the handle in CreateSharedImage.
   auto dup_handle = gpu_memory_buffer_handle.Clone();
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = gfx::BufferFormat::RGBA_8888;
-  const auto plane = gfx::BufferPlane::DEFAULT;
-  const auto color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY;
-  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  const GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
-  const SkAlphaType alpha_type = kPremul_SkAlphaType;
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, 0, std::move(gpu_memory_buffer_handle), format, plane,
       surface_handle, size, color_space, surface_origin, alpha_type, usage);
@@ -1667,11 +1670,13 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
     DCHECK(shm_gmb_handle.region.IsValid());
     shm_gmb_handle.stride = size.width();
 
-    auto backing = shared_image_factory_->CreateSharedImage(
-        mailboxes[i], /*client_id=*/0, std::move(shm_gmb_handle),
-        gfx::BufferFormat::YUV_420_BIPLANAR, planes[i], kNullSurfaceHandle,
-        size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        usage);
+    // CompoundImageBacking wrapping D3DImageBacking is required for shared
+    // memory support.
+    auto backing = CompoundImageBacking::CreateSharedMemory(
+        shared_image_factory_.get(), /*allow_shm_overlays=*/true, mailboxes[i],
+        std::move(shm_gmb_handle), gfx::BufferFormat::YUV_420_BIPLANAR,
+        planes[i], kNullSurfaceHandle, size, gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
     EXPECT_NE(backing, nullptr);
 
     shared_image_backings.push_back(std::move(backing));
@@ -1719,6 +1724,11 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
           shared_image_refs[0]->mailbox());
   ASSERT_NE(y_texture, nullptr);
 
+  auto y_access = y_texture->BeginScopedAccess(
+      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+      SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  ASSERT_NE(y_access, nullptr);
+
   GLuint y_texture_id = y_texture->GetTextureBase()->service_id();
   api->glBindTextureFn(GL_TEXTURE_2D, y_texture_id);
   api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
@@ -1740,6 +1750,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
                       GL_UNSIGNED_BYTE, &y_value);
   EXPECT_EQ(kYClearValue, y_value);
 
+  y_access.reset();
   y_texture.reset();
   EXPECT_TRUE(shared_image_refs[0]->CopyToGpuMemoryBuffer());
 
@@ -1747,6 +1758,11 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
       shared_image_representation_factory_->ProduceGLTexturePassthrough(
           shared_image_refs[1]->mailbox());
   ASSERT_NE(uv_texture, nullptr);
+
+  auto uv_access = uv_texture->BeginScopedAccess(
+      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+      SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  ASSERT_NE(uv_access, nullptr);
 
   GLuint uv_texture_id = uv_texture->GetTextureBase()->service_id();
   api->glBindTextureFn(GL_TEXTURE_2D, uv_texture_id);
@@ -1771,6 +1787,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   EXPECT_EQ(kUClearValue, uv_value[0]);
   EXPECT_EQ(kVClearValue, uv_value[1]);
 
+  uv_access.reset();
   uv_texture.reset();
   EXPECT_TRUE(shared_image_refs[1]->CopyToGpuMemoryBuffer());
 

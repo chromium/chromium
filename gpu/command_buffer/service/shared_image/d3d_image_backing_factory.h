@@ -118,11 +118,6 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
 
-  // Returns true if the specified GpuMemoryBufferType can be imported using
-  // this factory.
-  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type,
-                                viz::ResourceFormat format);
-
   Microsoft::WRL::ComPtr<ID3D11Device> GetDeviceForTesting() const {
     return d3d11_device_;
   }

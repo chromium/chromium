@@ -112,6 +112,14 @@ class CompoundImageBackingTest : public testing::Test {
     return static_cast<TestImageBacking*>(gpu_backing);
   }
 
+  bool GetShmHasLatestContent(CompoundImageBacking* backing) {
+    return backing->shm_has_latest_content_;
+  }
+
+  bool GetGpuHasLatestContent(CompoundImageBacking* backing) {
+    return backing->gpu_has_latest_content_;
+  }
+
   // Create a compound backing containing shared memory + GPU backing.
   std::unique_ptr<SharedImageBacking> CreateCompoundBacking(
       bool allow_shm_overlays = false) {
@@ -190,9 +198,17 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   // The compound backing hasn't been accessed yet.
   EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
+  // Only shared memory should have latest content initially.
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+
   // First access should trigger upload from memory to GPU.
   overlay_rep->BeginScopedReadAccess(false);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+
+  // After GPU read access both should have latest content.
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 
   // Second access shouldn't trigger upload since no shared memory updates
   // happened.
@@ -228,14 +244,52 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
       manager_.ProduceSkia(compound_backing->mailbox(), &tracker_, nullptr);
 
   compound_backing->Update(nullptr);
+
+  // After Update() only shared memory should have latest content.
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+
   skia_rep->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
       SharedImageRepresentation::AllowUnclearedAccess::kNo);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
+  // On GPU write access only GPU should have latest content.
+  EXPECT_FALSE(GetShmHasLatestContent(compound_backing));
+  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
+
   compound_backing->Update(nullptr);
   skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+}
+
+TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
+  auto backing = CreateCompoundBacking();
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+
+  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+
+  auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &tracker_);
+  compound_backing->Update(nullptr);
+  gl_passthrough_rep->BeginScopedAccess(
+      0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
+
+  auto* gpu_backing = GetGpuBacking(compound_backing);
+
+  // On write access UploadFromMemory() should be called and then only GPU
+  // texture has latest.
+  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+  EXPECT_FALSE(GetShmHasLatestContent(compound_backing));
+  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
+
+  compound_backing->CopyToGpuMemoryBuffer();
+
+  // On CopyToGpuMemoryBuffer() ReadbackToMemory() should have been called and
+  // shared memory has latest content again.
+  EXPECT_TRUE(gpu_backing->GetReadbackToMemoryCalledAndReset());
+  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 }
 
 TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
