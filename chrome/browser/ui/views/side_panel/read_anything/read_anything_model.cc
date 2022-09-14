@@ -10,9 +10,9 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/grit/component_extension_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -243,9 +243,8 @@ size_t ReadAnythingColorsModel::GetItemCount() const {
 
 ui::ImageModel ReadAnythingColorsModel::GetIconAt(size_t index) const {
   // The dropdown should always show the color palette icon.
-  return ui::ImageModel::FromImageSkia(
-      gfx::CreateVectorIcon(vector_icons::kPaletteIcon, kColorsIconSize,
-                            colors_choices_[index].foreground));
+  return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
+      kPaletteIcon, kColorsIconSize, colors_choices_[index].foreground));
 }
 
 ui::ImageModel ReadAnythingColorsModel::GetDropDownIconAt(size_t index) const {

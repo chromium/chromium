@@ -7,10 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/cc_macros.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -52,7 +51,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   auto decrease_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::DecreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      gfx::CreateVectorIcon(vector_icons::kTextDecreaseIcon, kSmallIconSize,
+      gfx::CreateVectorIcon(kTextDecreaseIcon, kSmallIconSize,
                             gfx::kPlaceholderColor),
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL));
@@ -60,7 +59,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      gfx::CreateVectorIcon(vector_icons::kTextIncreaseIcon, kLargeIconSize,
+      gfx::CreateVectorIcon(kTextIncreaseIcon, kLargeIconSize,
                             gfx::kPlaceholderColor),
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
@@ -120,13 +119,11 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   colors_combobox_->SetBackground(
       views::CreateSolidBackground(new_theme->background_color));
 
-  decrease_text_size_button_->UpdateIcon(
-      gfx::CreateVectorIcon(vector_icons::kTextDecreaseIcon, kSmallIconSize,
-                            new_theme->foreground_color));
+  decrease_text_size_button_->UpdateIcon(gfx::CreateVectorIcon(
+      kTextDecreaseIcon, kSmallIconSize, new_theme->foreground_color));
 
-  increase_text_size_button_->UpdateIcon(
-      gfx::CreateVectorIcon(vector_icons::kTextIncreaseIcon, kLargeIconSize,
-                            new_theme->foreground_color));
+  increase_text_size_button_->UpdateIcon(gfx::CreateVectorIcon(
+      kTextIncreaseIcon, kLargeIconSize, new_theme->foreground_color));
 }
 
 std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
