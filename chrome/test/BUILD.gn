@@ -9567,6 +9567,7 @@ if (!is_android) {
       sources += [
         "../browser/ui/read_later/read_later_test_utils.cc",
         "../browser/ui/read_later/read_later_test_utils.h",
+        "../browser/ui/toolbar/app_menu_model_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views_interactive_uitest.cc",
@@ -9636,6 +9637,7 @@ if (!is_android) {
         "//components/live_caption:utils",
         "//components/optimization_guide/core:test_support",
         "//components/optimization_guide/proto:optimization_guide_proto",
+        "//components/performance_manager:performance_manager",
         "//components/user_education/views",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",

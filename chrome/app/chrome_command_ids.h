@@ -227,6 +227,8 @@
 #define IDC_LACROS_DATA_MIGRATION      40265
 #endif
 
+#define IDC_PERFORMANCE                40266
+
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.
 #define IDC_SPELLCHECK_SUGGESTION_0     41000

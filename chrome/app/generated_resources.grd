@@ -1470,6 +1470,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_SHOW_EXTENSIONS" desc="The show extensions menu in the app menu">
           &amp;Extensions
         </message>
+        <message name="IDS_SHOW_PERFORMANCE" desc="The text label of the Performance menu item">
+          Performance
+        </message>
         <message name="IDS_SETTINGS" desc="The text label of the Settings menu item">
           &amp;Settings
         </message>
@@ -1507,6 +1510,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_SHOW_EXTENSIONS" desc="In Title Case: The show extensions menu in the app menu">
           &amp;Extensions
+        </message>
+        <message name="IDS_SHOW_PERFORMANCE" desc="In Title Case: The text label of the Performance menu item">
+          Performance
         </message>
         <message name="IDS_SETTINGS" desc="In Title Case: The text label of the Settings menu item">
           &amp;Settings

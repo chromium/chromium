@@ -54,6 +54,7 @@
 #include "chrome/common/content_restriction.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/prefs/pref_service.h"
@@ -779,6 +780,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_MANAGE_EXTENSIONS:
       ShowExtensions(browser_, std::string());
       break;
+    case IDC_PERFORMANCE:
+      ShowSettingsSubPage(browser_, chrome::kPerformanceSubPage);
+      break;
     case IDC_OPTIONS:
       ShowSettings(browser_);
       break;
@@ -1122,6 +1126,7 @@ void BrowserCommandController::InitCommandState() {
   DCHECK(!profile()->IsSystemProfile())
       << "Ought to never have browser for the system profile.";
   const bool normal_window = browser_->is_type_normal();
+  command_updater_.UpdateCommandEnabled(IDC_PERFORMANCE, true);
   command_updater_.UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
   UpdateCommandsForDevTools();
   command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER, CanOpenTaskManager());

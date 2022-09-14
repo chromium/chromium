@@ -105,6 +105,8 @@ class ZoomMenuModel : public ui::SimpleMenuModel {
 
 class ToolsMenuModel : public ui::SimpleMenuModel {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPerformanceMenuItem);
+
   ToolsMenuModel(ui::SimpleMenuModel::Delegate* delegate, Browser* browser);
 
   ToolsMenuModel(const ToolsMenuModel&) = delete;
@@ -123,8 +125,9 @@ class AppMenuModel : public ui::SimpleMenuModel,
                      public TabStripModelObserver,
                      public content::WebContentsObserver {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDownloadsMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoreToolsMenuItem);
 
   // First command ID to use for the recent tabs menu. This is one higher than
   // the first command id used for the bookmarks menus, as the command ids for
