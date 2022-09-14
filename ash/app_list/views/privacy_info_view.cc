@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -286,9 +287,10 @@ void PrivacyInfoView::InitCloseButton() {
   auto close_button = std::make_unique<views::ImageButton>();
   close_button->SetCallback(base::BindRepeating(
       &PrivacyInfoView::OnButtonPressed, base::Unretained(this)));
-  close_button->SetImage(views::ImageButton::STATE_NORMAL,
-                         gfx::CreateVectorIcon(views::kCloseIcon, kIconSizeDip,
-                                               gfx::kGoogleGrey700));
+  close_button->SetImageModel(
+      views::ImageButton::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(views::kCloseIcon, gfx::kGoogleGrey700,
+                                     kIconSizeDip));
   close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   std::u16string close_button_label(l10n_util::GetStringUTF16(IDS_APP_CLOSE));

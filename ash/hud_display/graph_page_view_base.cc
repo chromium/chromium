@@ -11,6 +11,7 @@
 #include "ash/hud_display/solid_source_background.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -71,17 +72,17 @@ BEGIN_METADATA(MinMaxButton, views::ImageButton)
 END_METADATA
 
 void SetMinimizeIconToButton(views::ImageButton* button) {
-  button->SetImage(
+  button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kWindowControlMinimizeIcon,
-                            kMinMaxButtonIconSize, kHUDDefaultColor));
+      ui::ImageModel::FromVectorIcon(views::kWindowControlMinimizeIcon,
+                                     kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 
 void SetRestoreIconToButton(views::ImageButton* button) {
-  button->SetImage(
+  button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kWindowControlRestoreIcon,
-                            kMinMaxButtonIconSize, kHUDDefaultColor));
+      ui::ImageModel::FromVectorIcon(views::kWindowControlRestoreIcon,
+                                     kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 
 }  // namespace
