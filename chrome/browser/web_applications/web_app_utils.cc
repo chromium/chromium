@@ -182,8 +182,10 @@ bool AreWebAppsEnabled(const Profile* profile) {
   DCHECK(!original_profile->IsOffTheRecord());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Web Apps should not be installed to the ChromeOS system profiles.
-  if (!ash::ProfileHelper::IsRegularProfile(original_profile)) {
+  // Web Apps should not be installed to the ChromeOS system profiles except the
+  // lock screen app profile.
+  if (!ash::ProfileHelper::IsRegularProfile(original_profile) &&
+      !ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     return false;
   }
   // Disable Web Apps if running any kiosk app and kKioskEnableAppService is not
@@ -205,6 +207,8 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
   if (IsWebAppsCrosapiEnabled())
+    return false;
+  if (ash::ProfileHelper::IsLockScreenAppProfile(profile))
     return false;
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&

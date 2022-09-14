@@ -229,8 +229,8 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 
   Profile* lock_screen_profile = profile_manager.CreateTestingProfile(
       ash::ProfileHelper::GetLockScreenAppProfileName());
-  EXPECT_FALSE(AreWebAppsEnabled(lock_screen_profile));
-  EXPECT_FALSE(AreWebAppsEnabled(
+  EXPECT_TRUE(AreWebAppsEnabled(lock_screen_profile));
+  EXPECT_TRUE(AreWebAppsEnabled(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   using MockUserManager = testing::NiceMock<ash::MockUserManager>;
