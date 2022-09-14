@@ -62,10 +62,6 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, SystemWebApp) {
   const AppId system_app_id = InstallSystemWebApp();
 
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
-
   EXPECT_EQ(GetWebAppTypeName(system_app_id,
                               apps::LaunchContainer::kLaunchContainerWindow),
             apps::AppTypeName::kSystemWeb);
@@ -116,10 +112,6 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, WindowedWebApps) {
       GURL("https://browser.example.com/"), blink::mojom::DisplayMode::kBrowser,
       /*user_display_mode=*/web_app::UserDisplayMode::kStandalone);
 
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
-
   // When container is specified, |user_display_mode| and |display_mode| are
   // ignored.
 
@@ -159,10 +151,6 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsBrowserTest, TabbedWebApps) {
   const AppId browser_app_id = InstallWebApp(
       GURL("https://browser.example.com/"), blink::mojom::DisplayMode::kBrowser,
       /*user_display_mode=*/web_app::UserDisplayMode::kBrowser);
-
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
 
   // When container is specified, |user_display_mode| and |display_mode| are
   // ignored.
