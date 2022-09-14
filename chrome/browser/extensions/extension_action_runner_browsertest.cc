@@ -742,8 +742,16 @@ class ExtensionActionRunnerWithUserHostControlsBrowserTest
 // is either 'on all sites' or 'on site'). Note that we don't check if extension
 // `WantsToRun` because on user-restricted sites, actions are blocked rather
 // than withheld.
+// TODO(crbug.com/1363781): Flaky on Win 7 and Mac 12.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess \
+  DISABLED_HandleUserSiteSettingModified_ExtensionHasAccess
+#else
+#define MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess \
+  HandleUserSiteSettingModified_ExtensionHasAccess
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
-                       HandleUserSiteSettingModified_ExtensionHasAccess) {
+                       MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess) {
   // Load an extension that wants to run on every page at document start.
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
