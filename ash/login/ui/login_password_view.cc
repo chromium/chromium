@@ -480,16 +480,16 @@ class LoginPasswordView::DisplayPasswordButton
 
   void UpdateIcons(const LoginPalette& palette) {
     auto color = palette.button_enabled_color;
-    const gfx::ImageSkia invisible_icon = gfx::CreateVectorIcon(
-        kLockScreenPasswordInvisibleIcon, kIconSizeDp, color);
-    const gfx::ImageSkia visible_icon = gfx::CreateVectorIcon(
-        kLockScreenPasswordVisibleIcon, kIconSizeDp, color);
-    const gfx::ImageSkia visible_icon_disabled =
-        gfx::CreateVectorIcon(kLockScreenPasswordVisibleIcon, kIconSizeDp,
-                              ColorUtil::GetDisabledColor(color));
-    SetImage(views::Button::STATE_NORMAL, visible_icon);
-    SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
-    SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
+    const ui::ImageModel invisible_icon = ui::ImageModel::FromVectorIcon(
+        kLockScreenPasswordInvisibleIcon, color, kIconSizeDp);
+    const ui::ImageModel visible_icon = ui::ImageModel::FromVectorIcon(
+        kLockScreenPasswordVisibleIcon, color, kIconSizeDp);
+    const ui::ImageModel visible_icon_disabled = ui::ImageModel::FromVectorIcon(
+        kLockScreenPasswordVisibleIcon, ColorUtil::GetDisabledColor(color),
+        kIconSizeDp);
+    SetImageModel(views::Button::STATE_NORMAL, visible_icon);
+    SetImageModel(views::Button::STATE_DISABLED, visible_icon_disabled);
+    SetToggledImageModel(views::Button::STATE_NORMAL, invisible_icon);
   }
 };
 

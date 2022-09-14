@@ -26,6 +26,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
@@ -94,11 +95,12 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
 
   // Custom styling for the settings button, which has a dark background and a
   // light colored icon when selected.
-  const auto normal_icon = gfx::CreateVectorIcon(
+  const auto normal_icon = ui::ImageModel::FromVectorIcon(
       kCaptureModeSettingsIcon,
       color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColor));
-  settings_button_->SetToggledImage(views::Button::STATE_NORMAL, &normal_icon);
+  settings_button_->SetToggledImageModel(views::Button::STATE_NORMAL,
+                                         normal_icon);
   settings_button_->set_toggled_background_color(
       color_provider->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::

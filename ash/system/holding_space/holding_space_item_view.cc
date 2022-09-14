@@ -20,6 +20,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -290,18 +291,20 @@ void HoldingSpaceItemView::OnThemeChanged() {
   // Cancel.
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
-  primary_action_cancel_->SetImage(
+  primary_action_cancel_->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kCancelIcon, kHoldingSpaceIconSize, icon_color));
+      ui::ImageModel::FromVectorIcon(kCancelIcon, icon_color,
+                                     kHoldingSpaceIconSize));
 
   // Pin.
-  const gfx::ImageSkia unpinned_icon = gfx::CreateVectorIcon(
-      views::kUnpinIcon, kHoldingSpaceIconSize, icon_color);
-  const gfx::ImageSkia pinned_icon =
-      gfx::CreateVectorIcon(views::kPinIcon, kHoldingSpaceIconSize, icon_color);
-  primary_action_pin_->SetImage(views::Button::STATE_NORMAL, unpinned_icon);
-  primary_action_pin_->SetToggledImage(views::Button::STATE_NORMAL,
-                                       &pinned_icon);
+  const ui::ImageModel unpinned_icon = ui::ImageModel::FromVectorIcon(
+      views::kUnpinIcon, icon_color, kHoldingSpaceIconSize);
+  const ui::ImageModel pinned_icon = ui::ImageModel::FromVectorIcon(
+      views::kPinIcon, icon_color, kHoldingSpaceIconSize);
+  primary_action_pin_->SetImageModel(views::Button::STATE_NORMAL,
+                                     unpinned_icon);
+  primary_action_pin_->SetToggledImageModel(views::Button::STATE_NORMAL,
+                                            pinned_icon);
 }
 
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
