@@ -37,6 +37,9 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
 }
 
 ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LOG(WARNING) << "crbug.com/1340791 | Flow controller destruction.";
+#endif
   if (contents())
     contents()->SetDelegate(nullptr);
 }
