@@ -7,9 +7,9 @@
 
 const params = new URLSearchParams(location.search);
 
-// The main test page (restriction-background-sync.https.html) loads the
-// initiator page, then the initiator page will prerender itself with the
-// `prerendering` parameter.
+// The main test page (restriction-background-sync.tentative.https.html)
+// loads the initiator page, then the initiator page will prerender itself
+// with the `prerendering` parameter.
 const isPrerendering = params.has('prerendering');
 
 if (!isPrerendering) {
