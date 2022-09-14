@@ -425,7 +425,7 @@ void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
     latest_tick_y_direction_ = WheelDeltaToScrollDirection(ticks_y);
     latest_tick_y_event_ = now;
     InjectMouseScroll(RemoteDesktopPortalInjector::ScrollType::VERTICAL_SCROLL,
-                      ticks_y);
+                      -ticks_y);
   }
 
   int ticks_x = 0;
@@ -438,7 +438,7 @@ void InputInjectorWayland::Core::InjectMouseEvent(const MouseEvent& event) {
   }
   if (ticks_x != 0) {
     InjectMouseScroll(
-        RemoteDesktopPortalInjector::ScrollType::HORIZONTAL_SCROLL, ticks_x);
+        RemoteDesktopPortalInjector::ScrollType::HORIZONTAL_SCROLL, -ticks_x);
   }
 }
 
