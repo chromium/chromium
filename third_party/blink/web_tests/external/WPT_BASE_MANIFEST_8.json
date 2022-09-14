@@ -239608,6 +239608,19 @@
          {}
         ]
        ],
+       "image-loading-lazy-data-url-to-https.html": [
+        "809068dd05adcde2dcc4e761969e587f32cd5813",
+        [
+         null,
+         [
+          [
+           "/html/semantics/embedded-content/the-img-element/image-loading-lazy-data-url-to-https-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "image-loading-lazy-slow-aspect-ratio.html": [
         "662ada69095c5079924008ad2a252fdaa474267e",
         [
@@ -323739,6 +323752,10 @@
         "05a60034ad0683c72db70f659c66075ac52c17bf",
         []
        ],
+       "image-loading-lazy-data-url-to-https-ref.html": [
+        "05a60034ad0683c72db70f659c66075ac52c17bf",
+        []
+       ],
        "image-loading-lazy-expected.txt": [
         "724ecac7ecfd4ce12ff9faf48d58d6c79ef61472",
         []
@@ -342158,6 +342175,10 @@
        "3f1c072d108ca5b271d81118698a5e0ebc0e3649",
        []
       ],
+      "background-sync.https.html": [
+       "f11a951818a68bcb895b1ae489f95bae79637bf8",
+       []
+      ],
       "battery-status.https.html": [
        "eb611175381240b483bb8776a1610286bd3b7219",
        []
@@ -342192,6 +342213,14 @@
       ],
       "cross-origin-isolated.https.html.headers": [
        "5f8621ef83660c66f0d037ea28fafefb558140f1",
+       []
+      ],
+      "dedicated-worker.https.html": [
+       "570d4b33a147e02ba8fbdbc874a8a1d652359497",
+       []
+      ],
+      "dedicated-worker.js": [
+       "d8029556be21eeaedf0a59a2fe2b24fa5d3f0eab",
        []
       ],
       "deferred-promise-utils.js": [
@@ -386516,7 +386545,7 @@
       ]
      ],
      "anchor-position-multicol-003.tentative.html": [
-      "0d3e3d8db995f18609a3fe6af45e64cdb76efda4",
+      "8ab938988c45183afb43b1c1f4029eabc19b8b16",
       [
        null,
        {}
@@ -490154,7 +490183,14 @@
         ]
        ],
        "image-loading-lazy-crossorigin-change.sub.html": [
-        "83e61d8465f4f91ac62ed01e0683561c1e297a94",
+        "84efc7b0d14f0be7daab2573cce96dac47d78399",
+        [
+         null,
+         {}
+        ]
+       ],
+       "image-loading-lazy-empty-src.html": [
+        "2a0aefea1df26b90d3455b370de3284a8037740c",
         [
          null,
          {}
@@ -545613,6 +545649,16 @@
        }
       ]
      ],
+     "restriction-background-sync.tentative.https.html": [
+      "7d49e14830aefcab13174144b9dc547258fb15f6",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-battery-status.https.html": [
       "80e25b08e723a73a75235608c9d902065b96eadd",
       [
@@ -545633,6 +545679,15 @@
      ],
      "restriction-broadcast-channel.html": [
       "7225e64cf9848921de4e33982e733104265daa43",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-dedicated-worker.https.html": [
+      "c58bd3434f8b9d1160fbed12bf0c7e62c5798ecc",
       [
        null,
        {
