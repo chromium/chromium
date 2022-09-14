@@ -46,6 +46,7 @@
 #import "ios/chrome/app/feed_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
 #import "ios/chrome/app/memory_monitor.h"
+#import "ios/chrome/app/post_restore_app_agent.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
@@ -700,6 +701,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   [self.appState addAgent:[[CredentialProviderAppAgent alloc] init]];
 #endif
+  [self.appState addAgent:[[PostRestoreAppAgent alloc] init]];
 }
 
 #pragma mark - SceneStateObserver
