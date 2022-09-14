@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
 
 #include "ash/glanceables/glanceables_up_next_event_item_view.h"
 #include "ash/shell.h"
@@ -20,13 +19,73 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
+namespace {
+
+using ::google_apis::calendar::CalendarEvent;
+
+bool IsAllDayEvent(const CalendarEvent& event) {
+  const auto exploded_start_time =
+      calendar_utils::GetExplodedUTC(event.start_time().date_time());
+  const auto exploded_end_time =
+      calendar_utils::GetExplodedUTC(event.end_time().date_time());
+
+  if (event.start_time().date_time() < event.end_time().date_time() &&
+      exploded_start_time.hour == exploded_end_time.hour &&
+      exploded_start_time.minute == exploded_end_time.minute &&
+      exploded_start_time.second == exploded_end_time.second &&
+      exploded_start_time.millisecond == exploded_end_time.millisecond) {
+    return true;
+  }
+  return false;
+}
+
+bool ShouldShowEvent(const CalendarEvent& event) {
+  const auto now = base::Time::Now();
+  const auto& start_time = event.start_time().date_time();
+  const auto& end_time = event.end_time().date_time();
+
+  // Skip finished events.
+  if (end_time < now)
+    return false;
+
+  // Skip ongoing events 1.5 hours after the start time.
+  if (start_time <= now && now - start_time >= base::Hours(1.5))
+    return false;
+
+  // Skip all-day events.
+  if (IsAllDayEvent(event))
+    return false;
+
+  return true;
+}
+
+bool EventComparator(const CalendarEvent& a, const CalendarEvent& b) {
+  const auto& a_start_time = a.start_time().date_time();
+  const auto& a_end_time = a.end_time().date_time();
+  const auto& b_start_time = b.start_time().date_time();
+  const auto& b_end_time = b.end_time().date_time();
+
+  // If `a` and `b` have the same start and end time, then they are ordered
+  // alphabetically.
+  if (a_start_time == b_start_time && a_end_time == b_end_time)
+    return a.summary() < b.summary();
+
+  // If `a` and `b` have the same start time, then they are ordered based on
+  // duration (longer events ordered first).
+  if (a_start_time == b_start_time)
+    return a_end_time - a_start_time > b_end_time - b_start_time;
+
+  // Default ordering by start time.
+  return a_start_time < b_start_time;
+}
+
+}  // namespace
 
 // TODO(crbug.com/1353495): file-level todo list:
 // - update existing `CalendarModel` and `CalendarEventFetch` to support 1-day
@@ -56,6 +115,14 @@ void GlanceablesUpNextView::OnEventsFetched(
     const google_apis::calendar::EventList* fetched_events) {
   calendar_model_->RemoveObserver(this);
 
+  const SingleDayEventList up_next_events = GetUpNextEvents();
+  if (!up_next_events.empty())
+    CreateEventsListView(up_next_events);
+  else
+    AddNoEventsLabel();
+}
+
+SingleDayEventList GlanceablesUpNextView::GetUpNextEvents() {
   const base::Time now = base::Time::Now();
   const base::Time midnight =
       (now + calendar_utils::GetTimeDifference(now)).UTCMidnight();
@@ -64,16 +131,11 @@ void GlanceablesUpNextView::OnEventsFetched(
 
   SingleDayEventList up_next_events;
   for (const auto& event : all_todays_events) {
-    if (event.start_time().date_time() >= now ||
-        event.end_time().date_time() >= now) {
+    if (ShouldShowEvent(event))
       up_next_events.push_back(event);
-    }
   }
-
-  if (!up_next_events.empty())
-    CreateEventsListView(up_next_events);
-  else
-    AddNoEventsLabel();
+  up_next_events.sort(&EventComparator);
+  return up_next_events;
 }
 
 void GlanceablesUpNextView::CreateEventsListView(

@@ -5,7 +5,6 @@
 #ifndef ASH_GLANCEABLES_GLANCEABLES_UP_NEXT_VIEW_H_
 #define ASH_GLANCEABLES_GLANCEABLES_UP_NEXT_VIEW_H_
 
-#include <tuple>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -50,6 +49,7 @@ class ASH_EXPORT GlanceablesUpNextView : public views::View,
  private:
   friend class GlanceablesTest;
 
+  SingleDayEventList GetUpNextEvents();
   void CreateEventsListView(const SingleDayEventList& events);
   void AddNoEventsLabel();
 

@@ -28,6 +28,7 @@ class ASH_EXPORT GlanceablesUpNextEventItemView : public views::Button {
   ~GlanceablesUpNextEventItemView() override = default;
 
   views::Label* event_title_label_for_test() { return event_title_label_; }
+  views::Label* event_time_label_for_test() { return event_time_label_; }
 
  private:
   friend class GlanceablesTest;
