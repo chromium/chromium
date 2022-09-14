@@ -77037,6 +77037,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3"
       label="Note changed from non-empty to empty from the password edit
              dialog in settings"/>
+  <int value="4" label="Note did not change"/>
 </enum>
 
 <enum name="PasswordProtectionInterstitialStringType">

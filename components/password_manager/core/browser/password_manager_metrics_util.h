@@ -570,7 +570,9 @@ enum class PasswordNoteAction {
   // Note changed from non-empty to empty from the password edit dialog in
   // settings.
   kNoteRemovedInEditDialog = 3,
-  kMaxValue = kNoteRemovedInEditDialog,
+  // Note did not change.
+  kNoteNotChanged = 4,
+  kMaxValue = kNoteNotChanged,
 };
 
 std::string GetPasswordAccountStorageUserStateHistogramSuffix(

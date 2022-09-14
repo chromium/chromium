@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -25,6 +26,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -365,10 +367,16 @@ SavedPasswordsPresenter::EditSavedCredentials(
       new_form.password_issues.clear();
     }
 
-    if (note_changed) {
-      PasswordNoteAction note_action =
-          UpdateNoteInPasswordForm(new_form, updated_credential.note);
-      metrics_util::LogPasswordNoteActionInSettings(note_action);
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordNotes)) {
+      if (note_changed) {
+        PasswordNoteAction note_action =
+            UpdateNoteInPasswordForm(new_form, updated_credential.note);
+        metrics_util::LogPasswordNoteActionInSettings(note_action);
+      } else {
+        metrics_util::LogPasswordNoteActionInSettings(
+            PasswordNoteAction::kNoteNotChanged);
+      }
     }
 
     // An updated username implies a change in the primary key, thus we need
