@@ -106,7 +106,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         listModel.set(SuggestionListProperties.OBSERVER, mMediator);
 
         ViewProvider<SuggestionListViewHolder> viewProvider =
-                createViewProvider(context, listItems);
+                createViewProvider(context, listItems, locationBarDataProvider);
         viewProvider.whenLoaded((holder) -> { mDropdown = holder.dropdown; });
         LazyConstructionPropertyMcp.create(listModel, SuggestionListProperties.VISIBLE,
                 viewProvider, SuggestionListViewBinder::bind);
@@ -131,8 +131,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         }
     }
 
-    private ViewProvider<SuggestionListViewHolder> createViewProvider(
-            Context context, MVCListAdapter.ModelList modelList) {
+    private ViewProvider<SuggestionListViewHolder> createViewProvider(Context context,
+            MVCListAdapter.ModelList modelList, LocationBarDataProvider locationBarDataProvider) {
         return new ViewProvider<SuggestionListViewHolder>() {
             private List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
             private SuggestionListViewHolder mHolder;
@@ -141,7 +141,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             public void inflate() {
                 OmniboxSuggestionsDropdown dropdown;
                 try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    dropdown = new OmniboxSuggestionsDropdown(context);
+                    dropdown = new OmniboxSuggestionsDropdown(context, locationBarDataProvider);
                 }
 
                 // Start with visibility GONE to ensure that show() is called.

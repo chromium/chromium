@@ -15,6 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -22,6 +23,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,10 +37,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
@@ -47,6 +53,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -196,6 +203,33 @@ public class ToolbarPhoneTest {
             float offsetWhenButtonInvisible = mToolbar.getLocationBarWidthOffsetForOptionalButton();
             Assert.assertNotEquals("Offset should be different when menu button is invisible",
                     offsetWhenButtonInvisible, offsetWhenParentVisible);
+        });
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    public void testToolbarColorSameAsSuggestionColorWhenFocus() {
+        LocationBarCoordinator locationBarCoordinator =
+                (LocationBarCoordinator) mToolbar.getLocationBar();
+        ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
+
+        // Focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().requestFocus();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(toolbarBackgroundDrawable.getColor(),
+                    Matchers.is(locationBarCoordinator.getSuggestionsStandardBackgroundColor()));
+        });
+
+        // Clear focus on the Omnibox
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(toolbarBackgroundDrawable.getColor(),
+                    Matchers.not(locationBarCoordinator.getSuggestionsStandardBackgroundColor()));
         });
     }
 

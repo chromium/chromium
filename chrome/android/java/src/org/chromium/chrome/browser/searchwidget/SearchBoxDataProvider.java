@@ -12,6 +12,7 @@ import androidx.annotation.ColorRes;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
@@ -21,6 +22,8 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private final @ColorInt int mPrimaryColor;
+    private final @ColorInt int mSuggestionStandardBgColor;
+    private final @ColorInt int mSuggestionIncognitoBgColor;
     private boolean mIsFromQuickActionSearchWidget;
     private Tab mTab;
 
@@ -31,6 +34,9 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     SearchBoxDataProvider(Context context) {
         mIsFromQuickActionSearchWidget = false;
         mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito());
+        mSuggestionStandardBgColor = ChromeColors.getSurfaceColor(
+                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+        mSuggestionIncognitoBgColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
     }
 
     /**
@@ -135,6 +141,16 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public int getSecurityIconContentDescriptionResourceId() {
         return 0;
+    }
+
+    @Override
+    public int getSuggestionsStandardBackgroundColor() {
+        return mSuggestionStandardBgColor;
+    }
+
+    @Override
+    public int getSuggestionsIncognitoBackgroundColor() {
+        return mSuggestionIncognitoBgColor;
     }
 
     void setIsFromQuickActionSearchWidget(boolean isFromQuickActionsWidget) {

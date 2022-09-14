@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -171,7 +172,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * Constructs a new list designed for containing omnibox suggestions.
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(@NonNull Context context) {
+    public OmniboxSuggestionsDropdown(
+            @NonNull Context context, @NonNull LocationBarDataProvider locationBarDataProvider) {
         super(context, null, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -205,11 +207,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         ViewCompat.setPaddingRelative(this, paddingSide, 0, paddingSide, paddingBottom);
 
         mStandardBgColor = shouldShowModernizeVisualUpdate
-                ? ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation)
+                ? locationBarDataProvider.getSuggestionsStandardBackgroundColor()
                 : ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoBgColor = shouldShowModernizeVisualUpdate
-                ? context.getColor(R.color.omnibox_dropdown_bg_incognito)
+                ? locationBarDataProvider.getSuggestionsIncognitoBackgroundColor()
                 : ChromeColors.getDefaultThemeColor(context, true);
     }
 

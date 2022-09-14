@@ -569,6 +569,16 @@ public class RecognitionTestHelper {
         public int getSecurityIconContentDescriptionResourceId() {
             return 0;
         }
+
+        @Override
+        public int getSuggestionsStandardBackgroundColor() {
+            return 0;
+        }
+
+        @Override
+        public int getSuggestionsIncognitoBackgroundColor() {
+            return 0;
+        }
     }
 
     /**

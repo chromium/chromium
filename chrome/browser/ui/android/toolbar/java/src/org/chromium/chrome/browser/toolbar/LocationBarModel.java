@@ -165,6 +165,8 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     private Tab mTab;
     private int mPrimaryColor;
+    private int mSuggestionsStandardBgColor;
+    private int mSuggestionsIncognitoBgColor;
     private LayoutStateProvider mLayoutStateProvider;
 
     private boolean mIsIncognito;
@@ -197,6 +199,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         mOfflineStatus = offlineStatus;
         mPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
         mSearchEngineLogoUtils = searchEngineLogoUtils;
+        mSuggestionsStandardBgColor = ChromeColors.getSurfaceColor(
+                mContext, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+        mSuggestionsIncognitoBgColor = mContext.getColor(R.color.omnibox_dropdown_bg_incognito);
     }
 
     /**
@@ -605,6 +610,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     @StringRes
     public int getSecurityIconContentDescriptionResourceId() {
         return SecurityStatusIcon.getSecurityIconContentDescriptionResourceId(getSecurityLevel());
+    }
+
+    @Override
+    public int getSuggestionsStandardBackgroundColor() {
+        return mSuggestionsStandardBgColor;
+    }
+
+    @Override
+    public int getSuggestionsIncognitoBackgroundColor() {
+        return mSuggestionsIncognitoBgColor;
     }
 
     @VisibleForTesting

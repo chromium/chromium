@@ -143,6 +143,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     protected ImageView mToolbarShadow;
     private OptionalButtonCoordinator mOptionalButton;
     private boolean mOptionalButtonUsesTint;
+    private boolean mShouldShowModernizeVisualUpdate;
 
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
@@ -286,7 +287,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
-        final int edgePaddingRes = OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+        mShouldShowModernizeVisualUpdate = OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
+        final int edgePaddingRes = mShouldShowModernizeVisualUpdate
                 ? R.dimen.toolbar_edge_padding_modern
                 : R.dimen.toolbar_edge_padding;
         mToolbarSidePadding = getResources().getDimensionPixelOffset(edgePaddingRes);
@@ -383,6 +385,17 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private int getLocationBarColorForToolbarColor(int toolbarColor) {
         return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                 getContext(), toolbarColor, isIncognito());
+    }
+
+    /**
+     * Get the toolbar default color depending on the toolbar's status.
+     */
+    private int getToolbarDefaultColor() {
+        if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
+            return isIncognito() ? mLocationBar.getSuggestionsIncognitoBackgroundColor()
+                                 : mLocationBar.getSuggestionsStandardBackgroundColor();
+        }
+        return ChromeColors.getDefaultThemeColor(getContext(), isIncognito());
     }
 
     private void inflateTabSwitchingResources() {
@@ -1019,7 +1032,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             // Only transition theme colors if in static tab mode that is not the NTP. In practice
             // this only runs when you focus the omnibox on a web page.
             if (!isLocationBarShownInNTP() && mTabSwitcherState == STATIC_TAB) {
-                int defaultColor = ChromeColors.getDefaultThemeColor(getContext(), isIncognito());
+                int defaultColor = getToolbarDefaultColor();
                 int defaultLocationBarColor = getLocationBarColorForToolbarColor(defaultColor);
                 int primaryColor = getToolbarDataProvider().getPrimaryColor();
                 int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);

@@ -131,4 +131,10 @@ public interface LocationBarDataProvider {
     /** Returns the resource ID of the content description for the security icon. */
     @StringRes
     int getSecurityIconContentDescriptionResourceId();
+
+    /** Returns the standard color to use for the suggestrions background.*/
+    int getSuggestionsStandardBackgroundColor();
+
+    /** Returns the incognito color to use for the suggestrions background.*/
+    int getSuggestionsIncognitoBackgroundColor();
 }

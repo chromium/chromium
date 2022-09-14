@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static junit.framework.Assert.assertEquals;
 
+import static org.mockito.Mockito.doReturn;
+
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
@@ -17,11 +19,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -33,8 +39,16 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxSuggestionsDropdownUnitTest {
+    private static final int COLOR_STANDARD = 0;
+    private static final int COLOR_INCOGNITO = 1;
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    private LocationBarDataProvider mLocationBarDataProvider;
 
     private Context mContext;
 
@@ -44,6 +58,12 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void setUp() {
         mContext = new ContextThemeWrapper(
                 ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        doReturn(COLOR_STANDARD)
+                .when(mLocationBarDataProvider)
+                .getSuggestionsStandardBackgroundColor();
+        doReturn(COLOR_INCOGNITO)
+                .when(mLocationBarDataProvider)
+                .getSuggestionsIncognitoBackgroundColor();
     }
 
     @Test
@@ -56,12 +76,10 @@ public class OmniboxSuggestionsDropdownUnitTest {
             "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
     public void
     testBackgroundColor_withOmniboxModernizeVisualUpdateFlags() {
-        mDropdown = new OmniboxSuggestionsDropdown(mContext);
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, mLocationBarDataProvider);
 
-        assertEquals(mDropdown.getStandardBgColor(),
-                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
-        assertEquals(mDropdown.getIncognitoBgColor(),
-                mContext.getColor(R.color.default_bg_color_dark_elev_1_baseline));
+        assertEquals(mDropdown.getStandardBgColor(), COLOR_STANDARD);
+        assertEquals(mDropdown.getIncognitoBgColor(), COLOR_INCOGNITO);
     }
 
     @Test
@@ -69,7 +87,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Feature("Omnibox")
     @DisableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     public void testBackgroundColor_withoutOmniboxModernizeVisualUpdateFlags() {
-        mDropdown = new OmniboxSuggestionsDropdown(mContext);
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, mLocationBarDataProvider);
 
         assertEquals(
                 mDropdown.getStandardBgColor(), ChromeColors.getDefaultThemeColor(mContext, false));

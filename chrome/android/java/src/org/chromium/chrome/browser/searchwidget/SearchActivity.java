@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -512,6 +513,8 @@ public class SearchActivity extends AsyncInitializationActivity
                     getResources().getDimensionPixelOffset(R.dimen.toolbar_edge_padding_modern);
             toolbarView.setPaddingRelative(edgePadding, toolbarView.getPaddingTop(), edgePadding,
                     toolbarView.getPaddingBottom());
+            toolbarView.setBackground(new ColorDrawable(
+                    mSearchBoxDataProvider.getSuggestionsStandardBackgroundColor()));
         }
         return contentView;
     }
