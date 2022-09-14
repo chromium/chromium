@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,27 +35,11 @@ void ExpectEqual(const DesktopRect& rect1, const DesktopRect& rect2) {
 
 namespace remoting {
 
-TEST(X11CrtcResizerTest, ResizeInPlace) {
-  X11CrtcResizer resizer(nullptr, nullptr);
-  resizer.SetCrtcsForTest({
-      {.x = 0, .y = 0, .width = 100, .height = 100},
-      {.x = 100, .y = 100, .width = 100, .height = 100},
-  });
-
-  resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {10, 20});
-  resizer.UpdateActiveCrtcs(Crtc(2), Mode(0), {30, 40});
-
-  auto result = resizer.GetCrtcsForTest();
-  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 10, 20));
-  ExpectEqual(result[1], DesktopRect::MakeXYWH(100, 100, 30, 40));
-}
-
-TEST(X11CrtcResizerTest, ShiftToMakeRoom) {
+TEST(X11CrtcResizerTest, ShiftToMakeRoomHorizontally) {
   X11CrtcResizer resizer(nullptr, nullptr);
   resizer.SetCrtcsForTest({
       {.x = 0, .y = 0, .width = 100, .height = 100},
       {.x = 100, .y = 0, .width = 100, .height = 100},
-      {.x = 0, .y = 100, .width = 100, .height = 100},
   });
 
   resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {300, 200});
@@ -63,7 +47,65 @@ TEST(X11CrtcResizerTest, ShiftToMakeRoom) {
   auto result = resizer.GetCrtcsForTest();
   ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 300, 200));
   ExpectEqual(result[1], DesktopRect::MakeXYWH(300, 0, 100, 100));
-  ExpectEqual(result[2], DesktopRect::MakeXYWH(0, 200, 100, 100));
+}
+
+TEST(X11CrtcResizerTest, ShiftToMakeRoomVertically) {
+  X11CrtcResizer resizer(nullptr, nullptr);
+  resizer.SetCrtcsForTest({
+      {.x = 0, .y = 0, .width = 100, .height = 100},
+      {.x = 0, .y = 100, .width = 100, .height = 100},
+  });
+
+  resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {300, 200});
+
+  auto result = resizer.GetCrtcsForTest();
+  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 300, 200));
+  ExpectEqual(result[1], DesktopRect::MakeXYWH(0, 200, 100, 100));
+}
+
+TEST(X11CrtcResizerTest, HorizontalLayoutPreferred) {
+  X11CrtcResizer resizer(nullptr, nullptr);
+  // Simple diagonal placement, neither horizontal nor vertical.
+  resizer.SetCrtcsForTest({
+      {.x = 0, .y = 100, .width = 50, .height = 50},
+      {.x = 100, .y = 0, .width = 50, .height = 50},
+  });
+
+  resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {60, 60});
+
+  auto result = resizer.GetCrtcsForTest();
+  // 1st monitor should be moved up to the origin and resized. 2nd monitor
+  // should be placed to its right.
+  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 60, 60));
+  ExpectEqual(result[1], DesktopRect::MakeXYWH(60, 0, 50, 50));
+}
+
+TEST(X11CrtcResizerTest, RightAlignmentKept) {
+  X11CrtcResizer resizer(nullptr, nullptr);
+  resizer.SetCrtcsForTest({
+      {.x = 50, .y = 0, .width = 50, .height = 50},
+      {.x = 0, .y = 100, .width = 100, .height = 100},
+  });
+
+  resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {200, 200});
+
+  auto result = resizer.GetCrtcsForTest();
+  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 200, 200));
+  ExpectEqual(result[1], DesktopRect::MakeXYWH(100, 200, 100, 100));
+}
+
+TEST(X11CrtcResizerTest, BottomAlignmentKept) {
+  X11CrtcResizer resizer(nullptr, nullptr);
+  resizer.SetCrtcsForTest({
+      {.x = 0, .y = 50, .width = 50, .height = 50},
+      {.x = 100, .y = 0, .width = 100, .height = 100},
+  });
+
+  resizer.UpdateActiveCrtcs(Crtc(1), Mode(0), {200, 200});
+
+  auto result = resizer.GetCrtcsForTest();
+  ExpectEqual(result[0], DesktopRect::MakeXYWH(0, 0, 200, 200));
+  ExpectEqual(result[1], DesktopRect::MakeXYWH(200, 100, 100, 100));
 }
 
 }  // namespace remoting

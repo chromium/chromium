@@ -4,6 +4,7 @@
 
 #include "remoting/host/x11_crtc_resizer.h"
 
+#include <iterator>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -120,53 +121,11 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
 
 void X11CrtcResizer::RelayoutCrtcs(CrtcInfo& crtc_to_resize,
                                    const webrtc::DesktopSize& new_size) {
-  if (new_size.width() > crtc_to_resize.width) {
-    // CRTCs beyond the old right edge may need to be pushed out of the way.
-    // Loop over these CRTCs and find the amount of adjustment needed for each
-    // CRTC. The final adjustment will be the max of these, and the same amount
-    // will be applied to every CRTC (beyond the old right edge), to avoid
-    // introducing any new overlaps.
-    int16_t old_right_edge = crtc_to_resize.x + crtc_to_resize.width;
-    int16_t new_right_edge = crtc_to_resize.x + new_size.width();
-    int16_t x_adjustment = 0;
-    for (auto& active_crtc : active_crtcs_) {
-      // Only consider CRTCs whose left edges lie between these values.
-      if (active_crtc.x >= old_right_edge && active_crtc.x < new_right_edge) {
-        int16_t adjustment = new_right_edge - active_crtc.x;
-        x_adjustment = std::max(x_adjustment, adjustment);
-      }
-    }
-    if (x_adjustment > 0) {
-      for (auto& active_crtc : active_crtcs_) {
-        if (active_crtc.x >= old_right_edge) {
-          active_crtc.x += x_adjustment;
-        }
-      }
-    }
+  if (LayoutIsVertical()) {
+    PackVertically(new_size);
+  } else {
+    PackHorizontally(new_size);
   }
-
-  if (new_size.height() > crtc_to_resize.height) {
-    // Apply the same algorithm as above, but using heights and y-offsets.
-    int16_t old_bottom_edge = crtc_to_resize.y + crtc_to_resize.height;
-    int16_t new_bottom_edge = crtc_to_resize.y + new_size.height();
-    int16_t y_adjustment = 0;
-    for (auto& active_crtc : active_crtcs_) {
-      if (active_crtc.y >= old_bottom_edge && active_crtc.y < new_bottom_edge) {
-        int16_t adjustment = new_bottom_edge - active_crtc.y;
-        y_adjustment = std::max(y_adjustment, adjustment);
-      }
-    }
-    if (y_adjustment > 0) {
-      for (auto& active_crtc : active_crtcs_) {
-        if (active_crtc.y >= old_bottom_edge) {
-          active_crtc.y += y_adjustment;
-        }
-      }
-    }
-  }
-
-  crtc_to_resize.width = new_size.width();
-  crtc_to_resize.height = new_size.height();
 }
 
 void X11CrtcResizer::DisableChangedCrtcs() {
@@ -240,6 +199,97 @@ void X11CrtcResizer::NormalizeCrtcs() {
   for (auto& crtc : active_crtcs_) {
     crtc.x += adjustment.x();
     crtc.y += adjustment.y();
+  }
+}
+
+bool X11CrtcResizer::LayoutIsVertical() const {
+  if (active_crtcs_.size() <= 1)
+    return false;
+
+  // For simplicity, just pick 2 CRTCs arbitrarily.
+  auto iter1 = active_crtcs_.begin();
+  auto iter2 = std::next(iter1);
+
+  // The cases:
+  // --[---]--------
+  // --------[---]--
+  // and:
+  // --------[---]--
+  // --[---]--------
+  // are not vertically stacked. The case where the CRTCs are exactly touching
+  // is also not vertically stacked, because it comes from a horizontal
+  // packing of CRTCs:
+  // --[---]-------
+  // -------[---]--
+  // All other cases have overlapping projections so they are considered
+  // vertically stacked.
+  auto left1 = iter1->x;
+  auto right1 = iter1->x + iter1->width;
+  auto left2 = iter2->x;
+  auto right2 = iter2->x + iter2->width;
+
+  return right1 > left2 && right2 > left1;
+}
+
+void X11CrtcResizer::PackVertically(const webrtc::DesktopSize& new_size) {
+  // Before applying the new size, test if right-alignment should be
+  // preserved.
+  DCHECK(!active_crtcs_.empty());
+  bool is_left_aligned = true;
+  bool is_right_aligned = true;
+  auto first_crtc_left = active_crtcs_.front().x;
+  auto first_crtc_right = first_crtc_left + active_crtcs_.front().width;
+  for (const auto& crtc_info : active_crtcs_) {
+    if (crtc_info.x != first_crtc_left) {
+      is_left_aligned = false;
+    }
+    if (crtc_info.x + crtc_info.width != first_crtc_right) {
+      is_right_aligned = false;
+    }
+  }
+
+  bool keep_right_alignment = is_right_aligned && !is_left_aligned;
+
+  // Apply the new size.
+  for (auto& crtc_info : active_crtcs_) {
+    if (crtc_info.crtc == resized_crtc_) {
+      crtc_info.width = new_size.width();
+      crtc_info.height = new_size.height();
+      break;
+    }
+  }
+
+  // Sort vertically before packing.
+  base::ranges::sort(active_crtcs_, std::less<>(), &CrtcInfo::y);
+
+  // Pack the CRTCs by setting their y-offsets. If necessary, change the
+  // x-offset for right-alignment.
+  int current_y = 0;
+  for (auto& crtc_info : active_crtcs_) {
+    crtc_info.y = current_y;
+    current_y += crtc_info.height;
+
+    // Place all monitors left-aligned or right-aligned.
+    // TODO(crbug.com/1326339): Implement a more sophisticated algorithm that
+    // tries to preserve pairwise alignment. It is not enough to leave the
+    // x-offsets unchanged here - this tends to result in the monitors being
+    // arranged roughly diagonally, wasting lots of space. Some amount of
+    // horizontal compression is needed to prevent this from happening.
+    crtc_info.x = keep_right_alignment ? -crtc_info.width : 0;
+  }
+}
+
+void X11CrtcResizer::PackHorizontally(const webrtc::DesktopSize& new_size) {
+  webrtc::DesktopSize new_size_transposed(new_size.height(), new_size.width());
+  Transpose();
+  PackVertically(new_size_transposed);
+  Transpose();
+}
+
+void X11CrtcResizer::Transpose() {
+  for (auto& crtc_info : active_crtcs_) {
+    std::swap(crtc_info.x, crtc_info.y);
+    std::swap(crtc_info.width, crtc_info.height);
   }
 }
 

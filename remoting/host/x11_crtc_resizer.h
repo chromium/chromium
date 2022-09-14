@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_X11_CRTC_RESIZER_H_
 #define REMOTING_HOST_X11_CRTC_RESIZER_H_
 
-#include <list>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -129,6 +128,23 @@ class X11CrtcResizer {
   // new bounding-box's top-left corner is at (0, 0).
   void NormalizeCrtcs();
 
+  // Returns true if the CRTCs appear to be roughly laid out vertically.
+  bool LayoutIsVertical() const;
+
+  // Stacks the CRTCs vertically without gaps. The CRTC being resized should
+  // have the old width/height, so that right-alignment can be detected and
+  // preserved. If they are not all right-aligned, this will position the
+  // monitors against the left edge of the desktop.
+  // On return, the CRTC being resized will have the new width/height.
+  void PackVertically(const webrtc::DesktopSize& new_size);
+
+  // Behaves similarly, but stacks the CRTCs horizontally.
+  void PackHorizontally(const webrtc::DesktopSize& new_size);
+
+  // Transposes all the CRTCs by swapping x and y coordinates. This allows
+  // the vertical layout code to be re-used for horizontal layout.
+  void Transpose();
+
   raw_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
   raw_ptr<x11::RandR> randr_;
 
@@ -139,7 +155,7 @@ class X11CrtcResizer {
   // CRTCs. If a CRTC needs to be disabled temporarily, the list entry will be
   // preserved so that the CRTC can be re-enabled with the original and new
   // properties.
-  std::list<CrtcInfo> active_crtcs_;
+  std::vector<CrtcInfo> active_crtcs_;
 
   // Stores the CRTC being resized. This is needed so that ApplyActiveCrtcs()
   // will set this CRTC's new size in the X server, even if its xy-offsets are
