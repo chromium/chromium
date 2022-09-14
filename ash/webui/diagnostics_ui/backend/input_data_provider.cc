@@ -8,7 +8,9 @@
 #include <linux/input.h>
 #include <vector>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/ranges/algorithm.h"
@@ -257,6 +259,7 @@ InputDataProvider::InputDataProvider(
 }
 
 InputDataProvider::~InputDataProvider() {
+  BlockShortcuts(/*should_block=*/false);
   device_manager_->RemoveObserver(this);
   widget_->RemoveObserver(this);
 }
@@ -343,11 +346,24 @@ void InputDataProvider::UpdateEventObservers() {
   UpdateMaySendEvents();
 
   if (previous != may_send_events_) {
+    // If there are no observers, then we never want to block shortcuts.
+    // If there are observers, then we want to block when we are going to send
+    // events.
+    if (!keyboard_observers_.empty()) {
+      BlockShortcuts(may_send_events_);
+    }
+
     if (!may_send_events_)
       SendPauseEvents();
     else
       SendResumeEvents();
   }
+}
+
+void InputDataProvider::BlockShortcuts(bool should_block) {
+  auto* accelerator_controller = Shell::Get()->accelerator_controller();
+  DCHECK(accelerator_controller);
+  accelerator_controller->SetPreventProcessingAccelerators(should_block);
 }
 
 void InputDataProvider::ForwardKeyboardInput(uint32_t id) {
@@ -357,6 +373,8 @@ void InputDataProvider::ForwardKeyboardInput(uint32_t id) {
     return;
   }
 
+  // If we are going to send keyboard events, we need to block shortcuts
+  BlockShortcuts(may_send_events_);
   keyboard_watchers_[id] =
       watcher_factory_->MakeWatcher(id, weak_factory_.GetWeakPtr());
 }
@@ -369,6 +387,10 @@ void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
   if (!keyboard_watchers_.erase(id)) {
     LOG(ERROR) << "Couldn't find keyboard watcher with ID " << id
                << " when trying to unforward input.";
+  }
+  // If there are no more watchers, unblock shortcuts
+  if (keyboard_watchers_.empty()) {
+    BlockShortcuts(/*should_block=*/false);
   }
 }
 

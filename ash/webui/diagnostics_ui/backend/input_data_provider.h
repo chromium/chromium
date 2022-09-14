@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_touch.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
@@ -26,8 +27,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
 
 // Interfaces for watching and dispatching relevant events from evdev to the
 // input_data_provider.
@@ -155,6 +155,8 @@ class InputDataProvider : public mojom::InputDataProvider,
   void SendPauseEvents();
   void SendResumeEvents();
 
+  void BlockShortcuts(bool should_block);
+
   InputDataProviderKeyboard keyboard_helper_;
   InputDataProviderTouch touch_helper_;
 
@@ -195,7 +197,6 @@ class InputDataProvider : public mojom::InputDataProvider,
   base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics
 
 #endif  // ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_INPUT_DATA_PROVIDER_H_

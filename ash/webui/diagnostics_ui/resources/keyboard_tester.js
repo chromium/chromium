@@ -92,6 +92,11 @@ const standardNumberPadCodes = new Set([
 Polymer({
   is: 'keyboard-tester',
 
+  created: function() {
+    this.addEventListener('keydown', this.onKeyDown.bind(this));
+    this.addEventListener('keyup', this.onKeyUp.bind(this));
+  },
+
   _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior],
@@ -266,6 +271,21 @@ Polymer({
     this.$.dialog.showModal();
   },
 
+  onKeyUp(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
+  onKeyDown(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // If we receive alt + esc we should close the app
+    if (e.altKey && e.key === 'Escape') {
+      this.close();
+    }
+  },
+
   /**
    * Returns whether the tester is currently open.
    * @return {boolean}
@@ -275,11 +295,14 @@ Polymer({
   },
 
   close() {
+    this.$$('#diagram').clearPressedKeys();
     this.$.dialog.close();
   },
 
   handleClose() {
-    this.receiver_.$.close();
+    if (this.receiver_) {
+      this.receiver_.$.close();
+    }
   },
 
   /**

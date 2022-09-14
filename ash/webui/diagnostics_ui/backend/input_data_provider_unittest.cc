@@ -9,6 +9,10 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_suite.h"
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -476,20 +480,23 @@ class TestInputDataProvider : public InputDataProvider {
   watchers_t& watchers_;
 };
 
-class InputDataProviderTest : public views::ViewsTestBase {
+class InputDataProviderTest : public AshTestBase {
  public:
   InputDataProviderTest()
-      : views::ViewsTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                content::BrowserTaskEnvironment::MainThreadType::UI,
-                content::BrowserTaskEnvironment::TimeSource::MOCK_TIME))) {}
+      : AshTestBase(content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  InputDataProviderTest(const InputDataProviderTest&) = delete;
+  InputDataProviderTest& operator=(const InputDataProviderTest&) = delete;
+  ~InputDataProviderTest() override = default;
 
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
-
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitAndEnableFeature(
         features::kEnableExternalKeyboardsInDiagnostics);
+
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    AshTestBase::SetUp();
 
     // Note: some init for creating widgets is performed in base SetUp
     // instead of the constructor, so our init must also be delayed until SetUp,
@@ -520,11 +527,22 @@ class InputDataProviderTest : public views::ViewsTestBase {
     UdevAddFakeDeviceCapabilities("/dev/input/event11", device_caps);
   }
 
-  InputDataProviderTest(const InputDataProviderTest&) = delete;
-  InputDataProviderTest& operator=(const InputDataProviderTest&) = delete;
-  ~InputDataProviderTest() override {
+  void TearDown() override {
     provider_.reset();
     base::RunLoop().RunUntilIdle();
+    AshTestBase::TearDown();
+  }
+
+  bool OpenAndCloseLauncher() {
+    const auto launcher_accelerator =
+        ui::Accelerator(ui::VKEY_ALL_APPLICATIONS, ui::EF_NONE,
+                        ui::Accelerator::KeyState::PRESSED);
+
+    // Open and close the launcher
+    return Shell::Get()->accelerator_controller()->AcceleratorPressed(
+               launcher_accelerator) &&
+           Shell::Get()->accelerator_controller()->AcceleratorPressed(
+               launcher_accelerator);
   }
 
  protected:
@@ -1536,6 +1554,105 @@ TEST_F(InputDataProviderTest, KeyObservationObeysFocusSwitching) {
                             /*key_code=*/kKeyB.key_code,
                             /*scan_code=*/kKeyB.at_scan_code,
                             /*top_row_position=*/-1));
+}
+
+TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocus) {
+  const std::string kDevicePath("/dev/input/event6");
+  const uint32_t kDeviceId = 6u;
+
+  std::unique_ptr<FakeKeyboardObserver> fake_observer =
+      std::make_unique<FakeKeyboardObserver>();
+
+  provider_->attached_widget_->Deactivate();
+  provider_->attached_widget_->Hide();
+
+  const ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath(kDevicePath));
+  provider_->OnDeviceEvent(event0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(OpenAndCloseLauncher());
+
+  // If widget is in focus, ObserveKeyEvents should block shortcuts, however
+  // since the widget is not in focus, it does not block
+  provider_->ObserveKeyEvents(
+      kDeviceId, fake_observer->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(OpenAndCloseLauncher());
+}
+
+TEST_F(InputDataProviderTest, ShortcutBlockingObeysFocusSwitching) {
+  const std::string kDevicePath("/dev/input/event6");
+  const uint32_t kDeviceId = 6u;
+
+  std::unique_ptr<FakeKeyboardObserver> fake_observer =
+      std::make_unique<FakeKeyboardObserver>();
+
+  provider_->attached_widget_->Show();
+
+  const ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath(kDevicePath));
+  provider_->OnDeviceEvent(event0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(OpenAndCloseLauncher());
+
+  // If widget is in focus, ObserveKeyEvents should block shortcuts
+  provider_->ObserveKeyEvents(
+      kDeviceId, fake_observer->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(OpenAndCloseLauncher());
+
+  // Hide widget and check that we can use shortcuts
+  provider_->attached_widget_->Hide();
+  EXPECT_TRUE(OpenAndCloseLauncher());
+
+  // Show widget and check that shortcuts are blocked
+  provider_->attached_widget_->Show();
+  EXPECT_FALSE(OpenAndCloseLauncher());
+}
+
+TEST_F(InputDataProviderTest, ShortcutBlockingObeysLastObserverDisconnect) {
+  const std::string kDevicePath("/dev/input/event6");
+  const uint32_t kDeviceId = 6u;
+
+  std::unique_ptr<FakeKeyboardObserver> fake_observer1 =
+      std::make_unique<FakeKeyboardObserver>();
+  std::unique_ptr<FakeKeyboardObserver> fake_observer2 =
+      std::make_unique<FakeKeyboardObserver>();
+
+  provider_->attached_widget_->Show();
+  provider_->attached_widget_->Activate();
+
+  // Shortcuts are still available after device is added
+  const ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath(kDevicePath));
+  provider_->OnDeviceEvent(event0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(OpenAndCloseLauncher());
+
+  // If widget is in focus, ObserveKeyEvents should block shortcuts
+  provider_->ObserveKeyEvents(
+      kDeviceId, fake_observer1->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(OpenAndCloseLauncher());
+
+  // When second observer is added, shortcuts should still be blocked
+  provider_->ObserveKeyEvents(
+      kDeviceId, fake_observer2->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(OpenAndCloseLauncher());
+
+  // When first observer is destroyed, shortcuts should still be blocked
+  fake_observer1.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(OpenAndCloseLauncher());
+
+  // After second observer is destroyed, shortcuts should be unblocked
+  fake_observer2.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(OpenAndCloseLauncher());
 }
 
 // Test overlapping lifetimes of separate observers of one device.
