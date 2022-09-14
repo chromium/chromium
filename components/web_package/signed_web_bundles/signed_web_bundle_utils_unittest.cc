@@ -11,10 +11,10 @@ namespace web_package {
 namespace {
 
 constexpr uint8_t kFakeUnsignedWebBundleHash[] = {0x01, 0x02, 0x03};
-constexpr uint8_t kFakeIntegrityBlock[] = {0x04, 0x05, 0x06, 0x07};
-constexpr uint8_t kFakeAttributes[] = {0x08, 0x09};
+constexpr uint8_t kFakeIntegrityBlockCbor[] = {0x04, 0x05, 0x06, 0x07};
+constexpr uint8_t kFakeAttributesCbor[] = {0x08, 0x09};
 
-constexpr uint8_t kExpectedPayloadForSigning[] = {
+constexpr uint8_t kExpectedSignaturePayload[] = {
     // length
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
     // unsigned web bundle hash
@@ -31,10 +31,12 @@ constexpr uint8_t kExpectedPayloadForSigning[] = {
 }  // namespace
 
 TEST(SignedWebBundleUtilsTest, BuildSignaturePayload) {
-  auto payload = CreateSignaturePayload(kFakeUnsignedWebBundleHash,
-                                        kFakeIntegrityBlock, kFakeAttributes);
-  EXPECT_EQ(payload, std::vector(std::begin(kExpectedPayloadForSigning),
-                                 std::end(kExpectedPayloadForSigning)));
+  auto payload = CreateSignaturePayload(
+      {.unsigned_web_bundle_hash = kFakeUnsignedWebBundleHash,
+       .integrity_block_cbor = kFakeIntegrityBlockCbor,
+       .attributes_cbor = kFakeAttributesCbor});
+  EXPECT_EQ(payload, std::vector(std::begin(kExpectedSignaturePayload),
+                                 std::end(kExpectedSignaturePayload)));
 }
 
 }  // namespace web_package

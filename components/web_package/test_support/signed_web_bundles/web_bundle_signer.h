@@ -30,6 +30,8 @@ class WebBundleSigner {
   };
 
   struct KeyPair {
+    static KeyPair CreateRandom();
+
     KeyPair(base::span<const uint8_t> public_key,
             base::span<const uint8_t> private_key);
     KeyPair(const KeyPair& other);

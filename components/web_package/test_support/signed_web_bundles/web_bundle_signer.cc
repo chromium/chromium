@@ -98,7 +98,9 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
 
     // Build the payload to sign and then sign it.
     std::vector<uint8_t> payload_to_sign = CreateSignaturePayload(
-        unsigned_bundle_hash, *integrity_block, *attributes);
+        {.unsigned_web_bundle_hash = unsigned_bundle_hash,
+         .integrity_block_cbor = *integrity_block,
+         .attributes_cbor = *attributes});
 
     std::vector<uint8_t> signature(ED25519_SIGNATURE_LEN);
     CHECK_EQ(key_pair.private_key.size(),
@@ -129,6 +131,14 @@ std::vector<uint8_t> WebBundleSigner::SignBundle(
                            unsigned_bundle.end());
 
   return signed_web_bundle;
+}
+
+// static
+WebBundleSigner::KeyPair WebBundleSigner::KeyPair::CreateRandom() {
+  std::vector<uint8_t> public_key(ED25519_PUBLIC_KEY_LEN);
+  std::vector<uint8_t> private_key(ED25519_PRIVATE_KEY_LEN);
+  ED25519_keypair(public_key.data(), private_key.data());
+  return KeyPair(public_key, private_key);
 }
 
 WebBundleSigner::KeyPair::KeyPair(base::span<const uint8_t> public_key,

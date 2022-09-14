@@ -11,14 +11,20 @@
 
 namespace web_package {
 
-// Helper function to construct and correctly encode the payload from the
-// unsigned web bundle's hash, the integrity block, and the attributes of the
-// signature stack entry. The payload can then be used to verify or calculate
-// the signed web bundle's signature.
+struct SignedWebBundleSignatureData {
+  base::span<const uint8_t> unsigned_web_bundle_hash;
+  base::span<const uint8_t> integrity_block_cbor;
+  base::span<const uint8_t> attributes_cbor;
+};
+
+// Utility function to construct and correctly encode the message for signature
+// creation and verification of a signature stack entry's signature of a Signed
+// Web Bundle. The arguments are provided in a struct, so that callers of this
+// function are less likely to accidentally use the wrong order of arguments
+// when calling this function, which could lead to signatures being created or
+// verified incorrectly.
 std::vector<uint8_t> CreateSignaturePayload(
-    base::span<const uint8_t> unsigned_bundle_hash,
-    base::span<const uint8_t> integrity_block,
-    base::span<const uint8_t> signature_stack_entry_attributes);
+    const SignedWebBundleSignatureData& data);
 
 }  // namespace web_package
 

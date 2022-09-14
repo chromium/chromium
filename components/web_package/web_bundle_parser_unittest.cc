@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace web_package {
 
@@ -193,13 +192,6 @@ struct SignedWebBundleAndKeys {
   std::vector<WebBundleSigner::KeyPair> key_pairs;
 };
 
-WebBundleSigner::KeyPair CreateKeys() {
-  std::vector<uint8_t> public_key(ED25519_PUBLIC_KEY_LEN);
-  std::vector<uint8_t> private_key(ED25519_PRIVATE_KEY_LEN);
-  ED25519_keypair(public_key.data(), private_key.data());
-  return WebBundleSigner::KeyPair(public_key, private_key);
-}
-
 SignedWebBundleAndKeys SignBundle(
     const std::vector<uint8_t>& unsigned_bundle,
     WebBundleSigner::ErrorForTesting error_for_testing =
@@ -207,7 +199,7 @@ SignedWebBundleAndKeys SignBundle(
     size_t num_signatures = 1) {
   std::vector<WebBundleSigner::KeyPair> key_pairs;
   for (size_t i = 0; i < num_signatures; ++i) {
-    key_pairs.push_back(CreateKeys());
+    key_pairs.push_back(WebBundleSigner::KeyPair::CreateRandom());
   }
 
   return {
@@ -1019,7 +1011,7 @@ TEST_F(WebBundleParserTest, SignedBundleSignatureStackWithThreeEntries) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto [public_key, private_key] = CreateKeys();
+  auto [public_key, private_key] = WebBundleSigner::KeyPair::CreateRandom();
   auto bundle_and_keys =
       SignBundle(unsigned_bundle,
                  WebBundleSigner::ErrorForTesting::kInvalidSignatureLength);
@@ -1035,7 +1027,7 @@ TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureStackEntryLength) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto [public_key, private_key] = CreateKeys();
+  auto [public_key, private_key] = WebBundleSigner::KeyPair::CreateRandom();
   auto bundle_and_keys = SignBundle(
       unsigned_bundle,
       WebBundleSigner::ErrorForTesting::kAdditionalSignatureStackEntryElement);
