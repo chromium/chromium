@@ -3,6 +3,6 @@
 function createAdFrame() {
   let ad_frame = document.createElement('iframe');
   document.body.appendChild(ad_frame);
-  internals.setIsAdFrame(ad_frame);
+  internals.setIsAdFrame(ad_frame.contentDocument);
   return ad_frame;
 }

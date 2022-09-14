@@ -610,7 +610,7 @@ class Internals final : public ScriptWrappable {
 
   void generateTestReport(const String& message);
 
-  void setIsAdFrame(HTMLIFrameElement* iframe, ExceptionState& exception_state);
+  void setIsAdFrame(Document* target_doc, ExceptionState& exception_state);
 
   ReadableStream* createReadableStream(ScriptState* script_state,
                                        int32_t queueSize,

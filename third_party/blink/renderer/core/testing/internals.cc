@@ -3839,20 +3839,23 @@ void Internals::generateTestReport(const String& message) {
   ReportingContext::From(document_->domWindow())->QueueReport(report);
 }
 
-void Internals::setIsAdFrame(HTMLIFrameElement* iframe,
+void Internals::setIsAdFrame(Document* target_doc,
                              ExceptionState& exception_state) {
-  if (!iframe->ContentFrame() || !iframe->ContentFrame()->IsLocalFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Frame cannot be accessed.");
+  LocalFrame* frame = target_doc->GetFrame();
+
+  if (frame->IsMainFrame() && !frame->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Frame must be an iframe or a fenced frame.");
     return;
   }
-  LocalFrame* parent_frame = iframe->GetDocument().GetFrame();
-  LocalFrame* child_frame = To<LocalFrame>(iframe->ContentFrame());
-  blink::FrameAdEvidence ad_evidence(parent_frame && parent_frame->IsAdFrame());
+
+  blink::FrameAdEvidence ad_evidence(/*parent_is_ad=*/frame->Parent() &&
+                                     frame->Parent()->IsAdFrame());
   ad_evidence.set_created_by_ad_script(
       mojom::FrameCreationStackEvidence::kCreatedByAdScript);
   ad_evidence.set_is_complete();
-  child_frame->SetAdEvidence(ad_evidence);
+  frame->SetAdEvidence(ad_evidence);
 }
 
 ReadableStream* Internals::createReadableStream(

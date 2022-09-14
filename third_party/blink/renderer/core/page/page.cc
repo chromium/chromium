@@ -898,6 +898,22 @@ void Page::DidCommitLoad(LocalFrame* frame) {
                                         mojom::blink::ScrollBehavior::kInstant,
                                         ScrollableArea::ScrollCallback());
   }
+  // crbug/1312107: If DevTools has "Highlight ad frames" checked when the
+  // main frame is refreshed or the ad frame is navigated to a different
+  // process, DevTools calls `Settings::SetHighlightAds` so early that the
+  // local frame is still in provisional state (not swapped in). Explicitly
+  // invalidate the settings here as `Page::DidCommitLoad` is only fired after
+  // the navigation is committed, at which point the local frame must already
+  // be swapped-in.
+  //
+  // This explicit update is placed outside the above if-block to accommodate
+  // iframes. The iframes share the same Page (frame tree) as the main frame,
+  // but local frame swap can happen to any of the iframes.
+  //
+  // TODO(crbug/1357763): Properly apply the settings when the local frame
+  // becomes the main frame of the page (i.e. when the navigation is
+  // committed).
+  frame->UpdateAdHighlight();
   GetLinkHighlight().ResetForPageNavigation();
 }
 

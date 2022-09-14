@@ -9,7 +9,7 @@
 
     let ad_frame = document.createElement('iframe');
     document.body.appendChild(ad_frame);
-    internals.setIsAdFrame(ad_frame);
+    internals.setIsAdFrame(ad_frame.contentDocument);
     ad_frame.width = 100;
     ad_frame.height = 200;
     ad_frame.src = "about:blank";

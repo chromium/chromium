@@ -2417,6 +2417,7 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
  public:
   explicit FrameColorOverlay(LocalFrame* frame, SkColor color)
       : color_(color), frame_(frame) {}
+  SkColor GetColorForTesting() const { return color_; }
 
  private:
   void PaintFrameOverlay(const FrameOverlay& frame_overlay,
@@ -2453,6 +2454,20 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
 void LocalFrame::SetReducedAcceptLanguage(
     const AtomicString& reduced_accept_language) {
   reduced_accept_language_ = reduced_accept_language;
+}
+
+template <>
+struct DowncastTraits<FrameColorOverlay> {
+  static bool AllowFrom(const FrameOverlay::Delegate& frame_overlay) {
+    return true;
+  }
+};
+
+absl::optional<SkColor> LocalFrame::GetFrameOverlayColorForTesting() const {
+  if (!frame_color_overlay_)
+    return absl::nullopt;
+  return DynamicTo<FrameColorOverlay>(frame_color_overlay_->GetDelegate())
+      ->GetColorForTesting();
 }
 
 void LocalFrame::SetMainFrameColorOverlay(SkColor color) {

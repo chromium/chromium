@@ -793,6 +793,8 @@ class CORE_EXPORT LocalFrame final
   void SetBackgroundColorPaintImageGeneratorForTesting(
       BackgroundColorPaintImageGenerator* generator);
 
+  absl::optional<SkColor> GetFrameOverlayColorForTesting() const;
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.

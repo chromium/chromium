@@ -437,7 +437,7 @@
     // Request generation of a Reporting report.
     void generateTestReport(DOMString message);
 
-    [RaisesException] void setIsAdFrame(HTMLIFrameElement iframe);
+    [RaisesException] void setIsAdFrame(Document target_doc);
 
     [RaisesException, CallWith=ScriptState] ReadableStream createReadableStream(long queueSize, DOMString optimizer);
     // The return value consists of a WritableStream (.stream) and a promise of
