@@ -374,15 +374,6 @@ const auto& GetFailingTestNames() {
       // expectations compared to non-iOS platforms.
       "049_register_ebay.com.html",
       "148_payment_dickblick.com.html",
-      // TODO(crbug.com/1339277): These pages contain labels which are only
-      // inferred using AutofillImprovedLabelForInference. This feature is
-      // currently not available on iOS.
-      "056_register_jbox.com.html",
-      "084_crbug_93595.html",
-      "097_register_alaskaair.com.html",
-      "115_checkout_walgreens.com.html",
-      "116_cc_checkout_walgreens.com.html",
-      "150_checkout_venus.com_search_field.html",
   };
   return failing_test_names;
 }

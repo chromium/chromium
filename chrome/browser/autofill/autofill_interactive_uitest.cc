@@ -846,15 +846,11 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     // Disable AutofillPageLanguageDetection because due to the little text in
     // the HTML files, the detected language is flaky (e.g., it often detects
     // "fr" instead of "en").
-    // TODO(crbug.com/1339277): Disable AutofillImprovedLabelForInference
-    // because inferring labels across ShadowDOM boundaries is only supported by
-    // the legacy label inference.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kAutofillShadowDOM,
          features::kAutofillRefillModifiedCreditCardExpirationDates},
-        /*disabled_features=*/{features::kAutofillPageLanguageDetection,
-                               features::kAutofillImprovedLabelForInference});
+        /*disabled_features=*/{features::kAutofillPageLanguageDetection});
   }
   ~AutofillInteractiveTestBase() override = default;
 
