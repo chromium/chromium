@@ -54,6 +54,10 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "content/browser/renderer_host/media/media_resource_provider_fuchsia.h"
+#endif
+
 namespace content {
 
 DedicatedWorkerHost::DedicatedWorkerHost(
@@ -754,6 +758,24 @@ void DedicatedWorkerHost::BindSerialService(
   ancestor_render_frame_host->BindSerialService(std::move(receiver));
 }
 #endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+void DedicatedWorkerHost::BindFuchsiaMediaResourceProvider(
+    mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
+        receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host) {
+    // The ancestor frame may have already been closed. In that case, the worker
+    // will soon be terminated too, so abort the connection.
+    return;
+  }
+
+  MediaResourceProviderFuchsia::Bind(ancestor_render_frame_host,
+                                     std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 void DedicatedWorkerHost::CreateBucketManagerHost(
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {

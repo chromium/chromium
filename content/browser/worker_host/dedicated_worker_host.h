@@ -47,6 +47,10 @@
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
+#endif
+
 namespace network {
 
 struct CrossOriginEmbedderPolicy;
@@ -144,6 +148,11 @@ class DedicatedWorkerHost final
 #if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
+#endif
+#if BUILDFLAG(IS_FUCHSIA)
+  void BindFuchsiaMediaResourceProvider(
+      mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
+          receiver);
 #endif
 
   // PlzDedicatedWorker:
