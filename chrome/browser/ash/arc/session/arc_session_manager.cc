@@ -911,9 +911,10 @@ void ArcSessionManager::RequestEnable() {
 
   if (IsDlcRequired())
     arc_dlc_installer_->RequestEnable();
-  // |directly_started_| flag must be preserved during the internal ARC restart.
-  // So set it only when ARC is externally requested to start.
-  directly_started_ = RequestEnableImpl();
+  // |skipped_terms_of_service_negotiation_| flag must be preserved during the
+  // internal ARC restart. So set it only when ARC is externally requested to
+  // start.
+  skipped_terms_of_service_negotiation_ = RequestEnableImpl();
 }
 
 bool ArcSessionManager::IsPlaystoreLaunchRequestedForTesting() const {
@@ -1006,15 +1007,15 @@ bool ArcSessionManager::RequestEnableImpl() {
   // In Public Session mode ARC should be started silently without user
   // interaction. If opt-in verification is disabled, skip negotiation, too.
   // This is for testing purpose.
-  const bool start_arc_directly = signed_in || ShouldArcAlwaysStart() ||
-                                  IsRobotOrOfflineDemoAccountMode() ||
-                                  IsArcOptInVerificationDisabled();
+  const bool skip_terms_of_service_negotiation =
+      signed_in || ShouldArcAlwaysStart() ||
+      IsRobotOrOfflineDemoAccountMode() || IsArcOptInVerificationDisabled();
   // When ARC is blocked because of filesystem compatibility, do not proceed
   // to starting ARC nor follow further state transitions.
   if (IsArcBlockedDueToIncompatibleFileSystem(profile_)) {
     // If the next step was the ToS negotiation, show a notification instead.
     // Otherwise, be silent now. Users are notified when clicking ARC app icons.
-    if (!start_arc_directly && g_ui_enabled)
+    if (!skip_terms_of_service_negotiation && g_ui_enabled)
       arc::ShowArcMigrationGuideNotification(profile_);
     return false;
   }
@@ -1047,7 +1048,7 @@ bool ArcSessionManager::RequestEnableImpl() {
         profile_, profile_->GetPrefs());
   }
 
-  if (start_arc_directly) {
+  if (skip_terms_of_service_negotiation) {
     StartArc();
     // Check Android management in parallel.
     // Note: StartBackgroundRequirementManagementChecks() may call
@@ -1078,7 +1079,7 @@ void ArcSessionManager::RequestDisable(bool remove_arc_data) {
 
   VLOG(1) << "Disabling ARC.";
 
-  directly_started_ = false;
+  skipped_terms_of_service_negotiation_ = false;
   enable_requested_ = false;
   SetArcEnabledStateMetric(false);
   scoped_opt_in_tracker_.reset();

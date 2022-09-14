@@ -271,9 +271,13 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // negotiation, because the user had accepted already or policy does not
   // require ToS acceptance. Returns false in other cases, including one when
   // ARC is not currently running.
-  bool is_directly_started() const { return directly_started_; }
-  void set_directly_started_for_testing(bool directly_started) {
-    directly_started_ = directly_started;
+  bool skipped_terms_of_service_negotiation() const {
+    return skipped_terms_of_service_negotiation_;
+  }
+  void set_skipped_terms_of_service_negotiation_for_testing(
+      bool skipped_terms_of_service_negotiation) {
+    skipped_terms_of_service_negotiation_ =
+        skipped_terms_of_service_negotiation;
   }
 
   // Injectors for testing.
@@ -434,7 +438,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcAppLauncher> playstore_launcher_;
   bool reenable_arc_ = false;
   bool provisioning_reported_ = false;
-  bool directly_started_ = false;
+  bool skipped_terms_of_service_negotiation_ = false;
   base::OneShotTimer arc_sign_in_timer_;
 
   std::unique_ptr<ArcSupportHost> support_host_;

@@ -1013,7 +1013,7 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
     // UI Shown time may not be set in unit tests.
     const user_manager::UserManager* user_manager =
         user_manager::UserManager::Get();
-    if (arc::ArcSessionManager::Get()->is_directly_started() &&
+    if (arc::ArcSessionManager::Get()->skipped_terms_of_service_negotiation() &&
         !user_manager->IsLoggedInAsKioskApp() &&
         !user_manager->IsLoggedInAsArcKioskApp() &&
         !ash::UserSessionManager::GetInstance()->ui_shown_time().is_null()) {

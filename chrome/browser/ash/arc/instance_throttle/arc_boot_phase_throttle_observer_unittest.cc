@@ -55,7 +55,8 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     user_manager->LoginUser(account_id);
 
     // By default, ARC is not started for opt-in.
-    arc_session_manager()->set_directly_started_for_testing(true);
+    arc_session_manager()->set_skipped_terms_of_service_negotiation_for_testing(
+        true);
 
     observer()->StartObserving(
         testing_profile_.get(),
@@ -207,7 +208,8 @@ TEST_F(ArcBootPhaseThrottleObserverTest, TestEnabledByEnterprise) {
 // Lock is enabled during session restore because ARC was started for opt-in.
 TEST_F(ArcBootPhaseThrottleObserverTest, TestOptInBoot) {
   EXPECT_FALSE(observer()->active());
-  arc_session_manager()->set_directly_started_for_testing(false);
+  arc_session_manager()->set_skipped_terms_of_service_negotiation_for_testing(
+      false);
   observer()->OnArcStarted();
   EXPECT_TRUE(observer()->active());
   observer()->OnSessionRestoreStartedLoadingTabs();
