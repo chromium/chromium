@@ -360,9 +360,6 @@ void TabHoverCardController::UpdateOrShowCard(
   }
 
   if (hover_card_) {
-    // Card should never exist without an anchor.
-    DCHECK(hover_card_->GetAnchorView());
-
     // If the card was visible we need to update the card now, before any slide
     // or snap occurs.
     UpdateCardContent(tab);
