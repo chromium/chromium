@@ -808,7 +808,7 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
   // Paths are UTF-8 safe on Chrome OS.
   std::string user_data_dir = browser_util::GetUserDataDir().AsUTF8Unsafe();
   std::string crash_dir =
-      browser_util::GetUserDataDir().Append("crash_dumps").AsUTF8Unsafe();
+      browser_util::GetUserDataDir().Append("Crash Reports").AsUTF8Unsafe();
 
   // Pass the locale via command line instead of via LacrosInitParams because
   // the Lacros browser process needs it early in startup, before zygote fork.
