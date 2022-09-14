@@ -519,9 +519,14 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
+#if BUILDFLAG(IS_WIN)
+    constexpr bool allow_shm_overlays = true;
+#else
+    constexpr bool allow_shm_overlays = false;
+#endif
     backing = CompoundImageBacking::CreateSharedMemory(
-        factory, mailbox, std::move(handle), format, plane, surface_handle,
-        size, color_space, surface_origin, alpha_type, usage);
+        factory, allow_shm_overlays, mailbox, std::move(handle), format, plane,
+        surface_handle, size, color_space, surface_origin, alpha_type, usage);
   } else {
     backing = factory->CreateSharedImage(
         mailbox, client_id, std::move(handle), format, plane, surface_handle,

@@ -188,7 +188,7 @@ SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
 }
 #endif
 
-void SharedImageBacking::SetNotReferencedCounted() {
+void SharedImageBacking::SetNotRefCounted() {
   DCHECK(!HasAnyRefs());
   is_ref_counted_ = false;
 }
