@@ -2741,12 +2741,6 @@ NGBlockLayoutAlgorithm::CreateMinimumTopScopeForChild(
 void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
     const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
-  // Check if we've already found an appropriate baseline.
-  if (container_builder_.FirstBaseline() &&
-      ConstraintSpace().BaselineAlgorithmType() ==
-          NGBaselineAlgorithmType::kDefault)
-    return;
-
   if (child.IsLineBox()) {
     const auto& line_box = To<NGPhysicalLineBoxFragment>(child);
 
@@ -2774,12 +2768,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
 
     if (!container_builder_.FirstBaseline())
       container_builder_.SetFirstBaseline(baseline);
-
-    // Set the last baseline only if required.
-    if (ConstraintSpace().BaselineAlgorithmType() ==
-        NGBaselineAlgorithmType::kInlineBlock)
-      container_builder_.SetLastBaseline(baseline);
-
+    container_builder_.SetLastBaseline(baseline);
     return;
   }
 
@@ -2791,8 +2780,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
     LayoutUnit block_offset) {
   DCHECK(child.IsBox());
 
-  // When computing the baseline for an inline-block, table's don't contribute
-  // to any baselines.
+  // When computing baselines for an inline-block, table's don't contribute any
+  // baselines.
   if (child.IsTableNG() && ConstraintSpace().BaselineAlgorithmType() ==
                                NGBaselineAlgorithmType::kInlineBlock) {
     return;
@@ -2803,19 +2792,20 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
                          physical_fragment);
 
   if (!container_builder_.FirstBaseline()) {
-    if (auto baseline = fragment.FirstBaseline())
-      container_builder_.SetFirstBaseline(block_offset + *baseline);
+    if (auto first_baseline = fragment.FirstBaseline())
+      container_builder_.SetFirstBaseline(block_offset + *first_baseline);
   }
 
-  // Set the last baseline only if required.
-  if (ConstraintSpace().BaselineAlgorithmType() ==
-      NGBaselineAlgorithmType::kInlineBlock) {
-    const auto baseline = physical_fragment.UseLastBaselineForInlineBaseline()
-                              ? fragment.LastBaseline()
-                              : fragment.FirstBaseline();
-    if (baseline)
-      container_builder_.SetLastBaseline(block_offset + *baseline);
-  }
+  // Counter-intuitively, when computing baselines for an inline-block, some
+  // fragments use their first-baseline for the container's last-baseline.
+  bool use_last_baseline = ConstraintSpace().BaselineAlgorithmType() ==
+                               NGBaselineAlgorithmType::kDefault ||
+                           physical_fragment.UseLastBaselineForInlineBaseline();
+
+  const auto last_baseline =
+      use_last_baseline ? fragment.LastBaseline() : fragment.FirstBaseline();
+  if (last_baseline)
+    container_builder_.SetLastBaseline(block_offset + *last_baseline);
 }
 
 bool NGBlockLayoutAlgorithm::ResolveBfcBlockOffset(
