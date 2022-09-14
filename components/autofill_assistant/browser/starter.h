@@ -74,6 +74,10 @@ class Starter : public content::WebContentsObserver,
           preconditions_checked_callback);
 
   // content::WebContentsObserver:
+  // Only one function will execute, the other will early return based on the
+  // AutofillAssistantUseDidFinishNavigation feature.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
 
   // Invoked when the tab interactability has changed.
@@ -172,8 +176,7 @@ class Starter : public content::WebContentsObserver,
   // successful.
   void ReportPreconditionsChecked(bool start_script);
 
-  void RecordNavigatedAwayMetrics(content::Page& page,
-                                  ukm::SourceId source_id,
+  void RecordNavigatedAwayMetrics(ukm::SourceId source_id,
                                   bool is_error_document) const;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

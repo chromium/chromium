@@ -156,5 +156,12 @@ const base::Feature kAutofillAssistantDesktop{"AutofillAssistantDesktop",
 const base::Feature kAutofillAssistantCudFilterProfiles{
     "AutofillAssistantCudFilterProfiles", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether the DidFinishNavigation should be used instead of
+// PrimaryPageChanged. This is a just-in-case switch that will be removed once
+// we are confident using DidFinishNavigation is working properly. b/243897243
+const base::Feature kAutofillAssistantUseDidFinishNavigation{
+    "AutofillAssistantUseDidFinishNavigation",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace autofill_assistant

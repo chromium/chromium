@@ -181,6 +181,12 @@ Starter::Starter(content::WebContents* web_contents,
 Starter::~Starter() = default;
 
 void Starter::PrimaryPageChanged(content::Page& page) {
+  // Early return if we want to use DidFinishNavigation instead.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAssistantUseDidFinishNavigation)) {
+    return;
+  }
+
   // Navigating away from the deeplink domain during startup OR ending up on an
   // error page will break the flow, unless a trigger script is currently
   // running (in which case, the trigger script will handle this event).
@@ -195,22 +201,59 @@ void Starter::PrimaryPageChanged(content::Page& page) {
       // Ignore; navigations to the target domain during startup are allowed.
       return;
     }
-    RecordNavigatedAwayMetrics(page, rfh.GetPageUkmSourceId(),
-                               rfh.IsErrorDocument());
+    RecordNavigatedAwayMetrics(rfh.GetPageUkmSourceId(), rfh.IsErrorDocument());
     // Note: do not early-return here. While the previous startup has failed, we
     // may have navigated to a new supported domain and may need to start
     // implicitly.
     CancelPendingStartup(absl::nullopt);
   }
-
   if (!rfh.IsErrorDocument()) {
     current_ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
     MaybeStartImplicitlyForUrl(gurl, current_ukm_source_id_);
   }
 }
 
-void Starter::RecordNavigatedAwayMetrics(content::Page& page,
-                                         ukm::SourceId source_id,
+void Starter::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Early return if we want to use PrimaryPageChanged instead.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAssistantUseDidFinishNavigation)) {
+    return;
+  }
+
+  // Navigating away from the deeplink domain during startup OR ending up on an
+  // error page will break the flow, unless a trigger script is currently
+  // running (in which case, the trigger script will handle this event).
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  const GURL& new_url = navigation_handle->GetURL();
+  if (IsStartupPending() && !trigger_script_coordinator_) {
+    if (NavigatedToTargetDomain(new_url, *GetPendingTriggerContext())) {
+      current_ukm_source_id_ = rfh->GetPageUkmSourceId();
+      if (waiting_for_deeplink_navigation_) {
+        Start(std::move(pending_trigger_context_));
+      }
+      // Ignore; navigations to the target domain during startup are allowed.
+      return;
+    }
+    RecordNavigatedAwayMetrics(rfh->GetPageUkmSourceId(),
+                               rfh->IsErrorDocument());
+    // Note: do not early-return here. While the previous startup has failed, we
+    // may have navigated to a new supported domain and may need to start
+    // implicitly.
+    CancelPendingStartup(absl::nullopt);
+  }
+
+  if (!rfh->IsErrorDocument()) {
+    current_ukm_source_id_ = rfh->GetPageUkmSourceId();
+    MaybeStartImplicitlyForUrl(new_url, current_ukm_source_id_);
+  }
+}
+
+void Starter::RecordNavigatedAwayMetrics(ukm::SourceId source_id,
                                          bool is_error_document) const {
   if (GetPendingTriggerContext()
           ->GetScriptParameters()
