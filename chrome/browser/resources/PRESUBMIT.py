@@ -13,7 +13,7 @@ ACTION_XML_PATH = '../../../tools/metrics/actions/actions.xml'
 PRESUBMIT_VERSION = '2.0.0'
 
 
-def CheckUserActionUpdate(input_api, output_api):
+def InternalCheckUserActionUpdate(input_api, output_api, action_xml_path):
   """Checks if any new user action has been added."""
   if any('actions.xml' == input_api.os_path.basename(f) for f in
          input_api.change.LocalPaths()):
@@ -31,7 +31,7 @@ def CheckUserActionUpdate(input_api, output_api):
         # Loads contents in tools/metrics/actions/actions.xml to memory. It's
         # loaded only once.
         if not current_actions:
-          with open(ACTION_XML_PATH) as actions_f:
+          with open(action_xml_path) as actions_f:
             current_actions = actions_f.read()
 
         metric_name = match.group(2)
@@ -45,6 +45,10 @@ def CheckUserActionUpdate(input_api, output_api):
             'tools/metrics/actions/extract_actions.py to update.'
             % (f.LocalPath(), line_num, metric_name), [])]
   return []
+
+
+def CheckUserActionUpdate(input_api, output_api):
+  return InternalCheckUserActionUpdate(input_api, output_api, ACTION_XML_PATH)
 
 
 def IsActionPresent(current_actions, metric_name, is_boolean):
