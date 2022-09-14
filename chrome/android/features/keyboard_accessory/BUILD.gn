@@ -76,6 +76,7 @@ android_library("test_java") {
   ]
 
   deps = [
+    ":test_resources",
     "internal:internal_java",
     "public:public_java",
     "//base:base_java",
@@ -121,6 +122,16 @@ android_library("test_java") {
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.keyboard_accessory"
+}
+
+android_resources("test_resources") {
+  testonly = true
+
+  sources = [ "javatests/res/layout/test_main.xml" ]
+
+  deps = [ "internal:java_resources" ]
 }
 
 robolectric_binary("keyboard_accessory_junit_tests") {

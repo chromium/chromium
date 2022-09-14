@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 
 import androidx.annotation.Px;
 
@@ -20,6 +19,7 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -94,12 +94,11 @@ public interface ManualFillingComponent extends BackPressHandler {
      * @param sheetController A {@link BottomSheetController} to show the UI in.
      * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param backPressManager A {@link BackPressManager} to register {@link BackPressHandler}.
-     * @param sheetStub The {@link ViewStub} used to inflate the keyboard accessory bottom
-     * @param barStub The {@link ViewStub} used to inflate the keyboard accessory bar.
+     * @param barStub The {@link AsyncViewStub} used to inflate the keyboard accessory bar.
      */
     void initialize(WindowAndroid windowAndroid, BottomSheetController sheetController,
             SoftKeyboardDelegate keyboardDelegate, BackPressManager backPressManager,
-            ViewStub sheetStub, ViewStub barStub);
+            AsyncViewStub sheetStub, AsyncViewStub barStub);
 
     /**
      * Cleans up the manual UI by destroying the accessory bar and its bottom sheet.

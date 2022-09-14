@@ -125,7 +125,6 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
     @Override
     protected void onFinishInflate() {
-        TraceEvent.begin("KeyboardAccessoryModernView#onFinishInflate");
         super.onFinishInflate();
         mSheetTitle = findViewById(R.id.sheet_title);
         mKeyboardToggle = findViewById(R.id.show_keyboard);
@@ -139,7 +138,6 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
         // Remove any paddings that might be inherited since this messes up the fading edge.
         ViewCompat.setPaddingRelative(mBarItemsView, 0, 0, 0, 0);
-        TraceEvent.end("KeyboardAccessoryModernView#onFinishInflate");
     }
 
     @Override

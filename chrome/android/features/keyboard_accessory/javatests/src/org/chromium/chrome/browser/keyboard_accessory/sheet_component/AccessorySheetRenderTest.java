@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -20,14 +19,10 @@ import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
-import android.view.ViewStub;
+import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import androidx.annotation.DimenRes;
-import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -63,7 +58,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.DeferredViewStubInflationProvider;
+import org.chromium.ui.AsyncViewProvider;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -133,14 +129,14 @@ public class AccessorySheetRenderTest {
         // and won't apply the theme.
         mActivityTestRule.getActivity().setTheme(R.style.ColorOverlay_ChromiumAndroid);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewStub sheetStub = initializeContentViewWithSheetStub();
+            AsyncViewStub sheetStub = initializeContentViewWithSheetStub();
 
             mSheetModel = createSheetModel(
                     mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                             R.dimen.keyboard_accessory_sheet_height));
 
             LazyConstructionPropertyMcp.create(mSheetModel, VISIBLE,
-                    new DeferredViewStubInflationProvider<>(sheetStub),
+                    AsyncViewProvider.of(sheetStub, R.id.keyboard_accessory_sheet_container),
                     AccessorySheetViewBinder::bind);
         });
     }
@@ -258,27 +254,20 @@ public class AccessorySheetRenderTest {
         mRenderTestRule.render(mContentView, "Addresses");
     }
 
-    private ViewStub initializeContentViewWithSheetStub() {
-        mContentView = new FrameLayout(mActivityTestRule.getActivity());
-        mActivityTestRule.getActivity().setContentView(mContentView);
-
-        ViewStub sheetStub = createViewStub(R.id.keyboard_accessory_sheet_stub,
-                R.layout.keyboard_accessory_sheet, null, R.dimen.keyboard_accessory_sheet_height);
-        mContentView.addView(sheetStub, MATCH_PARENT, WRAP_CONTENT);
-        return sheetStub;
-    }
-
-    private ViewStub createViewStub(@IdRes int id, @LayoutRes int layout,
-            @Nullable @IdRes Integer inflatedId, @DimenRes int layoutHeight) {
-        ViewStub stub = new ViewStub(mActivityTestRule.getActivity());
-        stub.setId(id);
-        stub.setLayoutResource(layout);
-        if (inflatedId != null) stub.setInflatedId(inflatedId);
+    private AsyncViewStub initializeContentViewWithSheetStub() {
+        mContentView = (FrameLayout) LayoutInflater.from(mActivityTestRule.getActivity())
+                               .inflate(R.layout.test_main, null);
+        AsyncViewStub sheetStub = mContentView.findViewById(R.id.keyboard_accessory_sheet_stub);
+        sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
+        sheetStub.setShouldInflateOnBackgroundThread(true);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT,
-                mActivityTestRule.getActivity().getResources().getDimensionPixelSize(layoutHeight));
+                mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_sheet_height));
         layoutParams.gravity = Gravity.START | Gravity.BOTTOM;
-        stub.setLayoutParams(layoutParams);
-        return stub;
+        sheetStub.setLayoutParams(layoutParams);
+
+        mActivityTestRule.getActivity().setContentView(mContentView);
+        return sheetStub;
     }
 
     private static PropertyModel createSheetModel(int height) {

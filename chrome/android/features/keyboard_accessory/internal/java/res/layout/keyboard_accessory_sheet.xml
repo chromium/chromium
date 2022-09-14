@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/keyboard_accessory_sheet_container"
     android:fillViewport="true"
     android:paddingTop="0dp"
     android:layout_gravity="start|top"

@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
@@ -411,6 +412,41 @@ public class ManualFillingTestHelper {
                 }
                 PostTask.runOrPostTask(
                         UiThreadTaskTraits.DEFAULT, () -> tabLayout.getTabAt(tabIndex).select());
+            }
+        };
+    }
+
+    /**
+     * Use in a |onView().perform| action to select the tab at |tabIndex| for the found tab layout.
+     * @param tabIndex The index to be selected.
+     * @return The action executed by |perform|.
+     */
+    public static ViewAction selectTabWithDescription(@StringRes int descriptionResId) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(TabLayout.class));
+            }
+
+            @Override
+            public String getDescription() {
+                return "with tab with matching description.";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                String descriptionToMatch = view.getContext().getString(descriptionResId);
+                TabLayout tabLayout = (TabLayout) view;
+                for (int tabIndex = 0; tabIndex < tabLayout.getTabCount(); tabIndex++) {
+                    final TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
+                    if (descriptionToMatch.equals(tab.getContentDescription())) {
+                        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, tab::select);
+                        return;
+                    }
+                }
+                throw new PerformException.Builder()
+                        .withCause(new Throwable("No tab with description: " + descriptionToMatch))
+                        .build();
             }
         };
     }
