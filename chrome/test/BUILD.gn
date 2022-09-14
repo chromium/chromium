@@ -865,6 +865,7 @@ if (is_android) {
       "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/engagement/important_sites_util_browsertest.cc",
+      "../browser/fast_checkout/fast_checkout_tab_helper_browsertest.cc",
       "../browser/metrics/metrics_log_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
       "../browser/metrics/sampled_out_client_id_saved_browsertest.cc",

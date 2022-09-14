@@ -154,6 +154,8 @@
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
+#include "chrome/browser/fast_checkout/fast_checkout_features.h"
+#include "chrome/browser/fast_checkout/fast_checkout_tab_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
@@ -467,6 +469,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     webapps::ChromeAppBannerManagerAndroid::CreateForWebContents(web_contents);
   }
   ContextMenuHelper::CreateForWebContents(web_contents);
+  if (base::FeatureList::IsEnabled(features::kFastCheckout)) {
+    FastCheckoutTabHelper::CreateForWebContents(web_contents);
+  }
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(
