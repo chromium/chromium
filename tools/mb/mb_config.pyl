@@ -2934,11 +2934,11 @@
     ],
 
     'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting': [
-        'compile_only', 'debug_static_bot', 'ios', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'asan', 'libfuzzer',  'no_dsyms', 'no_remoting', 'no_hermetic_swift',
+        'compile_only', 'debug_static_bot', 'ios', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
     ],
 
     'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient': [
-        'compile_only', 'debug_static_bot_reclient', 'ios', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'asan', 'libfuzzer',  'no_dsyms', 'no_remoting', 'no_hermetic_swift'
+        'compile_only', 'debug_static_bot_reclient', 'ios', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'asan', 'libfuzzer',  'no_dsyms', 'no_remoting',
     ],
 
     'ios_clang_device_tot_xctest': [
@@ -4396,10 +4396,6 @@
 
     'no_goma': {
       'gn_args': 'use_goma=false',
-    },
-
-    'no_hermetic_swift': {
-      'gn_args': 'swift_toolchain_path=""',
     },
 
     'no_keystone_registration_framework': {

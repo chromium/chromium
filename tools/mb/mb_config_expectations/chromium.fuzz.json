@@ -397,7 +397,6 @@
       "is_asan": true,
       "is_component_build": false,
       "is_debug": true,
-      "swift_toolchain_path": "",
       "symbol_level": 1,
       "target_cpu": "x64",
       "target_environment": "catalyst",
