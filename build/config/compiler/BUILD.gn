@@ -1667,6 +1667,9 @@ config("chromium_code") {
       # Warn on missing break statements at the end of switch cases.
       # For intentional fallthrough, use [[fallthrough]].
       "-Wimplicit-fallthrough",
+
+      # Warn on unnecessary extra semicolons outside of function definitions.
+      "-Wextra-semi",
     ]
 
     # TODO(thakis): Enable this more often, https://crbug.com/346399
@@ -1682,11 +1685,6 @@ config("chromium_code") {
         # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
         "-Wthread-safety",
       ]
-    }
-
-    # TODO(https://crbug.com/1355871): Enable on more platforms.
-    if (!is_chromecast) {
-      cflags += [ "-Wextra-semi" ]
     }
   }
 
