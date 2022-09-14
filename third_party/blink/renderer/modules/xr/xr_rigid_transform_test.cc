@@ -75,8 +75,9 @@ TEST(XRRigidTransformTest, Compose) {
 }
 
 TEST(XRRigidTransformTest, Decompose) {
-  TransformationMatrix matrix(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0,
-                              0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
+  auto matrix =
+      TransformationMatrix::ColMajor(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+                                     0.0, -1.0, 0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
   XRRigidTransform transform(matrix);
   const DOMPointReadOnly expected_position(1.0, 2.0, 3.0, 1.0);
   const DOMPointReadOnly expected_orientation(0.7071068, 0.0, 0.0, 0.7071068);

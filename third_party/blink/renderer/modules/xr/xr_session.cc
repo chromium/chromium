@@ -829,8 +829,9 @@ ScriptPromise XRSession::requestHitTestSource(
 
   // Zero out the translation of origin_from_ray matrix to correctly map a 3D
   // vector.
-  origin_from_ray.Translate3d(-origin_from_ray.M41(), -origin_from_ray.M42(),
-                              -origin_from_ray.M43());
+  gfx::Vector3dF translation = origin_from_ray.To3dTranslation();
+  origin_from_ray.Translate3d(-translation.x(), -translation.y(),
+                              -translation.z());
 
   ray_mojo->direction = origin_from_ray.MapPoint({0, 0, -1}).OffsetFromOrigin();
 

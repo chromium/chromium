@@ -258,25 +258,25 @@ SkMatrix TransformationMatrixToSkMatrix(const TransformationMatrix& source) {
   // assuming that a 2D-transformation with perspective is what's desired,
   // throwing out the z-dimension values. i.e.:
 
-  //        INPUT                  OUTPUT
-  // | m11 m21 m31 m41 |       | m11 m21 m41 |
-  // | m12 m22 m32 m42 | ----> | m12 m22 m42 |
-  // | m13 m23 m33 m43 |       | m14 m24 m44 |
-  // | m14 m24 m34 m44 |
+  //                  INPUT                               OUTPUT
+  // | scale_x skew_xy skew_xz trans_x |     | scale_x skew_x  trans_x |
+  // | skew_yx scale_y skew_yz trans_y | --> | skew_y  scale_y trans_y |
+  // | skew_xz skew_zy scale_z trans_z |     | persp_x persp_y persp_w |
+  // | persp_x persp_y persp_z persp_w |
 
   SkMatrix result;
 
-  result.setScaleX(WebCoreDoubleToSkScalar(source.M11()));
-  result.setSkewX(WebCoreDoubleToSkScalar(source.M21()));
-  result.setTranslateX(WebCoreDoubleToSkScalar(source.M41()));
+  result.setScaleX(WebCoreDoubleToSkScalar(source.rc(0, 0)));
+  result.setSkewX(WebCoreDoubleToSkScalar(source.rc(0, 1)));
+  result.setTranslateX(WebCoreDoubleToSkScalar(source.rc(0, 3)));
 
-  result.setScaleY(WebCoreDoubleToSkScalar(source.M22()));
-  result.setSkewY(WebCoreDoubleToSkScalar(source.M12()));
-  result.setTranslateY(WebCoreDoubleToSkScalar(source.M42()));
+  result.setScaleY(WebCoreDoubleToSkScalar(source.rc(1, 1)));
+  result.setSkewY(WebCoreDoubleToSkScalar(source.rc(1, 0)));
+  result.setTranslateY(WebCoreDoubleToSkScalar(source.rc(1, 3)));
 
-  result.setPerspX(source.M14());
-  result.setPerspY(source.M24());
-  result.set(SkMatrix::kMPersp2, source.M44());
+  result.setPerspX(source.rc(3, 0));
+  result.setPerspY(source.rc(3, 1));
+  result.set(SkMatrix::kMPersp2, source.rc(3, 3));
 
   return result;
 }

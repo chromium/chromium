@@ -24,7 +24,7 @@ TEST(ComputedStyleUtilsTest, MatrixForce3D) {
 }
 
 TEST(ComputedStyleUtilsTest, MatrixZoom2D) {
-  TransformationMatrix matrix(1, 2, 3, 4, 5, 6);
+  auto matrix = TransformationMatrix::Affine(1, 2, 3, 4, 5, 6);
   EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(matrix, 1, false)
                 ->CssText(),
             "matrix(1, 2, 3, 4, 5, 6)");
@@ -35,8 +35,8 @@ TEST(ComputedStyleUtilsTest, MatrixZoom2D) {
 }
 
 TEST(ComputedStyleUtilsTest, MatrixZoom3D) {
-  TransformationMatrix matrix(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                              16);
+  auto matrix = TransformationMatrix::ColMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                               11, 12, 13, 14, 15, 16);
   EXPECT_EQ(ComputedStyleUtils::ValueForTransformationMatrix(matrix, 1, false)
                 ->CssText(),
             "matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)");

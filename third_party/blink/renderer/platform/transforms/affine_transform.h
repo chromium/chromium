@@ -161,6 +161,9 @@ class PLATFORM_EXPORT AffineTransform {
     return AffineTransform(sx, 0, 0, sy, 0, 0);
   }
 
+  // The 2d version of TransformationMatrix::Zoom().
+  AffineTransform& Zoom(double zoom_factor);
+
   // If |as_matrix| is true, the transform is returned as a matrix in row-major
   // order. Otherwise, the transform's decomposition is returned which shows
   // the translation, scale, etc.

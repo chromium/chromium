@@ -107,13 +107,13 @@ DOMMatrix* DOMMatrix::fromMatrix(DOMMatrixInit* other,
   }
   if (other->is2D()) {
     return MakeGarbageCollected<DOMMatrix>(
-        TransformationMatrix(other->m11(), other->m12(), other->m21(),
-                             other->m22(), other->m41(), other->m42()),
+        TransformationMatrix::Affine(other->m11(), other->m12(), other->m21(),
+                                     other->m22(), other->m41(), other->m42()),
         other->is2D());
   }
 
   return MakeGarbageCollected<DOMMatrix>(
-      TransformationMatrix(
+      TransformationMatrix::ColMajor(
           other->m11(), other->m12(), other->m13(), other->m14(), other->m21(),
           other->m22(), other->m23(), other->m24(), other->m31(), other->m32(),
           other->m33(), other->m34(), other->m41(), other->m42(), other->m43(),
@@ -127,22 +127,9 @@ void DOMMatrix::SetIs2D(bool value) {
 }
 
 void DOMMatrix::SetNAN() {
-  matrix_.SetM11(NAN);
-  matrix_.SetM12(NAN);
-  matrix_.SetM13(NAN);
-  matrix_.SetM14(NAN);
-  matrix_.SetM21(NAN);
-  matrix_.SetM22(NAN);
-  matrix_.SetM23(NAN);
-  matrix_.SetM24(NAN);
-  matrix_.SetM31(NAN);
-  matrix_.SetM32(NAN);
-  matrix_.SetM33(NAN);
-  matrix_.SetM34(NAN);
-  matrix_.SetM41(NAN);
-  matrix_.SetM42(NAN);
-  matrix_.SetM43(NAN);
-  matrix_.SetM44(NAN);
+  matrix_ =
+      TransformationMatrix::ColMajor(NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN,
+                                     NAN, NAN, NAN, NAN, NAN, NAN, NAN, NAN);
 }
 
 DOMMatrix* DOMMatrix::multiplySelf(DOMMatrixInit* other,

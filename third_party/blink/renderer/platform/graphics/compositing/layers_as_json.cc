@@ -22,6 +22,21 @@ String PointerAsString(const void* ptr) {
   return ts.Release();
 }
 
+double RoundCloseToZero(double number) {
+  return std::abs(number) < 1e-7 ? 0 : number;
+}
+
+std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
+  auto array = std::make_unique<JSONArray>();
+  for (int c = 0; c < 4; c++) {
+    auto col = std::make_unique<JSONArray>();
+    for (int r = 0; r < 4; r++)
+      col->PushDouble(RoundCloseToZero(t.rc(r, c)));
+    array->PushArray(std::move(col));
+  }
+  return array;
+}
+
 }  // namespace
 
 // Create a JSON version of the specified |layer|.

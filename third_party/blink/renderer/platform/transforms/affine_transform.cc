@@ -220,8 +220,15 @@ gfx::QuadF AffineTransform::MapQuad(const gfx::QuadF& q) const {
 }
 
 TransformationMatrix AffineTransform::ToTransformationMatrix() const {
-  return TransformationMatrix(transform_[0], transform_[1], transform_[2],
-                              transform_[3], transform_[4], transform_[5]);
+  return TransformationMatrix::Affine(transform_[0], transform_[1],
+                                      transform_[2], transform_[3],
+                                      transform_[4], transform_[5]);
+}
+
+AffineTransform& AffineTransform::Zoom(double zoom_factor) {
+  transform_[4] *= zoom_factor;
+  transform_[5] *= zoom_factor;
+  return *this;
 }
 
 String AffineTransform::ToString(bool as_matrix) const {

@@ -318,7 +318,7 @@ TransformOperations TransformBuilder::CreateTransformOperations(
         break;
       }
       case TransformOperation::kMatrix3D: {
-        TransformationMatrix matrix(
+        auto matrix = TransformationMatrix::ColMajor(
             To<CSSPrimitiveValue>(transform_value->Item(0)).GetDoubleValue(),
             To<CSSPrimitiveValue>(transform_value->Item(1)).GetDoubleValue(),
             To<CSSPrimitiveValue>(transform_value->Item(2)).GetDoubleValue(),

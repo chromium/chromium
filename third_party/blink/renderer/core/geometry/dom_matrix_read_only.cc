@@ -329,25 +329,14 @@ DOMMatrixReadOnly::DOMMatrixReadOnly(const TransformationMatrix& matrix,
     : matrix_(matrix), is2d_(is2d) {}
 
 NotShared<DOMFloat32Array> DOMMatrixReadOnly::toFloat32Array() const {
-  float array[] = {
-      static_cast<float>(matrix_.M11()), static_cast<float>(matrix_.M12()),
-      static_cast<float>(matrix_.M13()), static_cast<float>(matrix_.M14()),
-      static_cast<float>(matrix_.M21()), static_cast<float>(matrix_.M22()),
-      static_cast<float>(matrix_.M23()), static_cast<float>(matrix_.M24()),
-      static_cast<float>(matrix_.M31()), static_cast<float>(matrix_.M32()),
-      static_cast<float>(matrix_.M33()), static_cast<float>(matrix_.M34()),
-      static_cast<float>(matrix_.M41()), static_cast<float>(matrix_.M42()),
-      static_cast<float>(matrix_.M43()), static_cast<float>(matrix_.M44())};
-
+  float array[16];
+  matrix_.GetColMajorF(array);
   return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(array, 16));
 }
 
 NotShared<DOMFloat64Array> DOMMatrixReadOnly::toFloat64Array() const {
-  double array[] = {matrix_.M11(), matrix_.M12(), matrix_.M13(), matrix_.M14(),
-                    matrix_.M21(), matrix_.M22(), matrix_.M23(), matrix_.M24(),
-                    matrix_.M31(), matrix_.M32(), matrix_.M33(), matrix_.M34(),
-                    matrix_.M41(), matrix_.M42(), matrix_.M43(), matrix_.M44()};
-
+  double array[16];
+  matrix_.GetColMajor(array);
   return NotShared<DOMFloat64Array>(DOMFloat64Array::Create(array, 16));
 }
 

@@ -50,14 +50,16 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
   template <typename T>
   DOMMatrixReadOnly(T sequence, int size) {
     if (size == 6) {
-      matrix_.SetMatrix(sequence[0], sequence[1], sequence[2], sequence[3],
-                        sequence[4], sequence[5]);
+      matrix_ =
+          TransformationMatrix::Affine(sequence[0], sequence[1], sequence[2],
+                                       sequence[3], sequence[4], sequence[5]);
       is2d_ = true;
     } else if (size == 16) {
-      matrix_.SetMatrix(sequence[0], sequence[1], sequence[2], sequence[3],
-                        sequence[4], sequence[5], sequence[6], sequence[7],
-                        sequence[8], sequence[9], sequence[10], sequence[11],
-                        sequence[12], sequence[13], sequence[14], sequence[15]);
+      matrix_ = TransformationMatrix::ColMajor(
+          sequence[0], sequence[1], sequence[2], sequence[3], sequence[4],
+          sequence[5], sequence[6], sequence[7], sequence[8], sequence[9],
+          sequence[10], sequence[11], sequence[12], sequence[13], sequence[14],
+          sequence[15]);
       is2d_ = false;
     } else {
       NOTREACHED();
@@ -65,29 +67,29 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
   }
   ~DOMMatrixReadOnly() override;
 
-  double a() const { return matrix_.M11(); }
-  double b() const { return matrix_.M12(); }
-  double c() const { return matrix_.M21(); }
-  double d() const { return matrix_.M22(); }
-  double e() const { return matrix_.M41(); }
-  double f() const { return matrix_.M42(); }
+  double a() const { return m11(); }
+  double b() const { return m12(); }
+  double c() const { return m21(); }
+  double d() const { return m22(); }
+  double e() const { return m41(); }
+  double f() const { return m42(); }
 
-  double m11() const { return matrix_.M11(); }
-  double m12() const { return matrix_.M12(); }
-  double m13() const { return matrix_.M13(); }
-  double m14() const { return matrix_.M14(); }
-  double m21() const { return matrix_.M21(); }
-  double m22() const { return matrix_.M22(); }
-  double m23() const { return matrix_.M23(); }
-  double m24() const { return matrix_.M24(); }
-  double m31() const { return matrix_.M31(); }
-  double m32() const { return matrix_.M32(); }
-  double m33() const { return matrix_.M33(); }
-  double m34() const { return matrix_.M34(); }
-  double m41() const { return matrix_.M41(); }
-  double m42() const { return matrix_.M42(); }
-  double m43() const { return matrix_.M43(); }
-  double m44() const { return matrix_.M44(); }
+  double m11() const { return matrix_.rc(0, 0); }
+  double m12() const { return matrix_.rc(1, 0); }
+  double m13() const { return matrix_.rc(2, 0); }
+  double m14() const { return matrix_.rc(3, 0); }
+  double m21() const { return matrix_.rc(0, 1); }
+  double m22() const { return matrix_.rc(1, 1); }
+  double m23() const { return matrix_.rc(2, 1); }
+  double m24() const { return matrix_.rc(3, 1); }
+  double m31() const { return matrix_.rc(0, 2); }
+  double m32() const { return matrix_.rc(1, 2); }
+  double m33() const { return matrix_.rc(2, 2); }
+  double m34() const { return matrix_.rc(3, 2); }
+  double m41() const { return matrix_.rc(0, 3); }
+  double m42() const { return matrix_.rc(1, 3); }
+  double m43() const { return matrix_.rc(2, 3); }
+  double m44() const { return matrix_.rc(3, 3); }
 
   bool is2D() const;
   bool isIdentity() const;

@@ -1670,8 +1670,9 @@ PaintLayer* PaintLayer::HitTestLayer(
     STACK_UNINITIALIZED TransformationMatrix inverted_matrix =
         local_transform_state->AccumulatedTransform().Inverse();
     // If the z-vector of the matrix is negative, the back is facing towards the
-    // viewer.
-    if (inverted_matrix.M33() < 0)
+    // viewer. TODO(crbug.com/1359528): Use something like
+    // gfx::Transform::IsBackfaceVisible().
+    if (inverted_matrix.rc(2, 2) < 0)
       return nullptr;
   }
 

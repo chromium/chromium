@@ -506,7 +506,7 @@ TEST(TransformOperationsTest, ZoomTest) {
       Length::Fixed(1), Length::Fixed(2), 3, TransformOperation::kTranslate3D));
   ops.Operations().push_back(PerspectiveTransformOperation::Create(1234));
   ops.Operations().push_back(
-      Matrix3DTransformOperation::Create(TransformationMatrix(
+      Matrix3DTransformOperation::Create(TransformationMatrix::ColMajor(
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)));
 
   // Apply unzoomed ops to unzoomed units, then zoom in
@@ -603,11 +603,11 @@ TEST(TransformOperationsTest, CanBlendWithMatrixTest) {
 TEST(TransformOperationsTest, CanBlendWithMatrix3DTest) {
   TransformOperations ops_a, ops_b;
   ops_a.Operations().push_back(Matrix3DTransformOperation::Create(
-      TransformationMatrix(1, 0, 0, 1, 0, 0)));
+      TransformationMatrix::Affine(1, 0, 0, 1, 0, 0)));
   ops_a.Operations().push_back(
       RotateTransformOperation::Create(0, TransformOperation::kRotate));
   ops_b.Operations().push_back(Matrix3DTransformOperation::Create(
-      TransformationMatrix(2, 0, 0, 2, 0, 0)));
+      TransformationMatrix::Affine(2, 0, 0, 2, 0, 0)));
   ops_b.Operations().push_back(
       RotateTransformOperation::Create(360, TransformOperation::kRotate));
 
@@ -695,7 +695,7 @@ TEST(TransformOperationsTest, BlendPercentPrefixTest) {
   auto translate_ref = TranslateTransformOperation::Create(
       Length::Percent(50), Length::Percent(25), TransformOperation::kTranslate);
   // scale(1.5) rotate(90deg)
-  TransformationMatrix matrix_ref(0, 1.5, -1.5, 0, 0, 0);
+  auto matrix_ref = TransformationMatrix::Affine(0, 1.5, -1.5, 0, 0, 0);
   EXPECT_EQ(*ops_c.Operations()[0], *translate_ref);
   EXPECT_TRANSFORMATION_MATRIX(mat_c, matrix_ref);
 }
@@ -728,22 +728,8 @@ TEST(TransformOperationsTest, OutOfRangePercentage) {
   ops.Apply(gfx::SizeF(800, 600), mat);
 
   // There should not be inf or nan in the transformation result.
-  EXPECT_TRUE(isfinite(mat.M11()));
-  EXPECT_TRUE(isfinite(mat.M12()));
-  EXPECT_TRUE(isfinite(mat.M13()));
-  EXPECT_TRUE(isfinite(mat.M14()));
-  EXPECT_TRUE(isfinite(mat.M21()));
-  EXPECT_TRUE(isfinite(mat.M22()));
-  EXPECT_TRUE(isfinite(mat.M23()));
-  EXPECT_TRUE(isfinite(mat.M24()));
-  EXPECT_TRUE(isfinite(mat.M31()));
-  EXPECT_TRUE(isfinite(mat.M32()));
-  EXPECT_TRUE(isfinite(mat.M33()));
-  EXPECT_TRUE(isfinite(mat.M34()));
-  EXPECT_TRUE(isfinite(mat.M41()));
-  EXPECT_TRUE(isfinite(mat.M42()));
-  EXPECT_TRUE(isfinite(mat.M43()));
-  EXPECT_TRUE(isfinite(mat.M44()));
+  for (int i = 0; i < 16; i++)
+    EXPECT_TRUE(std::isfinite(mat.ColMajorData()[i]));
 }
 
 }  // namespace blink

@@ -120,7 +120,7 @@ void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,
   float y_scale = 2.0f / (up_tan + down_tan);
   float inv_nf = 1.0f / (near_depth - far_depth);
 
-  projection_matrix_ = TransformationMatrix(
+  projection_matrix_ = TransformationMatrix::ColMajor(
       x_scale, 0.0f, 0.0f, 0.0f, 0.0f, y_scale, 0.0f, 0.0f,
       -((left_tan - right_tan) * x_scale * 0.5),
       ((up_tan - down_tan) * y_scale * 0.5), (near_depth + far_depth) * inv_nf,
@@ -134,7 +134,7 @@ void XRViewData::UpdateProjectionMatrixFromAspect(float fovy,
   float f = 1.0f / tanf(fovy / 2);
   float inv_nf = 1.0f / (near_depth - far_depth);
 
-  projection_matrix_ = TransformationMatrix(
+  projection_matrix_ = TransformationMatrix::ColMajor(
       f / aspect, 0.0f, 0.0f, 0.0f, 0.0f, f, 0.0f, 0.0f, 0.0f, 0.0f,
       (far_depth + near_depth) * inv_nf, -1.0f, 0.0f, 0.0f,
       (2.0f * far_depth * near_depth) * inv_nf, 0.0f);
@@ -175,10 +175,10 @@ TransformationMatrix XRViewData::UnprojectPointer(double x,
   y_axis.GetNormalized(&y_axis);
 
   // TODO(bajones): There's probably a more efficient way to do this?
-  TransformationMatrix inv_pointer(x_axis.x(), y_axis.x(), z_axis.x(), 0.0,
-                                   x_axis.y(), y_axis.y(), z_axis.y(), 0.0,
-                                   x_axis.z(), y_axis.z(), z_axis.z(), 0.0, 0.0,
-                                   0.0, 0.0, 1.0);
+  auto inv_pointer = TransformationMatrix::ColMajor(
+      x_axis.x(), y_axis.x(), z_axis.x(), 0.0, x_axis.y(), y_axis.y(),
+      z_axis.y(), 0.0, x_axis.z(), y_axis.z(), z_axis.z(), 0.0, 0.0, 0.0, 0.0,
+      1.0);
   inv_pointer.Translate3d(-point_in_view_space.x(), -point_in_view_space.y(),
                           -point_in_view_space.z());
 

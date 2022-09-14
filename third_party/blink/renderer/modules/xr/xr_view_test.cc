@@ -61,7 +61,7 @@ TEST(XRViewTest, ViewMatrices) {
       GetMatrixDataForTest(view.refSpaceFromView()->TransformMatrix()),
       GetMatrixDataForTest(TransformationMatrix(ref_space_from_view)));
   AssertMatrixEquals(GetMatrixDataForTest(view_data->ProjectionMatrix()),
-                     GetMatrixDataForTest(TransformationMatrix(
+                     GetMatrixDataForTest(TransformationMatrix::ColMajor(
                          0.78128596636, 0, 0, 0, 0, 0.78128596636, 0, 0, 0, 0,
                          -1.00020002, -1, 0, 0, -0.200020002, 0)));
 }

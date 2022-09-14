@@ -1905,11 +1905,9 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformationMatrix(
   if (matrix.IsAffine() && !force_matrix3d) {
     auto* result = MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kMatrix);
     // CSS matrix values are returned in column-major order.
-    double values[6] = {matrix.A(), matrix.B(),  //
-                        matrix.C(), matrix.D(),  //
-                        // E and F are pixel lengths so unzoom
-                        matrix.E() / zoom, matrix.F() / zoom};
-    for (double value : values) {
+    auto unzoomed = matrix.ToAffineTransform().Zoom(1.f / zoom);
+    for (double value : {unzoomed.A(), unzoomed.B(), unzoomed.C(), unzoomed.D(),
+                         unzoomed.E(), unzoomed.F()}) {
       result->Append(*CSSNumericLiteralValue::Create(
           value, CSSPrimitiveValue::UnitType::kNumber));
     }
@@ -1918,19 +1916,11 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformationMatrix(
     CSSFunctionValue* result =
         MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kMatrix3d);
     // CSS matrix values are returned in column-major order.
-    double values[16] = {
-        // Note that the transformation matrix operates on (Length^3 * R).
-        // Each column contains 3 scalars followed by a reciprocal length
-        // (with a value in 1/px) which must be unzoomed accordingly.
-        matrix.M11(), matrix.M12(), matrix.M13(), matrix.M14() * zoom,
-        matrix.M21(), matrix.M22(), matrix.M23(), matrix.M24() * zoom,
-        matrix.M31(), matrix.M32(), matrix.M33(), matrix.M34() * zoom,
-        // Last column has 3 pixel lengths and a scalar
-        matrix.M41() / zoom, matrix.M42() / zoom, matrix.M43() / zoom,
-        matrix.M44()};
-    for (double value : values) {
+    auto unzoomed = matrix;
+    unzoomed.Zoom(1.f / zoom);
+    for (int i = 0; i < 16; i++) {
       result->Append(*CSSNumericLiteralValue::Create(
-          value, CSSPrimitiveValue::UnitType::kNumber));
+          unzoomed.ColMajorData()[i], CSSPrimitiveValue::UnitType::kNumber));
     }
     return result;
   }

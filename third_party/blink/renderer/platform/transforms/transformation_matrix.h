@@ -57,7 +57,6 @@ namespace blink {
 
 class AffineTransform;
 class LayoutRect;
-class JSONArray;
 struct Rotation;
 
 class PLATFORM_EXPORT TransformationMatrix {
@@ -70,118 +69,95 @@ class PLATFORM_EXPORT TransformationMatrix {
   // Throughout this class, we will be speaking in column vector convention.
   // i.e. Applying a transform T to point P is T * P.
   // The elements of the matrix and the vector looks like:
-  // | scale_x  skew_y_x skew_z_x translate_x |   | x |
-  // | skew_x_y scale_y  skew_z_y translate_y | * | y |
-  // | skew_x_z skew_y_z scale_z  translate_z |   | z |
-  // | persp_x  persp_y  persp_z  persp_w     |   | w |
-  // Internally the matrix is stored as a 2-dimensional array in col-major
-  // order. In other words, this is the layout of the matrix:
-  // | matrix_[0][0] matrix_[1][0] matrix_[2][0] matrix_[3][0] |
-  // | matrix_[0][1] matrix_[1][1] matrix_[2][1] matrix_[3][1] |
-  // | matrix_[0][2] matrix_[1][2] matrix_[2][2] matrix_[3][2] |
-  // | matrix_[0][3] matrix_[1][3] matrix_[2][3] matrix_[3][3] |
+  //   \ col
+  // r  \     0        1        2          3
+  // o 0 | scale_x  skew_xy  skew_xz  translate_x |   | x |
+  // w 1 | skew_yx  scale_y  skew_yz  translate_y | * | y |
+  //   2 | skew_zx  skew_zy  scale_z  translate_z |   | z |
+  //   3 | persp_x  persp_y  persp_z  persp_w     |   | w |
+  //
+  // The components correspond to the DOMMatrix mij (i,j = 1..4) components:
+  //   i = col + 1
+  //   j = row + 1
+  constexpr TransformationMatrix()
+      : matrix_{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}} {}
 
-  TransformationMatrix() {
-    MakeIdentity();
-  }
   explicit TransformationMatrix(const AffineTransform&);
-  TransformationMatrix(const TransformationMatrix& t) {
-    *this = t;
-  }
-  TransformationMatrix(double a,
-                       double b,
-                       double c,
-                       double d,
-                       double e,
-                       double f) {
-    SetMatrix(a, b, c, d, e, f);
-  }
-  TransformationMatrix(double m11,
-                       double m12,
-                       double m13,
-                       double m14,
-                       double m21,
-                       double m22,
-                       double m23,
-                       double m24,
-                       double m31,
-                       double m32,
-                       double m33,
-                       double m34,
-                       double m41,
-                       double m42,
-                       double m43,
-                       double m44) {
-    SetMatrix(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41,
-              m42, m43, m44);
-  }
-
   explicit TransformationMatrix(const gfx::Transform&);
-  explicit TransformationMatrix(const SkM44& matrix) {
-    SetMatrix(
-        matrix.rc(0, 0), matrix.rc(1, 0), matrix.rc(2, 0), matrix.rc(3, 0),
-        matrix.rc(0, 1), matrix.rc(1, 1), matrix.rc(2, 1), matrix.rc(3, 1),
-        matrix.rc(0, 2), matrix.rc(1, 2), matrix.rc(2, 2), matrix.rc(3, 2),
-        matrix.rc(0, 3), matrix.rc(1, 3), matrix.rc(2, 3), matrix.rc(3, 3));
+  explicit TransformationMatrix(const SkM44& matrix)
+      : TransformationMatrix(matrix.rc(0, 0),
+                             matrix.rc(1, 0),
+                             matrix.rc(2, 0),
+                             matrix.rc(3, 0),
+                             matrix.rc(0, 1),
+                             matrix.rc(1, 1),
+                             matrix.rc(2, 1),
+                             matrix.rc(3, 1),
+                             matrix.rc(0, 2),
+                             matrix.rc(1, 2),
+                             matrix.rc(2, 2),
+                             matrix.rc(3, 2),
+                             matrix.rc(0, 3),
+                             matrix.rc(1, 3),
+                             matrix.rc(2, 3),
+                             matrix.rc(3, 3)) {}
+
+  double rc(int row, int col) const {
+    CheckRowCol(row, col);
+    return matrix_[col][row];
+  }
+  void set_rc(int row, int col, double v) {
+    CheckRowCol(row, col);
+    matrix_[col][row] = v;
   }
 
-  void SetMatrix(double a, double b, double c, double d, double e, double f) {
-    matrix_[0][0] = a;
-    matrix_[0][1] = b;
-    matrix_[0][2] = 0;
-    matrix_[0][3] = 0;
-    matrix_[1][0] = c;
-    matrix_[1][1] = d;
-    matrix_[1][2] = 0;
-    matrix_[1][3] = 0;
-    matrix_[2][0] = 0;
-    matrix_[2][1] = 0;
-    matrix_[2][2] = 1;
-    matrix_[2][3] = 0;
-    matrix_[3][0] = e;
-    matrix_[3][1] = f;
-    matrix_[3][2] = 0;
-    matrix_[3][3] = 1;
+  [[nodiscard]] static TransformationMatrix Affine(double a,
+                                                   double b,
+                                                   double c,
+                                                   double d,
+                                                   double e,
+                                                   double f) {
+    return ColMajor(a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, e, f, 0, 1);
   }
 
-  void SetMatrix(double m11,
-                 double m12,
-                 double m13,
-                 double m14,
-                 double m21,
-                 double m22,
-                 double m23,
-                 double m24,
-                 double m31,
-                 double m32,
-                 double m33,
-                 double m34,
-                 double m41,
-                 double m42,
-                 double m43,
-                 double m44) {
-    matrix_[0][0] = m11;
-    matrix_[0][1] = m12;
-    matrix_[0][2] = m13;
-    matrix_[0][3] = m14;
-    matrix_[1][0] = m21;
-    matrix_[1][1] = m22;
-    matrix_[1][2] = m23;
-    matrix_[1][3] = m24;
-    matrix_[2][0] = m31;
-    matrix_[2][1] = m32;
-    matrix_[2][2] = m33;
-    matrix_[2][3] = m34;
-    matrix_[3][0] = m41;
-    matrix_[3][1] = m42;
-    matrix_[3][2] = m43;
-    matrix_[3][3] = m44;
+  [[nodiscard]] static TransformationMatrix ColMajor(double r0c0,
+                                                     double r1c0,
+                                                     double r2c0,
+                                                     double r3c0,
+                                                     double r0c1,
+                                                     double r1c1,
+                                                     double r2c1,
+                                                     double r3c1,
+                                                     double r0c2,
+                                                     double r1c2,
+                                                     double r2c2,
+                                                     double r3c2,
+                                                     double r0c3,
+                                                     double r1c3,
+                                                     double r2c3,
+                                                     double r3c3) {
+    return TransformationMatrix(r0c0, r1c0, r2c0, r3c0, r0c1, r1c1, r2c1, r3c1,
+                                r0c2, r1c2, r2c2, r3c2, r0c3, r1c3, r2c3, r3c3);
   }
 
-  TransformationMatrix& operator=(const TransformationMatrix&) = default;
+  [[nodiscard]] static TransformationMatrix ColMajor(const double v[16]) {
+    return ColMajor(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9],
+                    v[10], v[11], v[12], v[13], v[14], v[15]);
+  }
+  void GetColMajor(double v[16]) const {
+    std::copy(ColMajorData(), ColMajorData() + 16, v);
+  }
+  const double* ColMajorData() const { return &matrix_[0][0]; }
+
+  [[nodiscard]] static TransformationMatrix ColMajorF(const float v[16]) {
+    return ColMajor(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9],
+                    v[10], v[11], v[12], v[13], v[14], v[15]);
+  }
+  // This method preserves NaN and infinity components.
+  void GetColMajorF(float v[16]) const;
 
   TransformationMatrix& MakeIdentity() {
-    SetMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    *this = TransformationMatrix();
     return *this;
   }
 
@@ -190,6 +166,10 @@ class PLATFORM_EXPORT TransformationMatrix {
         (Col(0) == Double4{1, 0, 0, 0}) & (Col(1) == Double4{0, 1, 0, 0}) &
         (Col(2) == Double4{0, 0, 1, 0}) & (Col(3) == Double4{0, 0, 0, 1}));
   }
+
+  // The float values produced by the following methods are clamped with
+  // ClampToFloat() which converts NaN to 0 and +-infinity to minimum/maximum
+  // value of float.
 
   // Map a 3D point through the transform, returning a 3D point.
   [[nodiscard]] gfx::Point3F MapPoint(const gfx::Point3F&) const;
@@ -227,62 +207,6 @@ class PLATFORM_EXPORT TransformationMatrix {
       const gfx::QuadF&) const;
 
   void TransformBox(gfx::BoxF&) const;
-
-  // Important: These indices are spoken in col-major order. i.e.:
-  // | M11() M21() M31() M41() |
-  // | M12() M22() M32() M42() |
-  // | M13() M23() M33() M43() |
-  // | M14() M24() M34() M44() |
-  double M11() const { return matrix_[0][0]; }
-  void SetM11(double f) { matrix_[0][0] = f; }
-  double M12() const { return matrix_[0][1]; }
-  void SetM12(double f) { matrix_[0][1] = f; }
-  double M13() const { return matrix_[0][2]; }
-  void SetM13(double f) { matrix_[0][2] = f; }
-  double M14() const { return matrix_[0][3]; }
-  void SetM14(double f) { matrix_[0][3] = f; }
-  double M21() const { return matrix_[1][0]; }
-  void SetM21(double f) { matrix_[1][0] = f; }
-  double M22() const { return matrix_[1][1]; }
-  void SetM22(double f) { matrix_[1][1] = f; }
-  double M23() const { return matrix_[1][2]; }
-  void SetM23(double f) { matrix_[1][2] = f; }
-  double M24() const { return matrix_[1][3]; }
-  void SetM24(double f) { matrix_[1][3] = f; }
-  double M31() const { return matrix_[2][0]; }
-  void SetM31(double f) { matrix_[2][0] = f; }
-  double M32() const { return matrix_[2][1]; }
-  void SetM32(double f) { matrix_[2][1] = f; }
-  double M33() const { return matrix_[2][2]; }
-  void SetM33(double f) { matrix_[2][2] = f; }
-  double M34() const { return matrix_[2][3]; }
-  void SetM34(double f) { matrix_[2][3] = f; }
-  double M41() const { return matrix_[3][0]; }
-  void SetM41(double f) { matrix_[3][0] = f; }
-  double M42() const { return matrix_[3][1]; }
-  void SetM42(double f) { matrix_[3][1] = f; }
-  double M43() const { return matrix_[3][2]; }
-  void SetM43(double f) { matrix_[3][2] = f; }
-  double M44() const { return matrix_[3][3]; }
-  void SetM44(double f) { matrix_[3][3] = f; }
-
-  double A() const { return matrix_[0][0]; }
-  void SetA(double a) { matrix_[0][0] = a; }
-
-  double B() const { return matrix_[0][1]; }
-  void SetB(double b) { matrix_[0][1] = b; }
-
-  double C() const { return matrix_[1][0]; }
-  void SetC(double c) { matrix_[1][0] = c; }
-
-  double D() const { return matrix_[1][1]; }
-  void SetD(double d) { matrix_[1][1] = d; }
-
-  double E() const { return matrix_[3][0]; }
-  void SetE(double e) { matrix_[3][0] = e; }
-
-  double F() const { return matrix_[3][1]; }
-  void SetF(double f) { matrix_[3][1] = f; }
 
   // *this = *this * mat.
   TransformationMatrix& Multiply(const TransformationMatrix&);
@@ -429,6 +353,13 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   bool IsInteger2DTranslation() const;
 
+  // Returns whether this matrix can transform a z=0 plane to something
+  // containing points where z != 0. This is primarily intended for metrics.
+  bool Creates3D() const {
+    return !gfx::AllTrue(Double4{matrix_[0][2], matrix_[1][2], 1,
+                                 matrix_[3][2]} == Double4{0, 0, 1, 0});
+  }
+
   // Returns true if axis-aligned 2d rects will remain axis-aligned after being
   // transformed by this matrix.
   bool Preserves2dAxisAlignment() const;
@@ -438,18 +369,25 @@ class PLATFORM_EXPORT TransformationMatrix {
                                  matrix_[3][3]} == Double4{0, 0, 0, 1});
   }
 
-  // If this transformation is identity or 2D translation, returns the
-  // translation.
+  // Returns the components that create a 2d translation, ignoring other
+  // components. This may be lossy.
   gfx::Vector2dF To2DTranslation() const {
-    DCHECK(IsIdentityOr2DTranslation());
     return gfx::Vector2dF(ClampToFloat(matrix_[3][0]),
                           ClampToFloat(matrix_[3][1]));
   }
 
-  typedef float FloatMatrix4[16];
-  void ToColumnMajorFloatArray(FloatMatrix4& result) const;
+  // Returns the components that create a 3d translation, ignoring other
+  // components. This may be lossy.
+  gfx::Vector3dF To3dTranslation() const {
+    return gfx::Vector3dF(ClampToFloat(matrix_[3][0]),
+                          ClampToFloat(matrix_[3][1]),
+                          ClampToFloat(matrix_[3][2]));
+  }
 
+  // This method converts double to float using ClampToFloat() which converts
+  // NaN to 0 and +-infinity to minimum/maximum value of float.
   SkM44 ToSkM44() const;
+  // Performs same conversions as ToSkM44.
   gfx::Transform ToTransform() const;
 
   // If |asMatrix|, return the matrix in row-major order. Otherwise, return
@@ -457,6 +395,36 @@ class PLATFORM_EXPORT TransformationMatrix {
   String ToString(bool as_matrix = false) const;
 
  private:
+  // Used internally to construct TransformationMatrix with parameters in
+  // col-major order.
+  TransformationMatrix(double r0c0,
+                       double r1c0,
+                       double r2c0,
+                       double r3c0,
+                       double r0c1,
+                       double r1c1,
+                       double r2c1,
+                       double r3c1,
+                       double r0c2,
+                       double r1c2,
+                       double r2c2,
+                       double r3c2,
+                       double r0c3,
+                       double r1c3,
+                       double r2c3,
+                       double r3c3)
+      : matrix_{{r0c0, r1c0, r2c0, r3c0},
+                {r0c1, r1c1, r2c1, r3c1},
+                {r0c2, r1c2, r2c2, r3c2},
+                {r0c3, r1c3, r2c3, r3c3}} {}
+
+  void CheckRowCol(int row, int col) const {
+    DCHECK_GE(row, 0);
+    DCHECK_LT(row, 4);
+    DCHECK_GE(col, 0);
+    DCHECK_LT(col, 4);
+  }
+
   gfx::PointF TranslatePoint(const gfx::PointF&) const;
   gfx::PointF InternalMapPoint(const gfx::PointF&) const;
   gfx::Point3F InternalMapPoint(const gfx::Point3F&) const;
@@ -483,13 +451,12 @@ class PLATFORM_EXPORT TransformationMatrix {
                                                    Double4& c2,
                                                    Double4& c3);
 
+  // This is indexed by [col][row].
   double matrix_[4][4];
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
                                          const TransformationMatrix&);
-PLATFORM_EXPORT std::unique_ptr<JSONArray> TransformAsJSONArray(
-    const TransformationMatrix&);
 
 }  // namespace blink
 

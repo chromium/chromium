@@ -32,7 +32,6 @@
 
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -274,16 +273,16 @@ void Slerp(TransformationMatrix::DecomposedType& from_decomp,
   from_decomp.quaternion_w = qc.w();
 }
 
-TransformationMatrix::TransformationMatrix(const gfx::Transform& t) {
-  const auto& matrix = t.matrix();
-  SetMatrix(matrix.rc(0, 0), matrix.rc(1, 0), matrix.rc(2, 0), matrix.rc(3, 0),
-            matrix.rc(0, 1), matrix.rc(1, 1), matrix.rc(2, 1), matrix.rc(3, 1),
-            matrix.rc(0, 2), matrix.rc(1, 2), matrix.rc(2, 2), matrix.rc(3, 2),
-            matrix.rc(0, 3), matrix.rc(1, 3), matrix.rc(2, 3), matrix.rc(3, 3));
-}
+// clang-format off
+TransformationMatrix::TransformationMatrix(const gfx::Transform& t)
+    : TransformationMatrix(t.rc(0, 0), t.rc(1, 0), t.rc(2, 0), t.rc(3, 0),
+                           t.rc(0, 1), t.rc(1, 1), t.rc(2, 1), t.rc(3, 1),
+                           t.rc(0, 2), t.rc(1, 2), t.rc(2, 2), t.rc(3, 2),
+                           t.rc(0, 3), t.rc(1, 3), t.rc(2, 3), t.rc(3, 3)) {}
+// clang-format on
 
 TransformationMatrix::TransformationMatrix(const AffineTransform& t) {
-  SetMatrix(t.A(), t.B(), t.C(), t.D(), t.E(), t.F());
+  *this = Affine(t.A(), t.B(), t.C(), t.D(), t.E(), t.F());
 }
 
 TransformationMatrix& TransformationMatrix::Scale(double s) {
@@ -307,7 +306,7 @@ gfx::PointF TransformationMatrix::ProjectPoint(const gfx::PointF& p,
   if (clamped)
     *clamped = false;
 
-  if (M33() == 0) {
+  if (matrix_[2][2] == 0) {
     // In this case, the projection plane is parallel to the ray we are trying
     // to trace, and there is no well-defined value for the projection.
     return gfx::PointF();
@@ -315,12 +314,16 @@ gfx::PointF TransformationMatrix::ProjectPoint(const gfx::PointF& p,
 
   double x = p.x();
   double y = p.y();
-  double z = -(M13() * x + M23() * y + M43()) / M33();
+  double z =
+      -(matrix_[0][2] * x + matrix_[1][2] * y + matrix_[3][2]) / matrix_[2][2];
 
-  double out_x = x * M11() + y * M21() + z * M31() + M41();
-  double out_y = x * M12() + y * M22() + z * M32() + M42();
+  double out_x =
+      x * matrix_[0][0] + y * matrix_[1][0] + z * matrix_[2][0] + matrix_[3][0];
+  double out_y =
+      x * matrix_[0][1] + y * matrix_[1][1] + z * matrix_[2][1] + matrix_[3][1];
 
-  double w = x * M14() + y * M24() + z * M34() + M44();
+  double w =
+      x * matrix_[0][3] + y * matrix_[1][3] + z * matrix_[2][3] + matrix_[3][3];
   if (w <= 0) {
     // Using int max causes overflow when other code uses the projected point.
     // To represent infinity yet reduce the risk of overflow, we use a large but
@@ -642,7 +645,7 @@ TransformationMatrix& TransformationMatrix::PostTranslate3d(double tx,
 }
 
 TransformationMatrix& TransformationMatrix::Skew(double sx, double sy) {
-  // angles are in degrees. Switch to radians
+  // Angles are in degrees. Switch to radians.
   sx = Deg2rad(sx);
   sy = Deg2rad(sy);
 
@@ -789,15 +792,15 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   if (IsIdentityOrTranslation()) {
     // Identity matrix.
     if (gfx::AllTrue(Col(3) == Double4{0, 0, 0, 1})) {
-      if (result)
+      if (!check_invertibility_only)
         result->MakeIdentity();
       return true;
     }
 
     // Translation.
     if (!check_invertibility_only) {
-      result->SetMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -matrix_[3][0],
-                        -matrix_[3][1], -matrix_[3][2], 1);
+      *result = TransformationMatrix().Translate3d(
+          -matrix_[3][0], -matrix_[3][1], -matrix_[3][2]);
     }
     return true;
   }
@@ -1152,19 +1155,19 @@ void TransformationMatrix::Recompose(const DecomposedType& decomp) {
   // now apply skew
   if (decomp.skew_yz) {
     TransformationMatrix tmp;
-    tmp.SetM32(decomp.skew_yz);
+    tmp.matrix_[2][1] = decomp.skew_yz;
     Multiply(tmp);
   }
 
   if (decomp.skew_xz) {
     TransformationMatrix tmp;
-    tmp.SetM31(decomp.skew_xz);
+    tmp.matrix_[2][0] = decomp.skew_xz;
     Multiply(tmp);
   }
 
   if (decomp.skew_xy) {
     TransformationMatrix tmp;
-    tmp.SetM21(decomp.skew_xy);
+    tmp.matrix_[1][0] = decomp.skew_xy;
     Multiply(tmp);
   }
 
@@ -1176,22 +1179,22 @@ void TransformationMatrix::Recompose2D(const Decomposed2dType& decomp) {
   MakeIdentity();
 
   // Translate transform.
-  SetM41(decomp.translate_x);
-  SetM42(decomp.translate_y);
+  matrix_[3][0] = decomp.translate_x;
+  matrix_[3][1] = decomp.translate_y;
 
   // Rotate transform.
-  double cosAngle = cos(decomp.angle);
-  double sinAngle = sin(decomp.angle);
-  SetM11(cosAngle);
-  SetM21(-sinAngle);
-  SetM12(sinAngle);
-  SetM22(cosAngle);
+  double cos_angle = cos(decomp.angle);
+  double sin_angle = sin(decomp.angle);
+  matrix_[0][0] = cos_angle;
+  matrix_[1][0] = -sin_angle;
+  matrix_[0][1] = sin_angle;
+  matrix_[1][1] = cos_angle;
 
   // skew transform.
   if (decomp.skew_xy) {
-    TransformationMatrix skewTransform;
-    skewTransform.SetM21(decomp.skew_xy);
-    Multiply(skewTransform);
+    TransformationMatrix skew_transform;
+    skew_transform.matrix_[1][0] = decomp.skew_xy;
+    Multiply(skew_transform);
   }
 
   // Scale transform.
@@ -1229,7 +1232,7 @@ bool TransformationMatrix::Preserves2dAxisAlignment() const {
   // If the matrix does have perspective component that is affected by x or y
   // values: The current implementation conservatively assumes that axis
   // alignment is not preserved.
-  bool has_x_or_y_perspective = M14() != 0 || M24() != 0;
+  bool has_x_or_y_perspective = matrix_[0][3] != 0 || matrix_[1][3] != 0;
   if (has_x_or_y_perspective)
     return false;
 
@@ -1241,19 +1244,19 @@ bool TransformationMatrix::Preserves2dAxisAlignment() const {
   int num_non_zero_in_row_2 = 0;
   int num_non_zero_in_col_1 = 0;
   int num_non_zero_in_col_2 = 0;
-  if (std::abs(M11()) > kEpsilon) {
+  if (std::abs(matrix_[0][0]) > kEpsilon) {
     num_non_zero_in_col_1++;
     num_non_zero_in_row_1++;
   }
-  if (std::abs(M12()) > kEpsilon) {
+  if (std::abs(matrix_[0][1]) > kEpsilon) {
     num_non_zero_in_col_1++;
     num_non_zero_in_row_2++;
   }
-  if (std::abs(M21()) > kEpsilon) {
+  if (std::abs(matrix_[1][0]) > kEpsilon) {
     num_non_zero_in_col_2++;
     num_non_zero_in_row_1++;
   }
-  if (std::abs(M22()) > kEpsilon) {
+  if (std::abs(matrix_[1][1]) > kEpsilon) {
     num_non_zero_in_col_2++;
     num_non_zero_in_row_2++;
   }
@@ -1262,42 +1265,34 @@ bool TransformationMatrix::Preserves2dAxisAlignment() const {
          num_non_zero_in_col_1 <= 1 && num_non_zero_in_col_2 <= 1;
 }
 
-void TransformationMatrix::ToColumnMajorFloatArray(FloatMatrix4& result) const {
-  result[0] = ClampToFloat(M11());
-  result[1] = ClampToFloat(M12());
-  result[2] = ClampToFloat(M13());
-  result[3] = ClampToFloat(M14());
-  result[4] = ClampToFloat(M21());
-  result[5] = ClampToFloat(M22());
-  result[6] = ClampToFloat(M23());
-  result[7] = ClampToFloat(M24());
-  result[8] = ClampToFloat(M31());
-  result[9] = ClampToFloat(M32());
-  result[10] = ClampToFloat(M33());
-  result[11] = ClampToFloat(M34());
-  result[12] = ClampToFloat(M41());
-  result[13] = ClampToFloat(M42());
-  result[14] = ClampToFloat(M43());
-  result[15] = ClampToFloat(M44());
+void TransformationMatrix::GetColMajorF(float result[16]) const {
+  // This doesn't use ClampToFloat() intentionally to preserve NaN and infinity
+  // values.
+  for (int i = 0; i < 16; i++)
+    result[i] = static_cast<float>(ColMajorData()[i]);
 }
 
 SkM44 TransformationMatrix::ToSkM44() const {
-  return SkM44(ClampToFloat(M11()), ClampToFloat(M21()), ClampToFloat(M31()),
-               ClampToFloat(M41()), ClampToFloat(M12()), ClampToFloat(M22()),
-               ClampToFloat(M32()), ClampToFloat(M42()), ClampToFloat(M13()),
-               ClampToFloat(M23()), ClampToFloat(M33()), ClampToFloat(M43()),
-               ClampToFloat(M14()), ClampToFloat(M24()), ClampToFloat(M34()),
-               ClampToFloat(M44()));
+  return SkM44(ClampToFloat(matrix_[0][0]), ClampToFloat(matrix_[1][0]),
+               ClampToFloat(matrix_[2][0]), ClampToFloat(matrix_[3][0]),
+               ClampToFloat(matrix_[0][1]), ClampToFloat(matrix_[1][1]),
+               ClampToFloat(matrix_[2][1]), ClampToFloat(matrix_[3][1]),
+               ClampToFloat(matrix_[0][2]), ClampToFloat(matrix_[1][2]),
+               ClampToFloat(matrix_[2][2]), ClampToFloat(matrix_[3][2]),
+               ClampToFloat(matrix_[0][3]), ClampToFloat(matrix_[1][3]),
+               ClampToFloat(matrix_[2][3]), ClampToFloat(matrix_[3][3]));
 }
 
 gfx::Transform TransformationMatrix::ToTransform() const {
   return gfx::Transform(
-      ClampToFloat(M11()), ClampToFloat(M21()), ClampToFloat(M31()),
-      ClampToFloat(M41()), ClampToFloat(M12()), ClampToFloat(M22()),
-      ClampToFloat(M32()), ClampToFloat(M42()), ClampToFloat(M13()),
-      ClampToFloat(M23()), ClampToFloat(M33()), ClampToFloat(M43()),
-      ClampToFloat(M14()), ClampToFloat(M24()), ClampToFloat(M34()),
-      ClampToFloat(M44()));
+      ClampToFloat(matrix_[0][0]), ClampToFloat(matrix_[1][0]),
+      ClampToFloat(matrix_[2][0]), ClampToFloat(matrix_[3][0]),
+      ClampToFloat(matrix_[0][1]), ClampToFloat(matrix_[1][1]),
+      ClampToFloat(matrix_[2][1]), ClampToFloat(matrix_[3][1]),
+      ClampToFloat(matrix_[0][2]), ClampToFloat(matrix_[1][2]),
+      ClampToFloat(matrix_[2][2]), ClampToFloat(matrix_[3][2]),
+      ClampToFloat(matrix_[0][3]), ClampToFloat(matrix_[1][3]),
+      ClampToFloat(matrix_[2][3]), ClampToFloat(matrix_[3][3]));
 }
 
 String TransformationMatrix::ToString(bool as_matrix) const {
@@ -1306,8 +1301,10 @@ String TransformationMatrix::ToString(bool as_matrix) const {
     return String::Format(
         "[%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%lg,\n%lg,%lg,%lg,%"
         "lg]",
-        M11(), M21(), M31(), M41(), M12(), M22(), M32(), M42(), M13(), M23(),
-        M33(), M43(), M14(), M24(), M34(), M44());
+        matrix_[0][0], matrix_[1][0], matrix_[2][0], matrix_[3][0],
+        matrix_[0][1], matrix_[1][1], matrix_[2][1], matrix_[3][1],
+        matrix_[0][2], matrix_[1][2], matrix_[2][2], matrix_[3][2],
+        matrix_[0][3], matrix_[1][3], matrix_[2][3], matrix_[3][3]);
   }
 
   TransformationMatrix::DecomposedType decomposition;
@@ -1338,47 +1335,6 @@ String TransformationMatrix::ToString(bool as_matrix) const {
 std::ostream& operator<<(std::ostream& ostream,
                          const TransformationMatrix& transform) {
   return ostream << transform.ToString();
-}
-
-static double RoundCloseToZero(double number) {
-  return std::abs(number) < 1e-7 ? 0 : number;
-}
-
-std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
-  auto array = std::make_unique<JSONArray>();
-  {
-    auto row = std::make_unique<JSONArray>();
-    row->PushDouble(RoundCloseToZero(t.M11()));
-    row->PushDouble(RoundCloseToZero(t.M12()));
-    row->PushDouble(RoundCloseToZero(t.M13()));
-    row->PushDouble(RoundCloseToZero(t.M14()));
-    array->PushArray(std::move(row));
-  }
-  {
-    auto row = std::make_unique<JSONArray>();
-    row->PushDouble(RoundCloseToZero(t.M21()));
-    row->PushDouble(RoundCloseToZero(t.M22()));
-    row->PushDouble(RoundCloseToZero(t.M23()));
-    row->PushDouble(RoundCloseToZero(t.M24()));
-    array->PushArray(std::move(row));
-  }
-  {
-    auto row = std::make_unique<JSONArray>();
-    row->PushDouble(RoundCloseToZero(t.M31()));
-    row->PushDouble(RoundCloseToZero(t.M32()));
-    row->PushDouble(RoundCloseToZero(t.M33()));
-    row->PushDouble(RoundCloseToZero(t.M34()));
-    array->PushArray(std::move(row));
-  }
-  {
-    auto row = std::make_unique<JSONArray>();
-    row->PushDouble(RoundCloseToZero(t.M41()));
-    row->PushDouble(RoundCloseToZero(t.M42()));
-    row->PushDouble(RoundCloseToZero(t.M43()));
-    row->PushDouble(RoundCloseToZero(t.M44()));
-    array->PushArray(std::move(row));
-  }
-  return array;
 }
 
 }  // namespace blink

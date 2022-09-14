@@ -116,10 +116,7 @@ CompositingReasons CompositingReasonsFor3DTransform(
 
     // We want to track whether (a) this element is in a preserve-3d scene and
     // (b) has a matrix that puts it into the third dimension in some way.
-    // The test we use for (b) is stricter than !matrix.Is2dTransform() or
-    // !matrix.IsFlat(); we're interested *only* in things that cause this
-    // element to have a nonzero z position within the 3-D scene.
-    if (matrix.M13() != 0.0 || matrix.M23() != 0.0 || matrix.M43() != 0.0) {
+    if (matrix.Creates3D()) {
       LayoutObject* parent_for_element =
           layout_object.NearestAncestorForElement();
       if (parent_for_element && parent_for_element->Preserves3D()) {

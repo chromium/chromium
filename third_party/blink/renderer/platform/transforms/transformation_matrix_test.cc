@@ -43,8 +43,9 @@ void SetRotationDecomp(double x,
 
 TEST(TransformationMatrixTest, NonInvertableBlendTest) {
   TransformationMatrix from;
-  TransformationMatrix to(2.7133590938, 0.0, 0.0, 0.0, 0.0, 2.4645137761, 0.0,
-                          0.0, 0.0, 0.0, 0.00, 0.01, 0.02, 0.03, 0.04, 0.05);
+  auto to = TransformationMatrix::ColMajor(2.7133590938, 0.0, 0.0, 0.0, 0.0,
+                                           2.4645137761, 0.0, 0.0, 0.0, 0.0,
+                                           0.00, 0.01, 0.02, 0.03, 0.04, 0.05);
   TransformationMatrix result;
 
   result = to;
@@ -122,6 +123,13 @@ TEST(TransformationMatrixTest, To2DTranslation) {
   EXPECT_EQ(gfx::Vector2dF(30, -40), matrix.To2DTranslation());
 }
 
+TEST(TransformationMatrixTest, To3dTranslation) {
+  TransformationMatrix matrix;
+  EXPECT_EQ(gfx::Vector3dF(), matrix.To3dTranslation());
+  matrix.Translate3d(30, -40, -10);
+  EXPECT_EQ(gfx::Vector3dF(30, -40, -10), matrix.To3dTranslation());
+}
+
 TEST(TransformationMatrixTest, ApplyTransformOrigin) {
   TransformationMatrix matrix;
 
@@ -140,40 +148,40 @@ TEST(TransformationMatrixTest, ApplyTransformOrigin) {
 
 TEST(TransformationMatrixTest, Multiplication) {
   // clang-format off
-  TransformationMatrix a(1, 1, 1, 1,
-                         2, 2, 2, 2,
-                         3, 3, 3, 3,
-                         4, 4, 4, 4);
-  TransformationMatrix b(1, 2, 3, 5,
-                         1, 2, 3, 4,
-                         1, 2, 3, 4,
-                         1, 2, 3, 4);
-  TransformationMatrix expected_a_times_b(34, 34, 34, 34,
-                                          30, 30, 30, 30,
-                                          30, 30, 30, 30,
-                                          30, 30, 30, 30);
+  auto a = TransformationMatrix::ColMajor(1, 2, 3, 4,
+                                          2, 3, 4, 5,
+                                          3, 4, 5, 6,
+                                          4, 5, 6, 7);
+  auto b = TransformationMatrix::ColMajor(1, 3, 5, 7,
+                                          2, 4, 6, 8,
+                                          3, 5, 7, 9,
+                                          4, 6, 8, 10);
+  auto expected_a_times_b = TransformationMatrix::ColMajor(50, 66, 82, 98,
+                                                           60, 80, 100, 120,
+                                                           70, 94, 118, 142,
+                                                           80, 108, 136, 164);
   // clang-format on
 
-  EXPECT_EQ(expected_a_times_b, a * b);
+  EXPECT_EQ(expected_a_times_b, a * b) << (a * b).ToString(true);
 
   a.Multiply(b);
-  EXPECT_EQ(expected_a_times_b, a);
+  EXPECT_EQ(expected_a_times_b, a) << a.ToString(true);
 }
 
 TEST(TransformationMatrixTest, MultiplicationSelf) {
   // clang-format off
-  TransformationMatrix a(1, 2, 3, 4,
-                         5, 6, 7, 8,
-                         9, 10, 11, 12,
-                         13, 14, 15, 16);
-  TransformationMatrix expected_a_times_a(90, 100, 110, 120,
-                                          202, 228, 254, 280,
-                                          314, 356, 398, 440,
-                                          426, 484, 542, 600);
+  auto a = TransformationMatrix::ColMajor(1, 2, 3, 4,
+                                          5, 6, 7, 8,
+                                          9, 10, 11, 12,
+                                          13, 14, 15, 16);
+  auto expected_a_times_a = TransformationMatrix::ColMajor(90, 100, 110, 120,
+                                                           202, 228, 254, 280,
+                                                           314, 356, 398, 440,
+                                                           426, 484, 542, 600);
   // clang-format on
 
   a.Multiply(a);
-  EXPECT_EQ(expected_a_times_a, a);
+  EXPECT_EQ(expected_a_times_a, a) << a.ToString(true);
 }
 
 TEST(TransformationMatrixTest, ValidRangedMatrix) {
@@ -253,8 +261,8 @@ TEST(TransformationMatrixTest, ValidRangedMatrix) {
       EXPECT_TRUE(is_valid_array16(a));
     };
 
-    test(TransformationMatrix(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
-                              mv, mv, mv, mv));
+    test(TransformationMatrix::ColMajor(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
+                                        mv, mv, mv, mv, mv, mv));
     test(TransformationMatrix().Translate(mv, mv));
   }
 }
@@ -262,8 +270,9 @@ TEST(TransformationMatrixTest, ValidRangedMatrix) {
 TEST(TransformationMatrixTest, BasicOperations) {
   // Just some arbitrary matrix that introduces no rounding, and is unlikely
   // to commute with other operations.
-  TransformationMatrix m(2.f, 3.f, 5.f, 0.f, 7.f, 11.f, 13.f, 0.f, 17.f, 19.f,
-                         23.f, 0.f, 29.f, 31.f, 37.f, 1.f);
+  auto m = TransformationMatrix::ColMajor(2.f, 3.f, 5.f, 0.f, 7.f, 11.f, 13.f,
+                                          0.f, 17.f, 19.f, 23.f, 0.f, 29.f,
+                                          31.f, 37.f, 1.f);
 
   gfx::Point3F p(41.f, 43.f, 47.f);
 
@@ -418,7 +427,8 @@ TEST(TransformationMatrixTest, BasicOperations) {
 }
 
 TEST(TransformationMatrixTest, ToString) {
-  TransformationMatrix zeros(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  auto zeros = TransformationMatrix::ColMajor(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                              0, 0, 0, 0, 0);
   EXPECT_EQ("[0,0,0,0,\n0,0,0,0,\n0,0,0,0,\n0,0,0,0] (degenerate)",
             zeros.ToString());
   EXPECT_EQ("[0,0,0,0,\n0,0,0,0,\n0,0,0,0,\n0,0,0,0]", zeros.ToString(true));
@@ -433,8 +443,8 @@ TEST(TransformationMatrixTest, ToString) {
   EXPECT_EQ("[1,0,0,3,\n0,1,0,5,\n0,0,1,7,\n0,0,0,1]",
             translation.ToString(true));
 
-  TransformationMatrix column_major_constructor(1, 1, 1, 6, 2, 2, 0, 7, 3, 3, 3,
-                                                8, 4, 4, 4, 9);
+  auto column_major_constructor = TransformationMatrix::ColMajor(
+      1, 1, 1, 6, 2, 2, 0, 7, 3, 3, 3, 8, 4, 4, 4, 9);
   // [ 1 2 3 4 ]
   // [ 1 2 3 4 ]
   // [ 1 0 3 4 ]
@@ -444,9 +454,9 @@ TEST(TransformationMatrixTest, ToString) {
 }
 
 TEST(TransformationMatrix, IsInvertible) {
-  EXPECT_FALSE(
-      TransformationMatrix(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-          .IsInvertible());
+  EXPECT_FALSE(TransformationMatrix::ColMajor(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                              0, 0, 0, 0, 0)
+                   .IsInvertible());
   EXPECT_TRUE(TransformationMatrix().IsInvertible());
   EXPECT_TRUE(TransformationMatrix().Translate3d(10, 20, 30).IsInvertible());
   EXPECT_TRUE(TransformationMatrix().Scale(1e-8).IsInvertible());
@@ -482,34 +492,30 @@ TEST(TransformationMatrix, Inverse) {
 
 TEST(TransformationMatrixTest, Blend2dXFlipTest) {
   // Test 2D x-flip (crbug.com/797472).
-  TransformationMatrix from;
-  from.SetMatrix(1, 0, 0, 1, 100, 150);
-  TransformationMatrix to;
-  to.SetMatrix(-1, 0, 0, 1, 400, 150);
+  auto from = TransformationMatrix::Affine(1, 0, 0, 1, 100, 150);
+  auto to = TransformationMatrix::Affine(-1, 0, 0, 1, 400, 150);
 
-  EXPECT_TRUE(from.Is2dTransform());
-  EXPECT_TRUE(to.Is2dTransform());
+  EXPECT_TRUE(from.IsAffine());
+  EXPECT_TRUE(to.IsAffine());
 
   // OK for interpolated transform to be degenerate.
   TransformationMatrix result = to;
   result.Blend(from, 0.5);
-  TransformationMatrix expected;
-  expected.SetMatrix(0, 0, 0, 1, 250, 150);
+  auto expected = TransformationMatrix::Affine(0, 0, 0, 1, 250, 150);
   EXPECT_TRANSFORMATION_MATRIX(expected, result);
 }
 
 TEST(TransformationMatrixTest, Blend2dRotationDirectionTest) {
   // Interpolate taking shorter rotation path.
-  TransformationMatrix from;
-  from.SetMatrix(-0.5, 0.86602575498, -0.86602575498, -0.5, 0, 0);
-  TransformationMatrix to;
-  to.SetMatrix(-0.5, -0.86602575498, 0.86602575498, -0.5, 0, 0);
+  auto from = TransformationMatrix::Affine(-0.5, 0.86602575498, -0.86602575498,
+                                           -0.5, 0, 0);
+  auto to = TransformationMatrix::Affine(-0.5, -0.86602575498, 0.86602575498,
+                                         -0.5, 0, 0);
 
   // Expect clockwise Rotation.
   TransformationMatrix result = to;
   result.Blend(from, 0.5);
-  TransformationMatrix expected;
-  expected.SetMatrix(-1, 0, 0, -1, 0, 0);
+  auto expected = TransformationMatrix::Affine(-1, 0, 0, -1, 0, 0);
   EXPECT_TRANSFORMATION_MATRIX(expected, result);
 
   // Reverse from and to.
@@ -522,33 +528,31 @@ TEST(TransformationMatrixTest, Blend2dRotationDirectionTest) {
 TEST(TransformationMatrixTest, Decompose2dShearTest) {
   // Test that x and y-shear transforms are properly decomposed.
   // The canonical decomposition is: transform, rotate, x-axis shear, scale.
-  TransformationMatrix transformShearX;
-  transformShearX.SetMatrix(1, 0, 1, 1, 0, 0);
-  TransformationMatrix::Decomposed2dType decompShearX;
-  EXPECT_TRUE(transformShearX.Decompose2D(decompShearX));
-  EXPECT_FLOAT(1, decompShearX.scale_x);
-  EXPECT_FLOAT(1, decompShearX.scale_y);
-  EXPECT_FLOAT(0, decompShearX.translate_x);
-  EXPECT_FLOAT(0, decompShearX.translate_y);
-  EXPECT_FLOAT(0, decompShearX.angle);
-  EXPECT_FLOAT(1, decompShearX.skew_xy);
-  TransformationMatrix recompShearX;
-  recompShearX.Recompose2D(decompShearX);
-  EXPECT_TRANSFORMATION_MATRIX(transformShearX, recompShearX);
+  auto transform_shear_x = TransformationMatrix::Affine(1, 0, 1, 1, 0, 0);
+  TransformationMatrix::Decomposed2dType decomp_shear_x;
+  EXPECT_TRUE(transform_shear_x.Decompose2D(decomp_shear_x));
+  EXPECT_FLOAT(1, decomp_shear_x.scale_x);
+  EXPECT_FLOAT(1, decomp_shear_x.scale_y);
+  EXPECT_FLOAT(0, decomp_shear_x.translate_x);
+  EXPECT_FLOAT(0, decomp_shear_x.translate_y);
+  EXPECT_FLOAT(0, decomp_shear_x.angle);
+  EXPECT_FLOAT(1, decomp_shear_x.skew_xy);
+  TransformationMatrix recomp_shear_x;
+  recomp_shear_x.Recompose2D(decomp_shear_x);
+  EXPECT_TRANSFORMATION_MATRIX(transform_shear_x, recomp_shear_x);
 
-  TransformationMatrix transformShearY;
-  transformShearY.SetMatrix(1, 1, 0, 1, 0, 0);
-  TransformationMatrix::Decomposed2dType decompShearY;
-  EXPECT_TRUE(transformShearY.Decompose2D(decompShearY));
-  EXPECT_FLOAT(sqrt(2), decompShearY.scale_x);
-  EXPECT_FLOAT(1 / sqrt(2), decompShearY.scale_y);
-  EXPECT_FLOAT(0, decompShearY.translate_x);
-  EXPECT_FLOAT(0, decompShearY.translate_y);
-  EXPECT_FLOAT(M_PI / 4, decompShearY.angle);
-  EXPECT_FLOAT(1, decompShearY.skew_xy);
-  TransformationMatrix recompShearY;
-  recompShearY.Recompose2D(decompShearY);
-  EXPECT_TRANSFORMATION_MATRIX(transformShearY, recompShearY);
+  auto transform_shear_y = TransformationMatrix::Affine(1, 1, 0, 1, 0, 0);
+  TransformationMatrix::Decomposed2dType decomp_shear_y;
+  EXPECT_TRUE(transform_shear_y.Decompose2D(decomp_shear_y));
+  EXPECT_FLOAT(sqrt(2), decomp_shear_y.scale_x);
+  EXPECT_FLOAT(1 / sqrt(2), decomp_shear_y.scale_y);
+  EXPECT_FLOAT(0, decomp_shear_y.translate_x);
+  EXPECT_FLOAT(0, decomp_shear_y.translate_y);
+  EXPECT_FLOAT(M_PI / 4, decomp_shear_y.angle);
+  EXPECT_FLOAT(1, decomp_shear_y.skew_xy);
+  TransformationMatrix recomp_shear_y;
+  recomp_shear_y.Recompose2D(decomp_shear_y);
+  EXPECT_TRANSFORMATION_MATRIX(transform_shear_y, recomp_shear_y);
 }
 
 double ComputeDecompRecompError(const TransformationMatrix& transform_matrix) {
@@ -558,13 +562,10 @@ double ComputeDecompRecompError(const TransformationMatrix& transform_matrix) {
   TransformationMatrix composed;
   composed.Recompose(decomp);
 
-  float expected[16];
-  float actual[16];
-  transform_matrix.ToColumnMajorFloatArray(expected);
-  composed.ToColumnMajorFloatArray(actual);
   double sse = 0;
   for (int i = 0; i < 16; i++) {
-    double diff = expected[i] - actual[i];
+    double diff =
+        transform_matrix.ColMajorData()[i] - composed.ColMajorData()[i];
     sse += diff * diff;
   }
   return sse;
@@ -575,15 +576,17 @@ TEST(TransformationMatrixTest, DecomposeRecompose) {
   EXPECT_EQ(0, ComputeDecompRecompError(TransformationMatrix()));
 
   // rotateZ(90deg)
-  EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix(0, 1, -1, 0, 0, 0)),
-              1e-6);
+  EXPECT_NEAR(
+      0,
+      ComputeDecompRecompError(TransformationMatrix::Affine(0, 1, -1, 0, 0, 0)),
+      1e-6);
 
   // rotateZ(180deg)
   // Edge case where w = 0.
-  EXPECT_NEAR(
-      0, ComputeDecompRecompError(TransformationMatrix(-1, 0, 0, -1, 0, 0)),
-      1e-6);
+  EXPECT_NEAR(0,
+              ComputeDecompRecompError(
+                  TransformationMatrix::Affine(-1, 0, 0, -1, 0, 0)),
+              1e-6);
 
   // rotateX(90deg) rotateY(90deg) rotateZ(90deg)
   // [1  0   0][ 0 0 1][0 -1 0]   [0 0 1][0 -1 0]   [0  0 1]
@@ -591,26 +594,27 @@ TEST(TransformationMatrixTest, DecomposeRecompose) {
   // [0  1   0][-1 0 0][0  0 1]   [0 1 0][0  0 1]   [1  0 0]
   // This test case leads to Gimbal lock when using Euler angles.
   EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix(
+              ComputeDecompRecompError(TransformationMatrix::ColMajor(
                   0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1)),
               1e-6);
 
   // Quaternion matrices with 0 off-diagonal elements, and negative trace.
   // Stress tests handling of degenerate cases in computing quaternions.
   // Validates fix for https://crbug.com/647554.
+  EXPECT_NEAR(
+      0,
+      ComputeDecompRecompError(TransformationMatrix::Affine(1, 1, 1, 0, 0, 0)),
+      1e-6);
   EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix(1, 1, 1, 0, 0, 0)),
-              1e-6);
-  EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix(
+              ComputeDecompRecompError(TransformationMatrix::ColMajor(
                   -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)),
               1e-6);
   EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix(
+              ComputeDecompRecompError(TransformationMatrix::ColMajor(
                   1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)),
               1e-6);
   EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix(
+              ComputeDecompRecompError(TransformationMatrix::ColMajor(
                   1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)),
               1e-6);
 }
@@ -720,39 +724,41 @@ TEST(TransformationMatrixTest, QuaternionToRotationMatrixTest) {
 
   SetRotationDecomp(sin30deg, 0, 0, cos30deg, decomp);
   m.Recompose(decomp);
-  TransformationMatrix rotate_x_60deg(1, 0, 0, 0,                 // column 1
-                                      0, cos60deg, sin60deg, 0,   // column 2
-                                      0, -sin60deg, cos60deg, 0,  // column 3
-                                      0, 0, 0, 1);                // column 4
+  auto rotate_x_60deg =
+      TransformationMatrix::ColMajor(1, 0, 0, 0,                 // column 1
+                                     0, cos60deg, sin60deg, 0,   // column 2
+                                     0, -sin60deg, cos60deg, 0,  // column 3
+                                     0, 0, 0, 1);                // column 4
   EXPECT_TRANSFORMATION_MATRIX(rotate_x_60deg, m);
 
   SetRotationDecomp(0, sin30deg, 0, cos30deg, decomp);
   m.Recompose(decomp);
-  TransformationMatrix rotate_y_60deg(cos60deg, 0, -sin60deg, 0,  // column 1
-                                      0, 1, 0, 0,                 // column 2
-                                      sin60deg, 0, cos60deg, 0,   // column 3
-                                      0, 0, 0, 1);                // column 4
+  auto rotate_y_60deg =
+      TransformationMatrix::ColMajor(cos60deg, 0, -sin60deg, 0,  // column 1
+                                     0, 1, 0, 0,                 // column 2
+                                     sin60deg, 0, cos60deg, 0,   // column 3
+                                     0, 0, 0, 1);                // column 4
   EXPECT_TRANSFORMATION_MATRIX(rotate_y_60deg, m);
 
   SetRotationDecomp(0, 0, sin30deg, cos30deg, decomp);
   m.Recompose(decomp);
-  TransformationMatrix rotate_z_60deg(cos60deg, sin60deg, 0, 0,   // column 1
-                                      -sin60deg, cos60deg, 0, 0,  // column 2
-                                      0, 0, 1, 0,                 // column 3
-                                      0, 0, 0, 1);                // column 4
+  auto rotate_z_60deg =
+      TransformationMatrix::ColMajor(cos60deg, sin60deg, 0, 0,   // column 1
+                                     -sin60deg, cos60deg, 0, 0,  // column 2
+                                     0, 0, 1, 0,                 // column 3
+                                     0, 0, 0, 1);                // column 4
   EXPECT_TRANSFORMATION_MATRIX(rotate_z_60deg, m);
 
   // Test non-axis aligned rotation
   SetRotationDecomp(sin30deg / root2, sin30deg / root2, 0, cos30deg, decomp);
   m.Recompose(decomp);
-  TransformationMatrix rotate_xy_60deg;
-  rotate_xy_60deg.Rotate3d(1, 1, 0, 60);
+  auto rotate_xy_60deg = TransformationMatrix().Rotate3d(1, 1, 0, 60);
   EXPECT_TRANSFORMATION_MATRIX(rotate_xy_60deg, m);
 
   // Test 180deg rotation.
   SetRotationDecomp(0, 0, 1, 0, decomp);
   m.Recompose(decomp);
-  TransformationMatrix rotate_z_180deg(-1, 0, 0, -1, 0, 0);
+  auto rotate_z_180deg = TransformationMatrix::Affine(-1, 0, 0, -1, 0, 0);
   EXPECT_TRANSFORMATION_MATRIX(rotate_z_180deg, m);
 }
 
@@ -766,8 +772,8 @@ TEST(TransformationMatrixTest, QuaternionInterpolation) {
   TransformationMatrix to_matrix;
   to_matrix.Rotate3d(0, 0, 1, 120);
   to_matrix.Blend(from_matrix, 0.5);
-  TransformationMatrix rotate_z_60(cos60deg, sin60deg, -sin60deg, cos60deg, 0,
-                                   0);
+  auto rotate_z_60 = TransformationMatrix::Affine(cos60deg, sin60deg, -sin60deg,
+                                                  cos60deg, 0, 0);
   EXPECT_TRANSFORMATION_MATRIX(rotate_z_60, to_matrix);
 
   // Rotate to identity matrix.
