@@ -10,8 +10,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/ui/webui/welcome/helpers.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 /** Test fixture for Polymer welcome elements. */
 const WelcomeBrowserTest = class extends PolymerTest {
   /** @override */

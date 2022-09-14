@@ -9,8 +9,6 @@
 
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 /** Test fixture for chrome.timeTicks WebUI testing. */
 var ChromeTimeTicksBrowserTest = class extends testing.Test {
   /** @override */

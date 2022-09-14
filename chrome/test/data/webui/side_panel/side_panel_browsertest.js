@@ -10,8 +10,6 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/accessibility/accessibility_features.h"');
 
-/* eslint-disable no-var */
-
 class SidePanelBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {

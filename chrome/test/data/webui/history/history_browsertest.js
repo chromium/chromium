@@ -13,8 +13,6 @@ GEN('#include "build/build_config.h"');
 GEN('#include "chrome/test/data/webui/history_ui_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 const HistoryBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {

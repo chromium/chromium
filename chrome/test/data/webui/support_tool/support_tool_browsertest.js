@@ -25,7 +25,6 @@ const SupportToolInteractiveTest = class extends PolymerInteractiveUITest {
   }
 };
 
-// eslint-disable-next-line no-var
 var SupportToolTest = class extends SupportToolInteractiveTest {
   /** @override */
   get browsePreload() {

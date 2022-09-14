@@ -15,8 +15,6 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "components/signin/public/base/signin_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 // Keep enum values in sync with the SyncConfirmationStyle enum class defined in
 // signin_url_utils.h.
 const SyncConfirmationStyle = {

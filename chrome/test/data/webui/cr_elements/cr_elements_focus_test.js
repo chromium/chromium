@@ -10,8 +10,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 var CrElementsFocusTest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {

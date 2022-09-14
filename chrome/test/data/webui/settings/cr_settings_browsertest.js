@@ -21,8 +21,6 @@ GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 GEN('#include "components/language/core/common/language_experiments.h"');
 GEN('#endif');
 
-/* eslint-disable no-var */
-
 /** Test fixture for shared Polymer 3 elements. */
 var CrSettingsBrowserTest = class extends PolymerTest {
   /** @override */

@@ -10,8 +10,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 /** Test fixture for shared Polymer 3 components using Mojo. */
 var CrComponentsMojoBrowserTest = class extends PolymerTest {
   /** @override */

@@ -20,6 +20,7 @@ def Run(os_path=None, args=None):
 
   return node.RunNode([
       node_modules.PathToEsLint(),
+      '--quiet',
       '--resolve-plugins-relative-to',
       os_path.join(_NODE_PATH, 'node_modules'),
   ] + args)

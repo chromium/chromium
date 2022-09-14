@@ -21,7 +21,6 @@ module.exports = {
             'test.skip() instead to explicitly disable certain test() cases.',
       },
     ],
-    'no-var': 'off',
     'eqeqeq': ['error', 'always', {'null': 'ignore'}],
   },
 };

@@ -28,7 +28,6 @@ const WhatsNewBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var WhatsNewAppTest = class extends WhatsNewBrowserTest {
   /** @override */
   get browsePreload() {

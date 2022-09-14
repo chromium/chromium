@@ -9,7 +9,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 
-// eslint-disable-next-line no-var
 var LocalProfileCustomizationFocusTest =
     class extends PolymerInteractiveUITest {
   /** @override */

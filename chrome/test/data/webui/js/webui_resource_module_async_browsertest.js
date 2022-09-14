@@ -8,8 +8,6 @@
 
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 /** Test fixture for testing shared JS module resources. */
 var WebUIResourceModuleAsyncTest = class extends testing.Test {
   /** @override */

@@ -12,8 +12,6 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "components/prefs/pref_service.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 class AccessCodeCastBrowserTest extends PolymerTest {
   get browsePreload() {
     throw new Error('this is abstract and should be overridden by subclasses');

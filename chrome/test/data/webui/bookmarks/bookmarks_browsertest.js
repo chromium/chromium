@@ -11,8 +11,6 @@ GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/ui/webui/bookmarks/bookmarks_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 const BookmarksBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {

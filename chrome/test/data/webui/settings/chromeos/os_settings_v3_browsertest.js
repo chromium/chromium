@@ -16,8 +16,6 @@ GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/accessibility/accessibility_features.h"');
 
-/* eslint-disable no-var */
-
 /** Test fixture for shared Polymer 3 elements. */
 var OSSettingsV3BrowserTest = class extends PolymerTest {
   /** @override */
@@ -115,7 +113,6 @@ var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
 
 TEST_F('OSSettingsNearbyShareSubPageV3Test', 'All', () => mocha.run());
 
-// eslint-disable-next-line no-var
 var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {

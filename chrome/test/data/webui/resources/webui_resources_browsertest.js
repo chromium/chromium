@@ -10,8 +10,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 var WebUIResourcesBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {

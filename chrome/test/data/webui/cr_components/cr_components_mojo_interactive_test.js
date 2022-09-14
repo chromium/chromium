@@ -18,7 +18,6 @@ class CrComponentsMojoInteractiveTest extends PolymerInteractiveUITest {
   }
 }
 
-// eslint-disable-next-line no-var
 var CrComponentsMostVisitedFocusTest =
     class extends CrComponentsMojoInteractiveTest {
   /** @override */

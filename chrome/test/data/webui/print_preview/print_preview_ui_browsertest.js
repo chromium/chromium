@@ -17,8 +17,6 @@ GEN(`#include "content/public/test/browser_test.h"
 #define InitWithFeatures(enabled, disabled) InitWithFeatures({}, {})
 #endif`);
 
-/* eslint-disable no-var */
-
 const PrintPreviewTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {

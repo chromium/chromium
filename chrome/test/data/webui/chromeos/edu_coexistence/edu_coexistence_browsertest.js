@@ -72,7 +72,6 @@ TEST_F(
 
 // TODO(crbug.com/1347746): Merge this test suite with the test above after the
 // feature is launched.
-// eslint-disable-next-line no-var
 var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
     class extends EduCoexistenceAppTest {
   /** @override */

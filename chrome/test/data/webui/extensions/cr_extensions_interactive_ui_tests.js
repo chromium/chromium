@@ -11,8 +11,6 @@ GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 /**
  * Test fixture for interactive Polymer Extensions elements.
  * @constructor

@@ -16,7 +16,6 @@ GEN('#include "content/public/test/browser_test.h"');
  * @constructor
  * @extends {PolymerTest}
  */
-// eslint-disable-next-line no-var
 var CrManagementA11yTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {

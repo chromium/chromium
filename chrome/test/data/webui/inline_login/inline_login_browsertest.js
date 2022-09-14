@@ -16,8 +16,6 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#endif');
 
-/* eslint-disable no-var */
-
 var InlineLoginBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -54,7 +52,6 @@ TEST_F('InlineLoginBrowserTest', 'BackButton', function() {
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 // TODO(crbug.com/1347746): Merge this test suite with the test above after the
 // feature is launched.
-// eslint-disable-next-line no-var
 var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =
     class extends InlineLoginBrowserTest {
   /** @override */
@@ -91,7 +88,6 @@ TEST_F(
       this.runMochaTest(inline_login_test.TestNames.BackButton);
     });
 
-// eslint-disable-next-line no-var
 var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
   /** @override */
   get browsePreload() {
@@ -122,7 +118,6 @@ TEST_F('InlineLoginWelcomePageBrowserTest', 'GoBack', function() {
 
 // TODO(crbug.com/1347746): Make this test the default one, and remove the test
 // suite above when the feature is enabled by default.
-// eslint-disable-next-line no-var
 var InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled =
     class extends InlineLoginWelcomePageBrowserTest {
   /** @override */
@@ -173,7 +168,6 @@ TEST_F(
       this.runMochaTest(inline_login_welcome_page_test.TestNames.LinkClick);
     });
 
-// eslint-disable-next-line no-var
 var InlineLoginArcAccountPickerBrowserTest =
     class extends InlineLoginBrowserTest {
   /** @override */
@@ -224,7 +218,6 @@ TEST_F(
           arc_account_picker_page_test.TestNames.MakeAvailableInArc);
     });
 
-// eslint-disable-next-line no-var
 var InlineLoginSigninBlockedByPolicyPageBrowserTest =
     class extends InlineLoginBrowserTest {
   get browsePreload() {

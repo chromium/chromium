@@ -10,8 +10,6 @@ GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-/* eslint-disable no-var */
-
 class NewTabPageBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {

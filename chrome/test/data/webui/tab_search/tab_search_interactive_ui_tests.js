@@ -11,7 +11,6 @@ GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "services/network/public/cpp/features.h"');
 
-// eslint-disable-next-line no-var
 var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {

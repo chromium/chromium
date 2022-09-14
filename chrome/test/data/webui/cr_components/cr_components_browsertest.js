@@ -13,8 +13,6 @@ GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "crypto/crypto_buildflags.h"');
 
-/* eslint-disable no-var */
-
 /** Test fixture for shared Polymer 3 components. */
 var CrComponentsBrowserTest = class extends PolymerTest {
   /** @override */

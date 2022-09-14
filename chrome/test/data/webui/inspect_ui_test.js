@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 function waitForElements(selector, populateFunctionName, callback) {
-  var elements = document.querySelectorAll(selector);
+  const elements = document.querySelectorAll(selector);
   if (elements.length) {
     callback(elements);
     return;
   }
-  var originalFunction = window[populateFunctionName];
+  const originalFunction = window[populateFunctionName];
   assertNotEquals(undefined, originalFunction);
   assertEquals(undefined, originalFunction.__isSniffer);
-  var interceptFunction = function() {
+  const interceptFunction = function() {
     originalFunction.apply(window, arguments);
-    var elements = document.querySelectorAll(selector);
+    const elements = document.querySelectorAll(selector);
     if (elements.length) {
       window[populateFunctionName] = originalFunction;
       callback(elements);
@@ -35,7 +35,7 @@ function findByContentSubstring(elements, content, childSelector) {
 function testTargetListed(sectionSelector, populateFunctionName, url) {
   waitForElements(
       sectionSelector + ' .row', populateFunctionName, function(elements) {
-        var urlElement = findByContentSubstring(elements, url, '.url');
+        const urlElement = findByContentSubstring(elements, url, '.url');
         assertNotEquals(undefined, urlElement);
         testDone();
       });
@@ -45,36 +45,36 @@ function testAdbTargetsListed() {
   waitForElements('.device', 'populateRemoteTargets', function(devices) {
     assertEquals(2, devices.length);
 
-    var offlineDevice =
+    const offlineDevice =
         findByContentSubstring(devices, 'Offline', '.device-name');
     assertNotEquals(undefined, offlineDevice);
 
-    var onlineDevice =
+    const onlineDevice =
         findByContentSubstring(devices, 'Nexus 6', '.device-name');
     assertNotEquals(undefined, onlineDevice);
 
-    var browsers = onlineDevice.querySelectorAll('.browser');
+    const browsers = onlineDevice.querySelectorAll('.browser');
     assertEquals(4, browsers.length);
 
-    var chromeBrowser = findByContentSubstring(
+    const chromeBrowser = findByContentSubstring(
         browsers, 'Chrome (32.0.1679.0)', '.browser-name');
     assertNotEquals(undefined, chromeBrowser);
 
-    var chromePages = chromeBrowser.querySelectorAll('.pages');
-    var chromiumPage =
+    const chromePages = chromeBrowser.querySelectorAll('.pages');
+    const chromiumPage =
         findByContentSubstring(chromePages, 'http://www.chromium.org/', '.url');
     assertNotEquals(undefined, chromiumPage);
 
-    var pageById = {};
+    const pageById = {};
     Array.prototype.forEach.call(devices, function(device) {
-      var pages = device.querySelectorAll('.row');
+      const pages = device.querySelectorAll('.row');
       Array.prototype.forEach.call(pages, function(page) {
         assertEquals(undefined, pageById[page.targetId]);
         pageById[page.targetId] = page;
       });
     });
 
-    var webView = findByContentSubstring(
+    const webView = findByContentSubstring(
         browsers, 'WebView in com.sample.feed (4.0)', '.browser-name');
     assertNotEquals(undefined, webView);
 
@@ -83,7 +83,7 @@ function testAdbTargetsListed() {
 }
 
 function testElementDisabled(selector, disabled) {
-  var element = document.querySelector(selector);
+  const element = document.querySelector(selector);
   assertEquals(disabled, element.disabled);
   testDone();
 }

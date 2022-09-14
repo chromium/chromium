@@ -15,12 +15,14 @@
 this.traceAssertionsForTesting = true;
 
 /** @suppress {globalThis} */
+// eslint-disable-next-line no-var
 var hasWindow = !!this.window;
 
 /**
  * Namespace for |Test|.
  * @type {Object}
  */
+// eslint-disable-next-line no-var
 var testing = {};
 (function(exports) {
 /**

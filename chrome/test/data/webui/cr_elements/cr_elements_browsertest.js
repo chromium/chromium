@@ -12,8 +12,6 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 
-/* eslint-disable no-var */
-
 /** Test fixture for shared Polymer 3 elements. */
 var CrElementsBrowserTest = class extends PolymerTest {
   /** @override */

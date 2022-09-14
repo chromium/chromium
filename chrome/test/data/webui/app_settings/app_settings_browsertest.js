@@ -9,8 +9,6 @@ GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chrome/browser/ui/webui/app_settings/web_app_settings_navigation_throttle.h"');
 
-/* eslint-disable no-var */
-
 class AppSettingsBrowserTest extends PolymerTest {
   get browsePreload() {
     throw new Error('this is abstract and should be overriden by subclasses');

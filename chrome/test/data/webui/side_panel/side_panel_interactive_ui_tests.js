@@ -9,7 +9,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-// eslint-disable-next-line no-var
 var SidePanelBookmarksListInteractiveUITest =
     class extends PolymerInteractiveUITest {
   /** @override */
