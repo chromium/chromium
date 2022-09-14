@@ -522,8 +522,11 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
 class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
  public:
   HoldingSpaceTrayTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpacePredictability, false);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {
+                features::kHoldingSpacePredictability,
+                features::kHoldingSpaceSuggestions,
+            });
   }
 
   // Verifies that the user's preferences and the suggestion section's visual
@@ -3325,6 +3328,103 @@ TEST_P(
   EXPECT_TRUE(test_api()->IsShowingInShelf());
   EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
   EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+}
+
+class HoldingSpaceTraySuggestionsFeatureTest
+    : public HoldingSpaceTrayTestBase,
+      public ::testing::WithParamInterface<std::tuple<
+          /*predictability_enabled=*/bool,
+          /*suggestions_enabled=*/bool>> {
+ public:
+  HoldingSpaceTraySuggestionsFeatureTest() {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    (IsHoldingSpacePredictabilityEnabled() ? enabled_features
+                                           : disabled_features)
+        .push_back(features::kHoldingSpacePredictability);
+
+    (IsHoldingSpaceSuggestionsEnabled() ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpaceSuggestions);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsHoldingSpacePredictabilityEnabled() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsHoldingSpaceSuggestionsEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceTraySuggestionsFeatureTest,
+                         ::testing::Combine(
+                             /*predictability_enabled=*/testing::Bool(),
+                             /*suggestions_enabled=*/testing::Bool()));
+
+TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
+       PinnedFilesPlaceholderShowsAfterPinUnpin) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+
+  // The tray button should be shown because the user has previously added an
+  // item to their holding space.
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+
+  // Pin an item, then clear the model. Whether the placeholder shows should
+  // depend on the state of the predictability flag.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake"));
+  MarkTimeOfFirstPin();
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+
+  RemoveAllItems();
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+  EXPECT_EQ(test_api()->PinnedFilesBubbleShown(),
+            IsHoldingSpacePredictabilityEnabled());
+  EXPECT_EQ(test_api()->IsShowingInShelf(),
+            IsHoldingSpacePredictabilityEnabled());
+
+  // Add a downloaded file. Now the pinned placeholder should show if either
+  // the predictability or suggestions flags are enabled.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
+  EXPECT_EQ(test_api()->PinnedFilesBubbleShown(),
+            IsHoldingSpaceSuggestionsEnabled() ||
+                IsHoldingSpacePredictabilityEnabled());
+
+  if (test_api()->PinnedFilesBubbleShown()) {
+    views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+    ASSERT_TRUE(pinned_files_bubble);
+    views::View* files_app_chip =
+        pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
+    EXPECT_EQ(files_app_chip != nullptr,
+              IsHoldingSpaceSuggestionsEnabled() ||
+                  IsHoldingSpacePredictabilityEnabled());
+  }
+}
+
+TEST_P(HoldingSpaceTraySuggestionsFeatureTest, TrayDoesNotShowUntilFirstAdd) {
+  StartSession(/*pre_mark_time_of_first_add=*/false);
+
+  // For the suggestions changes, the tray should still not show by default
+  // in the shelf. If the predictability feature is enabled, it should show
+  // no matter what.
+  EXPECT_EQ(test_api()->IsShowingInShelf(),
+            IsHoldingSpacePredictabilityEnabled());
+
+  MarkTimeOfFirstAdd();
+
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
 }
 
 // Base class for tests of the holding space icon parameterized by a boolean for

@@ -511,13 +511,18 @@ void HoldingSpaceTray::UpdateVisibility() {
     SetVisiblePreferred(true);
     return;
   }
+
   // The holding space tray should always be shown if the `model` contains
-  // fully initialized items. Otherwise, it should only be visible if the
-  // pinned files section is going to show a placeholder.
+  // fully initialized items, or if the predictability feature flag is enabled.
+  // Otherwise, it should only be visible if the time of first add has been
+  // marked, but a file has never been pinned, and the Files app chip has never
+  // been pressed.
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
   SetVisiblePreferred(
       ModelContainsInitializedItems(model) ||
-      (prefs && PinnedFilesSection::ShouldShowPlaceholder(prefs)));
+      (prefs && holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
+       !holding_space_prefs::GetTimeOfFirstPin(prefs) &&
+       !holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs)));
 }
 
 void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {

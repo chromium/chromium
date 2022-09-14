@@ -48,6 +48,23 @@ constexpr int kFilesAppChipIconSize = 20;
 constexpr auto kFilesAppChipInsets = gfx::Insets::TLBR(0, 8, 0, 16);
 constexpr int kPlaceholderChildSpacing = 16;
 
+// Returns true if the given pref service or currently active features are in a
+// state where the placeholder should be shown in the pinned files section.
+bool ShouldShowPlaceholder(PrefService* prefs) {
+  if (features::IsHoldingSpacePredictabilityEnabled() ||
+      features::IsHoldingSpaceSuggestionsEnabled()) {
+    return true;
+  }
+
+  // The placeholder should only be shown if:
+  // * a holding space item has been added at some point in time,
+  // * a holding space item has *never* been pinned, and
+  // * the user has never pressed the Files app chip in the placeholder.
+  return prefs && holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
+         !holding_space_prefs::GetTimeOfFirstPin(prefs) &&
+         !holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs);
+}
+
 // FilesAppChip ----------------------------------------------------------------
 
 class FilesAppChip : public views::Button {
@@ -137,21 +154,6 @@ PinnedFilesSection::PinnedFilesSection(HoldingSpaceViewDelegate* delegate)
 
 PinnedFilesSection::~PinnedFilesSection() = default;
 
-// static
-bool PinnedFilesSection::ShouldShowPlaceholder(PrefService* prefs) {
-  // If the predictability flag is enabled, always show the placeholder.
-  if (features::IsHoldingSpacePredictabilityEnabled())
-    return true;
-
-  // The placeholder should only be shown if:
-  // * a holding space item has been added at some point in time,
-  // * a holding space item has *never* been pinned, and
-  // * the user has never pressed the Files app chip in the placeholder.
-  return holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
-         !holding_space_prefs::GetTimeOfFirstPin(prefs) &&
-         !holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs);
-}
-
 const char* PinnedFilesSection::GetClassName() const {
   return "PinnedFilesSection";
 }
@@ -183,16 +185,19 @@ std::unique_ptr<views::View> PinnedFilesSection::CreateContainer() {
 
 std::unique_ptr<HoldingSpaceItemView> PinnedFilesSection::CreateView(
     const HoldingSpaceItem* item) {
-  // When `PinnedFilesSection::CreateView()` is called it implies that the user
-  // has at some point in time pinned a file to holding space. That being the
-  // case, the placeholder is no longer relevant and can be destroyed.
-  DestroyPlaceholder();
+  if (!(features::IsHoldingSpaceSuggestionsEnabled() ||
+        features::IsHoldingSpacePredictabilityEnabled())) {
+    // When `PinnedFilesSection::CreateView()` is called it implies that the
+    // user has at some point in time pinned a file to holding space. That being
+    // the case, the placeholder is no longer relevant and can be destroyed.
+    DestroyPlaceholder();
+  }
   return std::make_unique<HoldingSpaceItemChipView>(delegate(), item);
 }
 
 std::unique_ptr<views::View> PinnedFilesSection::CreatePlaceholder() {
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-  if (!PinnedFilesSection::ShouldShowPlaceholder(prefs))
+  if (!ShouldShowPlaceholder(prefs))
     return nullptr;
 
   auto placeholder = std::make_unique<views::View>();
@@ -230,12 +235,15 @@ void PinnedFilesSection::OnFilesAppChipPressed(const ui::Event& event) {
 
   HoldingSpaceController::Get()->client()->OpenMyFiles(base::DoNothing());
 
-  // Once the user has pressed the Files app chip, the placeholder should no
-  // longer be displayed. This is accomplished by destroying it. If the holding
-  // space model is empty, the holding space tray will also need to update its
-  // visibility to become hidden.
-  DestroyPlaceholder();
-  delegate()->UpdateTrayVisibility();
+  if (!(features::IsHoldingSpaceSuggestionsEnabled() ||
+        features::IsHoldingSpacePredictabilityEnabled())) {
+    // Once the user has pressed the Files app chip, the placeholder should no
+    // longer be displayed. This is accomplished by destroying it. If the
+    // holding space model is empty, the holding space tray will also need to
+    // update its visibility to become hidden.
+    DestroyPlaceholder();
+    delegate()->UpdateTrayVisibility();
+  }
 }
 
 }  // namespace ash
