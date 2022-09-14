@@ -396,6 +396,13 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     // Navigations to the home tab URL in tabbed apps should happen in the home
     // tab.
     nav_params.browser->tab_strip_model()->ActivateTabAt(0);
+    content::WebContents* home_tab_web_contents =
+        nav_params.browser->tab_strip_model()->GetWebContentsAt(0);
+    GURL previous_home_tab_url = home_tab_web_contents->GetLastCommittedURL();
+    if (previous_home_tab_url == nav_params.url) {
+      // URL is identical so no need for the navigation.
+      return home_tab_web_contents;
+    }
     nav_params.disposition = WindowOpenDisposition::CURRENT_TAB;
   }
 

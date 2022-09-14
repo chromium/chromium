@@ -116,7 +116,10 @@ TabbedWebAppNavigationThrottle::FocusHomeTab() {
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
   params.frame_tree_node_id = content::RenderFrameHost::kNoFrameTreeNodeId;
 
-  tab_strip->GetWebContentsAt(0)->OpenURL(std::move(params));
+  if (params.url != tab_strip->GetWebContentsAt(0)->GetLastCommittedURL()) {
+    // Only do the navigation if the URL has changed.
+    tab_strip->GetWebContentsAt(0)->OpenURL(std::move(params));
+  }
   tab_strip->ActivateTabAt(0);
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
