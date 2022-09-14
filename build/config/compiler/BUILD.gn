@@ -2407,6 +2407,14 @@ config("symbols") {
     }
   }
 
+  configs = []
+  # Compress debug on 32-bit ARM to stay under 4GB for ChromeOS
+  # https://b/243982712.
+  if (symbol_level == 2 && is_chromeos_device && !use_debug_fission &&
+        !is_nacl && current_cpu == "arm") {
+    configs += [ "//build/config:compress_debug_sections" ]
+  }
+
   if (is_clang && (!is_nacl || is_nacl_saigo) && current_os != "zos") {
     if (is_apple) {
       # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
