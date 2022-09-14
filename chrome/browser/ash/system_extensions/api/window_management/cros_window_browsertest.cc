@@ -44,6 +44,7 @@
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 
@@ -311,6 +312,10 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
           this->test_helpers_.Add(std::move(test_helper),
                                   std::move(pending_receiver));
         }));
+
+    // Needed because otherwise ChromeOS remaps some accelerators e.g.
+    // to other keys e.g. "Alt + Arrow up" to "Home".
+    feature_list_.InitAndEnableFeature(::features::kDeprecateAltBasedSixPack);
   }
 
  protected:
@@ -347,6 +352,8 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
       system_extensions_test::mojom::CrosWindowManagementTestHelper>
       test_helpers_;
   std::unique_ptr<TestSystemWebAppInstallation> installation_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
@@ -573,6 +580,11 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
   RunTest("accelerator_event_release_key.js");
 }
 
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       AcceleratorEvent_ArrowKeys) {
+  RunTest("accelerator_event_arrow_keys.js");
+}
+
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
                        AcceleratorEvent_WakeUpWorker) {
   InstallAndStartExtension();
@@ -596,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
   const auto& dict = result.GetDict();
 
   EXPECT_EQ("acceleratordown", *dict.FindString("type"));
-  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
+  EXPECT_EQ("Control Alt KeyA", *dict.FindString("name"));
   EXPECT_FALSE(*dict.FindBool("repeat"));
 }
 

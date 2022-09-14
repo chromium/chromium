@@ -15,7 +15,7 @@ promise_test(async (t) => {
   const event = await eventWatcher.wait_for(['acceleratordown']);
   assert_true(event instanceof chromeos.CrosAcceleratorEvent);
   assert_equals(event.type, 'acceleratordown');
-  assert_equals(event.acceleratorName, 'Control Alt a');
+  assert_equals(event.acceleratorName, 'Control Alt KeyA');
   assert_false(event.repeat);
 
   // `Event.bubbles` indicates whether the event bubbles of the DOM tree.
