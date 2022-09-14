@@ -31,6 +31,8 @@ const base::Feature kIPHDesktopSharedHighlightingFeature{
     "IPH_DesktopSharedHighlighting", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDesktopTabGroupsNewGroupFeature{
     "IPH_DesktopTabGroupsNewGroup", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHExtensionsMenuFeature{
+    "IPH_ExtensionsMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature{
     "IPH_FocusHelpBubbleScreenReaderPromo", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHGMCCastStartStopFeature{

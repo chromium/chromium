@@ -36,6 +36,7 @@ extern const base::Feature kEnableIPH;
 extern const base::Feature kIPHBatterySaverModeFeature;
 extern const base::Feature kIPHDesktopSharedHighlightingFeature;
 extern const base::Feature kIPHDesktopTabGroupsNewGroupFeature;
+extern const base::Feature kIPHExtensionsMenuFeature;
 extern const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature;
 extern const base::Feature kIPHGMCCastStartStopFeature;
 extern const base::Feature kIPHLiveCaptionFeature;

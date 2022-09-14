@@ -121,6 +121,7 @@ const base::Feature* const kAllFeatures[] = {
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
     &kIPHBatterySaverModeFeature,
     &kIPHDesktopTabGroupsNewGroupFeature,
+    &kIPHExtensionsMenuFeature,
     &kIPHFocusHelpBubbleScreenReaderPromoFeature,
     &kIPHGMCCastStartStopFeature,
     &kIPHLiveCaptionFeature,

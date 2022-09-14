@@ -34190,6 +34190,7 @@ should be able to be added at any place in this file.
       label="For DownloadPageScreenshot feature."/>
   <suffix name="EphemeralTab" label="For Ephemeral Tab."/>
   <suffix name="ExploreSitesTile" label="For Explore Sites feature."/>
+  <suffix name="ExtensionsMenu" label="For Extensions menu opening."/>
   <suffix name="FeatureNotificationGuideDefaultBrowserNotificationShown"
       label="For feature notification guide default browser notification
              feature."/>
