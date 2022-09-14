@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
@@ -57,6 +58,9 @@ constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
 
 constexpr int kShoppingUserDefaultSelectionTTLDays = 7;
 constexpr int kShoppingUserDefaultUnknownSelectionTTLDays = 7;
+
+constexpr int kCrossDeviceUserSegmentSelectionTTLDays = 7;
+constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
 
 constexpr char kVariationsParamNameSegmentSelectionTTLDays[] =
     "segment_selection_ttl_days";
@@ -325,6 +329,23 @@ std::unique_ptr<Config> GetConfigForShoppingUser() {
   return config;
 }
 
+std::unique_ptr<ModelProvider> GetCrossDeviceUserSegmentDefautlModel() {
+  return std::make_unique<CrossDeviceUserSegment>();
+}
+
+std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kCrossDeviceUserKey;
+  config->segmentation_uma_name = kCrossDeviceUserUmaName;
+  config->AddSegmentId(SegmentId::CROSS_DEVICE_USER_SEGMENT,
+                       GetCrossDeviceUserSegmentDefautlModel());
+  config->segment_selection_ttl =
+      base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
+  config->unknown_selection_ttl =
+      base::Days(kCrossDeviceUserSegmentUnknownSelectionTTLDays);
+  return config;
+}
+
 void AppendConfigsFromExperiments(
     std::vector<std::unique_ptr<Config>>& out_configs) {
   // TODO(crbug.com/1346389): Add logic to find segmentation param from field
@@ -378,6 +399,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForShoppingUser());
   }
 
+  configs.emplace_back(GetConfigForCrossDeviceSegments());
+
   AppendConfigsFromExperiments(configs);
   return configs;
 }
@@ -414,6 +437,9 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   // subsegment process is more stable.
   if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
     group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
+  }
+  if (segment_id == SegmentId::CROSS_DEVICE_USER_SEGMENT) {
+    group_name = CrossDeviceUserSegment::GetSubsegmentName(subsegment_rank);
   }
 
   if (!group_name) {

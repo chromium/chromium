@@ -9,6 +9,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
+#import "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #import "components/segmentation_platform/internal/stats.h"
 #import "components/segmentation_platform/public/config.h"
@@ -30,6 +31,9 @@ using ::segmentation_platform::proto::SegmentId;
 constexpr int kFeedUserSegmentSelectionTTLDays = 14;
 constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
 
+constexpr int kCrossDeviceUserSegmentSelectionTTLDays = 7;
+constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
+
 std::unique_ptr<Config> GetConfigForFeedSegments() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kFeedUserSegmentationKey;
@@ -47,6 +51,19 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
   return config;
 }
 
+std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kCrossDeviceUserKey;
+  config->segmentation_uma_name = kCrossDeviceUserUmaName;
+  config->AddSegmentId(SegmentId::CROSS_DEVICE_USER_SEGMENT,
+                       std::make_unique<CrossDeviceUserSegment>());
+  config->segment_selection_ttl =
+      base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
+  config->unknown_selection_ttl =
+      base::Days(kCrossDeviceUserSegmentUnknownSelectionTTLDays);
+  return config;
+}
+
 }  // namespace
 
 using proto::SegmentId;
@@ -57,6 +74,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
           features::kSegmentationPlatformFeedSegmentFeature)) {
     configs.emplace_back(GetConfigForFeedSegments());
   }
+
+  configs.emplace_back(GetConfigForCrossDeviceSegments());
 
   // Add new configs here.
 
@@ -85,6 +104,10 @@ void IOSFieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   absl::optional<std::string> group_name;
   if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
     group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
+  }
+
+  if (segment_id == SegmentId::CROSS_DEVICE_USER_SEGMENT) {
+    group_name = CrossDeviceUserSegment::GetSubsegmentName(subsegment_rank);
   }
 
   if (!group_name) {
