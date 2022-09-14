@@ -147,16 +147,16 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 }
 
 // static
-base::expected<std::vector<FirstPartySetsHandler::ParseWarning>,
-               FirstPartySetsHandler::ParseError>
+std::pair<absl::optional<FirstPartySetsHandler::ParseError>,
+          std::vector<FirstPartySetsHandler::ParseWarning>>
 FirstPartySetsHandler::ValidateEnterprisePolicy(
     const base::Value::Dict& policy) {
   FirstPartySetParser::PolicyParseResult parsed_or_error =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
   if (!parsed_or_error.has_value()) {
-    return base::unexpected(parsed_or_error.error());
+    return {parsed_or_error.error().first, parsed_or_error.error().second};
   }
-  return parsed_or_error.value().second;
+  return {absl::nullopt, parsed_or_error.value().second};
 }
 
 void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(

@@ -106,14 +106,14 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   static FirstPartySetsHandler* GetInstance();
 
   // Validates the First-Party Sets Overrides enterprise policy in `policy`,
-  // and either returns warnings that arise when parsing or returns an error
-  // containing information about why the policy is invalid.
+  // and outputs warnings that arise when parsing and an optional error that is
+  // present if `policy` was invalid.
   //
   // This validation only checks that all sets in this policy are valid
   // First-Party Sets and disjoint from each other. It doesn't require
   // disjointness with other sources, such as the public sets, since this policy
   // will be used override First-Party Sets in those sources.
-  static base::expected<std::vector<ParseWarning>, ParseError>
+  static std::pair<absl::optional<ParseError>, std::vector<ParseWarning>>
   ValidateEnterprisePolicy(const base::Value::Dict& policy);
 
   // Returns whether First-Party Sets is enabled.

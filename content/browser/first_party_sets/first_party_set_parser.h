@@ -50,7 +50,8 @@ class CONTENT_EXPORT FirstPartySetParser {
   using PolicyParseResult = base::expected<
       std::pair<ParsedPolicySetLists,
                 std::vector<FirstPartySetsHandler::ParseWarning>>,
-      FirstPartySetsHandler::ParseError>;
+      std::pair<FirstPartySetsHandler::ParseError,
+                std::vector<FirstPartySetsHandler::ParseWarning>>>;
 
   FirstPartySetParser() = delete;
   ~FirstPartySetParser() = delete;

@@ -34,6 +34,7 @@ using ParseWarning = FirstPartySetsHandler::ParseWarning;
 
 const char kPrimaryField[] = "primary";
 const char kAssociatedSitesField[] = "associatedSites";
+const char kCctldsField[] = "ccTLDs";
 const char kReplacementsField[] = "replacements";
 const char kAdditionsField[] = "additions";
 
@@ -533,7 +534,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -554,7 +556,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -575,7 +578,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kAssociatedSitesField}));
 }
@@ -597,7 +601,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kAssociatedSitesField, 1}));
 }
@@ -618,7 +623,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -639,7 +645,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -660,7 +667,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -681,7 +689,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -702,7 +711,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -723,7 +733,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -744,7 +755,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kSingletonSet,
                  {kReplacementsField, 0, kAssociatedSitesField}));
 }
@@ -765,7 +777,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kRepeatedDomain,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -790,7 +803,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kNonDisjointSets,
                  {kReplacementsField, 1, kAssociatedSitesField, 0}));
 }
@@ -815,7 +829,8 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kNonDisjointSets,
                  {kAdditionsField, 1, kAssociatedSitesField, 0}));
 }
@@ -841,9 +856,56 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
+          .error()
+          .first,
       ParseError(ParseErrorType::kNonDisjointSets,
                  {kAdditionsField, 0, kAssociatedSitesField, 0}));
+}
+
+TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
+  base::Value policy_value = base::JSONReader::Read(R"(
+               {
+                "replacements": [
+                  {
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"],
+                    "ccTLDs": {
+                      "https://associatedsite1.cctld": ["https://associatedsite1.test"],
+                      "https://primary1.test": ["https://primary1-diff.cctld"]
+                    }
+                  }
+                ],
+                "additions": [
+                  {
+                    "primary": "https://primary2.",
+                    "associatedSites": ["https://associatedsite2.test"],
+                    "ccTLDs": {
+                      "https://associatedsite2.test": ["https://associatedsite2-diff.cctld"]
+                    }
+                  }
+                ]
+              }
+            )")
+                                 .value();
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error()
+          .first,
+      ParseError(ParseErrorType::kInvalidOrigin,
+                 {kAdditionsField, 0, kPrimaryField}));
+
+  // The ParseWarning in the ccTLDs field of "additions[0]" isn't added since
+  // the InvalidOrigin error arises first.
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .error()
+          .second,
+      ElementsAre(ParseWarning(ParseWarningType::kCctldKeyNotCanonical,
+                               {kReplacementsField, 0, kCctldsField,
+                                "https://associatedsite1.cctld"}),
+                  ParseWarning(ParseWarningType::kAliasNotCctldVariant,
+                               {kReplacementsField, 0, kCctldsField,
+                                "https://primary1.test", 0})));
 }
 
 TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
@@ -1029,7 +1091,7 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
           .second,
       std::vector<ParseWarning>{ParseWarning(
           ParseWarningType::kCctldKeyNotCanonical,
-          {"replacements", 0, "ccTLDs", "https://not_in_set.test"})});
+          {kReplacementsField, 0, kCctldsField, "https://not_in_set.test"})});
 }
 
 class FirstPartySetParserTest : public ::testing::Test {

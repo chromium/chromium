@@ -77,23 +77,25 @@ bool FirstPartySetsOverridesPolicyHandler::CheckPolicySettings(
 
   // Output error and return false if any of the sets provided in the
   // "replacements" or "additions" list are not valid First-Party Sets.
-  base::expected<std::vector<ParseWarning>, ParseError> warnings_or_error =
-      content::FirstPartySetsHandler::ValidateEnterprisePolicy(
-          policy_value->GetDict());
-  if (!warnings_or_error.has_value()) {
-    ParseError parse_error = warnings_or_error.error();
-    errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR,
-                     ParseErrorTypeToString(parse_error.type()),
-                     parse_error.path());
-    return false;
-  }
+  std::pair<absl::optional<ParseError>, std::vector<ParseWarning>>
+      opt_error_and_warnings =
+          content::FirstPartySetsHandler::ValidateEnterprisePolicy(
+              policy_value->GetDict());
 
   // Output warnings that occur when parsing the policy.
-  for (ParseWarning parse_warning : warnings_or_error.value()) {
+  for (ParseWarning parse_warning : opt_error_and_warnings.second) {
     errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR,
                      ParseWarningTypeToString(parse_warning.type()),
                      parse_warning.path(),
                      policy::PolicyMap::MessageType::kWarning);
+  }
+
+  if (opt_error_and_warnings.first.has_value()) {
+    ParseError parse_error = opt_error_and_warnings.first.value();
+    errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR,
+                     ParseErrorTypeToString(parse_error.type()),
+                     parse_error.path());
+    return false;
   }
   return true;
 }
