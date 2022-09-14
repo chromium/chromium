@@ -1521,7 +1521,7 @@ static absl::StatusOr<int> MakeStatus() { return 100; }
 TEST(StatusOr, TestIgnoreError) { MakeStatus().IgnoreError(); }
 
 TEST(StatusOr, EqualityOperator) {
-  constexpr int kNumCases = 4;
+  constexpr size_t kNumCases = 4;
   std::array<absl::StatusOr<int>, kNumCases> group1 = {
       absl::StatusOr<int>(1), absl::StatusOr<int>(2),
       absl::StatusOr<int>(absl::InvalidArgumentError("msg")),
@@ -1530,8 +1530,8 @@ TEST(StatusOr, EqualityOperator) {
       absl::StatusOr<int>(1), absl::StatusOr<int>(2),
       absl::StatusOr<int>(absl::InvalidArgumentError("msg")),
       absl::StatusOr<int>(absl::InternalError("msg"))};
-  for (int i = 0; i < kNumCases; ++i) {
-    for (int j = 0; j < kNumCases; ++j) {
+  for (size_t i = 0; i < kNumCases; ++i) {
+    for (size_t j = 0; j < kNumCases; ++j) {
       if (i == j) {
         EXPECT_TRUE(group1[i] == group2[j]);
         EXPECT_FALSE(group1[i] != group2[j]);

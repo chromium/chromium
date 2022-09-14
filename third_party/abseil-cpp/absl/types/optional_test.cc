@@ -988,8 +988,8 @@ TEST(optionalTest, PointerStuff) {
   EXPECT_EQ("foo", *opt);
   const auto& opt_const = opt;
   EXPECT_EQ("foo", *opt_const);
-  EXPECT_EQ(opt->size(), 3);
-  EXPECT_EQ(opt_const->size(), 3);
+  EXPECT_EQ(opt->size(), 3u);
+  EXPECT_EQ(opt_const->size(), 3u);
 
   constexpr absl::optional<ConstexprType> opt1(1);
   static_assert((*opt1).x == ConstexprType::kCtorInt, "");
@@ -1523,7 +1523,7 @@ TEST(optionalTest, Hash) {
   for (int i = 0; i < 100; ++i) {
     hashcodes.insert(hash(i));
   }
-  EXPECT_GT(hashcodes.size(), 90);
+  EXPECT_GT(hashcodes.size(), 90u);
 
   static_assert(is_hash_enabled_for<absl::optional<int>>::value, "");
   static_assert(is_hash_enabled_for<absl::optional<Hashable>>::value, "");

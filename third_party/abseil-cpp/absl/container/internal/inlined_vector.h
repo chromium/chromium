@@ -641,8 +641,8 @@ auto Storage<T, N, A>::Insert(ConstIterator<A> pos, ValueAdapter values,
                               SizeType<A> insert_count) -> Iterator<A> {
   StorageView<A> storage_view = MakeStorageView();
 
-  SizeType<A> insert_index =
-      std::distance(ConstIterator<A>(storage_view.data), pos);
+  auto insert_index = static_cast<SizeType<A>>(
+      std::distance(ConstIterator<A>(storage_view.data), pos));
   SizeType<A> insert_end_index = insert_index + insert_count;
   SizeType<A> new_size = storage_view.size + insert_count;
 

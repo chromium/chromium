@@ -617,7 +617,7 @@ timespec ToTimespec(Duration d) {
         rep_lo -= kTicksPerSecond;
       }
     }
-    ts.tv_sec = rep_hi;
+    ts.tv_sec = static_cast<decltype(ts.tv_sec)>(rep_hi);
     if (ts.tv_sec == rep_hi) {  // no time_t narrowing
       ts.tv_nsec = rep_lo / kTicksPerNanosecond;
       return ts;
@@ -691,7 +691,7 @@ namespace {
 char* Format64(char* ep, int width, int64_t v) {
   do {
     --width;
-    *--ep = '0' + (v % 10);  // contiguous digits
+    *--ep = static_cast<char>('0' + (v % 10));  // contiguous digits
   } while (v /= 10);
   while (--width >= 0) *--ep = '0';  // zero pad
   return ep;

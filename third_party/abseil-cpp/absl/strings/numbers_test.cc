@@ -406,6 +406,19 @@ TEST(NumbersTest, Atod) {
   EXPECT_TRUE(absl::SimpleAtod("-INF", &d));
   EXPECT_TRUE(std::isinf(d) && (d < 0));
 
+  // Parse DBL_MAX. Parsing something more than twice as big should also
+  // produce infinity.
+  EXPECT_TRUE(absl::SimpleAtod("1.7976931348623157e+308", &d));
+  EXPECT_EQ(d, 1.7976931348623157e+308);
+  EXPECT_TRUE(absl::SimpleAtod("5e308", &d));
+  EXPECT_TRUE(std::isinf(d) && (d > 0));
+
+  // Parse DBL_MIN (normal) and DBL_TRUE_MIN (subnormal).
+  EXPECT_TRUE(absl::SimpleAtod("2.2250738585072014e-308", &d));
+  EXPECT_EQ(d, 2.2250738585072014e-308);
+  EXPECT_TRUE(absl::SimpleAtod("4.9406564584124654e-324", &d));
+  EXPECT_EQ(d, 4.9406564584124654e-324);
+
   // Leading and/or trailing whitespace is OK.
   EXPECT_TRUE(absl::SimpleAtod("  \t\r\n  2.718", &d));
   EXPECT_EQ(d, 2.718);
@@ -438,6 +451,14 @@ TEST(NumbersTest, Atod) {
   // The decimal separator must be '.' and is never ','.
   EXPECT_TRUE(absl::SimpleAtod("8.9", &d));
   EXPECT_FALSE(absl::SimpleAtod("8,9", &d));
+
+  // These examples are called out in the EiselLemire function's comments.
+  EXPECT_TRUE(absl::SimpleAtod("4503599627370497.5", &d));
+  EXPECT_EQ(d, 4503599627370497.5);
+  EXPECT_TRUE(absl::SimpleAtod("1e+23", &d));
+  EXPECT_EQ(d, 1e+23);
+  EXPECT_TRUE(absl::SimpleAtod("9223372036854775807", &d));
+  EXPECT_EQ(d, 9223372036854775807);
 
   // Some parsing algorithms don't always round correctly (but absl::SimpleAtod
   // should). This test case comes from

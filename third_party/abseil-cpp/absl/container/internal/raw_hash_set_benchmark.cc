@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/container/internal/raw_hash_set.h"
-
 #include <numeric>
 #include <random>
+#include <vector>
 
 #include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/hash_function_defaults.h"
+#include "absl/container/internal/raw_hash_set.h"
 #include "absl/strings/str_format.h"
 #include "benchmark/benchmark.h"
 
@@ -202,23 +202,46 @@ void CacheInSteadyStateArgs(Benchmark* bm) {
 BENCHMARK(BM_CacheInSteadyState)->Apply(CacheInSteadyStateArgs);
 
 void BM_EndComparison(benchmark::State& state) {
+  StringTable t = {{"a", "a"}, {"b", "b"}};
+  auto it = t.begin();
+  for (auto i : state) {
+    benchmark::DoNotOptimize(t);
+    benchmark::DoNotOptimize(it);
+    benchmark::DoNotOptimize(it != t.end());
+  }
+}
+BENCHMARK(BM_EndComparison);
+
+void BM_Iteration(benchmark::State& state) {
   std::random_device rd;
   std::mt19937 rng(rd());
   string_generator gen{12};
   StringTable t;
-  while (t.size() < state.range(0)) {
+
+  size_t capacity = state.range(0);
+  size_t size = state.range(1);
+  t.reserve(capacity);
+
+  while (t.size() < size) {
     t.emplace(gen(rng), gen(rng));
   }
 
-  for (auto _ : state) {
+  for (auto i : state) {
+    benchmark::DoNotOptimize(t);
     for (auto it = t.begin(); it != t.end(); ++it) {
-      benchmark::DoNotOptimize(it);
-      benchmark::DoNotOptimize(t);
-      benchmark::DoNotOptimize(it != t.end());
+      benchmark::DoNotOptimize(*it);
     }
   }
 }
-BENCHMARK(BM_EndComparison)->Arg(400);
+
+BENCHMARK(BM_Iteration)
+    ->ArgPair(10, 10)
+    ->ArgPair(20, 20)
+    ->ArgPair(100, 100)
+    ->ArgPair(400, 400)
+    // sparse
+    ->ArgPair(100, 1)
+    ->ArgPair(1000, 10);
 
 void BM_CopyCtor(benchmark::State& state) {
   std::random_device rd;
@@ -437,7 +460,6 @@ void CodegenAbslRawHashSetInt64Iterate(
 int odr =
     (::benchmark::DoNotOptimize(std::make_tuple(
          &CodegenAbslRawHashSetInt64Find, &CodegenAbslRawHashSetInt64FindNeEnd,
-         &CodegenAbslRawHashSetInt64Insert,
-         &CodegenAbslRawHashSetInt64Contains,
+         &CodegenAbslRawHashSetInt64Insert, &CodegenAbslRawHashSetInt64Contains,
          &CodegenAbslRawHashSetInt64Iterate)),
      1);

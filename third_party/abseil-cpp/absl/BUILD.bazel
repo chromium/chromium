@@ -28,6 +28,14 @@ config_setting(
 )
 
 config_setting(
+    name = "gcc_compiler",
+    flag_values = {
+        "@bazel_tools//tools/cpp:compiler": "gcc",
+    },
+    visibility = [":__subpackages__"],
+)
+
+config_setting(
     name = "msvc_compiler",
     flag_values = {
         "@bazel_tools//tools/cpp:compiler": "msvc-cl",

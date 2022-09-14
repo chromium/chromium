@@ -14,12 +14,9 @@
 # limitations under the License.
 #
 
-# Most widely used distributions have cmake 3.5 or greater available as of March
-# 2019.  A notable exception is RHEL-7 (CentOS7).  You can install a current
-# version of CMake by first installing Extra Packages for Enterprise Linux
-# (https://fedoraproject.org/wiki/EPEL#Extra_Packages_for_Enterprise_Linux_.28EPEL.29)
-# and then issuing `yum install cmake3` on the command line.
-cmake_minimum_required(VERSION 3.5)
+# https://github.com/google/oss-policies-info/blob/main/foundational-cxx-support-matrix.md
+# As of 2022-09-06, CMake 3.10 is the minimum supported version.
+cmake_minimum_required(VERSION 3.10)
 
 # Compiler id for Apple Clang is now AppleClang.
 if (POLICY CMP0025)

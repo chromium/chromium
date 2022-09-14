@@ -84,14 +84,15 @@ class TestZoneInfoSource : public cctz::ZoneInfoSource {
       : data_(data), end_(data + size) {}
 
   std::size_t Read(void* ptr, std::size_t size) override {
-    const std::size_t len = std::min<std::size_t>(size, end_ - data_);
+    const std::size_t len =
+        std::min(size, static_cast<std::size_t>(end_ - data_));
     memcpy(ptr, data_, len);
     data_ += len;
     return len;
   }
 
   int Skip(std::size_t offset) override {
-    data_ += std::min<std::size_t>(offset, end_ - data_);
+    data_ += std::min(offset, static_cast<std::size_t>(end_ - data_));
     return 0;
   }
 

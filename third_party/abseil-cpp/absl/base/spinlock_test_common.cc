@@ -34,7 +34,7 @@
 #include "absl/synchronization/blocking_counter.h"
 #include "absl/synchronization/notification.h"
 
-constexpr int32_t kNumThreads = 10;
+constexpr uint32_t kNumThreads = 10;
 constexpr int32_t kIters = 1000;
 
 namespace absl {
@@ -55,7 +55,7 @@ struct SpinLockTest {
 
 namespace {
 
-static constexpr int kArrayLength = 10;
+static constexpr size_t kArrayLength = 10;
 static uint32_t values[kArrayLength];
 
 ABSL_CONST_INIT static SpinLock static_cooperative_spinlock(
@@ -79,11 +79,11 @@ static uint32_t Hash32(uint32_t a, uint32_t c) {
   return c;
 }
 
-static void TestFunction(int thread_salt, SpinLock* spinlock) {
+static void TestFunction(uint32_t thread_salt, SpinLock* spinlock) {
   for (int i = 0; i < kIters; i++) {
     SpinLockHolder h(spinlock);
-    for (int j = 0; j < kArrayLength; j++) {
-      const int index = (j + thread_salt) % kArrayLength;
+    for (size_t j = 0; j < kArrayLength; j++) {
+      const size_t index = (j + thread_salt) % kArrayLength;
       values[index] = Hash32(values[index], thread_salt);
       std::this_thread::yield();
     }
@@ -93,7 +93,7 @@ static void TestFunction(int thread_salt, SpinLock* spinlock) {
 static void ThreadedTest(SpinLock* spinlock) {
   std::vector<std::thread> threads;
   threads.reserve(kNumThreads);
-  for (int i = 0; i < kNumThreads; ++i) {
+  for (uint32_t i = 0; i < kNumThreads; ++i) {
     threads.push_back(std::thread(TestFunction, i, spinlock));
   }
   for (auto& thread : threads) {
@@ -101,7 +101,7 @@ static void ThreadedTest(SpinLock* spinlock) {
   }
 
   SpinLockHolder h(spinlock);
-  for (int i = 1; i < kArrayLength; i++) {
+  for (size_t i = 1; i < kArrayLength; i++) {
     EXPECT_EQ(values[0], values[i]);
   }
 }
@@ -153,7 +153,7 @@ TEST(SpinLock, WaitCyclesEncoding) {
     int64_t cycles = cycle_distribution(generator);
     int64_t end_time = start_time + cycles;
     uint32_t lock_value = SpinLockTest::EncodeWaitCycles(start_time, end_time);
-    EXPECT_EQ(0, lock_value & kLockwordReservedMask);
+    EXPECT_EQ(0u, lock_value & kLockwordReservedMask);
     int64_t decoded = SpinLockTest::DecodeWaitCycles(lock_value);
     EXPECT_EQ(0, decoded & kProfileTimestampMask);
     EXPECT_EQ(cycles & ~kProfileTimestampMask, decoded);

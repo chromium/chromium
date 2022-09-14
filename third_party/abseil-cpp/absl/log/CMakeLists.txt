@@ -173,6 +173,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
+    $<$<BOOL:${ANDROID}>:-llog>
   DEPS
     absl::base
     absl::cleanup

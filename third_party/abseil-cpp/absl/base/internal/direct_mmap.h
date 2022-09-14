@@ -97,7 +97,8 @@ inline void* DirectMmap(void* start, size_t length, int prot, int flags, int fd,
 #ifdef __BIONIC__
   // SYS_mmap2 has problems on Android API level <= 16.
   // Workaround by invoking __mmap2() instead.
-  return __mmap2(start, length, prot, flags, fd, offset / pagesize);
+  return __mmap2(start, length, prot, flags, fd,
+                 static_cast<size_t>(offset / pagesize));
 #else
   return reinterpret_cast<void*>(
       syscall(SYS_mmap2, start, length, prot, flags, fd,

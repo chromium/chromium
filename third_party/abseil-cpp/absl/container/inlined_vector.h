@@ -626,9 +626,9 @@ class InlinedVector {
     ABSL_HARDENING_ASSERT(pos <= end());
 
     if (ABSL_PREDICT_TRUE(first != last)) {
-      return storage_.Insert(pos,
-                             IteratorValueAdapter<A, ForwardIterator>(first),
-                             std::distance(first, last));
+      return storage_.Insert(
+          pos, IteratorValueAdapter<A, ForwardIterator>(first),
+          static_cast<size_type>(std::distance(first, last)));
     } else {
       return const_cast<iterator>(pos);
     }
@@ -645,7 +645,7 @@ class InlinedVector {
     ABSL_HARDENING_ASSERT(pos >= begin());
     ABSL_HARDENING_ASSERT(pos <= end());
 
-    size_type index = std::distance(cbegin(), pos);
+    size_type index = static_cast<size_type>(std::distance(cbegin(), pos));
     for (size_type i = index; first != last; ++i, static_cast<void>(++first)) {
       insert(data() + i, *first);
     }

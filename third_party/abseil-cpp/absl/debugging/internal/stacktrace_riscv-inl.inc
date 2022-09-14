@@ -30,6 +30,8 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <limits>
+#include <utility>
 
 #include "absl/base/attributes.h"
 #include "absl/debugging/stacktrace.h"
