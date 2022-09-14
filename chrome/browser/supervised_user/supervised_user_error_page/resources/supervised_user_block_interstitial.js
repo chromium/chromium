@@ -181,6 +181,8 @@ function requestCreated(isSuccessful, isMainFrame) {
       };
       $('back-button').focus();
     }
+    $('error-page-illustration').hidden = true;
+    $('waiting-for-approval-illustration').hidden = false;
     if (interstitialRefreshEnabled) {
       $('request-sent-description').hidden = false;
       $('local-approvals-button').classList.add('secondary-button');

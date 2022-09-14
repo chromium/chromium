@@ -108,7 +108,7 @@ p {
   width: 72px;
 }
 
-#illustration {
+.illustration {
   display: none;
 }
 
@@ -234,7 +234,7 @@ picture {
   margin: auto;
 }
 
-.interstitial-refresh-enabled #illustration {
+.interstitial-refresh-enabled .illustration {
   display: inline;
 }
 
@@ -374,7 +374,7 @@ enabled. */
     margin: 0 4px 16px 4px;
   }
 
-  .interstitial-refresh-enabled #illustration {
+  .interstitial-refresh-enabled .illustration {
     display: none;
   }
 
