@@ -9,12 +9,14 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -137,14 +139,29 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   void OnDialogExplicitlyClosed() {
+    // If the user closes our parent tab while we're still open, this method
+    // will (eventually) be called in response to a WebContentsDestroyed() call
+    // from the WebContentsImpl to its observers.  But since the
+    // infobars::ContentInfoBarManager is also torn down in response to
+    // WebContentsDestroyed(), it may already be null. Since the tab is going
+    // away anyway, we can just omit showing an infobar, which prevents any
+    // attempt to access a null infobars::ContentInfoBarManager. Same applies to
+    // removing the webcontents' user data.
+    if (!web_contents_ || web_contents_->IsBeingDestroyed())
+      return;
+
+    if (status_changed_) {
+      CollectedCookiesInfoBarDelegate::Create(
+          infobars::ContentInfoBarManager::FromWebContents(
+              web_contents_.get()));
+    }
+
     // Reset the dialog reference in the user data. If the dialog is opened
     // again, a new instance should be created. When the dialog is destroyed
     // because of the web contents being destroyed, no need to remove the user
     // data because it will be destroyed.
-    if (web_contents_) {
-      web_contents_->RemoveUserData(
-          PageSpecificSiteDataDialogController::UserDataKey());
-    }
+    web_contents_->RemoveUserData(
+        PageSpecificSiteDataDialogController::UserDataKey());
   }
 
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
@@ -173,6 +190,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   void DeleteStoredObjects(const url::Origin& origin) {
     // TODO(crbug.com/1344787): Record metrics.
+    status_changed_ = true;
     DCHECK(DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(),
                                            origin))
         << "The node with a matching origin should be found and deleted in the "
@@ -181,6 +199,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   void SetContentException(const url::Origin& origin, ContentSetting setting) {
     // TODO(crbug.com/1344787): Record metrics.
+    status_changed_ = true;
     DCHECK(setting == CONTENT_SETTING_ALLOW ||
            setting == CONTENT_SETTING_BLOCK ||
            setting == CONTENT_SETTING_SESSION_ONLY);
@@ -237,6 +256,10 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
   std::unique_ptr<FaviconCache> favicon_cache_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+
+  // Whether user has done any changes to the site data, deleted site data for a
+  // site or created a content setting exception for a site.
+  bool status_changed_ = false;
 };
 
 }  // namespace

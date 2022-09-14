@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/page_info/core/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -91,6 +92,15 @@ class PageSpecificSiteDataDialogBrowserTest
     row_view->OnClearOnExitMenuItemClicked(/*event_flags*/ 0);
   }
 
+  size_t infobar_count() const {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return web_contents
+               ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
+                     ->infobar_count()
+               : 0;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -106,6 +116,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, CloseDialog) {
 
   dialog->Close();
   EXPECT_TRUE(dialog->IsClosed());
+
+  EXPECT_EQ(0u, infobar_count());
 }
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
@@ -132,13 +144,29 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   EXPECT_TRUE(dialog->IsClosed());
 }
 
-IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, CloseTab) {
+IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+                       ChangeAndCloseTab) {
+  if (!GetParam()) {
+    return;
+  }
+
   // Test closing tab while the dialog is open.
   // Closing the owning tab will close dialog.
   auto* dialog = OpenDialog();
 
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  auto* view =
+      GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
+  auto* row_view = static_cast<SiteDataRowView*>(view);
+  EXPECT_TRUE(row_view->GetVisible());
+  ClickDeleteMenuItem(row_view);
+  EXPECT_FALSE(row_view->GetVisible());
+
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
   EXPECT_TRUE(dialog->IsClosed());
+  EXPECT_EQ(0u, infobar_count());
 }
 
 // Closing the widget asynchronously destroys the CollectedCookiesViews object,
@@ -196,6 +224,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
   // TODO(crbug.com/1344787): Check the histograms value.
+
+  dialog->Close();
+  EXPECT_EQ(1u, infobar_count());
 }
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
@@ -220,6 +251,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Allowed");
   // TODO(crbug.com/1344787): Check the histograms value.
+
+  dialog->Close();
+  EXPECT_EQ(1u, infobar_count());
 }
 
 IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
@@ -241,6 +275,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Clear on close");
   // TODO(crbug.com/1344787): Check the histograms value.
+
+  dialog->Close();
+  EXPECT_EQ(1u, infobar_count());
 }
 
 // Run tests with kPageSpecificSiteDataDialog flag enabled and disabled.
