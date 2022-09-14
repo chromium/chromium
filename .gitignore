@@ -103,10 +103,6 @@ vs-chromium-project.txt
 /chrome/android/profiles/afdo.prof
 /chrome/android/profiles/local.txt
 /chrome/angle_unittests_run.xml
-# TODO(crbug.com/1361115): Remove after cleaning up usages. This is being
-# replaced by the '/components/vector_icons/google_chrome' entry below which
-# is uprev'd from the same internal repository.
-/chrome/app/vector_icons/google_chrome/
 /chrome/build/pgo_profiles/
 /chrome/gl_tests_run.xml
 /chrome/gles2_conform_test_run.xml
