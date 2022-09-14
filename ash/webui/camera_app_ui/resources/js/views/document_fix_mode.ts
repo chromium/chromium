@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertExists, assertInstanceof} from '../assert.js';
+import {
+  assert,
+  assertExists,
+  assertInstanceof,
+} from '../assert.js';
 import * as dom from '../dom.js';
 import {Box, Line, Point, Size, Vector, vectorFromPoints} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import {speak} from '../spoken_msg.js';
-import {Rotation} from '../type.js';
+import {Rotation, ROTATION_ORDER} from '../type.js';
 import * as util from '../util.js';
 
 /**
@@ -100,13 +104,6 @@ class MovementAnnouncer {
  */
 const CLOSEST_DISTANCE_RATIO = 1 / 10;
 
-const ROTATIONS = [
-  Rotation.ANGLE_0,
-  Rotation.ANGLE_90,
-  Rotation.ANGLE_180,
-  Rotation.ANGLE_270,
-] as const;
-
 interface Corner {
   el: HTMLDivElement;
   pt: Point;
@@ -155,9 +152,9 @@ export class DocumentFixMode {
   private imageContainerSize: Size|null = null;
 
   /**
-   * Index of `ROTATIONS` as current photo rotation.
+   * Current preview image rotation.
    */
-  private rotation = 0;
+  private rotation: Rotation = ROTATION_ORDER[0];
 
   /**
    * Used to update `this.corners` when manually update the corners by
@@ -181,8 +178,7 @@ export class DocumentFixMode {
     target: HTMLElement,
     onExit: () => void,
     onUpdatePage:
-        ({corners, rotation}:
-             {corners: Point[], rotation: typeof ROTATIONS[number]}) => void,
+        ({corners, rotation}: {corners: Point[], rotation: Rotation}) => void,
   }) {
     this.target = target;
     const fragment = util.instantiateTemplate(this.templateSelector);
@@ -238,15 +234,14 @@ export class DocumentFixMode {
             x / this.imageContainerSize.width,
             y / this.imageContainerSize.height);
       });
-      const rotation = ROTATIONS[this.rotation];
-      onUpdatePage({corners, rotation});
+      onUpdatePage({corners, rotation: this.rotation});
     };
 
     const clockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_clockwise_button]',
         HTMLButtonElement);
     clockwiseBtn.addEventListener('click', () => {
-      this.updateRotation((this.rotation + 1) % ROTATIONS.length);
+      this.updateRotation(this.getNextRotation(this.rotation));
       onChangeCornerOrRotation();
     });
 
@@ -254,8 +249,7 @@ export class DocumentFixMode {
         this.root, 'button[i18n-aria=rotate_counterclockwise_button]',
         HTMLButtonElement);
     counterclockwiseBtn.addEventListener('click', () => {
-      this.updateRotation(
-          (this.rotation + ROTATIONS.length - 1) % ROTATIONS.length);
+      this.updateRotation(this.getNextRotation(this.rotation, false));
       onChangeCornerOrRotation();
     });
 
@@ -307,7 +301,10 @@ export class DocumentFixMode {
             const announceMoveXY = KEY_MOVEMENTS[keyIdx];
             announceMoveX += announceMoveXY.x;
             announceMoveY += announceMoveXY.y;
-            const moveXY = KEY_MOVEMENTS[(keyIdx + this.rotation) % 4];
+            const movementIndex =
+                (keyIdx + this.getRotationIndex(this.rotation)) %
+                KEY_MOVEMENTS.length;
+            const moveXY = KEY_MOVEMENTS[movementIndex];
             moveX += moveXY.x;
             moveY += moveXY.y;
           }
@@ -549,9 +546,10 @@ export class DocumentFixMode {
               I18nString.LABEL_DOCUMENT_BOTTOM_RIGHT_CORNER,
               I18nString.LABEL_DOCUMENT_TOP_RIGHT_CORNER,
     ].entries()) {
-      const cornEl =
-          this.corners[(this.rotation + index) % this.corners.length].el;
-      cornEl.setAttribute('i18n-aria', label);
+      const cornerIndex =
+          (this.getRotationIndex(this.rotation) + index) % this.corners.length;
+      const cornElement = this.corners[cornerIndex].el;
+      cornElement.setAttribute('i18n-aria', label);
     }
     util.setupI18nElements(this.root);
   }
@@ -568,8 +566,7 @@ export class DocumentFixMode {
     }
     let rotatedW = rawImageW;
     let rotatedH = rawImageH;
-    if (ROTATIONS[this.rotation] === Rotation.ANGLE_90 ||
-        ROTATIONS[this.rotation] === Rotation.ANGLE_270) {
+    if ([Rotation.ANGLE_90, Rotation.ANGLE_270].includes(this.rotation)) {
       [rotatedW, rotatedH] = [rotatedH, rotatedW];
     }
     const scale = Math.min(1, frameW / rotatedW, frameH / rotatedH);
@@ -596,23 +593,24 @@ export class DocumentFixMode {
     style.set('width', CSS.px(newImageW));
     style.set('height', CSS.px(newImageH));
     this.imageContainerSize = new Size(newImageW, newImageH);
+    const rotationIndex = this.getRotationIndex(this.rotation);
     const originX =
-        frameW / 2 + rotatedW * scale / 2 * [-1, 1, 1, -1][this.rotation];
+        frameW / 2 + rotatedW * scale / 2 * [-1, 1, 1, -1][rotationIndex];
     const originY =
-        frameH / 2 + rotatedH * scale / 2 * [-1, -1, 1, 1][this.rotation];
+        frameH / 2 + rotatedH * scale / 2 * [-1, -1, 1, 1][rotationIndex];
     style.set('left', CSS.px(originX));
     style.set('top', CSS.px(originY));
 
-    const deg = ROTATIONS[this.rotation];
     style.set(
-        'transform', new CSSTransformValue([new CSSRotate(CSS.deg(deg))]));
+        'transform',
+        new CSSTransformValue([new CSSRotate(CSS.deg(this.rotation))]));
 
     this.updateCornerEl();
   }
 
   async update({corners, rotation, blob}: {
     corners: Point[],
-    rotation: typeof ROTATIONS[number],
+    rotation: Rotation,
     blob: Blob,
   }): Promise<void> {
     this.initialCorners = corners;
@@ -622,10 +620,10 @@ export class DocumentFixMode {
     this.rawImageSize = new Size(image.width, image.height);
     this.imageElement.src = image.src;
     URL.revokeObjectURL(image.src);
-    this.updateRotation(ROTATIONS.indexOf(rotation));
+    this.updateRotation(rotation);
   }
 
-  updateRotation(rotation: number): void {
+  updateRotation(rotation: Rotation): void {
     this.rotation = rotation;
     this.setupImageAndCorners();
     this.updateCornerElAriaLabel();
@@ -652,5 +650,16 @@ export class DocumentFixMode {
   hide(): void {
     this.resizeObserver.disconnect();
     this.root.remove();
+  }
+
+  private getNextRotation(rotation: Rotation, clockwise = true) {
+    const index = this.getRotationIndex(rotation);
+    const deviation = clockwise ? 1 : -1;
+    const length = ROTATION_ORDER.length;
+    return ROTATION_ORDER[(index + deviation + length) % length];
+  }
+
+  private getRotationIndex(rotation: Rotation) {
+    return ROTATION_ORDER.indexOf(rotation);
   }
 }

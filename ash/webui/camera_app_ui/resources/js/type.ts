@@ -191,6 +191,10 @@ export enum Rotation {
   ANGLE_180 = 180,
   ANGLE_270 = 270,
 }
+// `ROTATION_ORDER` is used for document scanning fix mode to show/crop images.
+// The length must be fixed at 4.
+export const ROTATION_ORDER =
+    Object.values(Rotation).filter((r): r is Rotation => typeof r === 'number');
 
 export interface VideoConfig {
   width: number;
