@@ -18,6 +18,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,11 +52,17 @@ constexpr char kInvalidDmServerUrl[] =
     "7C1.2.3&request=browser_public_key_upload";
 constexpr HttpResponseCode kSuccessCode = 200;
 constexpr HttpResponseCode kFailureCode = 400;
-constexpr HttpResponseCode kSignatureFailureCode = 409;
+constexpr HttpResponseCode kKeyConflictCode = 409;
 
 }  // namespace
 
 class MacKeyRotationCommandTest : public testing::Test {
+ protected:
+  MacKeyRotationCommandTest()
+      : test_shared_loader_factory_(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_)) {}
+
   void SetUp() override {
     auto mock_secure_enclave_client =
         std::make_unique<MockSecureEnclaveClient>();
@@ -75,13 +83,18 @@ class MacKeyRotationCommandTest : public testing::Test {
 
     RegisterDeviceTrustConnectorLocalPrefs(local_prefs_.registry());
 
-    rotation_command_ = absl::WrapUnique(new MacKeyRotationCommand(
-        &local_prefs_, KeyRotationManager::CreateForTesting(
-                           std::move(mock_network_delegate),
-                           std::move(mock_persistence_delegate))));
+    rotation_command_ = absl::WrapUnique(
+        new MacKeyRotationCommand(test_shared_loader_factory_, &local_prefs_));
+
+    KeyRotationManager::SetForTesting(KeyRotationManager::CreateForTesting(
+        std::move(mock_network_delegate),
+        std::move(mock_persistence_delegate)));
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<MacKeyRotationCommand> rotation_command_;
   MockSecureEnclaveClient* mock_secure_enclave_client_ = nullptr;
   MockKeyNetworkDelegate* mock_network_delegate_ = nullptr;
@@ -89,7 +102,6 @@ class MacKeyRotationCommandTest : public testing::Test {
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   KeyRotationCommand::Params params;
   TestingPrefServiceSimple local_prefs_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests a failed key rotation due to the secure enclave not being supported.
@@ -149,9 +161,9 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
   EXPECT_FALSE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
-// Tests a failed key rotation when uploading a the key to the dm server fails
-// due to a signature failure.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidSignatureFailure) {
+// Tests a failed key rotation when uploading a the key to the dm server
+// fails due to a key conflict failure.
+TEST_F(MacKeyRotationCommandTest, RotateFailure_KeyConflict) {
   InSequence s;
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
@@ -166,7 +178,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidSignatureFailure) {
       .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
                           const std::string& body,
                           base::OnceCallback<void(int)> callback) {
-        std::move(callback).Run(kSignatureFailureCode);
+        std::move(callback).Run(kKeyConflictCode);
       }));
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
@@ -206,7 +218,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
 }
 
 // Tests when the key rotation is successful.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_Success) {
+TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
   InSequence s;
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));

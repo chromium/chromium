@@ -14,9 +14,23 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+// Used for storing the key rotation manager in tests.
+std::unique_ptr<KeyRotationManager>& GetKeyRotationManagerFromStorage() {
+  static std::unique_ptr<KeyRotationManager> storage;
+  return storage;
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<KeyRotationManager> KeyRotationManager::Create(
     std::unique_ptr<KeyNetworkDelegate> network_delegate) {
+  auto& rotation_manager_instance = GetKeyRotationManagerFromStorage();
+  if (rotation_manager_instance)
+    return std::move(rotation_manager_instance);
+
   return std::make_unique<KeyRotationManagerImpl>(
       std::move(network_delegate), KeyPersistenceDelegateFactory::GetInstance()
                                        ->CreateKeyPersistenceDelegate());
@@ -28,6 +42,13 @@ std::unique_ptr<KeyRotationManager> KeyRotationManager::CreateForTesting(
     std::unique_ptr<KeyPersistenceDelegate> persistence_delegate) {
   return std::make_unique<KeyRotationManagerImpl>(
       std::move(network_delegate), std::move(persistence_delegate));
+}
+
+// static
+void KeyRotationManager::SetForTesting(
+    std::unique_ptr<KeyRotationManager> key_rotation_manager) {
+  auto& storage = GetKeyRotationManagerFromStorage();
+  storage = std::move(key_rotation_manager);
 }
 
 }  // namespace enterprise_connectors

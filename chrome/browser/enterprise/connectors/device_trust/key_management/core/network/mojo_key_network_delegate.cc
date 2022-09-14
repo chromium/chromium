@@ -14,8 +14,8 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -26,9 +26,9 @@ constexpr int kMaxRetryCount = 10;
 }  // namespace
 
 MojoKeyNetworkDelegate::MojoKeyNetworkDelegate(
-    network::mojom::URLLoaderFactory* url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {
-  DCHECK(url_loader_factory_);
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
+  DCHECK(shared_url_loader_factory_);
 }
 
 MojoKeyNetworkDelegate::~MojoKeyNetworkDelegate() = default;
@@ -86,7 +86,7 @@ void MojoKeyNetworkDelegate::SendPublicKeyToDmServer(
   url_loader_->SetRetryOptions(
       kMaxRetryCount, network::SimpleURLLoader::RetryMode::RETRY_ON_5XX);
   url_loader_->DownloadHeadersOnly(
-      url_loader_factory_,
+      shared_url_loader_factory_.get(),
       base::BindOnce(&MojoKeyNetworkDelegate::OnURLLoaderComplete,
                      weak_factory_.GetWeakPtr(),
                      std::move(upload_key_completed_callback)));

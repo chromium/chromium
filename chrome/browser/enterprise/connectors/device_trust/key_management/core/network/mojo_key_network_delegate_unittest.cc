@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,8 +41,9 @@ class MojoKeyNetworkDelegateTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   void SetUp() override {
-    network_delegate =
-        std::make_unique<MojoKeyNetworkDelegate>(&test_url_loader_factory);
+    network_delegate = std::make_unique<MojoKeyNetworkDelegate>(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
   }
 
   HttpResponseCode SendRequest() {
@@ -52,11 +54,11 @@ class MojoKeyNetworkDelegateTest : public testing::Test {
   }
 
   void AddResponse(net::HttpStatusCode http_status) {
-    test_url_loader_factory.AddResponse(kFakeDMServerUrl, "", http_status);
+    test_url_loader_factory_.AddResponse(kFakeDMServerUrl, "", http_status);
   }
 
  protected:
-  network::TestURLLoaderFactory test_url_loader_factory;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<MojoKeyNetworkDelegate> network_delegate;
 };
 
@@ -78,7 +80,7 @@ TEST_F(MojoKeyNetworkDelegateTest, UploadRequest_MultipleSequentialRequests) {
 // Tests an upload request when no response headers were returned from
 // the url loader.
 TEST_F(MojoKeyNetworkDelegateTest, UploadRequest_EmptyHeader) {
-  test_url_loader_factory.AddResponse(
+  test_url_loader_factory_.AddResponse(
       GURL(kFakeDMServerUrl), network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::OK),
       network::TestURLLoaderFactory::Redirects());

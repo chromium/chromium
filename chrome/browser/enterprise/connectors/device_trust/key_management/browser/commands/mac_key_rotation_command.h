@@ -7,6 +7,9 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
@@ -33,16 +36,20 @@ class MacKeyRotationCommand : public KeyRotationCommand {
  private:
   friend class MacKeyRotationCommandTest;
 
-  MacKeyRotationCommand(
-      PrefService* local_prefs,
-      std::unique_ptr<KeyRotationManager> key_rotation_manager);
+  // Processes the `result` of the key rotation and returns it to the
+  // rotation `callback`.
+  void OnKeyRotated(KeyRotationCommand::Callback callback,
+                    KeyRotationManager::Result result);
 
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::raw_ptr<PrefService> local_prefs_;
-
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Used to issue Keychain APIs.
   std::unique_ptr<SecureEnclaveClient> client_;
+
+  base::WeakPtrFactory<MacKeyRotationCommand> weak_factory_{this};
 };
 
 }  // namespace enterprise_connectors

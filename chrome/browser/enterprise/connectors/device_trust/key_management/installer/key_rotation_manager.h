@@ -37,6 +37,9 @@ class KeyRotationManager {
       std::unique_ptr<KeyNetworkDelegate> network_delegate,
       std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
 
+  static void SetForTesting(
+      std::unique_ptr<KeyRotationManager> key_rotation_manager);
+
   // Rotates the key pair and returns the result of the key rotation to the
   // callback. If no key pair already exists, simply creates a new one.
   // `dm_token` is the DM token to use when sending the new public key to the

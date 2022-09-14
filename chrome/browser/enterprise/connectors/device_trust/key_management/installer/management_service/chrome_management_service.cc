@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
@@ -24,6 +25,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace enterprise_connectors {
@@ -119,7 +121,8 @@ int ChromeManagementService::StartRotation(
     const base::CommandLine* command_line) {
   auto key_rotation_manager =
       KeyRotationManager::Create(std::make_unique<MojoKeyNetworkDelegate>(
-          remote_url_loader_factory_.get()));
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              remote_url_loader_factory_.get())));
   return RotateDeviceTrustKey(std::move(key_rotation_manager), *command_line,
                               chrome::GetChannel())
              ? kSuccess
