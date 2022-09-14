@@ -1534,9 +1534,10 @@ to valid getter return types:
 | `pending_associated_remote<Foo>`    | `mojo::PendingAssociatedRemote<Foo>`
 | `pending_associated_receiver<Foo>`    | `mojo::PendingAssociatedReceiver<Foo>`
 | `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `base::StringPiece`, and `WTF::String` (Blink).
-| `array<T>`                   | Value or reference to any type `T` that has a `mojo::ArrayTraits` specialization defined. By default this includes `std::vector<T>`, `mojo::CArray<T>`, and `WTF::Vector<T>` (Blink).
-| `map<K, V>`                  | Value or reference to any type `T` that has a `mojo::MapTraits` specialization defined. By default this includes `std::map<T>`, `mojo::unordered_map<T>`, and `WTF::HashMap<T>` (Blink).
-| `FooEnum`                    | Value of any type that has an appropriate `EnumTraits` specialization defined. By default this inlcudes only the generated `FooEnum` type.
+| `array<T>`                   | Value or reference to any type `T` that has a `mojo::ArrayTraits` specialization defined. By default this includes `std::array<T, N>`, `std::vector<T>`, `WTF::Vector<T>` (Blink), etc.
+| `array<T, N>`                | Similar to the above, but the length of the data must be always the same as `N`.
+| `map<K, V>`                  | Value or reference to any type `T` that has a `mojo::MapTraits` specialization defined. By default this includes `std::map<T>`, `mojo::unordered_map<T>`, `WTF::HashMap<T>` (Blink), etc.
+| `FooEnum`                    | Value of any type that has an appropriate `EnumTraits` specialization defined. By default this includes only the generated `FooEnum` type.
 | `FooStruct`                  | Value or reference to any type that has an appropriate `StructTraits` specialization defined. By default this includes only the generated `FooStructPtr` type.
 | `FooUnion`                   | Value of reference to any type that has an appropriate `UnionTraits` specialization defined. By default this includes only the generated `FooUnionPtr` type.
 | `Foo?`                       | `absl::optional<CppType>`, where `CppType` is the value type defined by the appropriate traits class specialization (e.g. `StructTraits`, `mojo::MapTraits`, etc.). This may be customized by the [typemapping](#Enabling-a-New-Type-Mapping).
