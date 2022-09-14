@@ -2782,6 +2782,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.NewProfileWithIgnoredCountryDecision"
+    enum="AutofillProfileImportDecision" expires_after="2023-02-26">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs the user's decision for storing a new address profile observed in a
+    form submission. The profile was only considered an import candidate after
+    an invalid country was ignored. This metric is emitted at the end of an
+    import process once the user-provided import decision is final. It is
+    collected in addition to Autofill.ProfileImport.NewProfileDecision and only
+    if kAutofillIgnoreInvalidCountryOnImport is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.ProfileImport.NewProfileWithRemovedPhoneNumberDecision"
     enum="AutofillProfileImportDecision" expires_after="2023-02-12">
@@ -2989,6 +3003,22 @@ chromium-metrics-reviews@google.com.
     is emitted at the end of an import process once the user-provided import
     decision is final. It is collected in addition to
     Autofill.ProfileImport.UpdateProfileDecision.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.ProfileImport.UpdateProfileWithIgnoredCountryDecision"
+    enum="AutofillProfileImportDecision" expires_after="2023-02-26">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs the user's decision for editing an already existing address after a
+    similar profile was observed in a form submission. The profile was only
+    considered an import candidate after an invalid country was ignored. This
+    metric is emitted at the end of an import process once the user-provided
+    import decision is final. It is collected in addition to
+    Autofill.ProfileImport.UpdateProfileDecision and only if
+    kAutofillIgnoreInvalidCountryOnImport is enabled.
   </summary>
 </histogram>
 

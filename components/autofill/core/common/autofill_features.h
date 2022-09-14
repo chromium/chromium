@@ -49,6 +49,8 @@ extern const base::Feature kAutofillAssociateForms;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillIgnoreInvalidCountryOnImport;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillInferCountryCallingCode;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillConsiderPhoneNumberSeparatorsValidLabels;

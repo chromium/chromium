@@ -782,6 +782,31 @@ TEST_P(FormDataImporterTest, ComplementCountry) {
   ImportWithCountry("", {kDefaultGermanProfile});
 }
 
+// Tests how invalid countries in submitted forms are treated depending on
+// `kAutofillIgnoreInvalidCountryOnImport`.
+TEST_P(FormDataImporterTest, InvalidCountry) {
+  // Due to the extra 'A', the country of this `form_structure` is invalid.
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry("USAA"));
+  // With `kAutofillIgnoreInvalidCountryOnImport` disabled, profiles with
+  // invalid country information are rejected.
+  {
+    base::test::ScopedFeatureList ignore_invalid_country_feature;
+    ignore_invalid_country_feature.InitAndDisableFeature(
+        features::kAutofillIgnoreInvalidCountryOnImport);
+    ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+  }
+  // With the feature enabled, the invalid country is ignored and country
+  // complemention overwrites it. It becomes US due to the locale.
+  {
+    base::test::ScopedFeatureList ignore_invalid_country_feature;
+    ignore_invalid_country_feature.InitAndEnableFeature(
+        features::kAutofillIgnoreInvalidCountryOnImport);
+    ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
+  }
+}
+
 TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
   TypeValuePairs profile_with_invalid_phone_number =
       GetDefaultProfileTypeValuePairs();

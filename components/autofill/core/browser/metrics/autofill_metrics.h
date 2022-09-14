@@ -1601,9 +1601,14 @@ class AutofillMetrics {
   static void LogNewProfileImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
-  // Logs the user decision for importing a new profile with auto complemented
+  // Logs the user decision for importing a new profile with a complemented
   // country.
   static void LogNewProfileWithComplementedCountryImportDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // Logs the user decision for importing a new profile, which could only
+  // be imported after an invalid country was ignored.
+  static void LogNewProfileWithIgnoredCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs the user decision for importing a new profile, which was only possible
@@ -1625,9 +1630,14 @@ class AutofillMetrics {
   static void LogProfileUpdateImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
-  // Logs the user decision for updating an exiting profile with auto
-  // complemented country.
+  // Logs the user decision for updating an exiting profile with a complemented
+  // country.
   static void LogProfileUpdateWithComplementedCountryImportDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // Logs the user decision for updating an exiting profile, which could only
+  // be imported after an invalid country was ignored.
+  static void LogProfileUpdateWithIgnoredCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
   // Logs the user decision for updating an existing profile, which was only

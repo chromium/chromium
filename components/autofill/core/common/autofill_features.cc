@@ -93,6 +93,13 @@ const base::Feature kAutofillAssociateForms{"AutofillAssociateForms",
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
+// When enabled, Autofill ignores invalid country information on import, which
+// would otherwise prevent an import. Instead, ignoring it will trigger the
+// country complemention logic.
+// TODO(crbug.com/1362472): Cleanup when launched.
+extern const base::Feature kAutofillIgnoreInvalidCountryOnImport{
+    "AutofillIgnoreInvalidCountryOnImport", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the country calling code for nationally formatted phone numbers
 // is inferred from the profile's country, if available.
 // TODO(crbug.com/1311937): Cleanup when launched.

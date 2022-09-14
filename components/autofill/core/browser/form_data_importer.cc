@@ -557,10 +557,18 @@ bool FormDataImporter::ImportAddressProfileForSection(
       }
       // Check if the country code was still not determined correctly.
       if (!candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
-        LOG_AF(import_log_buffer)
-            << LogMessage::kImportAddressProfileFromFormFailed
-            << "Missing country." << CTag{};
         has_invalid_country = true;
+        // If AutofillIgnoreInvalidCountryOnImport is enable, we cannot just
+        // set `has_invalid_country` to false, because the flag is used to
+        // collect metrics further down.
+        import_metadata.did_ignore_invalid_country =
+            base::FeatureList::IsEnabled(
+                features::kAutofillIgnoreInvalidCountryOnImport);
+        if (!import_metadata.did_ignore_invalid_country) {
+          LOG_AF(import_log_buffer)
+              << LogMessage::kImportAddressProfileFromFormFailed
+              << "Missing country." << CTag{};
+        }
       }
     }
   }
@@ -598,7 +606,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
   bool has_invalid_information =
       !IsValidLearnableProfile(candidate_profile, import_log_buffer) ||
       has_multiple_distinct_email_addresses || has_invalid_field_types ||
-      has_invalid_country || has_invalid_phone_number;
+      (has_invalid_country && !import_metadata.did_ignore_invalid_country) ||
+      has_invalid_phone_number;
 
   // Profiles with valid information qualify for multi-step imports.
   // This requires the profile to be finalized to apply the merging logic.
@@ -618,7 +627,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // For multi-step imports, |did_complement_country| might be set twice, but as
   // the metric is only logged if it wasn't present before, this is fine.
   import_metadata.did_complement_country =
-      !has_invalid_country &&
+      (!has_invalid_country || import_metadata.did_ignore_invalid_country) &&
       ComplementCountry(candidate_profile, predicted_country_code);
 
   // This relies on the profile's country code and must be done strictly after

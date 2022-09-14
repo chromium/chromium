@@ -364,6 +364,10 @@ void ProfileImportProcess::CollectMetrics() const {
       AutofillMetrics::LogNewProfileWithComplementedCountryImportDecision(
           user_decision_);
     }
+    if (import_metadata_.did_ignore_invalid_country) {
+      AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
+          user_decision_);
+    }
     if (import_metadata_.did_remove_invalid_phone_number) {
       AutofillMetrics::LogNewProfileWithRemovedPhoneNumberImportDecision(
           user_decision_);
@@ -397,6 +401,12 @@ void ProfileImportProcess::CollectMetrics() const {
     // difference and we should not count it in the metrics.
     if (import_metadata_.did_complement_country && difference_in_country) {
       AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
+          user_decision_);
+    }
+    // Ignoring an invalid country made the update possible, so this should be
+    // logged in any case.
+    if (import_metadata_.did_ignore_invalid_country) {
+      AutofillMetrics::LogProfileUpdateWithIgnoredCountryImportDecision(
           user_decision_);
     }
 
