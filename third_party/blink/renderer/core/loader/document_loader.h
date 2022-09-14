@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+
 namespace base {
 class TickClock;
 }

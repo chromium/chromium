@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_WEB_URL_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_WEB_URL_LOADER_H_
 
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"

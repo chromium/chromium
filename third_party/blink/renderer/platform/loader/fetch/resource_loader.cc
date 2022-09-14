@@ -43,6 +43,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

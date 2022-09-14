@@ -13,6 +13,10 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
+namespace mojo_base {
+class BigBuffer;
+}
+
 namespace blink {
 
 class CachedMetadata;

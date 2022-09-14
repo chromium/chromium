@@ -29,6 +29,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
