@@ -555,9 +555,7 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 
 #if BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(
-      prefs::kNetworkServiceSandboxEnabled,
-      sandbox::policy::features::IsNetworkSandboxEnabled());
+  registry->RegisterBooleanPref(prefs::kNetworkServiceSandboxEnabled, true);
 #endif  // BUILDFLAG(IS_WIN)
 }
 
