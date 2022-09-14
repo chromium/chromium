@@ -9,9 +9,6 @@
 
 #include "base/feature_list.h"
 
-// Feature flag to enable NTP UI pending loader blocker.
-extern const base::Feature kBlockNewTabPagePendingLoad;
-
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 extern const base::Feature kEnableFeedBackgroundRefresh;

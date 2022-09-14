@@ -489,9 +489,6 @@
 // invoked from test code, as the EG test code runs in a separate process and
 // must query Chrome for the state.
 
-// Returns YES if BlockNewTabPagePendingLoad feature is enabled.
-+ (BOOL)isBlockNewTabPagePendingLoadEnabled [[nodiscard]];
-
 // Returns YES if `variationID` is enabled.
 + (BOOL)isVariationEnabled:(int)variationID;
 

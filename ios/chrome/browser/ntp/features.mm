@@ -16,9 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kBlockNewTabPagePendingLoad{
-    "BlockNewTabPagePendingLoad", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnableWebChannels{"EnableWebChannels",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 

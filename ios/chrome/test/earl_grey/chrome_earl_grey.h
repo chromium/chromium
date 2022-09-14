@@ -616,9 +616,6 @@ UIWindow* GetAnyKeyWindow();
 
 #pragma mark - Feature enables checkers (EG2)
 
-// Returns YES if BlockNewTabPagePendingLoad feature is enabled.
-- (BOOL)isBlockNewTabPagePendingLoadEnabled [[nodiscard]];
-
 // Returns YES if `variationID` is enabled.
 - (BOOL)isVariationEnabled:(int)variationID;
 

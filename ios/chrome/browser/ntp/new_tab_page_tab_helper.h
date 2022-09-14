@@ -99,14 +99,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Enable or disable the tab helper.
   void SetActive(bool active);
 
-  // Sets the `ignore_load_requests_` flag to YES and starts the ignore load
-  // timer.
-  void EnableIgnoreLoadRequests();
-
-  // Sets the `ignore_load_requests_` flag to NO and stops the ignore load
-  // timer.
-  void DisableIgnoreLoadRequests();
-
   // Used to present and dismiss the NTP.
   __weak id<NewTabPageTabHelperDelegate> delegate_ = nil;
 

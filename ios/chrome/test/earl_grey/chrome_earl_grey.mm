@@ -1215,10 +1215,6 @@ UIWindow* GetAnyKeyWindow() {
 
 #pragma mark - Check features (EG2)
 
-- (BOOL)isBlockNewTabPagePendingLoadEnabled {
-  return [ChromeEarlGreyAppInterface isBlockNewTabPagePendingLoadEnabled];
-}
-
 - (BOOL)isVariationEnabled:(int)variationID {
   return [ChromeEarlGreyAppInterface isVariationEnabled:variationID];
 }

@@ -1021,10 +1021,6 @@ NSString* SerializedValue(const base::Value* value) {
 
 #pragma mark - Check features (EG2)
 
-+ (BOOL)isBlockNewTabPagePendingLoadEnabled {
-  return base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad);
-}
-
 + (BOOL)isVariationEnabled:(int)variationID {
   variations::VariationsIdsProvider* provider =
       variations::VariationsIdsProvider::GetInstance();

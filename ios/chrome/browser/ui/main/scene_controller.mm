@@ -2797,14 +2797,14 @@ bool IsSigninForcedByPolicy() {
   web::WebState* currentWebState =
       targetInterface.browser->GetWebStateList()->GetActiveWebState();
 
-  BOOL forceNewTabForIntentSearch =
+  BOOL alwaysInsertNewTab =
       base::FeatureList::IsEnabled(kForceNewTabForIntentSearch) &&
       (self.startupParameters.postOpeningAction == FOCUS_OMNIBOX);
 
   // Don't call loadWithParams for chrome://newtab when it's already loaded.
   // Note that it's safe to use -GetVisibleURL here, as it doesn't matter if the
   // NTP hasn't finished loading.
-  if (!forceNewTabForIntentSearch && currentWebState &&
+  if (!alwaysInsertNewTab && currentWebState &&
       IsURLNtp(currentWebState->GetVisibleURL()) &&
       IsURLNtp(urlLoadParams.web_params.url)) {
     if (tabOpenedCompletion) {
@@ -2813,13 +2813,6 @@ bool IsSigninForcedByPolicy() {
     return;
   }
 
-  // With kBrowserContainerContainsNTP enabled paired with a restored NTP
-  // session, the NTP may appear committed when it is still loading.  For the
-  // time being, always load within a new tab when this feature is enabled.
-  // TODO(crbug.com/931284): Revert this change when fixed.
-  BOOL alwaysInsertNewTab =
-      forceNewTabForIntentSearch ||
-      base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad);
   // If the current tab isn't an NTP, open a new tab.  Be sure to use
   // -GetLastCommittedURL incase the NTP is still loading.
   if (alwaysInsertNewTab ||
