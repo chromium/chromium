@@ -78,6 +78,8 @@ std::unique_ptr<Notification> CreateNotification(
       status.IsBatteryCharging() ? status.GetBatteryTimeToFull()
                                  : status.GetBatteryTimeToEmpty();
 
+  message_center::RichNotificationData rich_notification_data;
+
   if (status.IsUsbChargerConnected()) {
     title =
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE);
@@ -103,6 +105,9 @@ std::unique_ptr<Notification> CreateNotification(
       message = l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE, duration,
           base::NumberToString16(battery_percentage));
+      // Low battery notifications should display on fullscreen windows.
+      rich_notification_data.fullscreen_visibility =
+          message_center::FullscreenVisibility::OVER_USER;
     }
   }
 
@@ -113,8 +118,7 @@ std::unique_ptr<Notification> CreateNotification(
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierBattery,
                                  NotificationCatalogName::kBatteryNotifier),
-      message_center::RichNotificationData(), nullptr,
-      GetBatteryImageMD(notification_state),
+      rich_notification_data, nullptr, GetBatteryImageMD(notification_state),
       GetWarningLevelMD(notification_state));
   if (notification_state ==
       PowerNotificationController::NOTIFICATION_CRITICAL) {
