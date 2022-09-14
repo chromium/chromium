@@ -21,11 +21,12 @@ import {
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
+import {Flag} from '../flag.js';
 import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
-import {getI18nMessage} from '../models/load_time_data.js';
+import {getChromeFlag, getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -601,7 +602,11 @@ export class Camera extends View implements CameraViewUI {
 
   async onDocumentCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
-    // TODO(b/223089758): Add flag here to call `onMultiPageDocumentCaptureDone`
+    // TODO(b/223089758): Replace onDocumentCaptureDone with
+    // onMultiPageDocumentCaptureDone once multi-page feature is fully launched.
+    if (getChromeFlag(Flag.MULTI_PAGE_DOC_SCAN)) {
+      return this.onMultiPageDocumentCaptureDone(pendingPhotoResult);
+    }
     const {blob: rawBlob, resolution, timestamp, metadata} =
         await this.checkPhotoResult(pendingPhotoResult);
     const helper = ChromeHelper.getInstance();

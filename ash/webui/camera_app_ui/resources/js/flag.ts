@@ -6,5 +6,6 @@
  * Name of the chrome flags.
  */
 export enum Flag {
+  MULTI_PAGE_DOC_SCAN = 'multiPageDocScan',
   PLACEHOLDER_FLAG = '',
 }
