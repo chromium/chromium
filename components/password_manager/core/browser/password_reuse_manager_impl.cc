@@ -5,11 +5,16 @@
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+
+using base::RecordAction;
+using base::UserMetricsAction;
 
 namespace password_manager {
 
@@ -184,6 +189,8 @@ void PasswordReuseManagerImpl::SaveGaiaPasswordHash(
     bool is_primary_account,
     GaiaPasswordHashChange event) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  RecordAction(
+      UserMetricsAction("PasswordProtection.Gaia.HashedPasswordSaved"));
   SaveProtectedPasswordHash(username, password, is_primary_account,
                             /*is_gaia_password=*/true, event);
 }
@@ -192,6 +199,8 @@ void PasswordReuseManagerImpl::SaveEnterprisePasswordHash(
     const std::string& username,
     const std::u16string& password) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  RecordAction(UserMetricsAction(
+      "PasswordProtection.NonGaiaEnterprise.HashedPasswordSaved"));
   SaveProtectedPasswordHash(
       username, password, /*is_primary_account=*/false,
       /*is_gaia_password=*/false,
