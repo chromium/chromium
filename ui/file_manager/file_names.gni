@@ -258,10 +258,14 @@ ts_files = [
   "file_manager/state/file_key.ts",
   "file_manager/widgets/xf_breadcrumb.ts",
   "file_manager/containers/breadcrumb_container.ts",
+  "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
 ]
 
 # HTML template files that are used to generate the ".html.ts"
-ts_templates = [ "file_manager/widgets/xf_breadcrumb.html" ]
+ts_templates = [
+  "file_manager/widgets/xf_breadcrumb.html",
+  "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
+]
 
 ts_test_files = [
   # Lib:
@@ -274,6 +278,7 @@ ts_test_files = [
 
   # Widgets:
   "file_manager/widgets/xf_breadcrumb_unittest.ts",
+  "file_manager/widgets/xf_dlp_restriction_details_dialog_unittest.ts",
 ]
 
 ts_generated_templates = []

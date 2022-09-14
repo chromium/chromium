@@ -4,15 +4,13 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
-import {contextMenuHandler} from './context_menu_handler.js';
-import {Menu} from './menu.js';
-import {MenuItem} from './menu_item.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
+import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';
@@ -24,6 +22,7 @@ import {A11yAnnounce} from './a11y_announce.js';
 import {ActionModelUI} from './action_model_ui.js';
 import {ActionsSubmenu} from './actions_submenu.js';
 import {ComboButton} from './combobutton.js';
+import {contextMenuHandler} from './context_menu_handler.js';
 import {DefaultTaskDialog} from './default_task_dialog.js';
 import {DialogFooter} from './dialog_footer.js';
 import {BaseDialog} from './dialogs.js';
@@ -37,6 +36,8 @@ import {GearMenu} from './gear_menu.js';
 import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.js';
 import {InstallLinuxPackageDialog} from './install_linux_package_dialog.js';
 import {ListContainer} from './list_container.js';
+import {Menu} from './menu.js';
+import {MenuItem} from './menu_item.js';
 import {MultiMenu} from './multi_menu.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 import {ProgressCenterPanel} from './progress_center_panel.js';
@@ -148,6 +149,12 @@ export class FileManagerUI {
      * @type {?FilesPasswordDialog}
      */
     this.passwordDialog_ = null;
+
+    /**
+     * Dialog for DLP (Data Leak Prevention) restriction details.
+     * @type {?XfDlpRestrictionDetailsDialog}
+     */
+    this.dlpRestrictionDetailsDialog_ = null;
 
     /**
      * The container element of the dialog.
@@ -434,6 +441,24 @@ export class FileManagerUI {
         document.createElement('files-password-dialog'));
     this.element.appendChild(this.passwordDialog_);
     return this.passwordDialog_;
+  }
+
+  /**
+   * Gets the DlpRestrictionDetails dialog.
+   * @return {?XfDlpRestrictionDetailsDialog}
+   */
+  get dlpRestrictionDetailsDialog() {
+    if (!util.isDlpEnabled()) {
+      return null;
+    }
+    if (this.dlpRestrictionDetailsDialog_) {
+      return this.dlpRestrictionDetailsDialog_;
+    }
+    this.dlpRestrictionDetailsDialog_ =
+        /** @type {!XfDlpRestrictionDetailsDialog} */ (
+            document.createElement('xf-dlp-restriction-details-dialog'));
+    this.element.appendChild(this.dlpRestrictionDetailsDialog_);
+    return this.dlpRestrictionDetailsDialog_;
   }
 
   /**

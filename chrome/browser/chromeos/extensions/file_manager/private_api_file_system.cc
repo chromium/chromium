@@ -442,12 +442,9 @@ extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
     case policy::DlpRulesManager::Level::kBlock:
       return DlpLevel::DLP_LEVEL_BLOCK;
     case policy::DlpRulesManager::Level::kWarn:
+      return DlpLevel::DLP_LEVEL_WARN;
     case policy::DlpRulesManager::Level::kReport:
-      NOTIMPLEMENTED()
-          << "Warn and Report DLP levels for Files are not supported yet.";
-      // TODO(https://crbug.com/1172959): Implement Warn level for Files.
-      // TODO: Implement Report level for Files.
-      return DlpLevel::DLP_LEVEL_NONE;
+      return DlpLevel::DLP_LEVEL_REPORT;
     case policy::DlpRulesManager::Level::kNotSet:
       NOTREACHED() << "DLP level not set.";
       return DlpLevel::DLP_LEVEL_NONE;

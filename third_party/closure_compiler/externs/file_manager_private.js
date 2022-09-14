@@ -764,6 +764,8 @@ chrome.fileManagerPrivate.DlpMetadata;
 
 /** @enum {string} */
 chrome.fileManagerPrivate.DlpLevel = {
+  REPORT: 'report',
+  WARN: 'warn',
   BLOCK: 'block',
   ALLOW: 'allow',
 };

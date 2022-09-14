@@ -6,10 +6,8 @@ import './webui_command_extender.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {Command} from './ui/command.js';
-import {contextMenuHandler} from './ui/context_menu_handler.js';
 
-import {getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
+import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -23,6 +21,7 @@ import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {XfDlpRestrictionDetailsDialog} from '../../widgets/xf_dlp_restriction_details_dialog.js';
 
 import {ActionsModel} from './actions_model.js';
 import {constants} from './constants.js';
@@ -31,6 +30,8 @@ import {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {HoldingSpaceUtil} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
+import {Command} from './ui/command.js';
+import {contextMenuHandler} from './ui/context_menu_handler.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {List} from './ui/list.js';
@@ -1974,16 +1975,27 @@ CommandHandler.COMMANDS_['get-info'] = new (class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['dlp-restriction-details'] =
     new (class extends FilesCommand {
-      execute(event, fileManager) {
+      async executeImpl_(event, fileManager) {
         const entries = fileManager.getSelection().entries;
 
         const metadata =
             fileManager.metadataModel.getCache(entries, ['sourceUrl']);
-        if (!metadata || metadata.length !== 1) {
+        if (!metadata || metadata.length !== 1 || !metadata[0].sourceUrl) {
           return;
         }
-        // TODO(crbug.com/1346254): Get the details and show the modal with the
-        // returned information.
+
+        const sourceUrl = /** @type {!string} */ (metadata[0].sourceUrl);
+        try {
+          const details = await getDlpRestrictionDetails(sourceUrl);
+          fileManager.ui.dlpRestrictionDetailsDialog
+              .showDlpRestrictionDetailsDialog(details);
+        } catch (e) {
+          console.warn(`Error showing DLP restriction details `, e);
+        }
+      }
+
+      execute(event, fileManager) {
+        this.executeImpl_(event, fileManager);
       }
 
       /** @override */

@@ -390,7 +390,11 @@ enum UserType {
 };
 
 enum DlpLevel {
-  // User cannot perform an action.
+  // Report every action to the admin, doesn't affect the user.
+  report,
+  // Warn the user on every action.
+  warn,
+  // Block the user on every action.
   block,
   // No restriction.
   allow
