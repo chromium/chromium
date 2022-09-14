@@ -390,6 +390,17 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
   gfx::Size small_size(480, 320);
   gfx::Size large_size(800, 600);
   auto pixel_format = GetParam();
+  auto small_frame =
+      CreateGreenFrame(small_size, pixel_format, base::Milliseconds(1));
+  auto large_frame =
+      CreateGreenFrame(large_size, pixel_format, base::Milliseconds(2));
+
+  VideoPixelFormat expected_input_format = PIXEL_FORMAT_I420;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (pixel_format != PIXEL_FORMAT_I420 || !small_frame->IsMappable())
+    expected_input_format = PIXEL_FORMAT_NV12;
+#endif
+
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
@@ -397,23 +408,13 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, TwoFramesResize) {
 
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-        EXPECT_EQ(frame->format(),
-                  IsYuvPlanar(pixel_format) ? pixel_format : PIXEL_FORMAT_I420);
-#else
-        // Everywhere except on Linux resize switches frame into CPU mode.
-        EXPECT_EQ(frame->format(), PIXEL_FORMAT_I420);
-#endif
+        EXPECT_EQ(frame->format(), expected_input_format);
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));
   adapter()->Initialize(profile_, options, std::move(output_cb),
                         ValidatingStatusCB());
 
-  auto small_frame =
-      CreateGreenFrame(small_size, pixel_format, base::Milliseconds(1));
-  auto large_frame =
-      CreateGreenFrame(large_size, pixel_format, base::Milliseconds(2));
   adapter()->Encode(small_frame, true, ValidatingStatusCB());
   adapter()->Encode(large_frame, false, ValidatingStatusCB());
   RunUntilIdle();
@@ -465,6 +466,11 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
           : VideoEncodeAcceleratorAdapter::InputBufferKind::CpuMemBuf;
   adapter()->SetInputBufferPreferenceForTesting(input_kind);
 
+  const VideoPixelFormat expected_input_format =
+      input_kind == VideoEncodeAcceleratorAdapter::InputBufferKind::GpuMemBuf
+          ? PIXEL_FORMAT_NV12
+          : PIXEL_FORMAT_I420;
+
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
         outputs_count++;
@@ -472,8 +478,7 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
 
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
-        EXPECT_EQ(frame->format(),
-                  IsYuvPlanar(pixel_format) ? pixel_format : PIXEL_FORMAT_I420);
+        EXPECT_EQ(frame->format(), expected_input_format);
         EXPECT_EQ(frame->coded_size(), options.frame_size);
         return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
       }));

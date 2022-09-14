@@ -131,10 +131,14 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     config.input_format = PIXEL_FORMAT_I420;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (storage_type == VideoFrame::STORAGE_DMABUFS ||
-      storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    if (is_rgb)
-      config.input_format = PIXEL_FORMAT_NV12;
+  if (format != PIXEL_FORMAT_I420 ||
+      !VideoFrame::IsStorageTypeMappable(storage_type)) {
+    // ChromeOS/Linux hardware video encoders supports I420 on-memory
+    // VideoFrame and NV12 GpuMemoryBuffer VideoFrame.
+    // For other VideoFrames than them, some processing e.g. format conversion
+    // is required. Let the destination buffer be GpuMemoryBuffer because a
+    // hardware encoder can process it more efficiently than on-memory buffer.
+    config.input_format = PIXEL_FORMAT_NV12;
     config.storage_type =
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
