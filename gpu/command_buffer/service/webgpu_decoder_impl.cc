@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -38,6 +39,7 @@
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/webgpu/callback.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gl/gl_context_egl.h"
@@ -401,6 +403,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<std::string> force_enabled_toggles_;
   std::vector<std::string> force_disabled_toggles_;
   bool allow_unsafe_apis_;
+  blink::ExecutionContextToken execution_context_token_;
 
   std::unique_ptr<dawn::wire::WireServer> wire_server_;
   std::unique_ptr<DawnServiceSerializer> wire_serializer_;
@@ -1737,6 +1740,42 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
   }
 
   associated_shared_image_map_.erase(it);
+  return error::kNoError;
+}
+
+error::Error WebGPUDecoderImpl::HandleSetExecutionContextToken(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile webgpu::cmds::SetExecutionContextToken& c =
+      *static_cast<const volatile webgpu::cmds::SetExecutionContextToken*>(
+          cmd_data);
+  uint32_t type(c.type);
+  uint64_t high = uint64_t(c.high_high) << 32 | uint64_t(c.high_low);
+  uint64_t low = uint64_t(c.low_high) << 32 | uint64_t(c.low_low);
+  base::UnguessableToken token = base::UnguessableToken::Deserialize(high, low);
+  switch (type) {
+    // TODO(dawn:549) LocalFrameToken is a temp solution for initial testing.
+    // It will not be used in the final product because it can produce
+    // known races. The use of LocalFrameToken should only be enabled through
+    // --enable-unsafe-webgpu for now for testing. Once DocumentToken is ready,
+    // this should be migrated before enabling by default.
+    case blink::ExecutionContextToken::Base::template TypeIndex<
+        blink::LocalFrameToken>::kValue: {
+      DCHECK(enable_unsafe_webgpu_);
+      execution_context_token_ =
+          blink::ExecutionContextToken(blink::LocalFrameToken(token));
+      break;
+    }
+    case blink::ExecutionContextToken::Base::template TypeIndex<
+        blink::DedicatedWorkerToken>::kValue: {
+      execution_context_token_ =
+          blink::ExecutionContextToken(blink::DedicatedWorkerToken(token));
+      break;
+    }
+    default:
+      NOTREACHED();
+      return error::kInvalidArguments;
+  }
   return error::kNoError;
 }
 

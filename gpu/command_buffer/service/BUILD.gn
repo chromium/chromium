@@ -329,6 +329,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/command_buffer/common:raster_sources",
     "//gpu/command_buffer/common:webgpu_sources",
     "//skia",
+    "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/dawn/include/dawn:headers",
   ]
   deps += [

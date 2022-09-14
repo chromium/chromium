@@ -56,4 +56,16 @@ void DissociateMailboxForPresent(GLuint device_id,
   }
 }
 
+void SetExecutionContextToken(uint32_t type,
+                              uint32_t high_high,
+                              uint32_t high_low,
+                              uint32_t low_high,
+                              uint32_t low_low) {
+  webgpu::cmds::SetExecutionContextToken* c =
+      GetCmdSpace<webgpu::cmds::SetExecutionContextToken>();
+  if (c) {
+    c->Init(type, high_high, high_low, low_high, low_low);
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_CMD_HELPER_AUTOGEN_H_

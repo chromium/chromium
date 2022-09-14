@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/interface_base.h"
 #include "gpu/command_buffer/common/webgpu_cmd_enums.h"
 #include "gpu/command_buffer/common/webgpu_cmd_ids.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace gpu {
 namespace webgpu {
@@ -87,6 +88,13 @@ class WebGPUInterface : public InterfaceBase {
                         const GLbyte* mailbox) {
     AssociateMailbox(device_id, device_generation, id, generation, usage,
                      WEBGPU_MAILBOX_NONE, mailbox);
+  }
+
+  void SetExecutionContextToken(const blink::ExecutionContextToken& token) {
+    uint64_t high = token.value().GetHighForSerialization();
+    uint64_t low = token.value().GetLowForSerialization();
+    SetExecutionContextToken(token.variant_index(), high >> 32,
+                             high & 0xFFFFFFFF, low >> 32, low & 0xFFFFFFFF);
   }
 };
 

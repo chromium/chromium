@@ -218,6 +218,7 @@ source_set("webgpu_interface") {
     ":interface_base",
     "//base",
     "//gpu/command_buffer/common:webgpu",
+    "//third_party/blink/public/common/tokens:tokens_headers",
   ]
 }
 

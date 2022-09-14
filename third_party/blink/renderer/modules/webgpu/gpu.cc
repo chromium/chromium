@@ -281,6 +281,12 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
       resolver->Resolve(v8::Null(script_state->GetIsolate()));
       return promise;
     } else {
+      // Get an identifying token from the execution context to be sent to the
+      // GPU process so that it can be cross-referenced against the browser
+      // process to get an isolation key for caching purposes.
+      context_provider->WebGPUInterface()->SetExecutionContextToken(
+          execution_context->GetExecutionContextToken());
+
       // Make a new DawnControlClientHolder with the context provider we just
       // made and set the lost context callback
       dawn_control_client_ = DawnControlClientHolder::Create(

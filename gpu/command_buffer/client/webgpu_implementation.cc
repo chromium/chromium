@@ -452,5 +452,16 @@ void WebGPUImplementation::DissociateMailboxForPresent(
 #endif
 }
 
+void WebGPUImplementation::SetExecutionContextToken(uint32_t type,
+                                                    uint32_t high_high,
+                                                    uint32_t high_low,
+                                                    uint32_t low_high,
+                                                    uint32_t low_low) {
+#if BUILDFLAG(USE_DAWN)
+  helper_->SetExecutionContextToken(type, high_high, high_low, low_high,
+                                    low_low);
+#endif
+}
+
 }  // namespace webgpu
 }  // namespace gpu
