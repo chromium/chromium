@@ -30,6 +30,24 @@ async function writeTcp(address, port, options, requiredBytes) {
   }
 }
 
+async function writeLargeTcpPacket(address, port, size) {
+  try {
+    let tcpSocket = new TCPSocket(address, port);
+    let { writable } = await tcpSocket.opened;
+    let writer = writable.getWriter();
+
+    let chunk = new Uint8Array(size);
+    for (let index = 0; index < size; ++index) {
+      chunk[index] = index % 256;
+    }
+    await writer.write(chunk);
+
+    return 'writeLargeTcpPacket succeeded';
+  } catch(error) {
+    return ('writeLargeTcpPacket failed: ' + error);
+  }
+}
+
 async function readLoop(reader, requiredBytes) {
   if (!(reader instanceof ReadableStreamDefaultReader))
     return 'read failed: reader is not a ReadableStreamDefaultReader';
