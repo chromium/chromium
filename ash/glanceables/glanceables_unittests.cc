@@ -169,6 +169,14 @@ class GlanceablesTest : public AshTestBase {
     return controller_->view_->restore_view_;
   }
 
+  views::ImageButton* GetRestoreViewImageButton() {
+    return GetRestoreView()->image_button_;
+  }
+
+  PillButton* GetRestoreViewPillButton() {
+    return GetRestoreView()->pill_button_;
+  }
+
  protected:
   GlanceablesController* controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_{features::kGlanceables};
@@ -381,9 +389,12 @@ TEST_F(GlanceablesTest, RestoreViewRendersScreenshot) {
   GlanceablesRestoreView* restore_view = GetRestoreView();
   ASSERT_TRUE(restore_view);
 
-  // Wait for `image_util::DecodeImageFile` callback to run.
+  // Wait for GlanceablesRestoreView `image_util::DecodeImageFile` callback.
   base::RunLoop().RunUntilIdle();
-  gfx::ImageSkia image = restore_view->GetImage(views::Button::STATE_NORMAL);
+  views::ImageButton* image_button = GetRestoreViewImageButton();
+  ASSERT_TRUE(image_button);
+  ASSERT_FALSE(GetRestoreViewPillButton());
+  gfx::ImageSkia image = image_button->GetImage(views::Button::STATE_NORMAL);
   EXPECT_FALSE(image.isNull());
   EXPECT_GT(image.width(), 0);
   EXPECT_GT(image.height(), 0);
@@ -392,15 +403,21 @@ TEST_F(GlanceablesTest, RestoreViewRendersScreenshot) {
 
 TEST_F(GlanceablesTest, ClickOnSessionRestore) {
   controller_->CreateUi();
-
   GlanceablesRestoreView* restore_view = GetRestoreView();
   ASSERT_TRUE(restore_view);
+
+  // Wait for GlanceablesRestoreView `image_util::DecodeImageFile` callback.
+  base::RunLoop().RunUntilIdle();
+
+  PillButton* restore_button = GetRestoreViewPillButton();
+  ASSERT_TRUE(restore_button);
   ASSERT_EQ(0, GetTestDelegate()->restore_session_count());
 
-  // Click on the restore view (which is a button).
-  views::test::ButtonTestApi(restore_view).NotifyClick(ui::test::TestEvent());
+  // Click on the "Restore" button.
+  views::test::ButtonTestApi(restore_button).NotifyClick(ui::test::TestEvent());
 
   EXPECT_EQ(1, GetTestDelegate()->restore_session_count());
+  EXPECT_FALSE(controller_->IsShowing());
 }
 
 TEST_F(GlanceablesTest, DismissesOnlyOnAppWindowOpen) {
