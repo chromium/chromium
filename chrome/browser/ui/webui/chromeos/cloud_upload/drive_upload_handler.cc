@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/drive_upload_handler.h"
 
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/open_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
+
+using storage::FileSystemURL;
 
 namespace chromeos::cloud_upload {
 namespace {
@@ -23,58 +28,28 @@ const char kDestinationFolder[] = "from Chromebook";
 // editor) alternate URL.
 const int kAlternateUrlTimeout = 15;
 
-storage::FileSystemURL FilePathToFileSystemURL(
-    Profile* profile,
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    base::FilePath file_path) {
-  GURL url;
-  if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile, file_path, file_manager::util::GetFileManagerURL(), &url)) {
-    LOG(ERROR) << "Unable to ConvertAbsoluteFilePathToFileSystemUrl";
-    return storage::FileSystemURL();
-  }
-
-  return file_system_context->CrackURLInFirstPartyContext(url);
-}
-
-// Runs the callback provided to `CloudUploadHandler::UploadToCloud`.
-void UploadToCloudDone(scoped_refptr<CloudUploadHandler> cloud_upload_handler,
-                       CloudUploadHandler::UploadCallback callback,
-                       const GURL& hosted_url) {
+// Runs the callback provided to `DriveUploadHandler::Upload`.
+void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
+                  DriveUploadHandler::UploadCallback callback,
+                  const GURL& hosted_url) {
   std::move(callback).Run(hosted_url);
-}
-
-void CreateDirectoryOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    storage::FileSystemURL destination_folder_url,
-    base::OnceCallback<void(base::File::Error)> complete_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  file_system_context->operation_runner()->CreateDirectory(
-      destination_folder_url, /*exclusive=*/false, /*recursive=*/false,
-      std::move(complete_callback));
 }
 
 }  // namespace
 
 // static.
-void CloudUploadHandler::UploadToCloud(Profile* profile,
-                                       const storage::FileSystemURL& source_url,
-                                       const UploadType upload_type,
-                                       UploadCallback callback) {
-  if (upload_type == UploadType::kOneDrive) {
-    std::move(callback).Run(GURL());
-    return;
-  }
-
-  scoped_refptr<CloudUploadHandler> cloud_upload_handler =
-      new CloudUploadHandler(profile, source_url);
-  // Keep `cloud_upload_handler` alive until `UploadToCloudDone` executes.
-  cloud_upload_handler->Run(base::BindOnce(
-      &UploadToCloudDone, cloud_upload_handler, std::move(callback)));
+void DriveUploadHandler::Upload(Profile* profile,
+                                const FileSystemURL& source_url,
+                                UploadCallback callback) {
+  scoped_refptr<DriveUploadHandler> drive_upload_handler =
+      new DriveUploadHandler(profile, source_url);
+  // Keep `drive_upload_handler` alive until `UploadDone` executes.
+  drive_upload_handler->Run(
+      base::BindOnce(&OnUploadDone, drive_upload_handler, std::move(callback)));
 }
 
-CloudUploadHandler::CloudUploadHandler(Profile* profile,
-                                       const storage::FileSystemURL source_url)
+DriveUploadHandler::DriveUploadHandler(Profile* profile,
+                                       const FileSystemURL source_url)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
@@ -86,7 +61,7 @@ CloudUploadHandler::CloudUploadHandler(Profile* profile,
   observed_task_id_ = -1;
 }
 
-CloudUploadHandler::~CloudUploadHandler() {
+DriveUploadHandler::~DriveUploadHandler() {
   // Stop observing IO task updates.
   if (io_task_controller_) {
     io_task_controller_->RemoveObserver(this);
@@ -98,7 +73,7 @@ CloudUploadHandler::~CloudUploadHandler() {
   }
 }
 
-void CloudUploadHandler::Run(UploadCallback callback) {
+void DriveUploadHandler::Run(UploadCallback callback) {
   DCHECK(callback);
   DCHECK(!callback_);
   callback_ = std::move(callback);
@@ -135,7 +110,7 @@ void CloudUploadHandler::Run(UploadCallback callback) {
   base::FilePath destination_folder_path =
       drive_integration_service_->GetMountPointPath().Append("root").Append(
           kDestinationFolder);
-  storage::FileSystemURL destination_folder_url = FilePathToFileSystemURL(
+  FileSystemURL destination_folder_url = FilePathToFileSystemURL(
       profile_, file_system_context_, destination_folder_path);
   // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
@@ -148,18 +123,18 @@ void CloudUploadHandler::Run(UploadCallback callback) {
       base::BindOnce(&CreateDirectoryOnIOThread, file_system_context_,
                      destination_folder_url,
                      google_apis::CreateRelayCallback(base::BindOnce(
-                         &CloudUploadHandler::OnDestinationDirectoryCreated,
+                         &DriveUploadHandler::OnDestinationDirectoryCreated,
                          this, destination_folder_url))));
 }
 
-void CloudUploadHandler::UpdateProgressNotification() {
+void DriveUploadHandler::UpdateProgressNotification() {
   // The move progress and the syncing progress arbitrarily respectively account
   // for 20% and 80% of the upload workflow.
   int progress = move_progress_ * 0.2 + sync_progress_ * 0.8;
   notification_manager_->ShowProgress(progress);
 }
 
-void CloudUploadHandler::OnEndUpload(GURL hosted_url,
+void DriveUploadHandler::OnEndUpload(GURL hosted_url,
                                      std::string error_message) {
   // TODO (b/243095484) Define error behavior on invalid hosted URL.
   observed_relative_drive_path_.clear();
@@ -179,8 +154,8 @@ void CloudUploadHandler::OnEndUpload(GURL hosted_url,
   }
 }
 
-void CloudUploadHandler::OnDestinationDirectoryCreated(
-    storage::FileSystemURL destination_folder_url,
+void DriveUploadHandler::OnDestinationDirectoryCreated(
+    FileSystemURL destination_folder_url,
     base::File::Error error) {
   if (error != base::File::FILE_OK) {
     OnEndUpload(GURL(), "Unable to create destination folder");
@@ -192,7 +167,7 @@ void CloudUploadHandler::OnDestinationDirectoryCreated(
   }
 
   // Source URLs.
-  std::vector<storage::FileSystemURL> source_urls{source_url_};
+  std::vector<FileSystemURL> source_urls{source_url_};
 
   // TODO (b/242685159) Change copy to move.
   std::unique_ptr<file_manager::io_task::IOTask> task =
@@ -204,35 +179,7 @@ void CloudUploadHandler::OnDestinationDirectoryCreated(
   observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
 
-void CloudUploadHandler::OnFileShownInFolder(
-    platform_util::OpenOperationResult result) {
-  if (result == platform_util::OPEN_SUCCEEDED) {
-    return;
-  }
-  std::string error_string = "";
-  switch (result) {
-    case platform_util::OpenOperationResult::OPEN_SUCCEEDED:
-      error_string = "OPEN_SUCCEEDED";
-      break;
-    case platform_util::OpenOperationResult::OPEN_FAILED_PATH_NOT_FOUND:
-      error_string = "OPEN_FAILED_PATH_NOT_FOUND";
-      break;
-    case platform_util::OpenOperationResult::OPEN_FAILED_INVALID_TYPE:
-      error_string = "OPEN_FAILED_INVALID_TYPE";
-      break;
-    case platform_util::OpenOperationResult::
-        OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE:
-      error_string = "OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE";
-      break;
-    case platform_util::OpenOperationResult::OPEN_FAILED_FILE_ERROR:
-      error_string = "OPEN_FAILED_FILE_ERROR";
-      break;
-  }
-  LOG(ERROR) << "Failed to show destination file in Files app : "
-             << error_string;
-}
-
-void CloudUploadHandler::OnIOTaskStatus(
+void DriveUploadHandler::OnIOTaskStatus(
     const file_manager::io_task::ProgressStatus& status) {
   if (status.task_id != observed_task_id_) {
     return;
@@ -274,8 +221,7 @@ void CloudUploadHandler::OnIOTaskStatus(
       DCHECK_EQ(status.outputs.size(), 1);
       file_manager::util::ShowItemInFolder(
           profile_, status.outputs[0].url.path(),
-          base::BindOnce(&CloudUploadHandler::OnFileShownInFolder,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&LogErrorOnShowItemInFolder));
       return;
     case file_manager::io_task::State::kCancelled:
       OnEndUpload(GURL(), "Move error: kCancelled");
@@ -289,9 +235,9 @@ void CloudUploadHandler::OnIOTaskStatus(
   }
 }
 
-void CloudUploadHandler::OnUnmounted() {}
+void DriveUploadHandler::OnUnmounted() {}
 
-void CloudUploadHandler::OnSyncingStatusUpdate(
+void DriveUploadHandler::OnSyncingStatusUpdate(
     const drivefs::mojom::SyncingStatus& syncing_status) {
   for (const auto& item : syncing_status.item_events) {
     if (base::FilePath(item->path) != observed_relative_drive_path_) {
@@ -314,7 +260,7 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
         // time we allow before the file's alternate URL is available.
         alternate_url_timer_.Start(
             FROM_HERE, base::Seconds(kAlternateUrlTimeout),
-            base::BindOnce(&CloudUploadHandler::OnAlternateUrlTimeout,
+            base::BindOnce(&DriveUploadHandler::OnAlternateUrlTimeout,
                            weak_ptr_factory_.GetWeakPtr()));
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
@@ -330,7 +276,7 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
 // If a `kModify` event has been dispatched for the uploaded file, check the
 // file's metadata to see if its alternate URL is available, in which case the
 // upload is complete.
-void CloudUploadHandler::OnFilesChanged(
+void DriveUploadHandler::OnFilesChanged(
     const std::vector<drivefs::mojom::FileChange>& changes) {
   for (const auto& change : changes) {
     if (base::FilePath(change.path) != observed_relative_drive_path_ ||
@@ -344,12 +290,12 @@ void CloudUploadHandler::OnFilesChanged(
     }
     drive_integration_service_->GetDriveFsInterface()->GetMetadata(
         observed_relative_drive_path_,
-        base::BindOnce(&CloudUploadHandler::OnGetDriveMetadata,
+        base::BindOnce(&DriveUploadHandler::OnGetDriveMetadata,
                        weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/false));
   }
 }
 
-void CloudUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
+void DriveUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
   if (base::FilePath(error.path) != observed_relative_drive_path_) {
     return;
   }
@@ -365,7 +311,7 @@ void CloudUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
   }
 }
 
-void CloudUploadHandler::OnGetDriveMetadata(
+void DriveUploadHandler::OnGetDriveMetadata(
     bool timed_out,
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
@@ -395,7 +341,7 @@ void CloudUploadHandler::OnGetDriveMetadata(
   OnEndUpload(hosted_url);
 }
 
-void CloudUploadHandler::OnAlternateUrlTimeout() {
+void DriveUploadHandler::OnAlternateUrlTimeout() {
   if (!drive_integration_service_) {
     OnEndUpload(GURL(), "No drive integration service");
     return;
@@ -403,7 +349,7 @@ void CloudUploadHandler::OnAlternateUrlTimeout() {
 
   drive_integration_service_->GetDriveFsInterface()->GetMetadata(
       observed_relative_drive_path_,
-      base::BindOnce(&CloudUploadHandler::OnGetDriveMetadata,
+      base::BindOnce(&DriveUploadHandler::OnGetDriveMetadata,
                      weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/true));
 }
 

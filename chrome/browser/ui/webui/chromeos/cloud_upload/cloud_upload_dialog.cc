@@ -12,7 +12,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
+#include "chrome/browser/ash/file_system_provider/mount_path_util.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/drive_upload_handler.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
 
 namespace chromeos::cloud_upload {
@@ -21,17 +23,39 @@ namespace {
 using file_manager::file_tasks::kDriveTaskResultMetricName;
 using file_manager::file_tasks::OfficeTaskResult;
 
-void OnUploadCompleted(const UploadType upload_type, const GURL& url) {
-  switch (upload_type) {
-    case UploadType::kOneDrive:
-      LOG(ERROR) << "Opening in Office not implemented yet";
-      break;
-    case UploadType::kDrive:
-      UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
-                                OfficeTaskResult::MOVED);
-      file_manager::util::OpenNewTabForHostedOfficeFile(url);
-      break;
+const char kOpenWebActionId[] = "OPEN_WEB";
+
+void OpenDriveUrl(const GURL& url) {
+  if (url.is_empty()) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                              OfficeTaskResult::FAILED);
+    return;
   }
+  UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                            OfficeTaskResult::MOVED);
+  file_manager::util::OpenNewTabForHostedOfficeFile(url);
+}
+
+// Copied from file_tasks.cc.
+void OpenODFSUrl(const storage::FileSystemURL& uploaded_file_url) {
+  if (!uploaded_file_url.is_valid()) {
+    LOG(ERROR) << "Invalid uploaded file URL";
+    return;
+  }
+  ash::file_system_provider::util::FileSystemURLParser parser(
+      uploaded_file_url);
+  if (!parser.Parse()) {
+    LOG(ERROR) << "Path not in FSP";
+    return;
+  }
+
+  parser.file_system()->ExecuteAction(
+      {parser.file_path()}, kOpenWebActionId,
+      base::BindOnce([](base::File::Error result) {
+        if (result != base::File::Error::FILE_OK) {
+          LOG(ERROR) << "Error executing action: " << result;
+        }
+      }));
 }
 
 void OnUploadActionReceived(Profile* profile,
@@ -39,9 +63,16 @@ void OnUploadActionReceived(Profile* profile,
                             const UploadType upload_type,
                             const std::string& action) {
   if (action == kUserActionUpload) {
-    CloudUploadHandler::UploadToCloud(
-        profile, file_url, upload_type,
-        base::BindOnce(&OnUploadCompleted, upload_type));
+    switch (upload_type) {
+      case UploadType::kOneDrive:
+        OneDriveUploadHandler::Upload(profile, file_url,
+                                      base::BindOnce(&OpenODFSUrl));
+        break;
+      case UploadType::kDrive:
+        DriveUploadHandler::Upload(profile, file_url,
+                                   base::BindOnce(&OpenDriveUrl));
+        break;
+    }
   } else if (action == kUserActionCancel) {
     UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
                               OfficeTaskResult::CANCELLED);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
 
 #include <memory>
 
@@ -13,10 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
-#include "chrome/browser/ash/file_manager/open_util.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
-#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -28,31 +25,30 @@ class Profile;
 
 namespace chromeos::cloud_upload {
 
-// Manages the upload workflow after user confirmation. Instantiated by the
-// static `UploadToCloud` method. Starts with moving the file to the cloud. Gets
-// upload status by observing move and Drive events. Calls the UploadCallback
-// with the uploaded file's hosted URL once the upload is completed, which is
-// when the lifetime of the instance is expected to end.
-class CloudUploadHandler
+// Manages the "upload to Drive" workflow after user confirmation on the upload
+// dialog. Instantiated by the static `Upload` method. Starts with moving the
+// file to the cloud. Gets upload status by observing move and Drive events.
+// Calls the UploadCallback with the uploaded file's hosted URL once the upload
+// is completed, which is when `DriveUploadHandler` goes out of scope.
+class DriveUploadHandler
     : public file_manager::io_task::IOTaskController::Observer,
       public drivefs::DriveFsHostObserver,
-      public base::RefCounted<CloudUploadHandler> {
+      public base::RefCounted<DriveUploadHandler> {
  public:
   using UploadCallback = base::OnceCallback<void(const GURL&)>;
 
   // Starts the upload workflow for the file specified at construct time.
-  static void UploadToCloud(Profile* profile,
-                            const storage::FileSystemURL& source_url,
-                            const UploadType upload_type,
-                            UploadCallback callback);
+  static void Upload(Profile* profile,
+                     const storage::FileSystemURL& source_url,
+                     UploadCallback callback);
 
-  CloudUploadHandler(const CloudUploadHandler&) = delete;
-  CloudUploadHandler& operator=(const CloudUploadHandler&) = delete;
+  DriveUploadHandler(const DriveUploadHandler&) = delete;
+  DriveUploadHandler& operator=(const DriveUploadHandler&) = delete;
 
  private:
-  friend base::RefCounted<CloudUploadHandler>;
-  CloudUploadHandler(Profile* profile, const storage::FileSystemURL source_url);
-  ~CloudUploadHandler() override;
+  friend base::RefCounted<DriveUploadHandler>;
+  DriveUploadHandler(Profile* profile, const storage::FileSystemURL source_url);
+  ~DriveUploadHandler() override;
 
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
   void Run(UploadCallback callback);
@@ -66,8 +62,6 @@ class CloudUploadHandler
   void OnDestinationDirectoryCreated(
       storage::FileSystemURL destination_folder_url,
       base::File::Error error);
-
-  void OnFileShownInFolder(platform_util::OpenOperationResult result);
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
@@ -104,9 +98,9 @@ class CloudUploadHandler
   UploadCallback callback_;
   std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>
       scoped_suppress_drive_notifications_for_path_ = nullptr;
-  base::WeakPtrFactory<CloudUploadHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DriveUploadHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos::cloud_upload
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_CLOUD_UPLOAD_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CLOUD_UPLOAD_DRIVE_UPLOAD_HANDLER_H_
