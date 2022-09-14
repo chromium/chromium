@@ -417,6 +417,21 @@ suite('PaymentsSection', function() {
                     .querySelector<HTMLElement>('#paymentsIndicator')!.hidden);
   });
 
+  test('verifyCardImage', function() {
+    loadTimeData.overrideValues({
+      virtualCardMetadataEnabled: true,
+    });
+    const creditCard = createCreditCardEntry();
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+
+    const creditCardList = section.$.paymentsList;
+    assertTrue(!!creditCardList);
+    assertEquals(1, getLocalAndServerCreditCardListItems().length);
+    assertFalse(getCardRowShadowRoot(section.$.paymentsList)
+                    .querySelector<HTMLElement>('#cardImage')!.hidden);
+  });
+
   test('verifyAddVsEditCreditCardTitle', function() {
     const newCreditCard = createEmptyCreditCardEntry();
     const newCreditCardDialog = createCreditCardDialog(newCreditCard);

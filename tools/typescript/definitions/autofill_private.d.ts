@@ -81,6 +81,7 @@ declare global {
         expirationYear?: string;
         nickname?: string;
         network?: string;
+        imageSrc?: string;
         metadata?: AutofillMetadata;
       }
 

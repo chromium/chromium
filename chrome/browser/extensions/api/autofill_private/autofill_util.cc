@@ -124,6 +124,31 @@ autofill_private::CountryEntry CountryToCountryEntry(
   return entry;
 }
 
+std::string CardNetworkToIconResourceIdString(const std::string& network) {
+  if (network == autofill::kAmericanExpressCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_AMEX";
+  if (network == autofill::kDinersCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_DINERS";
+  if (network == autofill::kDiscoverCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_DISCOVER";
+  if (network == autofill::kEloCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_ELO";
+  if (network == autofill::kJCBCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_JCB";
+  if (network == autofill::kMasterCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_MASTERCARD";
+  if (network == autofill::kMirCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_MIR";
+  if (network == autofill::kTroyCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_TROY";
+  if (network == autofill::kUnionPay)
+    return "chrome://theme/IDR_AUTOFILL_CC_UNIONPAY";
+  if (network == autofill::kVisaCard)
+    return "chrome://theme/IDR_AUTOFILL_CC_VISA";
+
+  return "chrome://theme/IDR_AUTOFILL_CC_GENERIC";
+}
+
 autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
     const autofill::CreditCard& credit_card,
     const autofill::PersonalDataManager& personal_data) {
@@ -145,6 +170,7 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   if (!credit_card.nickname().empty()) {
     card.nickname = base::UTF16ToUTF8(credit_card.nickname());
   }
+  card.image_src = CardNetworkToIconResourceIdString(credit_card.network());
 
   // Create card metadata and add it to |card|.
   std::unique_ptr<autofill_private::AutofillMetadata> metadata(
