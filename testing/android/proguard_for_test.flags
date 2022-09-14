@@ -61,12 +61,7 @@
 # This is a workaround for b/147584922 - otherwise, R8 would generate a synthetic
 # abstract method for the subsclass FeedOfflineIndicator, which Mockito would not
 # mock.
-# TODO(https://crbug.com/1038372): Remove base after downstream migrates.
--keep,allowobfuscation @interface org.chromium.base.annotations.MockedInTests
 -keep,allowobfuscation @interface org.chromium.build.annotations.MockedInTests
--keep @org.chromium.base.annotations.MockedInTests class * {
-  <methods>;
-}
 -keep @org.chromium.build.annotations.MockedInTests class * {
   <methods>;
 }

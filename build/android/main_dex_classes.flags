@@ -5,17 +5,10 @@
 # Proguard flags for what should be kept in the main dex. Only used
 # during main dex list determination, not during actual proguarding.
 
-# TODO(https://crbug.com/1038372): Remove base after downstream migrates.
--keep @org.chromium.base.annotations.MainDex class * {
-  *;
-}
 -keep @org.chromium.build.annotations.MainDex class * {
   *;
 }
 
--keepclasseswithmembers class * {
-  @org.chromium.base.annotations.MainDex <methods>;
-}
 -keepclasseswithmembers class * {
   @org.chromium.build.annotations.MainDex <methods>;
 }
