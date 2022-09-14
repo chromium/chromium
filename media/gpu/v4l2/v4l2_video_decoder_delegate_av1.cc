@@ -115,6 +115,63 @@ void FillSequenceParams(v4l2_ctrl_av1_sequence& v4l2_seq_params,
   v4l2_seq_params.max_frame_height_minus_1 = seq_header.max_frame_height - 1;
 }
 
+// Section 5.9.11. Loop filter params syntax.
+// Note that |update_ref_delta| and |update_mode_delta| flags in the spec
+// are not needed for V4L2 AV1 API.
+void FillLoopFilterParams(v4l2_av1_loop_filter& v4l2_lf,
+                          const libgav1::LoopFilter& lf) {
+  if (lf.delta_enabled)
+    v4l2_lf.flags |= V4L2_AV1_LOOP_FILTER_FLAG_DELTA_ENABLED;
+
+  if (lf.delta_update)
+    v4l2_lf.flags |= V4L2_AV1_LOOP_FILTER_FLAG_DELTA_UPDATE;
+
+  static_assert(std::size(decltype(v4l2_lf.level){}) == libgav1::kFrameLfCount,
+                "Invalid size of loop filter level (strength) array");
+  for (size_t i = 0; i < libgav1::kFrameLfCount; i++)
+    v4l2_lf.level[i] = base::checked_cast<__u8>(lf.level[i]);
+
+  v4l2_lf.sharpness = lf.sharpness;
+
+  static_assert(std::size(decltype(v4l2_lf.ref_deltas){}) ==
+                    libgav1::kNumReferenceFrameTypes,
+                "Invalid size of ref deltas array");
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
+    v4l2_lf.ref_deltas[i] = lf.ref_deltas[i];
+
+  static_assert(std::size(decltype(v4l2_lf.mode_deltas){}) ==
+                    libgav1::kLoopFilterMaxModeDeltas,
+                "Invalid size of mode deltas array");
+  for (size_t i = 0; i < libgav1::kLoopFilterMaxModeDeltas; i++)
+    v4l2_lf.mode_deltas[i] = lf.mode_deltas[i];
+}
+
+// Section 5.9.12. Quantization params syntax
+void FillQuantizationParams(v4l2_av1_quantization& v4l2_quant,
+                            const libgav1::QuantizerParameters& quant) {
+  if (quant.use_matrix)
+    v4l2_quant.flags |= V4L2_AV1_QUANTIZATION_FLAG_USING_QMATRIX;
+
+  v4l2_quant.base_q_idx = quant.base_index;
+
+  // Note that quant.delta_ac[0] is useless
+  // because it is always 0 according to libgav1.
+  v4l2_quant.delta_q_y_dc = quant.delta_dc[0];
+
+  v4l2_quant.delta_q_u_dc = quant.delta_dc[1];
+  v4l2_quant.delta_q_u_ac = quant.delta_ac[1];
+
+  v4l2_quant.delta_q_v_dc = quant.delta_dc[2];
+  v4l2_quant.delta_q_v_ac = quant.delta_ac[2];
+
+  if (!quant.use_matrix)
+    return;
+
+  v4l2_quant.qm_y = base::checked_cast<uint8_t>(quant.matrix_level[0]);
+  v4l2_quant.qm_u = base::checked_cast<uint8_t>(quant.matrix_level[1]);
+  v4l2_quant.qm_v = base::checked_cast<uint8_t>(quant.matrix_level[2]);
+}
+
 }  // namespace
 
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
@@ -145,8 +202,15 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
     base::span<const uint8_t> data) {
   struct v4l2_ctrl_av1_sequence v4l2_seq_params = {};
-
   FillSequenceParams(v4l2_seq_params, sequence_header);
+
+  const libgav1::ObuFrameHeader& frame_header = pic.frame_header;
+
+  struct v4l2_av1_loop_filter v4l2_lf = {};
+  FillLoopFilterParams(v4l2_lf, frame_header.loop_filter);
+
+  struct v4l2_av1_quantization v4l2_quant = {};
+  FillQuantizationParams(v4l2_quant, frame_header.quantizer);
 
   NOTIMPLEMENTED();
 
