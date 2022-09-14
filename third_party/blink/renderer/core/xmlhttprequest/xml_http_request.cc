@@ -752,7 +752,7 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
         return false;
       }
     }
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
     if (isolate && v8::MicrotasksScope::IsRunningMicrotasks(isolate)) {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kDuring_Microtask_SyncXHR);
