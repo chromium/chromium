@@ -73,45 +73,50 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
 
-  mixer[kColorRealBoxBackground] = {SK_ColorWHITE};
-  mixer[kColorRealBoxBackgroundHovered] = {SK_ColorWHITE};
-  mixer[kColorRealBoxBorder] = {
+  mixer[kColorRealboxBackground] = {SK_ColorWHITE};
+  mixer[kColorRealboxBackgroundHovered] = {SK_ColorWHITE};
+  mixer[kColorRealboxBorder] = {
       key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh
           ? kColorLocationBarBorder
           : gfx::kGoogleGrey300};
-  mixer[kColorRealBoxForeground] = {SK_ColorBLACK};
-  mixer[kColorRealBoxPlaceholder] = {gfx::kGoogleGrey700};
-  mixer[kColorRealBoxResultsBackground] = {SK_ColorWHITE};
-  mixer[kColorRealBoxResultsBackgroundHovered] =
+  mixer[kColorRealboxForeground] = {SK_ColorBLACK};
+  mixer[kColorRealboxPlaceholder] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsBackground] = {SK_ColorWHITE};
+  mixer[kColorRealboxResultsBackgroundHovered] =
       ui::SetAlpha({gfx::kGoogleGrey900},
                    /* 10% opacity */ 0.1 * 255);
-  mixer[kColorRealBoxResultsDimSelected] = {gfx::kGoogleGrey700};
-  mixer[kColorRealBoxResultsForeground] = {SK_ColorBLACK};
-  mixer[kColorRealBoxResultsForegroundDimmed] = {gfx::kGoogleGrey700};
-  mixer[kColorRealBoxResultsIconSelected] = {gfx::kGoogleGrey700};
-  mixer[kColorRealBoxResultsUrl] = {gfx::kGoogleBlue700};
-  mixer[kColorRealBoxResultsUrlSelected] = {gfx::kGoogleBlue700};
-  mixer[kColorRealBoxSearchIconBackground] = {gfx::kGoogleGrey700};
-  mixer[kColorRealBoxResultsIcon] = {gfx::kGoogleGrey700};
-  mixer[kColorRealBoxResultsIconFocusedOutline] = {gfx::kGoogleBlue600};
+  mixer[kColorRealboxResultsControlBackgroundHovered] =
+      ui::SetAlpha(gfx::kGoogleGrey900, /* 10% opacity */ 0.1 * 255);
+  mixer[kColorRealboxResultsDimSelected] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsForeground] = {SK_ColorBLACK};
+  mixer[kColorRealboxResultsForegroundDimmed] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsIconSelected] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsUrl] = {gfx::kGoogleBlue700};
+  mixer[kColorRealboxResultsUrlSelected] = {gfx::kGoogleBlue700};
+  mixer[kColorRealboxSearchIconBackground] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsIcon] = {gfx::kGoogleGrey700};
+  mixer[kColorRealboxResultsIconFocusedOutline] = {gfx::kGoogleBlue600};
 
   if (base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme)) {
-    mixer[kColorRealBoxForeground] = {ui::kColorTextfieldForeground};
-    mixer[kColorRealBoxPlaceholder] = {kColorOmniboxTextDimmed};
-    mixer[kColorRealBoxResultsBackground] = {kColorOmniboxResultsBackground};
-    mixer[kColorRealBoxResultsBackgroundHovered] = {
+    mixer[kColorRealboxForeground] = {ui::kColorTextfieldForeground};
+    mixer[kColorRealboxPlaceholder] = {kColorOmniboxTextDimmed};
+    mixer[kColorRealboxResultsBackground] = {kColorOmniboxResultsBackground};
+    mixer[kColorRealboxResultsBackgroundHovered] = {
         kColorOmniboxResultsBackgroundHovered};
-    mixer[kColorRealBoxResultsDimSelected] = {
+    mixer[kColorRealboxResultsControlBackgroundHovered] =
+        ui::SetAlpha({gfx::kGoogleGrey200},
+                     /* 10% opacity */ 0.1 * 255);
+    mixer[kColorRealboxResultsDimSelected] = {
         kColorOmniboxResultsBackgroundSelected};
-    mixer[kColorRealBoxResultsForeground] = {ui::kColorTextfieldForeground};
-    mixer[kColorRealBoxResultsForegroundDimmed] = {
+    mixer[kColorRealboxResultsForeground] = {ui::kColorTextfieldForeground};
+    mixer[kColorRealboxResultsForegroundDimmed] = {
         kColorOmniboxResultsTextDimmed};
-    mixer[kColorRealBoxResultsIconSelected] = {
+    mixer[kColorRealboxResultsIconSelected] = {
         kColorOmniboxResultsIconSelected};
-    mixer[kColorRealBoxSearchIconBackground] = {kColorOmniboxResultsIcon};
-    mixer[kColorRealBoxResultsIcon] = {kColorOmniboxResultsIcon};
-    mixer[kColorRealBoxResultsUrl] = {kColorOmniboxResultsUrl};
-    mixer[kColorRealBoxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
+    mixer[kColorRealboxSearchIconBackground] = {kColorOmniboxResultsIcon};
+    mixer[kColorRealboxResultsIcon] = {kColorOmniboxResultsIcon};
+    mixer[kColorRealboxResultsUrl] = {kColorOmniboxResultsUrl};
+    mixer[kColorRealboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
 
     // For details see `kRealboxMatchOmniboxThemeVariations` in
     // chrome/browser/about_flags.cc.
@@ -119,23 +124,23 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
         ntp_features::kRealboxMatchOmniboxTheme,
         ntp_features::kRealboxMatchOmniboxThemeVariantParam, 0)) {
       case 0:
-        mixer[kColorRealBoxBackground] = {
+        mixer[kColorRealboxBackground] = {
             kColorToolbarBackgroundSubtleEmphasis};
-        mixer[kColorRealBoxBackgroundHovered] = {
+        mixer[kColorRealboxBackgroundHovered] = {
             kColorToolbarBackgroundSubtleEmphasisHovered};
         break;
       // NTP background on steady state and Omnibox steady state background on
       // hover.
       case 1:
-        mixer[kColorRealBoxBackground] = {kColorNewTabPageBackground};
-        mixer[kColorRealBoxBackgroundHovered] = {
+        mixer[kColorRealboxBackground] = {kColorNewTabPageBackground};
+        mixer[kColorRealboxBackgroundHovered] = {
             kColorToolbarBackgroundSubtleEmphasisHovered};
         break;
       // NTP background on steady state and Omnibox active state background on
       // hover.
       case 2:
-        mixer[kColorRealBoxBackground] = {kColorNewTabPageBackground};
-        mixer[kColorRealBoxBackgroundHovered] = {
+        mixer[kColorRealboxBackground] = {kColorNewTabPageBackground};
+        mixer[kColorRealboxBackgroundHovered] = {
             kColorOmniboxResultsBackground};
         break;
     }

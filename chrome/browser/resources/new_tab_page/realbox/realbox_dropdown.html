@@ -4,7 +4,7 @@
   }
 
   #selector {
-    background-color: var(--color-real-box-results-background);
+    background-color: var(--color-realbox-results-background);
     border-radius: calc(0.25 * var(--ntp-realbox-height));
     box-shadow: var(--ntp-realbox-shadow);
     display: block;
@@ -26,7 +26,7 @@
   }
 
   ntp-realbox-match {
-    color: var(--color-real-box-results-foreground);
+    color: var(--color-realbox-results-foreground);
   }
 
   .header {
@@ -41,7 +41,7 @@
   }
 
   .header .text {
-    color: var(--color-real-box-results-foreground-dimmed);
+    color: var(--color-realbox-results-foreground-dimmed);
     cursor: default;
     font-size: .875em;
     font-weight: 500;
@@ -55,13 +55,13 @@
 
   .header:focus-within:not(:focus) cr-icon-button {
       --cr-icon-button-fill-color:
-          var(--color-real-box-results-icon-selected);
+          var(--color-realbox-results-icon-selected);
   }
 
   ntp-realbox-match:-webkit-any(:hover, :focus-within, .selected),
   .header:-webkit-any(:hover, :focus-within) {
     background-color:
-        var(--color-real-box-results-background-hovered);
+        var(--color-realbox-results-background-hovered);
   }
 
   @media (forced-colors: active) {
