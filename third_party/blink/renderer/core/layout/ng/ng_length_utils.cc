@@ -10,12 +10,15 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -862,10 +865,9 @@ absl::optional<LogicalSize> ComputeNormalizedNaturalSize(
   return absl::nullopt;
 }
 
-}  // namespace
-
-// Computes size for a replaced element.
-LogicalSize ComputeReplacedSize(
+// The main part of ComputeReplacedSize(). This function doesn't handle a
+// case of <svg> as the documentElement.
+LogicalSize ComputeReplacedSizeInternal(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
@@ -1143,6 +1145,58 @@ LogicalSize ComputeReplacedSize(
   // the constrained block-size, and recalculate the inline-size.
   return {inline_min_max_sizes.ClampSizeToMinAndMax(hypothetical_inline),
           constrained_block};
+}
+
+}  // namespace
+
+// Computes size for a replaced element.
+LogicalSize ComputeReplacedSize(
+    const NGBlockNode& node,
+    const NGConstraintSpace& space,
+    const NGBoxStrut& border_padding,
+    absl::optional<LogicalSize> override_available_size,
+    ReplacedSizeMode mode,
+    const Length::AnchorEvaluator* anchor_evaluator) {
+  DCHECK(node.IsReplaced());
+
+  if (!node.GetLayoutBox()->IsSVGRoot()) {
+    return ComputeReplacedSizeInternal(node, space, border_padding,
+                                       override_available_size, mode,
+                                       anchor_evaluator);
+  }
+
+  const LayoutSVGRoot* svg_root = To<LayoutSVGRoot>(node.GetLayoutBox());
+  bool is_horizontal = node.Style().IsHorizontalWritingMode();
+  LayoutSize container_size = svg_root->GetContainerSize();
+  if (!container_size.IsEmpty()) {
+    if (is_horizontal)
+      return {container_size.Width(), container_size.Height()};
+    return {container_size.Height(), container_size.Width()};
+  }
+
+  if (svg_root->IsEmbeddedThroughFrameContainingSVGDocument()) {
+    LogicalSize size = space.AvailableSize();
+    size.block_size = is_horizontal ? node.InitialContainingBlockSize().height
+                                    : node.InitialContainingBlockSize().width;
+    return size;
+  }
+
+  LogicalSize size = ComputeReplacedSizeInternal(node, space, border_padding,
+                                                 override_available_size, mode,
+                                                 anchor_evaluator);
+
+  if (node.Style().LogicalWidth().IsPercentOrCalc())
+    size.inline_size *= svg_root->LogicalSizeScaleFactorForPercentageLengths();
+
+  const Length& logical_height = node.Style().LogicalHeight();
+  if (svg_root->IsDocumentElement() && logical_height.IsPercentOrCalc()) {
+    LayoutUnit height = ValueForLength(
+        logical_height,
+        node.GetDocument().GetLayoutView()->ViewLogicalHeightForPercentages());
+    height *= svg_root->LogicalSizeScaleFactorForPercentageLengths();
+    size.block_size = height;
+  }
+  return size;
 }
 
 int ResolveUsedColumnCount(int computed_count,

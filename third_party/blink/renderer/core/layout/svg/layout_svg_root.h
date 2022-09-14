@@ -46,6 +46,9 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   void IntrinsicSizingInfoChanged();
   void UnscaledIntrinsicSizingInfo(IntrinsicSizingInfo&) const;
+  // This is a special case for SVG documents with percentage dimensions which
+  // would normally not change under zoom. See: https://crbug.com/222786.
+  double LogicalSizeScaleFactorForPercentageLengths() const;
 
   // If you have a LayoutSVGRoot, use firstChild or lastChild instead.
   void SlowFirstChild() const = delete;
@@ -191,10 +194,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   SVGTransformChange BuildLocalToBorderBoxTransform();
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const final;
-
-  // This is a special case for SVG documents with percentage dimensions which
-  // would normally not change under zoom. See: https://crbug.com/222786.
-  double LogicalSizeScaleFactorForPercentageLengths() const;
 
   PaintLayerType LayerTypeRequired() const override;
 
