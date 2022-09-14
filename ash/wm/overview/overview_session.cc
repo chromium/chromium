@@ -1292,33 +1292,6 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         Move(/*reverse=*/true);
       }
       break;
-    case ui::VKEY_T: {
-      // See default section to see why we want to consume events during the
-      // start animation.
-      if (shell->overview_controller()->IsInStartAnimation())
-        break;
-
-        // Make pressing t while in overview show the templates grid if there
-        // are templates to be viewed. This allows developers to view the
-        // templates grid slightly quicker.
-        // TODO(crbug.com/1281685): Remove before feature launch.
-#if !defined(OFFICIAL_BUILD)
-      if (!saved_desk_util::IsSavedDesksEnabled())
-        return;
-
-      // There are no templates to be viewed.
-      if (!saved_desk_presenter_->should_show_templates_ui())
-        return;
-
-      DCHECK(!grid_list_.empty());
-      ShowDesksTemplatesGrids(grid_list_[0]->desks_bar_view()->IsZeroState(),
-                              base::GUID(), /*saved_desk_name=*/u"",
-                              Shell::GetPrimaryRootWindow());
-      break;
-#else
-      return;
-#endif
-    }
     case ui::VKEY_W: {
       if (!is_control_down)
         return;
