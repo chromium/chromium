@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/post_restore_signin/features.h"
+#import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
@@ -177,8 +179,11 @@
   // Add StandardPromoDisplayHandler promos here. For example:
   // TODO(crbug.com/1360880): Create first StandardPromoDisplayHandler promo.
 
-  // Add StandardPromoViewProvider promos here. For example:
-  // TODO(crbug.com/1360881): Create first StandardPromoViewProvider promo.
+  // StandardPromoViewProvider promo(s) below:
+  if (post_restore_signin::features::CurrentPostRestoreSignInType() ==
+      post_restore_signin::features::PostRestoreSignInType::kFullscreen)
+    _viewProviderPromos[promos_manager::Promo::PostRestoreSignInFullscreen] =
+        [[PostRestoreSignInProvider alloc] init];
 }
 
 - (base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
