@@ -17,6 +17,66 @@
 
 namespace ash {
 
+namespace {
+
+bool IsTilingWindowManagerAccelerator(base::StringPiece accelerator_name) {
+  // List of tiling window manager accelerator names.
+  static const base::NoDestructor<base::flat_set<std::string>>
+      kTilingWMaccelerators({
+          // Move window
+          "Alt Shift ArrowLeft",
+          "Alt Shift ArrowRight",
+          "Alt Shift ArrowUp",
+          "Alt Shift ArrowDown",
+          "Alt Shift KeyJ",
+          "Alt Shift KeyK",
+          "Alt Shift KeyL",
+          "Alt Shift Semicolon",
+          // Move focus
+          "Alt ArrowLeft",
+          "Alt ArrowRight",
+          "Alt ArrowUp",
+          "Alt ArrowDown",
+          "Alt KeyJ",
+          "Alt KeyK",
+          "Alt KeyL",
+          "Alt Semicolon",
+          // Toggle fullscreen
+          "Alt KeyF",
+          // Split window vertically
+          "Alt KeyV",
+          // Split window horizontally
+          "Alt KeyH",
+          // Switch to workspace
+          "Alt Digit0",
+          "Alt Digit1",
+          "Alt Digit2",
+          "Alt Digit3",
+          "Alt Digit4",
+          "Alt Digit5",
+          "Alt Digit6",
+          "Alt Digit7",
+          "Alt Digit8",
+          "Alt Digit9",
+          // Move to workspace
+          "Alt Shift Digit0",
+          "Alt Shift Digit1",
+          "Alt Shift Digit2",
+          "Alt Shift Digit3",
+          "Alt Shift Digit4",
+          "Alt Shift Digit5",
+          "Alt Shift Digit6",
+          "Alt Shift Digit7",
+          "Alt Shift Digit8",
+          "Alt Shift Digit9",
+          // Close window
+          "Alt Shift KeyQ",
+      });
+  return base::Contains(*kTilingWMaccelerators, accelerator_name);
+}
+
+}  // namespace
+
 // static
 CrosWindowManagementContext& CrosWindowManagementContext::Get(
     Profile* profile) {
@@ -115,6 +175,17 @@ void CrosWindowManagementContext::OnKeyEvent(ui::KeyEvent* event) {
                         : blink::mojom::AcceleratorEvent::Type::kUp;
   event_ptr->accelerator_name = base::JoinString(keys, " ");
   event_ptr->repeat = event->is_repeat();
+
+  // If the accelerator is for the tiling window manager, then mark the event
+  // as handled to avoid conflicts with other system shortcuts. Eventually,
+  // System Extensions will integrate with the shortcut manager and won't need
+  // this, but this improves the experience at the prototype stage.
+  // TODO(b/238578914): Remove once System Extensions can register their
+  // accelerators.
+  if (!system_extensions_registry_->GetIds().empty() &&
+      IsTilingWindowManagerAccelerator(event_ptr->accelerator_name)) {
+    event->SetHandled();
+  }
 
   GetCrosWindowManagementInstances(base::BindRepeating(
       [](const blink::mojom::AcceleratorEventPtr& event_ptr,
