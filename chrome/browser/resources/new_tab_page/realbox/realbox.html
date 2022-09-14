@@ -58,10 +58,18 @@
   }
 
   input::-webkit-search-decoration,
-  input::-webkit-search-cancel-button,
   input::-webkit-search-results-button,
   input::-webkit-search-results-decoration {
     display: none;
+  }
+
+  /* Visually hide the cancel button but do not set display to none or
+   * visibility to hidden as this causes issues with NVDA not reading out the
+   * full value of the realbox input as the user selects suggestion matches.
+   * See crbug.com/1312442 for more context. */
+  input::-webkit-search-cancel-button {
+    appearance: none;
+    margin: 0;
   }
 
   input::placeholder {
