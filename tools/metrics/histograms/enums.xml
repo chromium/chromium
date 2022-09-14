@@ -103291,7 +103291,10 @@ Called by update_scheduler_enums.py.-->
   <int value="-1569772500" label="/manageAccessibility/tts"/>
   <int value="-1555301506" label="/content/notifications"/>
   <int value="-1484929503" label="/manageAccessibility/switchAccess"/>
+  <int value="-1435300306" label="/passwords/view"/>
+  <int value="-1402547108" label="/passwords/device"/>
   <int value="-1381133263" label="/passwords/check"/>
+  <int value="-1334017282" label="/spellCheck"/>
   <int value="-1312744606" label="/knownNetworks"/>
   <int value="-1297176639" label="/fonts"/>
   <int value="-1283080115" label="/content/backgroundSync"/>
@@ -103315,6 +103318,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-916174295" label="/internet"/>
   <int value="-907780721" label="/certificates"/>
   <int value="-898481268" label="/multidevice/features"/>
+  <int value="-876839853" label="/content/windowPlacement"/>
   <int value="-842548379" label="/apps"/>
   <int value="-809146474" label="/content/location"/>
   <int value="-794215283" label="/content/images"/>
@@ -103323,6 +103327,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-655433489" label="/payments"/>
   <int value="-590688273" label="/content/sensors"/>
   <int value="-570956986" label="/personalization"/>
+  <int value="-565073397" label="/performance"/>
   <int value="-512116630" label="/search"/>
   <int value="-482801316" label="/appearance"/>
   <int value="-469021167" label="/resetProfileSettings"/>
@@ -103337,18 +103342,24 @@ Called by update_scheduler_enums.py.-->
   <int value="-237154443" label="/manageAccessibility/tts/googleTtsEngine"/>
   <int value="-230959653" label="/syncSetup"/>
   <int value="-210069062" label="/content"/>
+  <int value="-191557146" label="/content/bluetoothDevices"/>
   <int value="-189314307" label="/crostini/exportImport"/>
   <int value="-152132510" label="/captions"/>
   <int value="-146134264" label="/content/protectedContent"/>
+  <int value="-141168426" label="/passkeys"/>
+  <int value="-74938958" label="/content/federatedIdentityApi"/>
+  <int value="-68849649" label="/securityKeys/phones"/>
   <int value="-59332819" label="/accountManager"/>
   <int value="-44267040" label="/bluetoothDevices"/>
   <int value="-23311755" label="/content/vr"/>
   <int value="-14666765" label="/accounts"/>
+  <int value="4710857" label="/content/hidDevices"/>
   <int value="8030578" label="/crostini/sharedUsbDevices"/>
   <int value="8530592" label="/syncSetup/advanced"/>
   <int value="16287984" label="/languages/details"/>
   <int value="53341592" label="/privacySandbox"/>
   <int value="60238454" label="/content/ads"/>
+  <int value="91791837" label="/content/localFonts"/>
   <int value="104900992" label="/content/insecureContent"/>
   <int value="223791833" label="/help/about"/>
   <int value="254445609" label="/content/filesystem"/>
@@ -103382,6 +103393,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1225485397" label="/content/unsandboxedPlugins"/>
   <int value="1258785570" label="/crostini/sharedPaths"/>
   <int value="1300569861" label="/keyboard-overlay"/>
+  <int value="1338599766" label="/content/idleDetection"/>
   <int value="1364454971" label="/androidApps"/>
   <int value="1384165448" label="/stylus"/>
   <int value="1462185522" label="/dateTime"/>
