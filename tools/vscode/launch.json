@@ -6,11 +6,11 @@
       "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
       "request": "launch",
       "targetArchitecture": "x64",
-      "program": "${workspaceRoot}/out/Debug/chrome",
+      "program": "${workspaceFolder}/out/Debug/chrome",
       "args": [], // Optional command line args
       "preLaunchTask": "8-build_chrome_debug",
       "stopAtEntry": false,
-      "cwd": "${workspaceRoot}/out/Debug/",
+      "cwd": "${workspaceFolder}/out/Debug/",
       "environment": [],
       "externalConsole": true,
       "setupCommands": [
@@ -20,11 +20,11 @@
         },
         {
           "description": "Load Chromium gdb configuration",
-          "text": "-interpreter-exec console \"source -v ${workspaceRoot}/tools/gdb/gdbinit\""
+          "text": "-interpreter-exec console \"source -v ${workspaceFolder}/tools/gdb/gdbinit\""
         },
         {
           "description": "Load Blink gdb configuration",
-          "text": "-interpreter-exec console \"python import sys; sys.path.insert(0, '${workspaceRoot}/third_party/blink/tools/gdb'); import blink\""
+          "text": "-interpreter-exec console \"python import sys; sys.path.insert(0, '${workspaceFolder}/third_party/blink/tools/gdb'); import blink\""
         }
       ]
     },
@@ -33,11 +33,11 @@
       "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
       "request": "launch",
       "targetArchitecture": "x64",
-      "program": "${workspaceRoot}/out/Release/chrome",
+      "program": "${workspaceFolder}/out/Release/chrome",
       "args": [], // Optional command line args
       "preLaunchTask": "9-build_chrome_release",
       "stopAtEntry": false,
-      "cwd": "${workspaceRoot}/out/Release/",
+      "cwd": "${workspaceFolder}/out/Release/",
       "environment": [],
       "externalConsole": true
     },
@@ -46,7 +46,7 @@
       "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
       "request": "launch",
       "targetArchitecture": "x64",
-      "program": "${workspaceRoot}/out/Debug/unit_tests",
+      "program": "${workspaceFolder}/out/Debug/unit_tests",
       "args": [
         "--gtest_filter=*",
         "--single-process-tests",
@@ -55,7 +55,7 @@
       ],
       "preLaunchTask": "10-build_test_debug",
       "stopAtEntry": false,
-      "cwd": "${workspaceRoot}/out/Debug/",
+      "cwd": "${workspaceFolder}/out/Debug/",
       "environment": [],
       "externalConsole": true
     },
@@ -64,12 +64,12 @@
       "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
       "request": "launch",
       "targetArchitecture": "x64",
-      "program": "${workspaceRoot}/out/Debug/chrome",
+      "program": "${workspaceFolder}/out/Debug/chrome",
       "args": [
         "--remote-debugging-port=2224"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceRoot}/out/Debug/",
+      "cwd": "${workspaceFolder}/out/Debug/",
       "environment": [],
       "externalConsole": false
     },
@@ -82,7 +82,7 @@
       "program": "/tmp/adb-gdb-support-${env:USER}/app_process",
       "miDebuggerPath": "/tmp/adb-gdb-support-${env:USER}/gdb",
       "miDebuggerServerAddress": "ignored",
-      "cwd": "${workspaceRoot}",
+      "cwd": "${workspaceFolder}",
       "customLaunchSetupCommands": [
         {
           "text": "-interpreter-exec console \"source -v /tmp/adb-gdb-support-${env:USER}/gdbinit\""

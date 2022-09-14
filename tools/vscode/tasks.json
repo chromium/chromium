@@ -20,7 +20,7 @@
     },
     {
       "owner": "cpp",
-      "fileLocation": ["relative", "${workspaceRoot}"],
+      "fileLocation": ["relative", "${workspaceFolder}"],
       "pattern": {
         "regexp": "^../../(.*):(\\d+):(\\d+):\\s+(warning|\\w*\\s?error):\\s+(.*)$",
         "file": 1, "line": 2, "column": 3, "severity": 4, "message": 5
@@ -46,7 +46,7 @@
       "owner": "cpp",
       "fileLocation": [
         "relative",
-        "${workspaceRoot}"
+        "${workspaceFolder}"
       ],
       "pattern": {
         "regexp": "^../../(.*)\\((\\d+),(\\d+)\\):\\s+(warning|\\w*\\s?error):\\s+(.*)$",
@@ -67,7 +67,7 @@
     },
     {
       "owner": "cpp",
-      "fileLocation": ["relative", "${workspaceRoot}"],
+      "fileLocation": ["relative", "${workspaceFolder}"],
       "pattern": {
         "regexp": "^../../(.*?):(.*):\\s+(warning|\\w*\\s?error):\\s+(.*)$",
         "file": 1, "severity": 3, "message": 4
