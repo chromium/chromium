@@ -381,6 +381,7 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
             current_generation_item_->generation_element_),
         current_generation_item_->generation_element_.MaxLength(),
         current_generation_item_->generation_element_.NameForAutofill().Utf16(),
+        current_generation_item_->generation_element_.Value().Utf16(),
         FieldRendererId(current_generation_item_->generation_element_
                             .UniqueRendererFormControlId()),
         is_generation_element_password_type,
@@ -600,6 +601,7 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
           current_generation_item_->generation_element_),
       current_generation_item_->generation_element_.MaxLength(),
       current_generation_item_->generation_element_.NameForAutofill().Utf16(),
+      current_generation_item_->generation_element_.Value().Utf16(),
       FieldRendererId(current_generation_item_->generation_element_
                           .UniqueRendererFormControlId()),
       is_generation_element_password_type,

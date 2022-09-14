@@ -265,6 +265,11 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   return true;
 }
 
+void PasswordGenerationPopupControllerImpl::UpdateTypedPassword(
+    const std::u16string& new_user_typed_password) {
+  user_typed_password_ = new_user_typed_password;
+}
+
 void PasswordGenerationPopupControllerImpl::UpdateGeneratedPassword(
     std::u16string new_password) {
   current_generated_password_ = std::move(new_password);

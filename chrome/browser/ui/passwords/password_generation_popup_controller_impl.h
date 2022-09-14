@@ -50,6 +50,8 @@ class PasswordGenerationPopupView;
 // determining the location of the popup, handling keypress events while the
 // popup is active, and notifying both the renderer and the password manager
 // if the password is accepted.
+// It is also used for computing the password strength for manually typed
+// passwords.
 //
 // NOTE: This is used on Android only to display the editing popup.
 //
@@ -89,7 +91,11 @@ class PasswordGenerationPopupControllerImpl
   // Returns |true| in case of success, |false| otherwise.
   bool Show(GenerationUIState state);
 
-  // Update the password to be displayed in the UI.
+  // Update the password typed by the user.
+  void UpdateTypedPassword(const std::u16string& new_user_typed_password);
+
+  // Update the value of the generated password to be displayed in the UI (e.g.
+  // upon editing the generated password).
   void UpdateGeneratedPassword(std::u16string new_password);
 
   // Hides the popup, since its position is no longer valid.
@@ -189,8 +195,14 @@ class PasswordGenerationPopupControllerImpl
   // Help text in the footer.
   std::u16string help_text_;
 
-  // The password value to be displayed in the UI.
+  // Password typed by the user. Currently used for computing the password
+  // strength.
+  std::u16string user_typed_password_;
+
+  // The current password that is considered generated. This is the password to
+  // be displayed in the user generation dialog.
   std::u16string current_generated_password_;
+
   // Whether the row with the password is currently selected/highlighted.
   bool password_selected_;
 

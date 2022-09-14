@@ -426,6 +426,7 @@ struct PasswordGenerationUIData {
   FieldRendererId generation_element_id;
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
+  mojo_base.mojom.String16 user_typed_password;
   FormData form_data;
 };
 

@@ -1171,8 +1171,8 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
           bounds));
   autofill::password_generation::PasswordGenerationUIData ui_data(
       bounds, /*max_length=*/0, /*generation_element=*/std::u16string(),
-      field_renderer_id, /*is_generation_element_password_type=*/true,
-      base::i18n::TextDirection(),
+      /*user_typed_password=*/std::u16string(), field_renderer_id,
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       password_manager::GetFormWithFrameAndFormMetaData(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
           form_data));
@@ -1653,6 +1653,7 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
       popup_controller_, element_bounds_in_screen_space, ui_data,
       driver->AsWeakPtr(), observer_, web_contents(),
       driver->render_frame_host());
+  popup_controller_->UpdateTypedPassword(ui_data.user_typed_password);
   popup_controller_->Show(PasswordGenerationPopupController::kOfferGeneration);
 }
 
