@@ -17,15 +17,45 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using ::testing::IsEmpty;
 using ::testing::Optional;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 namespace net {
+
+const SchemefulSite kPrimary(GURL("https://primary.test"));
+const SchemefulSite kPrimary2(GURL("https://primary2.test"));
+const SchemefulSite kPrimary3(GURL("https://primary3.test"));
+const SchemefulSite kAssociated1(GURL("https://associated1.test"));
+const SchemefulSite kAssociated1Cctld(GURL("https://associated1.cctld"));
+const SchemefulSite kAssociated1Cctld2(GURL("https://associated1.cctld2"));
+const SchemefulSite kAssociated2(GURL("https://associated2.test"));
+const SchemefulSite kAssociated3(GURL("https://associated3.test"));
+const SchemefulSite kAssociated4(GURL("https://associated4.test"));
+const SchemefulSite kService(GURL("https://service.test"));
 
 class PublicSetsTest : public ::testing::Test {
  public:
   PublicSetsTest() = default;
 
   FirstPartySetsContextConfig* config() { return &fps_context_config_; }
+
+  // A helper to repeatedly call `PublicSets::FindEntry` and accumulate the
+  // non-nullopt results.
+  base::flat_map<SchemefulSite, FirstPartySetEntry> FindEntries(
+      const PublicSets& public_sets,
+      const base::flat_set<SchemefulSite>& sites) {
+    std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> results;
+    for (const SchemefulSite& site : sites) {
+      if (absl::optional<FirstPartySetEntry> entry =
+              public_sets.FindEntry(site, config());
+          entry.has_value()) {
+        results.emplace_back(site, *entry);
+      }
+    }
+    return results;
+  }
 
  private:
   FirstPartySetsContextConfig fps_context_config_;
@@ -162,6 +192,222 @@ TEST_F(PublicSetsTest, FindEntry_AliasesIgnoredForConfig) {
                   {{example_cctld, example}})
                   .FindEntry(example_cctld, config()),
               public_entry);
+}
+
+class PopulatedPublicSetsTest : public PublicSetsTest {
+ public:
+  PopulatedPublicSetsTest()
+      : public_sets_(
+            {
+                {kPrimary, FirstPartySetEntry(kPrimary,
+                                              SiteType::kPrimary,
+                                              absl::nullopt)},
+                {kAssociated1,
+                 FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+                {kAssociated2,
+                 FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
+                {kService, FirstPartySetEntry(kPrimary,
+                                              SiteType::kService,
+                                              absl::nullopt)},
+                {kPrimary2, FirstPartySetEntry(kPrimary2,
+                                               SiteType::kPrimary,
+                                               absl::nullopt)},
+                {kAssociated3,
+                 FirstPartySetEntry(kPrimary2, SiteType::kAssociated, 0)},
+            },
+            {
+                {kAssociated1Cctld, kAssociated1},
+            }) {}
+
+  base::flat_map<SchemefulSite, FirstPartySetEntry> FindEntries(
+      const base::flat_set<SchemefulSite>& sites) {
+    return PublicSetsTest::FindEntries(public_sets(), sites);
+  }
+
+  PublicSets& public_sets() { return public_sets_; }
+
+ private:
+  PublicSets public_sets_;
+};
+
+TEST_F(PopulatedPublicSetsTest,
+       ApplyManuallySpecifiedSet_DeduplicatesPrimaryPrimary) {
+  // kPrimary overlaps as primary of both sets, so the existing set should be
+  // wiped out.
+  public_sets().ApplyManuallySpecifiedSet(
+      kPrimary,
+      {
+          {kPrimary,
+           FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+          {kAssociated4,
+           FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+      },
+      {});
+
+  EXPECT_THAT(
+      FindEntries({
+          kPrimary,
+          kAssociated1,
+          kAssociated2,
+          kAssociated4,
+          kService,
+          kAssociated1Cctld,
+      }),
+      UnorderedElementsAre(
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kAssociated4,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0))));
+}
+
+TEST_F(PopulatedPublicSetsTest,
+       ApplyManuallySpecifiedSet_DeduplicatesPrimaryNonprimary) {
+  // kPrimary overlaps as a primary of the public set and non-primary of the CLI
+  // set, so the existing set should be wiped out.
+  public_sets().ApplyManuallySpecifiedSet(
+      kPrimary3,
+      {
+          {kPrimary3,
+           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+          {kPrimary, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+      },
+      {});
+
+  EXPECT_THAT(
+      FindEntries({
+          kPrimary,
+          kAssociated1,
+          kAssociated2,
+          kAssociated4,
+          kService,
+          kPrimary3,
+          kAssociated1Cctld,
+      }),
+      UnorderedElementsAre(
+          Pair(kPrimary3, FirstPartySetEntry(kPrimary3, SiteType::kPrimary,
+                                             absl::nullopt)),
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
+}
+
+TEST_F(PopulatedPublicSetsTest,
+       ApplyManuallySpecifiedSet_DeduplicatesNonprimaryPrimary) {
+  // kAssociated1 overlaps as a non-primary of the public set and primary of the
+  // CLI set, so the CLI set should steal it and wipe out its alias, but
+  // otherwise leave the set intact.
+  public_sets().ApplyManuallySpecifiedSet(
+      kAssociated1,
+      {
+          {kAssociated1,
+           FirstPartySetEntry(kAssociated1, SiteType::kPrimary, absl::nullopt)},
+          {kAssociated4,
+           FirstPartySetEntry(kAssociated1, SiteType::kAssociated, 0)},
+      },
+      {});
+
+  EXPECT_THAT(
+      FindEntries({
+          kPrimary,
+          kAssociated1,
+          kAssociated2,
+          kAssociated4,
+          kService,
+          kPrimary3,
+          kAssociated1Cctld,
+      }),
+      UnorderedElementsAre(
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kAssociated2,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)),
+          Pair(kService,
+               FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)),
+          Pair(kAssociated1,
+               FirstPartySetEntry(kAssociated1, SiteType::kPrimary,
+                                  absl::nullopt)),
+          Pair(kAssociated4,
+               FirstPartySetEntry(kAssociated1, SiteType::kAssociated, 0))));
+}
+
+TEST_F(PopulatedPublicSetsTest,
+       ApplyManuallySpecifiedSet_DeduplicatesNonprimaryNonprimary) {
+  // kAssociated1 overlaps as a non-primary of the public set and non-primary of
+  // the CLI set, so the CLI set should steal it and wipe out its alias.
+  public_sets().ApplyManuallySpecifiedSet(
+      kPrimary3,
+      {
+          {kPrimary3,
+           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+          {kAssociated1,
+           FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+      },
+      {});
+
+  EXPECT_THAT(
+      FindEntries({
+          kPrimary,
+          kAssociated1,
+          kAssociated2,
+          kAssociated4,
+          kService,
+          kPrimary3,
+          kAssociated1Cctld,
+      }),
+      UnorderedElementsAre(
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kAssociated2,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)),
+          Pair(kService,
+               FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)),
+          Pair(kPrimary3, FirstPartySetEntry(kPrimary3, SiteType::kPrimary,
+                                             absl::nullopt)),
+          Pair(kAssociated1,
+               FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
+}
+
+TEST_F(PopulatedPublicSetsTest,
+       ApplyManuallySpecifiedSet_PrunesInducedSingletons) {
+  // Steal kAssociated3, so that kPrimary2 becomes a singleton, and verify that
+  // kPrimary2 is no longer considered in a set.
+  public_sets().ApplyManuallySpecifiedSet(
+      kPrimary3,
+      {
+          {kPrimary3,
+           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+          {kAssociated3,
+           FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+      },
+      {});
+
+  EXPECT_THAT(FindEntries({kPrimary2}), IsEmpty());
+}
+
+TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
+  // Both the public sets and the locally-defined set define an alias for
+  // kAssociated1, but both define a different set for that site too.  Only the
+  // locally-defined alias should be observable.
+  public_sets().ApplyManuallySpecifiedSet(
+      kPrimary3,
+      {
+          {kPrimary3,
+           FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
+          {kAssociated1,
+           FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
+      },
+      {{kAssociated1Cctld2, kAssociated1}});
+
+  EXPECT_THAT(
+      FindEntries({
+          kAssociated1,
+          kAssociated1Cctld,
+          kAssociated1Cctld2,
+      }),
+      UnorderedElementsAre(
+          Pair(kAssociated1,
+               FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)),
+          Pair(kAssociated1Cctld2,
+               FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
 }
 
 }  // namespace net

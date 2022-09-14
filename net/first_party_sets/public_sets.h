@@ -6,6 +6,7 @@
 #define NET_FIRST_PARTY_SETS_PUBLIC_SETS_H_
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -50,7 +51,28 @@ class NET_EXPORT PublicSets {
       const SchemefulSite& site,
       const FirstPartySetsContextConfig* config) const;
 
+  // Modifies this instance such that it will respect the given
+  // manually-specified set.
+  void ApplyManuallySpecifiedSet(
+      const SchemefulSite& manual_primary,
+      const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries,
+      const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases);
+
  private:
+  // Finds the intersection between the underlying entries and the given
+  // manually-specified set.
+  //
+  // The returned collection also includes any sites in the underlying entries
+  // whose primary was in the intersection.
+  base::flat_set<net::SchemefulSite> FindIntersection(
+      const SchemefulSite& manual_primary,
+      const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries)
+      const;
+
+  // Finds singleton sets in the underlying entries, which are sets that consist
+  // of only a single site.
+  base::flat_set<net::SchemefulSite> FindSingletons() const;
+
   // Represents the mapping of site -> entry, where keys are sites within sets,
   // and values are entries of the sets.
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;
