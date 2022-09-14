@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "content/public/test/browser_test.h"
 
@@ -30,9 +33,6 @@ class QuickStartBrowserTest : public OobeBaseTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
-    connection_broker_factory_.set_initial_feature_support_status(
-        quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
-            kUndetermined);
     quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
         &connection_broker_factory_);
   }
@@ -51,7 +51,17 @@ class QuickStartBrowserTest : public OobeBaseTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ButtonVisibleOnWelcomeScreen) {
+class QuickStartNotDeterminedBrowserTest : public QuickStartBrowserTest {
+ public:
+  QuickStartNotDeterminedBrowserTest() {
+    connection_broker_factory_.set_initial_feature_support_status(
+        quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
+            kUndetermined);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(QuickStartNotDeterminedBrowserTest,
+                       ButtonVisibleOnWelcomeScreen) {
   OobeScreenWaiter(chromeos::WelcomeView::kScreenId).Wait();
   test::OobeJS().ExpectHiddenPath(kQuickStartButtonPath);
 
@@ -62,6 +72,25 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ButtonVisibleOnWelcomeScreen) {
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
       ->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
+  OobeScreenWaiter(chromeos::WelcomeView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kQuickStartButtonPath);
+
+  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+
+  OobeScreenWaiter(chromeos::QuickStartView::kScreenId).Wait();
+  connection_broker_factory_.instances().front()->InitiateConnection(
+      "fake_device_id");
+
+  test::OobeJS()
+      .CreateWaiter(
+          test::GetOobeElementPath({chromeos::QuickStartView::kScreenId.name}) +
+          ".uiStep === 'verification'")
+      ->Wait();
+  test::OobeJS().ExpectAttributeEQ(
+      "canvasSize_", {chromeos::QuickStartView::kScreenId.name}, 225);
 }
 
 }  // namespace ash

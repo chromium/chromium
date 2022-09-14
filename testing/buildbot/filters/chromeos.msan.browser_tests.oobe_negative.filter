@@ -134,6 +134,7 @@
 -PresetPolicyDeviceDisablingTest.*
 -PrimaryUserPoliciesProxiedTest.*
 -QuickStartBrowserTest.*
+-QuickStartNotDeterminedBrowserTest.*
 -RecommendAppsScreenManagedTest.*
 -RecommendAppsScreenTest.*
 -ResetFirstAfterBootTest.*

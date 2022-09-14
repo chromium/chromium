@@ -22,7 +22,7 @@ found in the LICENSE file.
         margin: 28px 14px;
       }
 
-      #verification {
+      #figures {
         margin: auto;
       }
 
@@ -49,9 +49,24 @@ found in the LICENSE file.
     <oobe-adaptive-dialog for-step="verification">
       <h1 slot="title">
         <!--TODO(https://crbug.com/1278686) Update with finalize strings -->
+        Scan the QR code
+      </h1>
+      <div id="code" class="layout horizontal" slot="content">
+        <div id="qrCodeWrapper">
+          <canvas id="qrCodeCanvas" width="[[canvasSize_]]"
+              height="[[canvasSize_]]">
+        </div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button on-click="onNextClicked_"></oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog for-step="figures">
+      <h1 slot="title">
+        <!--TODO(https://crbug.com/1278686) Update with finalize strings -->
         Verify the shapes
       </h1>
-      <div id="verification" class="layout horizontal" slot="content">
+      <div id="figures" class="layout horizontal" slot="content">
         <!-- We inline SVGs here to be able to control the color of them. -->
         <template is="dom-repeat" items="[[figures_]]">
           <div class="layout vertical center">

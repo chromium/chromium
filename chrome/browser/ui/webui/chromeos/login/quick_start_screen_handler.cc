@@ -34,6 +34,10 @@ void QuickStartScreenHandler::SetShapes(
   CallExternalAPI("setFigures", ToValue(shape_list));
 }
 
+void QuickStartScreenHandler::SetQRCode(base::Value::List blob) {
+  CallExternalAPI("setQRCode", std::move(blob));
+}
+
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
