@@ -27,13 +27,13 @@ code). "CQ builders" are try builders that the
 non-CQ try builders are called "optional" try builders.
 
 Try builders normally pick up their configuration from a "mirrored" (i.e.,
-matching) CI builder (the mapping is set in [trybots.py][25] in the
-chromium\_tests recipe configuration) and run the exact same things.  However,
-they can be configured to use slightly different GN args (usually to enable
-DCHECKs on release builders) and (rarely) to run different tests or run them
-with different flags. [ We enable dchecks on the release builders as a
-compromise between the speed of a release builder and the coverage of a
-debug builder]. Note that differences between the try builders and the CI
+matching) CI builder (the mapping is set in the `mirrors` field in the try
+builder's definition) and run the same set of tests/compile the same set of
+targets. However, they can be configured to use slightly different GN args
+(usually to enable DCHECKs on release builders) and (rarely) to run different
+tests or run them with different flags. [ We enable dchecks on the release
+builders as a compromise between the speed of a release builder and the coverage
+of a debug builder]. Note that differences between the try builders and the CI
 builders can cause changes to land that break the CI builders, which is
 unfortunate, but a known tradeoff we make.
 
@@ -53,9 +53,12 @@ for both, or some other limitation of the infrastructure).
 
 > **Note:** not every CI builder that should have a matching try builder
 > currently does, unfortunately (see
-> [crbug.com/709214](https://crbug.com/709214)).  Also, figuring out what the
-> corresponding builders are is harder than it should be, you have to look at
-> [trybots.py][25] for the mapping (embedded in the code).
+> [crbug.com/709214](https://crbug.com/709214)). Also, it can be hard to figure
+> out what the corresponding builders are for builders that have not been
+> migrated src-side: you have to look at [trybots.py][25] for the mapping
+> (embedded in the code). For CI builders with config specified src-side, the
+> generated properties file will have the builders that mirror them identified
+> in the `mirroring_builder_group_and_names` field.
 
 All CQ builders *must* have mirrored CI builders.
 
@@ -211,11 +214,11 @@ all entries include short name.
 
 ##### Try builders
 
-The sequence of try builders for a builder does not correspond to a linear
-history of revisions. Consequently, the interface for the consoles is different,
-as is the method of defining the console. Try builders will by default be added
-to a list view with the same name as its builder group and also to a console
-that includes all try builders, so nothing usually needs to be done to update a
+The sequence of builds for a try builder does not correspond to a linear history
+of revisions. Consequently, the interface for the consoles is different, as is
+the method of defining the console. Try builders will by default be added to a
+list view with the same name as its builder group and also to a console that
+includes all try builders, so nothing usually needs to be done to update a
 console when adding a builder to an existing builder group.
 
 ```starlark
@@ -471,16 +474,6 @@ specified at the builder definition simplifies adding and maintaining builders
 and removes the need to make a change to [chromium/tools/build][17]. Module
 properties must be used for all related builders (triggered/triggering builders
 and mirrored/mirroring builders).
-
-There are some configuration options present in the recipe configs that are not
-and will not be supported in the module properties: the PROVIDE_TEST_SPEC
-execution mode and mirrroring non-existent try-builders. The capabilities that
-these features provide can be achieved using supported mechanisms. Builders with
-the PROVIDE_TEST_SPEC execution mode could only appear as mirrors in a try spec
-and allowed for running the same test against multiple hardware configurations.
-This can be accomplished using variant test suites in the test specs. Within the
-recipe, a builder spec can be defined for a non-existent builder and that can
-appear as a mirror. Instead, the try builder can define its own builder spec.
 
 For the old way of defining the builder config in the recipe see the section
 titled "Recipe-based config".
