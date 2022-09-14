@@ -149,7 +149,8 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
         },
         *read_error);
     for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(base::unexpected(error_message));
+      std::move(callback).Run(
+          base::unexpected(ReadResponseError::ForOtherError(error_message)));
     }
     reader_cache_.erase(cache_entry_it);
     return;
@@ -160,7 +161,8 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
           cache_entry_it->second.reader->GetEntries());
       error.has_value()) {
     for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(base::unexpected(*error));
+      std::move(callback).Run(
+          base::unexpected(ReadResponseError::ForOtherError(*error)));
     }
     reader_cache_.erase(cache_entry_it);
     return;
@@ -178,9 +180,27 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
 
 void IsolatedWebAppReaderRegistry::DoReadResponse(
     SignedWebBundleReader& reader,
-    const network::ResourceRequest& resource_request,
+    network::ResourceRequest resource_request,
     ReadResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Remove query parameters from the request URL, if it has any.
+  // Resources within Signed Web Bundles used for Isolated Web Apps never have
+  // username, password, or fragment, just like resources within Signed Web
+  // Bundles and normal Web Bundles. Removing these from request URLs is done by
+  // the `SignedWebBundleReader`. However, in addition, resources in Signed Web
+  // Bundles used for Isolated Web Apps can also never have query parameters,
+  // which we need to remove here.
+  //
+  // Conceptually, we treat the resources in Signed Web Bundles for Isolated Web
+  // Apps more like files served by a file server (which also strips query
+  // parameters before looking up the file), and not like HTTP exchanges as they
+  // are used for Signed Exchanges (SXG).
+  if (resource_request.url.has_query()) {
+    GURL::Replacements replacements;
+    replacements.ClearQuery();
+    resource_request.url = resource_request.url.ReplaceComponents(replacements);
+  }
 
   reader.ReadResponse(
       resource_request,
@@ -194,13 +214,22 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
     SignedWebBundleReader& reader,
     ReadResponseCallback callback,
     base::expected<web_package::mojom::BundleResponsePtr,
-                   web_package::mojom::BundleResponseParseErrorPtr>
-        response_head) {
+                   SignedWebBundleReader::ReadResponseError> response_head) {
   if (!response_head.has_value()) {
-    std::move(callback).Run(base::unexpected(
-        base::StringPrintf("Failed to parse response head: %s",
-                           response_head.error()->message.c_str())));
-    return;
+    switch (response_head.error().type) {
+      case SignedWebBundleReader::ReadResponseError::Type::kParserInternalError:
+      case SignedWebBundleReader::ReadResponseError::Type::kFormatError:
+        std::move(callback).Run(
+            base::unexpected(ReadResponseError::ForOtherError(
+                base::StringPrintf("Failed to parse response head: %s",
+                                   response_head.error().message.c_str()))));
+        return;
+      case SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound:
+        std::move(callback).Run(
+            base::unexpected(ReadResponseError::ForResponseNotFound(
+                response_head.error().message)));
+        return;
+    }
   }
   // Since `this` owns `reader`, we only pass a weak reference to it to the
   // `Response` object. If `this` deletes `reader`, it makes sense that the

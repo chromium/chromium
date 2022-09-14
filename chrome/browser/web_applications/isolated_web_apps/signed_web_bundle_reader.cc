@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -271,24 +272,17 @@ void SignedWebBundleReader::ReadResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitialized);
 
-  // TODO(crbug.com/1315947): Decide and document the exact behavior of Isolated
-  // Web Apps with regards to query parameters. Currently, query parameters and
-  // fragment are stripped from all requests when looking up an exchange in the
-  // Web Bundle.
-  GURL::Replacements replacements;
-  replacements.ClearQuery();
-  replacements.ClearRef();
-  auto entry_it =
-      entries_.find(resource_request.url.ReplaceComponents(replacements));
-
+  const GURL& url = net::SimplifyUrlForRequest(resource_request.url);
+  auto entry_it = entries_.find(url);
   if (entry_it == entries_.end()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
-            base::unexpected(web_package::mojom::BundleResponseParseError::New(
-                web_package::mojom::BundleParseErrorType::kParserInternalError,
-                "URL not found inside the Web Bundle."))));
+            base::unexpected(ReadResponseError::ForResponseNotFound(
+                base::StringPrintf("The Web Bundle does not contain a response "
+                                   "for the provided URL: %s",
+                                   url.spec().c_str())))));
     return;
   }
 
@@ -324,7 +318,8 @@ void SignedWebBundleReader::OnResponseParsed(
   CHECK_EQ(state_, State::kInitialized);
 
   if (error) {
-    std::move(callback).Run(base::unexpected(std::move(error)));
+    std::move(callback).Run(base::unexpected(
+        ReadResponseError::FromBundleParseError(std::move(error))));
   } else {
     std::move(callback).Run(std::move(response));
   }
@@ -333,7 +328,7 @@ void SignedWebBundleReader::OnResponseParsed(
 void SignedWebBundleReader::ReadResponseBody(
     web_package::mojom::BundleResponsePtr response,
     mojo::ScopedDataPipeProducerHandle producer_handle,
-    ReadResponseBodyCallback callback) {
+    ResponseBodyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitialized);
 
@@ -421,12 +416,11 @@ void SignedWebBundleReader::DidReconnect(absl::optional<std::string> error) {
     for (auto& [response_location, response_callback] : read_tasks) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(response_callback),
-                         base::unexpected(
-                             web_package::mojom::BundleResponseParseError::New(
-                                 web_package::mojom::BundleParseErrorType::
-                                     kParserInternalError,
-                                 *error))));
+          base::BindOnce(
+              std::move(response_callback),
+              base::unexpected(
+                  ReadResponseError::ForParserInternalError(base::StringPrintf(
+                      "Unable to open file: %s", error->c_str())))));
     }
     return;
   }
@@ -441,6 +435,37 @@ void SignedWebBundleReader::DidReconnect(absl::optional<std::string> error) {
     ReadResponseInternal(std::move(response_location),
                          std::move(response_callback));
   }
+}
+
+// static
+SignedWebBundleReader::ReadResponseError
+SignedWebBundleReader::ReadResponseError::FromBundleParseError(
+    web_package::mojom::BundleResponseParseErrorPtr error) {
+  switch (error->type) {
+    case web_package::mojom::BundleParseErrorType::kVersionError:
+      // A `kVersionError` error can only be triggered while parsing
+      // the integrity block or metadata, not while parsing a response.
+      NOTREACHED();
+      [[fallthrough]];
+    case web_package::mojom::BundleParseErrorType::kParserInternalError:
+      return ForParserInternalError(error->message);
+    case web_package::mojom::BundleParseErrorType::kFormatError:
+      return ReadResponseError(Type::kFormatError, error->message);
+  }
+}
+
+// static
+SignedWebBundleReader::ReadResponseError
+SignedWebBundleReader::ReadResponseError::ForParserInternalError(
+    const std::string& message) {
+  return ReadResponseError(Type::kParserInternalError, message);
+}
+
+// static
+SignedWebBundleReader::ReadResponseError
+SignedWebBundleReader::ReadResponseError::ForResponseNotFound(
+    const std::string& message) {
+  return ReadResponseError(Type::kResponseNotFound, message);
 }
 
 // static

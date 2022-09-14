@@ -72,8 +72,30 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
     base::WeakPtr<SignedWebBundleReader> reader_;
   };
 
-  using ReadResponseCallback =
-      base::OnceCallback<void(base::expected<Response, std::string> response)>;
+  struct ReadResponseError {
+    enum class Type {
+      kOtherError,
+      kResponseNotFound,
+    };
+
+    static ReadResponseError ForOtherError(const std::string& message) {
+      return ReadResponseError(Type::kOtherError, message);
+    }
+
+    static ReadResponseError ForResponseNotFound(const std::string& message) {
+      return ReadResponseError(Type::kResponseNotFound, message);
+    }
+
+    Type type;
+    std::string message;
+
+   private:
+    ReadResponseError(Type type, const std::string& message)
+        : type(type), message(message) {}
+  };
+
+  using ReadResponseCallback = base::OnceCallback<void(
+      base::expected<Response, ReadResponseError> response)>;
 
   // Given a path to a Signed Web Bundle, the expected Signed Web Bundle ID, and
   // a request, read the corresponding response from it. The `callback` receives
@@ -98,15 +120,14 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       absl::optional<SignedWebBundleReader::ReadError> read_error);
 
   void DoReadResponse(SignedWebBundleReader& reader,
-                      const network::ResourceRequest& resource_request,
+                      network::ResourceRequest resource_request,
                       ReadResponseCallback callback);
 
   void OnResponseRead(
       SignedWebBundleReader& reader,
       ReadResponseCallback callback,
       base::expected<web_package::mojom::BundleResponsePtr,
-                     web_package::mojom::BundleResponseParseErrorPtr>
-          response_head);
+                     SignedWebBundleReader::ReadResponseError> response_head);
 
   // A `CacheEntry` has two states: In its initial `kPending` state, it caches
   // requests made to a web bundle until the `SignedWebBundleReader` is ready.

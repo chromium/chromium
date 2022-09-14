@@ -41,6 +41,11 @@ namespace web_app {
 // can be determined by either waiting for the callback passed to
 // `CreateAndStartReading` to run or by querying `GetState`.
 //
+// URLs passed to `ReadResponse` will be simplified to remove username,
+// password, and fragment before looking up the corresponding response inside
+// the Signed Web Bundle. This is the same behavior as with unsigned Web
+// Bundles (see `content::WebBundleReader`).
+//
 // Internally, this class wraps a `data_decoder::SafeWebBundleParser` with
 // support for automatic reconnection in case it disconnects while parsing
 // responses. The `SafeWebBundleParser` might disconnect, for example, if one of
@@ -158,22 +163,43 @@ class SignedWebBundleReader {
   // in the metadata. Will CHECK if `GetState()` != `kInitialized`.
   std::vector<GURL> GetEntries() const;
 
+  struct ReadResponseError {
+    enum class Type {
+      kParserInternalError,
+      kFormatError,
+      kResponseNotFound,
+    };
+
+    static ReadResponseError FromBundleParseError(
+        web_package::mojom::BundleResponseParseErrorPtr error);
+    static ReadResponseError ForParserInternalError(const std::string& message);
+    static ReadResponseError ForResponseNotFound(const std::string& message);
+
+    Type type;
+    std::string message;
+
+   private:
+    ReadResponseError(Type type, const std::string& message)
+        : type(type), message(message) {}
+  };
+
   // Reads the status code and headers, as well as the length and offset of the
-  // response body within the Web Bundle. Will CHECK if `GetState()` !=
-  // `kInitialized`.
+  // response body within the Web Bundle. The URL will be simplified
+  // (credentials and fragment and removed, this is consistent with
+  // `content::WebBundleReader`) before matching it to a response. Will CHECK if
+  // `GetState()` != `kInitialized`.
   using ResponseCallback = base::OnceCallback<void(
       base::expected<web_package::mojom::BundleResponsePtr,
-                     web_package::mojom::BundleResponseParseErrorPtr>)>;
+                     ReadResponseError>)>;
   void ReadResponse(const network::ResourceRequest& resource_request,
                     ResponseCallback callback);
 
   // Reads the response body given a `response` read with `ReadResponse`. Will
   // CHECK if `GetState()` != `kInitialized`.
-  using ReadResponseBodyCallback =
-      base::OnceCallback<void(net::Error net_error)>;
+  using ResponseBodyCallback = base::OnceCallback<void(net::Error net_error)>;
   void ReadResponseBody(web_package::mojom::BundleResponsePtr response,
                         mojo::ScopedDataPipeProducerHandle producer_handle,
-                        ReadResponseBodyCallback callback);
+                        ResponseBodyCallback callback);
 
   base::WeakPtr<SignedWebBundleReader> AsWeakPtr();
 

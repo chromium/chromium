@@ -159,8 +159,8 @@ class IsolatedWebAppReaderRegistryTest : public WebAppTest {
   web_package::mojom::BundleResponsePtr response_;
 };
 
-using Result =
-    base::expected<IsolatedWebAppReaderRegistry::Response, std::string>;
+using Result = base::expected<IsolatedWebAppReaderRegistry::Response,
+                              IsolatedWebAppReaderRegistry::ReadResponseError>;
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   network::ResourceRequest resource_request;
@@ -175,7 +175,31 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
   FulfillResponse(resource_request);
 
   Result result = read_response_future.Take();
-  ASSERT_TRUE(result.has_value()) << result.error();
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+  EXPECT_EQ(result->head()->response_code, 200);
+
+  std::string response_body = ReadAndFulfillResponseBody(
+      result->head()->payload_length,
+      base::BindOnce(&IsolatedWebAppReaderRegistry::Response::ReadBody,
+                     base::Unretained(&*result)));
+  EXPECT_EQ(kResponseBody, response_body);
+}
+
+TEST_F(IsolatedWebAppReaderRegistryTest,
+       TestSingleRequestWithQueryAndFragment) {
+  network::ResourceRequest resource_request;
+  resource_request.url = GURL(kPrimaryUrl.spec() + "?bar=baz#foo");
+
+  base::test::TestFuture<Result> read_response_future;
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
+
+  FulfillIntegrityBlock();
+  FulfillMetadata();
+  FulfillResponse(resource_request);
+
+  Result result = read_response_future.Take();
+  ASSERT_TRUE(result.has_value()) << result.error().message;
   EXPECT_EQ(result->head()->response_code, 200);
 
   std::string response_body = ReadAndFulfillResponseBody(
@@ -199,7 +223,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   FulfillResponse(resource_request);
 
   Result result = read_response_future.Take();
-  ASSERT_TRUE(result.has_value()) << result.error();
+  ASSERT_TRUE(result.has_value()) << result.error().message;
   EXPECT_EQ(result->head()->response_code, 200);
 
   // Delete the registry so that the `SignedWebBundleReader`, which `result`
@@ -216,6 +240,28 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   EXPECT_EQ(net::ERR_FAILED, error_future.Take());
 }
 
+TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
+  network::ResourceRequest resource_request;
+  resource_request.url = GURL(kPrimaryUrl.spec() + "foo");
+
+  base::test::TestFuture<Result> read_response_future;
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
+
+  FulfillIntegrityBlock();
+  FulfillMetadata();
+
+  Result result = read_response_future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error().type,
+      IsolatedWebAppReaderRegistry::ReadResponseError::Type::kResponseNotFound);
+  EXPECT_EQ(result.error().message,
+            "The Web Bundle does not contain a response for the provided URL: "
+            "isolated-app://"
+            "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/foo");
+}
+
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlock) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
@@ -230,7 +276,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlock) {
 
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Failed to parse integrity block: test error");
+  EXPECT_EQ(result.error().type,
+            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().message,
+            "Failed to parse integrity block: test error");
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
@@ -248,7 +297,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
 
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(),
+  EXPECT_EQ(result.error().type,
+            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().message,
             "Public keys of the Isolated Web App are untrusted: test error");
 }
 
@@ -271,7 +322,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadata) {
 
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Failed to parse metadata: test error");
+  EXPECT_EQ(result.error().type,
+            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().message, "Failed to parse metadata: test error");
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
@@ -290,8 +343,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
 
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().type,
+            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
   EXPECT_EQ(
-      result.error(),
+      result.error().message,
       base::StringPrintf("Invalid metadata: Primary URL must be %s, but "
                          "was %s",
                          kPrimaryUrl.spec().c_str(), kInvalidIsolatedAppUrl));
@@ -315,7 +370,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
 
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(),
+  EXPECT_EQ(result.error().type,
+            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().message,
             "Invalid metadata: The URL of an exchange is invalid: The host of "
             "isolated-app:// URLs must be a valid Signed Web Bundle ID (got "
             "foo): The signed web bundle ID must be exactly 56 characters "
@@ -342,7 +399,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {
 
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Failed to parse response head: test error");
+  EXPECT_EQ(result.error().type,
+            IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().message,
+            "Failed to parse response head: test error");
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
@@ -362,7 +422,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   FulfillResponse(resource_request);
   {
     Result result = read_response_future_1.Take();
-    ASSERT_TRUE(result.has_value()) << result.error();
+    ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
 
     std::string response_body = ReadAndFulfillResponseBody(
@@ -375,7 +435,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   FulfillResponse(resource_request);
   {
     Result result = read_response_future_2.Take();
-    ASSERT_TRUE(result.has_value()) << result.error();
+    ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
 
     std::string response_body = ReadAndFulfillResponseBody(
@@ -392,7 +452,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
   FulfillResponse(resource_request);
   {
     Result result = read_response_future_3.Take();
-    ASSERT_TRUE(result.has_value()) << result.error();
+    ASSERT_TRUE(result.has_value()) << result.error().message;
     EXPECT_EQ(result->head()->response_code, 200);
 
     std::string response_body = ReadAndFulfillResponseBody(

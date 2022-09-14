@@ -55,6 +55,16 @@ absl::optional<std::string> IsolatedWebAppValidator::ValidateMetadata(
           "Web Bundle ID: %s",
           entry_web_bundle_id->id().c_str());
     }
+    if (entry.has_ref()) {
+      return base::StringPrintf(
+          "Invalid metadata: The URL of an exchange is invalid: URLs must not "
+          "have a fragment part.");
+    }
+    if (entry.has_query()) {
+      return base::StringPrintf(
+          "Invalid metadata: The URL of an exchange is invalid: URLs must not "
+          "have a query part.");
+    }
   }
 
   return absl::nullopt;

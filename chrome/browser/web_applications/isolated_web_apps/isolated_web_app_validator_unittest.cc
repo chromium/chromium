@@ -103,6 +103,16 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(kPrimaryUrl,
                         std::vector<std::string>({kPrimaryUrl}),
                         absl::nullopt),
+        std::make_tuple(kPrimaryUrl,
+                        std::vector<std::string>({kPrimaryUrl,
+                                                  kPrimaryUrl + "/foo#bar"}),
+                        "Invalid metadata: The URL of an exchange is invalid: "
+                        "URLs must not have a fragment part."),
+        std::make_tuple(kPrimaryUrl,
+                        std::vector<std::string>({kPrimaryUrl,
+                                                  kPrimaryUrl + "/foo?bar"}),
+                        "Invalid metadata: The URL of an exchange is invalid: "
+                        "URLs must not have a query part."),
         std::make_tuple(
             kPrimaryUrl + "/foo",
             std::vector<std::string>({kPrimaryUrl}),
