@@ -162,3 +162,31 @@ TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
             ash::quick_start::FakeTargetDeviceConnectionBroker::
                 FeatureSupportStatus::kNotSupported);
 }
+
+TEST_F(TargetDeviceBootstrapControllerTest, RejectConnection) {
+  bootstrap_controller_->StartAdvertising();
+  connection_broker()->on_start_advertising_callback().Run(/*success=*/true);
+  connection_broker()->InitiateConnection(kSourceDeviceId);
+
+  connection_broker()->RejectConnection(kSourceDeviceId);
+
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
+  ASSERT_TRUE(
+      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+            ErrorCode::CONNECTION_REJECTED);
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
+  bootstrap_controller_->StartAdvertising();
+  connection_broker()->on_start_advertising_callback().Run(/*success=*/true);
+  connection_broker()->InitiateConnection(kSourceDeviceId);
+
+  connection_broker()->CloseConnection(kSourceDeviceId);
+
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
+  ASSERT_TRUE(
+      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+            ErrorCode::CONNECTION_CLOSED);
+}

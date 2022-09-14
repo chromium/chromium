@@ -68,4 +68,14 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
   fake_connection_ = std::move(fake_authenticated_connection);
 }
 
+void FakeTargetDeviceConnectionBroker::RejectConnection(
+    const std::string& source_device_id) {
+  connection_lifecycle_listener_->OnConnectionRejected(source_device_id);
+}
+
+void FakeTargetDeviceConnectionBroker::CloseConnection(
+    const std::string& source_device_id) {
+  connection_lifecycle_listener_->OnConnectionClosed(source_device_id);
+}
+
 }  // namespace ash::quick_start

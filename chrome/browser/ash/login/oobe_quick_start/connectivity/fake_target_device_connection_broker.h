@@ -74,6 +74,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
   void InitiateConnection(const std::string& source_device_id);
   void AuthenticateConnection(const std::string& source_device_id);
+  void RejectConnection(const std::string& source_device_id);
+  void CloseConnection(const std::string& source_device_id);
 
   void set_feature_support_status(FeatureSupportStatus feature_support_status) {
     feature_support_status_ = feature_support_status;

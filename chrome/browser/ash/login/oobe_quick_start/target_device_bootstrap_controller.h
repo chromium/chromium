@@ -37,6 +37,8 @@ class TargetDeviceBootstrapController
 
   enum class ErrorCode {
     START_ADVERTISING_FAILED,
+    CONNECTION_REJECTED,
+    CONNECTION_CLOSED,
   };
 
   using QRCodePixelData = std::vector<uint8_t>;

@@ -99,6 +99,7 @@ void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
     // New connection came. It should be a different device.
     DCHECK_NE(source_device_id_, source_device_id);
   }
+  source_device_id_ = source_device_id;
   incoming_connection_ = std::move(connection);
   auto qr_code = GenerateQRCode(incoming_connection_->GetQrCodeData());
   status_.step = Step::QR_CODE_VERIFICATION;
@@ -109,6 +110,7 @@ void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     const std::string& source_device_id,
     base::WeakPtr<AuthenticatedConnection> connection) {
+  DCHECK_EQ(source_device_id_, source_device_id);
   constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
   DCHECK(base::Contains(kPossibleSteps, status_.step));
   DCHECK(incoming_connection_.WasInvalidated());
@@ -120,14 +122,18 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
 
 void TargetDeviceBootstrapController::OnConnectionRejected(
     const std::string& source_device_id) {
-  // TODO(b/239855593): Implement
-  NOTIMPLEMENTED();
+  DCHECK_EQ(source_device_id_, source_device_id);
+  status_.step = Step::ERROR;
+  status_.payload = ErrorCode::CONNECTION_REJECTED;
+  NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
     const std::string& source_device_id) {
-  // TODO(b/239855593): Implement
-  NOTIMPLEMENTED();
+  DCHECK_EQ(source_device_id_, source_device_id);
+  status_.step = Step::ERROR;
+  status_.payload = ErrorCode::CONNECTION_CLOSED;
+  NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::NotifyObservers() {
