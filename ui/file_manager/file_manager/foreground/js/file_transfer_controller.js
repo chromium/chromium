@@ -164,12 +164,6 @@ export class FileTransferController {
     this.touching_ = false;
 
     /**
-     * Count of the SourceNotFound error.
-     * @private {number}
-     */
-    this.sourceNotFoundErrorCount_ = 0;
-
-    /**
      * @private {!Command}
      * @const
      */
@@ -601,68 +595,49 @@ export class FileTransferController {
     const toMove = pastePlan.isMove;
     const destinationEntry = pastePlan.destinationEntry;
 
-    let entries = [];
-    let shareEntries;
-    const taskId = this.fileOperationManager_.generateTaskId();
 
-    pastePlan.resolveEntries()
-        .then(sourceEntries => {
-          // The promise is not rejected, so it's safe to not remove the
-          // early progress center item here.
-          return this.fileOperationManager_.filterSameDirectoryEntry(
-              sourceEntries, destinationEntry, toMove);
-        })
-        .then(/**
-               * @param {!Array<Entry>} filteredEntries
-               */
-              async filteredEntries => {
-                entries = filteredEntries;
-                if (entries.length === 0) {
-                  return Promise.reject('ABORT');
-                }
-                if (isAllTrashEntries(entries, this.volumeManager_)) {
-                  await startIOTask(
-                      chrome.fileManagerPrivate.IOTaskType
-                          .RESTORE_TO_DESTINATION,
-                      entries, {destinationFolder: destinationEntry});
-                  return;
-                }
+    // Execute the IOTask in asynchronously.
+    (async () => {
+      try {
+        const sourceEntries = await pastePlan.resolveEntries();
+        const entries =
+            await this.fileOperationManager_.filterSameDirectoryEntry(
+                sourceEntries, destinationEntry, toMove);
 
-                const taskType = toMove ?
-                    chrome.fileManagerPrivate.IOTaskType.MOVE :
-                    chrome.fileManagerPrivate.IOTaskType.COPY;
-                try {
-                  // TODO(crbug/1290197): Start tracking the copy/move
-                  // operation starting here as both the legacy taskId and
-                  // IOTask taskId are available.
-                  await startIOTask(
-                      taskType, entries, {destinationFolder: destinationEntry});
-                } catch (e) {
-                  console.error(`Failed to start ${taskType} io task:`, e);
-                }
-              })
-        .catch(error => {
-          if (error !== 'ABORT') {
-            console.warn(error.stack ? error.stack : error);
+        if (entries.length > 0) {
+          if (isAllTrashEntries(entries, this.volumeManager_)) {
+            await startIOTask(
+                chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION,
+                entries, {destinationFolder: destinationEntry});
+            return;
           }
-        })
-        .finally(() => {
-          // Publish source not found error item.
-          for (let i = 0; i < pastePlan.failureUrls.length; i++) {
-            const fileName = decodeURIComponent(
-                pastePlan.failureUrls[i].replace(/^.+\//, ''));
-            const item = new ProgressCenterItem();
-            item.id = 'source-not-found-' + this.sourceNotFoundErrorCount_;
-            if (toMove) {
-              item.message = strf('MOVE_SOURCE_NOT_FOUND_ERROR', fileName);
-            } else {
-              item.message = strf('COPY_SOURCE_NOT_FOUND_ERROR', fileName);
-            }
-            item.state = ProgressItemState.ERROR;
-            this.progressCenter_.updateItem(item);
-            this.sourceNotFoundErrorCount_++;
-          }
-        });
+
+          const taskType = toMove ? chrome.fileManagerPrivate.IOTaskType.MOVE :
+                                    chrome.fileManagerPrivate.IOTaskType.COPY;
+          // TODO(crbug/1290197): Start tracking the copy/move operation
+          // starting here.
+          await startIOTask(
+              taskType, entries, {destinationFolder: destinationEntry});
+        }
+      } catch (error) {
+        console.warn(error.stack ? error.stack : error);
+      } finally {
+        // Publish source not found error item.
+        for (let i = 0; i < pastePlan.failureUrls.length; i++) {
+          const url = pastePlan.failureUrls[i];
+          // Extract the file name.
+          const fileName = decodeURIComponent(url.replace(/^.+\//, ''));
+          const item = new ProgressCenterItem();
+          item.id = `source-not-found-${url}`;
+          item.state = ProgressItemState.ERROR;
+          item.message = toMove ?
+              strf('MOVE_SOURCE_NOT_FOUND_ERROR', fileName) :
+              strf('COPY_SOURCE_NOT_FOUND_ERROR', fileName);
+          this.progressCenter_.updateItem(item);
+        }
+      }
+    })();
+
     return toMove ? 'move' : 'copy';
   }
 
