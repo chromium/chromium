@@ -161,6 +161,8 @@ bool HasTriggerRumbleSupport(GamepadId gamepad_id) {
          gamepad_id == GamepadId::kMicrosoftProduct02ea ||
          // Xbox One S Bluetooth
          gamepad_id == GamepadId::kMicrosoftProduct02e0 ||
+         // Xbox One S USB
+         gamepad_id == GamepadId::kMicrosoftProduct0b06 ||
          // Xbox Series X USB
          gamepad_id == GamepadId::kMicrosoftProduct0b12 ||
          // Xbox Series X Bluetooth

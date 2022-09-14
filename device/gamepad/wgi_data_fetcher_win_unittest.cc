@@ -63,9 +63,10 @@ constexpr GamepadId kGamepadsWithTriggerRumble[] = {
     GamepadId::kMicrosoftProduct02d1, GamepadId::kMicrosoftProduct02dd,
     GamepadId::kMicrosoftProduct02fd, GamepadId::kMicrosoftProduct0b20,
     GamepadId::kMicrosoftProduct02ea, GamepadId::kMicrosoftProduct02e0,
-    GamepadId::kMicrosoftProduct0b12, GamepadId::kMicrosoftProduct0b13,
-    GamepadId::kMicrosoftProduct02e3, GamepadId::kMicrosoftProduct0b00,
-    GamepadId::kMicrosoftProduct0b05, GamepadId::kMicrosoftProduct0b22};
+    GamepadId::kMicrosoftProduct0b06, GamepadId::kMicrosoftProduct0b12,
+    GamepadId::kMicrosoftProduct0b13, GamepadId::kMicrosoftProduct02e3,
+    GamepadId::kMicrosoftProduct0b00, GamepadId::kMicrosoftProduct0b05,
+    GamepadId::kMicrosoftProduct0b22};
 
 constexpr WgiTestErrorCode kErrors[] = {
     WgiTestErrorCode::kErrorWgiRawGameControllerActivateFailed,
