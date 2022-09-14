@@ -4,19 +4,19 @@
 
 import './button_bar.js';
 import './fake_mojo_service.js';
-import './multidevice_setup_shared_css.js';
+import './multidevice_setup_shared.css.js';
 import './password_page.js';
 import './setup_succeeded_page.js';
 import './start_setup_page.js';
-import '../../../js/cr.m.js';
+import '//resources/js/cr.m.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
+import {WebUIListenerBehavior} from '//resources/cr_elements/web_ui_listener_behavior.js';
 import {assert} from '//resources/js/assert.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {WebUIListenerBehavior} from '../../../cr_elements/web_ui_listener_behavior.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_api.js';
+import {getTemplate} from './multidevice_setup.html.js';
 import {MultiDeviceSetupDelegate} from './multidevice_setup_delegate.js';
 
 /** @enum {string} */
@@ -27,7 +27,7 @@ export const PageName = {
 };
 
 const MultiDeviceSetup = Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'multidevice-setup',
 
   behaviors: [WebUIListenerBehavior],

@@ -87,12 +87,14 @@ _preserve_url_scheme = False
 # Use an OrderedDict, since the order these redirects are applied matters.
 _chrome_redirects = OrderedDict([
     ('//resources/polymer/v1_0/', POLYMER_V1_DIR),
+    ('//resources/ash/common/', 'ash/webui/common/resources/'),
     ('//resources/', 'ui/webui/resources/'),
 ])
 
 _chrome_reverse_redirects = {
     POLYMER_V3_DIR: '//resources/polymer/v3_0/',
     'ui/webui/resources/': '//resources/',
+    'ash/webui/common/resources/': '//resources/ash/common/',
 }
 
 

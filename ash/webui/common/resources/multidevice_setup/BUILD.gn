@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 
-assert(is_chromeos, "MultiDevice UI is Chrome OS only.")
+assert(is_chromeos_ash, "MultiDevice UI is Chrome OS only.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -16,7 +15,6 @@ js_type_check("closure_compile_module") {
     ":multidevice_setup",
     ":multidevice_setup_browser_proxy",
     ":multidevice_setup_delegate",
-    ":multidevice_setup_shared_css",
     ":password_page",
     ":setup_succeeded_page",
     ":start_setup_page",
@@ -51,7 +49,6 @@ js_library("multidevice_setup") {
     ":fake_mojo_service",
     ":mojo_api",
     ":multidevice_setup_delegate",
-    ":multidevice_setup_shared_css",
     ":password_page",
     ":setup_succeeded_page",
     ":start_setup_page",
@@ -69,10 +66,7 @@ js_library("multidevice_setup_delegate") {
 }
 
 js_library("password_page") {
-  deps = [
-    ":multidevice_setup_browser_proxy",
-    ":multidevice_setup_shared_css",
-  ]
+  deps = [ ":multidevice_setup_browser_proxy" ]
   externs_list = chrome_extension_public_externs +
                  [ "$externs_path/quick_unlock_private.js" ]
   extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
@@ -81,7 +75,6 @@ js_library("password_page") {
 js_library("setup_succeeded_page") {
   deps = [
     ":multidevice_setup_browser_proxy",
-    ":multidevice_setup_shared_css",
     ":ui_page_container_behavior",
   ]
 }
@@ -90,7 +83,6 @@ js_library("start_setup_page") {
   deps = [
     ":mojo_api",
     ":multidevice_setup_delegate",
-    ":multidevice_setup_shared_css",
     ":ui_page_container_behavior",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
@@ -105,23 +97,5 @@ js_library("ui_page_container_behavior") {
   ]
 }
 
-js_library("multidevice_setup_shared_css") {
-  deps = []
-}
-
 js_library("ui_page") {
-  deps = [ ":multidevice_setup_shared_css" ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "button_bar.js",
-    "icons.js",
-    "multidevice_setup.js",
-    "multidevice_setup_shared_css.js",
-    "password_page.js",
-    "setup_succeeded_page.js",
-    "start_setup_page.js",
-    "ui_page.js",
-  ]
 }

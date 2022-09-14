@@ -382,10 +382,10 @@ js_library("multidevice_setup.m") {
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
+    "//ash/webui/common/resources/multidevice_setup:mojo_api",
+    "//ash/webui/common/resources/multidevice_setup:multidevice_setup",
+    "//ash/webui/common/resources/multidevice_setup:multidevice_setup_delegate",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/multidevice_setup:mojo_api",
-    "//ui/webui/resources/cr_components/chromeos/multidevice_setup:multidevice_setup",
-    "//ui/webui/resources/cr_components/chromeos/multidevice_setup:multidevice_setup_delegate",
   ]
   extra_deps = [ ":multidevice_setup_module" ]
 }

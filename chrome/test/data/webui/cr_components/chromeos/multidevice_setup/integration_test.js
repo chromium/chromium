@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://multidevice-setup/strings.m.js';
-import 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.js';
+import 'chrome://resources/ash/common/multidevice_setup/multidevice_setup.js';
 
-import {FakeMojoService} from 'chrome://resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.js';
+import {FakeMojoService} from 'chrome://resources/ash/common/multidevice_setup/fake_mojo_service.js';
+import {BrowserProxyImpl} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup_browser_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FakeQuickUnlockPrivate} from '../../../settings/chromeos/fake_quick_unlock_private.js';

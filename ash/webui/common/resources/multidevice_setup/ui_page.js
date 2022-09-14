@@ -6,13 +6,15 @@
  * An element that encapsulates the structure common to all pages in the WebUI.
  */
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './icons.js';
-import './multidevice_setup_shared_css.js';
+import './icons.html.js';
+import './multidevice_setup_shared.css.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './ui_page.html.js';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'ui-page',
 
   properties: {

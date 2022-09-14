@@ -1401,6 +1401,7 @@
                   '|ash/services/device_sync/'\
                   '|ash/services/multidevice_setup/'\
                   '|ash/services/secure_channel/'\
+                  '|ash/webui/common/resources/multidevice_setup/'\
                   '|chrome/browser/ash/cryptauth/'\
                   '|chrome/browser/ash/device_sync/'\
                   '|chrome/browser/ash/multidevice_setup/'\
@@ -1409,8 +1410,7 @@
                   '|chrome/browser/resources/settings/chromeos/multidevice_page/'\
                   '|chrome/browser/ui/webui/chromeos/multidevice_setup/'\
                   '|chrome/browser/ui/webui/settings/ash/multidevice'\
-                  '|chrome/test/data/webui/multidevice_setup/'\
-                  '|ui/webui/resources/cr_components/chromeos/multidevice_setup/'
+                  '|chrome/test/data/webui/multidevice_setup/'
     },
     'multipaste': {
      'filepath': 'ash/clipboard/',

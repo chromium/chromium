@@ -2,42 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './multidevice_setup_shared_css.js';
+import './multidevice_setup_shared.css.js';
 import './ui_page.js';
-import '../../../js/cr.m.js';
+import '//resources/js/cr.m.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy, BrowserProxyImpl} from './multidevice_setup_browser_proxy.js';
+import {getTemplate} from './setup_succeeded_page.html.js';
 import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
 
 /**
  * @type {string}
  */
 const SRC_SET_URL_1_LIGHT =
-    'chrome://resources/cr_components/chromeos/multidevice_setup/all_set_1x_light.svg';
+    'chrome://resources/ash/common/multidevice_setup/all_set_1x_light.svg';
 
 /**
  * @type {string}
  */
 const SRC_SET_URL_2_LIGHT =
-    'chrome://resources/cr_components/chromeos/multidevice_setup/all_set_2x_light.svg';
+    'chrome://resources/ash/common/multidevice_setup/all_set_2x_light.svg';
 
 /**
  * @type {string}
  */
 const SRC_SET_URL_1_DARK =
-    'chrome://resources/cr_components/chromeos/multidevice_setup/all_set_1x_dark.svg';
+    'chrome://resources/ash/common/multidevice_setup/all_set_1x_dark.svg';
 
 /**
  * @type {string}
  */
 const SRC_SET_URL_2_DARK =
-    'chrome://resources/cr_components/chromeos/multidevice_setup/all_set_2x_dark.svg';
+    'chrome://resources/ash/common/multidevice_setup/all_set_2x_dark.svg';
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'setup-succeeded-page',
 
   properties: {
