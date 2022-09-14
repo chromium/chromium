@@ -59,8 +59,10 @@
       display: block;
       height: auto;
       margin: auto;
-      max-height: 600px;
-      width: 580px;
+      max-height: 100%;
+      max-width: 100%;
+      position: relative;
+      width: auto;
     }
 
     cr-dialog::part(dialog) {
@@ -93,6 +95,66 @@
       --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
       margin-inline-end: 12px;
       padding: 2px;
+    }
+
+    dialog {
+      background-color: transparent;
+      border: none;
+      font-size: 100%;
+      height: 100%;
+      margin: 0;
+      max-height: initial;
+      max-width: initial;
+      opacity: 0;
+      outline: none;
+      overflow: hidden;
+      padding: 0;
+      width: 100%;
+    }
+
+    dialog[open] {
+      opacity: 1;
+      transition: opacity 200ms;
+    }
+
+    .dialog-toolbar {
+      align-items: center;
+      background-color: var(--cros-bg-color);
+      border-bottom: 1px solid var(--cros-separator-color);
+      color: var(--cros-text-color-primary);
+      display: flex;
+      font-family: var(--feedback-google-sans-font-family);
+      font-size: 15px;
+      font-weight: var(--feedback-medium-font-weight);
+      height: 56px;
+      line-height: 48px;
+      opacity: 1;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    .dialog-main-panel {
+      background-color: transparent;
+      bottom: 0;
+      position: absolute;
+      /* The top value here should be the total height of the #toolbar including
+      the height and the border-width */
+      top: 56px;
+      width: 100%;
+    }
+
+    .dialog-content-panel {
+      background-color: var(--cros-app-shield-60);
+      color: var(--cros-text-color-primary);
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 16px);
+      justify-content: center;
+      outline: none;
+      padding: 8px 44px 8px 44px;
+      position: relative;
+      text-align: center;
+      width: calc(100% - 88px);
     }
   </style>
 </template>

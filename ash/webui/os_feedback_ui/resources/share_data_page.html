@@ -65,9 +65,21 @@
     opacity: 0.7;
   }
 
-  dialog {
-    bottom: auto;
-    top: auto;
+  #closeDialogButton {
+    border: none;
+    height: 48px;
+    margin-bottom: 4px;
+    margin-inline-end: 8px;
+    margin-top: 4px;
+    min-width: 48px;
+    padding: 0;
+    width: 48px;
+  }
+
+  #backArrow {
+    --iron-icon-fill-color: var(--cros-icon-color-primary);
+    height: 20px;
+    width: 20px;
   }
 
   #addFileContainer {
@@ -249,15 +261,18 @@
     </cr-button>
   </div>
 </div>
-<cr-dialog id="screenshotDialog">
-  <div id="modalDialogTitle" slot="title">
-    <cr-icon-button id="closeDialogButton" class="icon-arrow-back"
-        on-click="handleScreenshotDialogCloseClick_"
-        title="[[i18n('attachScreenshotLabel')]]">
-    </cr-icon-button>
-    <span>[[i18n('attachScreenshotLabel')]]</span>
+<dialog id="screenshotDialog">
+  <div id="toolbar" class="dialog-toolbar">
+    <cr-button id="closeDialogButton"
+        title="[[i18n('attachScreenshotLabel')]]"
+        on-click="handleScreenshotDialogCloseClick_">
+      <iron-icon id="backArrow" icon="cr:arrow-back"></iron-icon>
+    </cr-button>
+    <div id="dialogTitle">[[i18n('attachScreenshotLabel')]]</div>
   </div>
-  <div slot="body">
-    <img src="[[screenshotUrl]]" class="image-preview">
+  <div id="mainPanel" class="dialog-main-panel">
+    <div id="innerContentPanel" class="dialog-content-panel">
+      <img src="[[screenshotUrl]]" class="image-preview">
+    </div> 
   </div>
-</cr-dialog>
+</dialog>
