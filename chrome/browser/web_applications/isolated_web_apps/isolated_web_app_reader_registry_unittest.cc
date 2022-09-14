@@ -248,7 +248,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
 
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "test error");
+  EXPECT_EQ(result.error(),
+            "Public keys of the Isolated Web App are untrusted: test error");
 }
 
 // TODO(crbug.com/1315947): Add a test that checks the behavior when the

@@ -17,6 +17,7 @@
 #include "components/web_package/shared_file.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/safe_web_bundle_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 struct ResourceRequest;
@@ -48,28 +49,68 @@ namespace web_app {
 class SignedWebBundleReader {
  public:
   // Callers of this class can decide whether parsing the Signed Web Bundle
-  // should continue or stop after the integrity block has been read.
-  enum class IntegrityVerificationAction {
-    kAbort,
-    kContinueAndVerifyIntegrity,
-
-  // On ChromeOS, we only verify integrity at install-time. On other OSes, we
-  // verify integrity once per session, so skipping integrity verification is
-  // not an option for other OSes.
+  // should continue or stop after the integrity block has been read by passing
+  // an appropriate instance of this class to the
+  // `integrity_block_result_callback`. If a caller decides that parsing should
+  // stop, then metadata will not be read and the `read_error_callback` will run
+  // with an `AbortedByCaller` error.
+  class IntegrityVerificationAction {
+   public:
+    enum class Type {
+      kAbort,
+      kContinueAndVerifyIntegrity,
 #if BUILDFLAG(IS_CHROMEOS)
-    kContinueAndSkipIntegrityVerification,
+      // On ChromeOS, we only verify integrity at install-time. On other OSes,
+      // we verify integrity once per session, so skipping integrity
+      // verification is not an option for other OSes.
+      kContinueAndSkipIntegrityVerification,
 #endif
+    };
+
+    static IntegrityVerificationAction Abort(const std::string& abort_message);
+    static IntegrityVerificationAction ContinueAndVerifyIntegrity();
+#if BUILDFLAG(IS_CHROMEOS)
+    static IntegrityVerificationAction ContinueAndSkipIntegrityVerification();
+#endif
+
+    IntegrityVerificationAction(const IntegrityVerificationAction&);
+    ~IntegrityVerificationAction();
+
+    Type type() { return type_; }
+
+    // Will CHECK if `type()` != `Type::kAbort`.
+    std::string abort_message() { return *abort_message_; }
+
+   private:
+    IntegrityVerificationAction(Type type,
+                                absl::optional<std::string> abort_message);
+
+    const Type type_;
+    const absl::optional<std::string> abort_message_;
   };
 
   using IntegrityBlockReadResultCallback = base::OnceCallback<void(
       const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
       base::OnceCallback<void(IntegrityVerificationAction)> callback)>;
 
-  using ReadError =
-      absl::variant<web_package::mojom::BundleIntegrityBlockParseErrorPtr,
-                    // TODO(crbug.com/1315947): Add type for a signature
-                    // verification error here once it is implemented.
-                    web_package::mojom::BundleMetadataParseErrorPtr>;
+  // This error will be passed to `read_error_callback` if parsing is aborted by
+  // the caller as part of `integrity_block_result_callback`.
+  struct AbortedByCaller {
+    std::string message;
+  };
+
+  using ReadError = absl::variant<
+      // Triggered when the integrity block of the Signed Web Bundle does not
+      // exist or parsing it fails.
+      web_package::mojom::BundleIntegrityBlockParseErrorPtr,
+      // Triggered when the caller aborts parsing as part of
+      // `integrity_block_result_callback`.
+      AbortedByCaller,
+      // TODO(crbug.com/1315947): Add type for a signature
+      // verification error here once it is implemented.
+
+      // Triggered when metadata parsing fails.
+      web_package::mojom::BundleMetadataParseErrorPtr>;
   using ReadErrorCallback =
       base::OnceCallback<void(absl::optional<ReadError> result)>;
 
@@ -78,6 +119,8 @@ class SignedWebBundleReader {
   // the integrity block, which must then, based on the public keys contained in
   // the integrity block, determine whether this class should continue with
   // signature verification and metadata reading, or abort altogether.
+  // In any case, `read_error_callback` will be called once reading integrity
+  // block and metadata has either succeeded, was aborted, or failed.
   static std::unique_ptr<SignedWebBundleReader> CreateAndStartReading(
       const base::FilePath& web_bundle_path,
       IntegrityBlockReadResultCallback integrity_block_result_callback,

@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -78,32 +79,12 @@ class SignedWebBundleReaderTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  std::unique_ptr<SignedWebBundleReader> CreateReaderAndInitialize(
-      SignedWebBundleReader::ReadErrorCallback callback,
-      const std::string test_file_data = kResponseBody) {
-    return CreateReaderAndInitialize(
-        std::move(callback),
-        base::BindOnce(
-            [](const std::vector<web_package::Ed25519PublicKey>&
-                   public_key_stack,
-               base::OnceCallback<void(
-                   SignedWebBundleReader::IntegrityVerificationAction)>
-                   callback) {
-              EXPECT_EQ(public_key_stack.size(), 1ul);
-              EXPECT_TRUE(base::ranges::equal(public_key_stack[0].bytes(),
-                                              kEd25519PublicKey));
-
-              std::move(callback).Run(
-                  SignedWebBundleReader::IntegrityVerificationAction::
-                      kContinueAndVerifyIntegrity);
-            }),
-        test_file_data);
-  }
+  using VerificationAction = SignedWebBundleReader::IntegrityVerificationAction;
 
   std::unique_ptr<SignedWebBundleReader> CreateReaderAndInitialize(
       SignedWebBundleReader::ReadErrorCallback callback,
-      SignedWebBundleReader::IntegrityBlockReadResultCallback
-          integrity_block_callback,
+      VerificationAction verification_action =
+          VerificationAction::ContinueAndVerifyIntegrity(),
       const std::string test_file_data = kResponseBody) {
     // Provide a buffer that contains the contents of just a single
     // response. We do not need to provide an integrity block or metadata
@@ -122,7 +103,18 @@ class SignedWebBundleReaderTest : public testing::Test {
             base::Unretained(parser_factory_.get())));
 
     return SignedWebBundleReader::CreateAndStartReading(
-        temp_file_path, std::move(integrity_block_callback),
+        temp_file_path,
+        base::BindLambdaForTesting(
+            [verification_action](
+                const std::vector<web_package::Ed25519PublicKey>&
+                    public_key_stack,
+                base::OnceCallback<void(VerificationAction)> callback) {
+              EXPECT_EQ(public_key_stack.size(), 1ul);
+              EXPECT_TRUE(base::ranges::equal(public_key_stack[0].bytes(),
+                                              kEd25519PublicKey));
+
+              std::move(callback).Run(verification_action);
+            }),
         std::move(callback));
   }
 
@@ -238,27 +230,20 @@ TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockWithParserCrash) {
 TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockAndAbort) {
   base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
       parse_error_future;
-  base::test::TestFuture<
-      const std::vector<web_package::Ed25519PublicKey>&,
-      base::OnceCallback<void(
-          SignedWebBundleReader::IntegrityVerificationAction)>>
-      parse_integrity_block_future;
   auto reader =
       CreateReaderAndInitialize(parse_error_future.GetCallback(),
-                                parse_integrity_block_future.GetCallback());
+                                VerificationAction::Abort("test error"));
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_.Clone());
 
-  auto [public_key_stack, callback] = parse_integrity_block_future.Take();
-  EXPECT_EQ(public_key_stack.size(), 1ul);
-  EXPECT_TRUE(
-      base::ranges::equal(public_key_stack[0].bytes(), kEd25519PublicKey));
-  std::move(callback).Run(
-      SignedWebBundleReader::IntegrityVerificationAction::kAbort);
-
-  // This callback will never run because the parsing is aborted above.
-  EXPECT_FALSE(parse_error_future.IsReady());
+  auto parse_error = parse_error_future.Take();
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kError);
+  ASSERT_TRUE(parse_error.has_value());
+
+  auto* error =
+      absl::get_if<SignedWebBundleReader::AbortedByCaller>(&*parse_error);
+  ASSERT_TRUE(error);
+  EXPECT_EQ(error->message, "test error");
 }
 
 // TODO(crbug.com/1315947): Test integrity block signature verification.

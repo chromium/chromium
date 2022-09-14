@@ -88,32 +88,21 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
   if (auto error =
           validator_->ValidateIntegrityBlock(web_bundle_id, public_key_stack);
       error.has_value()) {
-    auto cache_entry_it = reader_cache_.find(web_bundle_path);
-    DCHECK(cache_entry_it != reader_cache_.end());
-    DCHECK_EQ(cache_entry_it->second.state, CacheEntry::State::kPending);
-
-    // Get all pending callbacks and set the pending callbacks of the cache
-    // entry to an empty vector.
-    std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
-        pending_requests;
-    cache_entry_it->second.pending_requests.swap(pending_requests);
-    for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(base::unexpected(*error));
-    }
-    reader_cache_.erase(cache_entry_it);
+    // Aborting parsing will trigger a call to `OnIntegrityBlockAndMetadataRead`
+    // with a `SignedWebBundleReader::AbortedByCaller` error.
     std::move(integrity_callback)
-        .Run(SignedWebBundleReader::IntegrityVerificationAction::kAbort);
+        .Run(SignedWebBundleReader::IntegrityVerificationAction::Abort(*error));
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::move(integrity_callback)
       .Run(SignedWebBundleReader::IntegrityVerificationAction::
-               kContinueAndSkipIntegrityVerification);
+               ContinueAndSkipIntegrityVerification());
 #else
   std::move(integrity_callback)
       .Run(SignedWebBundleReader::IntegrityVerificationAction::
-               kContinueAndVerifyIntegrity);
+               ContinueAndVerifyIntegrity());
 #endif
 }
 
@@ -142,6 +131,11 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
                                            BundleIntegrityBlockParseErrorPtr>) {
             return base::StringPrintf("Failed to parse integrity block: %s",
                                       error->message.c_str());
+          } else if constexpr (std::is_same_v<
+                                   T, SignedWebBundleReader::AbortedByCaller>) {
+            return base::StringPrintf(
+                "Public keys of the Isolated Web App are untrusted: %s",
+                error.message.c_str());
           } else if constexpr (std::is_same_v<
                                    T, web_package::mojom::
                                           BundleMetadataParseErrorPtr>) {

@@ -158,15 +158,17 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
-  switch (action) {
-    case IntegrityVerificationAction::kAbort:
-      state_ = State::kError;
+  switch (action.type()) {
+    case IntegrityVerificationAction::Type::kAbort:
+      FulfillWithError(std::move(callback),
+                       AbortedByCaller({.message = action.abort_message()}));
       return;
-    case IntegrityVerificationAction::kContinueAndVerifyIntegrity:
+    case IntegrityVerificationAction::Type::kContinueAndVerifyIntegrity:
       VerifyIntegrity(std::move(callback));
       return;
 #if BUILDFLAG(IS_CHROMEOS)
-    case IntegrityVerificationAction::kContinueAndSkipIntegrityVerification:
+    case IntegrityVerificationAction::Type::
+        kContinueAndSkipIntegrityVerification:
       ReadMetadata(std::move(callback));
       return;
 #endif
@@ -440,5 +442,41 @@ void SignedWebBundleReader::DidReconnect(absl::optional<std::string> error) {
                          std::move(response_callback));
   }
 }
+
+// static
+SignedWebBundleReader::IntegrityVerificationAction
+SignedWebBundleReader::IntegrityVerificationAction::Abort(
+    const std::string& abort_message) {
+  return IntegrityVerificationAction(Type::kAbort, abort_message);
+}
+
+// static
+SignedWebBundleReader::IntegrityVerificationAction SignedWebBundleReader::
+    IntegrityVerificationAction::ContinueAndVerifyIntegrity() {
+  return IntegrityVerificationAction(Type::kContinueAndVerifyIntegrity,
+                                     absl::nullopt);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// static
+SignedWebBundleReader::IntegrityVerificationAction SignedWebBundleReader::
+    IntegrityVerificationAction::ContinueAndSkipIntegrityVerification() {
+  return IntegrityVerificationAction(
+      Type::kContinueAndSkipIntegrityVerification, absl::nullopt);
+}
+
+#endif
+
+SignedWebBundleReader::IntegrityVerificationAction::IntegrityVerificationAction(
+    Type type,
+    absl::optional<std::string> abort_message)
+    : type_(type), abort_message_(abort_message) {}
+
+SignedWebBundleReader::IntegrityVerificationAction::IntegrityVerificationAction(
+    const IntegrityVerificationAction&) = default;
+
+SignedWebBundleReader::IntegrityVerificationAction::
+    ~IntegrityVerificationAction() = default;
 
 }  // namespace web_app
