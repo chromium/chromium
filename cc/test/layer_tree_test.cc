@@ -130,8 +130,7 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
   }
   void DispatchInvalidation() {
     frame_request_pending_ = false;
-    client_->OnDraw(gfx::Transform(SkMatrix::I()), viewport_,
-                    use_software_renderer_, false);
+    client_->OnDraw(gfx::Transform(), viewport_, use_software_renderer_, false);
   }
 
   bool frame_request_pending_ = false;

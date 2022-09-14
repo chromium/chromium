@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -30,7 +31,7 @@ namespace cc {
 static HomogeneousCoordinate ProjectHomogeneousPoint(
     const gfx::Transform& transform,
     const gfx::PointF& p) {
-  SkScalar m22 = transform.matrix().rc(2, 2);
+  SkScalar m22 = transform.rc(2, 2);
   // In this case, the layer we are trying to project onto is perpendicular to
   // ray (point p and z-axis direction) that we are trying to project. This
   // happens when the layer is rotated so that it is infinitesimally thin, or
@@ -38,16 +39,15 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
   // invisible anyway.
   if (!std::isnormal(m22))
     return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
-  SkScalar z =
-      -(transform.matrix().rc(2, 0) * p.x() +
-        transform.matrix().rc(2, 1) * p.y() + transform.matrix().rc(2, 3)) /
-      m22;
+  SkScalar z = -(transform.rc(2, 0) * p.x() + transform.rc(2, 1) * p.y() +
+                 transform.rc(2, 3)) /
+               m22;
   // Same underlying condition as the previous early return.
   if (!std::isfinite(z))
     return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
 
   HomogeneousCoordinate result(p.x(), p.y(), z, 1.0);
-  transform.matrix().mapScalars(result.vec, result.vec);
+  transform.TransformVector4(result.vec);
   return result;
 }
 
@@ -62,9 +62,9 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
 
 static HomogeneousCoordinate MapHomogeneousPoint(
     const gfx::Transform& transform,
-    const gfx::Point3F& p) {
-  HomogeneousCoordinate result(p.x(), p.y(), p.z(), 1.0);
-  transform.matrix().mapScalars(result.vec, result.vec);
+    const gfx::PointF& p) {
+  HomogeneousCoordinate result(p.x(), p.y(), 0.0, 1.0);
+  transform.TransformVector4(result.vec);
   return result;
 }
 
@@ -272,11 +272,9 @@ gfx::Rect MathUtil::MapEnclosingClippedRectIgnoringError(
     const gfx::Transform& transform,
     const gfx::Rect& src_rect,
     float ignore_error) {
-  if (transform.IsIdentityOrIntegerTranslation()) {
-    gfx::Vector2d offset(static_cast<int>(transform.matrix().rc(0, 3)),
-                         static_cast<int>(transform.matrix().rc(1, 3)));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrIntegerTranslation())
+    return src_rect + gfx::ToFlooredVector2d(transform.To2dTranslation());
+
   gfx::RectF mapped_rect = MapClippedRect(transform, gfx::RectF(src_rect));
 
   // gfx::ToEnclosingRect crashes if called on a RectF with any NaN coordinate.
@@ -289,41 +287,26 @@ gfx::Rect MathUtil::MapEnclosingClippedRectIgnoringError(
 
 gfx::RectF MathUtil::MapClippedRect(const gfx::Transform& transform,
                                     const gfx::RectF& src_rect) {
-  if (transform.IsIdentityOrTranslation()) {
-    gfx::Vector2dF offset(transform.matrix().rc(0, 3),
-                          transform.matrix().rc(1, 3));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrTranslation())
+    return src_rect + transform.To2dTranslation();
 
   // Apply the transform, but retain the result in homogeneous coordinates.
+  HomogeneousCoordinate hc0 = MapHomogeneousPoint(transform, src_rect.origin());
+  HomogeneousCoordinate hc1 =
+      MapHomogeneousPoint(transform, src_rect.top_right());
+  HomogeneousCoordinate hc2 =
+      MapHomogeneousPoint(transform, src_rect.bottom_right());
+  HomogeneousCoordinate hc3 =
+      MapHomogeneousPoint(transform, src_rect.bottom_left());
 
-  SkScalar quad[4 * 2];  // input: 4 x 2D points
-  quad[0] = src_rect.x();
-  quad[1] = src_rect.y();
-  quad[2] = src_rect.right();
-  quad[3] = src_rect.y();
-  quad[4] = src_rect.right();
-  quad[5] = src_rect.bottom();
-  quad[6] = src_rect.x();
-  quad[7] = src_rect.bottom();
-
-  SkScalar result[4 * 4];  // output: 4 x 4D homogeneous points
-  transform.matrix().map2(quad, 4, result);
-
-  HomogeneousCoordinate hc0(result[0], result[1], result[2], result[3]);
-  HomogeneousCoordinate hc1(result[4], result[5], result[6], result[7]);
-  HomogeneousCoordinate hc2(result[8], result[9], result[10], result[11]);
-  HomogeneousCoordinate hc3(result[12], result[13], result[14], result[15]);
   return ComputeEnclosingClippedRect(hc0, hc1, hc2, hc3);
 }
 
 gfx::Rect MathUtil::ProjectEnclosingClippedRect(const gfx::Transform& transform,
                                                 const gfx::Rect& src_rect) {
-  if (transform.IsIdentityOrIntegerTranslation()) {
-    gfx::Vector2d offset(static_cast<int>(transform.matrix().rc(0, 3)),
-                         static_cast<int>(transform.matrix().rc(1, 3)));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrIntegerTranslation())
+    return src_rect + gfx::ToFlooredVector2d(transform.To2dTranslation());
+
   gfx::RectF projected_rect =
       ProjectClippedRect(transform, gfx::RectF(src_rect));
 
@@ -337,11 +320,8 @@ gfx::Rect MathUtil::ProjectEnclosingClippedRect(const gfx::Transform& transform,
 
 gfx::RectF MathUtil::ProjectClippedRect(const gfx::Transform& transform,
                                         const gfx::RectF& src_rect) {
-  if (transform.IsIdentityOrTranslation()) {
-    gfx::Vector2dF offset(transform.matrix().rc(0, 3),
-                          transform.matrix().rc(1, 3));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrTranslation())
+    return src_rect + transform.To2dTranslation();
 
   // Perform the projection, but retain the result in homogeneous coordinates.
   gfx::QuadF q = gfx::QuadF(src_rect);
@@ -374,31 +354,20 @@ gfx::Rect MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
     const gfx::Transform& transform,
     const gfx::Rect& rect) {
   DCHECK(transform.Preserves2dAxisAlignment());
-  DCHECK_GT(transform.matrix().rc(3, 3), 0);
-  DCHECK(std::isnormal(transform.matrix().rc(3, 3)));
+  DCHECK_GT(transform.rc(3, 3), 0);
+  DCHECK(std::isnormal(transform.rc(3, 3)));
 
-  if (transform.IsIdentityOrIntegerTranslation()) {
-    gfx::Vector2d offset(static_cast<int>(transform.matrix().rc(0, 3)),
-                         static_cast<int>(transform.matrix().rc(1, 3)));
-    return rect + offset;
-  }
+  if (transform.IsIdentityOrIntegerTranslation())
+    return rect + gfx::ToFlooredVector2d(transform.To2dTranslation());
   if (transform.IsIdentityOrTranslation()) {
-    gfx::Vector2dF offset(transform.matrix().rc(0, 3),
-                          transform.matrix().rc(1, 3));
+    gfx::Vector2dF offset = transform.To2dTranslation();
     return gfx::ToEnclosedRect(gfx::RectF(rect) + offset);
   }
 
-  SkScalar quad[2 * 2];  // input: 2 x 2D points
-  quad[0] = rect.x();
-  quad[1] = rect.y();
-  quad[2] = rect.right();
-  quad[3] = rect.bottom();
-
-  SkScalar result[4 * 2];  // output: 2 x 4D homogeneous points
-  transform.matrix().map2(quad, 2, result);
-
-  HomogeneousCoordinate hc0(result[0], result[1], result[2], result[3]);
-  HomogeneousCoordinate hc1(result[4], result[5], result[6], result[7]);
+  HomogeneousCoordinate hc0 =
+      MapHomogeneousPoint(transform, gfx::PointF(rect.origin()));
+  HomogeneousCoordinate hc1 =
+      MapHomogeneousPoint(transform, gfx::PointF(rect.bottom_right()));
   DCHECK(!hc0.ShouldBeClipped());
   DCHECK(!hc1.ShouldBeClipped());
 
@@ -416,14 +385,10 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
   // HomogeneousCoordinate::kInfiniteCoordinate], we need to do the
   // clamping while keeping the points coplanar.
 
-  HomogeneousCoordinate h1 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p1()));
-  HomogeneousCoordinate h2 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p2()));
-  HomogeneousCoordinate h3 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p3()));
-  HomogeneousCoordinate h4 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p4()));
+  HomogeneousCoordinate h1 = MapHomogeneousPoint(transform, src_quad.p1());
+  HomogeneousCoordinate h2 = MapHomogeneousPoint(transform, src_quad.p2());
+  HomogeneousCoordinate h3 = MapHomogeneousPoint(transform, src_quad.p3());
+  HomogeneousCoordinate h4 = MapHomogeneousPoint(transform, src_quad.p4());
 
   // The order of adding the vertices to the array is chosen so that
   // clockwise / counter-clockwise orientation is retained.
@@ -715,20 +680,15 @@ gfx::QuadF MathUtil::MapQuad(const gfx::Transform& transform,
                              bool* clipped) {
   if (transform.IsIdentityOrTranslation()) {
     gfx::QuadF mapped_quad(q);
-    mapped_quad += gfx::Vector2dF(transform.matrix().rc(0, 3),
-                                  transform.matrix().rc(1, 3));
+    mapped_quad += transform.To2dTranslation();
     *clipped = false;
     return mapped_quad;
   }
 
-  HomogeneousCoordinate h1 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p1()));
-  HomogeneousCoordinate h2 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p2()));
-  HomogeneousCoordinate h3 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p3()));
-  HomogeneousCoordinate h4 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p4()));
+  HomogeneousCoordinate h1 = MapHomogeneousPoint(transform, q.p1());
+  HomogeneousCoordinate h2 = MapHomogeneousPoint(transform, q.p2());
+  HomogeneousCoordinate h3 = MapHomogeneousPoint(transform, q.p3());
+  HomogeneousCoordinate h4 = MapHomogeneousPoint(transform, q.p4());
 
   *clipped = h1.ShouldBeClipped() || h2.ShouldBeClipped() ||
             h3.ShouldBeClipped() || h4.ShouldBeClipped();
@@ -744,7 +704,7 @@ gfx::QuadF MathUtil::MapQuad(const gfx::Transform& transform,
 gfx::PointF MathUtil::MapPoint(const gfx::Transform& transform,
                                const gfx::PointF& p,
                                bool* clipped) {
-  HomogeneousCoordinate h = MapHomogeneousPoint(transform, gfx::Point3F(p));
+  HomogeneousCoordinate h = MapHomogeneousPoint(transform, p);
 
   if (h.w() > 0) {
     *clipped = false;
@@ -957,7 +917,7 @@ void MathUtil::AddToTracedValue(const char* name,
   res->BeginArray(name);
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col)
-      res->AppendDouble(transform.matrix().rc(row, col));
+      res->AppendDouble(transform.rc(row, col));
   }
   res->EndArray();
 }
@@ -1032,15 +992,13 @@ float MathUtil::AsFloatSafely(float value) {
 }
 
 gfx::Vector3dF MathUtil::GetXAxis(const gfx::Transform& transform) {
-  return gfx::Vector3dF(transform.matrix().rc(0, 0),
-                        transform.matrix().rc(1, 0),
-                        transform.matrix().rc(2, 0));
+  return gfx::Vector3dF(transform.rc(0, 0), transform.rc(1, 0),
+                        transform.rc(2, 0));
 }
 
 gfx::Vector3dF MathUtil::GetYAxis(const gfx::Transform& transform) {
-  return gfx::Vector3dF(transform.matrix().rc(0, 1),
-                        transform.matrix().rc(1, 1),
-                        transform.matrix().rc(2, 1));
+  return gfx::Vector3dF(transform.rc(0, 1), transform.rc(1, 1),
+                        transform.rc(2, 1));
 }
 
 ScopedSubnormalFloatDisabler::ScopedSubnormalFloatDisabler() {

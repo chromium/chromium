@@ -627,8 +627,8 @@ void TransformTree::UpdateSnapping(TransformNode* node) {
   if (translation.IsZero())
     return;
 
-  from_screen.matrix().postTranslate(-translation.x(), -translation.y(), 0);
-  node->to_parent.Translate(translation.x(), translation.y());
+  from_screen.PostTranslate(-translation);
+  node->to_parent.Translate(translation);
   // Avoid accumulation of errors in to_parent.
   if (node->to_parent.IsApproximatelyIdentityOrIntegerTranslation(kTolerance))
     node->to_parent.RoundTranslationComponents();
@@ -2450,9 +2450,8 @@ DrawTransforms& PropertyTrees::GetDrawTransforms(int transform_id,
   } else if (transform_id > dest_id) {
     transform_tree().CombineTransformsBetween(transform_id, dest_id,
                                               &target_space_transform);
-    target_space_transform.matrix().postScale(
-        effect_node->surface_contents_scale.x(),
-        effect_node->surface_contents_scale.y(), 1.f);
+    target_space_transform.PostScale(effect_node->surface_contents_scale.x(),
+                                     effect_node->surface_contents_scale.y());
     data.transforms.to_valid = true;
     data.transforms.from_valid = false;
     data.transforms.might_be_invertible = true;

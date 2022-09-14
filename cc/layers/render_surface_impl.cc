@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace cc {
@@ -86,7 +87,8 @@ gfx::RectF RenderSurfaceImpl::DrawableContentRect() const {
   const FilterOperations& filters = Filters();
   if (!filters.IsEmpty()) {
     surface_content_rect =
-        filters.MapRect(surface_content_rect, SurfaceScale().matrix().asM33());
+        filters.MapRect(surface_content_rect,
+                        gfx::TransformToFlattenedSkMatrix(SurfaceScale()));
   }
   gfx::RectF drawable_content_rect = MathUtil::MapClippedRect(
       draw_transform(), gfx::RectF(surface_content_rect));
@@ -221,8 +223,8 @@ gfx::Rect RenderSurfaceImpl::CalculateExpandedClipForFilters(
     const gfx::Transform& target_to_surface) {
   gfx::Rect clip_in_surface_space =
       MathUtil::ProjectEnclosingClippedRect(target_to_surface, clip_rect());
-  gfx::Rect expanded_clip_in_surface_space =
-      Filters().MapRect(clip_in_surface_space, SurfaceScale().matrix().asM33());
+  gfx::Rect expanded_clip_in_surface_space = Filters().MapRect(
+      clip_in_surface_space, gfx::TransformToFlattenedSkMatrix(SurfaceScale()));
   gfx::Rect expanded_clip_in_target_space = MathUtil::MapEnclosingClippedRect(
       draw_transform(), expanded_clip_in_surface_space);
   return expanded_clip_in_target_space;

@@ -17,6 +17,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -216,7 +217,8 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
     bool is_rect_valid = damage_for_this_update_.GetAsRect(&damage_rect);
     if (is_rect_valid && !damage_rect.IsEmpty()) {
       damage_rect = render_surface->Filters().MapRect(
-          damage_rect, render_surface->SurfaceScale().matrix().asM33());
+          damage_rect,
+          gfx::TransformToFlattenedSkMatrix(render_surface->SurfaceScale()));
       damage_for_this_update_ = DamageAccumulator();
       damage_for_this_update_.Union(damage_rect);
     }

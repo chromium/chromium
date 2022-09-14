@@ -1708,10 +1708,9 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   static constexpr float kScaleErrorThreshold = kPixelErrorThreshold / 10000;
   auto is_raster_scale = [this](const gfx::Transform& transform) -> bool {
     // The matrix has the X scale at (0,0), and the Y scale at (1,1).
-    return std::abs(transform.matrix().rc(0, 0) - raster_contents_scale_.x()) <=
-               kScaleErrorThreshold &&
-           std::abs(transform.matrix().rc(1, 1) - raster_contents_scale_.y()) <=
-               kScaleErrorThreshold;
+    gfx::Vector2dF scale_diff = transform.To2dScale() - raster_contents_scale_;
+    return std::abs(scale_diff.x()) <= kScaleErrorThreshold &&
+           std::abs(scale_diff.y()) <= kScaleErrorThreshold;
   };
   if (!is_raster_scale(screen_transform) || !is_raster_scale(draw_transform))
     return false;
@@ -1719,10 +1718,12 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   // Extract the fractional part of layer origin in the screen space and in the
   // target space.
   auto fraction = [](float f) -> float { return f - floorf(f); };
-  float screen_x_fraction = fraction(screen_transform.matrix().rc(0, 3));
-  float screen_y_fraction = fraction(screen_transform.matrix().rc(1, 3));
-  float target_x_fraction = fraction(draw_transform.matrix().rc(0, 3));
-  float target_y_fraction = fraction(draw_transform.matrix().rc(1, 3));
+  gfx::Vector2dF screen_translation = screen_transform.To2dTranslation();
+  float screen_x_fraction = fraction(screen_translation.x());
+  float screen_y_fraction = fraction(screen_translation.y());
+  gfx::Vector2dF draw_translation = draw_transform.To2dTranslation();
+  float target_x_fraction = fraction(draw_translation.x());
+  float target_y_fraction = fraction(draw_translation.y());
 
   // If the origin is different in the screen space and in the target space,
   // it means the render target is not aligned to physical pixels, and the

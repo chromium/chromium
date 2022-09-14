@@ -62,8 +62,8 @@ void PostConcatSurfaceContentsScale(const EffectNode* effect_node,
     return;
   }
   DCHECK(effect_node->HasRenderSurface());
-  transform->matrix().postScale(effect_node->surface_contents_scale.x(),
-                                effect_node->surface_contents_scale.y(), 1.f);
+  transform->PostScale(effect_node->surface_contents_scale.x(),
+                       effect_node->surface_contents_scale.y());
 }
 
 bool ConvertRectBetweenSurfaceSpaces(const PropertyTrees* property_trees,

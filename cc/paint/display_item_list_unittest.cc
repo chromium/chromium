@@ -299,7 +299,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(transform.GetMatrixAsSkM44());
+    list->push<ConcatOp>(gfx::TransformToSkM44(transform));
     list->EndPaintOfPairedBegin();
   }
 
@@ -336,7 +336,7 @@ TEST_F(DisplayItemListTest, TransformPairedRange) {
       SkRect::MakeLTRB(0.f + first_offset.x(), 0.f + first_offset.y(),
                        60.f + first_offset.x(), 60.f + first_offset.y()),
       red_paint);
-  expected_canvas.setMatrix(transform.matrix().asM33());
+  expected_canvas.setMatrix(gfx::TransformToFlattenedSkMatrix(transform));
   expected_canvas.drawRect(
       SkRect::MakeLTRB(50.f + second_offset.x(), 50.f + second_offset.y(),
                        75.f + second_offset.x(), 75.f + second_offset.y()),
@@ -518,7 +518,7 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
   {
     list->StartPaint();
     list->push<SaveOp>();
-    list->push<ConcatOp>(transform.GetMatrixAsSkM44());
+    list->push<ConcatOp>(gfx::TransformToSkM44(transform));
     list->EndPaintOfPairedBegin();
   }
 

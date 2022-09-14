@@ -8429,12 +8429,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   // the page scale delta on the root layer is applied hierarchically.
   DrawFrame();
 
-  EXPECT_EQ(1, root->DrawTransform().matrix().rc(0, 0));
-  EXPECT_EQ(1, root->DrawTransform().matrix().rc(1, 1));
-  EXPECT_EQ(new_page_scale, inner_scroll->DrawTransform().matrix().rc(0, 0));
-  EXPECT_EQ(new_page_scale, inner_scroll->DrawTransform().matrix().rc(1, 1));
-  EXPECT_EQ(new_page_scale, outer_scroll->DrawTransform().matrix().rc(0, 0));
-  EXPECT_EQ(new_page_scale, outer_scroll->DrawTransform().matrix().rc(1, 1));
+  EXPECT_EQ(1, root->DrawTransform().rc(0, 0));
+  EXPECT_EQ(1, root->DrawTransform().rc(1, 1));
+  EXPECT_EQ(new_page_scale, inner_scroll->DrawTransform().rc(0, 0));
+  EXPECT_EQ(new_page_scale, inner_scroll->DrawTransform().rc(1, 1));
+  EXPECT_EQ(new_page_scale, outer_scroll->DrawTransform().rc(0, 0));
+  EXPECT_EQ(new_page_scale, outer_scroll->DrawTransform().rc(1, 1));
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
