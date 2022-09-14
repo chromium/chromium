@@ -18,8 +18,8 @@ import {decodeString16, mojoTimeTicks} from '../utils.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
-// clang-format off
 
+// clang-format off
 /**
  * Bitmap used to decode the value of ACMatchClassification style
  * field.
@@ -32,6 +32,8 @@ enum ACMatchClassificationStyle {
   DIM =   1 << 2,  // A "helper text".
 }
 // clang-format on
+
+const ENTITY_MATCH_TYPE: string = 'search-suggest-entity';
 
 export interface RealboxMatchElement {
   $: {
@@ -73,6 +75,25 @@ export class RealboxMatchElement extends PolymerElement {
       hasImage: {
         type: Boolean,
         computed: `computeHasImage_(match)`,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Whether the match is an entity suggestion (with or without an image).
+       */
+      isEntitySuggestion: {
+        type: Boolean,
+        computed: `computeIsEntitySuggestion_(match)`,
+        reflectToAttribute: true,
+      },
+
+      /**
+       * Whether the match should be rendered in a two-row layout. Currently
+       * limited to matches that feature an image, calculator, and answers.
+       */
+      isRichSuggestion: {
+        type: Boolean,
+        computed: `computeIsRichSuggestion_(match)`,
         reflectToAttribute: true,
       },
 
@@ -298,6 +319,14 @@ export class RealboxMatchElement extends PolymerElement {
 
   private computeHasImage_(): boolean {
     return this.match && !!this.match.imageUrl;
+  }
+
+  private computeIsEntitySuggestion_(): boolean {
+    return this.match && this.match.type === ENTITY_MATCH_TYPE;
+  }
+
+  private computeIsRichSuggestion_(): boolean {
+    return this.match && this.match.isRichSuggestion;
   }
 
   private computeActionIsVisible_(): boolean {
