@@ -118,8 +118,12 @@ void AppWebMessagePort::SetShouldReceiveMessages(JNIEnv* env,
   DCHECK(connector_);
   if (!should_receive_message) {
     connector_->set_incoming_receiver(nullptr);
+    j_strong_obj_.Reset();
   } else {
     connector_->set_incoming_receiver(this);
+    if (!connector_errored_) {
+      j_strong_obj_ = j_obj_.get(env);
+    }
     if (!is_watching_) {
       is_watching_ = true;
       connector_->StartReceiving(runner_);
@@ -171,6 +175,7 @@ blink::MessagePortDescriptor AppWebMessagePort::PassPort() {
 void AppWebMessagePort::OnPipeError() {
   DCHECK(runner_->BelongsToCurrentThread());
   connector_errored_ = true;
+  j_strong_obj_.Reset();
 }
 
 void AppWebMessagePort::GiveDisentangledHandleIfNeeded() {
