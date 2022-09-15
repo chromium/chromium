@@ -218,6 +218,15 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
   auto desktop_capturer =
       std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
 
+#if defined(REMOTING_USE_X11)
+  // Workaround for http://crbug.com/1361502: Run each capturer (and
+  // mouse-cursor-monitor) on a separate X11 Display.
+  auto new_options = webrtc::DesktopCaptureOptions::CreateDefault();
+  mutable_desktop_capture_options()->set_x_display(
+      std::move(new_options.x_display()));
+  desktop_capture_options().x_display()->IgnoreXServerGrabs();
+#endif  // REMOTING_USE_X11
+
   desktop_capturer->CreateCapturer(desktop_capture_options());
   return std::move(desktop_capturer);
 }
