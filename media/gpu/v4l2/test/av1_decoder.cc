@@ -389,9 +389,10 @@ void FillTileInfo(v4l2_av1_tile_info* v4l2_ti, const libgav1::TileInfo& ti) {
         "Size of |width_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
         "does not match libgav1 expectation");
     for (size_t i = 0; i < libgav1::kMaxTileColumns; i++) {
-      CHECK_GE(ti.tile_column_width_in_superblocks[i], 1);
-      v4l2_ti->width_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
-          ti.tile_column_width_in_superblocks[i] - 1);
+      if (ti.tile_column_width_in_superblocks[i] >= 1) {
+        v4l2_ti->width_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
+            ti.tile_column_width_in_superblocks[i] - 1);
+      }
     }
 
     static_assert(
@@ -400,9 +401,10 @@ void FillTileInfo(v4l2_av1_tile_info* v4l2_ti, const libgav1::TileInfo& ti) {
         "Size of |height_in_sbs_minus_1| array in |v4l2_av1_tile_info| struct "
         "does not match libgav1 expectation");
     for (size_t i = 0; i < libgav1::kMaxTileRows; i++) {
-      CHECK_GE(ti.tile_row_height_in_superblocks[i], 1);
-      v4l2_ti->height_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
-          ti.tile_row_height_in_superblocks[i] - 1);
+      if (ti.tile_row_height_in_superblocks[i] >= 1) {
+        v4l2_ti->height_in_sbs_minus_1[i] = base::checked_cast<uint32_t>(
+            ti.tile_row_height_in_superblocks[i] - 1);
+      }
     }
   }
 
