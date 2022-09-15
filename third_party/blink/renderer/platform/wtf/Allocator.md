@@ -23,23 +23,25 @@ See [BlinkGCAPIReference.md](../heap/BlinkGCAPIReference.md) to learn the design
 
 ### PartitionAlloc
 
-PartitionAlloc is Blink's default memory allocator.
-PartitionAlloc is highly optimized for performance and security requirements
-in Blink. All Blink objects that don't need a GC or discardable memory should be
-allocated by PartitionAlloc (instead of malloc).
-The following objects are allocated by PartitionAlloc:
+PartitionAlloc is Chrome's default memory allocator. It's highly optimized for
+performance and security.
 
-* Objects that have a USING_FAST_MALLOC macro.
-
-* Nodes (which will be moved to Oilpan in the near future)
-
-* LayoutObjects
-
-* Strings, Vectors, HashTables, ArrayBuffers and other primitive containers.
+When you simply call `new` or `malloc` PartitionAlloc will be used, unless
+[specific gn args](/base/allocator/allocator/partition_allocator/build_config.md)
+are specified.
 
 The implementation is in /base/allocator/partition_allocator.
 See [PartitionAlloc.md](/base/allocator/partition_allocator/PartitionAlloc.md)
 to learn the design.
+
+#### `USING_FAST_MALLOC`
+
+Before PartitionAlloc become the default, `USING_FAST_MALLOC` had been used to
+specify the allocator to be PartitionAlloc instead of malloc for an object.
+Now `USING_FAST_MALLOC` only makes a difference when PartitionAlloc is disabled
+in the build or [\*Scan](https://crbug.com/1277560) is enabled for blink.
+For now `USING_FAST_MALLOC` is still preferred for non-GC blink objects that
+allow `new`.
 
 ### Discardable memory
 
@@ -51,17 +53,6 @@ user of the discardable memory.
 The implementation is in src/base/memory/discardable_memory.*.
 See [this document](https://docs.google.com/document/d/1aNdOF_72_eG2KUM_z9kHdbT_fEupWhaDALaZs5D8IAg/edit)
 to learn the design.
-
-### malloc
-
-When you simply call 'new' or 'malloc', the object is allocated by malloc.
-As mentioned above, malloc is discouraged and should be replaced with
-PartitionAlloc. PartitionAlloc is faster, securer and more instrumentable
-than malloc.
-
-The actual implementation of malloc is platform-dependent.
-As of 2015 Dec, Linux uses tcmalloc. Mac and Windows use their system allocator.
-Android uses device-dependent allocators such as dlmalloc.
 
 ## Basic allocation rules
 
@@ -86,10 +77,9 @@ void func() {
 }
 ```
 
-* Use PartitionAlloc if you don't need a GC to manage the lifetime of
-the object (i.e., if scoped_refptr or unique_ptr is enough to manage the
-lifetime of the object). You need to add a USING_FAST_MALLOC macro to the
-object.
+* It's preferred to use USING_FAST_MALLOC if you don't need a GC to manage
+the lifetime of the object (i.e., if scoped_refptr or unique_ptr is enough
+to manage the lifetime of the object).
 
 ```c++
 class X {
