@@ -9646,14 +9646,14 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithSingleButtonIllustrationAndTitle",
+                    "name": "EnabledWithIllustrationAndTitle_3",
                     "enable_features": [
                         "SyncAndroidPromosWithIllustration",
-                        "SyncAndroidPromosWithSingleButton",
                         "SyncAndroidPromosWithTitle"
                     ],
                     "disable_features": [
-                        "SyncAndroidPromosWithAlternativeTitle"
+                        "SyncAndroidPromosWithAlternativeTitle",
+                        "SyncAndroidPromosWithSingleButton"
                     ]
                 }
             ]
