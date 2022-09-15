@@ -5916,8 +5916,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
         ->OnScoreAdComplete(
             /*score=*/11,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*data_version=*/0,
-            /*has_data_version=*/false,
+            /*scoring_signals_data_version=*/0,
+            /*has_scoring_signals_data_version=*/false,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -6014,7 +6014,8 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
       ->OnScoreAdComplete(
           /*score=*/11,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt,
           std::move(score_ad_1_pa_requests),
@@ -6032,7 +6033,8 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
       ->OnScoreAdComplete(
           /*score=*/10,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt,
           std::move(score_ad_2_pa_requests),
@@ -6178,7 +6180,8 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
           ->OnScoreAdComplete(
               /*score=*/10,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*data_version=*/0, /*has_data_version=*/false,
+              /*scoring_signals_data_version=*/0,
+              /*has_scoring_signals_data_version=*/false,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
               /*errors=*/{});
@@ -6191,7 +6194,8 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
           ->OnScoreAdComplete(
               /*score=*/11,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*data_version=*/0, /*has_data_version=*/false,
+              /*scoring_signals_data_version=*/0,
+              /*has_scoring_signals_data_version=*/false,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
               /*errors=*/{});
@@ -6307,7 +6311,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
               /*ad=*/"null",
               /*bid=*/0,
               /*has_bid=*/false),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -6324,7 +6329,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
       ->OnScoreAdComplete(
           /*score=*/4,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -6424,7 +6430,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
                 /*ad=*/"null",
                 /*bid=*/0,
                 /*has_bid=*/false),
-            /*data_version=*/0, /*has_data_version=*/false,
+            /*scoring_signals_data_version=*/0,
+            /*has_scoring_signals_data_version=*/false,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -6441,7 +6448,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
         ->OnScoreAdComplete(
             /*score=*/4,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*data_version=*/0, /*has_data_version=*/false,
+            /*scoring_signals_data_version=*/0,
+            /*has_scoring_signals_data_version=*/false,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -6646,7 +6654,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
     mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
         std::move(score_ad_params.score_ad_client))
         ->OnScoreAdComplete(/*score=*/3, test_case.params.Clone(),
-                            /*data_version=*/0, /*has_data_version=*/false,
+                            /*scoring_signals_data_version=*/0,
+                            /*has_scoring_signals_data_version=*/false,
                             /*debug_loss_report_url=*/absl::nullopt,
                             /*debug_win_report_url=*/absl::nullopt,
                             /*pa_requests=*/{},
@@ -6707,7 +6716,8 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
               /*ad=*/"null",
               /*bid=*/0,
               /*has_bid=*/false),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -6773,7 +6783,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
           ->OnScoreAdComplete(
               /*score=*/11,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*data_version=*/0, /*has_data_version=*/false,
+              /*scoring_signals_data_version=*/0,
+              /*has_scoring_signals_data_version=*/false,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
               /*errors=*/{});
@@ -6869,7 +6880,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
           ->OnScoreAdComplete(
               /*score=*/11,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*data_version=*/0, /*has_data_version=*/false,
+              /*scoring_signals_data_version=*/0,
+              /*has_scoring_signals_data_version=*/false,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
               /*errors=*/{});
@@ -7105,7 +7117,8 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
       ->OnScoreAdComplete(
           /*score=*/10,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7163,7 +7176,8 @@ TEST_F(AuctionRunnerTest, BadSellerBeaconUrl) {
       ->OnScoreAdComplete(
           /*score=*/10,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7234,7 +7248,8 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
               /*ad=*/"null",
               /*bid=*/0,
               /*has_bid=*/false),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7248,7 +7263,8 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
       ->OnScoreAdComplete(
           /*score=*/10,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7316,7 +7332,8 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
       ->OnScoreAdComplete(
           /*score=*/10,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7378,7 +7395,8 @@ TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
       ->OnScoreAdComplete(
           /*score=*/10,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7445,7 +7463,8 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
       ->OnScoreAdComplete(
           /*score=*/11,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7509,7 +7528,8 @@ TEST_F(AuctionRunnerTest, Tie) {
         ->OnScoreAdComplete(
             /*score=*/10,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*data_version=*/0, /*has_data_version=*/false,
+            /*scoring_signals_data_version=*/0,
+            /*has_scoring_signals_data_version=*/false,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -7525,7 +7545,8 @@ TEST_F(AuctionRunnerTest, Tie) {
         ->OnScoreAdComplete(
             /*score=*/10,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*data_version=*/0, /*has_data_version=*/false,
+            /*scoring_signals_data_version=*/0,
+            /*has_scoring_signals_data_version=*/false,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -7659,7 +7680,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     /*score=*/bidder1_wins ? 11 : 9,
                     auction_worklet::mojom::
                         ComponentAuctionModifiedBidParamsPtr(),
-                    /*data_version=*/0, /*has_data_version=*/false,
+                    /*scoring_signals_data_version=*/0,
+                    /*has_scoring_signals_data_version=*/false,
                     /*debug_loss_report_url=*/absl::nullopt,
                     /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
                     /*errors=*/{});
@@ -7672,8 +7694,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                 ->OnScoreAdComplete(/*score=*/10,
                                     auction_worklet::mojom::
                                         ComponentAuctionModifiedBidParamsPtr(),
-                                    /*data_version=*/0,
-                                    /*has_data_version=*/false,
+                                    /*scoring_signals_data_version=*/0,
+                                    /*has_scoring_signals_data_version=*/false,
                                     /*debug_loss_report_url=*/absl::nullopt,
                                     /*debug_win_report_url=*/absl::nullopt,
                                     /*pa_requests=*/{},
@@ -9976,7 +9998,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
         ->OnScoreAdComplete(
             /*score=*/10,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*data_version=*/0, /*has_data_version=*/false,
+            /*scoring_signals_data_version=*/0,
+            /*has_scoring_signals_data_version=*/false,
             test_case.seller_debug_loss_report_url,
             test_case.seller_debug_win_report_url, /*pa_requests=*/{},
             /*errors=*/{});
@@ -10038,7 +10061,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       ->OnScoreAdComplete(
           /*score=*/10,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*data_version=*/0, /*has_data_version=*/false,
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
           GURL("https://seller-debug-loss-reporting.com/1"),
           GURL("https://seller-debug-win-reporting.com/1"), /*pa_requests=*/{},
           /*errors=*/{});
