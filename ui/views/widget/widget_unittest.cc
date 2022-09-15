@@ -4482,6 +4482,63 @@ TEST_F(DesktopWidgetTest, WindowModalOwnerDestroyedEnabledTest) {
   top_level_widget->CloseNow();
 }
 
+TEST_F(DesktopWidgetTest, StackAboveTest) {
+  WidgetAutoclosePtr root_one(CreateTopLevelNativeWidget());
+  WidgetAutoclosePtr root_two(CreateTopLevelNativeWidget());
+  Widget* child_one = CreateChildNativeWidgetWithParent(root_one->AsWidget());
+  Widget* child_one_b = CreateChildNativeWidgetWithParent(root_one->AsWidget());
+  Widget* child_two = CreateChildNativeWidgetWithParent(root_two->AsWidget());
+  Widget* grandchild_one =
+      CreateChildNativeWidgetWithParent(child_one->AsWidget());
+  Widget* grandchild_two =
+      CreateChildNativeWidgetWithParent(child_two->AsWidget());
+
+  root_one->ShowInactive();
+  child_one->ShowInactive();
+  child_one_b->ShowInactive();
+  grandchild_one->ShowInactive();
+  root_two->ShowInactive();
+  child_two->ShowInactive();
+  grandchild_two->ShowInactive();
+
+  // Creates the following where Z-Order is from Left to Right.
+  //            Root_one                    Root_two
+  //             /    \                         /
+  //       child_one  child_one_b           child_two
+  //          /                               /
+  // grandchild_one                     grandchild_two
+
+  // Child elements are stacked above parent.
+  EXPECT_TRUE(child_one->IsStackedAbove(root_one->GetNativeView()));
+  EXPECT_TRUE(child_one_b->IsStackedAbove(root_one->GetNativeView()));
+  EXPECT_TRUE(grandchild_one->IsStackedAbove(child_one->GetNativeView()));
+  EXPECT_TRUE(grandchild_two->IsStackedAbove(root_two->GetNativeView()));
+
+  // Siblings with higher z-order are stacked correctly.
+  EXPECT_TRUE(child_one_b->IsStackedAbove(child_one->GetNativeView()));
+  EXPECT_TRUE(child_one_b->IsStackedAbove(grandchild_one->GetNativeView()));
+
+  // Root elements are stacked above child of a root with lower z-order.
+  EXPECT_TRUE(root_two->IsStackedAbove(root_one->GetNativeView()));
+  EXPECT_TRUE(root_two->IsStackedAbove(child_one_b->GetNativeView()));
+
+  // Child elements are stacked above child of root with lower z-order.
+  EXPECT_TRUE(child_two->IsStackedAbove(child_one_b->GetNativeView()));
+  EXPECT_TRUE(child_two->IsStackedAbove(grandchild_one->GetNativeView()));
+  EXPECT_TRUE(grandchild_two->IsStackedAbove(child_one->GetNativeView()));
+  EXPECT_TRUE(grandchild_two->IsStackedAbove(root_one->GetNativeView()));
+
+  // False cases to verify function is not just returning true for all cases.
+  EXPECT_FALSE(root_one->IsStackedAbove(grandchild_two->GetNativeView()));
+  EXPECT_FALSE(root_one->IsStackedAbove(grandchild_one->GetNativeView()));
+  EXPECT_FALSE(child_two->IsStackedAbove(grandchild_two->GetNativeView()));
+  EXPECT_FALSE(child_one->IsStackedAbove(grandchild_two->GetNativeView()));
+  EXPECT_FALSE(child_one_b->IsStackedAbove(child_two->GetNativeView()));
+  EXPECT_FALSE(grandchild_one->IsStackedAbove(grandchild_two->GetNativeView()));
+  EXPECT_FALSE(grandchild_one->IsStackedAbove(root_two->GetNativeView()));
+  EXPECT_FALSE(grandchild_one->IsStackedAbove(child_one_b->GetNativeView()));
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)

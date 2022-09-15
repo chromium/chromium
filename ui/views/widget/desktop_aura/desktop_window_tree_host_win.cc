@@ -447,6 +447,38 @@ ui::ZOrderLevel DesktopWindowTreeHostWin::GetZOrderLevel() const {
                               : ui::ZOrderLevel::kNormal;
 }
 
+bool DesktopWindowTreeHostWin::IsStackedAbove(aura::Window* window) {
+  HWND above = GetHWND();
+  HWND below = window->GetHost()->GetAcceleratedWidget();
+
+  // Child windows are always above their parent windows.
+  // Check to see if HWNDs have a Parent-Child relationship.
+  if (IsChild(below, above))
+    return true;
+
+  if (IsChild(above, below))
+    return false;
+
+  // Check all HWNDs with lower z order than current HWND
+  // to see if it matches or is a parent to the "below" HWND.
+  bool result = false;
+  HWND parent = above;
+  while (parent && parent != GetDesktopWindow()) {
+    HWND next = parent;
+    while (next) {
+      // GW_HWNDNEXT retrieves the next HWND below z order level.
+      next = GetWindow(next, GW_HWNDNEXT);
+      if (next == below || IsChild(next, below)) {
+        result = true;
+        break;
+      }
+    }
+    parent = GetAncestor(parent, GA_PARENT);
+  }
+
+  return result;
+}
+
 void DesktopWindowTreeHostWin::SetVisibleOnAllWorkspaces(bool always_visible) {
   // Chrome does not yet support Windows 10 desktops.
 }

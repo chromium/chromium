@@ -576,6 +576,28 @@ TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
   EXPECT_EQ(nullptr, widget1->GetFocusManager()->GetFocusedView());
 }
 
+TEST_F(WidgetTestInteractive, ZOrderCheckBetweenTopWindows) {
+  WidgetAutoclosePtr w1(CreateTopLevelPlatformWidget());
+  WidgetAutoclosePtr w2(CreateTopLevelPlatformWidget());
+  WidgetAutoclosePtr w3(CreateTopLevelPlatformWidget());
+
+  ShowSync(w1.get());
+  ShowSync(w2.get());
+  ShowSync(w3.get());
+
+  EXPECT_FALSE(w1->AsWidget()->IsStackedAbove(w2->AsWidget()->GetNativeView()));
+  EXPECT_FALSE(w2->AsWidget()->IsStackedAbove(w3->AsWidget()->GetNativeView()));
+  EXPECT_FALSE(w1->AsWidget()->IsStackedAbove(w3->AsWidget()->GetNativeView()));
+  EXPECT_TRUE(w2->AsWidget()->IsStackedAbove(w1->AsWidget()->GetNativeView()));
+  EXPECT_TRUE(w3->AsWidget()->IsStackedAbove(w2->AsWidget()->GetNativeView()));
+  EXPECT_TRUE(w3->AsWidget()->IsStackedAbove(w1->AsWidget()->GetNativeView()));
+
+  w2->AsWidget()->StackAboveWidget(w1->AsWidget());
+  EXPECT_TRUE(w2->AsWidget()->IsStackedAbove(w1->AsWidget()->GetNativeView()));
+  w1->AsWidget()->StackAboveWidget(w2->AsWidget());
+  EXPECT_FALSE(w2->AsWidget()->IsStackedAbove(w1->AsWidget()->GetNativeView()));
+}
+
 // Test z-order of child widgets relative to their parent.
 // TODO(crbug.com/1227009): Disabled on Mac due to flake
 #if BUILDFLAG(IS_MAC)

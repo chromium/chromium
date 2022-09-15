@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -93,6 +94,28 @@ void SetIcon(aura::Window* window,
     window->ClearProperty(key);
   else
     window->SetProperty(key, value);
+}
+
+bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
+                       const ui::Layer** first,
+                       const ui::Layer** second) {
+  for (const ui::Layer* child : children) {
+    if (child == *second) {
+      *second = nullptr;
+      return *first == nullptr;
+    }
+
+    if (child == *first)
+      *first = nullptr;
+
+    if (FindLayersInOrder(child->children(), first, second))
+      return true;
+
+    // If second is cleared without success, exit early with failure.
+    if (!*second)
+      return false;
+  }
+  return false;
 }
 
 }  // namespace
@@ -572,6 +595,21 @@ void NativeWidgetAura::StackAbove(gfx::NativeView native_view) {
 void NativeWidgetAura::StackAtTop() {
   if (window_)
     window_->parent()->StackChildAtTop(window_);
+}
+
+bool NativeWidgetAura::IsStackedAbove(gfx::NativeView native_view) {
+  // If the root windows are not shared between two native views
+  // it is likely that they are child windows of different top level windows.
+  // In that scenario, just check the top level windows.
+  if (GetNativeWindow()->GetRootWindow() != native_view->GetRootWindow()) {
+    return GetTopLevelWidget()->IsStackedAbove(
+        native_view->GetToplevelWindow());
+  }
+
+  const ui::Layer* first = native_view->layer();      // below
+  const ui::Layer* second = GetWidget()->GetLayer();  // above
+  return FindLayersInOrder(
+      GetNativeWindow()->GetRootWindow()->layer()->children(), &first, &second);
 }
 
 void NativeWidgetAura::SetShape(std::unique_ptr<Widget::ShapeRects> shape) {

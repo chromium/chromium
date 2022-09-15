@@ -530,6 +530,22 @@ void NativeWidgetMac::StackAtTop() {
     GetNSWindowMojo()->StackAtTop();
 }
 
+bool NativeWidgetMac::IsStackedAbove(gfx::NativeView native_view) {
+  // -[NSApplication orderedWindows] are ordered front-to-back.
+  NSWindow* first = GetNativeWindow().GetNativeNSWindow();
+  NSWindow* second = [native_view.GetNativeNSView() window];
+
+  for (NSWindow* window in [NSApp orderedWindows]) {
+    if (window == second)
+      return !first;
+
+    if (window == first)
+      first = nil;
+  }
+
+  return false;
+}
+
 void NativeWidgetMac::SetShape(std::unique_ptr<Widget::ShapeRects> shape) {
   NOTIMPLEMENTED();
 }

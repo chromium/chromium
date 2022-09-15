@@ -655,6 +655,10 @@ void Widget::StackAtTop() {
   native_widget_->StackAtTop();
 }
 
+bool Widget::IsStackedAbove(gfx::NativeView native_view) {
+  return native_widget_->IsStackedAbove(native_view);
+}
+
 void Widget::SetShape(std::unique_ptr<ShapeRects> shape) {
   native_widget_->SetShape(std::move(shape));
 }

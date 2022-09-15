@@ -149,6 +149,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void SetSize(const gfx::Size& size) override;
   void StackAbove(gfx::NativeView native_view) override;
   void StackAtTop() override;
+  bool IsStackedAbove(gfx::NativeView native_view) override;
   void SetShape(std::unique_ptr<Widget::ShapeRects> shape) override;
   void Close() override;
   void CloseNow() override;

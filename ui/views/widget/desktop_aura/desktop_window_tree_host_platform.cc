@@ -466,6 +466,12 @@ void DesktopWindowTreeHostPlatform::StackAtTop() {
   platform_window()->StackAtTop();
 }
 
+bool DesktopWindowTreeHostPlatform::IsStackedAbove(aura::Window* window) {
+  // TODO(https://crbug.com/1363218) Implement Window layer check
+  NOTREACHED();
+  return false;
+}
+
 void DesktopWindowTreeHostPlatform::CenterWindow(const gfx::Size& size) {
   gfx::Rect parent_bounds = GetWorkAreaBoundsInScreen();
 

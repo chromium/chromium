@@ -666,6 +666,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void StackAbove(gfx::NativeView native_view);
   void StackAtTop();
 
+  // Returns true if widget is above the specified window in z-order.
+  bool IsStackedAbove(gfx::NativeView native_view);
+
   // Sets a shape on the widget. Passing a NULL |shape| reverts the widget to
   // be rectangular.
   void SetShape(std::unique_ptr<ShapeRects> shape);
