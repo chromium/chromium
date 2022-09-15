@@ -11,12 +11,15 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
+#include "components/variations/client_filterable_state.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/variations_associated_data.h"
 
 class PrefService;
 
 namespace variations {
+
+struct ClientFilterableState;
 
 // Packages signed variations seed data into a tuple for use with
 // WriteSeedData(). This allows for encapsulated seed information to be created
@@ -103,6 +106,10 @@ bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data);
 // Resets variations. Ensures that maps can be cleared between tests since they
 // are stored as process singleton.
 void ResetVariations();
+
+// Create a ClientFilterableState with valid, but unimportant values.
+// Tests that actually expect specific values should set them on the result.
+std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState();
 
 }  // namespace variations
 

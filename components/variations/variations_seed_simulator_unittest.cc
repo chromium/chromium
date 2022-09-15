@@ -8,12 +8,15 @@
 
 #include <map>
 
+#include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/time/time.h"
+#include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -79,28 +82,21 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
     testing::ClearAllVariationParams();
   }
 
-  // Uses a VariationsSeedSimulator to simulate the differences between
-  // |studies| and the current field trial state.
-  VariationsSeedSimulator::Result SimulateDifferences(
-      const std::vector<ProcessedStudy>& studies) {
-    // Should pick the first group that has non-zero probability weight.
-    base::MockEntropyProvider default_provider(0);
-    // Should pick default groups, if they have non-zero probability weight.
-    base::MockEntropyProvider low_provider(1.0 - 1e-8);
-    VariationsSeedSimulator seed_simulator(default_provider, low_provider);
-    return seed_simulator.ComputeDifferences(studies);
-  }
-
   // Simulates the differences between |study| and the current field trial
   // state, returning a string like "1 2 3", where 1 is the number of regular
   // group changes, 2 is the number of "kill best effort" group changes and 3
   // is the number of "kill critical" group changes.
   std::string SimulateStudyDifferences(const Study* study) {
-    ProcessedStudy processed_study;
-    if (!processed_study.Init(study))
-      return "invalid study";
-    std::vector<ProcessedStudy> studies = {processed_study};
-    return ConvertSimulationResultToString(SimulateDifferences(studies));
+    VariationsSeed seed;
+    seed.add_study()->MergeFrom(*study);
+    auto client_state = CreateDummyClientFilterableState();
+    // Should pick the first group that has non-zero probability weight.
+    base::MockEntropyProvider default_provider(0);
+    // Should pick default groups, if they have non-zero probability weight.
+    base::MockEntropyProvider low_provider(1.0 - 1e-8);
+    return ConvertSimulationResultToString(
+        VariationsSeedSimulator(default_provider, low_provider)
+            .SimulateSeedStudies(seed, *client_state));
   }
 
   // Formats |result| as a string with format "1 2 3", where 1 is the number of

@@ -10,6 +10,7 @@
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/client_filterable_state.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/client_variations.pb.h"
@@ -299,5 +300,17 @@ const FieldTrialTestingConfig kTestingConfig = {
     array_kFieldTrialConfig_studies,
     1,
 };
+
+std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState() {
+  auto client_state = std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }));
+  client_state->locale = "en-CA";
+  client_state->reference_date = base::Time::Now();
+  client_state->version = base::Version("20.0.0.0");
+  client_state->channel = Study::STABLE;
+  client_state->form_factor = Study::PHONE;
+  client_state->platform = Study::PLATFORM_ANDROID;
+  return client_state;
+}
 
 }  // namespace variations
