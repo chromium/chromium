@@ -56,6 +56,8 @@ _HTML_REPORT_URL = (
 _MAX_DEX_METHOD_COUNT_INCREASE = 200
 _MAX_NORMALIZED_INCREASE = 16 * 1024
 _MAX_PAK_INCREASE = 1024
+_TRYBOT_MD_URL = ('https://chromium.googlesource.com/chromium/src/+/main/docs/'
+                  'speed/binary_size/android_binary_size_trybot.md')
 
 
 _PROGUARD_CLASS_MAPPING_RE = re.compile(r'(?P<original_name>[^ ]+)'
@@ -422,9 +424,9 @@ PASSING Checks:
 {}
 
 To understand what those checks are and how to pass them, see:
-https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/android_binary_size_trybot.md
+{}
 
-""".format(failing_checks_text, passing_checks_text)
+""".format(failing_checks_text, passing_checks_text, _TRYBOT_MD_URL)
 
   status_code = int(bool(failing_deltas))
 
@@ -434,31 +436,33 @@ https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/and
   if is_roller and mutable_constants_delta not in failing_deltas:
     status_code = 0
 
+  see_docs_lines = ['\n', f'For more details: {_TRYBOT_MD_URL}\n']
+
   summary = '<br>' + checks_text.replace('\n', '<br>')
   links_json = [
       {
           'name': 'Binary Size Details',
-          'lines': resource_sizes_lines,
+          'lines': resource_sizes_lines + see_docs_lines,
           'log_name': _RESOURCE_SIZES_LOG,
       },
       {
           'name': 'Base Module Binary Size Details',
-          'lines': base_resource_sizes_lines,
+          'lines': base_resource_sizes_lines + see_docs_lines,
           'log_name': _BASE_RESOURCE_SIZES_LOG,
       },
       {
           'name': 'Mutable Constants Diff',
-          'lines': mutable_constants_lines,
+          'lines': mutable_constants_lines + see_docs_lines,
           'log_name': _MUTABLE_CONSTANTS_LOG,
       },
       {
           'name': 'ForTest Symbols Diff',
-          'lines': testing_symbols_lines,
+          'lines': testing_symbols_lines + see_docs_lines,
           'log_name': _FOR_TESTING_LOG,
       },
       {
           'name': 'Dex Class and Method Diff',
-          'lines': dex_delta_lines,
+          'lines': dex_delta_lines + see_docs_lines,
           'log_name': _DEX_SYMBOLS_LOG,
       },
       {
