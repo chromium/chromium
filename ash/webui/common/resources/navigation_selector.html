@@ -63,8 +63,8 @@ cr-expand-button {
     <template id="selectorItems" is="dom-repeat" items="{{selectorItems}}">
         <div class$="{{computeInitialClass_(item)}}" tabindex="0"
             on-click="onSelected_">
-          <iron-icon class="icon" icon="[[item.icon]]" alt="">
-          </iron-icon>
+          <iron-icon class="icon" icon="[[item.icon]]"
+            alt="" hidden="[[!item.icon]]"></iron-icon>
           [[item.name]]
         </div>
     </template>

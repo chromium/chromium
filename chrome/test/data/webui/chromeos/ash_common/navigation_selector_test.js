@@ -5,7 +5,7 @@
 import {NavigationSelectorElement, SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.js';
+import {isVisible, waitAfterNextRender} from '../../test_util.js';
 
 export function navigationSelectorTestSuite() {
   /** @type {?NavigationSelectorElement} */
@@ -50,5 +50,33 @@ export function navigationSelectorTestSuite() {
     assertEquals(2, navigationElements.length);
     assertEquals('test1', navigationElements[0].textContent.trim());
     assertEquals('test2', navigationElements[1].textContent.trim());
+  });
+
+  test('navigationSelectorIconVisible', async () => {
+    const item1 = createSelectorItem('test1', 'test-page1', 'search');
+
+    navigationElement.selectorItems = [item1];
+    await waitAfterNextRender(navigationElement);
+
+    const selectorElement =
+        navigationElement.shadowRoot.querySelector('.navigation-item');
+    assertTrue(!!selectorElement);
+
+    const iconElement = selectorElement.querySelector('iron-icon');
+    assertTrue(isVisible(iconElement));
+  });
+
+  test('navigationSelectorIconHidden', async () => {
+    const item1 = createSelectorItem('test1', 'test-page1', '');
+
+    navigationElement.selectorItems = [item1];
+    await waitAfterNextRender(navigationElement);
+
+    const selectorElement =
+        navigationElement.shadowRoot.querySelector('.navigation-item');
+    assertTrue(!!selectorElement);
+
+    const iconElement = selectorElement.querySelector('iron-icon');
+    assertFalse(isVisible(iconElement));
   });
 }
