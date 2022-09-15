@@ -119,8 +119,8 @@ class SingleProcessBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1231009): Flaky / times out on windows bots.
-#if BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/1231009): Flaky / times out on windows and linux bots.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
