@@ -3768,14 +3768,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "google-mobile-services-passwords-error-messages",
-    "owners": [
-      "ioanap",
-      "izuzic@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "grid-tab-switcher-for-tablets",
     "owners": [ "nemco", "clank-app-team@google.com" ],
     "expiry_milestone": 114
