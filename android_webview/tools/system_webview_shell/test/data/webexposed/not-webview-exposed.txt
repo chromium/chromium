@@ -206,11 +206,13 @@ interface XRAnchorSet
 interface XRLightEstimate
 interface XRLightProbe : EventTarget
 interface XRWebGLBinding
+    method getCameraImage
     method getDepthInformation
     method getReflectionCubeMap
 interface XRDepthInformation
 interface XRCPUDepthInformation : XRDepthInformation
 interface XRWebGLDepthInformation : XRDepthInformation
+interface XRCamera
 
 # Web Serial API is not implemented on Android. If Bluetooth Classic support
 # were added this could change. https://crbug.com/1164036

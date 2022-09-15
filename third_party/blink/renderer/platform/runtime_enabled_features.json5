@@ -3013,7 +3013,7 @@
       name: "WebXRCameraAccess",
       depends_on: ["WebXRARModule"],
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebXRDepth",
