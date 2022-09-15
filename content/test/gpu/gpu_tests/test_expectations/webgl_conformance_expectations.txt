@@ -564,6 +564,8 @@ crbug.com/1307905 [ win passthrough ] conformance/attribs/gl-vertexattribpointer
 # Fail when ANGLE GLES3 is requested for OOPR and SkiaRenderer.
 crbug.com/1336736 [ win angle-d3d11 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
+crbug.com/982294 [ win debug passthrough nvidia ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
+
 ####################
 # Mac failures     #
 ####################
