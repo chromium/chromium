@@ -63,13 +63,21 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                                  ->GetFeedMetricsRecorder();
 
   __weak __typeof(self) weakSelf = self;
-  NSURL* webPageURL = _followedWebSite.webPageURL;
+  // Most of time the page url of a followed site is a valid url, but sometimes
+  // it is an invalid url with only a scheme. At this time, use the RSS url
+  // instead. For a followed website, at least one url between the `webPageURL`
+  // and `RSSURL` should be valid with a host.
+  NSURL* followedSiteURL = _followedWebSite.webPageURL.host
+                               ? _followedWebSite.webPageURL
+                               : _followedWebSite.RSSURL;
+  DCHECK(followedSiteURL.host);
+
   FirstFollowViewController* firstFollowViewController =
       [[FirstFollowViewController alloc]
           initWithTitle:_followedWebSite.title
               available:_followedWebSite.available
           faviconSource:^(void (^completion)(UIImage* favicon)) {
-            [weakSelf faviconForURL:webPageURL completion:completion];
+            [weakSelf faviconForURL:followedSiteURL completion:completion];
           }];
 
   firstFollowViewController.actionHandler = self;
