@@ -433,25 +433,26 @@ class AppPlatformMetricsServiceTest : public testing::Test,
             AppTypeName::kBuiltIn, apps::InstallReason::kSystem),
         /*count=*/1);
 
-    // Should be 3 Borealis apps: The installer/launcher created by the
+    // Should be 4 Borealis apps: The installer + launcher created by the
     // BorealisApps class, plus the two created in this test.
-    const int borealis_apps_count = 3;
+    const int borealis_pre_installed = 2;
+    const int borealis_installed_by_test = 2;
     histogram_tester_.ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
             AppTypeName::kBorealis),
-        /*sample=*/borealis_apps_count,
+        /*sample=*/borealis_pre_installed + borealis_installed_by_test,
         /*expected_bucket_count=*/1);
 
-    // The installer/launcher is preinstalled, the others are user-installed.
+    // The installer + launcher are preinstalled, the others are user-installed.
     histogram_tester_.ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBorealis, apps::InstallReason::kDefault),
-        /*sample=*/1,
+        /*sample=*/borealis_pre_installed,
         /*expected_bucket_count=*/1);
     histogram_tester_.ExpectUniqueSample(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kBorealis, apps::InstallReason::kUser),
-        /*sample=*/borealis_apps_count - 1,
+        /*sample=*/borealis_installed_by_test,
         /*expected_bucket_count=*/1);
 
     histogram_tester_.ExpectTotalCount(

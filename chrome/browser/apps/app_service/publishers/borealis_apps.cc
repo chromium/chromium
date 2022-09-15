@@ -155,24 +155,44 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
                        .IsEnabled();
   bool shown = allowed && !installed;
 
-  auto app = apps::AppPublisher::MakeApp(
+  // An app for borealis' installer. This app is not shown to users via
+  // launcher/management, and is only visible on the shelf.
+  auto installer_app = apps::AppPublisher::MakeApp(
       apps::AppType::kBorealis, borealis::kInstallerAppId,
       shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
-      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
-      apps::InstallReason::kDefault, apps::InstallSource::kUnknown);
-  InitializeApp(*app, shown);
-
-  app->icon_key =
+      l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
+      apps::InstallReason::kDefault, apps::InstallSource::kSystem);
+  InitializeApp(*installer_app, shown);
+  installer_app->icon_key =
       apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                     IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
+  installer_app->show_in_launcher = false;
+  installer_app->show_in_management = false;
+  installer_app->show_in_search = false;
+  installer_app->allow_uninstall = false;
+  AppPublisher::Publish(std::move(installer_app));
 
-  // The installer is not uninstallable, or shown in manager/launcher.
-  app->show_in_launcher = false;
-  app->show_in_management = false;
-  app->allow_uninstall = false;
+  // A "steam" app, which is shown in launcher searches. This app is essentially
+  // a front for the installer, but we need it for two reasons:
+  //  - The "real" steam app comes with the VM and so we won't have it before
+  //    installation.
+  //  - We want users to be able to search for steam and see the correct icon,
+  //    but we want to visually distinguish that from the installer app above.
+  auto initial_steam_app = apps::AppPublisher::MakeApp(
+      apps::AppType::kBorealis, borealis::kLauncherSearchAppId,
+      shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
+      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
+      apps::InstallReason::kDefault, apps::InstallSource::kSystem);
+  InitializeApp(*initial_steam_app, shown);
+  initial_steam_app->icon_key =
+      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                    IDR_LOGO_BOREALIS_STEAM_192, apps::IconEffects::kNone);
+  initial_steam_app->show_in_launcher = false;
+  initial_steam_app->show_in_management = false;
+  initial_steam_app->allow_uninstall = false;
+  AppPublisher::Publish(std::move(initial_steam_app));
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
-  AppPublisher::Publish(std::move(app));
 }
 
 void BorealisApps::SetUpSpecialAppsMojom(bool allowed) {
@@ -182,25 +202,46 @@ void BorealisApps::SetUpSpecialAppsMojom(bool allowed) {
                        .IsEnabled();
   bool shown = allowed && !installed;
 
-  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
+  // An app for borealis' installer. This app is not shown to users via
+  // launcher/management, and is only visible on the shelf.
+  apps::mojom::AppPtr installer_app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kBorealis, borealis::kInstallerAppId,
+      shown ? apps::mojom::Readiness::kReady
+            : apps::mojom::Readiness::kDisabledByPolicy,
+      l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
+      apps::mojom::InstallReason::kDefault);
+  InitializeAppMojom(installer_app.get(), shown);
+  installer_app->icon_key = apps::mojom::IconKey::New(
+      apps::mojom::IconKey::kDoesNotChangeOverTime,
+      IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
+  installer_app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+  installer_app->show_in_management = apps::mojom::OptionalBool::kFalse;
+  installer_app->show_in_search = apps::mojom::OptionalBool::kFalse;
+  installer_app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+  PublisherBase::Publish(std::move(installer_app), subscribers_);
+
+  // A "steam" app, which is shown in launcher searches. This app is essentially
+  // a front for the installer, but we need it for two reasons:
+  //  - The "real" steam app comes with the VM and so we won't have it before
+  //    installation.
+  //  - We want users to be able to search for steam and see the correct icon,
+  //    but we want to visually distinguish that from the installer app above.
+  apps::mojom::AppPtr initial_steam_app = apps::PublisherBase::MakeApp(
+      apps::mojom::AppType::kBorealis, borealis::kLauncherSearchAppId,
       shown ? apps::mojom::Readiness::kReady
             : apps::mojom::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
       apps::mojom::InstallReason::kDefault);
-  InitializeAppMojom(app.get(), shown);
-
-  app->icon_key = apps::mojom::IconKey::New(
-      apps::mojom::IconKey::kDoesNotChangeOverTime,
-      IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
-
-  // The installer is not uninstallable, or shown in manager/launcher.
-  app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
-  app->show_in_management = apps::mojom::OptionalBool::kFalse;
-  app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+  InitializeAppMojom(initial_steam_app.get(), shown);
+  initial_steam_app->icon_key = apps::mojom::IconKey::New(
+      apps::mojom::IconKey::kDoesNotChangeOverTime, IDR_LOGO_BOREALIS_STEAM_192,
+      apps::IconEffects::kNone);
+  initial_steam_app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+  initial_steam_app->show_in_management = apps::mojom::OptionalBool::kFalse;
+  initial_steam_app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+  PublisherBase::Publish(std::move(initial_steam_app), subscribers_);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
-  PublisherBase::Publish(std::move(app), subscribers_);
 }
 
 guest_os::GuestOsRegistryService* BorealisApps::Registry() {
@@ -219,9 +260,10 @@ AppPtr BorealisApps::CreateApp(
   // We must only convert borealis apps.
   DCHECK_EQ(registration.VmType(), guest_os::VmType::BOREALIS);
 
-  // The installer app is not a GuestOs app, it doesnt have a registration and
-  // it can't be converted.
+  // The special apps are not GuestOs apps, they don't have a registration and
+  // can't be converted.
   DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
+  DCHECK_NE(registration.app_id(), borealis::kLauncherSearchAppId);
 
   bool shown = !registration.NoDisplay();
   auto app = AppPublisher::MakeApp(
@@ -261,9 +303,10 @@ apps::mojom::AppPtr BorealisApps::Convert(
   // We must only convert borealis apps.
   DCHECK_EQ(registration.VmType(), guest_os::VmType::BOREALIS);
 
-  // The installer app is not a GuestOs app, it doesnt have a registration and
-  // it can't be converted.
+  // The special apps are not GuestOs apps, they don't have a registration and
+  // can't be converted.
   DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
+  DCHECK_NE(registration.app_id(), borealis::kLauncherSearchAppId);
 
   bool shown = !registration.NoDisplay();
   apps::mojom::AppPtr app = PublisherBase::MakeApp(

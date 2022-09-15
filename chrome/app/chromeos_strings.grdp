@@ -5788,6 +5788,9 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_APP_NAME" desc="Name of app, noun, video game distribution service" translateable="false">
     Steam
   </message>
+  <message name="IDS_BOREALIS_INSTALLER_APP_NAME" desc="Name of a utility which is used to install the Steam application (Steam is a video game distribution service)">
+    Steam Installer
+  </message>
   <message name="IDS_BOREALIS_CREDITS_PLACEHOLDER" desc="Shown to users who navigate to about://borealis-credits when the real credits file can't be shown (e.g. because borealis is not running)" translateable="false">
     Steam is either not installed or not running. Please run Steam to view credits.
   </message>

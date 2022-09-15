@@ -147,6 +147,7 @@
         <include name="IDR_LOGO_CROSH" file="chromium/chromeos/crosh_app_icon_256.png" type="BINDATA" />
         <!-- Borealis icons -->
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />
+        <include name="IDR_LOGO_BOREALIS_STEAM_192" file="borealis/logo_borealis_steam_192.png" type="BINDATA" />
         <!-- Crostini icons -->
         <include name="IDR_LOGO_CROSTINI_TERMINAL" file="crostini/ic_terminal_256.png" type="BINDATA" />
         <include name="IDR_LOGO_CROSTINI_DEFAULT" file="crostini/ic_linux_256.png" type="BINDATA" />

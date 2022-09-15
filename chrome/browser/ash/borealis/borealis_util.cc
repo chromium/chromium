@@ -28,6 +28,7 @@ namespace borealis {
 
 const char kInstallerAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
 const char kClientAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
+const char kLauncherSearchAppId[] = "ceoplblcdaffnnflkkcagjpomjgedmdl";
 const char kIgnoredAppIdPrefix[] = "org.chromium.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
