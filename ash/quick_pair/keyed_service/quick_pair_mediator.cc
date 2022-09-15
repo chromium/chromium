@@ -248,7 +248,7 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
     case DiscoveryAction::kDismissedByUser:
     case DiscoveryAction::kDismissed:
     case DiscoveryAction::kLearnMore:
-    case DiscoveryAction::kAlreadyDisplaying:
+    case DiscoveryAction::kAlreadyDisplayed:
       break;
   }
 }

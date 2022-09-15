@@ -21,8 +21,8 @@ std::ostream& operator<<(std::ostream& stream, DiscoveryAction action) {
     case DiscoveryAction::kLearnMore:
       stream << "[Learn more]";
       break;
-    case DiscoveryAction::kAlreadyDisplaying:
-      stream << "[[Already displaying notification]]";
+    case DiscoveryAction::kAlreadyDisplayed:
+      stream << "[[Already displayed notification for device]]";
       break;
   }
 

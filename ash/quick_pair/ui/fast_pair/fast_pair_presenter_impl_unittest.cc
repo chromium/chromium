@@ -1266,7 +1266,7 @@ TEST_F(FastPairPresenterImplTest, ShowSubsequentDiscovery_DismissedByOS) {
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissed);
 }
 
-TEST_F(FastPairPresenterImplTest, ShowOnlyOneDiscovery_Dismissed) {
+TEST_F(FastPairPresenterImplTest, ShowOnlyOneDiscovery_DismissedByUser) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoverySubsequentNotificationId));
 
@@ -1296,7 +1296,7 @@ TEST_F(FastPairPresenterImplTest, ShowOnlyOneDiscovery_Dismissed) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByUser);
-  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kAlreadyDisplaying);
+  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kAlreadyDisplayed);
 }
 
 TEST_F(FastPairPresenterImplTest, ShowOnlyOneDiscovery_Connect) {
@@ -1329,7 +1329,113 @@ TEST_F(FastPairPresenterImplTest, ShowOnlyOneDiscovery_Connect) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
-  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kAlreadyDisplaying);
+  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kAlreadyDisplayed);
+}
+
+TEST_F(FastPairPresenterImplTest, ShowDiscoveryAgain_DismissedByOS) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.Close(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*by_user=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(
+          &FastPairPresenterImplTest::OnDiscoveryActionForSecondNotification,
+          weak_pointer_factory_.GetWeakPtr(), subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.Close(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*by_user=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // If the notification is dismissed by OS, we show it again to the user, who
+  // can dismiss it.
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissed);
+  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kDismissedByUser);
+}
+
+TEST_F(FastPairPresenterImplTest, DontShowDiscoveryAgain_DismissedByUser) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.Close(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*by_user=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(
+          &FastPairPresenterImplTest::OnDiscoveryActionForSecondNotification,
+          weak_pointer_factory_.GetWeakPtr(), subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  // If the notification was dismissed by the user, we won't show the
+  // notification again.
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kDismissedByUser);
+  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kAlreadyDisplayed);
+}
+
+TEST_F(FastPairPresenterImplTest, DontShowDiscoveryAgain_ConnectPressed) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(
+          &FastPairPresenterImplTest::OnDiscoveryActionForSecondNotification,
+          weak_pointer_factory_.GetWeakPtr(), subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+
+  // If the user clicks connect on the notification, we won't show it again.
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
+  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kAlreadyDisplayed);
 }
 
 }  // namespace quick_pair

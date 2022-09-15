@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/fast_pair/fast_pair_notification_controller.h"
@@ -68,6 +69,16 @@ class FastPairPresenterImpl : public FastPairPresenter {
   FastPairPresenterImpl(const FastPairPresenterImpl&) = delete;
   FastPairPresenterImpl& operator=(const FastPairPresenterImpl&) = delete;
 
+  // Object representing devices we have already shown notifications for. We
+  // use `DevicesWithDiscoveryNotificationAlreadyShown` in order to prevent
+  // storing `Device` objects whose lifetime might have ended. We store them
+  // in the |address_to_devices_with_discovery_notification_already_shown_map_|
+  // map using the device's |ble_address| as the key.
+  struct DevicesWithDiscoveryNotificationAlreadyShown {
+    Protocol protocol;
+    std::string metadata_id;
+  };
+
   void OnCheckOptInStatus(scoped_refptr<Device> device,
                           DiscoveryCallback callback,
                           DeviceMetadata* device_metadata,
@@ -83,8 +94,11 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                            DiscoveryCallback callback,
                                            DeviceMetadata* device_metadata);
   void OnDiscoveryClicked(DiscoveryCallback action_callback);
-  void OnDiscoveryDismissed(DiscoveryCallback callback, bool user_dismissed);
+  void OnDiscoveryDismissed(const std::string& ble_address,
+                            DiscoveryCallback callback,
+                            bool user_dismissed);
   void OnDiscoveryLearnMoreClicked(DiscoveryCallback action_callback);
+  bool WasDiscoveryNotificationAlreadyShownForDevice(const Device& device);
 
   void OnNavigateToSettings(PairingFailedCallback callback);
   void OnPairingFailedDismissed(PairingFailedCallback callback,
@@ -112,15 +126,16 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                            bool has_retryable_error);
 
   // Store the device we are currently displaying a discovery notification
-  // for. In the Fast Pair flow, it is possible for a discovery notification to
-  // repeatedly appear for some devices, especially in the case of
-  // Subsequent Pairing when we are parsing multiple advertisements and finding
-  // a match each time. We only need this check for Discovery Notifications
-  // since the Error Notification and AssociateAccount notifications are
-  // triggered once per device action (e.g., pairing failed, classic Bluetooth
-  // pairing). Without this logic, the undesired 'cycle' behavior would occur
-  // for every advertisement parsed.
-  scoped_refptr<Device> device_with_discovery_notification_showing_;
+  // for using |ble_address| as key. In the Fast Pair flow, it is possible for a
+  // discovery notification to repeatedly appear for some devices, especially in
+  // the case of Subsequent Pairing when we are parsing multiple advertisements
+  // and finding a match each time. We only need this check for Discovery
+  // Notifications since the Error Notification and Associate Account
+  // Notification are triggered once per device action (e.g., pairing failed,
+  // classic Bluetooth pairing). This logic is required to avoid repeatedly
+  // showing and dismissing a notification.
+  std::map<std::string, DevicesWithDiscoveryNotificationAlreadyShown>
+      address_to_devices_with_discovery_notification_already_shown_map_;
 
   std::unique_ptr<FastPairNotificationController> notification_controller_;
   base::WeakPtrFactory<FastPairPresenterImpl> weak_pointer_factory_{this};
