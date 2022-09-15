@@ -336,6 +336,7 @@ if (enable_pdf) {
       "pdfium/pdfium_page_unittest.cc",
       "pdfium/pdfium_permissions_unittest.cc",
       "pdfium/pdfium_print_unittest.cc",
+      "pdfium/pdfium_range_unittest.cc",
       "pdfium/pdfium_test_base.cc",
       "pdfium/pdfium_test_base.h",
       "test/run_all_unittests.cc",
