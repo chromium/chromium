@@ -94,7 +94,7 @@ class BASE_EXPORT CategoryRegistry {
   using CategoryInitializerFn = void (*)(TraceCategory*);
 
   // The max number of trace categories that can be recorded.
-  static constexpr size_t kMaxCategories = 300;
+  static constexpr size_t kMaxCategories = 350;
 
   // Checks that there is enough space for all builtin categories.
   static_assert(BuiltinCategories::Size() <= kMaxCategories,
