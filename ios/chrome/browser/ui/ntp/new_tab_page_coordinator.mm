@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -94,7 +95,9 @@
 #endif
 
 namespace {
-
+// Flag to enable the checking of new content for the Follow Feed.
+const base::Feature kEnableCheckForNewFollowContent{
+    "EnableCheckForNewFollowContent", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace
 
 @interface NewTabPageCoordinator () <AppStateObserver,
@@ -617,7 +620,8 @@ namespace {
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
-  if (![self isFollowingFeedAvailable]) {
+  if (![self isFollowingFeedAvailable] ||
+      !base::FeatureList::IsEnabled(kEnableCheckForNewFollowContent)) {
     return;
   }
   if ([self doesFollowingFeedHaveContent]) {
@@ -1354,11 +1358,15 @@ namespace {
 - (FeedHeaderViewController*)feedHeaderViewController {
   DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
   if (!_feedHeaderViewController) {
-    // Only show the dot if the user follows available publishers.
-    BOOL followingSegmentDotVisible =
-        [self doesFollowingFeedHaveContent] &&
-        self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
-        self.selectedFeed != FeedTypeFollowing;
+    BOOL followingSegmentDotVisible = NO;
+    if (base::FeatureList::IsEnabled(kEnableCheckForNewFollowContent) &&
+        IsWebChannelsEnabled()) {
+      // Only show the dot if the user follows available publishers.
+      followingSegmentDotVisible =
+          [self doesFollowingFeedHaveContent] &&
+          self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
+          self.selectedFeed != FeedTypeFollowing;
+    }
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
         initWithFollowingFeedSortType:self.followingFeedSortType
            followingSegmentDotVisible:followingSegmentDotVisible];
