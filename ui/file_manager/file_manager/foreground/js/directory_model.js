@@ -766,7 +766,8 @@ export class DirectoryModel extends EventTarget {
         return;
       }
       const newDirContents = this.createDirectoryContents_(
-          this.currentFileListContext_, assert(this.getCurrentDirEntry()));
+          this.currentFileListContext_, assert(this.getCurrentDirEntry()),
+          this.lastSearchQuery_);
       this.clearAndScan_(newDirContents, callback);
     });
   }

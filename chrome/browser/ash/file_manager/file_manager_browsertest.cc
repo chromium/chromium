@@ -1366,6 +1366,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableFiltersInRecentsV2(),
         TestCase("recentsPlayFiles").EnableArc(),
         TestCase("recentsReadOnlyHidden").EnableFiltersInRecentsV2(),
+        TestCase("recentsRespectSearchWhenSwitchingFilter")
+            .EnableFiltersInRecentsV2(),
         TestCase("recentsRespondToTimezoneChangeForGridView")
             .EnableFiltersInRecentsV2(),
         TestCase("recentsRespondToTimezoneChangeForListView")
