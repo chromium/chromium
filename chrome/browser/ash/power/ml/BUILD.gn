@@ -13,7 +13,7 @@ source_set("user_activity_ukm_logger_helpers") {
 
   deps = [
     "//base",
-    "//chrome/browser/chromeos:user_activity_event_proto",
+    "//chrome/browser/ash:user_activity_event_proto",
     "//ui/base",
   ]
 }

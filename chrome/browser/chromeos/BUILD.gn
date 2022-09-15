@@ -70,16 +70,9 @@ source_set("chromeos") {
   ]
 
   deps = [
-    ":add_remove_user_event_proto",
-    ":attestation_proto",
     ":device_configuration_proto",
-    ":device_policy_remover_generated",
     ":dlp_policy_event_proto",
-    ":key_permissions_proto",
     ":login_logout_event_proto",
-    ":print_job_info_proto",
-    ":screen_brightness_event_proto",
-    ":user_activity_event_proto",
     "../ash/guest_os:guest_os_diagnostics_mojom",
     "//apps",
     "//ash",
@@ -2486,9 +2479,7 @@ source_set("unit_tests") {
 
   public_deps = [ ":chromeos" ]
   deps = [
-    ":attestation_proto",
     ":test_support",
-    ":user_activity_event_proto",
     ":user_event_reporter_testing_record_proto",
     "//ash",
     "//ash:test_support",
@@ -2681,26 +2672,6 @@ source_set("unit_tests") {
   ]
 }
 
-proto_library("attestation_proto") {
-  sources = [ "../ash/attestation/attestation_key_payload.proto" ]
-}
-
-proto_library("screen_brightness_event_proto") {
-  sources = [ "../ash/power/ml/screen_brightness_event.proto" ]
-}
-
-proto_library("user_activity_event_proto") {
-  sources = [ "../ash/power/ml/user_activity_event.proto" ]
-}
-
-proto_library("add_remove_user_event_proto") {
-  sources =
-      [ "../policy/messaging_layer/proto/synced/add_remove_user_event.proto" ]
-  deps = [
-    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
-  ]
-}
-
 proto_library("device_configuration_proto") {
   sources = [ "../ash/login/screens/recommend_apps/device_configuration.proto" ]
   generate_python = false
@@ -2708,17 +2679,6 @@ proto_library("device_configuration_proto") {
 
 proto_library("dlp_policy_event_proto") {
   sources = [ "policy/dlp/dlp_policy_event.proto" ]
-}
-
-proto_library("key_permissions_proto") {
-  sources = [ "//third_party/cros_system_api/dbus/chaps/key_permissions.proto" ]
-  generate_python = false
-
-  proto_out_dir = "chrome/browser/ash/platform_keys/key_permissions"
-}
-
-proto_library("print_job_info_proto") {
-  sources = [ "../ash/printing/history/print_job_info.proto" ]
 }
 
 proto_library("login_logout_event_proto") {
@@ -2739,52 +2699,6 @@ proto_library("lock_unlock_event_proto") {
 proto_library("user_event_reporter_testing_record_proto") {
   sources =
       [ "../ash/policy/reporting/user_event_reporter_testing_record.proto" ]
-}
-
-device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
-
-action("device_policy_remover_generate") {
-  script = "../ash/policy/tools/generate_device_policy_remover.py"
-  descriptor_pool_path = "//third_party/protobuf/python"
-  symbol_database_path = "$root_out_dir/pyproto"
-
-  # This is provided by //components/policy/proto listed in public_deps.
-  # The containing directory is in a separate variable because that's what
-  # the script expects as an argument.
-  chrome_device_policy_pb2_dir = "$root_out_dir/pyproto/components/policy/proto"
-  chrome_device_policy_pb2_path =
-      "$chrome_device_policy_pb2_dir/chrome_device_policy_pb2.py"
-
-  sources = [
-    # It's important to explicitly list which files provided by this action's
-    # dependencies are actually used by this action, because the action is not
-    # automatically re-run on changes in one of the public_deps. See
-    # https://crbug.com/933359 for more information.
-    chrome_device_policy_pb2_path,
-  ]
-
-  outputs = [ device_policy_remover_path ]
-
-  args = [
-    # generated file name
-    rebase_path(device_policy_remover_path, root_build_dir),
-
-    # directories for PATH variable to compile generated file
-    rebase_path(descriptor_pool_path, root_build_dir),
-    rebase_path(symbol_database_path, root_build_dir),
-    rebase_path(chrome_device_policy_pb2_dir, root_build_dir),
-  ]
-
-  public_deps = [
-    "//components/policy/proto",
-    "//third_party/protobuf:py_proto",
-  ]
-}
-
-static_library("device_policy_remover_generated") {
-  sources = [ device_policy_remover_path ]
-
-  public_deps = [ ":device_policy_remover_generate" ]
 }
 
 fuzzer_test("smb_url_fuzzer") {

@@ -9,6 +9,7 @@ import("//chromeos/ash/components/hibernate/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_extensions, "Ash Chrome has to be built with extensions")
 assert(is_chromeos_ash)
@@ -2544,6 +2545,9 @@ source_set("ash") {
   ]
 
   public_deps = [
+    ":print_job_info_proto",
+    ":screen_brightness_event_proto",
+    ":user_activity_event_proto",
     "//ash",
     "//ash/components/arc",
     "//ash/components/arc:arc_base",
@@ -2611,15 +2615,12 @@ source_set("ash") {
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/chromeos",
-    "//chrome/browser/chromeos:print_job_info_proto",
-    "//chrome/browser/chromeos:screen_brightness_event_proto",
-    "//chrome/browser/chromeos:user_activity_event_proto",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
-    "//chrome/browser/safe_browsing:safe_browsing",
+    "//chrome/browser/safe_browsing",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings_headers",
     "//chrome/browser/web_applications",
@@ -2774,6 +2775,7 @@ source_set("ash") {
     "//components/sync_preferences",
     "//components/user_manager",
     "//components/viz/common",
+    "//components/web_modal",
     "//content/public/browser",
     "//crypto",
     "//dbus",
@@ -2856,6 +2858,7 @@ source_set("ash") {
     "//ui/shell_dialogs",
     "//ui/snapshot",
     "//ui/views",
+    "//ui/views/controls/webview",
     "//ui/web_dialogs",
     "//ui/webui",
     "//ui/wm/public",
@@ -2863,6 +2866,10 @@ source_set("ash") {
   ]
 
   deps = [
+    ":add_remove_user_event_proto",
+    ":attestation_proto",
+    ":device_policy_remover_generated",
+    ":key_permissions_proto",
     "//apps",
     "//ash/components/arc:arc_features",
     "//ash/components/arc/input_overlay/resources",
@@ -2942,9 +2949,6 @@ source_set("ash") {
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/browser/browsing_data:constants",
-    "//chrome/browser/chromeos:add_remove_user_event_proto",
-    "//chrome/browser/chromeos:attestation_proto",
-    "//chrome/browser/chromeos:key_permissions_proto",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
@@ -3094,7 +3098,6 @@ source_set("ash") {
     "//components/version_info",
     "//components/version_info:channel",
     "//components/viz/host",
-    "//components/web_modal",
     "//components/webapps/browser",
     "//components/webapps/browser:constants",
     "//content/public/common",
@@ -3164,7 +3167,6 @@ source_set("ash") {
     "//ui/native_theme",
     "//ui/ozone",
     "//ui/strings:ui_strings",
-    "//ui/views/controls/webview",
     "//ui/wm",
   ]
 
@@ -3273,4 +3275,81 @@ static_library("user_event_reporter_helper_test_support") {
   ]
 
   deps = [ ":ash" ]
+}
+
+proto_library("add_remove_user_event_proto") {
+  sources =
+      [ "../policy/messaging_layer/proto/synced/add_remove_user_event.proto" ]
+  deps = [
+    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
+  ]
+}
+
+proto_library("attestation_proto") {
+  sources = [ "attestation/attestation_key_payload.proto" ]
+}
+
+proto_library("key_permissions_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/chaps/key_permissions.proto" ]
+  generate_python = false
+
+  proto_out_dir = "chrome/browser/ash/platform_keys/key_permissions"
+}
+
+proto_library("print_job_info_proto") {
+  sources = [ "printing/history/print_job_info.proto" ]
+}
+
+proto_library("screen_brightness_event_proto") {
+  sources = [ "power/ml/screen_brightness_event.proto" ]
+}
+
+proto_library("user_activity_event_proto") {
+  sources = [ "power/ml/user_activity_event.proto" ]
+}
+
+device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
+
+action("device_policy_remover_generate") {
+  script = "../ash/policy/tools/generate_device_policy_remover.py"
+  descriptor_pool_path = "//third_party/protobuf/python"
+  symbol_database_path = "$root_out_dir/pyproto"
+
+  # This is provided by //components/policy/proto listed in public_deps.
+  # The containing directory is in a separate variable because that's what
+  # the script expects as an argument.
+  chrome_device_policy_pb2_dir = "$root_out_dir/pyproto/components/policy/proto"
+  chrome_device_policy_pb2_path =
+      "$chrome_device_policy_pb2_dir/chrome_device_policy_pb2.py"
+
+  sources = [
+    # It's important to explicitly list which files provided by this action's
+    # dependencies are actually used by this action, because the action is not
+    # automatically re-run on changes in one of the public_deps. See
+    # https://crbug.com/933359 for more information.
+    chrome_device_policy_pb2_path,
+  ]
+
+  outputs = [ device_policy_remover_path ]
+
+  args = [
+    # generated file name
+    rebase_path(device_policy_remover_path, root_build_dir),
+
+    # directories for PATH variable to compile generated file
+    rebase_path(descriptor_pool_path, root_build_dir),
+    rebase_path(symbol_database_path, root_build_dir),
+    rebase_path(chrome_device_policy_pb2_dir, root_build_dir),
+  ]
+
+  public_deps = [
+    "//components/policy/proto",
+    "//third_party/protobuf:py_proto",
+  ]
+}
+
+static_library("device_policy_remover_generated") {
+  sources = [ device_policy_remover_path ]
+
+  public_deps = [ ":device_policy_remover_generate" ]
 }
