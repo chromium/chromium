@@ -172,7 +172,7 @@ MediaStreamRendererFactory::GetAudioRenderer(
     renderer = new WebRtcAudioRenderer(
         PeerConnectionDependencyFactory::From(*frame->DomWindow())
             .GetWebRtcSignalingTaskRunner(),
-        web_stream, web_frame,
+        web_stream, *web_frame,
 
         GetSessionIdForWebRtcAudioRenderer(*frame->DomWindow()),
         String(device_id), std::move(on_render_error_callback));
