@@ -29,7 +29,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #undef atan2  // to use std::atan2 instead of wtf_atan2

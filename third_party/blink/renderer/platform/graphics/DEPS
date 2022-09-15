@@ -68,7 +68,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h",
     "+third_party/blink/renderer/platform/mojo/heap_mojo_remote.h",
     "+third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h",
-    "+third_party/blink/renderer/platform/mojo/mojo_helper.h",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/runtime_enabled_features.h",
     "+third_party/blink/renderer/platform/scheduler",

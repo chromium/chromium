@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 
 namespace blink {
 

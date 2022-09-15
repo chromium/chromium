@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 
 // Maximum number of entries in a vibration pattern.
 const unsigned kVibrationPatternLengthMax = 99;

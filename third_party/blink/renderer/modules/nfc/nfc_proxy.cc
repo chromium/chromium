@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_reader.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_type_converters.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 
 namespace blink {
 

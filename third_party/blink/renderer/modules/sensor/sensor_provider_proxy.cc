@@ -7,7 +7,6 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy_impl.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy_inspector_impl.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 
 namespace blink {
 

@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/icu/source/common/unicode/char16ptr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -102,13 +101,6 @@ TimeZoneController::~TimeZoneController() = default;
 
 // static
 void TimeZoneController::Init() {
-  // TODO(crbug.com/660274): The unit tests should not require this exception.
-  // Currently some unit tests have no message loop ready, so we can't
-  // initialize the mojo stuff here. They can initialize those mojo stuff
-  // they're interested in later after they got a message loop ready.
-  if (!CanInitializeMojo())
-    return;
-
   // monitor must not use HeapMojoRemote. TimeZoneController is not managed by
   // Oilpan. monitor is only used to bind receiver_ here and never used
   // again.
