@@ -41,6 +41,7 @@ using PasswordCheckUIStatus = password_manager::PasswordCheckUIStatus;
 using State = password_manager::BulkLeakCheckService::State;
 using SyncState = password_manager::SyncState;
 using CredentialUIEntry = password_manager::CredentialUIEntry;
+using CredentialFacet = password_manager::CredentialFacet;
 using CompromisedCredentialForUI =
     PasswordCheckManager::CompromisedCredentialForUI;
 
@@ -249,6 +250,13 @@ void PasswordCheckManager::OnCredentialDone(
 CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
     const CredentialUIEntry& credential) const {
   CompromisedCredentialForUI ui_credential(credential);
+
+  std::vector<CredentialFacet> credential_facets;
+  CredentialFacet credential_facet;
+  credential_facet.display_name = credential.GetDisplayName();
+  credential_facet.url = credential.GetURL();
+  credential_facet.signon_realm = credential.signon_realm;
+
   // UI is only be created after the list of available password check
   // scripts has been refreshed.
   DCHECK(AreScriptsRefreshed());
@@ -258,7 +266,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   if (facet.IsValidAndroidFacetURI()) {
     ui_credential.package_name = facet.android_package_name();
 
-    if (credential.app_display_name.empty()) {
+    if (credential.GetDisplayName().empty()) {
       // In case no affiliation information could be obtained show the
       // formatted package name to the user.
       ui_credential.display_origin = l10n_util::GetStringFUTF16(
@@ -266,36 +274,38 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
           base::UTF8ToUTF16(facet.android_package_name()));
     } else {
       ui_credential.display_origin =
-          base::UTF8ToUTF16(credential.app_display_name);
+          base::UTF8ToUTF16(credential.GetDisplayName());
     }
     // In case no affiliated_web_realm could be obtained we should not have an
     // associated url for android credential.
-    ui_credential.url = credential.affiliated_web_realm.empty()
-                            ? GURL::EmptyGURL()
-                            : GURL(credential.affiliated_web_realm);
+    credential_facet.url = credential.affiliated_web_realm.empty()
+                               ? GURL::EmptyGURL()
+                               : GURL(credential.affiliated_web_realm);
 
   } else {
     ui_credential.display_origin = url_formatter::FormatUrl(
-        credential.url.DeprecatedGetOriginAsURL(),
+        credential.GetURL().DeprecatedGetOriginAsURL(),
         url_formatter::kFormatUrlOmitDefaults |
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
             url_formatter::kFormatUrlTrimAfterHost,
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
     ui_credential.change_password_url =
-        password_manager::CreateChangePasswordUrl(ui_credential.url).spec();
+        password_manager::CreateChangePasswordUrl(credential_facet.url).spec();
   }
 
   ui_credential.display_username = GetDisplayUsername(credential.username);
   ui_credential.has_startable_script =
       !credential.username.empty() && ShouldFetchPasswordScripts() &&
       password_script_fetcher_->IsScriptAvailable(
-          url::Origin::Create(ui_credential.url.DeprecatedGetOriginAsURL()));
+          url::Origin::Create(credential_facet.url.DeprecatedGetOriginAsURL()));
   ui_credential.has_auto_change_button =
       ui_credential.has_startable_script &&
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordChangeInSettings);
 
+  credential_facets.push_back(std::move(credential_facet));
+  ui_credential.facets = std::move(credential_facets);
   return ui_credential;
 }
 

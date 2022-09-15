@@ -23,11 +23,12 @@
     auto facetUri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
         credential.signon_realm);
     if (facetUri.IsValidAndroidFacetURI()) {
-      if (!credential.app_display_name.empty()) {
+      std::string display_name = credential.GetDisplayName();
+      if (!display_name.empty()) {
         _changePasswordURL = password_manager::CreateChangePasswordUrl(
             GURL(credential.affiliated_web_realm));
-        _origin = base::SysUTF8ToNSString(credential.app_display_name);
-        _website = base::SysUTF8ToNSString(credential.app_display_name);
+        _origin = base::SysUTF8ToNSString(display_name);
+        _website = base::SysUTF8ToNSString(display_name);
       } else {
         _origin = base::SysUTF8ToNSString(facetUri.android_package_name());
         _website = base::SysUTF8ToNSString(facetUri.android_package_name());
@@ -38,7 +39,7 @@
       _website = base::SysUTF8ToNSString(
           password_manager::GetShownUrl(credential).spec());
       _changePasswordURL =
-          password_manager::CreateChangePasswordUrl(credential.url);
+          password_manager::CreateChangePasswordUrl(credential.GetURL());
     }
 
     if (!credential.blocked_by_user) {

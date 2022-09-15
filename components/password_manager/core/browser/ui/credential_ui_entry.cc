@@ -21,9 +21,7 @@ CredentialUIEntry::CredentialUIEntry() = default;
 
 CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
     : signon_realm(form.signon_realm),
-      url(form.url),
       affiliated_web_realm(form.affiliated_web_realm),
-      app_display_name(form.app_display_name),
       username(form.username_value),
       password(form.password_value),
       federation_origin(form.federation_origin),
@@ -38,6 +36,13 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
       break;
     }
   }
+
+  CredentialFacet facet;
+  facet.display_name = form.app_display_name;
+  facet.url = form.url;
+  facet.signon_realm = form.signon_realm;
+  facets.push_back(std::move(facet));
+
   if (form.IsUsingAccountStore())
     stored_in.insert(PasswordForm::Store::kAccountStore);
   if (form.IsUsingProfileStore())
@@ -49,9 +54,13 @@ CredentialUIEntry::CredentialUIEntry(const CSVPassword& csv_password,
     : signon_realm(IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
                        ? csv_password.GetURL().value().spec()
                        : GetSignonRealm(csv_password.GetURL().value())),
-      url(csv_password.GetURL().value()),
       username(base::UTF8ToUTF16(csv_password.GetUsername())),
       password(base::UTF8ToUTF16(csv_password.GetPassword())) {
+  CredentialFacet facet;
+  facet.url = csv_password.GetURL().value();
+  facet.signon_realm = GetSignonRealm(csv_password.GetURL().value());
+  facets.push_back(std::move(facet));
+
   DCHECK_EQ(csv_password.GetParseStatus(), CSVPassword::Status::kOK);
 
   stored_in.insert(to_store);
@@ -86,6 +95,16 @@ const base::Time CredentialUIEntry::GetLastLeakedOrPhishedTime() const {
                  password_issues.at(InsecureType::kPhished).create_time);
   }
   return compromise_time;
+}
+
+std::string CredentialUIEntry::GetDisplayName() const {
+  DCHECK(!facets.empty());
+  return facets[0].display_name;
+}
+
+GURL CredentialUIEntry::GetURL() const {
+  DCHECK(!facets.empty());
+  return facets[0].url;
 }
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {

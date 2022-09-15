@@ -110,9 +110,10 @@ void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {
 std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
       credential_.signon_realm);
+  std::string display_name = credential_.GetDisplayName();
 
   if (facet.IsValidAndroidFacetURI()) {
-    if (credential_.app_display_name.empty()) {
+    if (display_name.empty()) {
       // In case no affiliation information could be obtained show the
       // formatted package name to the user.
       return l10n_util::GetStringFUTF16(
@@ -120,11 +121,11 @@ std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
           base::UTF8ToUTF16(facet.android_package_name()));
     }
 
-    return base::UTF8ToUTF16(credential_.app_display_name);
+    return base::UTF8ToUTF16(display_name);
   }
 
   return url_formatter::FormatUrl(
-      credential_.url.DeprecatedGetOriginAsURL(),
+      credential_.GetURL().DeprecatedGetOriginAsURL(),
       url_formatter::kFormatUrlOmitDefaults |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrivialSubdomains |

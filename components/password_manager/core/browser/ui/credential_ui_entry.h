@@ -15,6 +15,25 @@
 
 namespace password_manager {
 
+// CredentialUIEntry is converted to represent a group of credentials with the
+// same username and password and are under the same affiliation (for example:
+// apple.com and apple.de). CredentialFacet is a simple struct to keep track of
+// each credential's display name, url and sign-on realm.
+struct CredentialFacet {
+  // The display name for the website or the Android application.
+  std::string display_name;
+
+  // An URL consists of the scheme, host, port and path; the rest is stripped.
+  // This is the primary data used by the PasswordManager to decide (in
+  // longest matching prefix fashion) whether or not a given PasswordForm
+  // result from the database is a good fit for a particular form on a page.
+  GURL url;
+
+  // The "Realm" for the sign-on. Please refer to the PasswordSpecifics
+  // documentation for more details.
+  std::string signon_realm;
+};
+
 // Simple struct that represents an entry inside Settings UI. Allows implicit
 // construction from PasswordForm for convenience. A single entry might
 // correspond to multiple PasswordForms.
@@ -36,24 +55,20 @@ struct CredentialUIEntry {
   CredentialUIEntry& operator=(const CredentialUIEntry& other);
   CredentialUIEntry& operator=(CredentialUIEntry&& other);
 
+  // List of facets represented by this entry which contains the display name,
+  // url and sign-on realm of a credential.
+  std::vector<CredentialFacet> facets;
+
   // The "Realm" for the sign-on. This is scheme, host, port for SCHEME_HTML.
   // Dialog based forms also contain the HTTP realm. Android based forms will
   // contain a string of the form "android://<hash of cert>@<package name>"
+  // TODO(crbug.com/1360896): Remove unused member.
   std::string signon_realm;
-
-  // An URL consists of the scheme, host, port and path; the rest is stripped.
-  // This is the primary data used by the PasswordManager to decide (in
-  // longest matching prefix fashion) whether or not a given PasswordForm
-  // result from the database is a good fit for a particular form on a page.
-  GURL url;
 
   // The web realm affiliated with the Android application, if the it is an
   // Android credential. Otherwise, the string is empty.
+  // TODO(crbug.com/1360896): Move this to CredentialFacet.
   std::string affiliated_web_realm;
-
-  // The display name (e.g. Play Store name) of the Android application if
-  // it is an Android credential. Otherwise, the string is empty.
-  std::string app_display_name;
 
   // The current username.
   std::u16string username;
@@ -89,6 +104,14 @@ struct CredentialUIEntry {
   bool IsPhished() const;
 
   const base::Time GetLastLeakedOrPhishedTime() const;
+
+  // Returns the first display name among all the display names in the facets
+  // associated with this entry.
+  std::string GetDisplayName() const;
+
+  // Returns the first URL among all the URLs in the facets associated with this
+  // entry.
+  GURL GetURL() const;
 };
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);

@@ -160,7 +160,7 @@ TEST_F(PasswordImporterTest, CSVImport) {
 
   EXPECT_EQ(1u, results.number_imported);
   ASSERT_EQ(1u, stored_passwords().size());
-  EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].url);
+  EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].GetURL());
   EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].signon_realm);
   EXPECT_EQ(kTestUsername, stored_passwords()[0].username);
   EXPECT_EQ(kTestPassword, stored_passwords()[0].password);
@@ -230,7 +230,7 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileStore) {
 
   EXPECT_EQ(1u, results.number_imported);
   ASSERT_EQ(1u, stored_passwords().size());
-  EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].url);
+  EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].GetURL());
   EXPECT_EQ(u"username_exists_in_profile_store",
             stored_passwords()[0].username);
   EXPECT_EQ(u"password_already_stored", stored_passwords()[0].password);
@@ -272,7 +272,7 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchAccountStore) {
 
   EXPECT_EQ(1u, results.number_imported);
   ASSERT_EQ(1u, stored_passwords().size());
-  EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].url);
+  EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].GetURL());
   EXPECT_EQ(u"username_exists_in_account_store",
             stored_passwords()[0].username);
   EXPECT_EQ(u"password_already_stored", stored_passwords()[0].password);
@@ -318,11 +318,11 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileAndAccountStore) {
   EXPECT_EQ(password_manager::ImportResults::Status::SUCCESS, results.status);
   EXPECT_EQ(2u, results.number_imported);
   ASSERT_EQ(2u, stored_passwords().size());
-  EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].url);
+  EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].GetURL());
   EXPECT_EQ(u"username_exists_in_profile_and_account_store",
             stored_passwords()[0].username);
   EXPECT_EQ(u"password_already_stored", stored_passwords()[0].password);
-  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].url);
+  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].GetURL());
   EXPECT_EQ(u"username2", stored_passwords()[1].username);
   EXPECT_EQ(u"password2", stored_passwords()[1].password);
 }
@@ -370,7 +370,7 @@ TEST_F(PasswordImporterTest, CSVImportConflictProfileStore) {
 
   EXPECT_EQ(1u, results.number_imported);
   ASSERT_EQ(2u, stored_passwords().size());
-  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].url);
+  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].GetURL());
   EXPECT_EQ(u"username2", stored_passwords()[1].username);
   EXPECT_EQ(u"password2", stored_passwords()[1].password);
 }
@@ -420,7 +420,7 @@ TEST_F(PasswordImporterTest, CSVImportConflictAccountStore) {
   EXPECT_EQ(password_manager::ImportResults::Status::SUCCESS, results.status);
   EXPECT_EQ(1u, results.number_imported);
   ASSERT_EQ(2u, stored_passwords().size());
-  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].url);
+  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].GetURL());
   EXPECT_EQ(u"username2", stored_passwords()[1].username);
   EXPECT_EQ(u"password2", stored_passwords()[1].password);
 }
@@ -471,7 +471,7 @@ TEST_F(PasswordImporterTest, CSVImportConflictProfileAndAccountStore) {
   EXPECT_EQ(password_manager::ImportResults::Status::SUCCESS, results.status);
   EXPECT_EQ(1u, results.number_imported);
   ASSERT_EQ(2u, stored_passwords().size());
-  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].url);
+  EXPECT_EQ(GURL("https://test2.com"), stored_passwords()[1].GetURL());
   EXPECT_EQ(u"username2", stored_passwords()[1].username);
   EXPECT_EQ(u"password2", stored_passwords()[1].password);
 }
@@ -771,7 +771,7 @@ TEST_F(PasswordImporterTest, PartialImportSucceeds) {
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
   ASSERT_EQ(1u, stored_passwords().size());
-  EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].url);
+  EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].GetURL());
   EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].signon_realm);
   EXPECT_EQ(kTestUsername, stored_passwords()[0].username);
   EXPECT_EQ(kTestPassword, stored_passwords()[0].password);

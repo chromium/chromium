@@ -82,7 +82,7 @@ ImportEntry CreateFailedImportEntry(
     const CredentialUIEntry& credential) {
   DCHECK(!IsSuccessOrExactMatch(add_result));
   ImportEntry result;
-  result.url = credential.url.possibly_invalid_spec();
+  result.url = credential.GetURL().possibly_invalid_spec();
   result.username = base::UTF16ToUTF8(credential.username);
   result.status = ToImportEntryStatus(add_result);
   return result;

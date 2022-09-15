@@ -962,7 +962,7 @@ bool ShouldShowSettingsUI() {
   passwordItem.title = text;
   passwordItem.credential = credential;
   passwordItem.detailText = detailText;
-  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.url)];
+  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
@@ -981,7 +981,7 @@ bool ShouldShowSettingsUI() {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.credential = credential;
-  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.url)];
+  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return passwordItem;

@@ -187,8 +187,8 @@ auto ExpectCompromisedCredentialForUI(
   return AllOf(
       Field(&CompromisedCredentialForUI::display_username, display_username),
       Field(&CompromisedCredentialForUI::display_origin, display_origin),
-      Field(&CompromisedCredentialForUI::url, url), package_name_field_matcher,
-      change_password_url_field_matcher,
+      Property(&CompromisedCredentialForUI::GetURL, url),
+      package_name_field_matcher, change_password_url_field_matcher,
       Field(&CompromisedCredentialForUI::password_issues,
             MatchInsecureType(insecure_type)),
       Property(&CompromisedCredentialForUI::IsLeaked,

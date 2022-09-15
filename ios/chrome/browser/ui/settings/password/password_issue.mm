@@ -23,7 +23,7 @@
     _website =
         base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
     _username = base::SysUTF16ToNSString(credential.username);
-    _URL = [[CrURL alloc] initWithGURL:credential.url];
+    _URL = [[CrURL alloc] initWithGURL:credential.GetURL()];
   }
   return self;
 }

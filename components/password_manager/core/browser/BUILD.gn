@@ -244,6 +244,8 @@ static_library("browser") {
     "sync/password_sync_bridge.h",
     "sync_credentials_filter.cc",
     "sync_credentials_filter.h",
+    "ui/affiliated_group.cc",
+    "ui/affiliated_group.h",
     "ui/bulk_leak_check_service_adapter.cc",
     "ui/bulk_leak_check_service_adapter.h",
     "ui/credential_provider_interface.h",

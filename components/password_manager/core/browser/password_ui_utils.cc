@@ -72,13 +72,14 @@ std::pair<std::string, GURL> GetShownOriginAndLinkUrl(
 std::string GetShownOrigin(const CredentialUIEntry& credential) {
   FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(credential.signon_realm);
-  return GetShownOrigin(facet_uri, credential.app_display_name, credential.url);
+  return GetShownOrigin(facet_uri, credential.GetDisplayName(),
+                        credential.GetURL());
 }
 
 GURL GetShownUrl(const CredentialUIEntry& credential) {
   FacetURI facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(credential.signon_realm);
-  return GetShownURL(facet_uri, credential.url);
+  return GetShownURL(facet_uri, credential.GetURL());
 }
 
 std::string GetShownOrigin(const url::Origin& origin) {

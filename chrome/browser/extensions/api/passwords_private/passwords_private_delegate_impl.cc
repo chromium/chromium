@@ -67,6 +67,7 @@
 
 namespace {
 
+using password_manager::CredentialFacet;
 using password_manager::CredentialUIEntry;
 
 // The error message returned to the UI when Chrome refuses to start multiple
@@ -297,9 +298,14 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
       use_account_store ? password_manager::PasswordForm::Store::kAccountStore
                         : password_manager::PasswordForm::Store::kProfileStore;
   CredentialUIEntry credential;
-  credential.url = password_manager_util::StripAuthAndParams(
+
+  CredentialFacet facet;
+  facet.url = password_manager_util::StripAuthAndParams(
       password_manager_util::ConstructGURLWithScheme(url));
-  credential.signon_realm = password_manager::GetSignonRealm(credential.url);
+  facet.signon_realm = password_manager::GetSignonRealm(facet.url);
+  // TODO(crbug.com/1360896): Remove this in part 2.
+  credential.signon_realm = facet.signon_realm;
+  credential.facets.push_back(std::move(facet));
   credential.username = username;
   credential.password = password;
   credential.note = password_manager::PasswordNote(
@@ -853,7 +859,7 @@ void PasswordsPrivateDelegateImpl::EmitHistogramsForCredentialAccess(
     sync_service = SyncServiceFactory::GetForProfile(profile_);
   }
   if (password_manager::sync_util::IsSyncAccountCredential(
-          entry.url, entry.username, sync_service,
+          entry.GetURL(), entry.username, sync_service,
           IdentityManagerFactory::GetForProfile(profile_))) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_SyncCredentialShown"));

@@ -630,15 +630,16 @@ PasswordCheckDelegate::ConstructInsecureCredential(
   api_credential.username = base::UTF16ToUTF8(entry.username);
   api_credential.urls = CreateUrlCollectionFromCredential(entry);
   api_credential.stored_in = StoreSetFromCredential(entry);
+  GURL entry_url = entry.GetURL();
   if (api_credential.is_android_credential) {
     // |change_password_url| need special handling for Android. Here we use
     // affiliation information instead of the origin.
-    if (!entry.app_display_name.empty()) {
+    if (!entry.GetDisplayName().empty()) {
       api_credential.change_password_url =
           GetChangePasswordUrl(GURL(entry.affiliated_web_realm));
     }
   } else {
-    api_credential.change_password_url = GetChangePasswordUrl(entry.url);
+    api_credential.change_password_url = GetChangePasswordUrl(entry_url);
   }
 
   api_credential.has_startable_script = false;
@@ -652,10 +653,10 @@ PasswordCheckDelegate::ConstructInsecureCredential(
           .Get()) {
     GURL url = api_credential.is_android_credential
                    ? GURL(entry.affiliated_web_realm)
-                   : entry.url;
+                   : entry_url;
     api_credential.has_startable_script =
         !url.is_empty() && GetPasswordScriptsFetcher()->IsScriptAvailable(
-                               url::Origin::Create(entry.url));
+                               url::Origin::Create(entry_url));
   }
 
   return api_credential;
