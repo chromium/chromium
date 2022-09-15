@@ -174,6 +174,45 @@ void FillQuantizationParams(v4l2_av1_quantization& v4l2_quant,
 
 }  // namespace
 
+// Section 5.9.14. Segmentation params syntax
+void FillSegmentationParams(struct v4l2_av1_segmentation& v4l2_seg,
+                            const libgav1::Segmentation& seg) {
+  if (seg.enabled)
+    v4l2_seg.flags |= V4L2_AV1_SEGMENTATION_FLAG_ENABLED;
+
+  if (seg.update_map)
+    v4l2_seg.flags |= V4L2_AV1_SEGMENTATION_FLAG_UPDATE_MAP;
+
+  if (seg.temporal_update)
+    v4l2_seg.flags |= V4L2_AV1_SEGMENTATION_FLAG_TEMPORAL_UPDATE;
+
+  if (seg.update_data)
+    v4l2_seg.flags |= V4L2_AV1_SEGMENTATION_FLAG_UPDATE_DATA;
+
+  if (seg.segment_id_pre_skip)
+    v4l2_seg.flags |= V4L2_AV1_SEGMENTATION_FLAG_SEG_ID_PRE_SKIP;
+
+  static_assert(
+      std::size(decltype(v4l2_seg.feature_enabled){}) == libgav1::kMaxSegments,
+      "Invalid size of |feature_enabled| array in |v4l2_av1_segmentation| "
+      "struct");
+
+  static_assert(
+      std::size(decltype(v4l2_seg.feature_data){}) == libgav1::kMaxSegments &&
+          std::extent<decltype(v4l2_seg.feature_data), 0>::value ==
+              libgav1::kSegmentFeatureMax,
+      "Invalid size of |feature_data| array in |v4l2_av1_segmentation| struct");
+
+  for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
+    for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j) {
+      v4l2_seg.feature_enabled[i] |= (seg.feature_enabled[i][j] << j);
+      v4l2_seg.feature_data[i][j] = seg.feature_data[i][j];
+    }
+  }
+
+  v4l2_seg.last_active_seg_id = seg.last_active_segment_id;
+}
+
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
@@ -211,6 +250,9 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
 
   struct v4l2_av1_quantization v4l2_quant = {};
   FillQuantizationParams(v4l2_quant, frame_header.quantizer);
+
+  struct v4l2_av1_segmentation v4l2_seg = {};
+  FillSegmentationParams(v4l2_seg, frame_header.segmentation);
 
   NOTIMPLEMENTED();
 
