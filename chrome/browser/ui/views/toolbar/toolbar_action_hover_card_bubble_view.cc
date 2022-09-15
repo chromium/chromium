@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
+
 #include <string>
 
 #include "base/feature_list.h"
@@ -29,11 +30,6 @@
 #endif
 
 namespace {
-
-// Maximum number of lines that labels can occupy.
-constexpr int kHoverCardTitleMaxLines = 2;
-constexpr int kHoverCardFootnoteTitleMaxLines = 2;
-constexpr int kHoverCardFootnoteDescriptionMaxLines = 2;
 
 // Hover card fixed width. Toolbar actions are not visible when window is too
 // small to display them, therefore hover cards wouldn't be displayed if the
@@ -154,22 +150,18 @@ class RenderTextFactoryLabel : public views::Label {
 // FadeLabel. Move it to its own shared file.
 class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
  public:
-  FadeLabel(int context, int num_lines) {
+  explicit FadeLabel(int context) {
     primary_label_ = AddChildView(std::make_unique<RenderTextFactoryLabel>(
         std::u16string(), context, views::style::STYLE_PRIMARY));
     primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     primary_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
-    primary_label_->SetMultiLine(num_lines > 1);
-    if (num_lines > 1)
-      primary_label_->SetMaxLines(num_lines);
+    primary_label_->SetMultiLine(true);
 
     label_fading_out_ = AddChildView(std::make_unique<SolidLabel>(
         std::u16string(), context, views::style::STYLE_PRIMARY));
     label_fading_out_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label_fading_out_->SetVerticalAlignment(gfx::ALIGN_TOP);
-    label_fading_out_->SetMultiLine(num_lines > 1);
-    if (num_lines > 1)
-      label_fading_out_->SetMaxLines(num_lines);
+    label_fading_out_->SetMultiLine(true);
     label_fading_out_->GetViewAccessibility().OverrideIsIgnored(true);
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -178,12 +170,7 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
   ~FadeLabel() override = default;
 
   void SetText(std::u16string text, absl::optional<bool> is_filename) {
-    if (was_filename_.has_value())
-      SetMultilineParams(label_fading_out_, was_filename_.value());
     label_fading_out_->SetText(primary_label_->GetText());
-    if (is_filename.has_value())
-      SetMultilineParams(primary_label_, is_filename.value());
-    was_filename_ = is_filename;
     primary_label_->SetText(text);
   }
 
@@ -239,13 +226,8 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
   }
 
  private:
-  static void SetMultilineParams(views::Label* label, bool is_filename) {
-    label->SetElideBehavior(is_filename ? gfx::NO_ELIDE : gfx::ELIDE_TAIL);
-  }
-
   raw_ptr<RenderTextFactoryLabel> primary_label_;
   raw_ptr<SolidLabel> label_fading_out_;
-  absl::optional<bool> was_filename_;
 
   double percent_ = 1.0;
   absl::optional<ui::ColorId> background_color_id_;
@@ -256,11 +238,10 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
   FootnoteView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    title_label_ = AddChildView(std::make_unique<FadeLabel>(
-        CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardFootnoteTitleMaxLines));
+    title_label_ =
+        AddChildView(std::make_unique<FadeLabel>(CONTEXT_TAB_HOVER_CARD_TITLE));
     description_label_ = AddChildView(
-        std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT,
-                                    kHoverCardFootnoteDescriptionMaxLines));
+        std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT));
 
     title_label_->SetBackgroundColorId(ui::kColorBubbleFooterBackground);
     description_label_->SetBackgroundColorId(ui::kColorBubbleFooterBackground);
@@ -334,8 +315,8 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   set_highlight_button_when_shown(false);
 
   // Set up content.
-  title_label_ = AddChildView(std::make_unique<FadeLabel>(
-      CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardTitleMaxLines));
+  title_label_ =
+      AddChildView(std::make_unique<FadeLabel>(CONTEXT_TAB_HOVER_CARD_TITLE));
 
   // Set up layout.
   views::FlexLayout* const layout =
