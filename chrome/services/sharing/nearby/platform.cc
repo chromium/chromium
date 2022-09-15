@@ -56,8 +56,9 @@ int GetCurrentTid() {
   return 0;
 }
 
-std::string ImplementationPlatform::GetDownloadPath(std::string& parent_folder,
-                                                    std::string& file_name) {
+std::string ImplementationPlatform::GetDownloadPath(
+    absl::string_view parent_folder,
+    absl::string_view file_name) {
   // This should return the <download_path>/parent_folder/file_name. For now we
   // will just return an empty string, since chrome doesn't call this yet.
   // TODO(b/223710122): Eventually chrome should implement this method.
