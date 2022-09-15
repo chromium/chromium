@@ -777,7 +777,7 @@ scoped_refptr<CSSVariableData>
 StyleCascade::TokenSequence::BuildVariableData() {
   Vector<String> backing_strings;
   for (scoped_refptr<const CSSVariableData>& data : variable_data_)
-    backing_strings.AppendVector(data->BackingStrings());
+    data->AppendBackingStrings(backing_strings);
   variable_data_.clear();
   return CSSVariableData::CreateResolved(
       std::move(tokens_), std::move(backing_strings), is_animation_tainted_,

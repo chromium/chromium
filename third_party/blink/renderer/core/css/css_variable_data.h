@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 
+#include <memory>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -57,7 +59,10 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   }
 
   base::span<CSSParserToken> Tokens() const { return {tokens_, num_tokens_}; }
-  const Vector<String>& BackingStrings() const { return backing_strings_; }
+
+  // Appends all backing strings to the given vector.
+  void AppendBackingStrings(Vector<String>& output) const;
+
   String Serialize() const;
 
   bool operator==(const CSSVariableData& other) const;
@@ -81,7 +86,14 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   const CSSValue* ParseForSyntax(const CSSSyntaxDefinition&,
                                  SecureContextMode) const;
 
-  ~CSSVariableData() { WTF::Partitions::FastFree(tokens_); }
+  ~CSSVariableData() {
+    if (num_backing_strings_ == 1) {
+      backing_string_.~String();
+    } else {
+      backing_strings_.~unique_ptr<String[]>();
+    }
+    WTF::Partitions::FastFree(tokens_);
+  }
 
   CSSVariableData(const CSSVariableData&) = delete;
   CSSVariableData& operator=(const CSSVariableData&) = delete;
@@ -89,7 +101,7 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   CSSVariableData& operator=(const CSSVariableData&&) = delete;
 
  private:
-  CSSVariableData() = default;
+  CSSVariableData() {}
 
   CSSVariableData(const CSSTokenizedValue&,
                   bool is_animation_tainted,
@@ -104,13 +116,22 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
                   bool has_root_font_units,
                   const String& base_url,
                   const WTF::TextEncoding& charset)
-      : backing_strings_(std::move(backing_strings)),
-        num_tokens_(resolved_tokens.size()),
+      : num_tokens_(resolved_tokens.size()),
         is_animation_tainted_(is_animation_tainted),
         has_font_units_(has_font_units),
         has_root_font_units_(has_root_font_units),
         base_url_(base_url),
         charset_(charset) {
+    if (backing_strings.size() == 1) {
+      backing_string_ = std::move(backing_strings[0]);
+    } else if (backing_strings.size() > 1) {
+      backing_strings_ = std::make_unique<String[]>(backing_strings.size());
+      for (wtf_size_t i = 0; i < backing_strings.size(); ++i) {
+        backing_strings_[i] = std::move(backing_strings[i]);
+      }
+    }
+    num_backing_strings_ = backing_strings.size();
+
     AllocateSpaceForCSSParserTokens();
     std::uninitialized_move(resolved_tokens.begin(), resolved_tokens.end(),
                             tokens_);
@@ -133,10 +154,14 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   // tokens_ may have raw pointers to string data, we store the String objects
   // owning that data in backing_strings_ to keep it alive alongside the
   // tokens_.
-  Vector<String> backing_strings_;
+  union {
+    String backing_string_;  // If num_backing_strings_ == 1.
+    std::unique_ptr<String[]> backing_strings_{nullptr};  // Otherwise.
+  };
   String original_text_;
   CSSParserToken* tokens_ = nullptr;  // Owned, allocated with FastMalloc.
   wtf_size_t num_tokens_ = 0;
+  wtf_size_t num_backing_strings_ = 0;
   const bool is_animation_tainted_ = false;
   const bool needs_variable_resolution_ = false;
   bool has_font_units_ = false;

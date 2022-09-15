@@ -84,14 +84,16 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
     ASSERT_EQ(url.GetString(), GetDocument().Url().GetString());
   }
 
-  const String& GetRootVariableValue(UADefinedVariable name) {
+  String GetRootVariableValue(UADefinedVariable name) {
     CSSVariableData* data =
         StyleEnvironmentVariables::GetRootInstance().ResolveVariable(
             StyleEnvironmentVariables::GetVariableName(
                 name, /*feature_context=*/nullptr),
             {});
     EXPECT_NE(nullptr, data);
-    return data->BackingStrings()[0];
+    Vector<String> backing_strings;
+    data->AppendBackingStrings(backing_strings);
+    return backing_strings[0];
   }
 
   void SetVariableOnRoot(const AtomicString& name, const String& value) {

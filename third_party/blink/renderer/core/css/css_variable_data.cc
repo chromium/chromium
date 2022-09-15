@@ -52,6 +52,16 @@ static bool IsRootFontUnitToken(CSSParserToken token) {
          token.GetUnitType() == CSSPrimitiveValue::UnitType::kRems;
 }
 
+void CSSVariableData::AppendBackingStrings(Vector<String>& output) const {
+  if (num_backing_strings_ == 1) {
+    output.push_back(backing_string_);
+  } else {
+    for (wtf_size_t i = 0; i < num_backing_strings_; ++i) {
+      output.push_back(backing_strings_[i]);
+    }
+  }
+}
+
 String CSSVariableData::Serialize() const {
   if (original_text_) {
     if (original_text_.EndsWith('\\')) {
@@ -93,7 +103,7 @@ bool CSSVariableData::operator==(const CSSVariableData& other) const {
 
 void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
   DCHECK_EQ(num_tokens_, 0u);
-  DCHECK_EQ(backing_strings_.size(), 0u);
+  DCHECK_EQ(num_backing_strings_, 0u);
   StringBuilder string_builder;
   CSSParserTokenRange local_range = range;
 
@@ -105,13 +115,13 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
     has_root_font_units_ |= IsRootFontUnitToken(token);
     ++num_tokens_;
   }
-  String backing_string = string_builder.ReleaseString();
-  backing_strings_.push_back(backing_string);
+  backing_string_ = string_builder.ReleaseString();
+  num_backing_strings_ = 1;
   AllocateSpaceForCSSParserTokens();
-  if (backing_string.Is8Bit())
-    UpdateTokens<LChar>(range, backing_string, tokens_);
+  if (backing_string_.Is8Bit())
+    UpdateTokens<LChar>(range, backing_string_, tokens_);
   else
-    UpdateTokens<UChar>(range, backing_string, tokens_);
+    UpdateTokens<UChar>(range, backing_string_, tokens_);
 }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -137,7 +147,7 @@ bool TokenValueIsBacked(const CSSParserToken& token,
 }
 
 bool TokenValueIsBacked(const CSSParserToken& token,
-                        const Vector<String>& backing_strings) {
+                        base::span<const String> backing_strings) {
   DCHECK(token.HasStringBacking());
   for (const String& backing_string : backing_strings) {
     if (TokenValueIsBacked(token, backing_string)) {
@@ -150,9 +160,16 @@ bool TokenValueIsBacked(const CSSParserToken& token,
 }  // namespace
 
 void CSSVariableData::VerifyStringBacking() const {
+  base::span<const String> backing_strings;
+  if (num_backing_strings_ == 1) {
+    backing_strings = base::span<const String>(&backing_string_, 1);
+  } else {
+    backing_strings =
+        base::span<const String>(backing_strings_.get(), num_backing_strings_);
+  }
   for (const CSSParserToken& token : Tokens()) {
     DCHECK(!token.HasStringBacking() ||
-           TokenValueIsBacked(token, backing_strings_))
+           TokenValueIsBacked(token, backing_strings))
         << "Token value is not backed: " << token.Value().ToString();
   }
 }
