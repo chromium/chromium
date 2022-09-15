@@ -12,6 +12,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 
 namespace content {
@@ -28,9 +29,6 @@ namespace first_party_sets {
 // policy.
 class FirstPartySetsPolicyService : public KeyedService {
  public:
-  using PolicyCustomization =
-      content::FirstPartySetsHandler::PolicyCustomization;
-
   FirstPartySetsPolicyService(content::BrowserContext* context,
                               const base::Value::Dict& policy);
   FirstPartySetsPolicyService(const FirstPartySetsPolicyService&) = delete;
@@ -53,7 +51,7 @@ class FirstPartySetsPolicyService : public KeyedService {
  private:
   // Triggers changes that occur once the customizations are ready for the
   // profile that created this service.
-  void OnCustomizationsReady(PolicyCustomization customizations);
+  void OnCustomizationsReady(net::FirstPartySetsContextConfig config);
 
   // Triggers changes that occur once the sets transition clearing is done for
   // the profile that created this service.
@@ -76,7 +74,7 @@ class FirstPartySetsPolicyService : public KeyedService {
   // The customizations to the browser's list of First-Party Sets to respect
   // the changes specified by this FirstPartySetsOverrides policy for the
   // profile that created this service.
-  absl::optional<PolicyCustomization> customizations_
+  absl::optional<net::FirstPartySetsContextConfig> config_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -7,9 +7,11 @@
 #include "base/containers/flat_map.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/public_sets.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
@@ -154,6 +156,20 @@ bool StructTraits<network::mojom::PublicFirstPartySetsDataView,
     return false;
 
   *out_public_sets = net::PublicSets(entries, aliases);
+
+  return true;
+}
+
+bool StructTraits<network::mojom::FirstPartySetsContextConfigDataView,
+                  net::FirstPartySetsContextConfig>::
+    Read(network::mojom::FirstPartySetsContextConfigDataView config,
+         net::FirstPartySetsContextConfig* out_config) {
+  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
+      customizations;
+  if (!config.ReadCustomizations(&customizations))
+    return false;
+
+  *out_config = net::FirstPartySetsContextConfig(std::move(customizations));
 
   return true;
 }

@@ -20,12 +20,16 @@ class NET_EXPORT FirstPartySetsContextConfig {
       base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>;
 
   FirstPartySetsContextConfig();
+  explicit FirstPartySetsContextConfig(OverrideSets customizations);
 
-  FirstPartySetsContextConfig(const FirstPartySetsContextConfig& other);
+  FirstPartySetsContextConfig(FirstPartySetsContextConfig&& other);
+  FirstPartySetsContextConfig& operator=(FirstPartySetsContextConfig&& other);
 
   ~FirstPartySetsContextConfig();
 
-  void SetCustomizations(OverrideSets customizations);
+  FirstPartySetsContextConfig Clone() const;
+
+  bool operator==(const FirstPartySetsContextConfig& other) const;
 
   const OverrideSets& customizations() const { return customizations_; }
 

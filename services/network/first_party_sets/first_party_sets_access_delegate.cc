@@ -41,7 +41,7 @@ FirstPartySetsAccessDelegate::~FirstPartySetsAccessDelegate() = default;
 void FirstPartySetsAccessDelegate::NotifyReady(
     mojom::FirstPartySetsReadyEventPtr ready_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context_config_.SetCustomizations(ready_event->customizations);
+  context_config_ = std::move(ready_event->config);
   InvokePendingQueries();
 }
 

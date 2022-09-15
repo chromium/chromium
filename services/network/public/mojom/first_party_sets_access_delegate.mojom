@@ -28,13 +28,8 @@ struct FirstPartySetsAccessDelegateParams {
 };
 
 struct FirstPartySetsReadyEvent {
-  // The list of modifications to override the public First-Party Sets owned
+  // The config to override the public First-Party Sets owned
   // by the network service for the network context.
   //
-  // This map is computed by the browser side against the public First-Party
-  // Sets, where the keys are member sites and the values are the ultimate
-  // entries of the final First-Party Sets combining the public sets and the
-  // modifications. Map entries of site -> absl::nullopt means the key site is
-  // considered deleted from the existing First-Party Sets.
-  map<SchemefulSite, FirstPartySetEntry?> customizations;
+  FirstPartySetsContextConfig config;
 };

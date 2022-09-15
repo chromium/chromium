@@ -16,6 +16,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/public_sets.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
@@ -54,9 +55,9 @@ CreateFirstPartySetsAccessDelegateParams(bool enabled) {
 }
 
 mojom::FirstPartySetsReadyEventPtr CreateFirstPartySetsReadyEvent(
-    OverrideSets override_sets) {
+    net::FirstPartySetsContextConfig config) {
   auto ready_event = mojom::FirstPartySetsReadyEvent::New();
-  ready_event->customizations = std::move(override_sets);
+  ready_event->config = std::move(config);
   return ready_event;
 }
 
@@ -255,13 +256,15 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, QueryBeforeReady_FindEntries) {
 }
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
-  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent({
-      {kSet1Member1,
-       {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kAssociated, 0)}},
-      {kSet3Owner,
-       {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kPrimary,
-                                absl::nullopt)}},
-  }));
+  delegate_remote()->NotifyReady(
+      CreateFirstPartySetsReadyEvent(net::FirstPartySetsContextConfig({
+          {kSet1Member1,
+           {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kAssociated,
+                                    0)}},
+          {kSet3Owner,
+           {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kPrimary,
+                                    absl::nullopt)}},
+      })));
 
   net::FirstPartySetEntry primary_entry(kSet3Owner, net::SiteType::kPrimary,
                                         absl::nullopt);
@@ -273,11 +276,12 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
 }
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_FindEntries) {
-  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent({
-      {kSet3Owner,
-       {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kPrimary,
-                                absl::nullopt)}},
-  }));
+  delegate_remote()->NotifyReady(
+      CreateFirstPartySetsReadyEvent(net::FirstPartySetsContextConfig({
+          {kSet3Owner,
+           {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kPrimary,
+                                    absl::nullopt)}},
+      })));
 
   EXPECT_THAT(FindEntriesAndWait({kSet3Owner}),
               UnorderedElementsAre(Pair(kSet3Owner, _)));
@@ -287,13 +291,15 @@ class SyncFirstPartySetsAccessDelegateTest
     : public AsyncFirstPartySetsAccessDelegateTest {
  public:
   SyncFirstPartySetsAccessDelegateTest() {
-    delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent({
-        {kSet3Member1,
-         {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kAssociated, 0)}},
-        {kSet3Owner,
-         {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kPrimary,
-                                  absl::nullopt)}},
-    }));
+    delegate_remote()->NotifyReady(
+        CreateFirstPartySetsReadyEvent(net::FirstPartySetsContextConfig({
+            {kSet3Member1,
+             {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kAssociated,
+                                      0)}},
+            {kSet3Owner,
+             {net::FirstPartySetEntry(kSet3Owner, net::SiteType::kPrimary,
+                                      absl::nullopt)}},
+        })));
   }
 };
 

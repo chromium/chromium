@@ -7,16 +7,24 @@
 namespace net {
 
 FirstPartySetsContextConfig::FirstPartySetsContextConfig() = default;
+FirstPartySetsContextConfig::FirstPartySetsContextConfig(
+    FirstPartySetsContextConfig::OverrideSets customizations)
+    : customizations_(std::move(customizations)) {}
 
 FirstPartySetsContextConfig::FirstPartySetsContextConfig(
-    const FirstPartySetsContextConfig& other) = default;
+    FirstPartySetsContextConfig&& other) = default;
+FirstPartySetsContextConfig& FirstPartySetsContextConfig::operator=(
+    FirstPartySetsContextConfig&& other) = default;
 
 FirstPartySetsContextConfig::~FirstPartySetsContextConfig() = default;
 
-void FirstPartySetsContextConfig::SetCustomizations(
-    OverrideSets customizations) {
-  DCHECK(customizations_.empty());
-  customizations_ = std::move(customizations);
+FirstPartySetsContextConfig FirstPartySetsContextConfig::Clone() const {
+  return FirstPartySetsContextConfig(customizations_);
+}
+
+bool FirstPartySetsContextConfig::operator==(
+    const FirstPartySetsContextConfig& other) const {
+  return customizations_ == other.customizations_;
 }
 
 }  // namespace net

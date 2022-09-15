@@ -89,7 +89,7 @@ FirstPartySetsManager::ComputeMetadata(
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsManager::ComputeMetadataAndInvoke,
         weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
-        party_context, fps_context_config, std::move(callback),
+        party_context, fps_context_config.Clone(), std::move(callback),
         base::ElapsedTimer()));
     return absl::nullopt;
   }
@@ -170,10 +170,10 @@ FirstPartySetsManager::FindEntries(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
-    EnqueuePendingQuery(
-        base::BindOnce(&FirstPartySetsManager::FindEntriesAndInvoke,
-                       weak_factory_.GetWeakPtr(), sites, fps_context_config,
-                       std::move(callback), base::ElapsedTimer()));
+    EnqueuePendingQuery(base::BindOnce(
+        &FirstPartySetsManager::FindEntriesAndInvoke,
+        weak_factory_.GetWeakPtr(), sites, fps_context_config.Clone(),
+        std::move(callback), base::ElapsedTimer()));
     return absl::nullopt;
   }
 

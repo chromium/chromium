@@ -14,11 +14,8 @@
 #include "base/version.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace net {
-class FirstPartySetEntry;
-}
 
 namespace content {
 
@@ -92,14 +89,6 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   using ParseError = IssueWithMetadata<ParseErrorType>;
   using ParseWarning = IssueWithMetadata<ParseWarningType>;
 
-  // The keys are member sites and the values are their entries in the final
-  // list of First-Party Sets that result from combining the public sets and
-  // the per-profile Overrides policy. Entries of site -> absl::nullopt means
-  // the key site is considered deleted from the existing First-Party Sets.
-  using PolicyCustomization =
-      base::flat_map<net::SchemefulSite,
-                     absl::optional<net::FirstPartySetEntry>>;
-
   virtual ~FirstPartySetsHandler() = default;
 
   // Returns the singleton instance.
@@ -151,14 +140,14 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // initialized, which occurs asynchronously.
   virtual void GetCustomizationForPolicy(
       const base::Value::Dict& policy,
-      base::OnceCallback<void(PolicyCustomization)> callback) = 0;
+      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) = 0;
 
   // Clear site state of sites that have a FPS membership change for the browser
   // context represented by `browser_context_id`. Sites joining FPSs for the
   // first time will not be cleared.
   //
   // `browser_context_getter` is needed to get a BrowsingDataRemover to handle
-  // the clearing work. `policy_customization` should be the return value from
+  // the clearing work. `context_config` should be the return value from
   // `GetCustomizationForPolicy` if an Overrides enterprise policy is provided,
   // or null if one is not provided. `callback` will be invoked once the
   // clearing is done. If non-null, `policy_customization` must live until
@@ -168,7 +157,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   virtual void ClearSiteDataOnChangedSetsForContext(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
-      const PolicyCustomization* policy_customization,
+      const net::FirstPartySetsContextConfig* context_config,
       base::OnceClosure callback) = 0;
 };
 

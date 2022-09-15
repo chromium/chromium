@@ -23,6 +23,7 @@
 #include "content/public/common/content_client.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/public_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,7 +53,8 @@ FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
 // from a site to its owner.
 void UpdateCustomizationMap(
     const std::vector<SingleSet>& set_list,
-    FirstPartySetsHandlerImpl::PolicyCustomization& site_to_entry) {
+    base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>&
+        site_to_entry) {
   for (const auto& set : set_list) {
     for (const auto& site_and_entry : set) {
       bool inserted = site_to_entry.emplace(site_and_entry).second;
@@ -161,10 +163,8 @@ FirstPartySetsHandler::ValidateEnterprisePolicy(
 
 void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
     const base::Value::Dict& policy,
-    base::OnceCallback<void(FirstPartySetsHandler::PolicyCustomization)>
-        callback) {
+    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PolicyCustomization customization;
   if (public_sets_.has_value()) {
     std::move(callback).Run(GetCustomizationForPolicyInternal(policy));
     return;
@@ -180,7 +180,7 @@ void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
           .Then(std::move(callback)));
 }
 
-FirstPartySetsHandlerImpl::PolicyCustomization
+net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
     const net::PublicSets& public_sets,
     const FirstPartySetParser::ParsedPolicySetLists& policy) {
@@ -284,7 +284,7 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
     DCHECK(inserted);
   }
 
-  return site_to_entry;
+  return net::FirstPartySetsContextConfig(std::move(site_to_entry));
 }
 
 FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
@@ -431,7 +431,7 @@ net::PublicSets FirstPartySetsHandlerImpl::GetSetsSync() const {
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     base::RepeatingCallback<BrowserContext*()> browser_context_getter,
     const std::string& browser_context_id,
-    const PolicyCustomization* policy_customization,
+    const net::FirstPartySetsContextConfig* context_config,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(public_sets_.has_value());
@@ -446,7 +446,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
   std::move(callback).Run();
 }
 
-FirstPartySetsHandler::PolicyCustomization
+net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
     const base::Value::Dict& policy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -456,7 +456,7 @@ FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
   return parsed_or_error.has_value()
              ? FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
                    public_sets_.value(), parsed_or_error.value().first)
-             : FirstPartySetsHandlerImpl::PolicyCustomization();
+             : net::FirstPartySetsContextConfig();
 }
 
 }  // namespace content

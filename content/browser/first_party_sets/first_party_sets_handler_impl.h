@@ -28,6 +28,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/public_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,7 +48,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   using FlattenedSets =
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
   using SetsReadyOnceCallback = base::OnceCallback<void(net::PublicSets)>;
-  using PolicyCustomization = FirstPartySetsHandler::PolicyCustomization;
 
   static FirstPartySetsHandlerImpl* GetInstance();
 
@@ -89,12 +89,13 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void ResetForTesting() override;
   void GetCustomizationForPolicy(
       const base::Value::Dict& policy,
-      base::OnceCallback<void(PolicyCustomization)> callback) override;
+      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
+      override;
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSetsForContext(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
-      const PolicyCustomization* policy_customization,
+      const net::FirstPartySetsContextConfig* context_config,
       base::OnceClosure callback) override;
 
   // Sets whether FPS is enabled (for testing).
@@ -115,7 +116,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.
-  static PolicyCustomization ComputeEnterpriseCustomizations(
+  static net::FirstPartySetsContextConfig ComputeEnterpriseCustomizations(
       const net::PublicSets& public_sets,
       const FirstPartySetParser::ParsedPolicySetLists& policy);
 
@@ -141,9 +142,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Must be called after the list has been initialized.
   net::PublicSets GetSetsSync() const;
 
-  // Parses the policy and computes the PolicyCustomization that represents the
-  // changes needed to apply `policy` to `sets_`.
-  PolicyCustomization GetCustomizationForPolicyInternal(
+  // Parses the policy and computes the config that represents the changes
+  // needed to apply `policy` to `sets_`.
+  net::FirstPartySetsContextConfig GetCustomizationForPolicyInternal(
       const base::Value::Dict& policy) const;
 
   // Whether Init has been called already or not.

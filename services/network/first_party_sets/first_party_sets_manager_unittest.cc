@@ -78,8 +78,8 @@ class FirstPartySetsManagerTest : public ::testing::Test {
 
  protected:
   void SetFirstPartySetsContextConfig(OverrideSets customizations) {
-    fps_context_config_ = net::FirstPartySetsContextConfig();
-    fps_context_config_.SetCustomizations(std::move(customizations));
+    fps_context_config_ =
+        net::FirstPartySetsContextConfig(std::move(customizations));
   }
 
  private:
