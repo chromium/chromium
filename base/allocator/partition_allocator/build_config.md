@@ -9,6 +9,8 @@ different settings. Broadly, these are controlled at the top-level by
 Most of what you'll want to know exists between
 
 * [`//base/allocator/partition_allocator/BUILD.gn`][pa-build-gn],
+* Everything else ending in `.gn` or `.gni` in
+  `//base/allocator/partition_allocator/`,
 * [`allocator.gni`][allocator-gni],
 * [`//base/allocator/BUILD.gn`][base-allocator-build-gn], and
 * [`//base/BUILD.gn`][base-build-gn].
@@ -18,6 +20,15 @@ Most of what you'll want to know exists between
 While Chromium promotes the `#if BUILDFLAG(FOO)` construct, some of
 PartitionAlloc's behavior is governed by compound conditions `#defined`
 in [`partition_alloc_config.h`][partition-alloc-config].
+***
+
+*** promo
+PartitionAlloc targets C++17. As the team develops standalone
+PartitionAlloc, this may diverge from what the rest of Chrome browser
+does, as we will be obligated to support external clients that
+may not yet support newer C++ standards.
+
+See [Chrome-External Builds](./external_builds.md) for more.
 ***
 
 ## Select GN Args
