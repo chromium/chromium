@@ -20,6 +20,7 @@ import '../os_people_page/users_page.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../os_people_page/lock_screen.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
+import './metrics_consent_toggle_button.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,7 +33,6 @@ import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl} from './metrics_consent_browser_proxy.js';
 import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 
 /**
@@ -227,30 +227,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
           return loadTimeData.getBoolean('showPrivacyHubPage');
         },
       },
-
-      // <if expr="_google_chrome">
-      /**
-       * The preference controlling the current user's metrics consent. This
-       * will be loaded from |this.prefs| based on the response from
-       * |this.metricsConsentBrowserProxy_.getMetricsConsentState()|.
-       *
-       * @private
-       * @type {!chrome.settingsPrivate.PrefObject}
-       */
-      metricsConsentPref_: {
-        type: Object,
-        value: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-
-      /** @private */
-      isMetricsConsentConfigurable_: {
-        type: Boolean,
-        value: false,
-      },
-      // </if>
     };
   }
 
@@ -278,19 +254,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
         this.supportedSettingIds.add(Setting.kPeripheralDataAccessProtection);
       }
     });
-
-    // <if expr="_google_chrome">
-    this.metricsConsentBrowserProxy_ =
-        MetricsConsentBrowserProxyImpl.getInstance();
-    this.metricsConsentBrowserProxy_.getMetricsConsentState().then(state => {
-      const pref = /** @type {?chrome.settingsPrivate.PrefObject} */ (
-          this.get(state.prefName, this.prefs));
-      if (pref) {
-        this.metricsConsentPref_ = pref;
-        this.isMetricsConsentConfigurable_ = state.isConfigurable;
-      }
-    });
-    // </if>
   }
 
   /** @override */
@@ -506,30 +469,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     }
     this.setPrefValue(this.dataAccessProtectionPrefName_, false);
   }
-
-  // <if expr="_google_chrome">
-  /** @private */
-  onMetricsConsentChange_() {
-    this.metricsConsentBrowserProxy_
-        .updateMetricsConsent(this.getMetricsToggle_().checked)
-        .then(consent => {
-          if (consent === this.getMetricsToggle_().checked) {
-            this.getMetricsToggle_().sendPrefChange();
-          } else {
-            this.getMetricsToggle_().resetToPrefValue();
-          }
-        });
-  }
-
-  /**
-   * @private
-   * @return {SettingsToggleButtonElement}
-   */
-  getMetricsToggle_() {
-    return /** @type {SettingsToggleButtonElement} */ (
-        this.shadowRoot.querySelector('#enable-logging'));
-  }
-  // </if>
 
   /**
    * This is used to add a keydown listener event for handling keyboard

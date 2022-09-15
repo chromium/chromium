@@ -57,6 +57,7 @@ import './os_printing_page/cups_printers.js';
 import './os_printing_page/cups_saved_printers.js';
 import './os_printing_page/cups_settings_add_printer_dialog.js';
 import './os_printing_page/os_printing_page.js';
+import './os_privacy_page/metrics_consent_toggle_button.js';
 import './os_privacy_page/os_privacy_page.js';
 import './os_privacy_page/peripheral_data_access_protection_dialog.js';
 import './os_privacy_page/privacy_hub_page.js';

@@ -10,6 +10,7 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":metrics_consent_toggle_button",
     ":os_privacy_page",
     ":peripheral_data_access_protection_dialog",
     ":privacy_hub_browser_proxy",
@@ -20,7 +21,7 @@ js_type_check("closure_compile_module") {
 
 js_library("os_privacy_page") {
   deps = [
-    ":metrics_consent_browser_proxy",
+    ":metrics_consent_toggle_button",
     ":peripheral_data_access_browser_proxy",
     ":peripheral_data_access_protection_dialog",
     ":privacy_hub_browser_proxy",
@@ -69,9 +70,17 @@ js_library("smart_privacy_page") {
 
 js_library("privacy_hub_page") {
   deps = [
+    ":metrics_consent_toggle_button",
     ":privacy_hub_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("metrics_consent_toggle_button") {
+  deps = [
+    ":metrics_consent_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -84,6 +93,7 @@ js_library("privacy_hub_browser_proxy") {
 
 html_to_js("web_components") {
   js_files = [
+    "metrics_consent_toggle_button.js",
     "os_privacy_page.js",
     "peripheral_data_access_protection_dialog.js",
     "privacy_hub_page.js",

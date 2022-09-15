@@ -52,17 +52,14 @@
     </template>
 
 <if expr="_google_chrome">
-    <settings-toggle-button
-        id="enable-logging"
-        pref="[[metricsConsentPref_]]"
-        label="$i18n{enableLogging}"
-        sub-label="$i18n{enableLoggingDesc}"
-        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-        disabled$="[[!isMetricsConsentConfigurable_]]"
-        on-settings-boolean-control-change="onMetricsConsentChange_"
-        no-set-pref>
-    </settings-toggle-button>
-    <div class="hr"></div>
+    <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
+      <settings-metrics-consent-toggle-button
+          id="metricsConsentToggle"
+          deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+          prefs="{{prefs}}">
+      </settings-metrics-consent-toggle-button>
+      <div class="hr"></div>
+    </template>
     <template is="dom-if" if="[[isRevenBranding_]]">
       <settings-toggle-button
           id="enable-hw-data-usage"

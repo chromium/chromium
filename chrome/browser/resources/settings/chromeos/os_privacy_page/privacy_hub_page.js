@@ -8,6 +8,7 @@
  */
 
 import '../../controls/settings_toggle_button.js';
+import './metrics_consent_toggle_button.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
@@ -104,6 +105,7 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
           Setting.kCameraOnOff,
           Setting.kMicrophoneOnOff,
           Setting.kGeolocationOnOff,
+          Setting.kUsageStatsAndCrashReports,
         ]),
       },
 

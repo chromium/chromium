@@ -5,7 +5,7 @@
 import '../../chai.js';
 
 import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {MetricsConsentBrowserProxyImpl, Router, routes, SecureDnsMode} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -13,8 +13,12 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
-import {assertEquals, assertNotReached} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
+
+import {DEVICE_METRICS_CONSENT_PREF_NAME, TestMetricsConsentBrowserProxy} from './test_metrics_consent_browser_proxy.js';
+
+const USER_METRICS_CONSENT_PREF_NAME = 'metrics.user_consent';
 
 /** @implements {PrivacyHubBrowserProxy} */
 class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
@@ -293,7 +297,6 @@ async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
           'Geolocation toggle should be focused for settingId=1118.');
     }
   });
-  //}
 }
 
 suite(
@@ -305,3 +308,196 @@ suite(
 suite(
     'PrivacyHubFutureSubpageTests',
     () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.Future));
+
+async function parametrizedTestsuiteForMetricsConsentToggle(
+    isPrivacyHubVisible) {
+  /** @type {SettingsPrivacyPageElement} */
+  let settingsPage = null;
+
+  // Which settings page to run the tests on.
+  const pageId = isPrivacyHubVisible ? 'settings-privacy-hub-page' :
+                                       'os-settings-privacy-page';
+
+  const prefs_ = {
+    'cros': {
+      'device': {
+        'peripheral_data_access_enabled': {
+          value: true,
+        },
+      },
+      'metrics': {
+        'reportingEnabled': {
+          value: true,
+        },
+      },
+    },
+    'metrics': {
+      'user_consent': {
+        value: false,
+      },
+    },
+    'dns_over_https':
+        {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
+  };
+
+  /** @type {?TestMetricsConsentBrowserProxy} */
+  let metricsConsentBrowserProxy = null;
+
+  setup(async () => {
+    loadTimeData.overrideValues({
+      showPrivacyHubPage: isPrivacyHubVisible,
+    });
+    metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
+    MetricsConsentBrowserProxyImpl.setInstanceForTesting(
+        metricsConsentBrowserProxy);
+
+    settingsPage = document.createElement(pageId);
+    PolymerTest.clearBody();
+  });
+
+  async function setUpPage(prefName, isConfigurable) {
+    metricsConsentBrowserProxy.setMetricsConsentState(prefName, isConfigurable);
+
+    settingsPage = document.createElement(pageId);
+    settingsPage.prefs = Object.assign({}, prefs_);
+    document.body.appendChild(settingsPage);
+    flush();
+
+    await metricsConsentBrowserProxy.whenCalled('getMetricsConsentState');
+    await waitAfterNextRender();
+    flush();
+  }
+
+  teardown(function() {
+    settingsPage.remove();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test(
+      'Send usage stats toggle visibility in os-settings-privacy-page',
+      async () => {
+        settingsPage = document.createElement('os-settings-privacy-page');
+        document.body.appendChild(settingsPage);
+        flush();
+
+        const element =
+            settingsPage.shadowRoot.querySelector('#metricsConsentToggle');
+
+        assertEquals(
+            element === null, isPrivacyHubVisible,
+            'Send usage toggle should only be visible here when privacy hub' +
+                ' is hidden.');
+      });
+
+  test(
+      'Send usage stats toggle visibility in settings-privacy-hub-page',
+      async () => {
+        if (isPrivacyHubVisible) {
+          settingsPage = document.createElement('settings-privacy-hub-page');
+          document.body.appendChild(settingsPage);
+          flush();
+
+          const element =
+              settingsPage.shadowRoot.querySelector('#metricsConsentToggle');
+
+          assertFalse(
+              element === null,
+              'Send usage toggle should be visible in the privacy hub' +
+                  ' subpage.');
+        }
+      });
+
+  test('Deep link to send usage stats', async () => {
+    await setUpPage(DEVICE_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ true);
+
+    const params = new URLSearchParams();
+    params.append('settingId', '1103');
+    Router.getInstance().navigateTo(
+        isPrivacyHubVisible ? routes.PRIVACY_HUB : routes.OS_PRIVACY, params);
+
+    flush();
+
+    const deepLinkElement =
+        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
+            .shadowRoot.querySelector('#settingsToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(deepLinkElement);
+
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Send usage stats toggle should be focused for settingId=1103.');
+  });
+
+  test('Toggle disabled if metrics consent is not configurable', async () => {
+    await setUpPage(
+        DEVICE_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ false);
+
+    const toggle =
+        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
+            .shadowRoot.querySelector('#settingsToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(toggle);
+
+    // The pref is true, so the toggle should be on.
+    assertTrue(toggle.checked);
+
+    // Not configurable, so toggle should be disabled.
+    assertTrue(toggle.disabled);
+  });
+
+  test('Toggle enabled if metrics consent is configurable', async () => {
+    await setUpPage(DEVICE_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ true);
+
+    const toggle =
+        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
+            .shadowRoot.querySelector('#settingsToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(toggle);
+
+    // The pref is true, so the toggle should be on.
+    assertTrue(toggle.checked);
+
+    // Configurable, so toggle should be enabled.
+    assertFalse(toggle.disabled);
+
+    // Toggle.
+    toggle.click();
+    await metricsConsentBrowserProxy.whenCalled('updateMetricsConsent');
+
+    // Pref should be off now.
+    assertFalse(toggle.checked);
+  });
+
+  test('Correct pref displayed', async () => {
+    await setUpPage(USER_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ true);
+
+    const toggle =
+        settingsPage.shadowRoot.querySelector('#metricsConsentToggle')
+            .shadowRoot.querySelector('#settingsToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(toggle);
+
+    // The user consent pref is false, so the toggle should not be checked.
+    assertFalse(toggle.checked);
+
+    // Configurable, so toggle should be enabled.
+    assertFalse(toggle.disabled);
+
+    // Toggle.
+    toggle.click();
+    await metricsConsentBrowserProxy.whenCalled('updateMetricsConsent');
+
+    // Pref should be on now.
+    assertTrue(toggle.checked);
+  });
+}
+
+suite(
+    'PrivacyHubSubpageTest_OfficialBuild',
+    () => parametrizedTestsuiteForMetricsConsentToggle(
+        /*isPrivacyHubVisible=*/ true));
+
+suite(
+    'PrivacyHubSubpageTest_OfficialBuild',
+    () => parametrizedTestsuiteForMetricsConsentToggle(
+        /*isPrivacyHubVisible=*/ false));

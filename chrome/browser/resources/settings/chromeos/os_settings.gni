@@ -330,6 +330,7 @@ gen_web_component_files = [
   "chromeos/os_printing_page/cups_saved_printers.js",
   "chromeos/os_printing_page/cups_settings_add_printer_dialog.js",
   "chromeos/os_printing_page/os_printing_page.js",
+  "chromeos/os_privacy_page/metrics_consent_toggle_button.js",
   "chromeos/os_privacy_page/os_privacy_page.js",
   "chromeos/os_privacy_page/peripheral_data_access_protection_dialog.js",
   "chromeos/os_privacy_page/privacy_hub_page.js",

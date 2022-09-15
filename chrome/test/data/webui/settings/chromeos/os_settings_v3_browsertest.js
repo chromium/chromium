@@ -490,16 +490,16 @@ function registerTest(testName, module, featureList) {
       mocha.grep('AboutPageTest_OfficialBuild').run();
     });
     GEN('#endif');
-  } else if (testName === 'PrivacyPage') {
-    // PrivacyPage has a test suite that can only succeed on official builds
-    // where the is_chrome_branded build flag is enabled.
+  } else if (testName === 'PrivacyHubSubpage') {
+    // PrivacyHubSubpage has a test suite that can only succeed on official
+    // builds where the is_chrome_branded build flag is enabled.
     TEST_F(className, 'AllBuilds' || 'All', () => {
-      mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
+      mocha.grep('/^(?!PrivacyHubSubpageTest_OfficialBuild).*$/').run();
     });
 
     GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
     TEST_F(className, 'OfficialBuild' || 'All', () => {
-      mocha.grep('PrivacePageTest_OfficialBuild').run();
+      mocha.grep('PrivacyHubSubpageTest_OfficialBuild').run();
     });
     GEN('#endif');
   } else {

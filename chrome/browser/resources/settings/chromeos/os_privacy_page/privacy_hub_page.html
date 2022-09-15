@@ -22,10 +22,17 @@
       deep-link-focus-id$="[[Setting.kGeolocationOnOff]]">
   </settings-toggle-button>
 </template>
-  <settings-toggle-button
-      id="suggested-content"
-      pref="{{prefs.settings.suggested_content_enabled}}"
-      label="$i18n{enableSuggestedContent}"
-      sub-label="$i18n{enableSuggestedContentDesc}"
-      learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-  </settings-toggle-button>
+<settings-toggle-button
+    id="suggested-content"
+    pref="{{prefs.settings.suggested_content_enabled}}"
+    label="$i18n{enableSuggestedContent}"
+    sub-label="$i18n{enableSuggestedContentDesc}"
+    learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+</settings-toggle-button>
+<if expr="_google_chrome">
+    <settings-metrics-consent-toggle-button
+        id="metricsConsentToggle"
+        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+        prefs="{{prefs}}">
+    </settings-metrics-consent-toggle-button>
+</if>

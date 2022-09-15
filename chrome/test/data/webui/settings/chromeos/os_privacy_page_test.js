@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {DataAccessPolicyState, MetricsConsentBrowserProxyImpl, MetricsConsentState, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode} from 'chrome://os-settings/chromeos/os_settings.js';
+import {DataAccessPolicyState, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -19,8 +19,6 @@ import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.js';
 const crosSettingPrefName = 'cros.device.peripheral_data_access_enabled';
 const localStatePrefName =
     'settings.local_state_device_pci_data_access_enabled';
-const deviceMetricsConsentPrefName = 'cros.metrics.reportingEnabled';
-const userMetricsConsentPrefName = 'metrics.user_consent';
 
 /**
  * @implements {PeripheralDataAccessBrowserProxy}
@@ -61,44 +59,6 @@ class TestPeripheralDataAccessBrowserProxy extends TestBrowserProxy {
   }
 }
 
-/**
- * @implements {MetricsConsentBrowserProxy}
- */
-class TestMetricsConsentBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'getMetricsConsentState',
-      'updateMetricsConsent',
-    ]);
-
-    /** @type {MetricsConsentState} */
-    this.state_ = {
-      prefName: deviceMetricsConsentPrefName,
-      isConfigurable: false,
-    };
-  }
-
-  /** @override */
-  getMetricsConsentState() {
-    this.methodCalled('getMetricsConsentState');
-    return Promise.resolve(this.state_);
-  }
-
-  /** @override */
-  updateMetricsConsent(consent) {
-    this.methodCalled('updateMetricsConsent');
-    return Promise.resolve(consent);
-  }
-
-  /**
-   * @param {String} prefName
-   * @param {Boolean} isConfigurable
-   */
-  setMetricsConsentState(prefName, isConfigurable) {
-    this.state_.prefName = prefName;
-    this.state_.isConfigurable = isConfigurable;
-  }
-}
 
 suite('PrivacyPageTests', function() {
   /** @type {SettingsPrivacyPageElement} */
@@ -418,143 +378,6 @@ suite('PrivacyPageTests', function() {
 
   // TODO(crbug.com/1262869): add a test for deep linking to snopping setting
   //                          once it has been added.
-});
-
-suite('PrivacePageTest_OfficialBuild', async () => {
-  /** @type {SettingsPrivacyPageElement} */
-  let privacyPage = null;
-
-  const prefs_ = {
-    'cros': {
-      'device': {
-        'peripheral_data_access_enabled': {
-          value: true,
-        },
-      },
-      'metrics': {
-        'reportingEnabled': {
-          value: true,
-        },
-      },
-    },
-    'metrics': {
-      'user_consent': {
-        value: false,
-      },
-    },
-    'dns_over_https':
-        {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
-  };
-
-  /** @type {?TestPeripheralDataAccessBrowserProxy} */
-  let browserProxy = null;
-
-  /** @type {?TestMetricsConsentBrowserProxy} */
-  let metricsConsentBrowserProxy = null;
-
-  setup(async () => {
-    browserProxy = new TestPeripheralDataAccessBrowserProxy();
-    PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
-
-    metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
-    MetricsConsentBrowserProxyImpl.setInstanceForTesting(
-        metricsConsentBrowserProxy);
-
-    privacyPage = document.createElement('os-settings-privacy-page');
-    PolymerTest.clearBody();
-  });
-
-  async function setUpPage(prefName, isConfigurable) {
-    metricsConsentBrowserProxy.setMetricsConsentState(prefName, isConfigurable);
-
-    privacyPage = document.createElement('os-settings-privacy-page');
-    privacyPage.prefs = Object.assign({}, prefs_);
-    document.body.appendChild(privacyPage);
-    flush();
-
-    await metricsConsentBrowserProxy.whenCalled('getMetricsConsentState');
-    await waitAfterNextRender();
-    flush();
-  }
-
-  teardown(function() {
-    privacyPage.remove();
-    Router.getInstance().resetRouteForTesting();
-  });
-
-  test('Deep link to send usage stats', async () => {
-    await setUpPage(deviceMetricsConsentPrefName, /*isConfigurable=*/ true);
-
-    const params = new URLSearchParams();
-    params.append('settingId', '1103');
-    Router.getInstance().navigateTo(routes.OS_PRIVACY, params);
-
-    flush();
-
-    const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('#enable-logging')
-            .shadowRoot.querySelector('cr-toggle');
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Send usage stats toggle should be focused for settingId=1103.');
-  });
-
-  test('Toggle disabled if metrics consent is not configurable', async () => {
-    await setUpPage(deviceMetricsConsentPrefName, /*isConfigurable=*/ false);
-
-    const toggle = privacyPage.shadowRoot.querySelector('#enable-logging')
-                       .shadowRoot.querySelector('cr-toggle');
-    await waitAfterNextRender(toggle);
-
-    // The pref is true, so the toggle should be on.
-    assertTrue(toggle.checked);
-
-    // Not configurable, so toggle should be disabled.
-    assertTrue(toggle.disabled);
-  });
-
-  test('Toggle enabled if metrics consent is configurable', async () => {
-    await setUpPage(deviceMetricsConsentPrefName, /*is_configurable=*/ true);
-
-    const toggle = privacyPage.shadowRoot.querySelector('#enable-logging')
-                       .shadowRoot.querySelector('cr-toggle');
-    await waitAfterNextRender(toggle);
-
-    // The pref is true, so the toggle should be on.
-    assertTrue(toggle.checked);
-
-    // Configurable, so toggle should be enabled.
-    assertFalse(toggle.disabled);
-
-    // Toggle.
-    toggle.click();
-    await metricsConsentBrowserProxy.whenCalled('updateMetricsConsent');
-
-    // Pref should be off now.
-    assertFalse(toggle.checked);
-  });
-
-  test('Correct pref displayed', async () => {
-    await setUpPage(userMetricsConsentPrefName, /*is_configurable=*/ true);
-
-    const toggle = privacyPage.shadowRoot.querySelector('#enable-logging')
-                       .shadowRoot.querySelector('cr-toggle');
-    await waitAfterNextRender(toggle);
-
-    // The user consent pref is false, so the toggle should not be checked.
-    assertFalse(toggle.checked);
-
-    // Configurable, so toggle should be enabled.
-    assertFalse(toggle.disabled);
-
-    // Toggle.
-    toggle.click();
-    await metricsConsentBrowserProxy.whenCalled('updateMetricsConsent');
-
-    // Pref should be on now.
-    assertTrue(toggle.checked);
-  });
 });
 
 suite('PeripheralDataAccessTest', function() {
