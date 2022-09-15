@@ -54,8 +54,11 @@ function initialize() {
         'interstitial refresh being enabled.');
     return;
   }
+
+  // TODO(b/243916175): remove once CSS files have been updated.
   document.body.classList.toggle(
       'interstitial-refresh-enabled', interstitialRefreshEnabled);
+
   if (custodianName && allowAccessRequests) {
     $('custodians-information').hidden = false;
     if (avatarURL1x) {

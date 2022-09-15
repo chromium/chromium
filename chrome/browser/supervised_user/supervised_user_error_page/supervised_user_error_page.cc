@@ -184,7 +184,9 @@ std::string BuildHtml(bool allow_access_requests,
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_HTML);
+          web_filter_interstitial_refresh_enabled
+              ? IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML
+              : IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
   std::string error_html = webui::GetI18nTemplateHtml(html, strings);
   return error_html;
