@@ -15,6 +15,7 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -29,7 +30,11 @@ export interface PasswordsImportDialogElement {
     dialog: CrDialogElement,
     descriptionText: HTMLElement,
     successTip: HTMLElement,
+    failuresSummary: HTMLElement,
     storePicker: HTMLSelectElement,
+    chooseFile: CrButtonElement,
+    close: CrButtonElement,
+    expandButton: HTMLElement,
   };
 }
 
@@ -149,9 +154,10 @@ export class PasswordsImportDialogElement extends
          !!this.results_!.failedImports.length);
   }
 
-  private showFailuresSummary_(): boolean {
-    return this.isState_(ImportDialogState.SUCCESS) &&
-        !!this.results_!.failedImports.length;
+  private isFailuresSummaryHidden_(): boolean {
+    return !this.isState_(ImportDialogState.SUCCESS) ||
+        (this.isState_(ImportDialogState.SUCCESS) &&
+         !this.results_!.failedImports.length);
   }
 
   private shouldShowStorePicker_(): boolean {
@@ -179,7 +185,7 @@ export class PasswordsImportDialogElement extends
     switch (this.results_.status) {
       case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
         this.handleSuccess_();
-        break;
+        return;
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
         this.$.descriptionText.textContent =
             this.i18n('importPasswordsFileSizeExceeded');
@@ -206,7 +212,7 @@ export class PasswordsImportDialogElement extends
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
         // Dialog state should not change if a system file picker was dismissed.
-        return;
+        break;
       case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
         this.$.descriptionText.textContent =
             this.i18n('importPasswordsAlreadyActive');
@@ -215,6 +221,7 @@ export class PasswordsImportDialogElement extends
       default:
         assertNotReached();
     }
+    this.$.close.focus();
   }
 
   private async handleSuccess_() {
@@ -252,6 +259,12 @@ export class PasswordsImportDialogElement extends
               this.results_.numberImported);
     }
     this.dialogState = ImportDialogState.SUCCESS;
+
+    if (this.isFailuresSummaryHidden_()) {
+      this.$.close.focus();
+    } else {
+      this.$.expandButton.focus();
+    }
   }
 
   private getStoreOptionAccountText_(): string {
@@ -306,9 +319,31 @@ export class PasswordsImportDialogElement extends
         assertNotReached();
     }
   }
+  private getCloseButtonText_(): string {
+    switch (this.dialogState) {
+      case ImportDialogState.START:
+        return this.i18n('cancel');
+      case ImportDialogState.ERROR:
+      case ImportDialogState.ALREADY_ACTIVE:
+        return this.i18n('close');
+      case ImportDialogState.SUCCESS:
+        return this.i18n('done');
+      default:
+        assertNotReached();
+    }
+  }
 
-  private onCancelClick_() {
-    this.$.dialog.cancel();
+  private getCloseButtonType_(): string {
+    switch (this.dialogState) {
+      case ImportDialogState.START:
+      case ImportDialogState.ERROR:
+        return 'cancel';
+      case ImportDialogState.ALREADY_ACTIVE:
+      case ImportDialogState.SUCCESS:
+        return 'action';
+      default:
+        assertNotReached();
+    }
   }
 
   private onCloseClick_() {

@@ -47,28 +47,21 @@ function assertIntialStatePartsAndClose(
   assertTrue(!!spinner);
   assertFalse(spinner.active);
 
-  const cancel =
-      importDialog.shadowRoot!.querySelector<CrButtonElement>('#cancel');
-  assertTrue(!!cancel);
-  const chooseFile =
-      importDialog.shadowRoot!.querySelector<CrButtonElement>('#chooseFile');
-  assertTrue(!!chooseFile);
-
-  assertTrue(isVisible(cancel));
-  assertTrue(isVisible(chooseFile));
-  assertFalse(cancel.disabled);
-  assertFalse(chooseFile.disabled);
+  assertTrue(isVisible(importDialog.$.chooseFile));
+  assertFalse(importDialog.$.close.disabled);
+  assertFalse(importDialog.$.chooseFile.disabled);
 
   assertFalse(isVisible(
       importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
-  assertEquals(importDialog.i18n('cancel'), cancel.textContent!.trim());
+  assertEquals(
+      importDialog.i18n('cancel'), importDialog.$.close.textContent!.trim());
   assertEquals(
       importDialog.i18n('importPasswordsChooseFile'),
-      chooseFile.textContent!.trim());
+      importDialog.$.chooseFile.textContent!.trim());
   assertEquals(
       expectedDescription, importDialog.$.descriptionText.textContent!.trim());
-  cancel.click();
+  importDialog.$.close.click();
 }
 
 async function assertErrorStateAndClose(
@@ -85,13 +78,10 @@ async function assertErrorStateAndClose(
   assertFalse(isVisible(
       importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
-  const close =
-      importDialog.shadowRoot!.querySelector<CrButtonElement>('#close');
-  assertTrue(!!close);
-  assertEquals(importDialog.i18n('close'), close.textContent!.trim());
-  assertTrue(isVisible(close));
-  assertFalse(close.disabled);
-  close.click();
+  assertEquals(
+      importDialog.i18n('close'), importDialog.$.close.textContent!.trim());
+  assertFalse(importDialog.$.close.disabled);
+  importDialog.$.close.click();
   await eventToPromise('close', importDialog);
 }
 
@@ -168,14 +158,13 @@ suite('PasswordsImportDialog', function() {
         importDialog.$.successTip.textContent!.trim());
 
     // Failed imports summary should not be visible.
-    assertFalse(!!importDialog.shadowRoot!.querySelector<HTMLElement>(
-        '#failuresSummary'));
+    assertFalse(isVisible(importDialog.$.failuresSummary));
 
-    const done = importDialog.shadowRoot!.querySelector<HTMLElement>('#done');
-    assertTrue(!!done);
-    assertEquals(importDialog.i18n('done'), done.textContent!.trim());
-    assertTrue(isVisible(done));
-    done.click();
+    assertEquals(
+        importDialog.i18n('done'), importDialog.$.close.textContent!.trim());
+    assertFalse(importDialog.$.close.disabled);
+    // check console for exceptions!
+    importDialog.$.close.click();
     await eventToPromise('close', importDialog);
   });
 
@@ -316,19 +305,15 @@ suite('PasswordsImportDialog', function() {
     assertFalse(isVisible(
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
-    const failuresSummary =
-        importDialog.shadowRoot!.querySelector<HTMLElement>('#failuresSummary');
-    assertTrue(!!failuresSummary);
-
+    assertTrue(isVisible(importDialog.$.failuresSummary));
     assertEquals(
         importDialog.i18n('importPasswordsFailuresSummary', 10),
-        failuresSummary.textContent!.trim());
+        importDialog.$.failuresSummary.textContent!.trim());
 
-    const done = importDialog.shadowRoot!.querySelector<HTMLElement>('#done');
-    assertTrue(!!done);
-    assertEquals(importDialog.i18n('done'), done.textContent!.trim());
-    assertTrue(isVisible(done));
-    done.click();
+    assertEquals(
+        importDialog.i18n('done'), importDialog.$.close.textContent!.trim());
+    assertFalse(importDialog.$.close.disabled);
+    importDialog.$.close.click();
     await eventToPromise('close', importDialog);
   });
 
@@ -359,13 +344,11 @@ suite('PasswordsImportDialog', function() {
     assertFalse(isVisible(
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
-    const close =
-        importDialog.shadowRoot!.querySelector<CrButtonElement>('#close');
-    assertTrue(!!close);
-    assertEquals(importDialog.i18n('close'), close.textContent!.trim());
-    assertTrue(isVisible(close));
-    assertFalse(close.disabled);
-    close.click();
+
+    assertEquals(
+        importDialog.i18n('close'), importDialog.$.close.textContent!.trim());
+    assertFalse(importDialog.$.close.disabled);
+    importDialog.$.close.click();
     await eventToPromise('close', importDialog);
   });
 });
