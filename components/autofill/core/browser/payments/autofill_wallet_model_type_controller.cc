@@ -31,7 +31,8 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
       sync_service_(sync_service) {
   DCHECK(type == syncer::AUTOFILL_WALLET_DATA ||
          type == syncer::AUTOFILL_WALLET_METADATA ||
-         type == syncer::AUTOFILL_WALLET_OFFER);
+         type == syncer::AUTOFILL_WALLET_OFFER ||
+         type == syncer::AUTOFILL_WALLET_USAGE);
   SubscribeToPrefChanges();
   sync_service_->AddObserver(this);
 }
@@ -51,7 +52,8 @@ AutofillWalletModelTypeController::AutofillWalletModelTypeController(
       sync_service_(sync_service) {
   DCHECK(type == syncer::AUTOFILL_WALLET_DATA ||
          type == syncer::AUTOFILL_WALLET_METADATA ||
-         type == syncer::AUTOFILL_WALLET_OFFER);
+         type == syncer::AUTOFILL_WALLET_OFFER ||
+         type == syncer::AUTOFILL_WALLET_USAGE);
   SubscribeToPrefChanges();
   sync_service_->AddObserver(this);
 }
