@@ -449,6 +449,8 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinRequireLockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockPolicyRequirePinSuccessHistogram, 0);
 
   // Test that the shill error propagates to the error callback.
   network_device_handler_->RequirePin(kUnknownCellularDevicePath, true,
@@ -462,6 +464,8 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinRequireLockSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockPolicyRequirePinSuccessHistogram, 0);
 }
 
 TEST_F(NetworkDeviceHandlerTest, EnterPinOnManagedDevice) {
@@ -696,6 +700,8 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinChangeSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockPolicyChangePinSuccessHistogram, 0);
 
   // Test that the shill error propagates to the error callback.
   network_device_handler_->ChangePin(kDefaultCellularDevicePath, kIncorrectPin,
@@ -708,6 +714,8 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinChangeSuccessHistogram,
       CellularMetricsLogger::SimPinOperationResult::kErrorIncorrectPin, 1);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockPolicyChangePinSuccessHistogram, 0);
 }
 
 TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {
@@ -725,6 +733,8 @@ TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {
   EXPECT_EQ(NetworkDeviceHandler::kErrorBlockedByPolicy, result_);
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockPolicyRequirePinSuccessHistogram, 0);
 
   // Test that the success callback gets called when removing a PIN lock.
   network_device_handler_->RequirePin(kDefaultCellularDevicePath, false,
@@ -754,6 +764,8 @@ TEST_F(NetworkDeviceHandlerTest, ChangePinBlockedByPolicy) {
   EXPECT_EQ(NetworkDeviceHandler::kErrorBlockedByPolicy, result_);
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kSimPinChangeSuccessHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      CellularMetricsLogger::kSimPinLockPolicyChangePinSuccessHistogram, 0);
 }
 
 TEST_F(NetworkDeviceHandlerTest, EnterPinWhenSimPinLockPolicyRestricted) {
