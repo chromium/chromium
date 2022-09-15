@@ -24,16 +24,6 @@ enum RTCRtcpMuxPolicy {
     "require"
 };
 
-// The only supported format is "unified-plan". Exposed in
-// RTCPeerConnection.getConfiguration().sdpSemantics for backwards-compatibility
-// reasons. "plan-b" is only listed here as to avoid a type error when
-// attempting to construct an RTCPeerConnection with "plan-b", but it will be
-// ignored.
-enum SdpSemantics {
-  "plan-b",
-  "unified-plan"
-};
-
 // https://w3c.github.io/webrtc-pc/#rtcconfiguration-dictionary
 
 dictionary RTCConfiguration {
@@ -49,7 +39,6 @@ dictionary RTCConfiguration {
     // TODO(foolip): DOMString peerIdentity;
     sequence<RTCCertificate> certificates;
     [EnforceRange] octet iceCandidatePoolSize = 0;
-    SdpSemantics sdpSemantics = "unified-plan";
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMaxPackets;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMinDelayMs;
