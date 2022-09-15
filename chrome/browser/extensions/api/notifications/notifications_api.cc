@@ -123,7 +123,8 @@ bool NotificationBitmapToGfxImage(
     return false;
 
   // Ensure we have rgba data.
-  std::vector<uint8_t>* rgba_data = notification_bitmap.data.get();
+  const absl::optional<std::vector<uint8_t>>& rgba_data =
+      notification_bitmap.data;
   if (!rgba_data)
     return false;
 

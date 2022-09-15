@@ -1064,11 +1064,7 @@ class _Generator(object):
       (c.Eblock('}')
         .Sblock('else {')
       )
-      if is_ptr:
-        c.Append('%(dst_var)s = std::make_unique<std::vector<uint8_t>>('
-                 '%(src_var)s.GetBlob());')
-      else:
-        c.Append('%(dst_var)s = %(src_var)s.GetBlob();')
+      c.Append('%(dst_var)s = %(src_var)s.GetBlob();')
       c.Eblock('}')
     else:
       raise NotImplementedError(type_)

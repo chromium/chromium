@@ -203,8 +203,7 @@ void WallpaperSetWallpaperFunction::OnWallpaperFetched(
     bool success,
     const std::string& response) {
   if (success) {
-    params_->details.data = std::make_unique<std::vector<uint8_t>>(
-        response.begin(), response.end());
+    params_->details.data.emplace(response.begin(), response.end());
     SetWallpaperOnAsh();
   } else {
     Respond(Error(response));

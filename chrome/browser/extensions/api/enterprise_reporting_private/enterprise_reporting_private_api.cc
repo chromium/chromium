@@ -506,8 +506,7 @@ void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
   if (cert) {
     base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
         cert->certificate()->cert_buffer());
-    ret.encoded_certificate = std::make_unique<std::vector<uint8_t>>(
-        der_cert.begin(), der_cert.end());
+    ret.encoded_certificate.emplace(der_cert.begin(), der_cert.end());
   }
 
   Respond(WithArguments(ret.ToValue()));

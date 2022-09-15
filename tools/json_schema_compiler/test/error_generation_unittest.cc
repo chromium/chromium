@@ -267,7 +267,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
     EXPECT_FALSE(errors::OptionalBinaryData::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'data': expected binary, got integer",
         error));
-    EXPECT_EQ(NULL, out.data.get());
+    EXPECT_FALSE(out.data.has_value());
   }
 }
 

@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
   auto cert = GetCertificate();
 
   EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
-  EXPECT_EQ(nullptr, cert.encoded_certificate);
+  EXPECT_FALSE(cert.encoded_certificate.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
   auto cert = GetCertificate();
 
   EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
-  EXPECT_EQ(nullptr, cert.encoded_certificate);
+  EXPECT_FALSE(cert.encoded_certificate.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
   auto cert = GetCertificate();
 
   EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
-  EXPECT_EQ(nullptr, cert.encoded_certificate);
+  EXPECT_FALSE(cert.encoded_certificate.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
   auto cert = GetCertificate();
 
   EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
-  EXPECT_NE(nullptr, cert.encoded_certificate);
+  EXPECT_TRUE(cert.encoded_certificate.has_value());
 
   base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
       client_certs()[0]->cert_buffer());

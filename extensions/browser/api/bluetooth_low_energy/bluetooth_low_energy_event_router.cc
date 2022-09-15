@@ -109,7 +109,7 @@ apibtle::Characteristic PopulateCharacteristic(
 
   const std::vector<uint8_t>& value = characteristic->GetValue();
   if (!value.empty())
-    result.value = std::make_unique<std::vector<uint8_t>>(value);
+    result.value.emplace(value);
 
   return result;
 }
@@ -124,7 +124,7 @@ apibtle::Descriptor PopulateDescriptor(
 
   const std::vector<uint8_t>& value = descriptor->GetValue();
   if (!value.empty())
-    result.value = std::make_unique<std::vector<uint8_t>>(value);
+    result.value.emplace(value);
 
   return result;
 }
@@ -1110,7 +1110,7 @@ void BluetoothLowEnergyEventRouter::OnCharacteristicWriteRequest(
   request.request_id = StoreSentRequest(
       extension_id, std::make_unique<AttributeValueRequest>(
                         std::move(callback), std::move(error_callback)));
-  request.value = std::make_unique<std::vector<uint8_t>>(value);
+  request.value.emplace(value);
   DispatchEventToExtension(
       extension_id,
       events::BLUETOOTH_LOW_ENERGY_ON_CHARACTERISTIC_WRITE_REQUEST,
@@ -1183,7 +1183,7 @@ void BluetoothLowEnergyEventRouter::OnDescriptorWriteRequest(
   request.request_id = StoreSentRequest(
       extension_id, std::make_unique<AttributeValueRequest>(
                         std::move(callback), std::move(error_callback)));
-  request.value = std::make_unique<std::vector<uint8_t>>(value);
+  request.value.emplace(value);
   DispatchEventToExtension(
       extension_id,
       events::BLUETOOTH_LOW_ENERGY_ON_CHARACTERISTIC_WRITE_REQUEST,
