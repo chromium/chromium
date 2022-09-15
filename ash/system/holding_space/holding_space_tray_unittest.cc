@@ -45,7 +45,9 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
@@ -3404,6 +3406,23 @@ class HoldingSpaceTraySuggestionsFeatureTest
     return std::get<1>(GetParam());
   }
 
+  bool IsGoogleChromeBranded() const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    return true;
+#else
+    return false;
+#endif
+  }
+
+  bool GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
+      const views::View* pinned_files_bubble) const {
+    bool has_icons = pinned_files_bubble->GetViewByID(
+        kHoldingSpacePinnedFilesSectionPlaceholderGSuiteIconsId);
+    bool should_have_icons =
+        IsHoldingSpaceSuggestionsEnabled() && IsGoogleChromeBranded();
+    return has_icons == should_have_icons;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -3451,11 +3470,17 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   if (test_api()->PinnedFilesBubbleShown()) {
     views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
     ASSERT_TRUE(pinned_files_bubble);
-    views::View* files_app_chip =
+
+    // If the suggestions feature is enabled, then the placeholder with the G
+    // Suite icons should be showing. If it is disabled but the predictability
+    // feature is enabled, then the files app chip should be showing. Otherwise,
+    // The placeholder shouldn't be showing at all.
+    bool has_files_app_chip =
         pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
-    EXPECT_EQ(files_app_chip != nullptr,
-              IsHoldingSpaceSuggestionsEnabled() ||
-                  IsHoldingSpacePredictabilityEnabled());
+    EXPECT_EQ(has_files_app_chip, IsHoldingSpacePredictabilityEnabled() &&
+                                      !IsHoldingSpaceSuggestionsEnabled());
+    EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
+        pinned_files_bubble));
   }
 }
 
@@ -3471,6 +3496,44 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest, TrayDoesNotShowUntilFirstAdd) {
   MarkTimeOfFirstAdd();
 
   EXPECT_TRUE(test_api()->IsShowingInShelf());
+}
+
+// Until the user has pinned an item, a placeholder should exist in the pinned
+// files bubble which contains a prompt to pin files and, in chrome branded
+// builds, G Suite icons.
+TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
+       PlaceholderContainsGSuitePrompt) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+
+  // Show the bubble. Only the pinned files bubble should be visible.
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
+  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+
+  // The new suggestions placeholder text and icons should exist in the bubble.
+  views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+
+  views::Label* suggestions_placeholder_label =
+      static_cast<views::Label*>(pinned_files_bubble->GetViewByID(
+          kHoldingSpacePinnedFilesSectionPlaceholderLabelId));
+  ASSERT_TRUE(suggestions_placeholder_label);
+
+  // TODO(https://crbug.com/1363339): Replace the placeholder text below when
+  // the final string is added.
+  std::u16string expected_text =
+      IsHoldingSpaceSuggestionsEnabled()
+          ? u"[i18n]You can pin important files here, from the Files app, as "
+            u"well as from Google Slides, Docs, and Drive."
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_HOLDING_SPACE_PINNED_EMPTY_PROMPT);
+  EXPECT_EQ(suggestions_placeholder_label->GetText(), expected_text);
+
+  bool has_files_app_chip =
+      pinned_files_bubble->GetViewByID(kHoldingSpaceFilesAppChipId);
+  EXPECT_NE(has_files_app_chip, IsHoldingSpaceSuggestionsEnabled());
+  EXPECT_TRUE(GSuiteIconsAreVisibleWhenSuggestionsFeatureIsEnabled(
+      pinned_files_bubble));
 }
 
 // Base class for tests of the holding space icon parameterized by a boolean for

@@ -136,6 +136,8 @@ aggregate_vector_icons("components_vector_icons") {
     sources += [
       "google_chrome/assistant.icon",
       "google_chrome/google_calendar.icon",
+      "google_chrome/google_docs.icon",
+      "google_chrome/google_drive.icon",
       "google_chrome/google_g_logo.icon",
       "google_chrome/google_g_logo_monochrome.icon",
       "google_chrome/google_keep_note.icon",
@@ -144,7 +146,9 @@ aggregate_vector_icons("components_vector_icons") {
       "google_chrome/google_lens_logo.icon",
       "google_chrome/google_password_manager.icon",
       "google_chrome/google_pay_logo.icon",
+      "google_chrome/google_sheets.icon",
       "google_chrome/google_sites.icon",
+      "google_chrome/google_slides.icon",
       "google_chrome/google_super_g.icon",
     ]
   }

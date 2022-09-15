@@ -71,15 +71,17 @@ constexpr int kHoldingSpaceItemSecondaryChipLabelId = 11;
 constexpr int kHoldingSpaceItemResumeButtonId = 12;
 constexpr int kHoldingSpacePinnedFilesBubbleId = 13;
 constexpr int kHoldingSpacePinnedFilesSectionId = 14;
-constexpr int kHoldingSpaceRecentFilesBubbleId = 15;
-constexpr int kHoldingSpaceScreenCapturePlayIconId = 16;
-constexpr int kHoldingSpaceSuggestionsChevronIconId = 17;
-constexpr int kHoldingSpaceSuggestionsSectionContainerId = 18;
-constexpr int kHoldingSpaceSuggestionsSectionHeaderId = 19;
-constexpr int kHoldingSpaceSuggestionsSectionId = 20;
-constexpr int kHoldingSpaceTrayDefaultIconId = 21;
-constexpr int kHoldingSpaceTrayDropTargetOverlayId = 22;
-constexpr int kHoldingSpaceTrayPreviewsIconId = 23;
+constexpr int kHoldingSpacePinnedFilesSectionPlaceholderGSuiteIconsId = 15;
+constexpr int kHoldingSpacePinnedFilesSectionPlaceholderLabelId = 16;
+constexpr int kHoldingSpaceRecentFilesBubbleId = 17;
+constexpr int kHoldingSpaceScreenCapturePlayIconId = 18;
+constexpr int kHoldingSpaceSuggestionsChevronIconId = 19;
+constexpr int kHoldingSpaceSuggestionsSectionContainerId = 20;
+constexpr int kHoldingSpaceSuggestionsSectionHeaderId = 21;
+constexpr int kHoldingSpaceSuggestionsSectionId = 22;
+constexpr int kHoldingSpaceTrayDefaultIconId = 23;
+constexpr int kHoldingSpaceTrayDropTargetOverlayId = 24;
+constexpr int kHoldingSpaceTrayPreviewsIconId = 25;
 
 // The maximum allowed age for files restored into the holding space model.
 // Note that this is not enforced for pinned items.
