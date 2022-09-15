@@ -1178,6 +1178,7 @@
 <translation id="208634871997892083">VPN အမြဲတမ်းဖွင့်ထားရန်</translation>
 <translation id="2087822576218954668">ပရင့်: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> ကို ထည့်သွင်းပြီးမှသာ စာရင်းသွင်းခွင့်ပြုသည်။</translation>
+<translation id="2089090684895656482">ပိုနည်း</translation>
 <translation id="208928984520943006">'ပင်မစာမျက်နှာ' သို့ အချိန်မရွေးသွားရန် အောက်ခြေမှအပေါ်သို့ ပွတ်ဆွဲပါ။</translation>
 <translation id="2089566709556890888">Google Chrome ကို အသုံးပြု၍ ဝဘ်ဆိုက်များအား လုံခြုံစွာ ဖွင့်ကြည့်လိုက်ပါ</translation>
 <translation id="2089795179672254991">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများကို ဝဘ်ဆိုက်က ကြည့်လိုသည့်အခါ မေးမြန်းပါ (အကြံပြုထားသည်)</translation>
@@ -2258,6 +2259,7 @@
 <translation id="3046178388369461825">Linux ဒစ်ခ်နေရာ အလွန်နည်းနေပါပြီ</translation>
 <translation id="3046910703532196514">ဝဘ်စာမျက်နှာ၊ ပြီးပြည့်စုံ</translation>
 <translation id="304747341537320566">စကားပြော အင်ဂျင်များ</translation>
+<translation id="3048051495640130973">‘ဘက်ထရီ အားထိန်း’ ဖွင့်မည့်အချိန်ကို ဆက်တင်များတွင် စီမံနိုင်သည်</translation>
 <translation id="3048336643003835855">ရောင်းချသူ <ph name="VENDOR_ID" /> ထံမှ HID စက်ပစ္စည်းများ</translation>
 <translation id="3048917188684939573">ကာစ်လုပ်ခြင်းနှင့် စက်ပစ္စည်းမှတ်တမ်းများ</translation>
 <translation id="3051250416341590778">ပြကွက်အရွယ်</translation>
@@ -2515,6 +2517,7 @@
 <translation id="3325910708063135066">'Mac စနစ် သတ်မှတ်ချက်များ' တွင် ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို ပိတ်ထားသည်</translation>
 <translation id="3327050066667856415">Chromebook များကို လုံခြုံရေးအတွက် ရည်ရွယ်ထုတ်လုပ်ထားခြင်းဖြစ်သည်။ သင့်စက်ကို မဲလ်ဝဲမှ အလိုအလျောက်ကာကွယ်ပြီးဖြစ်သည်၊ နောက်ထပ်ဆော့ဖ်ဝဲမလိုပါ။</translation>
 <translation id="3328489342742826322">အရန်သိမ်းဆည်းမှု‌မှနေ၍ ပြန်ယူခြင်းဖြင့် လက်ရှိ Linux အက်ပ်များနှင့် သင်၏ Linux ဖိုင်တွဲရှိ ဒေတာများကို ဖျက်လိုက်ပါမည်။</translation>
+<translation id="3329013043687509092">စိုရွှဲမှု</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">အက်ပ်အင်ဖို</translation>
 <translation id="3333190335304955291">သင်သည် ဤဝန်ဆောင်မှုကို 'ဆက်တင်များ' ထဲတွင် ပိတ်နိုင်သည်။</translation>
@@ -2848,6 +2851,7 @@
 <translation id="3641456520301071208">ဝက်ဆိုက်များက သင့်တည်နေရာကို မေးနိုင်သည်</translation>
 <translation id="3642070413432681490">ကာဆာအဝိုင်း</translation>
 <translation id="3642699533549879077">သင့်ဖန်သားပြင်ကို တစ်စုံတစ်ဦးကြည့်ပါက သတိပေးမည်ဖြစ်ပြီး အကြောင်းကြားချက်ဆိုင်ရာ အချက်အလက်များကို ဖျောက်ပေးသည်။</translation>
+<translation id="3643962751030964445">ဤစက်ကို <ph name="DEVICE_MANAGER" /> က စီမံခန့်ခွဲသည်။ <ph name="DEVICE_MANAGER" /> က <ph name="USER_EMAIL_ADDRESS" /> အကောင့်အတွက် ပရိုဖိုင်အသစ် တောင်းဆိုသည်</translation>
 <translation id="3645372836428131288">လက်ဗွေ၏ အခြားအပိုင်းကို ရိုက်ကူးရန် အနည်းငယ် ရွှေ့လိုက်ပါ။</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ထံမှရသော <ph name="ATTACHMENTS" /> ခု}other{<ph name="DEVICE_NAME" /> ထံမှရသော <ph name="ATTACHMENTS" /> ခု}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ကို ရှာတွေ့ခဲ့သည်</translation>
@@ -3299,6 +3303,7 @@
 <translation id="4050534976465737778">စက်နှစ်ခုလုံးပွင့်နေပြီး အတူကပ်ထားကာ ဘလူးတုသ်ဖွင့်ထားကြောင်း သေချာပါစေ။ သင်၏အဆက်အသွယ်များတွင် မပါဝင်သော Chromebook အား မျှဝေနေပါက ၎င်းတွင် 'အနီးတစ်ဝိုက် မြင်နိုင်မှု' ဖွင့်ထားကြောင်း သေချာပါစေ (အခြေအနေပြနေရာကို ဖွင့်ပါ၊ ထို့နောက် 'အနီးတစ်ဝိုက် မြင်နိုင်မှု' ကိုဖွင့်ပါ)။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">သေး</translation>
 <translation id="4054070260844648638">လူတိုင်း မြင်နိုင်သည်</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome အက်ပ်အတွက် သင့်မိဘကသတ်မှတ်ထားသည့် အချိန်ကန့်သတ်ချက် ပြည့်သွားပါပြီ။ မနက်ဖြန် <ph name="TIME_LIMIT" /> ကြာ အသုံးပြုနိုင်ပါမည်။</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">စတိုးမှာ ကြည့်ရန်</translation>
@@ -3416,6 +3421,7 @@
 <translation id="4175137578744761569">ခရမ်းဖျော့နှင့် အဖြူ</translation>
 <translation id="4175737294868205930">တည်မြဲသည့် သိုလှောင်ခန်း</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
+<translation id="4176864026061939326">ဤစက်ကို စီမံခန့်ခွဲထားသည်။ သင့်စက်စီမံခန့်ခွဲသူက <ph name="USER_EMAIL_ADDRESS" /> အကောင့်အတွက် ပရိုဖိုင်အသစ် တောင်းဆိုသည်</translation>
 <translation id="4180788401304023883">CA လက်မှတ် "<ph name="CERTIFICATE_NAME" />" ကို ဖျက်မည်လား?</translation>
 <translation id="4181602000363099176">၂၀ ဆ</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
@@ -3836,7 +3842,6 @@
 <translation id="4579876313423027742">ဘရောင်ဇာ အကြောင်းကြားချက်များအတွက် <ph name="LINK_BEGIN" />Chrome ဘရောင်ဇာ ဆက်တင်များ<ph name="LINK_END" /> သို့သွားပါ</translation>
 <translation id="4580587929153007251">‘Google စကားဝှက်မန်နေဂျာ’ သို့ ပြန်လည်လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4580596421317071374">ဤစက်ပေါ်ရှိ စကားဝှက်များကို<ph name="GOOGLE_PASSWORD_MANAGER" /> တွင် သိမ်းသည်။</translation>
-<translation id="4580626299762849806">စကားဝှက်များ ထည့်သွင်း၍မရပါ။ <ph name="FILENAME" /> ကို စစ်ဆေးပြီး မှန်ကန်စွာဖော်မက်လုပ်ထားကြောင်း သေချာပါစေ။</translation>
 <translation id="4581774856936278355">Linux ပြန်ယူနေစဉ်တွင် အမှားဖြစ်သွားသည်</translation>
 <translation id="4582297591746054421">သင်မိတ္တူကူးလိုက်သော စာသားဖော်မက်ကို ဆက်သုံးခြင်းကဲ့သို့ ဝန်ဆောင်မှုများအတွက် ဝဘ်ဆိုက်များက သင်၏ကလစ်ဘုတ်ကို ဖတ်လေ့ရှိသည်</translation>
 <translation id="4582563038311694664">ဆက်တင်များ အားလုံး ပြင်ဆင်သတ်မှတ်ရန်</translation>
@@ -6582,6 +6587,7 @@
 <translation id="7267875682732693301">လက်ဗွေ၏ အစိတ်အပိုင်းအမျိုးမျိုးကို ထည့်ရန်အတွက် သင့်လက်ချောင်းကို အကြိမ်ကြိမ်ပြန်ကြွပါ</translation>
 <translation id="7267898843336437186">ဤဝဘ်ဆိုက်က ကြည့်၍ရသောဖိုင်တွဲ ရွေးရန်</translation>
 <translation id="7268127947535186412">ဤဆက်တင်ကို စက်ပစ္စည်း၏ပိုင်ရှင်က စီမံခန့်ခွဲသည်။</translation>
+<translation id="7269229526547981029">ဤပရိုဖိုင်ကို <ph name="PROFILE_MANAGER" /> က စီမံခန့်ခွဲသည်။ <ph name="ACCOUNT_MANAGER" /> က <ph name="USER_EMAIL_ADDRESS" /> အကောင့်အတွက် ပရိုဖိုင်အသစ် တောင်းဆိုသည်</translation>
 <translation id="7269736181983384521">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဒေတာသုံးစွဲမှု</translation>
 <translation id="7272674038937250585">မည်သည့်အကြောင်းအရာမျှ မဖော်ပြထားပါ</translation>
 <translation id="7273110280511444812">နောက်ဆုံး ပူးတွဲခဲ့<ph name="DATE" /></translation>
@@ -7593,6 +7599,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{အကြောင်းကြားချက်အသစ်}other{အကြောင်းကြားချက်အသစ် # ခု}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> ၏ ‘Google စကားဝှက်မန်နေဂျာ’ တွင် စကားဝှက်များထည့်သွင်းရန် CSV ဖိုင်တစ်ခု ရွေးပါ</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ဒေါင်းလုဒ် လုပ်နေဆဲဖြစ်သည်}other{ဒေါင်းလုဒ်များ လုပ်နေဆဲဖြစ်သည်}}</translation>
+<translation id="8212601853154459483">ဤပရိုဖိုင်ကို <ph name="PROFILE_MANAGER" /> က စီမံပြီး <ph name="USER_EMAIL_ADDRESS" /> အကောင့်အတွက် သီးခြားပရိုဖိုင် ပြုလုပ်ရန် တောင်းဆိုသည်</translation>
 <translation id="8213449224684199188">ဓာတ်ပုံမုဒ်သို့ ပြောင်းလိုက်ပါပြီ</translation>
 <translation id="8214489666383623925">ဖိုင် ဖွင့်ရန်...</translation>
 <translation id="8215129063232901118">သင့် <ph name="DEVICE_TYPE" /> မှ သင့်ဖုန်း၏စွမ်းဆောင်နိုင်မှုများကို ဝင်ကြည့်နိုင်သည်</translation>

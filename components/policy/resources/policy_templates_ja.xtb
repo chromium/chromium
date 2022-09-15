@@ -3736,13 +3736,6 @@
 <translation id="5082296146261894974">ユーザーがスマートフォン ハブの通知をクリックして Eche アプリを起動することを許可します。</translation>
 <translation id="5082572440690475059">File System API 経由での読み取りアクセスを許可するサイトを指定する</translation>
 <translation id="5085647276663819155">印刷プレビューを無効にする</translation>
-<translation id="5087974224086385270">この設定により、<ph name="LACROS_NAME" /> が無効になった後、どれだけのユーザーデータが保持されるかが決まります。
-
-      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> に設定した場合は、すべてのユーザーデータが削除されます。これは最も安全な設定です。
-
-      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> に設定した場合は、ほとんどのユーザーデータが削除され、ブラウザに依存しないファイルのみ（例: 「ダウンロード」）が保存されます。
-
-      このポリシーを <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> に設定した場合、ユーザーデータはすべて保持されます。この設定ではエラーが発生するリスクが高く、復旧するには Powerwash が必要になります。</translation>
 <translation id="5090791951240382356">ソースの異なる辞書ポリシーの統合を許可する</translation>
 <translation id="5091315650312105069">HTTP で <ph name="BASIC_AUTH" /> 認証を許可する</translation>
 <translation id="5099239365323299669">M106 以降、永続的な割り当てはサポートされなくなります。このポリシーにより、M107 まで永続的な割り当ての機能が再有効化されます。

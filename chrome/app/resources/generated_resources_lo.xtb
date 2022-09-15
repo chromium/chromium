@@ -1177,6 +1177,7 @@
 <translation id="208634871997892083">VPN ແບບເປີດຕະຫຼອດ</translation>
 <translation id="2087822576218954668">ພິມ​: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">ຮອງຮັບການລົງທະບຽນຫຼັງຈາກທີ່ທ່ານຕິດຕັ້ງ <ph name="DEVICE_OS" /> ເທົ່ານັ້ນ.</translation>
+<translation id="2089090684895656482">ຫນ້ອຍ</translation>
 <translation id="208928984520943006">ປັດຂຶ້ນຈາກລຸ່ມສຸດເພື່ອໄປຫາໜ້າຈໍຫຼັກໄດ້ທຸກເວລາ.</translation>
 <translation id="2089566709556890888">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Google Chrome</translation>
 <translation id="2089795179672254991">ຖາມເມື່ອເວັບໄຊຕ້ອງການເຫັນຂໍ້ຄວາມ ແລະ ຮູບພາບທີ່ສຳເນົາໄວ້ໃນຄລິບບອດ (ແນະນຳ)</translation>
@@ -2259,6 +2260,7 @@
 <translation id="3046178388369461825">ພື້ນທີ່ດິສກ໌ Linux ເຫຼືອໜ້ອຍລະດັບວິກິດແລ້ວ</translation>
 <translation id="3046910703532196514">ໜ້າເວັບສໍາ​ເລັດ</translation>
 <translation id="304747341537320566">ໂປຣແກຣມສຽງເວົ້າ</translation>
+<translation id="3048051495640130973">ທ່ານສາມາດຄວບຄຸມໄດ້ວ່າຈະເປີດຕົວປະຢັດແບັດເຕີຣີຕອນໃດໃນການຕັ້ງຄ່າ</translation>
 <translation id="3048336643003835855">ອຸປະກອນ HID ຈາກຜູ້ຂາຍ <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">ບັນທຶກການສົ່ງສັນຍານ ແລະ ອຸປະກອນ</translation>
 <translation id="3051250416341590778">ຂະໜາດສະແດງຜົນ</translation>
@@ -2516,6 +2518,7 @@
 <translation id="3325910708063135066">ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນປິດຢູ່ໃນການຕັ້ງຄ່າລະບົບ Mac</translation>
 <translation id="3327050066667856415">Chromebook ໄດ້ຮັບການອອກແບບມາເພື່ອຄວາມປອດໄພ. ອຸປະກອນຂອງທ່ານໄດ້ຮັບການປົກປ້ອງຈາກເມົາແວໂດຍອັດຕະໂນມັດ, ບໍ່ຈຳເປັນຕ້ອງໃຊ້ຊອບແວເພີ່ມເຕີມ.</translation>
 <translation id="3328489342742826322">ການກູ້ຄືນຈາກການສຳຮອງຂໍ້ມູນຈະລຶບແອັບພລິເຄຊັນ ແລະ ຂໍ້ມູນ Linux ທີ່ມີຢູ່ໃນໂຟນເດີໄຟລ໌ Linux ຂອງທ່ານ.</translation>
+<translation id="3329013043687509092">ການອີ່ມຕົວ</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ຂໍ້​ມູນ​ແອັບ</translation>
 <translation id="3333190335304955291">ທ່ານສາມາດປິດການບໍລິການນີ້ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
@@ -2849,6 +2852,7 @@
 <translation id="3641456520301071208">ເວັບໄຊສາມາດຂໍສະຖານທີ່ຂອງທ່ານໄດ້</translation>
 <translation id="3642070413432681490">ເຄີເຊີວົງມົນ</translation>
 <translation id="3642699533549879077">ເມື່ອມີຄົນອື່ນເບິ່ງໜ້າຈໍຂອງທ່ານ, ທ່ານຈະຖືກແຈ້ງເຕືອນ ແລະ ເນື້ອຫາການແຈ້ງເຕືອນຈະຖືກເຊື່ອງໄວ້.</translation>
+<translation id="3643962751030964445">ອຸປະກອນນີ້ຖືກຈັດການໂດຍ <ph name="DEVICE_MANAGER" />. ຕ້ອງໃຊ້ໂປຣໄຟລ໌ໃໝ່ສຳລັບບັນຊີ <ph name="USER_EMAIL_ADDRESS" /> ໂດຍ <ph name="DEVICE_MANAGER" /></translation>
 <translation id="3645372836428131288">ຍ້າຍຊ້າໆເພື່ອບັນທຶກເອົາສ່ວນຕ່າງໆຂອງລາຍນິ້ວມື.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ທີ່ໄດ້ຮັບຈາກ <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> ທີ່ໄດ້ຮັບຈາກ <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ກວດ​ພົບ​ແລ້ວ</translation>
@@ -3301,6 +3305,7 @@
 <translation id="4050534976465737778">ກະລຸນາກວດສອບວ່າອຸປະກອນທັງສອງປົດລັອກແລ້ວ, ຢູ່ໃກ້ກັນ ແລະ ເປີດ Bluetooth. ຖ້າທ່ານກຳລັງແບ່ງປັນກັບ Chromebook ທີ່ບໍ່ໄດ້ຢູ່ໃນລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ, ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າມັນໄດ້ເປີດການແບ່ງປັນ Nearby (ເປີດພື້ນທີ່ສະຖານະ, ຈາກນັ້ນເປີດການແບ່ງປັນ Nearby). <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">ບາງ</translation>
 <translation id="4054070260844648638">ທຸກຄົນສາມາດເຫັນໄດ້</translation>
+<translation id="4056223980640387499">ສີນໍ້າຕານດໍາ</translation>
 <translation id="4056908315660577142">ທ່ານໄດ້ຮອດຂີດຈຳກັດເວລາທີ່ພໍ່ແມ່ຂອງທ່ານກຳນົດໄວ້ສຳລັບແອັບ Chrome <ph name="APP_NAME" /> ແລ້ວ. ທ່ານສາມາດໃຊ້ມັນເປັນເວລາ <ph name="TIME_LIMIT" /> ໄດ້ໃນມື້ອື່ນ.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ເບິ່ງ​ຢູ່​ໃນ​ຮ້ານ</translation>
@@ -3418,6 +3423,7 @@
 <translation id="4175137578744761569">ສີມ່ວງອ່ອນ ແລະ ສີຂາວ</translation>
 <translation id="4175737294868205930">ການຈັດເກັບຂໍ້ມູນຕໍ່ເນື່ອງ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
+<translation id="4176864026061939326">ອຸປະກອນນີ້ຖືກຈັດການຢູ່. ຕ້ອງໃຊ້ໂປຣໄຟລ໌ໃໝ່ສຳລັບບັນຊີ <ph name="USER_EMAIL_ADDRESS" /> ໂດຍຜູ້ເບິ່ງແຍງລະບົບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4180788401304023883">ລຶບໃບຢັ້ງຢືນ CA "<ph name="CERTIFICATE_NAME" />" ບໍ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ພາສາ</translation>
@@ -3838,7 +3844,6 @@
 <translation id="4579876313423027742">ສຳລັບການແຈ້ງເຕືອນໂປຣແກຣມທ່ອງເວັບ, ກະລຸນາເຂົ້າໄປ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບ Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">ກັບຄືນເຂົ້າສູ່ລະບົບຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="4580596421317071374">ລະຫັດຜ່ານຖືກບັນທຶກໄປໃສ່ <ph name="GOOGLE_PASSWORD_MANAGER" /> ຢູ່ອຸປະກອນນີ້.</translation>
-<translation id="4580626299762849806">ບໍ່ສາມາດນຳເຂົ້າລະຫັດຜ່ານໄດ້. ກະລຸນາກວດສອບ <ph name="FILENAME" /> ແລະ ກວດໃຫ້ແນ່ໃຈວ່າຮູບແບບຂອງມັນຖືກຕ້ອງແລ້ວ.</translation>
 <translation id="4581774856936278355">ເກີດຄວາມຜິດພາດໃນຂະນະທີ່ກູ້ຄືນ Linux</translation>
 <translation id="4582297591746054421">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະອ່ານຄລິບບອດສຳລັບຄຸນສົມບັດ ເຊັ່ນ: ການຮັກສາການຈັດຮູບແບບຂອງຂໍ້ຄວາມທີ່ທ່ານສຳເນົາໄວ້</translation>
 <translation id="4582563038311694664">ຕັ້ງທຸກການຕັ້ງຄ່າ​ຄືນໃໝ່</translation>
@@ -6585,6 +6590,7 @@
 <translation id="7267875682732693301">ຍົກນິ້ວຂອງທ່ານຂຶ້ນເພື່ອເພີ່ມສ່ວນຕ່າງໆຂອງລາຍນິ້ວມືທ່ານ</translation>
 <translation id="7267898843336437186">ເລືອກໂຟນເດີໃດໜຶ່ງທີ່ເວັບໄຊນີ້ສາມາດເບິ່ງໄດ້</translation>
 <translation id="7268127947535186412">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍເຈົ້າຂອງອຸປະກອນ.</translation>
+<translation id="7269229526547981029">ໂປຣໄຟລ໌ນີ້ຖືກຈັດການໂດຍ <ph name="PROFILE_MANAGER" />. ຕ້ອງໃຊ້ໂປຣໄຟລ໌ໃໝ່ສຳລັບບັນຊີ <ph name="USER_EMAIL_ADDRESS" /> ໂດຍ <ph name="ACCOUNT_MANAGER" /></translation>
 <translation id="7269736181983384521">ການນຳໃຊ້ອິນເຕີເນັດຂອງການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="7272674038937250585">ບໍ່ມີລາຍລະອຽດທີ່ໃຫ້ໄວ້</translation>
 <translation id="7273110280511444812">ຄັດຕິດ​ຫຼ້າ​ສຸດ​ໃນ​ວັນ​ທີ <ph name="DATE" /></translation>
@@ -7595,6 +7601,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ການແຈ້ງເຕືອນໃໝ່}other{ການແຈ້ງເຕືອນໃໝ່ # ລາຍການ}}</translation>
 <translation id="821119981794423735">ເພື່ອນຳເຂົ້າລະຫັດຜ່ານໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="USER_EMAIL" />, ໃຫ້ເລືອກໄຟລ໌ CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ການດາວໂຫຼດພວມດຳເນີນຢູ່}other{ການດາວໂຫຼດພວມດຳເນີນຢູ່}}</translation>
+<translation id="8212601853154459483">ໂປຣໄຟລ໌ນີ້ຖືກຈັດການໂດຍ <ph name="PROFILE_MANAGER" /> ແລະ ກຳນົດໃຫ້ທ່ານສ້າງໂປຣໄຟລ໌ແຍກກັນສຳລັບບັນຊີ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8213449224684199188">ເຂົ້າໂໝດຮູບພາບແລ້ວ</translation>
 <translation id="8214489666383623925">ເປີດ​ໄຟລ​໌...</translation>
 <translation id="8215129063232901118">ເຂົ້າເຖິງຄວາມສາມາດຂອງໂທລະສັບຂອງທ່ານຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>

@@ -454,6 +454,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="3435465986463792564">Ai deschis multe ferestre? Gestionează-le de aici</translation>
 <translation id="3443221991560634068">Reîncarcă pagina curentă</translation>
 <translation id="3444179773590444986">Trimiți feedback despre tema întunecată pentru site-uri?</translation>
+<translation id="3452832259067974318">Pentru a-ți proteja confidențialitatea, Chrome nu va completa automat parola în acest câmp.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{O descărcare programată}few{# descărcări programate}other{# de descărcări programate}}</translation>
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Poți alege motorul de căutare</translation>
@@ -679,6 +680,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Parolele sunt salvate în Managerul de parole pe acest dispozitiv</translation>
 <translation id="4766678251456904326">Adaugă un cont pe dispozitiv</translation>
+<translation id="4787736314074622408">Dorești să ștergi <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Te ajută în activități precum finalizarea unei achiziții, oriunde pe web</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay.

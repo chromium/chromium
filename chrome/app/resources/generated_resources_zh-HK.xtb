@@ -1180,6 +1180,7 @@
 <translation id="208634871997892083">保持開啟 VPN</translation>
 <translation id="2087822576218954668">列印：<ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">安裝 <ph name="DEVICE_OS" /> 後才能註冊。</translation>
+<translation id="2089090684895656482">較少</translation>
 <translation id="208928984520943006">從底部向上滑動即可隨時前往主畫面。</translation>
 <translation id="2089566709556890888">透過 Google Chrome 瀏覽器安全瀏覽內容</translation>
 <translation id="2089795179672254991">在網站要求查看複製到剪貼簿的文字和圖片時詢問您 (建議)</translation>
@@ -2518,6 +2519,7 @@
 <translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的相機和麥克風</translation>
 <translation id="3327050066667856415">Chromebook 專為提升安全性而設。您的裝置會自動防範惡意軟件，無需安裝額外軟件。</translation>
 <translation id="3328489342742826322">還原備份內容時，系統將刪除 Linux 檔案資料夾中的現有 Linux 應用程式和資料。</translation>
+<translation id="3329013043687509092">飽和度</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">應用程式資料</translation>
 <translation id="3333190335304955291">您可以在「設定」中關閉此服務。</translation>
@@ -3304,6 +3306,7 @@
 <translation id="4050534976465737778">請確保兩部裝置都已解鎖並放在一起，確保藍牙功能已開啟。如果要與未設定為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用「咫尺共享」分享設定 (開啟狀態區，然後啟動「咫尺共享」分享設定)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4054070260844648638">向所有人顯示</translation>
+<translation id="4056223980640387499">棕褐色</translation>
 <translation id="4056908315660577142">您已達到家長為「<ph name="APP_NAME" />」Chrome 應用程式設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">前往商店檢視</translation>
@@ -3553,7 +3556,7 @@
 <translation id="4306119971288449206">應用程式的內容類型應設為「<ph name="CONTENT_TYPE" />」</translation>
 <translation id="4307992518367153382">基本</translation>
 <translation id="4309165024397827958">允許擁有位置存取權的 Android 應用程式和服務使用裝置的位置資訊。Google 可能會定期收集並以匿名方式使用位置資訊，以提升定位的精確度及改善適地性服務。</translation>
-<translation id="4309183709806093061">一併分享系統音訊。這部裝置將設為靜音，以避免音訊回授。</translation>
+<translation id="4309183709806093061">也分享系統音訊。此裝置將設定為靜音，以避免音訊反饋。</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K 使用中)</translation>
 <translation id="4310132194679586591">在裝置上選取應用程式以開啟此連結</translation>
 <translation id="4310139701823742692">檔案格式錯誤。請檢查 PPD 檔案，然後再試一次。</translation>
@@ -3810,7 +3813,7 @@
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同或較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存至 Google 帳戶，請登入並開啟同步功能。</translation>
-<translation id="4556194354084985730">使用已儲存的密碼輕鬆登入網站和應用程式。如果關閉這項設定，系統會在你登入前要求你開啟。</translation>
+<translation id="4556194354084985730">使用已儲存的密碼輕鬆登入網站和應用程式。如果關閉此設定，系統會在您登入前要求您開啟。</translation>
 <translation id="4558426062282641716">已要求自動啟動權限</translation>
 <translation id="4559617833001311418">此網站正在存取您的動作或光線感應器。</translation>
 <translation id="4561893854334016293">最近沒有變更過任何權限</translation>
@@ -3842,7 +3845,6 @@
 <translation id="4579876313423027742">如要設定瀏覽器通知，請前往 <ph name="LINK_BEGIN" />Chrome 瀏覽器設定<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">重新登入「Google 密碼管理工具」</translation>
 <translation id="4580596421317071374">密碼會儲存至此裝置的「<ph name="GOOGLE_PASSWORD_MANAGER" />」中。</translation>
-<translation id="4580626299762849806">無法匯入密碼，請檢查「<ph name="FILENAME" />」的格式是否正確。</translation>
 <translation id="4581774856936278355">還原 Linux 時發生錯誤</translation>
 <translation id="4582297591746054421">網站通常會讀取剪貼簿，以提供保留複製文字格式等功能</translation>
 <translation id="4582563038311694664">重設所有設定</translation>
@@ -4568,7 +4570,7 @@
 <translation id="5305145881844743843">此帳戶是由 <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> 管理</translation>
 <translation id="5307030433605830021">不支援的來源</translation>
 <translation id="5307386115243749078">與藍牙開關配對</translation>
-<translation id="5307958609248661362">Google 密碼管理工具已逾時</translation>
+<translation id="5307958609248661362">「Google 密碼管理工具」已逾時</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5309418307557605830">「Google 助理」亦支援此裝置</translation>
 <translation id="5311304534597152726">正在使用以下身分登入：</translation>
@@ -5363,7 +5365,7 @@
 <translation id="6077476112742402730">朗讀即可輸入</translation>
 <translation id="6078121669093215958">{0,plural, =1{訪客}other{# 個開緊嘅訪客視窗}}</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
-<translation id="6078742430369906859">「<ph name="NETWORK_ID" />」的連線能力可能受到限制</translation>
+<translation id="6078742430369906859">「<ph name="NETWORK_ID" />」的連接性可能受到限制</translation>
 <translation id="6078752646384677957">請檢查麥克風和音訊音量。</translation>
 <translation id="6078769373519310690">「<ph name="CHROME_EXTENSION_NAME" />」要求連接 HID 裝置</translation>
 <translation id="608029822688206592">找不到網絡。請插入 SIM 卡，然後再試一次。</translation>
@@ -6075,7 +6077,7 @@
 <translation id="6779447100905857289">您的購物車</translation>
 <translation id="677965093459947883">非常小</translation>
 <translation id="6781005693196527806">管理搜尋引擎…(&amp;M)</translation>
-<translation id="6781012982807899368">已儲存的密碼會顯示在這裡。<ph name="BEGIN_LINK" />匯入密碼<ph name="END_LINK" /></translation>
+<translation id="6781012982807899368">已儲存的密碼會在這裡顯示。<ph name="BEGIN_LINK" />匯入密碼<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Doodle 連結</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式根據開發人員設定所儲存的任何資料，可能包括聯絡人、訊息和相片等資料。備份資料將不會佔用您子女的「雲端硬碟」儲存空間配額。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在「設定」中關閉此服務。<ph name="END_PARAGRAPH2" /></translation>
@@ -7907,7 +7909,7 @@
 <translation id="8523493869875972733">保留變更</translation>
 <translation id="8523849605371521713">由政策新增</translation>
 <translation id="8524783101666974011">將各卡儲存至 Google 帳戶</translation>
-<translation id="8525157245469383124">零售商商店 ID 的格式為 ABC-1234</translation>
+<translation id="8525157245469383124">零售商商店 ID 格式為 ABC-1234</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">新增語言</translation>

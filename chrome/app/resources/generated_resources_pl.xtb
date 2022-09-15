@@ -1166,6 +1166,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="208634871997892083">Stały VPN</translation>
 <translation id="2087822576218954668">Drukuj: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Rejestracja jest obsługiwana tylko po zainstalowaniu systemu operacyjnego <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Mniej</translation>
 <translation id="208928984520943006">Aby w dowolnym momencie przejść do ekranu głównego, przesuń palcem w górę od dołu ekranu.</translation>
 <translation id="2089566709556890888">Przeglądaj bezpiecznie w Google Chrome</translation>
 <translation id="2089795179672254991">Pytaj, gdy strona chce uzyskać dostęp do tekstu i obrazów skopiowanych do schowka (zalecane)</translation>
@@ -2490,6 +2491,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3325910708063135066">Kamera i mikrofon są wyłączone w Preferencjach systemowych Maca</translation>
 <translation id="3327050066667856415">Chromebooki mają bezpieczeństwo w genach. Twoje urządzenie ma automatyczne zabezpieczenia przed złośliwym oprogramowaniem. Innych nie trzeba.</translation>
 <translation id="3328489342742826322">Przywrócenie danych z kopii zapasowej spowoduje usunięcie wszystkich dotychczasowych aplikacji na Linuksa oraz danych w folderach z plikami Linuksa.</translation>
+<translation id="3329013043687509092">Nasycenie</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informacje o aplikacji</translation>
 <translation id="3333190335304955291">Możesz wyłączyć tę usługę w Ustawieniach.</translation>
@@ -3276,6 +3278,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4050534976465737778">Dopilnuj, by obydwa urządzenia były odblokowane, znajdowały się blisko siebie i miały włączony Bluetooth. Jeśli chcesz coś udostępnić Chromebookowi, którego nie masz w kontaktach, upewnij się, że ma włączoną Widoczność w pobliżu (tę opcję włącza się na pasku stanu). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Malutki</translation>
 <translation id="4054070260844648638">Widoczne dla każdego</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Upłynął ustawiony przez rodzica limit czasu korzystania z aplikacji <ph name="APP_NAME" /> w Chrome. Jutro możesz z niej korzystać przez <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Wyświetl w sklepie</translation>
@@ -3812,7 +3815,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4579876313423027742">Aby wyświetlić powiadomienia przeglądarki, otwórz <ph name="LINK_BEGIN" />Ustawienia przeglądarki Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Zaloguj się ponownie w Menedżerze haseł Google</translation>
 <translation id="4580596421317071374">Hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" /> na tym urządzeniu.</translation>
-<translation id="4580626299762849806">Nie udało się zaimportować haseł. Sprawdź, czy plik <ph name="FILENAME" /> jest poprawnie sformatowany.</translation>
 <translation id="4581774856936278355">Błąd podczas przywracania Linuksa</translation>
 <translation id="4582297591746054421">Strony zwykle odczytują zawartość schowka na przykład w celu zachowania formatowania kopiowanego tekstu</translation>
 <translation id="4582563038311694664">Zresetuj wszystkie ustawienia</translation>

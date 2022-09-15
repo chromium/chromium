@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">ទិសដៅ</translation>
 <translation id="3153444934357957346">អ្នកអាចមានគណនីត្រឹមតែ <ph name="MULTI_PROFILE_USER_LIMIT" /> ប៉ុណ្ណោះ សម្រាប់ការចូលគណនីច្រើន។</translation>
 <translation id="3154351730702813399">អ្នកគ្រប់គ្រងឧបករណ៍នេះអាចនឹងត្រួតពិនិត្យសកម្មភាពរុករករបស់អ្នក។</translation>
+<translation id="3157931365184549694">ស្តារ</translation>
 <translation id="316086887565479535">កម្មវិធីដែលមិនអាចប្រើបាននៅក្នុងទម្រង់គំរូ</translation>
 <translation id="3161500364292033097">បិទតុ និងវិនដូ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> កំពុងបន្ទាបកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក។ ឧបករណ៍​របស់អ្នកនឹង​កំណត់​ឡើងវិញ ហើយទិន្នន័យ​ទាំងអស់​នឹងត្រូវបានលុប។</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">តម្រៀបតាម</translation>
 <translation id="3742055079367172538">រូបថតអេក្រង់ត្រូវបានថតយក</translation>
 <translation id="3765841986579723851">បានកែ​នៅថ្ងៃនេះ</translation>
-<translation id="3771549900096082774">មុខងារភាពដិតកម្រិតខ្ពស់</translation>
 <translation id="3773700760453577392">អ្នកគ្រប់គ្រង​បានដក​ការអនុញ្ញាត​មិនឱ្យមាន​ការចូលគណនី​ច្រើនសម្រាប់ <ph name="USER_EMAIL" /> ទេ។ អ្នកប្រើ​ប្រាស់ទាំងអស់​ត្រូវចាកចេញ​ដើម្បីបន្ត។</translation>
 <translation id="3779139509281456663">កំពុងភ្ជាប់ <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងលើ។ ខុសគ្នា​ជាមួយនឹង​ផ្ទៃប្រព័ន្ធ។</translation>
 <translation id="4316910396681052118">កម្មវិធី​ទាំងអស់</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">អ្នក​បានចុច​ផ្លូវកាត់ក្ដារចុច​សម្រាប់កម្រិត​ពន្លឺខ្ពស់។ តើអ្នក​ចង់បើក​វាដែរទេ?</translation>
 <translation id="4322742403972824594">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Ctrl + Alt + ព្រួញឡើងលើ។ ដើម្បីប្រើគ្រាប់ចុច Home សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ព្រួញ​ទៅឆ្វេង។</translation>
 <translation id="4333628967105022692">មិនអាចប្រើ Lacros បានទេ នៅពេលមានអ្នកប្រើប្រាស់ច្រើនចូល។</translation>
 <translation id="4338109981321384717">កែវពង្រីក</translation>
 <translation id="4351433414020964307">ជំនួយការ​កំពុង​ផ្ទុក...</translation>
-<translation id="4356930093361201197">មុខងារភាពដិតកម្រិតខ្ពស់</translation>
 <translation id="4371348193907997655">ការកំណត់ការបញ្ជូន</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" /> ភាគរយ</translation>
 <translation id="4378551569595875038">កំពុងភ្ជាប់...</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">ចាកចេញពីរបៀបភ្ញៀវ</translation>
 <translation id="598407983968395253">ប្រើ​ទម្រង់​គំរូ</translation>
 <translation id="598882571027504733">ដើម្បី​ទទួលបាន​កំណែ​ថ្មី សូម​ចាប់ផ្តើម Chromebook របស់អ្នក​ឡើងវិញ​ដោយប្រើក្តារចុច​ដែល​ភ្ជាប់​មក​ជាមួយ។</translation>
-<translation id="5992218262414051481">បានបើក​មុខងារ​កម្រិត​ពណ៌ខ្ពស់។ សូមចុច Ctrl+Search+H ម្តងទៀត​ដើម្បី​បិទវា។</translation>
 <translation id="6012623610530968780">ទំព័រ <ph name="SELECTED_PAGE" /> នៃ <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">កំពុង​ចាកចេញ​ពី​មុខងារឆ្លុះ</translation>
 <translation id="602001110135236999">រំកិលទៅ​ឆ្វេង</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">ទម្រង់គំរូដែលមានឈ្មោះថា <ph name="DESK_TEMPLATE_NAME" /> មានរួចហើយ</translation>
 <translation id="8052898407431791827">បានចម្លង​ទៅ​ឃ្លីបបត</translation>
 <translation id="8054466585765276473">កំពុងគណនារយៈពេលថាមពលថ្ម។</translation>
-<translation id="8061464966246066292">កម្រិត​ពន្លឺខ្ពស់</translation>
 <translation id="8083540854303889870">បានរក្សាទុកសម្រាប់ពេលក្រោយ</translation>
 <translation id="8091387634532529612">ការដំឡើងកំណែ​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8098591350844501178">បញ្ឈប់​ការបញ្ជូន​អេក្រង់ទៅ <ph name="RECEIVER_NAME" /></translation>

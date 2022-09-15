@@ -373,6 +373,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3151786313568798007">Orientimi</translation>
 <translation id="3153444934357957346">Mund të kesh vetëm deri në <ph name="MULTI_PROFILE_USER_LIMIT" /> llogari në identifikimin e shumëfishtë.</translation>
 <translation id="3154351730702813399">Administratori i pajisjes mund të monitorojë aktivitetin tënd të shfletimit.</translation>
+<translation id="3157931365184549694">Restauro</translation>
 <translation id="316086887565479535">Aplikacione të pambështetura në shabllon</translation>
 <translation id="3161500364292033097">Mbyll tavolinën e punës dhe dritaret</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> po kthen pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
@@ -476,7 +477,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3735740477244556633">Rendit sipas</translation>
 <translation id="3742055079367172538">Pamja e ekranit u mor</translation>
 <translation id="3765841986579723851">Modifikuar sot</translation>
-<translation id="3771549900096082774">Modaliteti i kontrastit të lartë</translation>
 <translation id="3773700760453577392">Një administrator ka ndaluar identifikimin e shumëfishtë për <ph name="USER_EMAIL" />. Të gjithë përdoruesit duhet të dalin për të vazhduar.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> po lidhet</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4312840429157639164">Pamja paraprake e kamerës ka kaluar në këndin e sipërm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="4316910396681052118">TË GJITHA APLIKACIONET</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Ke shtypur shkurtoren e tastierës për kontrastin e lartë. Dëshiron ta aktivizosh?</translation>
 <translation id="4322742403972824594">Shkurtorja e tastierës për Ctrl + Shigjeta lart është ndryshuar. Për të përdorur tastin Home, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta majtas.</translation>
 <translation id="4333628967105022692">Lacros nuk mbështetet ndërsa janë të identifikuar disa përdorues.</translation>
 <translation id="4338109981321384717">Xhami zmadhues</translation>
 <translation id="4351433414020964307">"Asistenti" po ngarkohet...</translation>
-<translation id="4356930093361201197">modaliteti i kontrastit të lartë</translation>
 <translation id="4371348193907997655">Cilësimet e transmetimit</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /> për qind</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
@@ -877,7 +875,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5980301590375426705">Dil si vizitor</translation>
 <translation id="598407983968395253">Përdor shabllonin</translation>
 <translation id="598882571027504733">Për të marrë përditësimin, rinise Chromebook me tastierën e lidhur.</translation>
-<translation id="5992218262414051481">Modaliteti i kontrastit të lartë u aktivizua. Shtyp përsëri Ctrl+Kërko+Shift+H për ta çaktivizuar.</translation>
 <translation id="6012623610530968780">Faqja <ph name="SELECTED_PAGE" /> nga <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Po del nga modaliteti i pasqyrës</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
@@ -1233,7 +1230,6 @@ Instalim i ri</translation>
 <translation id="8051716679295756675">Shablloni me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>
-<translation id="8061464966246066292">Kontrast i lartë</translation>
 <translation id="8083540854303889870">Ruajtur për më vonë</translation>
 <translation id="8091387634532529612">Përditësimet automatike</translation>
 <translation id="8098591350844501178">Ndalo transmetimin e ekranit te <ph name="RECEIVER_NAME" /></translation>

@@ -1180,6 +1180,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="208634871997892083">Altydaan-VPN</translation>
 <translation id="2087822576218954668">Druk uit: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Inskrywing word eers gesteun nadat jy <ph name="DEVICE_OS" /> installeer.</translation>
+<translation id="2089090684895656482">Minder</translation>
 <translation id="208928984520943006">Swiep enige tyd van die onderkant af op om na die tuisskerm toe te gaan.</translation>
 <translation id="2089566709556890888">Blaai veilig met Google Chrome</translation>
 <translation id="2089795179672254991">Vra wanneer 'n werf teks en prente wat na die knipbord gekopieer is, wil sien (aanbeveel)</translation>
@@ -2518,6 +2519,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3325910708063135066">Kamera en mikrofoon is in Mac-stelselvoorkeure afgeskakel</translation>
 <translation id="3327050066667856415">Chromebooks is ontwerp vir sekuriteit. Jou toestel word outomaties teen wanware beskerm – geen ekstra sagteware is nodig nie.</translation>
 <translation id="3328489342742826322">As jy van 'n rugsteun af terugstel, sal bestaande Linux-programme en data in jou Linux-lêersvouer uitgevee word.</translation>
+<translation id="3329013043687509092">Versadiging</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Programinligting</translation>
 <translation id="3333190335304955291">Jy kan hierdie diens in Instellings afskakel.</translation>
@@ -3304,6 +3306,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4050534976465737778">Maak seker dat albei toestelle ontsluit is, naby mekaar is, en dat Bluetooth aangeskakel is. As jy met 'n Chromebook deel wat nie in jou kontakte is nie, moet jy seker maak dat Nabysigbaarheid aangeskakel is (maak die statusarea oop en skakel dan Nabysigbaarheid aan). <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Klein</translation>
 <translation id="4054070260844648638">Sigbaar vir almal</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Jy het die tydlimiet bereik wat jou ouer vir die Chrome-program <ph name="APP_NAME" /> gestel het. Jy kan dit môre <ph name="TIME_LIMIT" /> lank gebruik.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Bekyk in winkel</translation>
@@ -3842,7 +3845,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4579876313423027742">Gaan na <ph name="LINK_BEGIN" />Chrome-blaaierinstellings<ph name="LINK_END" /> vir blaaierkennisgewings</translation>
 <translation id="4580587929153007251">Meld weer aan by Google Wagwoordbestuurder</translation>
 <translation id="4580596421317071374">Wagwoorde word gestoor in <ph name="GOOGLE_PASSWORD_MANAGER" /> op hierdie toestel</translation>
-<translation id="4580626299762849806">Kan nie wagwoorde invoer nie. Gaan <ph name="FILENAME" /> na en maak seker dat dit reg geformateer is.</translation>
 <translation id="4581774856936278355">Kon nie Linux terugstel nie</translation>
 <translation id="4582297591746054421">Werwe lees gewoonlik jou knipbord vir kenmerke soos behoud van die formatering van teks wat jy gekopieer het</translation>
 <translation id="4582563038311694664">Stel alle instellings terug</translation>

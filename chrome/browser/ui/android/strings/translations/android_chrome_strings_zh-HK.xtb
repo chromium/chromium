@@ -454,7 +454,7 @@
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
-<translation id="3452832259067974318">為保護個人隱私，Chrome 不會在這個欄位中自動填入密碼。</translation>
+<translation id="3452832259067974318">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已預定 1 項下載}other{已預定 # 項下載}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
@@ -680,7 +680,7 @@
 <translation id="4763480195061959176">影片</translation>
 <translation id="4766313118839197559">密碼會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
-<translation id="4787736314074622408">要刪除 <ph name="ITEM_TITLE" /> 嗎？</translation>
+<translation id="4787736314074622408">係咪想刪除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4791358705705538979">協助您在網絡完成結帳等工作</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">密碼短語加密的資料並不包括 Google Pay 上的付款方法和地址。

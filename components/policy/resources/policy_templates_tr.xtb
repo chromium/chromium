@@ -3345,6 +3345,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (ayarlanmışsa) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Ancak M85'ten itibaren ana makinede "*" ve "[*.]" joker karakterler olan kalıplar bu politika için desteklenmez.</translation>
+<translation id="4369307906396795087">Çalışanlar (Web Çalışanları, Hizmet Çalışanları vb.) için komut dosyaları, lax MIME türü kontrolünü kullanır. <ph name="MIMETYPE_TEXT_ASCII" /> gibi eski MIME türlerine sahip çalışan komut dosyaları çalışır.</translation>
 <translation id="4370937370030117032">Kullanıcı adını ve dosya adını yerel yazıcılara göndermeyi devre dışı bırak</translation>
 <translation id="4372704773119750918">Kurumsal kullanıcının çok profilli oturumun parçası olmasına izin verme (birincil veya ikincil)</translation>
 <translation id="4377599627073874279">Tüm sitelerin tüm resimleri görüntülemesine izin ver</translation>
@@ -3927,13 +3928,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="5082296146261894974">Kullanıcıların Eche uygulamasını başlatmak için Telefon Merkezi bildirimini tıklamasına izin verir.</translation>
 <translation id="5082572440690475059">Bu sitelerde File System API üzerinden okuma erişimine izin ver</translation>
 <translation id="5085647276663819155">Baskı Önizlemeyi Devre Dışı Bırak</translation>
-<translation id="5087974224086385270">Bu ayar, <ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerinin ne kadarının saklanacağını belirler.
-
-      Politika <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> değerine ayarlanırsa tüm kullanıcı verileri kaldırılır. Bu en güvenli seçenektir.
-
-      Politika <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> değerine ayarlanırsa kullanıcı verilerinin çoğu kaldırılır. Yalnızca tarayıcıdan bağımsız dosyalar (örneğin, indirilenler) saklanır.
-
-      Politika <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> değerine ayarlanırsa tüm kullanıcı verileri saklanır. Bu seçenek, yüksek hata riskine sahiptir ve kurtarma işlemi için powerwash yapılması gerekir.</translation>
 <translation id="5090791951240382356">Farklı kaynaklara ait sözlük politikalarını birleştirmeye izin ver</translation>
 <translation id="5091315650312105069">HTTP için <ph name="BASIC_AUTH" /> kimlik doğrulamasına izin ver</translation>
 <translation id="5099239365323299669">Kalıcı kota, M106 sürümünden itibaren desteklenmeyecektir. Bu politika, kalıcı kota işlevini M107 sürümüne kadar yeniden etkinleştirir.
@@ -6385,6 +6379,11 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Politika etkinleştirilirse veya ayarlanmadan bırakılırsa Bil bakalım birim dönüşümü etkinleştirilir.
       Politika devre dışı bırakılırsa Bil bakalım birim dönüşümü devre dışı bırakılır.</translation>
+<translation id="7582095958259051083">Politika, Etkin değerine ayarlanırsa kullanıcının ziyaret ettiği sayfaların URL'lerini, arama ve göz atmayı iyileştirmek için Google'a gönderen, URL içeren veya URL'lerle ilişkili anonim veri toplama her zaman etkin olur.
+
+      Politika, Devre Dışı değerine ayarlanırsa URL içeren veya URL'lerle ilişkili anonim veriler toplanmaz.
+
+      Bu politika ayarlanmadan bırakılırsa kullanıcı bu ayarı manuel olarak değiştirebilir.</translation>
 <translation id="7587345076013230465">Otomatik seçim politikası, oturum açma ekranında birden fazla sertifikayla eşleştiğinde kullanıcıdan istemci sertifikasını seçmesini iste</translation>
 <translation id="7587921466180902617">Family Link kullanıcıları için Ekran Kaydı test sürümünü etkinleştir</translation>
 <translation id="759957074386651883">Güvenli Tarama ayarları</translation>
@@ -7092,6 +7091,7 @@ Windows'da politika yapılandırmak için önerilen yol GPO kullanmaktır. Ancak
 <translation id="8337114537412769126"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> protokolünün ayarlanması, POST ile öneri araması yaparken parametreleri belirtir. Virgülle ayrılmış ad-değer çiftlerini içerir. Değer, <ph name="SEARCH_TERM_MARKER" /> gibi bir şablon parametresi ise gerçek arama terimleri verisiyle değiştirilir.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> politikası ayarlanmadan bırakılırsa öneri araması istekleri GET yöntemi kullanılarak gönderilir.</translation>
+<translation id="8337961007759352651">Çalışanlar (Web Çalışanları, Hizmet Çalışanları vb.) için komut dosyalarında <ph name="MIMETYPE_TEXT_JAVASCRIPT" /> gibi bir JavaScript MIME türü gerekir. <ph name="MIMETYPE_TEXT_ASCII" /> gibi eski MIME türlerine sahip çalışan komut dosyaları reddedilir.</translation>
 <translation id="8339089771335211509">WebRTC, yalnızca herkese açık internete bağlanırken arayüzü kullanıp özel IP adresleri kullanarak bağlanmaz.</translation>
 <translation id="8339420913453596618">İkinci faktör devre dışı</translation>
 <translation id="8344454543174932833">İlk çalıştırmada yer işaretlerini varsayılan tarayıcıdan içe aktar</translation>
@@ -7390,12 +7390,23 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (ayarlanmışsa) geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Bu politikadaki URL'ler, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> aracılığıyla yapılandırılan URL'lerle çakışmamalıdır. Çakışırsa bu politika, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> ve  politikalarına göre daha önceliklidir.</translation>
+<translation id="8667754887193084187">Bu politika, çalışan komut dosyaları için sıkı MIME türü kontrolünü etkinleştirir.
+
+      Politika etkinleştirilir veya ayarlanmadan bırakılırsa çalışan komut dosyaları, JavaScript için sıkı MIME türü kontrolünü kullanır. Bu da varsayılan yeni davranıştır. Eski MIME türlerine sahip çalışan komut dosyaları reddedilir.
+
+      Politika devre dışı bırakılırsa çalışan komut dosyaları, lax MIME türü kontrolünü kullanır. Böylece, <ph name="MIMETYPE_TEXT_ASCII" /> gibi eski MIME türlerine sahip çalışan komut dosyaları yüklenmeye ve yürütülmeye devam eder.
+
+      Tarayıcılar geleneksel olarak lax MIME türü kontrolünü kullandığı için çok sayıda eski MIME türüne sahip kaynak desteklenmekteydi. Örneğin <ph name="MIMETYPE_TEXT_ASCII" />, JavaScript kaynakları için desteklenen eski bir MIME türüdür. Bu, kaynakların hiçbir zaman komut dosyası olarak kullanılması amaçlanmamışken komut dosyası olarak yüklenmesine izin verdiği için güvenlik sorunları ortaya çıkabilir. Chrome, yakın bir tarihte sıkı MIME türü kontrolünü kullanmaya başlayacaktır. Etkinleştirilen politika, varsayılan davranışı uygular. Bu politikanın devre dışı bırakılması, yöneticilerin isterse eski davranışı korumasına olanak tanır.
+
+      JavaScript/ECMAScript medya türleriyle ilgili ayrıntılı bilgi edinmek için https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage adresine göz atın.
+      </translation>
 <translation id="8669313549017524373"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> politikası RestoreOnStartupIsURLs olarak ayarlanırsa <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> politikasını bir URL listesine ayarlamak hangi URL'lerin açılacağını belirtir.
 
       Politika ayarlanmadan bırakılırsa başlangıçta Yeni Sekme sayfası açılır.
 
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev, yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="8671119576957984818">Masaüstü paylaşım merkezini etkinleştir</translation>
+<translation id="8671193325113134911">Çalışan komut dosyaları için sıkı MIME türü kontrolünü etkinleştir</translation>
 <translation id="8671314659400112135">Politikanın etkin değerine ayarlanması veya ayarlanmadan bırakılması <ph name="PRODUCT_NAME" /> hizmetinin, tarayıcı işlemindeki eski uzantı noktalarını engellemek için ek uzantı noktası güvenlik azaltma işlemi uygulamasına izin verir.
 
       Bilinmeyen ve zararlı olabilecek kod, <ph name="PRODUCT_NAME" /> ürününün tarayıcı işlemine yüklenebileceğinden, politikanın Devre Dışı değerine ayarlanması, <ph name="PRODUCT_NAME" /> ürününün güvenliğini ve kararlılığını olumsuz yönde etkiler. Politika yalnızca <ph name="PRODUCT_NAME" /> ürününün tarayıcı işleminin içinde çalışması gereken üçüncü taraf yazılımı ile uyumluluk sorunları varsa devre dışı bırakılmalıdır.

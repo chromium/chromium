@@ -331,6 +331,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8453117565092476964">O arquivo do programa de instalação está corrompido ou não é válido. Descarregue novamente o Chromium.</translation>
 <translation id="8463672209299734063">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromiumOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="8493179195440786826">O Chromium Está Desatualizado</translation>
+<translation id="8522220489792889625">Conforme necessário, o Chromium recupera a memória dos separadores que não está a usar ativamente. Pode alterar esta definição em qualquer altura nas definições.</translation>
 <translation id="8550334526674375523">Este perfil de trabalho está completamente separado do seu perfil pessoal.</translation>
 <translation id="8558383651099478961">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido adicionar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Para obter atualizações futuras do Chromium, precisa do macOS 10.13 ou posterior. Este computador está a usar o macOS 10.12.</translation>

@@ -1180,6 +1180,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="208634871997892083">VPN luôn bật</translation>
 <translation id="2087822576218954668">Bản in: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Chỉ hỗ trợ đăng ký sau khi bạn hoàn tất cài đặt <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Bớt</translation>
 <translation id="208928984520943006">Để chuyển đến Màn hình chính bất cứ lúc nào, hãy vuốt lên từ cuối màn hình.</translation>
 <translation id="2089566709556890888">Duyệt web an toàn bằng Google Chrome</translation>
 <translation id="2089795179672254991">Hỏi khi có một trang web muốn xem văn bản và hình ảnh đã sao chép sang bảng nhớ tạm (được đề xuất)</translation>
@@ -2518,6 +2519,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3325910708063135066">Máy ảnh và micrô đã bị tắt trong System Preferences (Tùy chọn hệ thống) trên máy Mac</translation>
 <translation id="3327050066667856415">Chromebook có thiết kế giúp tăng cường tính bảo mật. Thiết bị của bạn tự động được bảo vệ khỏi phần mềm độc hại mà không cần phải cài đặt phần mềm bổ sung.</translation>
 <translation id="3328489342742826322">Nếu bạn khôi phục từ một bản sao lưu, các dữ liệu và ứng dụng Linux hiện có trong thư mục tệp Linux của bạn sẽ bị xóa.</translation>
+<translation id="3329013043687509092">Độ bão hòa</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Thông tin ứng dụng</translation>
 <translation id="3333190335304955291">Bạn có thể tắt dịch vụ này trong phần Cài đặt.</translation>
@@ -3304,6 +3306,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4050534976465737778">Hãy đảm bảo cả hai thiết bị đã mở khóa, ở gần nhau và đã bật Bluetooth. Nếu bạn đang chia sẻ với một thiết bị Chromebook không có trong danh bạ của mình, hãy đảm bảo thiết bị này đã bật Chế độ hiển thị lân cận (mở khu vực trạng thái, rồi bật Chế độ hiển thị lân cận). <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Rất nhỏ</translation>
 <translation id="4054070260844648638">Hiển thị với mọi người</translation>
+<translation id="4056223980640387499">Màu nâu đỏ</translation>
 <translation id="4056908315660577142">Bạn đã đạt tới giới hạn thời gian mà cha mẹ bạn đặt cho ứng dụng <ph name="APP_NAME" /> trên Chrome. Bạn có thể dùng ứng dụng này trong <ph name="TIME_LIMIT" /> vào ngày mai.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Xem trong cửa hàng</translation>
@@ -3842,7 +3845,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4579876313423027742">Để xem thông báo của trình duyệt, hãy chuyển tới mục <ph name="LINK_BEGIN" />Các chế độ cài đặt của trình duyệt Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Đăng nhập lại vào Trình quản lý mật khẩu của Google</translation>
 <translation id="4580596421317071374">Mật khẩu được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> trên thiết bị này.</translation>
-<translation id="4580626299762849806">Không nhập được mật khẩu. Hãy kiểm tra <ph name="FILENAME" /> để đảm bảo tệp này có định dạng chính xác.</translation>
 <translation id="4581774856936278355">Lỗi khi khôi phục Linux</translation>
 <translation id="4582297591746054421">Các trang web thường đọc bảng nhớ tạm để áp dụng những tính năng như giữ nguyên định dạng của văn bản đã sao chép</translation>
 <translation id="4582563038311694664">Đặt lại tất cả cài đặt</translation>

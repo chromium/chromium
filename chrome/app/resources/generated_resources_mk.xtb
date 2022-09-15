@@ -1181,6 +1181,7 @@
 <translation id="208634871997892083">Секогаш вклучена VPN</translation>
 <translation id="2087822576218954668">Печати: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Регистрацијата е поддржана само откако ќе инсталирате <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Помалку</translation>
 <translation id="208928984520943006">За да одите на почетен екран во кое било време, повлечете нагоре од долниот дел.</translation>
 <translation id="2089566709556890888">Прелистувајте безбедно со Google Chrome</translation>
 <translation id="2089795179672254991">Прашај кога некој сајт сака да гледа текст и слики копирани на привремената меморија (препорачано)</translation>
@@ -2519,6 +2520,7 @@
 <translation id="3325910708063135066">Камерата и микрофонот се исклучени во поставките за системот Mac</translation>
 <translation id="3327050066667856415">Уредите Chromebook се дизајнирани за безбедност. Вашиот уред е заштитен од злонамерен софтвер, нема потреба од дополнителен софтвер.</translation>
 <translation id="3328489342742826322">Враќањето од бекап ќе ги избрише сите постојни апликации на Linux и податоците во папката со датотеки на Linux.</translation>
+<translation id="3329013043687509092">Заситеност</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Информации за апликациите</translation>
 <translation id="3333190335304955291">Услугава може да ја исклучите во „Поставки“.</translation>
@@ -3305,6 +3307,7 @@
 <translation id="4050534976465737778">Проверете дали двата уреда се отклучени, блиску еден до друг и дали имаат вклучено Bluetooth. Ако споделувате со Chromebook што не е во вашите контакти, проверете дали има вклучено „Видливост во близина“ (отворете ја статусната област, а потоа вклучете „Видливост во близина“). <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Ситен</translation>
 <translation id="4054070260844648638">Видлив за сите</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Го достигна временското ограничување што твојот родител го поставил за апликацијата <ph name="APP_NAME" /> на Chrome. Ќе може да ја користиш <ph name="TIME_LIMIT" /> утре.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Прикажи во продавница</translation>
@@ -3843,7 +3846,6 @@
 <translation id="4579876313423027742">За известувањата од прелистувачот, одете во <ph name="LINK_BEGIN" />Поставки за прелистувачот Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Најавете се повторно на Google Password Manager</translation>
 <translation id="4580596421317071374">Лозинките се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" /> на уредов.</translation>
-<translation id="4580626299762849806">Не може да се увезат лозинките. Проверете го <ph name="FILENAME" /> и погрижете се дека е форматирано правилно.</translation>
 <translation id="4581774856936278355">Грешка при враќањето на Linux</translation>
 <translation id="4582297591746054421">Сајтовите обично ја читаат вашата привремена меморија за функциите како што е задржувањето на форматот на текстот што сте го копирале</translation>
 <translation id="4582563038311694664">Ресетирај ги сите поставки</translation>

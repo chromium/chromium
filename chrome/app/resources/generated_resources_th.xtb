@@ -692,6 +692,7 @@
 <translation id="1640283014264083726">PKCS #1 MD4 พร้อมการเข้ารหัส RSA</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050">การดำเนินการเพิ่มเติมสำหรับ <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{ระบบไม่ได้นำเข้ารหัสผ่านอื่นอีก 1 รายการเนื่องจากมีรูปแบบไม่ถูกต้อง}other{ระบบไม่ได้นำเข้ารหัสผ่านอื่นอีก {NUM_PASSWORDS} รายการเนื่องจากมีรูปแบบไม่ถูกต้อง}}</translation>
 <translation id="1642492862748815878">เชื่อมต่ออยู่กับ <ph name="DEVICE" /> และอุปกรณ์บลูทูธอื่นอีก <ph name="NUMBER_OF_DEVICES" /> รายการ</translation>
 <translation id="1642494467033190216">ต้องนำการป้องกัน rootfs ออกและรีสตาร์ทก่อนที่จะเปิดใช้ฟีเจอร์การแก้ไขข้อบกพร่องอื่นๆ</translation>
 <translation id="1643072738649235303">ลายเซ็น X9.62 ECDSA ที่มี SHA-1</translation>
@@ -1168,6 +1169,7 @@
 <translation id="208634871997892083">การเชื่อมต่อ VPN ตลอดเวลา</translation>
 <translation id="2087822576218954668">พิมพ์: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">รองรับการลงทะเบียนหลังจากที่คุณติดตั้ง <ph name="DEVICE_OS" /> แล้วเท่านั้น</translation>
+<translation id="2089090684895656482">น้อยลง</translation>
 <translation id="208928984520943006">เลื่อนขึ้นจากด้านล่างเพื่อไปยังหน้าจอหลักได้ทุกเมื่อ</translation>
 <translation id="2089566709556890888">ท่องเว็บอย่างปลอดภัยด้วย Google Chrome</translation>
 <translation id="2089795179672254991">ถามเมื่อเว็บไซต์ต้องการดูข้อความและรูปภาพที่คัดลอกไปที่คลิปบอร์ด (แนะนำ)</translation>
@@ -1828,6 +1830,7 @@
 <translation id="2673135533890720193">อ่านประวัติการเข้าชม</translation>
 <translation id="2674764818721168631">ปิด</translation>
 <translation id="2678063897982469759">เปิดการใช้งานอีกครั้ง</translation>
+<translation id="2678100101831051676">แคสต์ไม่ได้</translation>
 <translation id="268053382412112343">ประวั&amp;ติ</translation>
 <translation id="2681124317993121768">ไม่รองรับโปรไฟล์ผู้มาเยือน</translation>
 <translation id="2682498795777673382">อัปเดตจากผู้ปกครองของคุณ</translation>
@@ -2503,6 +2506,7 @@
 <translation id="3325910708063135066">กล้องและไมโครโฟนปิดอยู่ในค่ากำหนดของระบบ Mac</translation>
 <translation id="3327050066667856415">Chromebook ออกแบบมาเพื่อความปลอดภัย อุปกรณ์ของคุณได้รับการปกป้องจากมัลแวร์โดยอัตโนมัติ ไม่ต้องใช้ซอฟต์แวร์เพิ่มเติม</translation>
 <translation id="3328489342742826322">การคืนค่าข้อมูลสำรองจะลบแอปพลิเคชันและข้อมูลของ Linux ที่มีอยู่ในโฟลเดอร์ไฟล์ Linux</translation>
+<translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ข้อมูลแอป</translation>
 <translation id="3333190335304955291">คุณปิดบริการนี้ได้ในการตั้งค่า</translation>
@@ -3289,6 +3293,7 @@
 <translation id="4050534976465737778">ตรวจสอบว่าอุปกรณ์ทั้ง 2 เครื่องปลดล็อกแล้ว อยู่ใกล้กัน และเปิดบลูทูธอยู่ หากจะแชร์กับ Chromebook ที่ไม่ได้อยู่ในรายชื่อติดต่อของคุณ ให้ตรวจสอบว่าอุปกรณ์ดังกล่าวเปิดการมองเห็นใกล้เคียงแล้ว (เปิดพื้นที่แสดงสถานะ แล้วเปิด "การมองเห็นใกล้เคียง") <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">ขนาดจิ๋ว</translation>
 <translation id="4054070260844648638">ปรากฏแก่ทุกคน</translation>
+<translation id="4056223980640387499">ซีเปีย</translation>
 <translation id="4056908315660577142">คุณใช้งานแอป <ph name="APP_NAME" /> สำหรับ Chrome ถึงขีดจำกัดเวลาที่ผู้ปกครองตั้งไว้แล้ว พรุ่งนี้คุณจะใช้แอปได้ <ph name="TIME_LIMIT" /></translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ดูในสโตร์</translation>
@@ -3826,7 +3831,6 @@
 <translation id="4579876313423027742">สำหรับการแจ้งเตือนของเบราว์เซอร์ ให้ไปที่<ph name="LINK_BEGIN" />การตั้งค่าเบราว์เซอร์ Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">ลงชื่อเข้าใช้ Google เครื่องมือจัดการรหัสผ่านอีกครั้ง</translation>
 <translation id="4580596421317071374">รหัสผ่านจะบันทึกไว้ใน <ph name="GOOGLE_PASSWORD_MANAGER" />บนอุปกรณ์นี้</translation>
-<translation id="4580626299762849806">นำเข้ารหัสผ่านไม่ได้ ตรวจสอบ <ph name="FILENAME" /> ว่าอยู่ในรูปแบบที่ถูกต้อง</translation>
 <translation id="4581774856936278355">เกิดข้อผิดพลาดขณะคืนค่า Linux</translation>
 <translation id="4582297591746054421">โดยปกติแล้วเว็บไซต์จะอ่านคลิปบอร์ดของคุณเพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น คงการจัดรูปแบบข้อความที่คุณคัดลอกไว้</translation>
 <translation id="4582563038311694664">รีเซ็ตการตั้งค่าทั้งหมด</translation>
@@ -3860,6 +3864,7 @@
 <translation id="4617019240346358451">โหลดหน้าเว็บซ้ำเพื่อใช้ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">ตัวเลือกส่วนขยาย</translation>
 <translation id="4617880081511131945">เริ่มการเชื่อมต่อไม่ได้</translation>
+<translation id="4618195822946934889">URL ต้องมีเฉพาะอักขระ ASCII เท่านั้น</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
 <translation id="4619615317237390068">แท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="4620809267248568679">การตั้งค่านี้ได้รับการบังคับใช้โดยส่วนขยาย</translation>
@@ -5056,6 +5061,7 @@
 <translation id="5800351251499368110">ปิดการค้นหาในแผงด้านข้าง การค้นหาเปิดอยู่ในแผงด้านข้าง</translation>
 <translation id="5801568494490449797">ค่ากำหนด</translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
+<translation id="5805268472388605531">กดแป้นบนแป้นพิมพ์ค้างไว้เพื่อดูเครื่องหมายการเน้นเสียงและสัญลักษณ์พิเศษ</translation>
 <translation id="5805697420284793859">ตัวจัดการหน้าต่าง</translation>
 <translation id="5806447147478173900">พื้นที่เก็บข้อมูลทั้งหมดที่เว็บไซต์ต่างๆ ที่แสดงอยู่ใช้: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ค่าเริ่มต้น)</translation>
@@ -5696,6 +5702,7 @@
 <translation id="642469772702851743">เจ้าของล็อกอุปกรณ์นี้ไว้ (หมายเลขประจำเครื่อง: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6425556984042222041">อัตราของการอ่านออกเสียงข้อความ</translation>
 <translation id="642729974267661262">ไม่ได้รับอนุญาตให้เล่นเสียง</translation>
+<translation id="6427608534767366138">ต้องมีการตรวจสอบสิทธิ์พร็อกซีสำหรับ "<ph name="NETWORK_ID" />"</translation>
 <translation id="6429384232893414837">เกิดข้อผิดพลาดในการอัปเดต</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, ใบรับรองเดี่ยว</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> จะติดตั้งการอัปเดตอัตโนมัติสำหรับผู้ใช้ทั้งหมดที่ใช้เครื่องคอมพิวเตอร์นี้</translation>
@@ -7821,6 +7828,7 @@
 <translation id="844063558976952706">ทำงานบนไซต์นี้เสมอ</translation>
 <translation id="8441313165929432954">เปิด/ปิดการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
 <translation id="8443795068008423036">โปรดตรวจสอบว่าอุปกรณ์เป็นเวอร์ชันล่าสุด แล้วลองอีกครั้ง</translation>
+<translation id="8443986842926457191">URL มีจำนวนอักขระมากกว่า 2,048 ตัว</translation>
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8447409163267621480">รวมปุ่ม Ctrl หรือ Alt</translation>
 <translation id="844850004779619592">ไม่พบคำสั่ง</translation>
@@ -7886,6 +7894,7 @@
 <translation id="851263357009351303">อนุญาตให้ <ph name="HOST" /> แสดงภาพเสมอ</translation>
 <translation id="8513108775083588393">หมุนอัตโนมัติ</translation>
 <translation id="8514746246728959655">ลองใช้คีย์ความปลอดภัยอื่น</translation>
+<translation id="8519895319663397036">นำเข้ารหัสผ่านไม่ได้ ไฟล์ต้องมีขนาดเล็กกว่า 150 KB</translation>
 <translation id="8523493869875972733">เก็บการเปลี่ยนแปลงไว้</translation>
 <translation id="8523849605371521713">เพิ่มตามนโยบาย</translation>
 <translation id="8524783101666974011">บันทึกบัตรลงในบัญชี Google ของคุณ</translation>

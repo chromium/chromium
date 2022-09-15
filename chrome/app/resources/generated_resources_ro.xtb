@@ -1169,6 +1169,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="208634871997892083">VPN activat permanent</translation>
 <translation id="2087822576218954668">Printați: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Înregistrarea este acceptată numai după ce instalezi <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Mai puține</translation>
 <translation id="208928984520943006">Pentru a accesa oricând ecranul de pornire, glisează în sus din partea de jos.</translation>
 <translation id="2089566709556890888">Navighează în siguranță folosind Google Chrome</translation>
 <translation id="2089795179672254991">Întreabă-mă când un site dorește să vadă textul și imaginile copiate în clipboard (recomandat)</translation>
@@ -2504,6 +2505,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3325910708063135066">Camera foto și microfonul sunt dezactivate în System Preferences (Preferințe de sistem) pentru Mac</translation>
 <translation id="3327050066667856415">Chromebookurile sunt proiectate pentru securitate. Dispozitivul tău este protejat automat de programe malware; nu este nevoie de software suplimentar.</translation>
 <translation id="3328489342742826322">Restabilirea dintr-un backup va duce la ștergerea aplicațiilor și a datelor din dosarul Fișiere Linux.</translation>
+<translation id="3329013043687509092">Saturație</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informații despre aplicație</translation>
 <translation id="3333190335304955291">Poți dezactiva acest serviciu din Setări.</translation>
@@ -3290,6 +3292,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4050534976465737778">Asigură-te că ambele dispozitive sunt deblocate, apropiate unul de celălalt și au activată conexiunea Bluetooth. Dacă trimiți fișiere unui Chromebook care nu este trecut în agendă, asigură-te că are funcția Vizibilitate în apropiere activată (deschide zona de stare, apoi activează Vizibilitate în apropiere). <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Mic</translation>
 <translation id="4054070260844648638">Vizibil pentru toată lumea</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Ai atins limita de timp setată de părintele tău pentru aplicația Chrome <ph name="APP_NAME" />. Poți folosi aplicația mâine timp de <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Vedeți în magazin</translation>
@@ -3539,6 +3542,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4306119971288449206">Aplicațiile trebuie să fie difuzate utilizând antetul content-type „<ph name="CONTENT_TYPE" />”</translation>
 <translation id="4307992518367153382">Elemente de bază</translation>
 <translation id="4309165024397827958">Permite ca serviciile și aplicațiile pentru Android cu permisiune pentru locație să folosească locația dispozitivului. Google poate să culeagă periodic date despre locație și să le folosească în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
+<translation id="4309183709806093061">Permite accesul și la conținutul audio de pe sistem. Sunetul dispozitivului va fi dezactivat pentru a evita feedbackul audio.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
 <translation id="4310132194679586591">Selectează o aplicație pe dispozitiv ca să deschizi acest link</translation>
 <translation id="4310139701823742692">Fișierul are un format incorect. Verifică fișierul PPD și încearcă din nou.</translation>
@@ -3826,7 +3830,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4579876313423027742">Pentru notificările din browser, accesează <ph name="LINK_BEGIN" />Setările browserului Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Conectează-te din nou la Managerul de parole Google</translation>
 <translation id="4580596421317071374">Parolele se salvează în <ph name="GOOGLE_PASSWORD_MANAGER" /> pe acest dispozitiv.</translation>
-<translation id="4580626299762849806">Nu se pot importa parolele. Verifică <ph name="FILENAME" /> și asigură-te că este formatat corect.</translation>
 <translation id="4581774856936278355">Eroare la restabilirea Linux</translation>
 <translation id="4582297591746054421">Site-urile citesc de obicei clipboardul pentru a face acțiuni precum păstrarea formatării textului pe care l-ai copiat</translation>
 <translation id="4582563038311694664">Restabilește toate setările</translation>
@@ -4552,6 +4555,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5305145881844743843">Acest cont este gestionat de <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Sursa nu este acceptată</translation>
 <translation id="5307386115243749078">Asociază comutatorul Bluetooth</translation>
+<translation id="5307958609248661362">Managerul de parole Google a expirat</translation>
 <translation id="5308380583665731573">Conectează-te</translation>
 <translation id="5309418307557605830">Asistentul Google este disponibil și aici</translation>
 <translation id="5311304534597152726">Te conectezi ca</translation>
@@ -7352,6 +7356,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7988805580376093356">Păstrează sistemul de operare și rulează <ph name="DEVICE_OS" /> de pe USB.</translation>
 <translation id="7991296728590311172">Setările pentru Accesul prin comutare</translation>
 <translation id="7992203134935383159">Sintetizare vocală</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prioritatea procesului</translation>
 <translation id="7999229196265990314">Au fost create următoarele fișiere:
         

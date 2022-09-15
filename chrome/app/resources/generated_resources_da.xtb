@@ -1181,6 +1181,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="208634871997892083">Konstant VPN</translation>
 <translation id="2087822576218954668">Udskrift: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Du kan først tilmelde dig, når du har installeret <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Mindre</translation>
 <translation id="208928984520943006">Du kan altid komme til startskærmen ved at stryge opad fra bunden.</translation>
 <translation id="2089566709556890888">Brug internettet sikkert med Google Chrome</translation>
 <translation id="2089795179672254991">Spørg, når et website vil se tekst og billeder, der er kopieret til udklipsholderen (anbefales)</translation>
@@ -2519,6 +2520,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3325910708063135066">Kameraet og mikrofonen er deaktiveret i Systemindstillinger for Mac</translation>
 <translation id="3327050066667856415">Chromebooks er udviklet med fokus på sikkerhed. Din enhed er automatisk beskyttet mod malware, uden at du skal hente ekstra software.</translation>
 <translation id="3328489342742826322">Når du gendanner fra en sikkerhedskopi, slettes dine eksisterende Linux-apps og -data fra din mappe med Linux-filer.</translation>
+<translation id="3329013043687509092">Mætning</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Oplysninger om appen</translation>
 <translation id="3333190335304955291">Du kan deaktivere denne tjeneste i Indstillinger.</translation>
@@ -3305,6 +3307,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4050534976465737778">Sørg for, at begge enheder er låst op, er i nærheden af hinanden, og at Bluetooth er aktiveret. Hvis du deler med en Chromebook, som ikke findes under Kontakter, skal du sørge for, at Deling tæt på er aktiveret (åbn statusområdet, og aktivér Deling tæt på). <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Lillebitte</translation>
 <translation id="4054070260844648638">Kan ses af alle</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Du har nået den grænse, din forælder har angivet for Chrome-appen <ph name="APP_NAME" />. Du kan bruge den i <ph name="TIME_LIMIT" /> i morgen.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Se i Webshop</translation>
@@ -3554,6 +3557,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4306119971288449206">Apps skal downloades med indholdstypen "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Grundlæggende valgmuligheder</translation>
 <translation id="4309165024397827958">Tillad, at Android-apps og -tjenester med adgangstilladelse til lokation kan bruge din enheds lokation. Google kan med jævne mellemrum indsamle lokationsdata og bruge oplysningerne anonymt til at gøre lokationen mere nøjagtig og forbedre lokationsbaserede tjenester.</translation>
+<translation id="4309183709806093061">Del også systemlyd. Lyden slås fra på denne enhed for at forhindre lydfeedback.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
 <translation id="4310132194679586591">Vælg en app på din enhed for at åbne dette link</translation>
 <translation id="4310139701823742692">Filen har et forkert format. Tjek PPD-filen, og prøv igen.</translation>
@@ -3842,7 +3846,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4579876313423027742">Gå til <ph name="LINK_BEGIN" />indstillingerne for Chrome-browseren<ph name="LINK_END" /> for at gå til browsernotifikationerne</translation>
 <translation id="4580587929153007251">Log ind på Google Adgangskodeadministrator igen</translation>
 <translation id="4580596421317071374">Adgangskoder gemmes i <ph name="GOOGLE_PASSWORD_MANAGER" /> på denne enhed.</translation>
-<translation id="4580626299762849806">Adgangskoderne kan ikke importeres. Tjek <ph name="FILENAME" />, og sørg for, at den er formateret korrekt.</translation>
 <translation id="4581774856936278355">Der opstod en fejl ved gendannelsen af Linux</translation>
 <translation id="4582297591746054421">Websites læser normalt din udklipsholder for at kunne bevare formatet af den tekst, du kopierede</translation>
 <translation id="4582563038311694664">Nulstil alle indstillinger</translation>
@@ -4568,6 +4571,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5305145881844743843">Denne konto administreres af <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Kilden understøttes ikke</translation>
 <translation id="5307386115243749078">Par Bluetooth-kontakt</translation>
+<translation id="5307958609248661362">Google Adgangskodeadministrator fik timeout</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5309418307557605830">Google Assistent kan også bruges på denne enhed</translation>
 <translation id="5311304534597152726">Logger ind som</translation>
@@ -7368,6 +7372,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7988805580376093356">Behold dit OS, og kør <ph name="DEVICE_OS" /> via USB.</translation>
 <translation id="7991296728590311172">Indstillinger for kontaktadgang</translation>
 <translation id="7992203134935383159">Talesyntese</translation>
+<translation id="799570308305997052">Webvisning</translation>
 <translation id="7997826902155442747">Procesprioritet</translation>
 <translation id="7999229196265990314">Oprettede følgende filer:
         

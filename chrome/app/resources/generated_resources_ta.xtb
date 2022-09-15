@@ -1180,6 +1180,7 @@
 <translation id="208634871997892083">VPNனை எப்போதும் இயக்கத்தில் வை</translation>
 <translation id="2087822576218954668">அச்சிடு: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> ஐ நிறுவிய பிறகுதான் பதிவுசெய்ய முடியும்.</translation>
+<translation id="2089090684895656482">சுருக்கு</translation>
 <translation id="208928984520943006">கீழிருந்து மேல் நோக்கி ஸ்வைப் செய்வதன் மூலம் எந்த நேரத்திலும் முகப்புத் திரைக்குச் செல்லலாம்.</translation>
 <translation id="2089566709556890888">Google Chromeஐப் பயன்படுத்தி, பாதுகாப்பாக உலாவவும்</translation>
 <translation id="2089795179672254991">கிளிப்போர்டுக்கு நகலெடுத்த உரையையும் படங்களையும் பார்ப்பதற்குத் தளம் விரும்பும் போது, கேள் (பரிந்துரைக்கப்படுவது)</translation>
@@ -2260,6 +2261,7 @@
 <translation id="3046178388369461825">Linux டிஸ்க் சேமிப்பிடம் மிகவும் குறைவாக உள்ளது</translation>
 <translation id="3046910703532196514">வலைப்பக்கம், முழுமையாக</translation>
 <translation id="304747341537320566">பேச்சு என்ஜின்கள்</translation>
+<translation id="3048051495640130973">பேட்டரி சேமிப்பான் அம்சம் எப்போது இயக்கப்பட வேண்டும் என்பதை நீங்கள் கட்டுப்படுத்தலாம்</translation>
 <translation id="3048336643003835855">விற்பனையாளர் <ph name="VENDOR_ID" /> வழங்கும் HID சாதனங்கள்</translation>
 <translation id="3048917188684939573">Cast மற்றும் சாதனப் பதிவுகள்</translation>
 <translation id="3051250416341590778">டிஸ்ப்ளே அளவு</translation>
@@ -2517,6 +2519,7 @@
 <translation id="3325910708063135066">Mac சிஸ்டம் விருப்பத்தேர்வுகளில் மைக்ரோஃபோன் மற்றும் கேமரா முடக்கப்பட்டுள்ளது</translation>
 <translation id="3327050066667856415">பாதுகாப்பான பயன்பாட்டிற்காகவே Chromebookகுகள் வடிவமைக்கப்பட்டுள்ளன. உங்கள் சாதனம் மால்வேரில் இருந்து தானாகவே பாதுகாக்கப்படும், கூடுதலாக எந்த மென்பொருளும் தேவையில்லை.</translation>
 <translation id="3328489342742826322">காப்புப்பிரதியிலிருந்து மீட்டமைக்கும் போது 'Linux ஃபைல்கள் ' ஃபோல்டரில் ஏற்கனவே உள்ள Linux ஆப்ஸும் தரவும் நீக்கப்படும்.</translation>
+<translation id="3329013043687509092">நிறை செறிவு நிலை</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ஆப்ஸ் தகவல்</translation>
 <translation id="3333190335304955291">இந்தச் சேவையை அமைப்புகளில் முடக்கலாம்.</translation>
@@ -2850,6 +2853,7 @@
 <translation id="3641456520301071208">எனது இருப்பிடத்தை அணுக தளங்கள் அனுமதி கேட்க வேண்டும்</translation>
 <translation id="3642070413432681490">வட்டமான கர்சர்</translation>
 <translation id="3642699533549879077">உங்கள் திரையை வேறு யாராவது பார்த்தால் உங்களுக்கு எச்சரிக்கைக் காட்டப்படும், அறிவிப்பு உள்ளடக்கம் மறைக்கப்படும்.</translation>
+<translation id="3643962751030964445">இந்தச் சாதனத்தை நிர்வகிப்பது: <ph name="DEVICE_MANAGER" />. <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்கான புதிய சுயவிவரத்தை <ph name="DEVICE_MANAGER" /> உருவாக்க வேண்டும்</translation>
 <translation id="3645372836428131288">கைரேகையின் வேறொரு பகுதியைப் பதிவுசெய்ய, விரலைக் கொஞ்சம் நகர்த்தவும்.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> வந்துள்ளது}other{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> வந்துள்ளது}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> கண்டறியப்பட்டது</translation>
@@ -3302,6 +3306,7 @@
 <translation id="4050534976465737778">இரண்டு சாதனங்களும் அன்லாக் செய்யப்பட்டிருப்பதையும் அருகருகே இருப்பதையும் அவற்றில் புளூடூத் ஆன் செய்யப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும். உங்கள் தொடர்புகளில் இல்லாத Chromebookகுடன் பகிர்கிறீர்கள் எனில் அதில் 'அருகில் பகிர்தல்' தெரிவுநிலை ஆன் செய்யப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும் (நிலைப் பகுதியைத் திறந்து 'அருகில் பகிர்தல்' தெரிவுநிலையை ஆன் செய்யவும்). <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">சிறிய</translation>
 <translation id="4054070260844648638">அனைவருக்கும் காட்டப்படும்</translation>
+<translation id="4056223980640387499">செபியா</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ஆப்ஸைப் பயன்படுத்த உங்கள் பெற்றோர் அமைத்த நேர வரம்பை அடைந்துவிட்டீர்கள். நாளை <ph name="TIME_LIMIT" /> பயன்படுத்திக் கொள்ளலாம்.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">அங்காடியில் காட்டு</translation>
@@ -3419,6 +3424,7 @@
 <translation id="4175137578744761569">வெளிர் ஊதா &amp; வெள்ளை</translation>
 <translation id="4175737294868205930">தொடர்நிலை சேமிப்பகம்</translation>
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
+<translation id="4176864026061939326">இந்தச் சாதனம் நிர்வாகியால் நிர்வகிக்கப்படுகிறது. <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்கான புதிய சுயவிவரத்தை உங்கள் சாதன நிர்வாகி உருவாக்க வேண்டும்</translation>
 <translation id="4180788401304023883">CA சான்றிதழ் "<ph name="CERTIFICATE_NAME" />" ஐ நீக்கவா?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
@@ -3550,6 +3556,7 @@
 <translation id="4306119971288449206">ஆப்ஸ் "<ph name="CONTENT_TYPE" />" எனும் உள்ளடக்க வகையுடனேயே வழங்கப்பட வேண்டும்</translation>
 <translation id="4307992518367153382">அடிப்படைகள்</translation>
 <translation id="4309165024397827958">இருப்பிட அனுமதி உள்ள Android ஆப்ஸையும் சேவைகளையும் உங்கள் சாதனத்தின் இருப்பிடத்தைப் பயன்படுத்த அனுமதிக்கும். இருப்பிடத் துல்லியத்தையும் இருப்பிடம் சார்ந்த சேவைகளையும் மேம்படுத்த Google அவ்வப்போது இருப்பிடத் தரவைச் சேகரித்து, அடையாளத்தை வெளிப்படுத்தாமல் பயன்படுத்தக்கூடும்.</translation>
+<translation id="4309183709806093061">சிஸ்டம் ஆடியோவையும் பகிர். எதிரொலிப்பதைத் தடுக்க இந்தச் சாதனம் ஒலியடக்கப்படும்.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K பயன்பாட்டில்)</translation>
 <translation id="4310132194679586591">இந்த இணைப்பைத் திறக்க உங்கள் சாதனத்தில் ஓர் ஆப்ஸைத் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="4310139701823742692">ஃபைல் தவறான வடிவமைப்பில் உள்ளது. PPD ஃபைலைச் சரிபார்த்து, மீண்டும் முயலவும்.</translation>
@@ -3838,7 +3845,6 @@
 <translation id="4579876313423027742">உலாவி அறிவிப்புகளைக் கண்டறிய, <ph name="LINK_BEGIN" />Chrome உலாவி அமைப்புகள்<ph name="LINK_END" /> என்பதற்குச் செல்லவும்</translation>
 <translation id="4580587929153007251">Google Password Managerரில் மீண்டும் உள்நுழையவும்</translation>
 <translation id="4580596421317071374">இந்தச் சாதனத்தில் <ph name="GOOGLE_PASSWORD_MANAGER" /> இல் கடவுச்சொற்கள் சேமிக்கப்படுகின்றன.</translation>
-<translation id="4580626299762849806">கடவுச்சொற்களை ஏற்ற முடியவில்லை. <ph name="FILENAME" /> ஃபைலைச் சரிபார்த்து அது சரியாக ஃபார்மேட் செய்யப்பட்டுள்ளதை உறுதிப்படுத்திக்கொள்ளவும்.</translation>
 <translation id="4581774856936278355">Linuxசை மீட்டமைக்கும் பொழுது பிழை நேர்ந்தது</translation>
 <translation id="4582297591746054421">நகலெடுத்த உரையின் வடிவமைப்பை அப்படியே வைத்துக்கொள்ள, கிளிப்போர்டைத் தளங்கள் வழக்கமாகப் படிக்கும்</translation>
 <translation id="4582563038311694664">எல்லா அமைப்புகளையும் மீட்டமை</translation>
@@ -4564,6 +4570,7 @@
 <translation id="5305145881844743843">இந்தக் கணக்கை <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> நிர்வகிக்கிறது</translation>
 <translation id="5307030433605830021">மூல உள்ளடக்கம் ஆதரிக்கப்படவில்லை</translation>
 <translation id="5307386115243749078">புளூடூத் சுவிட்ச்சுடன் இணை</translation>
+<translation id="5307958609248661362">Google Password Manager அங்கீகரிப்பு நேரம் முடிந்தது</translation>
 <translation id="5308380583665731573">இணை</translation>
 <translation id="5309418307557605830">இங்கும் Google Assistant செயல்படும்</translation>
 <translation id="5311304534597152726">பின்வரும் முகவரி மூலம் உள்நுழைகிறீர்கள்:</translation>
@@ -6586,6 +6593,7 @@
 <translation id="7267875682732693301">கைரேகையின் வெவ்வேறு பகுதிகளைச் சேர்க்க, விரலை எடுத்து எடுத்து வைக்கவும்</translation>
 <translation id="7267898843336437186">இந்தத் தளம் பார்க்கக்கூடிய ஃபோல்டரைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="7268127947535186412">இந்த அமைப்பைச் சாதனத்தின் உரிமையாளர் நிர்வகிக்கிறார்.</translation>
+<translation id="7269229526547981029">இந்தச் சுயவிவரத்தை நிர்வகிப்பது: <ph name="PROFILE_MANAGER" />. <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்கான புதிய சுயவிவரத்தை <ph name="ACCOUNT_MANAGER" /> உருவாக்க வேண்டும்</translation>
 <translation id="7269736181983384521">’அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தின் டேட்டா உபயோகம்</translation>
 <translation id="7272674038937250585">விளக்கம் எதுவும் வழங்கப்படவில்லை</translation>
 <translation id="7273110280511444812">கடைசியாக இணைத்த தேதி <ph name="DATE" /></translation>
@@ -7363,6 +7371,7 @@
 <translation id="7988805580376093356">தற்போதுள்ள OSஸுக்குப் பதிலாக <ph name="DEVICE_OS" /> ஐ USBயில் இருந்தே பயன்படுத்திப் பார்க்கலாம்.</translation>
 <translation id="7991296728590311172">ஸ்விட்ச் அணுகலுக்கான அமைப்புகள்</translation>
 <translation id="7992203134935383159">பேச்சு உருவாக்கம்</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">செயல்படுத்தல் முன்னுரிமை</translation>
 <translation id="7999229196265990314">பின்வரும் ஃபைல்கள்  உருவாக்கப்பட்டன:
 
@@ -7597,6 +7606,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{புதிய அறிவிப்பு}other{# புதிய அறிவிப்புகள்}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> கணக்கிற்கான கடவுச்சொற்களை Google Password Managerரில் ஏற்ற, CSV ஃபைலைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{பதிவிறக்கம் செயலில் உள்ளது}other{பதிவிறக்கங்கள் செயலில் உள்ளன}}</translation>
+<translation id="8212601853154459483">இந்தச் சுயவிவரம் <ph name="PROFILE_MANAGER" /> ஆல் நிர்வகிக்கப்படுகிறது. <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்கென ஒரு தனி சுயவிவரத்தை நீங்கள் உருவாக்க வேண்டும்</translation>
 <translation id="8213449224684199188">படப் பயன்முறைக்குச் சென்றது</translation>
 <translation id="8214489666383623925">ஃபைலைத் திற...</translation>
 <translation id="8215129063232901118">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் இருந்து மொபைலின் வசதிகளை அணுகலாம்</translation>

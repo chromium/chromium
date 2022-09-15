@@ -373,6 +373,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3151786313568798007">Orientasi</translation>
 <translation id="3153444934357957346">Anda hanya dapat memiliki maksimum <ph name="MULTI_PROFILE_USER_LIMIT" /> akun dalam fitur login multipel.</translation>
 <translation id="3154351730702813399">Admin perangkat dapat memantau aktivitas akses internet Anda.</translation>
+<translation id="3157931365184549694">Pulihkan</translation>
 <translation id="316086887565479535">Aplikasi yang tidak didukung di template</translation>
 <translation id="3161500364292033097">Tutup desktop dan jendela</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> me-roll back <ph name="DEVICE_TYPE" />. Perangkat Anda akan direset dan semua data akan dihapus.</translation>
@@ -476,7 +477,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3735740477244556633">Urutkan menurut</translation>
 <translation id="3742055079367172538">Screenshot telah diambil</translation>
 <translation id="3765841986579723851">Diedit hari ini</translation>
-<translation id="3771549900096082774">Mode Kontras Tinggi</translation>
 <translation id="3773700760453577392">Administrator telah melarang fitur login multipel untuk <ph name="USER_EMAIL" />. Semua pengguna harus logout untuk melanjutkan.</translation>
 <translation id="3779139509281456663">Menghubungkan <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4312840429157639164">Kamera dipaskan ke pojok kanan atas. Bertentangan dengan platform sistem.</translation>
 <translation id="4316910396681052118">SEMUA APLIKASI</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Anda menekan pintasan keyboard untuk kontras tinggi. Ingin mengaktifkannya?</translation>
 <translation id="4322742403972824594">Pintasan keyboard Ctrl + Alt + Panah Atas telah diubah. Untuk menggunakan tombol Home, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Kiri.</translation>
 <translation id="4333628967105022692">Lacros tidak didukung saat beberapa pengguna login.</translation>
 <translation id="4338109981321384717">Kaca pembesar</translation>
 <translation id="4351433414020964307">Asisten sedang dimuat...</translation>
-<translation id="4356930093361201197">mode kontras tinggi</translation>
 <translation id="4371348193907997655">Setelan Transmisi</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan sinyal <ph name="SIGNAL_STRENGTH" /> persen</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
@@ -877,7 +875,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5980301590375426705">Hentikan sesi tamu</translation>
 <translation id="598407983968395253">Gunakan template</translation>
 <translation id="598882571027504733">Untuk mendapatkan update, nyalakan ulang Chromebook dengan keyboard dalam keadaan terhubung.</translation>
-<translation id="5992218262414051481">Mode Kontras Tinggi diaktifkan. Tekan Ctrl+Search+H lagi untuk menonaktifkannya.</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> dari <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Keluar dari mode transmisi</translation>
 <translation id="602001110135236999">Scroll ke kiri</translation>
@@ -1233,7 +1230,6 @@ Baru diinstal</translation>
 <translation id="8051716679295756675">Template bernama <ph name="DESK_TEMPLATE_NAME" /> sudah ada</translation>
 <translation id="8052898407431791827">Disalin ke papan klip</translation>
 <translation id="8054466585765276473">Menghitung masa pakai baterai.</translation>
-<translation id="8061464966246066292">Kontras tinggi</translation>
 <translation id="8083540854303889870">Disimpan untuk nanti</translation>
 <translation id="8091387634532529612">Update otomatis</translation>
 <translation id="8098591350844501178">Hentikan casting layar ke <ph name="RECEIVER_NAME" /></translation>

@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">方向</translation>
 <translation id="3153444934357957346">使用多帐号登录时，一次最多只能登入 <ph name="MULTI_PROFILE_USER_LIMIT" /> 个帐号。</translation>
 <translation id="3154351730702813399">此设备的管理员可能会监控您的浏览活动。</translation>
+<translation id="3157931365184549694">恢复</translation>
 <translation id="316086887565479535">此模板含有不支持的应用</translation>
 <translation id="3161500364292033097">关闭桌面和窗口</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回滚您的 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3765841986579723851">今天修改过</translation>
-<translation id="3771549900096082774">高反差模式</translation>
 <translation id="3773700760453577392">管理员已禁止 <ph name="USER_EMAIL" /> 使用多帐号登录功能。所有用户都必须先退出帐号才能继续。</translation>
 <translation id="3779139509281456663">正在连接“<ph name="NAME" />”</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">相机已对准右上角。与系统界面冲突。</translation>
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">您按下了高对比度的键盘快捷键。要开启这项功能吗？</translation>
 <translation id="4322742403972824594">键盘快捷键“Ctrl + Alt + 向上键”已更改。若要使用 Home 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向左键。</translation>
 <translation id="4333628967105022692">当有多个用户登录时，Lacros 不受支持。</translation>
 <translation id="4338109981321384717">放大镜</translation>
 <translation id="4351433414020964307">智能助理正在加载中…</translation>
-<translation id="4356930093361201197">高对比度模式</translation>
 <translation id="4371348193907997655">投放设置</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">正在连接…</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">退出访客模式</translation>
 <translation id="598407983968395253">使用模板</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
-<translation id="5992218262414051481">已启用高反差模式。再按一次 Ctrl+搜索键+H 组合键即可关闭此模式。</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="6018164090099858612">正在退出镜像模式</translation>
 <translation id="602001110135236999">向左滚动</translation>
@@ -1230,7 +1227,6 @@
 <translation id="8051716679295756675">名为“<ph name="DESK_TEMPLATE_NAME" />”的模板已存在</translation>
 <translation id="8052898407431791827">已复制到剪贴板</translation>
 <translation id="8054466585765276473">正在计算续航时间。</translation>
-<translation id="8061464966246066292">高对比度</translation>
 <translation id="8083540854303889870">已保存供日后使用</translation>
 <translation id="8091387634532529612">自动更新</translation>
 <translation id="8098591350844501178">停止将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>

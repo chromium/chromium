@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">Ориентация</translation>
 <translation id="3153444934357957346">Для множественного входа можно использовать не более <ph name="MULTI_PROFILE_USER_LIMIT" /> аккаунтов.</translation>
 <translation id="3154351730702813399">Администратору устройства доступна информация о том, какие страницы вы просматриваете в браузере.</translation>
+<translation id="3157931365184549694">Восстановить</translation>
 <translation id="316086887565479535">В шаблоне есть неподдерживаемые приложения</translation>
 <translation id="3161500364292033097">Закрыть рабочий стол и окна</translation>
 <translation id="316356270129335934">По требованию <ph name="MANAGER" /> на вашем устройстве <ph name="DEVICE_TYPE" /> выполняется откат. Настройки устройства будут сброшены, а все данные – удалены.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">Сортировать по:</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
 <translation id="3765841986579723851">Изменено сегодня</translation>
-<translation id="3771549900096082774">Режим высокой контрастности</translation>
 <translation id="3773700760453577392">Администратор отключил множественный вход для аккаунта <ph name="USER_EMAIL" />. Чтобы продолжить, все пользователи должны выйти из аккаунтов.</translation>
 <translation id="3779139509281456663">Подключение к устройству "<ph name="NAME" />"</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">Окно предварительного просмотра камеры привязано к правому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="4316910396681052118">ВСЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Вы нажали сочетание клавиш для включения режима высокой контрастности. Выполнить это действие?</translation>
 <translation id="4322742403972824594">Функция сочетания клавиш Ctrl + Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Home, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка влево.</translation>
 <translation id="4333628967105022692">Lacros не поддерживается, если выполнен вход в несколько аккаунтов.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Загрузка Ассистента…</translation>
-<translation id="4356930093361201197">Режим высокой контрастности</translation>
 <translation id="4371348193907997655">Настройки трансляции</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Подключение…</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">Закрыть сеанс гостя</translation>
 <translation id="598407983968395253">Использовать шаблон</translation>
 <translation id="598882571027504733">Чтобы выполнить обновление, перезагрузите устройство Chromebook, не отключая от него клавиатуру.</translation>
-<translation id="5992218262414051481">Режим высокой контрастности включен. Чтобы отключить его, нажмите CTRL + ПОИСК + H.</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> из <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Выход из режима трансляции…</translation>
 <translation id="602001110135236999">Влево</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" уже существует.</translation>
 <translation id="8052898407431791827">Скопировано в буфер обмена</translation>
 <translation id="8054466585765276473">Подсчет оставшегося времени работы от батареи…</translation>
-<translation id="8061464966246066292">Высокая контрастность</translation>
 <translation id="8083540854303889870">Сохранено</translation>
 <translation id="8091387634532529612">Автоматическое обновление</translation>
 <translation id="8098591350844501178">Остановить трансляцию содержимого экрана на устройство "<ph name="RECEIVER_NAME" />"</translation>

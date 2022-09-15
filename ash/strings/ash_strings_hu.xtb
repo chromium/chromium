@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">Tájolás</translation>
 <translation id="3153444934357957346">Legfeljebb <ph name="MULTI_PROFILE_USER_LIMIT" /> fiókot használhat a többfiókos bejelentkezés során.</translation>
 <translation id="3154351730702813399">Az eszköz rendszergazdája figyelheti a böngészési tevékenységét.</translation>
+<translation id="3157931365184549694">Helyreállítás</translation>
 <translation id="316086887565479535">Nem támogatott alkalmazások találhatók a sablonban</translation>
 <translation id="3161500364292033097">Asztal és ablakok bezárása</translation>
 <translation id="316356270129335934">A(z) <ph name="MANAGER" /> visszaállítja <ph name="DEVICE_TYPE" /> eszköze korábbi verzióját. Eszköze újra fog indulni, és minden adat törlődik róla.</translation>
@@ -476,7 +477,6 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
 <translation id="3765841986579723851">Ma szerkesztette</translation>
-<translation id="3771549900096082774">Nagy kontrasztú mód</translation>
 <translation id="3773700760453577392">Egy rendszergazda letiltotta a többfiókos bejelentkezést <ph name="USER_EMAIL" /> számára.
 Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3779139509281456663">Csatlakozás: <ph name="NAME" /></translation>
@@ -577,12 +577,10 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4312840429157639164">Kamera a jobb felső sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
 <translation id="4316910396681052118">MINDEN ALKALMAZÁS</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Lenyomta a nagy kontraszt billentyűparancsát. Bekapcsolja a funkciót?</translation>
 <translation id="4322742403972824594">A Ctrl + Alt + Felfelé nyíl billentyűparancs módosult. A Home billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Balra nyíl.</translation>
 <translation id="4333628967105022692">A Lacros nem támogatott akkor, ha több felhasználó van bejelentkezve.</translation>
 <translation id="4338109981321384717">Nagyító</translation>
 <translation id="4351433414020964307">Segéd betöltése…</translation>
-<translation id="4356930093361201197">nagy kontrasztú mód</translation>
 <translation id="4371348193907997655">Átküldés beállításai</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jelerősség: <ph name="SIGNAL_STRENGTH" /> százalék</translation>
 <translation id="4378551569595875038">Kapcsolódás…</translation>
@@ -878,7 +876,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5980301590375426705">Kilépés vendégként</translation>
 <translation id="598407983968395253">Sablon használata</translation>
 <translation id="598882571027504733">A frissítés lekéréséhez indítsa újra a Chromebookot a csatlakoztatott billentyűzet segítségével.</translation>
-<translation id="5992218262414051481">Nagy kontrasztú mód bekapcsolva. Kikapcsoláshoz nyomja le ismét a Ctrl+Keresés+H billentyűparancsot.</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />/<ph name="SELECTED_PAGE" />. oldal</translation>
 <translation id="6018164090099858612">Kilépés a tükrözési módból</translation>
 <translation id="602001110135236999">Görgetés balra</translation>
@@ -1234,7 +1231,6 @@ Frissen telepítve</translation>
 <translation id="8051716679295756675">A(z) <ph name="DESK_TEMPLATE_NAME" /> nevű sablon már létezik.</translation>
 <translation id="8052898407431791827">Vágólapra másolva</translation>
 <translation id="8054466585765276473">Akkumulátor-időtartam kiszámítása.</translation>
-<translation id="8061464966246066292">Kontrasztos megjelenítés</translation>
 <translation id="8083540854303889870">Későbbre mentett</translation>
 <translation id="8091387634532529612">Automatikus frissítések</translation>
 <translation id="8098591350844501178">A képernyő „<ph name="RECEIVER_NAME" />” eszközre történő átküldésének leállítása</translation>

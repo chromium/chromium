@@ -373,6 +373,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3151786313568798007">Retning</translation>
 <translation id="3153444934357957346">Du kan kun have op til <ph name="MULTI_PROFILE_USER_LIMIT" /> konti i samlet login fra flere konti.</translation>
 <translation id="3154351730702813399">Administratoren af enheden kan overvåge din browseraktivitet.</translation>
+<translation id="3157931365184549694">Gendan</translation>
 <translation id="316086887565479535">Der er apps, som ikke understøttes, i skabelonen</translation>
 <translation id="3161500364292033097">Luk skrivebord og vinduer</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> skifter til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
@@ -476,7 +477,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3735740477244556633">Sortér efter</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
 <translation id="3765841986579723851">Redigeret i dag</translation>
-<translation id="3771549900096082774">Tilstanden Høj kontrast</translation>
 <translation id="3773700760453577392">En administrator har afvist samlet login fra flere konti for <ph name="USER_EMAIL" />. Alle brugere skal logge ud for at fortsætte.</translation>
 <translation id="3779139509281456663">Opretter forbindelse til <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4312840429157639164">Kameraet er fastgjort til hjørnet øverst til højre. Dette er i strid med systemfladen.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Du trykkede på tastaturgenvejen for høj kontrast. Vil du aktivere indstillingen?</translation>
 <translation id="4322742403972824594">Tastaturgenvejen Ctrl+Alt+pil op er blevet ændret. Hvis du vil bruge Home-tasten, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+venstrepil.</translation>
 <translation id="4333628967105022692">Lacros understøttes ikke, når flere brugere er logget ind.</translation>
 <translation id="4338109981321384717">Lup</translation>
 <translation id="4351433414020964307">Assistenten indlæses...</translation>
-<translation id="4356930093361201197">tilstanden Høj kontrast</translation>
 <translation id="4371348193907997655">Cast-indstillinger</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> procent.</translation>
 <translation id="4378551569595875038">Tilslutter...</translation>
@@ -877,7 +875,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5980301590375426705">Afslut gæst</translation>
 <translation id="598407983968395253">Brug skabelon</translation>
 <translation id="598882571027504733">Genstart din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
-<translation id="5992218262414051481">Tilstanden Høj kontrast er aktiveret. Tryk på Ctrl+Søg+H igen for at deaktivere tilstanden.</translation>
 <translation id="6012623610530968780">Side <ph name="SELECTED_PAGE" /> ud af <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Lukker spejltilstand</translation>
 <translation id="602001110135236999">Rul til venstre</translation>
@@ -1233,7 +1230,6 @@ Installeret for nylig</translation>
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
-<translation id="8061464966246066292">Høj kontrast</translation>
 <translation id="8083540854303889870">Gemt til senere</translation>
 <translation id="8091387634532529612">Automatiske opdateringer</translation>
 <translation id="8098591350844501178">Stop skærmcast til <ph name="RECEIVER_NAME" /></translation>

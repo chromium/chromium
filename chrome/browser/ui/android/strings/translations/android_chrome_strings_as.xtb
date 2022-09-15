@@ -454,6 +454,7 @@
 <translation id="3435465986463792564">বহুতো ৱিণ্ড’ পাইছেনে? আপুনি ইয়াৰ পৰা সেইবোৰ পৰিচালনা কৰিব পাৰে</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
 <translation id="3444179773590444986">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম সম্পৰ্কে মতামত শ্বেয়াৰ কৰিব নেকি?</translation>
+<translation id="3452832259067974318">আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ, Chromeএ এই ক্ষেত্ৰখনত আপোনাৰ পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ নকৰে৷</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{১ টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}one{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}other{# টা ডাউনল’ডৰ সময়সূচী নিৰ্ধাৰণ কৰা হৈছে}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
@@ -679,6 +680,7 @@
 <translation id="4763480195061959176">ভিডিঅ’</translation>
 <translation id="4766313118839197559">পাছৱৰ্ডসমূহ এই ডিভাইচটোত থকা পাছৱৰ্ড পৰিচালকত ছেভ কৰা হয়</translation>
 <translation id="4766678251456904326">ডিভাইচত একাউণ্ট যোগ দিয়ক</translation>
+<translation id="4787736314074622408">আপুনি <ph name="ITEM_TITLE" /> মচিব খোজেনে?</translation>
 <translation id="4791358705705538979">কাৰ্যসমূহ সম্পূৰ্ণ কৰাত আপোনাক সহায় কৰে, যেনে সমগ্ৰ ৱেবত ছেকআউট কৰা</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
@@ -1085,6 +1087,7 @@
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> টেবটো বাছনি কৰা হৈছে</translation>
 <translation id="6828070228333235514">মূল্য ট্ৰেক কৰাটো বন্ধ কৰক</translation>
+<translation id="6830728435402077660">সুৰক্ষিত নহয়</translation>
 <translation id="6833996806551876956">গোপনীয়তা ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
 <translation id="6836206421467243968"><ph name="TITLE_OF_GROUP" /> টেবৰ গোটক এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="6846298663435243399">ল’ড কৰি থকা হৈছে…</translation>

@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">כיוון</translation>
 <translation id="3153444934357957346">אפשר לכלול עד <ph name="MULTI_PROFILE_USER_LIMIT" /> חשבונות בכניסה עם מספר חשבונות.</translation>
 <translation id="3154351730702813399">ייתכן שמנהל המכשיר עוקב אחרי פעילות הגלישה שלך.</translation>
+<translation id="3157931365184549694">שחזור</translation>
 <translation id="316086887565479535">האפליקציות בתבנית לא נתמכות</translation>
 <translation id="3161500364292033097">סגירה של שולחן העבודה הווירטואלי והחלונות</translation>
 <translation id="316356270129335934">ה-<ph name="DEVICE_TYPE" /> יוחזר לגרסה הקודמת על ידי <ph name="MANAGER" />. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">מיון לפי</translation>
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
 <translation id="3765841986579723851">נערך היום</translation>
-<translation id="3771549900096082774">מצב ניגודיות גבוהה</translation>
 <translation id="3773700760453577392">מנהל מערכת ביטל הרשאה של כניסה עם מספר חשבונות עבור <ph name="USER_EMAIL" />. כדי להמשיך, כל המשתמשים חייבים לבצע יציאה.</translation>
 <translation id="3779139509281456663">מתבצע חיבור של <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">המצלמה מוצמדת לפינה השמאלית העליונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="4316910396681052118">כל האפליקציות</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">הקשת על מקש הקיצור של ניגודיות גבוהה. להפעיל אותה?</translation>
 <translation id="4322742403972824594">‏מקשי הקיצור Ctrl ‏+ ‏Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Home, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ שמאלה.</translation>
 <translation id="4333628967105022692">‏אין תמיכה בדפדפן Lacros כאשר יש כמה משתמשים מחוברים.</translation>
 <translation id="4338109981321384717">זכוכית מגדלת</translation>
 <translation id="4351433414020964307">‏Assistant בטעינה...</translation>
-<translation id="4356930093361201197">מצב ניגודיות גבוהה</translation>
 <translation id="4371348193907997655">‏הגדרות העברה (cast)</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, עוצמת אות <ph name="SIGNAL_STRENGTH" /> אחוז</translation>
 <translation id="4378551569595875038">התחברות...</translation>
@@ -876,7 +874,6 @@
 <translation id="5980301590375426705">יציאה מהפעלת אורח</translation>
 <translation id="598407983968395253">שימוש בתבנית</translation>
 <translation id="598882571027504733">‏כדי להתקין את העדכון, יש להפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
-<translation id="5992218262414051481">‏מצב ניגודיות גבוהה פועל. יש להקיש שוב על Ctrl+Search+H כדי לכבות אותו.</translation>
 <translation id="6012623610530968780">דף <ph name="SELECTED_PAGE" /> מתוך <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">יציאה ממצב שיקוף</translation>
 <translation id="602001110135236999">גלילה שמאלה</translation>
@@ -1234,7 +1231,6 @@
 <translation id="8051716679295756675">קיימת כבר תבנית בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">הועתק ללוח</translation>
 <translation id="8054466585765276473">מחשב זמן סוללה</translation>
-<translation id="8061464966246066292">ניגודיות גבוהה</translation>
 <translation id="8083540854303889870">שולחן העבודה נשמר למועד מאוחר יותר</translation>
 <translation id="8091387634532529612">עדכונים אוטומטיים</translation>
 <translation id="8098591350844501178">הפסקת העברת המסך אל <ph name="RECEIVER_NAME" /></translation>

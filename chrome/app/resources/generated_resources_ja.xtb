@@ -1165,6 +1165,7 @@
 <translation id="208634871997892083">常時接続 VPN</translation>
 <translation id="2087822576218954668">印刷: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">登録は <ph name="DEVICE_OS" /> をインストールした後にのみ行うことができます。</translation>
+<translation id="2089090684895656482">一部表示</translation>
 <translation id="208928984520943006">ホーム画面は、下から上にスワイプすれば、いつでも表示できます。</translation>
 <translation id="2089566709556890888">Google Chrome で安全にブラウジング</translation>
 <translation id="2089795179672254991">クリップボードにコピーされているテキストや画像にサイトがアクセスする際に確認する（推奨）</translation>
@@ -2493,6 +2494,7 @@
 <translation id="3325910708063135066">Mac のシステム環境設定でカメラとマイクがオフになっています</translation>
 <translation id="3327050066667856415">Chromebook はセキュリティを重視して設計されています。デバイスはマルウェアから自動的に保護され、追加のソフトウェアは必要ありません。</translation>
 <translation id="3328489342742826322">バックアップから復元すると、Linux ファイル フォルダの既存の Linux アプリケーションとデータは削除されます。</translation>
+<translation id="3329013043687509092">彩度</translation>
 <translation id="3331321258768829690">（<ph name="UTCOFFSET" />）<ph name="LONGTZNAME" />（<ph name="EXEMPLARCITY" />）</translation>
 <translation id="3331974543021145906">アプリ情報</translation>
 <translation id="3333190335304955291">このサービスは [設定] でオフにできます。</translation>
@@ -3275,6 +3277,7 @@
 <translation id="4050534976465737778">両方のデバイスでロックが解除されていること、お互いが近くにあること、Bluetooth が有効になっていることを確認してください。連絡先に登録されていない Chromebook とファイルを共有する場合は、その Chromebook で周辺ユーザーによる検出がオンになっていることも確認してください（ステータス領域を開いて、周辺ユーザーによる検出をオンにします）。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">極小</translation>
 <translation id="4054070260844648638">全員が検出可能</translation>
+<translation id="4056223980640387499">セピア</translation>
 <translation id="4056908315660577142">保護者が設定した <ph name="APP_NAME" /> Chrome アプリの利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" /> まで使えます。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ストアで見る</translation>
@@ -3808,7 +3811,6 @@
 <translation id="4579876313423027742">ブラウザの通知は、<ph name="LINK_BEGIN" />Chrome ブラウザの設定<ph name="LINK_END" />で確認できます</translation>
 <translation id="4580587929153007251">Google パスワード マネージャーにもう一度ログインしてください</translation>
 <translation id="4580596421317071374">パスワードは、このデバイスの <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
-<translation id="4580626299762849806">パスワードをインポートできません。<ph name="FILENAME" /> で形式が正しいかどうかを確認してください。</translation>
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
 <translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
 <translation id="4582563038311694664">すべての設定をリセット</translation>

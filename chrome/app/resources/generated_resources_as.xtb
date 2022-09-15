@@ -2516,6 +2516,7 @@
 <translation id="3325910708063135066">Mac ছিষ্টেম অগ্ৰাধিকাৰত কেমেৰা আৰু মাইক্ৰ’ফ’ন অফ কৰা আছে</translation>
 <translation id="3327050066667856415">Chromebook সুৰক্ষাৰ বাবে ডিজাইন কৰা হয়। আপোনাৰ ডিভাইচটো মালৱেৰৰ পৰা স্বয়ংক্ৰিয়ভাৱে সুৰক্ষিত হয় – কোনো অতিৰিক্ত ছফ্টৱেৰৰ আৱশ্যক নহয়।</translation>
 <translation id="3328489342742826322">বেকআপৰ পৰা পুনঃস্থাপন কৰিলে আপোনাৰ Linux ফাইলবোৰৰ ফ’ল্ডাৰত ইতিমধ্যে থকা Linux এপ্লিকেশ্বনটো মচি পেলাব।</translation>
+<translation id="3329013043687509092">সংপৃক্তি</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">এপৰ তথ্য</translation>
 <translation id="3333190335304955291">আপুনি ছেটিংসমূহত এই সেৱাটো অফ কৰিব পাৰে।</translation>
@@ -3301,6 +3302,7 @@
 <translation id="4050534976465737778">দুয়োটা ডিভাইচ আনলক কৰাটো, এটা আনটোৰ ওচৰত থকাটো আৰু ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক। আপুনি যদি আপোনাৰ সম্পৰ্কসূচীত নথকা কোনো Chromebookৰ জৰিয়তে শ্বেয়াৰ কৰি আছে, নিশ্চিত হৈ লওক যে সেইটোৰ নিকটৱৰ্তী দৃশ্যমানতা অন হৈ আছে (বিভিন্ন স্থিতি দেখুওৱা ঠাই খোলক, তাৰ পাছত নিকটৱৰ্তী দৃশ্যমানতা অন কৰক)। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">ক্ষুদ্ৰ</translation>
 <translation id="4054070260844648638">সকলোৰে বাবে দৃশ্যমান</translation>
+<translation id="4056223980640387499">ছেপিয়া</translation>
 <translation id="4056908315660577142">আপোনাৰ অভিভাৱকে <ph name="APP_NAME" /> Chrome এপ্‌টোৰ বাবে ছেট কৰা সময়ৰ সীমাত আপুনি উপনীত হৈছে। আপুনি এইটো কাইলৈ <ph name="TIME_LIMIT" />ৰ বাবে ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Storeত চাওক</translation>
@@ -3550,6 +3552,7 @@
 <translation id="4306119971288449206">এপ্ "<ph name="CONTENT_TYPE" />" প্ৰকাৰৰ সমলৰ সৈতে দিবই লাগিব</translation>
 <translation id="4307992518367153382">মৌলিক</translation>
 <translation id="4309165024397827958">অৱস্থানৰ অনুমতি থকা Android এপ্‌ আৰু সেৱাক আপোনাৰ ডিভাইচটোৰ অৱস্থান ব্যৱহাৰ কৰিবলৈ দিয়ক। Googleএ সময়ে সময়ে অৱস্থানৰ ডেটা সংগ্ৰহ কৰিব পাৰে আৰু এই ডেটাখিনি অৱস্থানৰ সঠিকতা আৰু অৱস্থানভিত্তিক সেৱাসমূহ উন্নত কৰিবলৈ নামবিহীনভাৱে ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="4309183709806093061">লগতে ছিষ্টেমৰ অডিঅ' শ্বেয়াৰ কৰক। মতামত বাধা দিবলৈ এই ডিভাইচটো মিউট কৰা হ'ব।</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />কে (<ph name="NUM_KILOBYTES_LIVE" />কে লাইভ)</translation>
 <translation id="4310132194679586591">এই লিংকটো খুলিবলৈ আপোনাৰ ডিভাইচত থকা এটা এপ্‌ বাছনি কৰক</translation>
 <translation id="4310139701823742692">ফাইলটো ভুল ফর্মেটত আছে। PPD ফাইলটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
@@ -3838,7 +3841,6 @@
 <translation id="4579876313423027742">ব্ৰাউজাৰ সম্পৰ্কীয় জাননীৰ বাবে, <ph name="LINK_BEGIN" />Chromeৰ ব্ৰাউজাৰৰ ছেটিঙ <ph name="LINK_END" />লৈ যাওক</translation>
 <translation id="4580587929153007251">Google Password Managerত পুনৰ ছাইন ইন কৰক</translation>
 <translation id="4580596421317071374">পাছৱৰ্ডসমূহ এই ডিভাইচটোত<ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰা হয়।</translation>
-<translation id="4580626299762849806">পাছৱৰ্ড আমদানি কৰিব নোৱাৰি। <ph name="FILENAME" /> পৰীক্ষা কৰক আৰু সেইটো সঠিকভাৱে ফৰ্মেট কৰি থোৱাটো নিশ্চিত কৰক।</translation>
 <translation id="4581774856936278355">Linux পুনঃস্থাপন কৰি থাকোঁতে আসোঁৱাহ হ’ল</translation>
 <translation id="4582297591746054421">আপুনি প্ৰতিলিপি কৰা পাঠৰ ফৰ্মেট কৰাটো ৰখাৰ দৰে সুবিধাসমূহৰ বাবে ছাইটসমূহে সচৰাচৰ ক্লিপব'ৰ্ড পঢ়ে</translation>
 <translation id="4582563038311694664">সকলো ছেটিং ৰিছেট কৰক</translation>
@@ -4564,6 +4566,7 @@
 <translation id="5305145881844743843">এই একাউণ্টটো <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />এ পৰিচালনা কৰে</translation>
 <translation id="5307030433605830021">উৎস সমর্থিত নহয়</translation>
 <translation id="5307386115243749078">ব্লুটুথ ছুইচ পেয়াৰ কৰক</translation>
+<translation id="5307958609248661362">Google Password Managerৰ সময় উকলিছে</translation>
 <translation id="5308380583665731573">সংযোগ কৰক</translation>
 <translation id="5309418307557605830">Google Assistantএ ইয়াতো কাম কৰে</translation>
 <translation id="5311304534597152726">এই হিচাপে ছাইন ইন কৰি থকা হৈছে</translation>
@@ -7364,6 +7367,7 @@
 <translation id="7988805580376093356">আপোনাৰ OSটো ৰাখক আৰু ইউএছবিৰ পৰা <ph name="DEVICE_OS" /> চলাওক।</translation>
 <translation id="7991296728590311172">ছুইচ্চ এক্সেছৰ ছেটিংসমূহ</translation>
 <translation id="7992203134935383159">কথন সংযোজন</translation>
+<translation id="799570308305997052">ৱেবভিউ</translation>
 <translation id="7997826902155442747">প্ৰচেছৰ অগ্ৰাধিকাৰ</translation>
 <translation id="7999229196265990314">এই ফাইলকেইটা সৃষ্টি কৰিছে:
 

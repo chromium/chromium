@@ -1167,6 +1167,7 @@
 <translation id="208634871997892083">Стално укључен VPN</translation>
 <translation id="2087822576218954668">Штампање: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Регистровање је подржано само када инсталирате <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Мање</translation>
 <translation id="208928984520943006">Да бисте дошли на почетни екран у било ком тренутку, превуците нагоре од дна.</translation>
 <translation id="2089566709556890888">Прегледајте безбедно уз Google Chrome</translation>
 <translation id="2089795179672254991">Питај када сајт жели да види текст и слике који су копирани у привремену меморију (препоручено)</translation>
@@ -2502,6 +2503,7 @@
 <translation id="3325910708063135066">Камера и микрофон су искључени у подешавањима Mac система</translation>
 <translation id="3327050066667856415">Chromebook-ови су осмишљени за безбедност. Уређај је аутоматски заштићен од малвера – није потребан никакав додатан софтвер.</translation>
 <translation id="3328489342742826322">Враћањем из резервне копије избрисаће се постојеће Linux апликације и подаци у директоријуму са Linux датотекама.</translation>
+<translation id="3329013043687509092">Засићеност боја</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Информације о апликацији</translation>
 <translation id="3333190335304955291">Можете да искључите ову услугу у Подешавањима.</translation>
@@ -3288,6 +3290,7 @@
 <translation id="4050534976465737778">Уверите се да су оба уређаја откључана, близу један другом и да је укључен Bluetooth. Ако делите са Chromebook-ом, који није у контактима, уверите се да му је укључена Видљивост у близини (отворите област статуса, па укључите Видљивост у близини). <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Сићушна</translation>
 <translation id="4054070260844648638">Видљиво свима</translation>
+<translation id="4056223980640387499">Сепија</translation>
 <translation id="4056908315660577142">Достигао/ла си временско ограничење које је родитељ подесио за Chrome апликацију<ph name="APP_NAME" />. Сутра имаш <ph name="TIME_LIMIT" /> на располагању.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Прикажи у продавници</translation>
@@ -3825,7 +3828,6 @@
 <translation id="4579876313423027742">Ако желите обавештења прегледача, идите у <ph name="LINK_BEGIN" />Подешавања Chrome прегледача<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Поново се пријавите у Google менаџер лозинки</translation>
 <translation id="4580596421317071374">Лозинке се чувају на овом уређају у:<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="4580626299762849806">Увоз лозинки није успео. Проверите фајл <ph name="FILENAME" /> и уверите се да је правилно форматиран.</translation>
 <translation id="4581774856936278355">Грешка при враћању Linux-а</translation>
 <translation id="4582297591746054421">Сајтови обично читају привремену меморију за потребе функција попут задржавања форматирања текста који сте копирали</translation>
 <translation id="4582563038311694664">Ресетуј сва подешавања</translation>

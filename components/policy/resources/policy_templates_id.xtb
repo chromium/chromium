@@ -3969,13 +3969,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="5082296146261894974">Mengizinkan pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
 <translation id="5082572440690475059">Izinkan akses baca melalui File System API di situs ini</translation>
 <translation id="5085647276663819155">Nonaktifkan Pratinjau Cetak</translation>
-<translation id="5087974224086385270">Setelan ini menentukan jumlah data pengguna yang disimpan setelah <ph name="LACROS_NAME" /> dinonaktifkan.
-
-      Jika kebijakan disetel ke <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, semua data pengguna akan dihapus. Ini adalah opsi paling aman.
-
-      Jika kebijakan disetel ke <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, sebagian besar data pengguna akan dihapus. Hanya file yang tidak bergantung pada browser yang akan disimpan (seperti Download).
-
-      Jika kebijakan disetel ke <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, semua data pengguna akan disimpan. Opsi ini memiliki risiko kegagalan yang tinggi, yang mengharuskan powerwash untuk pemulihan.</translation>
 <translation id="5090791951240382356">Mengizinkan penggabungan kebijakan kamus dari sumber berbeda</translation>
 <translation id="5091315650312105069">Mengizinkan autentikasi <ph name="BASIC_AUTH" /> untuk HTTP</translation>
 <translation id="5099239365323299669">Mulai M106, kuota persisten tidak akan didukung lagi. Kebijakan ini akan mengaktifkan kembali fungsi kuota persisten hingga M107.

@@ -1165,6 +1165,7 @@
 <translation id="208634871997892083">Әрқашан қосулы VPN</translation>
 <translation id="2087822576218954668">Басып шығару: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> орнатылған соң ғана тіркелуге болады.</translation>
+<translation id="2089090684895656482">Азырақ</translation>
 <translation id="208928984520943006">Негізгі экранға кез келген уақытта өту үшін саусақпен экранның төменгі жағынан жоғары қарай сырғытыңыз.</translation>
 <translation id="2089566709556890888">Google Chrome арқылы қауіпсіз күйде шолыңыз</translation>
 <translation id="2089795179672254991">Сайт буферге көшірілген мәтін мен кескіндерді көргісі келген кезде, рұқсат сұралсын (ұсынылады)</translation>
@@ -2497,6 +2498,7 @@
 <translation id="3325910708063135066">Камера мен микрофон Mac жүйесінің параметрлерінде өшірілген.</translation>
 <translation id="3327050066667856415">Chromebook құрылғылары қауіптерге төтеп бере алатын етіп жасалады. Құрылғы зиянды бағдарламадан автоматты түрде қорғалады, ешқандай қосымша бағдарламалық құрал қажет емес.</translation>
 <translation id="3328489342742826322">Сақтық көшірмеден қалпына келтірсеңіз, Linux қолданбалары және Linux файлдары орналасқан қалтадағы деректер жойылады.</translation>
+<translation id="3329013043687509092">Қанықтық</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Қолданба ақпараты</translation>
 <translation id="3333190335304955291">Бұл қызметті "Параметрлер" бөлімінен өшіруге болады.</translation>
@@ -3281,6 +3283,7 @@
 <translation id="4050534976465737778">Екі құрылғының да құлпы ашық, бір-біріне жақын және Bluetooth функциялары қосулы екеніне көз жеткізіңіз. Егер контактілеріңізде жоқ Chromebook құрылғысымен бөлісетін болсаңыз, Nearby көрсетілу параметрінің қосулы екеніне көз жеткізіңіз. Ол үшін күй аумағын ашып, Nearby көрсетілу параметрін қосыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Кішкентай</translation>
 <translation id="4054070260844648638">Барлығына көрсетіледі</translation>
+<translation id="4056223980640387499">Сепия</translation>
 <translation id="4056908315660577142">Ата-анаңыз <ph name="APP_NAME" /> Chrome қолданбасы үшін белгілеген уақыт шегіне жеттіңіз. Оны ертең <ph name="TIME_LIMIT" /> бойы пайдалана аласыз.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Дүкенде көру</translation>
@@ -3816,7 +3819,6 @@
 <translation id="4579876313423027742">Браузер хабарландырулары үшін <ph name="LINK_BEGIN" />Chrome браузерінің параметрлеріне<ph name="LINK_END" /> өтіңіз.</translation>
 <translation id="4580587929153007251">Google Құпия сөз менеджеріне қайтадан кіріңіз.</translation>
 <translation id="4580596421317071374">Құпия сөздер осы құрылғыда <ph name="GOOGLE_PASSWORD_MANAGER" /> қызметінде сақталады.</translation>
-<translation id="4580626299762849806">Құпия сөздерді импорттау мүмкін емес. <ph name="FILENAME" /> тексеріп, оның дұрыс форматталғанына көз жеткізіңіз.</translation>
 <translation id="4581774856936278355">Linux жүйесін қалпына келтіру кезінде қате шықты.</translation>
 <translation id="4582297591746054421">Сіз көшірген мәтіннің форматын сақтау сияқты функциялар үшін сайттар әдетте буферді оқиды.</translation>
 <translation id="4582563038311694664">Барлық параметрлерді қалпына келтіру</translation>

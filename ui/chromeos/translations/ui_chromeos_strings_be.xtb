@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">Элементы (<ph name="NUMBER_OF_ITEMS" />) архівуюцца...</translation>
 <translation id="1722687688096767818">Ідзе дадаванне профілю...</translation>
 <translation id="1726100011689679555">Серверы даменных імён</translation>
+<translation id="1726600877401297672">У сметніцу перамешчана наступная колькасць элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="1729953886957086472">Нямецкая (Германія)</translation>
 <translation id="1730235522912993863">Кітайская (цанцзе)</translation>
 <translation id="1731889557567069540">Скапіраваны элементы (<ph name="NUMBER_OF_ITEMS" />).</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Няма элементаў, якія адпавядаюць запыту &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Інфармацыя</translation>
 <translation id="2902734494705624966">ЗША, пашыраная</translation>
+<translation id="2906052776158021882">У сметніцу перамяшчаецца наступная колькасць элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="290843123675549676">Маратхі</translation>
 <translation id="2923240520113693977">Эстонская</translation>
 <translation id="2938685643439809023">Мангольская</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Піца</translation>
 <translation id="5081517858322016911">Будуць выдалены файлы агульным памерам <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Ідзе перамяшчэнне элементаў (<ph name="NUMBER_OF_ITEMS" />) у папку "<ph name="FOLDER_NAME" />"</translation>
+<translation id="5092200349368278146">Файл "<ph name="FILE_NAME" />" перамешчаны ў сметніцу</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="5098629044894065541">Іўрыт</translation>
 <translation id="5102922915594634436">Кіраваць сінхранізаванымі папкамі</translation>
@@ -560,6 +563,7 @@
 <translation id="5845721951356578987">Медработнік</translation>
 <translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Не ўдалося выканаць пошук DHCP</translation>
+<translation id="5887342613489958822">Файл "<ph name="FILE_NAME" />" перамяшчаецца ў сметніцу</translation>
 <translation id="5896749729057314184">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, адключана, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="5911887972742538906">Узнікла памылка падчас усталявання Linux-праграмы.</translation>
 <translation id="5912396950572065471">Фармат</translation>

@@ -1506,6 +1506,7 @@
 <translation id="2356070529366658676">Запытваць</translation>
 <translation id="2357330829548294574">Выдаліць карыстальніка <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Сайты могуць выкарыстоўваць змесціва JavaScript</translation>
+<translation id="2358777858338503863">Націсніце, каб дазволіць пашырэнню доступ да сайта <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Праграмы Linux могуць перастаць адказваць на запыты.</translation>
 <translation id="2359345697448000899">Каб кіраваць пашырэннямі, націсніце "Пашырэнні" ў меню "Інструменты".</translation>
 <translation id="2359556993567737338">Падключыць прыладу Bluetooth</translation>
@@ -2247,6 +2248,7 @@
 <translation id="3046178388369461825">Вельмі мала месца на дыску Linux</translation>
 <translation id="3046910703532196514">Вэб-старонка поўнасцю</translation>
 <translation id="304747341537320566">Модулі маўлення</translation>
+<translation id="3048051495640130973">Указаць, пры якіх умовах павінен уключацца рэжым энергазберажэння, можна ў наладах</translation>
 <translation id="3048336643003835855">Прылады HID ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Журналы прылады і трансляцыі</translation>
 <translation id="3051250416341590778">Памер элементаў дысплэя</translation>
@@ -2504,6 +2506,7 @@
 <translation id="3325910708063135066">Камера і мікрафон выключаны ў наладах System Preferences сістэмы Mac</translation>
 <translation id="3327050066667856415">Прылады Chromebook распрацаваны для вашай бяспекі. Ваша прылада абараняецца ад шкодных праграм аўтаматычна – дадатковае праграмнае забеспячэнне не патрабуецца.</translation>
 <translation id="3328489342742826322">Пры аднаўленні з рэзервовай копіі будуць выдалены ўсе існуючыя праграмы Linux і даныя ў папцы файлаў Linux.</translation>
+<translation id="3329013043687509092">Насычанасць</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Звесткі пра праграму</translation>
 <translation id="3333190335304955291">Гэты сэрвіс можна выключыць у Наладах.</translation>
@@ -2837,6 +2840,7 @@
 <translation id="3641456520301071208">Сайты могуць запытваць ваша месцазнаходжанне</translation>
 <translation id="3642070413432681490">Вылучэнне курсора кружком</translation>
 <translation id="3642699533549879077">Калі нехта іншы будзе глядзець на экран вашай прылады, вы атрымаеце абвестку, а змесціва апавяшчэння будзе схавана.</translation>
+<translation id="3643962751030964445">Гэтай прыладай кіруе <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> патрабуе стварыць новы профіль для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">Крыху перамясціце палец, каб была захоплена іншая частка адбітка.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}one{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}few{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}many{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}other{З прылады "<ph name="DEVICE_NAME" />" атрыманы даныя (<ph name="ATTACHMENTS" />)}}</translation>
 <translation id="3648348069317717750">Выяўлена прылада: <ph name="USB_DEVICE_NAME" /></translation>
@@ -3289,6 +3293,7 @@
 <translation id="4050534976465737778">Упэўніцеся, што абедзве прылады разблакіраваны, знаходзяцца адна пры адной і на іх уключаны Bluetooth. Пры абагульванні з Chromebook, якога няма ў вашых кантактах, упэўніцеся, што на ім уключана бачнасць для функцыі "Абагульванне паблізу" (адкрыйце панэль стану, затым уключыце бачнасць з дапамогай кнопкі "Бачнасць паблізу"). <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Дробны</translation>
 <translation id="4054070260844648638">Бачнасць для ўсіх</translation>
+<translation id="4056223980640387499">Сепія</translation>
 <translation id="4056908315660577142">Скончыўся ліміт часу, зададзены бацькамі для праграмы Chrome "<ph name="APP_NAME" />". Заўтра ёю можна будзе карыстацца <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Паглядзець у краме</translation>
@@ -3406,6 +3411,7 @@
 <translation id="4175137578744761569">Светла-фіялетавы і белы</translation>
 <translation id="4175737294868205930">Пастаяннае сховішча</translation>
 <translation id="4176463684765177261">Выключана</translation>
+<translation id="4176864026061939326">Гэта прылада знаходзіцца пад кіраваннем. Яе адміністратар патрабуе стварыць новы профіль для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4180788401304023883">Выдаліць сертыфікат ЦС "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мовы</translation>
@@ -3792,6 +3798,7 @@
 <translation id="4554591392113183336">Знешняе пашырэнне мае тую ж версію, што існуючае пашырэнне, або ніжэйшую.</translation>
 <translation id="4555769855065597957">Цень</translation>
 <translation id="4555863373929230635">Каб захоўваць паролі ва Уліковым запісе Google, увайдзіце ў яго і ўключыце сінхранізацыю.</translation>
+<translation id="4556194354084985730">Просты ўваход на сайты і ў праграмы з выкарыстаннем захаваных вамі пароляў. Калі гэта функцыя адключана, пры ўваходзе сістэма будзе запытваць увод пароля.</translation>
 <translation id="4558426062282641716">Запытаны дазвол на аўтаматычны запуск</translation>
 <translation id="4559617833001311418">Гэты сайт мае доступ да датчыкаў руху або святла.</translation>
 <translation id="4561893854334016293">Нядаўна змененых дазволаў няма</translation>
@@ -3823,7 +3830,6 @@
 <translation id="4579876313423027742">Параметры апавяшчэнняў у браўзеры можна задаваць у <ph name="LINK_BEGIN" />Наладах браўзера Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Увайдзіце ў Менеджар пароляў Google зноў</translation>
 <translation id="4580596421317071374">Паролі захоўваюцца ў сэрвісе "<ph name="GOOGLE_PASSWORD_MANAGER" />" на гэтай прыладзе.</translation>
-<translation id="4580626299762849806">Не ўдалося імпартаваць паролі. Упэўніцеся, што ў файла <ph name="FILENAME" /> правільны фармат.</translation>
 <translation id="4581774856936278355">Памылка падчас аднаўлення кантэйнера Linux</translation>
 <translation id="4582297591746054421">Сайты звычайна счытваюць ваш буфер абмену для работы такіх функцый, як захаванне фармату скапіраванага тэксту</translation>
 <translation id="4582563038311694664">Скінуць усе налады</translation>
@@ -5346,6 +5352,7 @@
 <translation id="6077476112742402730">Галасавы набор тэксту</translation>
 <translation id="6078121669093215958">{0,plural, =1{Госць}one{# адкрытае гасцявое акно}few{# адкрытыя гасцявыя акны}many{# адкрытых гасцявых акон}other{# адкрытага гасцявога акна}}</translation>
 <translation id="6078323886959318429">Дадаць ярлык</translation>
+<translation id="6078742430369906859">Магчымасць падключэння да сеткі "<ph name="NETWORK_ID" />" можа быць абмежаванай</translation>
 <translation id="6078752646384677957">Праверце мікрафон і ўзроўні гучнасці.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" запытвае дазвол на падключэнне да прылады HID</translation>
 <translation id="608029822688206592">Сеткі не знойдзены. Устаўце SIM-карту і паўтарыце спробу.</translation>
@@ -6062,6 +6069,7 @@
 <translation id="6779447100905857289">вашы кошыкі</translation>
 <translation id="677965093459947883">Вельмі дробны</translation>
 <translation id="6781005693196527806">&amp;Кіраваць пошукавымі сістэмамі...</translation>
+<translation id="6781012982807899368">Захаваныя паролі з'явяцца тут. <ph name="BEGIN_LINK" /> Імпартаваць паролі<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Спасылка на дудл</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />Даныя праграм – гэта любыя даныя, якія захоўваюцца праграмай (у залежнасці ад налад распрацоўшчыка), у тым ліку кантакты, паведамленні і фота. Рэзервовыя копіі даных не будуць улічвацца ў квоце сховішча вашага дзіцяці на Дыску.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Гэты сэрвіс можна выключыць у Наладах.<ph name="END_PARAGRAPH2" /></translation>
@@ -6574,6 +6582,7 @@
 <translation id="7267875682732693301">Дакраніцеся некалькі разоў, каб быў зняты ўвесь адбітак пальца</translation>
 <translation id="7267898843336437186">Выберыце папку, якую гэты сайт зможа праглядаць</translation>
 <translation id="7268127947535186412">Гэта налада кіруецца ўладальнікам прылады.</translation>
+<translation id="7269229526547981029">Гэтым профілем кіруе <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> патрабуе стварыць новы профіль для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7269736181983384521">Абагульванне паблізу: выкарыстанне трафіка</translation>
 <translation id="7272674038937250585">Няма апісання</translation>
 <translation id="7273110280511444812">апошняе падключэнне: <ph name="DATE" /></translation>
@@ -7213,6 +7222,7 @@
 <translation id="7870790288828963061">Праграм-кіёскаў навейшай версіі не знойдзена. Няма чаго абнаўляць. Выміце USB-сховішча.</translation>
 <translation id="7871049986386271121">Заўсёды на гэтым сайце</translation>
 <translation id="7871109039747854576">Выкарыстоўваць клавішы <ph name="COMMA" /> і <ph name="PERIOD" /> для пераходу паміж старонкамі спіса кандыдатаў</translation>
+<translation id="7872494313446521576">Націсніце, каб дазволіць пашырэнню "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" доступ да сайта <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Выключана</translation>
 <translation id="7872758299142009420">Занадта шмат укладзеных груп: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Фоны Chrome</translation>
@@ -7582,6 +7592,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новае апавяшчэнне}one{# новае апавяшчэнне}few{# новыя апавяшчэнні}many{# новых апавяшчэнняў}other{# новага апавяшчэння}}</translation>
 <translation id="821119981794423735">Каб імпартаваць паролі ў Менеджар пароляў Google карыстальніка <ph name="USER_EMAIL" />, выберыце файл CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Ажыццяўляецца спампоўка}one{Ажыццяўляюцца спампоўкі}few{Ажыццяўляюцца спампоўкі}many{Ажыццяўляюцца спампоўкі}other{Ажыццяўляюцца спампоўкі}}</translation>
+<translation id="8212601853154459483">Гэтым профілем кіруе <ph name="PROFILE_MANAGER" />. Вам неабходна стварыць асобны профіль для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8213449224684199188">Уключаны рэжым фота</translation>
 <translation id="8214489666383623925">Адкрыць файл...</translation>
 <translation id="8215129063232901118">Атрымайце магчымасць выкарыстоўваць функцыі тэлефона з прылады <ph name="DEVICE_TYPE" /></translation>
@@ -7887,6 +7898,7 @@
 <translation id="8523493869875972733">Захаваць змяненні</translation>
 <translation id="8523849605371521713">Дададзена палітыкай</translation>
 <translation id="8524783101666974011">Захавайце плацежныя карткі ва Уліковым запісе Google</translation>
+<translation id="8525157245469383124">Фармат ідэнтыфікатара крамы рознічнага гандлю: ABC-1234</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Дадаць мовы</translation>

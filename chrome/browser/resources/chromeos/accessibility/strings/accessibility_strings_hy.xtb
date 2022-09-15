@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Դուք նաև կարող եք էկրանի մի բաժնից մյուսին անցնել։ Օրինակ, կարող եք տեղաշարժվել գործարկիչի, դարակի և Chrome-ի ներդիրների միջև։ Հաջորդ բաժնին անցնելու համար չորս մատը սահեցրեք ձախից աջ։ Փորձեք անել դա հենց հիմա։</translation>
 <translation id="2624431853467395961">Բացել սովորելու ռեժիմը</translation>
 <translation id="2626530649491650971">clickable</translation>
+<translation id="263637551280112393">Սեղմեք «Որոնում» + Shift + բացատ</translation>
 <translation id="2637227747952042642">Մաթեմատիկա</translation>
 <translation id="2638785836053527382">«<ph name="FILE_NAME" />» ֆայլի ներբեռնումը վերսկսվեց</translation>
 <translation id="2639750663247012216">ChromeVox-ի կերպափոխիչ</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Հաջորդ բաժին չկա</translation>
 <translation id="5368000168321181111">Ձայնային ազդանշաններն անջատված են</translation>
 <translation id="5368505757342402527">«<ph name="FILE_NAME" />» ֆայլը ներբեռնվել է <ph name="PROGRESS" />%-ով: Մնացել է մոտ <ph name="TIME" /> <ph name="UNITS" />:</translation>
+<translation id="5381388086899614489">սեղմեք և պահեք</translation>
 <translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="5402367795255837559">Բրայլի գրատիպ</translation>
 <translation id="5402791055281059602">Մոդալ ծանուցում</translation>

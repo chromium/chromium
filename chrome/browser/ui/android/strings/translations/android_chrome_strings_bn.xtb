@@ -454,6 +454,7 @@
 <translation id="3435465986463792564">অনেক উইন্ডো খোলা আছে? আপনি সেগুলি এখানে ম্যানেজ করতে পারেন</translation>
 <translation id="3443221991560634068">বর্তমান পৃষ্ঠাটি রিলোড করুন</translation>
 <translation id="3444179773590444986">সাইটের জন্য ডার্ক থিম সম্পর্কিত মতামত শেয়ার করতে চান?</translation>
+<translation id="3452832259067974318">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রে আপনার পাসওয়ার্ডটি আপনা-আপনি পূরণ করবে না।</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{১টি ডাউনলোড শিডিউল করা হয়েছে}one{#টি ডাউনলোড শিডিউল করা হয়েছে}other{#টি ডাউনলোড শিডিউল করা হয়েছে}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> হিসাবে চালিয়ে যান</translation>
 <translation id="3478363558367712427">আপনার সার্চ ইঞ্জিন বেছে নিতে পারেন</translation>
@@ -681,6 +682,7 @@
 <translation id="4763480195061959176">ভিডিও</translation>
 <translation id="4766313118839197559">এই ডিভাইসের 'পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়</translation>
 <translation id="4766678251456904326">ডিভাইসে অ্যাকাউন্ট যোগ করুন</translation>
+<translation id="4787736314074622408">আপনি <ph name="ITEM_TITLE" /> মুছে ফেলতে চান?</translation>
 <translation id="4791358705705538979">এটি ওয়েবে চেক-আউটের মতো টাস্ক সম্পূর্ণ করতে সাহায্য করে</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।

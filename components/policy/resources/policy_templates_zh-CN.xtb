@@ -3879,13 +3879,6 @@
 <translation id="5082296146261894974">允许用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5082572440690475059">允许在这些网站上通过 File System API 读取内容</translation>
 <translation id="5085647276663819155">停用打印预览</translation>
-<translation id="5087974224086385270">此设置用于确定在 <ph name="LACROS_NAME" /> 停用后保留多少用户数据。
-
-      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />，系统会移除所有用户数据。这是最安全的选项。
-
-      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />，系统会移除大部分用户数据，而只会保留与浏览器无关的文件（例如下载内容）。
-
-      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />，系统会保留所有用户数据。此选项存在很高的失败风险，并且失败后需要执行 Powerwash 操作才能恢复。</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
 <translation id="5091315650312105069">允许通过 HTTP 进行<ph name="BASIC_AUTH" />身份验证</translation>
 <translation id="5099239365323299669">从 M106 开始，永久配额将不再受支持。此政策用于重新启用永久配额功能，直至 M107。

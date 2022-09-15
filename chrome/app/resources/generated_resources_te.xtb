@@ -695,6 +695,7 @@
 <translation id="1640283014264083726">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 MD4</translation>
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> కోసం మరిన్ని చర్యలు</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 ఇతర పాస్‌వర్డ్ తప్పుగా ఫార్మాట్ చేయబడింది, కాబట్టి అది దిగుమతి చేయబడలేదు}other{{NUM_PASSWORDS} ఇతర పాస్‌వర్డ్‌లు తప్పుగా ఫార్మాట్ చేయబడ్డాయి, కాబట్టి అవి దిగుమతి చేయబడలేదు}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" />కు, ఇంకా <ph name="NUMBER_OF_DEVICES" /> ఇతర బ్లూటూత్ పరికరాలకు కనెక్ట్ చేయబడింది</translation>
 <translation id="1642494467033190216">ఇతర డీబగ్గింగ్ ఫీచ‌ర్‌లను ప్రారంభించడానికి ముందు rootfs రక్షణను తీసివేసి, పునఃప్రారంభించాలి.</translation>
 <translation id="1643072738649235303">SHA-1తో X9.62 ECDSA సంతకం</translation>
@@ -1179,6 +1180,7 @@
 <translation id="208634871997892083">ఎల్లప్పుడూ ఆన్‌లో ఉండే VPN</translation>
 <translation id="2087822576218954668">ముద్రణ: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">మీరు <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేసిన తర్వాత మాత్రమే ఎన్‌రోల్‌మెంట్ సపోర్ట్ చేస్తుంది.</translation>
+<translation id="2089090684895656482">తక్కువ</translation>
 <translation id="208928984520943006">ఎప్పుడైనా హోమ్ స్క్రీన్‌కు వెళ్ళడానికి, కింది నుండి పైకి స్వైప్ చేయండి.</translation>
 <translation id="2089566709556890888">Google Chromeతో సురక్షితంగా బ్రౌజ్ చేయండి</translation>
 <translation id="2089795179672254991">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను సైట్ చూడాలన్నప్పుడు అనుమతి అడగాలి (సిఫార్సు చేయడమైనది)</translation>
@@ -1842,6 +1844,7 @@
 <translation id="2673135533890720193">మీ బ్రౌజింగ్ హిస్టరీని చదవడానికి అనుమతి</translation>
 <translation id="2674764818721168631">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="2678063897982469759">మ‌ళ్లీ-ప్రారంభించు</translation>
+<translation id="2678100101831051676">ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="268053382412112343">&amp;చరిత్ర</translation>
 <translation id="2681124317993121768">గెస్ట్ ప్రొఫైళ్లు సపోర్ట్ చేయవు</translation>
 <translation id="2682498795777673382">మీ తల్లి/తండ్రి నుండి అప్‌డేట్</translation>
@@ -2517,6 +2520,7 @@
 <translation id="3325910708063135066">Mac సిస్టమ్ ప్రాధాన్యతలలో కెమెరా మరియు మైక్రోఫోన్ ఆపివేయబడతాయి</translation>
 <translation id="3327050066667856415">Chromebooks భద్రత కోసం రూపొందించబడ్డాయి. మీ పరికరం ఆటోమేటిక్‌గా మాల్‌వేర్ నుండి రక్షించబడుతుంది - అదనపు సాఫ్ట్‌వేర్ అవసరం లేదు.</translation>
 <translation id="3328489342742826322">బ్యాకప్ నుండి పునరుద్ధరించడం వలన మీ Linux ఫైళ్ల ఫోల్డర్‌లో ప్రస్తుతం ఉన్న Linux అప్లికేషన్‌లు, డేటా తొలగించబడతాయి.</translation>
+<translation id="3329013043687509092">సంతృప్తత</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">యాప్‌ సమాచారం</translation>
 <translation id="3333190335304955291">మీరు సెట్టింగ్‌లలో ఈ సర్వీస్‌ను ఆఫ్ చేయవచ్చు.</translation>
@@ -3303,6 +3307,7 @@
 <translation id="4050534976465737778">రెండు పరికరాలూ అన్‌లాక్ అయి, దగ్గరగా ఉన్నాయని, వాటిలో బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి. మీరు మీ కాంటాక్ట్‌లలో లేని Chromebookతో షేర్ చేస్తుంటే, దానిలో సమీప విజిబిలిటీ ఫీచర్ ఆన్‌లో ఉందని నిర్ధారించుకోండి (స్టేటస్ ప్రాంతాన్ని తెరిచి, ఆపై సమీప విజిబిలిటీని ఆన్ చేయండి). <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">చిన్న</translation>
 <translation id="4054070260844648638">ప్రతిఒక్కరికీ కనిపిస్తుంది</translation>
+<translation id="4056223980640387499">సెపియా</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome యాప్‌కు మీ తల్లి/తండ్రి సెట్ చేసిన సమయ పరిమితిని మీరు చేరుకున్నారు. మీరు రేపు దానిని <ph name="TIME_LIMIT" /> సమయం ఉపయోగించవచ్చు.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">స్టోర్‌లో చూడండి</translation>
@@ -3841,7 +3846,6 @@
 <translation id="4579876313423027742">బ్రౌజర్ నోటిఫికేషన్‌ల కోసం, <ph name="LINK_BEGIN" />Chrome బ్రౌజర్ సెట్టింగ్‌ల<ph name="LINK_END" />కు వెళ్లండి</translation>
 <translation id="4580587929153007251">Google Password Managerకు మీరు తిరిగి సైన్ ఇన్ చేయండి</translation>
 <translation id="4580596421317071374">ఈ పరికరంలోని <ph name="GOOGLE_PASSWORD_MANAGER" />‌లో పాస్‌వర్డ్‌లు సేవ్ చేయబడ్డాయి.</translation>
-<translation id="4580626299762849806">పాస్‌వర్డ్‌లను దిగుమతి చేయడం సాధ్యపడలేదు. <ph name="FILENAME" />ను చెక్ చేసి, అది సరిగ్గా ఫార్మాట్ అయి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="4581774856936278355">Linuxని పునరుద్ధరిస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది</translation>
 <translation id="4582297591746054421">మీరు కాపీ చేసిన టెక్స్ట్ యొక్క ఫార్మాటింగ్‌ను అలాగే ఉంచడం వంటి ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు మీ క్లిప్‌బోర్డ్‌ను చదువుతాయి</translation>
 <translation id="4582563038311694664">అన్ని సెట్టింగ్‌లను రీసెట్ చేయి</translation>
@@ -3875,6 +3879,7 @@
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />"‌ను ఉపయోగించడానికి పేజీని రీలోడ్ చేయండి</translation>
 <translation id="4617270414136722281">ఎక్స్‌టెన్షన్ ఆప్షన్‌లు</translation>
 <translation id="4617880081511131945">కనెక్షన్‌ను ఏర్పాటు చేయడం సాధ్యపడలేదు</translation>
+<translation id="4618195822946934889">URLలో కేవలం ASCII అక్షరాలు మాత్రమే ఉండాలి</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4619615317237390068">ఇతర పరికరాల్లోని ట్యాబ్‌లు</translation>
 <translation id="4620809267248568679">ఈ సెట్టింగ్ ఎక్స్‌టెన్షన్‌ ద్వారా అమలు చేయబడింది.</translation>
@@ -5073,6 +5078,7 @@
 <translation id="5800351251499368110">సైడ్ ప్యానెల్‌లో సెర్చ్‌ను మూసివేయండి. సైడ్ ప్యానెల్‌లో సెర్చ్ తెరిచి ఉంది.</translation>
 <translation id="5801568494490449797">ప్రాధాన్యతలు</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
+<translation id="5805268472388605531">యాక్సెంట్ మార్క్‌లను, ప్రత్యేక అక్షరాలను చూడటానికి కీబోర్డ్ కీలను నొక్కి, పట్టుకోండి</translation>
 <translation id="5805697420284793859">విండో మేనేజర్</translation>
 <translation id="5806447147478173900">ప్రదర్శించబడిన సైట్‌లు ఉపయోగించిన మొత్తం స్టోరేజ్: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (డిఫాల్ట్)</translation>
@@ -5714,6 +5720,7 @@
 <translation id="642469772702851743">ఈ (SN: <ph name="SERIAL_NUMBER" />) పరికరం యజమానిచే లాక్ చేయబడింది.</translation>
 <translation id="6425556984042222041">టెక్ట్స్-టు-స్పీచ్ రేట్</translation>
 <translation id="642729974267661262">శబ్దాన్ని ప్లే చేయడానికి అనుమతించబడలేదు</translation>
+<translation id="6427608534767366138">"<ph name="NETWORK_ID" />" కోసం ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="6429384232893414837">అప్‌డేట్‌లో ఎర్రర్</translation>
 <translation id="6430814529589430811">Base64-ఎన్‌కోడ్ చేసిన ASCII, ఒక్క సర్టిఫికెట్</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" />ఈ కంప్యూటర్ వినియోగదారులందరికీ ఆటోమేటిక్ అప్‌డేట్‌లను సెట్ చేస్తుంది.</translation>
@@ -7836,6 +7843,7 @@
 <translation id="844063558976952706">ఎల్లప్పుడూ ఈ సైట్‌లో</translation>
 <translation id="8441313165929432954">టెథరింగ్‌ను ఎనేబుల్/డిజేబుల్ చేయండి</translation>
 <translation id="8443795068008423036">దయచేసి మీ పరికరం అప్‌డేట్ అయ్యి ఉందని నిర్ధారించుకొని, మళ్లీ ట్రై చేయండి</translation>
+<translation id="8443986842926457191">URLలో 2048 కంటే ఎక్కువ అక్షరాలు ఉన్నాయి</translation>
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
 <translation id="8447409163267621480">Ctrl లేదా Altను చేర్చండి</translation>
 <translation id="844850004779619592">కమాండ్‌లు ఏవీ కనుగొనబడలేదు</translation>
@@ -7901,6 +7909,7 @@
 <translation id="851263357009351303">చిత్రాలను చూపించడానికి ఎల్లప్పుడూ <ph name="HOST" />ను అనుమతించండి</translation>
 <translation id="8513108775083588393">ఆటో-రొటేట్</translation>
 <translation id="8514746246728959655">వేరొక సెక్యూరిటీ కీని ప్రయత్నించండి</translation>
+<translation id="8519895319663397036">పాస్‌వర్డ్‌లను దిగుమతి చేయడం సాధ్యపడలేదు. ఫైల్ సైజ్ 150 KB కన్నా తక్కువ ఉండాలి.</translation>
 <translation id="8523493869875972733">మార్పులను అలాగే ఉంచు</translation>
 <translation id="8523849605371521713">విధానం ద్వారా జోడించబడింది</translation>
 <translation id="8524783101666974011">కార్డ్‌లను మీ Google ఖాతాలో సేవ్ చేయండి</translation>

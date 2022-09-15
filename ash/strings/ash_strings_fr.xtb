@@ -373,6 +373,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3151786313568798007">Orientation</translation>
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de cet appareil peut contrôler votre activité de navigation.</translation>
+<translation id="3157931365184549694">Restaurer</translation>
 <translation id="316086887565479535">Le modèle contient des applis non compatibles</translation>
 <translation id="3161500364292033097">Fermer le bureau et les fenêtres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> effectue un rollback de votre <ph name="DEVICE_TYPE" />. Cela entraînera la réinitialisation de votre appareil et la suppression de toutes vos données.</translation>
@@ -476,7 +477,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3765841986579723851">Modifié aujourd'hui</translation>
-<translation id="3771549900096082774">Mode Contraste élevé</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
 <translation id="3779139509281456663">Connexion à l'appareil suivant : <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4312840429157639164">Appareil photo aligné sur l'angle supérieur droit. Conflit avec la surface du système.</translation>
 <translation id="4316910396681052118">TOUTES LES APPLICATIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Vous avez appuyé sur le raccourci clavier du contraste élevé. Voulez-vous l'activer ?</translation>
 <translation id="4322742403972824594">Le raccourci clavier Ctrl+Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Accueil, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la gauche.</translation>
 <translation id="4333628967105022692">Lacros ne peut pas fonctionner lorsque plusieurs utilisateurs sont connectés.</translation>
 <translation id="4338109981321384717">Loupe</translation>
 <translation id="4351433414020964307">Chargement de l'Assistant…</translation>
-<translation id="4356930093361201197">le mode Contraste élevé</translation>
 <translation id="4371348193907997655">Paramètres Cast</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Connexion</translation>
@@ -877,7 +875,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier branché.</translation>
-<translation id="5992218262414051481">Le mode Contraste élevé est activé. Appuyez de nouveau sur Ctrl+Recherche+H pour le désactiver.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
@@ -1233,7 +1230,6 @@ Nouvelle installation</translation>
 <translation id="8051716679295756675">Le modèle "<ph name="DESK_TEMPLATE_NAME" />" existe déjà</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
-<translation id="8061464966246066292">Contraste élevé</translation>
 <translation id="8083540854303889870">Bureaux enregistrés</translation>
 <translation id="8091387634532529612">Mises à jour automatiques</translation>
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>

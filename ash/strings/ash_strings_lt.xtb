@@ -373,6 +373,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3151786313568798007">Orientacija</translation>
 <translation id="3153444934357957346">Naudodami kelių paskyrų funkciją, galite turėti iki <ph name="MULTI_PROFILE_USER_LIMIT" /> paskyr.</translation>
 <translation id="3154351730702813399">Įrenginio administratorius gali stebėti jūsų naršymo veiklą.</translation>
+<translation id="3157931365184549694">Atkurti</translation>
 <translation id="316086887565479535">Nepalaikomos programos šablone</translation>
 <translation id="3161500364292033097">Uždaryti darbalaukį ir langus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> grąžina ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
@@ -476,7 +477,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3735740477244556633">Rūšiuoti pagal</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
 <translation id="3765841986579723851">Redaguota šiandien</translation>
-<translation id="3771549900096082774">Didelio kontrasto režimas</translation>
 <translation id="3773700760453577392">Administratorius neleido <ph name="USER_EMAIL" /> prisijungti prie kelių paskyrų. Norėdami tęsti, visi naudotojai turi atsijungti.</translation>
 <translation id="3779139509281456663">Susiejamas įrenginys „<ph name="NAME" />“</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4312840429157639164">Fotoaparato peržiūra pridėta viršutiniame dešiniajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="4316910396681052118">VISOS PROGRAMOS</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Paspaudėte didelio kontrasto spartųjį klavišą. Ar norite jį įjungti?</translation>
 <translation id="4322742403972824594">Pakeistas spartusis klavišas „Ctrl“ + „Alt“ + rodyklė aukštyn. Jei norite naudoti klavišą „Home“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę kairėn.</translation>
 <translation id="4333628967105022692">„Lacros“ nepalaikoma, kai prisijungę keli naudotojai.</translation>
 <translation id="4338109981321384717">Didinamasis stiklas</translation>
 <translation id="4351433414020964307">Padėjėjas įkeliamas...</translation>
-<translation id="4356930093361201197">didelio kontrasto režimas</translation>
 <translation id="4371348193907997655">„Cast“ nustatymai</translation>
 <translation id="4378479437904450384">„<ph name="WIRELESS_PROVIDER" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc.</translation>
 <translation id="4378551569595875038">Jungiamasi...</translation>
@@ -877,7 +875,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5980301590375426705">Išeiti iš sveč. rež.</translation>
 <translation id="598407983968395253">Naudoti šabloną</translation>
 <translation id="598882571027504733">Kad gautumėte naujinį, iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
-<translation id="5992218262414051481">Didelio kontrasto režimas įgalintas. Dar kartą paspauskite „Ctrl“ + paieškos klavišą + H, kad išjungtumėte režimą.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> psl. iš <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Išjungiamas atvaizdavimo režimas</translation>
 <translation id="602001110135236999">Slinkti kairėn</translation>
@@ -1233,7 +1230,6 @@ Naujas įdiegimas</translation>
 <translation id="8051716679295756675">Šablonas pavadinimu „<ph name="DESK_TEMPLATE_NAME" />“ jau yra</translation>
 <translation id="8052898407431791827">Nukopijuota į iškarpinę</translation>
 <translation id="8054466585765276473">Apskaičiuojamas laikas, likęs iki akumuliatoriaus išsikrovimo.</translation>
-<translation id="8061464966246066292">Didelis kontrastas</translation>
 <translation id="8083540854303889870">Išsaugota vėlesniam laikui</translation>
 <translation id="8091387634532529612">Automatiniai naujiniai</translation>
 <translation id="8098591350844501178">Sustabdyti ekrano perdavimą į: <ph name="RECEIVER_NAME" /></translation>

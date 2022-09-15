@@ -454,6 +454,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="3435465986463792564">Du verwendest viele Fenster? Du kannst sie hier verwalten.</translation>
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
 <translation id="3444179773590444986">Feedback zu dunklem Design für Websites teilen?</translation>
+<translation id="3452832259067974318">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch mit deinem Passwort aus.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 Download geplant}other{# Downloads geplant}}</translation>
 <translation id="3474624961160222204">Als "<ph name="NAME" />" fortfahren</translation>
 <translation id="3478363558367712427">Du kannst deine Suchmaschine auswählen</translation>
@@ -679,6 +680,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4763480195061959176">Video</translation>
 <translation id="4766313118839197559">Passwörter werden auf diesem Gerät im Passwortmanager gespeichert</translation>
 <translation id="4766678251456904326">Konto zum Gerät hinzufügen</translation>
+<translation id="4787736314074622408">Möchtest du <ph name="ITEM_TITLE" /> löschen?</translation>
 <translation id="4791358705705538979">Hilft dir, Aufgaben im Internet durchzuführen, z. B. beim Bezahlen</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.

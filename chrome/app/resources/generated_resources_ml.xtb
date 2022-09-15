@@ -1167,6 +1167,7 @@
 <translation id="208634871997892083">എപ്പോഴും ഓണാക്കി വയ്‌ക്കുന്ന VPN</translation>
 <translation id="2087822576218954668">പ്രിന്‍റ് ചെയ്യുക: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">നിങ്ങൾ <ph name="DEVICE_OS" /> ഇൻസ്റ്റാൾ ചെയ്ത ശേഷം മാത്രമേ എൻറോൾ ചെയ്യൽ പിന്തുണയ്ക്കൂ.</translation>
+<translation id="2089090684895656482">കുറച്ച്</translation>
 <translation id="208928984520943006">ഏതുസമയത്തും നിങ്ങളുടെ ഹോം സ്ക്രീനിലേക്ക് പോകാൻ താഴെ നിന്ന് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക.</translation>
 <translation id="2089566709556890888">Google Chrome ഉപയോഗിച്ച് സുരക്ഷിതമായി ബ്രൗസ് ചെയ്യുക</translation>
 <translation id="2089795179672254991">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണാൻ ഒരു സൈറ്റ് താൽപ്പര്യപ്പെടുമ്പോൾ ചോദിക്കുക (ശുപാർശ ചെയ്യപ്പെടുന്നു)</translation>
@@ -1502,6 +1503,7 @@
 <translation id="2356070529366658676">ചോദിക്കുക</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> നീക്കം ചെയ്യുക</translation>
 <translation id="2358561147588818967">സൈറ്റുകൾക്ക് JavaScript ഉപയോഗിക്കാം</translation>
+<translation id="2358777858338503863"><ph name="ORIGIN" /> എന്നതിൽ അനുവദിക്കാൻ ക്ലിക്ക് ചെയ്യുക:</translation>
 <translation id="2359071692152028734">Linux ആപ്പുകൾ പ്രതികരിക്കാതാവാം.</translation>
 <translation id="2359345697448000899">ഉപകരണങ്ങൾ മെനുവിലെ വിപുലീകരണങ്ങളിൽ ക്ലിക്ക് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ വിപുലീകരണങ്ങൾ നിയന്ത്രിക്കുക.</translation>
 <translation id="2359556993567737338">Bluetooth ഉപകരണം കണക്റ്റ് ചെയ്യുക</translation>
@@ -2243,6 +2245,7 @@
 <translation id="3046178388369461825">Linux ഡിസ്‌ക് ഇടം വളരെ കുറവാണ്</translation>
 <translation id="3046910703532196514">വെബ്‌പേജ്, പൂർണ്ണമായും</translation>
 <translation id="304747341537320566">സ്പീച്ച് എഞ്ചിനുകൾ</translation>
+<translation id="3048051495640130973">ബാറ്ററി ലാഭിക്കൽ ഓണാക്കേണ്ടത് എപ്പോഴാണെന്ന് നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ നിയന്ത്രിക്കാം</translation>
 <translation id="3048336643003835855">വെണ്ടറിൽ <ph name="VENDOR_ID" /> നിന്നുള്ള HID ഉപകരണങ്ങൾ</translation>
 <translation id="3048917188684939573">കാസ്റ്റ് ചെയ്യൽ, ഉപകരണ ലോഗുകൾ എന്നിവ</translation>
 <translation id="3051250416341590778">ഡിസ്പ്ലേ വലുപ്പം</translation>
@@ -2500,6 +2503,7 @@
 <translation id="3325910708063135066">Mac സിസ്‌റ്റം മുൻഗണനകളിൽ ക്യാമറയും മൈക്രോഫോണും ഓഫാക്കി</translation>
 <translation id="3327050066667856415">Chromebooks സുരക്ഷയ്‌ക്കായി രൂപകൽപ്പന ചെയ്‌തിരിക്കുന്നു. നിങ്ങളുടെ ഉപകരണം മാൽവെയറിൽ നിന്ന് സ്വയമേവ പരിരക്ഷിക്കപ്പെട്ടിരിക്കുന്നു – അധിക സോഫ്‌റ്റ്‌വെയർ ആവശ്യമില്ല.</translation>
 <translation id="3328489342742826322">ബാക്കപ്പിൽ നിന്ന് പുനഃസ്ഥാപിക്കുന്നത്, നിങ്ങളുടെ നിലവിലുള്ള Linux ആപ്പുകളെയും നിങ്ങളുടെ Linux ഫയലുകളുടെ ഫോൾഡറിലെ ഡാറ്റയും ഇല്ലാതാക്കും.</translation>
+<translation id="3329013043687509092">സാച്ചുറേഷൻ</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ആപ്പ് വിവരം</translation>
 <translation id="3333190335304955291">ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഈ സേവനം ഓഫാക്കാം.</translation>
@@ -2833,6 +2837,7 @@
 <translation id="3641456520301071208">സൈറ്റുകൾക്ക് നിങ്ങളുടെ ലൊക്കേഷൻ ആവശ്യപ്പെടാം</translation>
 <translation id="3642070413432681490">സര്‍ക്കിള്‍ കഴ്‌സർ</translation>
 <translation id="3642699533549879077">മറ്റാരെങ്കിലും നിങ്ങളുടെ സ്ക്രീനിലേക്ക് നോക്കുമ്പോൾ നിങ്ങൾക്ക് അലേർട്ടും അറിയിപ്പും ലഭിക്കും, ഉള്ളടക്കം മറയ്ക്കുകയും ചെയ്യും.</translation>
+<translation id="3643962751030964445">ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="DEVICE_MANAGER" /> ആണ്. <ph name="USER_EMAIL_ADDRESS" /> അക്കൗണ്ടിന് പുതിയൊരു പ്രൊഫെെൽ വേണമെന്ന് <ph name="DEVICE_MANAGER" /> ആവശ്യപ്പെടുന്നു</translation>
 <translation id="3645372836428131288">ഫിംഗർപ്രിന്റിന്റെ മറ്റൊരു ഭാഗം പകർത്താൻ ചെറുതായി നീക്കുക.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിച്ചു}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിച്ചു}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> കണ്ടെത്തി</translation>
@@ -3284,6 +3289,7 @@
 <translation id="4050534976465737778">രണ്ട് ഉപകരണങ്ങളും അൺലോക്ക് ചെയ്‌തിട്ടുണ്ടെന്നും അടുത്തടുത്താണ് ഉള്ളതെന്നും Bluetooth ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക. നിങ്ങളുടെ കോൺടാക്റ്റുകളിൽ ഇല്ലാത്ത Chromebook-മായാണ് നിങ്ങൾ പങ്കിടുന്നതെങ്കിൽ അതിൽ സമീപമുള്ള ദൃശ്യപരത ഓണാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക (സ്റ്റാറ്റസ് ഏരിയ തുറന്ന് സമീപമുള്ള ദൃശ്യപരത തിരഞ്ഞെടുക്കുക). <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">ചെറുത്</translation>
 <translation id="4054070260844648638">എല്ലാവര്‍ക്കും ദൃശ്യം</translation>
+<translation id="4056223980640387499">സിപിയ</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ആപ്പിനായി നിങ്ങളുടെ രക്ഷിതാവ് സജ്ജീകരിച്ച സമയ പരിധിയിലെത്തി. നാളെ <ph name="TIME_LIMIT" /> സമയം നിങ്ങൾക്ക് അത് ഉപയോഗിക്കാം.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">സ്റ്റോറിൽ കാണുക</translation>
@@ -3401,6 +3407,7 @@
 <translation id="4175137578744761569">ഇളം പർപ്പിളും വെള്ളയും</translation>
 <translation id="4175737294868205930">സ്ഥിരമായ സ്‌റ്റോറേജ്</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
+<translation id="4176864026061939326">ഈ ഉപകരണം മാനേജ് ചെയ്യപ്പെടുന്നുണ്ട്. <ph name="USER_EMAIL_ADDRESS" /> അക്കൗണ്ടിന് പുതിയൊരു പ്രൊഫെെൽ വേണമെന്ന് നിങ്ങളുടെ ഉപകരണ അഡ്‌മിൻ ആവശ്യപ്പെടുന്നു</translation>
 <translation id="4180788401304023883">CA സർട്ടിഫിക്കറ്റ് "<ph name="CERTIFICATE_NAME" />" ഇല്ലാതാക്കണോ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
@@ -3787,6 +3794,7 @@
 <translation id="4554591392113183336">നിലവിലുള്ള ഒന്നുമായി താരതമ്യപ്പെടുത്തുമ്പോൾ, ബാഹ്യ വിപുലീകരണത്തിന്റെ പതിപ്പ് സമാനമായതോ അതിന് മുമ്പുള്ളതോ ആണ്.</translation>
 <translation id="4555769855065597957">ഷാഡോ</translation>
 <translation id="4555863373929230635">നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് പാസ്‍വേഡുകൾ സംരക്ഷിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
+<translation id="4556194354084985730">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഉപയോഗിച്ച് സെെറ്റുകളിലേക്കും ആപ്പുകളിലേക്കും എളുപ്പത്തിൽ സെെൻ ഇൻ ചെയ്യൂ. ഇത് ഓഫാക്കിയാൽ, സെെൻ ഇൻ ചെയ്യുന്നതിന് മുമ്പ് നിങ്ങളോട് ചോദിക്കും.</translation>
 <translation id="4558426062282641716">സ്വയമേവ ലോഞ്ച് ചെയ്യാനുള്ള അനുമതി അഭ്യർത്ഥിച്ചു</translation>
 <translation id="4559617833001311418">നിങ്ങളുടെ ചലന സെൻസർ അല്ലെങ്കിൽ വെളിച്ച സെൻസർ ഈ സൈറ്റ് ആക്‌സസ് ചെയ്യുന്നു.</translation>
 <translation id="4561893854334016293">അടുത്തിടെ അനുമതികളൊന്നും മാറ്റിയിട്ടില്ല</translation>
@@ -3818,7 +3826,6 @@
 <translation id="4579876313423027742">ബ്രൗസർ അറിയിപ്പുകൾക്ക്, <ph name="LINK_BEGIN" />Chrome ബ്രൗസർ ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക</translation>
 <translation id="4580587929153007251">Google Password Manager-ലേക്ക് തിരികെ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4580596421317071374">പാസ്‌വേഡുകൾ ഈ ഉപകരണത്തിലെ <ph name="GOOGLE_PASSWORD_MANAGER" /> എന്നതിൽ സംരക്ഷിക്കുന്നു.</translation>
-<translation id="4580626299762849806">പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യാനാകുന്നില്ല. <ph name="FILENAME" /> പരിശോധിച്ച് അത് ശരിയായി ഫോർമാറ്റ് ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="4581774856936278355">Linux പുനഃസ്ഥാപിക്കുന്നതിൽ പിശക്</translation>
 <translation id="4582297591746054421">പകർത്തിയ ടെക്‌സ്റ്റിന്റെ ഫോർമാറ്റ് നിലനിർത്തുന്നത് പോലുള്ള ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡ് വായിക്കാറുണ്ട്</translation>
 <translation id="4582563038311694664">എല്ലാ ക്രമീകരണങ്ങളും റീസെറ്റ് ചെയ്യുക</translation>
@@ -5342,6 +5349,7 @@
 <translation id="6077476112742402730">ടൈപ്പ് ചെയ്യാൻ പറഞ്ഞ് കൊടുക്കുക</translation>
 <translation id="6078121669093215958">{0,plural, =1{അതിഥി}other{# തുറന്ന അതിഥി വിൻഡോകൾ}}</translation>
 <translation id="6078323886959318429">കുറുക്കുവഴി ചേർക്കുക</translation>
+<translation id="6078742430369906859">"<ph name="NETWORK_ID" />" എന്നതിലെ കണക്‌റ്റിവിറ്റി പരിമിതപ്പെടുത്തിയേക്കാം</translation>
 <translation id="6078752646384677957">നിങ്ങളുടെ മൈക്രോഫോണും ഓഡിയോ ലെവലുകളും പരിശോധിക്കുക.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" ഒരു HID ഉപകരണത്തിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="608029822688206592">നെറ്റ്‌വർക്കുകളൊന്നും കണ്ടെത്തിയില്ല. നിങ്ങളുടെ സിം കാർഡ് ഇട്ട ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -6053,6 +6061,7 @@
 <translation id="6779447100905857289">നിങ്ങളുടെ കാർട്ടുകൾ</translation>
 <translation id="677965093459947883">വളരെ ചെറുത്</translation>
 <translation id="6781005693196527806">&amp;തിരയൽ യന്ത്രങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
+<translation id="6781012982807899368">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇവിടെ ദൃശ്യമാകും. <ph name="BEGIN_LINK" /> പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യുക<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">ഡൂഡ്ല്‍ ലിങ്ക്</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />ആപ്പ് ഡാറ്റ എന്നത് കോൺടാക്റ്റുകൾ, സന്ദേശങ്ങൾ, ഫോട്ടോകൾ എന്നിവ ഉൾപ്പെടെ ആപ്പ് സംരക്ഷിച്ചിട്ടുള്ള ഏതൊരു ഡാറ്റയും (ഡെവലപ്പർ ക്രമീകരണം അടിസ്ഥാനമാക്കി) ആകാം. ബാക്കപ്പ് ഡാറ്റയെ നിങ്ങളുടെ കുട്ടിയുടെ Drive സ്റ്റോറേജ് ക്വാട്ടയുടെ ഭാഗമായി കണക്കാക്കില്ല.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഈ സേവനം ഓഫാക്കാം.<ph name="END_PARAGRAPH2" /></translation>
@@ -6565,6 +6574,7 @@
 <translation id="7267875682732693301">നിങ്ങളുടെ ഫിംഗർപ്രിന്റിന്റെ വ്യത്യസ്ത ഭാഗങ്ങൾ ചേർക്കുന്നതിന് നിങ്ങളുടെ വിരൽ ഉയർത്തിക്കൊണ്ടിരിക്കുക</translation>
 <translation id="7267898843336437186">ഈ സൈറ്റിന് കാണാനാകുന്ന ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7268127947535186412">ഉപകരണ ഉടമയാണ് ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത്.</translation>
+<translation id="7269229526547981029">ഈ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_MANAGER" /> ആണ്. <ph name="USER_EMAIL_ADDRESS" /> അക്കൗണ്ടിന് പുതിയൊരു പ്രൊഫെെൽ വേണമെന്ന് <ph name="ACCOUNT_MANAGER" /> ആവശ്യപ്പെടുന്നു</translation>
 <translation id="7269736181983384521">സമീപമുള്ള പങ്കിടൽ ഡാറ്റാ ഉപയോഗം</translation>
 <translation id="7272674038937250585">വിവരണമൊന്നും നൽകിയിട്ടില്ല</translation>
 <translation id="7273110280511444812">അവസാനം അറ്റാച്ചുചെയ്‌ത തീയതി <ph name="DATE" /> ആണ്</translation>
@@ -7204,6 +7214,7 @@
 <translation id="7870790288828963061">ഏറ്റവും പുതിയ പതിപ്പിലുള്ള കിയോസ്‌ക് ആപ്പുകളൊന്നും കണ്ടെത്തിയില്ല. USB സ്‌റ്റിക്ക് നീക്കംചെയ്യുക.</translation>
 <translation id="7871049986386271121">ഈ സൈറ്റിൽ എപ്പോഴും അനുവദിക്കുക</translation>
 <translation id="7871109039747854576">കാൻഡിഡേറ്റ് ലിസ്‌റ്റ് പേജ് ചെയ്യാൻ <ph name="COMMA" /> കീയും <ph name="PERIOD" /> കീയും ഉപയോഗിക്കൽ</translation>
+<translation id="7872494313446521576"><ph name="ORIGIN" /> എന്നതിൽ "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" അനുവദിക്കാൻ ക്ലിക്ക് ചെയ്യുക:</translation>
 <translation id="787268756490971083">ഓഫാണ്</translation>
 <translation id="7872758299142009420">വളരെയധികം നെസ്റ്റഡ് ഗ്രൂപ്പുകൾ: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome പശ്ചാത്തലങ്ങൾ</translation>
@@ -7574,6 +7585,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{പുതിയ അറിയിപ്പ്}other{# പുതിയ അറിയിപ്പുകൾ}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> എന്നതിനുള്ള Google Password Manager-ലേക്ക് പാസ്‍വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യാൻ, ഒരു CSV ഫയൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ഡൗൺലോഡ് പുരോഗമിക്കുന്നു}other{ഡൗൺലോഡുകൾ പുരോഗമിക്കുന്നു}}</translation>
+<translation id="8212601853154459483">ഈ പ്രൊഫെെൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_MANAGER" /> ആണ്, <ph name="USER_EMAIL_ADDRESS" /> അക്കൗണ്ടിന് മറ്റൊരു പ്രൊഫെെൽ വേണമെന്ന് അവർ നിങ്ങളോട് ആവശ്യപ്പെടുന്നു</translation>
 <translation id="8213449224684199188">ഫോട്ടോ മോഡിലേക്ക് പ്രവേശിച്ചു</translation>
 <translation id="8214489666383623925">ഫയല്‍ തുറക്കുക...</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് നിങ്ങളുടെ ഫോണിന്റെ ശേഷികൾ ആക്സസ് ചെയ്യുക</translation>
@@ -7879,6 +7891,7 @@
 <translation id="8523493869875972733">മാറ്റങ്ങൾ നിലനിർത്തുക</translation>
 <translation id="8523849605371521713">നയം ചേർത്ത വിപൂലീകരണം</translation>
 <translation id="8524783101666974011">കാർഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
+<translation id="8525157245469383124">ചില്ലറവ്യാപാരിയുടെ സ്റ്റോർ ഐഡി ഫോർമാറ്റ് ABC-1234 ആണ്</translation>
 <translation id="8525306231823319788">പൂര്‍ണ്ണ സ്ക്രീന്‍</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">ഭാഷകൾ ചേർക്കുക</translation>

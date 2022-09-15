@@ -3302,6 +3302,7 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
+<translation id="4369307906396795087">Scripts voor workers (web workers, service workers, enzovoort) maken gebruik van minder strenge MIME-typecontrole. Workerscripts met verouderde MIME-typen, zoals <ph name="MIMETYPE_TEXT_ASCII" />, werken ook.</translation>
 <translation id="4370937370030117032">Gebruikersnaam en bestandsnaam naar systeemeigen printers sturen uitzetten</translation>
 <translation id="4372704773119750918">Zakelijke gebruikers niet toestaan deel uit te maken van multiprofielen (primair of secundair)</translation>
 <translation id="4377599627073874279">Alle sites toestaan afbeeldingen te tonen</translation>
@@ -3883,13 +3884,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="5082296146261894974">Staat toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
 <translation id="5082572440690475059">Alleen leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
-<translation id="5087974224086385270">Deze instelling bepaalt hoeveel gebruikersgegevens worden bewaard nadat <ph name="LACROS_NAME" /> is uitgezet.
-
-      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, worden alle gebruikersgegevens verwijderd. Dit is de veiligste optie.
-
-      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, worden de meeste gebruikersgegevens verwijderd. Alleen bestanden die niet afhankelijk zijn van de browser worden bewaard (zoals downloads).
-
-      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, worden alle gebruikersgegevens bewaard. Deze optie heeft een hoog risico op fouten en vereist een Powerwash om te herstellen.</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" />-verificatie toestaan voor HTTP</translation>
 <translation id="5099239365323299669">Vanaf versie M106 worden permanente quota niet meer ondersteund. Met dit beleid wordt de functionaliteit voor een permanent quotum opnieuw aangezet tot M107.
@@ -6320,6 +6314,11 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       Als je het beleid toepast of niet instelt, wordt Eenheidsconversie van Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Eenheidsconversie van Snelle antwoorden uitgezet.</translation>
+<translation id="7582095958259051083">Als je het beleid toepast, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsen te verbeteren.
+
+      Als je het beleid niet toepast, wordt de geanonimiseerde gegevensverzameling met URL-sleutel niet aangezet.
+
+      Als je dit beleid niet instelt, kunnen gebruikers deze instelling handmatig wijzigen.</translation>
 <translation id="7587345076013230465">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten op het inlogscherm</translation>
 <translation id="7587921466180902617">Dogfood-versie van Screencast aanzetten voor gebruikers van Family Link</translation>
 <translation id="759957074386651883">Safe Browsing-instellingen</translation>
@@ -7022,6 +7021,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="8337114537412769126">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd tijdens voorgestelde zoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden voorgestelde zoekopdrachten gestuurd met de GET-methode.</translation>
+<translation id="8337961007759352651">Scripts voor workers (web workers, service workers, enzovoort) vereisen een JavaScript MIME-type, zoals <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Workerscripts met verouderde MIME-typen, zoals <ph name="MIMETYPE_TEXT_ASCII" />, worden geweigerd.</translation>
 <translation id="8339089771335211509">WebRTC gebruikt alleen de interface die is verbonden met het openbare internet en maakt geen verbinding via IP-adressen die privé zijn.</translation>
 <translation id="8339420913453596618">Tweede factor staat uit</translation>
 <translation id="8344454543174932833">Bookmarks importeren uit standaardbrowser bij eerste uitvoering</translation>
@@ -7327,12 +7327,23 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       De URL's in dit beleid mogen niet conflicteren met de URL's die zijn ingesteld via <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="8667754887193084187">Met dit beleid kun je strenge MIME-typecontrole voor workerscripts aanzetten.
+
+      Als je het beleid toepast of niet instelt, gebruiken workerscripts strenge MIME-typecontrole voor JavaScript. Dit is het nieuwe standaardgedrag. Workerscripts met verouderde MIME-typen worden geweigerd.
+
+      Als je het beleid niet toepast, gebruiken workerscripts minder strenge MIME-typecontrole, zodat workerscripts met verouderde MIME-typen, bijv. <ph name="MIMETYPE_TEXT_ASCII" />, nog steeds worden geladen en uitgevoerd.
+
+      Browsers maakten oorspronkelijk gebruik van minder strenge MIME-typecontrole, zodat resources met een aantal verouderde MIME-typen werden ondersteund. Voor JavaScript-resources is <ph name="MIMETYPE_TEXT_ASCII" /> bijvoorbeeld een verouderd ondersteund MIME-type. Dit kan beveiligingsproblemen opleveren, omdat resources dan kunnen worden geladen als scripts die nooit bedoeld waren om op die manier te worden gebruikt. Chrome wordt binnenkort overgezet naar strenge MIME-typecontrole. Het toegepaste beleid houdt het standaardgedrag bij. Als je dit beleid niet toepast, kunnen beheerders het verouderde gedrag bijhouden als ze dat willen.
+
+      Ga naar https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage voor meer informatie over JavaScript-/ECMAScript-mediatypen.
+      </translation>
 <translation id="8669313549017524373">Als je <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> instelt op RestoreOnStartupIsURLs, geef je aan welke URL's moeten worden geopend door <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> in te stellen op een lijst met URL's.
 
       Als je het beleid niet instelt, wordt de pagina 'Nieuw tabblad' geopend als de browser wordt opgestart.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="8671119576957984818">Hub voor delen van bureaublad aanzetten</translation>
+<translation id="8671193325113134911">Strenge MIME-typecontrole voor workerscripts aanzetten</translation>
 <translation id="8671314659400112135">Als je het beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de aanvullende beveiligingsbeperking voor extensiepunten toepassen om verouderde extensiepunten in het browserproces te blokkeren.
 
       Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" />, omdat onbekende en potentieel schadelijke code kan worden geladen in het browserproces van <ph name="PRODUCT_NAME" />. Pas het beleid alleen niet toe als er compatibiliteitsproblemen zijn met software van derden die in het browserproces van <ph name="PRODUCT_NAME" /> moet worden uitgevoerd.

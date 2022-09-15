@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="2135456203358955318">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
+<translation id="2161132820593978283">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਵੀਡੀਓ ਕਾਲਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਦੇ ਕੇਂਦਰ ਵਿੱਚ ਹੋਵੋ। ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2170530631236737939">ਰੂਪ-ਰੇਖਾ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ ਤਿੰਨ ਉਂਗਲਾਂ ਨਾਲ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="219905428774326614">ਲਾਂਚਰ, ਸਭ ਐਪਾਂ</translation>
 <translation id="2201071101391734388">ਹਾਲੀਆ ਫ਼ੋਟੋ <ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />।</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2408955596600435184">ਆਪਣਾ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2412593942846481727">ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
+<translation id="2426051945783024481">ਕੈਮਰਾ ਫ੍ਰੇਮ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕੇਂਦਰਿਤ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="2427507373259914951">ਖੱਬਾ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2429753432712299108">ਬਲੂਟੁੱਥ ਡਿਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ। ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਪਾਸਕੁੰਜੀ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
@@ -373,6 +375,7 @@
 <translation id="3151786313568798007">ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="3153444934357957346">ਤੁਸੀਂ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਵਿੱਚ ਸਿਰਫ਼ <ph name="MULTI_PROFILE_USER_LIMIT" /> ਤੱਕ ਖਾਤੇ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3154351730702813399">ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
+<translation id="3157931365184549694">ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="316086887565479535">ਟੈਮਪਲੇਟ ਵਿੱਚ ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
 <translation id="3161500364292033097">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
@@ -476,7 +479,6 @@
 <translation id="3735740477244556633">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="3742055079367172538">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਿਆ ਗਿਆ</translation>
 <translation id="3765841986579723851">ਅੱਜ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="3771549900096082774">ਉੱਚ ਵਖਰੇਵਾਂ ਮੋਡ</translation>
 <translation id="3773700760453577392">ਕਿਸੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="USER_EMAIL" /> ਲਈ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਦਾ ਸਾਈਨ-ਆਊਟ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +578,10 @@
 <translation id="4312840429157639164">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
 <translation id="4316910396681052118">ਸਭ ਐਪਾਂ</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">ਤੁਸੀਂ ਉੱਚ ਕੰਟ੍ਰਾਸਟ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Home ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਖੱਬਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4333628967105022692">ਕਈ ਵਰਤੋਂਕਾਰਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਹੋਣ ਦੌਰਾਨ Lacros ਸਮਰਥਿਤ ਨਹੀਂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="4338109981321384717">ਸੂਖਮਦਰਸ਼ੀ ਕੱਚ</translation>
 <translation id="4351433414020964307">Assistant ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
-<translation id="4356930093361201197">ਉੱਚ ਵਖਰੇਵਾਂ ਮੋਡ</translation>
 <translation id="4371348193907997655">ਕਾਸਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /> ਫ਼ੀਸਦ</translation>
 <translation id="4378551569595875038">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -878,7 +878,6 @@
 <translation id="5980301590375426705">ਮਹਿਮਾਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="598407983968395253">ਟੈਮਪਲੇਟ ਵਰਤੋ</translation>
 <translation id="598882571027504733">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chromebook ਨੂੰ ਨਾਲ ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਰਾਹੀਂ ਮੁੜ-ਚਾਲੂ ਕਰੋ।</translation>
-<translation id="5992218262414051481">ਉੱਚ ਵਖਰੇਵਾਂ ਮੋਡ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸਨੂੰ ਬੰਦ 'ਤੇ ਟੌਗਲ ਕਰਨ ਲਈ ਦੁਬਾਰਾ Ctrl+Search+H ਦਬਾਓ।</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> ਵਿੱਚੋਂ <ph name="SELECTED_PAGE" /> ਪੰਨਾ</translation>
 <translation id="6018164090099858612">"ਮਿਰਰ ਮੋਡ" ਤੋਂ ਬਾਹਰ ਨਿਕਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="602001110135236999">ਖੱਬੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
@@ -1044,6 +1043,7 @@
 <translation id="6960565108681981554">ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="6961121602502368900">ਫ਼ੋਨ ਨੂੰ ਖਮੋਸ਼ ਕਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="6961840794482373852">Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Page Up ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਉੱਪਰ ਤੀਰ ਦਬਾਓ।</translation>
+<translation id="696267987219125751">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਬੰਦ ਹੈ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6972754398087986839">ਸ਼ੁਰੂ ਕੀਤਾ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1134,6 +1134,7 @@
 <translation id="7513922695575567867"><ph name="DATE" /> ਵਾਲੇ ਹਫ਼ਤੇ ਦੇ ਕੈਲੰਡਰ ਵਿੱਚ ਫ਼ਿਲਹਾਲ <ph name="SELECTED_DATE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="7514365320538308">ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਚਾਲੂ ਹੈ।</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux ਐਪਾਂ ਅਤੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -1152,6 +1153,7 @@
 <translation id="7607002721634913082">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="7609951632080598826">ਕੈਲੰਡਰ ਦ੍ਰਿਸ਼, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ਕੈਮਰੇ ਨੂੰ ਮੁੜ-ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ।</translation>
+<translation id="761736749114493194">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ।</translation>
 <translation id="7634648064048557203">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -1234,7 +1236,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ਨਾਮਕ ਟੈਮਪਲੇਟ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8052898407431791827">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8054466585765276473">ਬੈਟਰੀ ਸਮੇਂ ਦਾ ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ।</translation>
-<translation id="8061464966246066292">ਉੱਚ ਕੰਟ੍ਰਾਸਟ</translation>
 <translation id="8083540854303889870">ਬਾਅਦ ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8091387634532529612">ਸਵੈਚਲਿਤ ਅੱਪਡੇਟ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> 'ਤੇ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰਨੀ ਬੰਦ ਕਰੋ</translation>
@@ -1313,6 +1314,7 @@
 <translation id="851458219935658693">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਉਹ ਵਿੰਡੋ ਦਿਖਾਓ ਜਿਸ ਵਿੱਚ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਚੁਣਿਆ ਹੋਵੇ</translation>
 <translation id="8517041960877371778">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਚਾਲੂ ਹੋਣ ਵੇਲੇ ਚਾਰਜ ਨਹੀਂ ਹੋ ਸਕਦੀ।</translation>
 <translation id="8535393432370007982">ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਦੇ ਕ੍ਰਮ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="8541078764854166027">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ</translation>
 <translation id="8542053257095774575">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੀ ਡਿਸਕ ਜਾਂ ਟੈਮਪਲੇਟ ਨਹੀਂ</translation>
 <translation id="8546059259582788728">ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਅਣਕੀਤਾ ਕਰਨਾ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="8551588720239073785">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਸੈਟਿੰਗਾਂ</translation>

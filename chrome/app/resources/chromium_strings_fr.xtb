@@ -209,6 +209,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="6072279588547424923">L'extension <ph name="EXTENSION_NAME" /> a été ajoutée à Chromium</translation>
 <translation id="608006075545470555">Ajouter un profil professionnel à ce navigateur</translation>
 <translation id="6096348254544841612">Personnalisez et contrôlez Chromium. Une mise à jour est disponible.</translation>
+<translation id="6119438414301547735">Autoriser l'extension à afficher les demandes d'accès dans la barre d'outils Chromium</translation>
 <translation id="6120345080069858279">Chromium va enregistrer ce mot de passe dans votre compte Google. Vous n'avez pas besoin de le retenir.</translation>
 <translation id="6129621093834146363">Chromium a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
 <translation id="6134968993075716475">La navigation sécurisée étant désactivée, Chromium vous recommande de l'activer.</translation>

@@ -3919,13 +3919,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5082296146261894974">Consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5082572440690475059">Consenti l'accesso di lettura tramite l'API file system su questi siti</translation>
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
-<translation id="5087974224086385270">Questa impostazione determina la quantità di dati utente da conservare dopo la disattivazione di <ph name="LACROS_NAME" />.
-
-      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, tutti i dati utente vengono rimossi. Questa è l'opzione più sicura.
-
-      Se viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, la maggior parte dei dati utente viene rimossa. Vengono conservati solo i file indipendenti dal browser (come i download).
-
-      Se il criterio viene impostato su <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, tutti i dati utente vengono conservati. Questa opzione presenta un rischio elevato di errore, che richiede il Powerwash per il ripristino.</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
 <translation id="5099239365323299669">L'avvio della quota permanente non sarà più supportato a partire dalla versione M106. Questo criterio consente di riattivare la funzionalità della quota permanente fino alla versione M107.

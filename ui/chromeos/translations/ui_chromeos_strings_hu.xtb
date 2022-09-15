@@ -78,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elem tömörítése…</translation>
 <translation id="1722687688096767818">Profil hozzáadása…</translation>
 <translation id="1726100011689679555">Névszerverek</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezve a kukába</translation>
 <translation id="1729953886957086472">német (Németország)</translation>
 <translation id="1730235522912993863">kínai (kanji)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elem a vágólapra másolva.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Nincs &lt;b&gt;„<ph name="SEARCH_STRING" />”&lt;/b&gt; keresésnek megfelelő elem</translation>
 <translation id="2894654529758326923">Információ</translation>
 <translation id="2902734494705624966">USA bővített</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezése a kukába</translation>
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">észt</translation>
 <translation id="2938685643439809023">mongol</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">A törlésre kerülő fájlok mérete összesen <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezése ide: <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">A(z) <ph name="FILE_NAME" /> áthelyezve a kukába</translation>
 <translation id="509429900233858213">Hiba történt.</translation>
 <translation id="5098629044894065541">héber</translation>
 <translation id="5102922915594634436">Szinkronizált mappák kezelése</translation>
@@ -561,6 +564,7 @@
 <translation id="5845721951356578987">Ápoló</translation>
 <translation id="5861477046012235702">Játékos</translation>
 <translation id="5864471791310927901">DHCP-keresés sikertelen</translation>
+<translation id="5887342613489958822">A(z) <ph name="FILE_NAME" /> áthelyezése a kukába</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" /> hálózat, <ph name="NETWORK_NAME" />, Inaktiválva, Jelerősség <ph name="SIGNAL_STRENGTH" />%, Részletek</translation>
 <translation id="5911887972742538906">Hiba történt a Linux-alkalmazás telepítése során.</translation>
 <translation id="5912396950572065471">Formázás</translation>
@@ -663,6 +667,7 @@
 <translation id="6874758081814639712">Tajcsi gyakorlatot végző ember</translation>
 <translation id="6876155724392614295">Kerékpár</translation>
 <translation id="6878261347041253038">Dévanágari billentyűzet (fonetikus)</translation>
+<translation id="6881853403185175088">Office</translation>
 <translation id="6885780034956018177">Csiga</translation>
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6898028766943174120">További almappák...</translation>

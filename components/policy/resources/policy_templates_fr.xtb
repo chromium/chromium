@@ -110,6 +110,7 @@
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
 <translation id="1100840127293327071">Ne pas cocher l'option permettant de conserver les données de navigation existantes par défaut</translation>
 <translation id="1105572260329131950">Utiliser les icônes par défaut pour les connexions sécurisées</translation>
+<translation id="1105711894873068933">Une fois <ph name="LACROS_NAME" /> désactivé, toutes les données utilisateur sont supprimées à la connexion suivante.</translation>
 <translation id="1107538157073168076">Désactiver l'extension des insights</translation>
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
@@ -2564,6 +2565,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       Si cette règle est définie sur "False", l'appareil n'essaiera pas de contacter Quirks Server pour télécharger les fichiers de configuration.
 
       Si cette règle est définie sur "True" ou si elle n'est pas définie, <ph name="PRODUCT_OS_NAME" /> contactera automatiquement Quirks Server pour télécharger les fichiers de configuration, s'ils sont disponibles, et les enregistrer sur l'appareil  Ces fichiers pourront, par exemple, être utilisés pour améliorer la qualité d'affichage des moniteurs connectés.</translation>
+<translation id="351654132746710200">Une fois <ph name="LACROS_NAME" /> désactivé, la migration des données n'est pas effectuée. Le dossier <ph name="LACROS_NAME" /> est supprimé, et les utilisateurs continuent d'utiliser les données restantes.</translation>
 <translation id="3522257170445891912">Si cette règle est configurée, l'authentification s'effectue de l'une des deux façons suivantes, selon la valeur du paramètre :
 
       Si la valeur est GAIA, la connexion s'effectue suivant le flux d'authentification GAIA normal.
@@ -4157,6 +4159,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle n'est pas configurée, les utilisateurs ayant recours au déverrouillage rapide devront saisir leur mot de passe tous les jours sur l'écran de verrouillage.</translation>
 <translation id="5306186200045823863">Faire confiance à l'ancienne infrastructure PKI de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilité du mode navigation privée</translation>
+<translation id="5308551343115571396">Une fois <ph name="LACROS_NAME" /> désactivé, nous essayons de conserver le plus de données utilisateur possible, tout en supprimant toutes les données du navigateur.</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
 <translation id="5312253627576569499">Pourcentage d'adaptation du délai d'assombrissement de l'écran en cas d'activité de l'utilisateur lors de la réduction de la luminosité ou peu de temps après la désactivation de l'écran.</translation>
 <translation id="5317852436044398288">Si cette règle est configurée, vous pouvez lister les formats d'URL qui peuvent utiliser les captures de fenêtre et d'onglet.
@@ -4301,6 +4304,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, l'utilisateur peut contrôler l'affichage des fiches. Par défaut, les fiches sont affichées.
       </translation>
+<translation id="5448022937220253000">Choisissez ce qu'il advient des données utilisateur une fois <ph name="LACROS_NAME" /> désactivé</translation>
 <translation id="5449690328792750354">L'API Event.path sera disponible.</translation>
 <translation id="5455609857202311243">Ignorer l'approbation par la règle KDC lors de l'authentification HTTP</translation>
 <translation id="5455888515928026628">Lors de la connexion via l'écran de verrouillage, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut s'effectuer sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
@@ -7346,6 +7350,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8634062512783775032">Utiliser <ph name="AES_KL_NAME" /> comme algorithme de chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="8637566476051166626">Ports réseau explicitement autorisés</translation>
 <translation id="8643838501942693770">Autoriser les cookies tiers, mais permettre aux utilisateurs de modifier ce paramètre</translation>
+<translation id="864611373241249369">Une fois <ph name="LACROS_NAME" /> désactivé, nous tentons de migrer toutes les données.</translation>
 <translation id="8648844602494595665">Cette règle contrôle l'utilisation de l'icône en forme de cadenas dans l'omnibox.
        À partir de Chrome M93, il y aura une nouvelle icône dans l'omnibox pour les connexions sécurisées.
        Si cette règle est activée, Chrome utilisera l'icône en forme de cadenas existante pour les connexions sécurisées.
@@ -7752,6 +7757,9 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas définie, la sélection automatique n'est effectuée pour aucun site.
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="906349948439898016">WebSQL dans les contextes non sécurisés est activé par défaut à partir de M105, mais peut être désactivé via l'indicateur Chrome.
+          Si cette règle est définie sur "False" ou n'est pas configurée, WebSQL dans les contextes non sécurisés peut être désactivé.
+          Si cette règle est définie sur "True", WebSQL ne peut pas être désactivé.</translation>
 <translation id="9068629430243705879">port 6566 (peut être débloqué jusqu'au 15/10/2021)</translation>
 <translation id="9069588907259547232">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés signalent leur volume audio.
 

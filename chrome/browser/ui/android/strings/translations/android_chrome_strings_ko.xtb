@@ -454,6 +454,7 @@
 <translation id="3435465986463792564">창이 많이 열렸나요? 여기에서 관리할 수 있습니다.</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
 <translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
+<translation id="3452832259067974318">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{다운로드 1개 예약됨}other{다운로드 #개 예약됨}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
@@ -679,6 +680,7 @@
 <translation id="4763480195061959176">동영상</translation>
 <translation id="4766313118839197559">비밀번호가 이 기기의 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="4766678251456904326">기기에 계정 추가</translation>
+<translation id="4787736314074622408"><ph name="ITEM_TITLE" /> 파일을 삭제하시겠습니까?</translation>
 <translation id="4791358705705538979">웹에서 결제와 같은 작업을 처리하도록 도와줍니다.</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.

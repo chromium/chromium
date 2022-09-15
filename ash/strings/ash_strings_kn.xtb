@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">ಓರಿಯಂಟೇಶನ್</translation>
 <translation id="3153444934357957346">ಹಲವು ಪ್ರೊಫೈಲ್ ಸೈನ್-ಇನ್‌ ಮಾಡುವಾಗ ನೀವು <ph name="MULTI_PROFILE_USER_LIMIT" /> ಖಾತೆಗಳವರೆಗೆ ಮಾತ್ರ ಹೊಂದಬಹುದು.</translation>
 <translation id="3154351730702813399">ಸಾಧನದ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಬಹುದು.</translation>
+<translation id="3157931365184549694">ಮರುಸ್ಥಾಪನೆ</translation>
 <translation id="316086887565479535">ಟೆಂಪ್ಲೇಟ್‌ನಲ್ಲಿ ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="3161500364292033097">ಡೆಸ್ಕ್ ಮತ್ತು ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="316356270129335934">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು <ph name="MANAGER" /> ಹಿಂತಿರುಗಿಸುತ್ತಿದೆ. ನಿಮ್ಮ ಸಾಧನವನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">ಈ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="3742055079367172538">ಸ್ಕ್ರಿನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="3765841986579723851">ಇಂದು ಎಡಿಟ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="3771549900096082774">ಉನ್ನತ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> ಗೆ ಬಹು ಸೈನ್‌-ಇನ್‌ ಅನುಮತಿಯನ್ನು ನಿರ್ವಾಹಕರು ರದ್ದುಗೊಳಿಸಿದ್ದಾರೆ. ಮುಂದುವರಿಯಲು ಎಲ್ಲ ಬಳಕೆದಾರರು ಸೈನ್‌ ಔಟ್‌ ಮಾಡಬೇಕು.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">ಕ್ಯಾಮರಾವನ್ನು ಮೇಲಿನ ಬಲ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ. ಸಿಸ್ಟಮ್ ಮೇಲ್ಮೈ ಜೊತೆಗೆ ಸಂಘರ್ಷ.</translation>
 <translation id="4316910396681052118">ಎಲ್ಲಾ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">ನೀವು ಅಧಿಕ ಕಾಂಟ್ರಾಸ್ಟ್‌ನ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಒತ್ತಿದ್ದೀರಿ. ನೀವು ಅದನ್ನು ಆನ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ಅಪ್ ಆ್ಯರೋ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. Home ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಲೆಫ್ಟ್ ಆ್ಯರೋ ಒತ್ತಿ.</translation>
 <translation id="4333628967105022692">ಅನೇಕ ಬಳಕೆದಾರರು ಸೈನ್ ಇನ್ ಆಗಿರುವಾಗ ಲ್ಯಾಕ್ರೋಸ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="4338109981321384717">ಭೂತಕನ್ನಡಿ</translation>
 <translation id="4351433414020964307">ಸಹಾಯಕವು ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
-<translation id="4356930093361201197">ಅಧಿಕ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್</translation>
 <translation id="4371348193907997655">ಕ್ಯಾಸ್ಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ ಶೇಕಡಾ <ph name="SIGNAL_STRENGTH" /> ಶೇಕಡಾ</translation>
 <translation id="4378551569595875038">ಕನೆಕ್ಟ್...</translation>
@@ -877,8 +875,6 @@
 <translation id="5980301590375426705">ಅತಿಥಿ ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="598407983968395253">ಟೆಂಪ್ಲೇಟ್‌ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="598882571027504733">ಅಪ್‌ಡೇಟ್‌ ಪಡೆಯಲು, ಕೀಬೋರ್ಡ್ ಲಗತ್ತಿನೊಂದಿಗೆ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
-<translation id="5992218262414051481">ಹೆಚ್ಚು ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಅದನ್ನು ಟಾಗಲ್‌ ಆಫ್‌ ಮಾಡಲು ಪುನಃ
-Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="6012623610530968780">ಪುಟ <ph name="SELECTED_PAGE" /> ರಲ್ಲಿ <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">ಪ್ರತಿಬಿಂಬ ಮೋಡ್ ನಿರ್ಗಮಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="602001110135236999">ಎಡಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
@@ -1234,7 +1230,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ಹೆಸರಿನ ಟೆಂಪ್ಲೇಟ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="8052898407431791827">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="8054466585765276473">ಬ್ಯಾಟರಿ ಸಮಯವನ್ನು ಲೆಕ್ಕಾಚಾರ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
-<translation id="8061464966246066292">ಉನ್ನತ ಕಾಂಟ್ರಾಸ್ಟ್</translation>
 <translation id="8083540854303889870">ನಂತರ ಬಳಕೆಗಾಗಿ ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8091387634532529612">ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="8098591350844501178">ಪರದೆಯನ್ನು <ph name="RECEIVER_NAME" /> ಗೆ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>

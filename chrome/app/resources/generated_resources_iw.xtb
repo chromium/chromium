@@ -1179,6 +1179,7 @@
 <translation id="208634871997892083">‏VPN מופעל תמיד</translation>
 <translation id="2087822576218954668">הדפסה: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">הרישום אפשרי רק לאחר התקנה של <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">פחות</translation>
 <translation id="208928984520943006">כדי לעבור למסך הבית בכל שלב, מחליקים כלפי מעלה מתחתית המסך.</translation>
 <translation id="2089566709556890888">‏גלישה בטוחה עם Google Chrome</translation>
 <translation id="2089795179672254991">יש לשאול כשאתר רוצה גישה אל טקסט ותמונות שהועתקו אל הלוח (מומלץ)</translation>
@@ -2513,6 +2514,7 @@
 <translation id="3325910708063135066">‏המצלמה והמיקרופון מושבתים בהעדפות המערכת של Mac</translation>
 <translation id="3327050066667856415">‏אבטחת המכשיר מתוכננת ב-Chromebook באופן מובנה. המכשיר שלך מוגן מתוכנות זדוניות באופן אוטומטי, ולא נדרשות בו תוכנות נוספות.</translation>
 <translation id="3328489342742826322">‏שחזור מגיבוי יביא למחיקת האפליקציות והנתונים הקיימים של Linux בתיקיית קובצי Linux.</translation>
+<translation id="3329013043687509092">רווייה</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">פרטי אפליקציה</translation>
 <translation id="3333190335304955291">אפשר להשבית את השירות הזה דרך ההגדרות.</translation>
@@ -3296,6 +3298,7 @@
 <translation id="4050534976465737778">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. אם השיתוף נעשה עם Chromebook שאינו רשום באנשי הקשר שלך, יש לוודא שהופעלו הרשאות הגישה בקרבת מקום (יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה בקרבת מקום). <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">זעיר</translation>
 <translation id="4054070260844648638">גלוי לכולם</translation>
+<translation id="4056223980640387499">חום-ספיה</translation>
 <translation id="4056908315660577142">‏הגעת למגבלת הזמן שהוגדרה על ידי ההורה שלך לאפליקציה <ph name="APP_NAME" /> ב-Chrome. מחר אפשר יהיה להשתמש בה למשך <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">הצגה בחנות</translation>
@@ -3830,7 +3833,6 @@
 <translation id="4579876313423027742">‏כדי לעבור להתראות של הדפדפן, נכנסים אל <ph name="LINK_BEGIN" />הגדרות הדפדפן Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">‏יש להיכנס שוב למנהל הסיסמאות של Google</translation>
 <translation id="4580596421317071374">הסיסמאות נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" /> במכשיר הזה.</translation>
-<translation id="4580626299762849806">לא ניתן לייבא את הסיסמאות. צריך לבדוק את הקובץ <ph name="FILENAME" /> ולוודא שהפורמט שלו תקין.</translation>
 <translation id="4581774856936278355">‏שגיאה בזמן השחזור של Linux</translation>
 <translation id="4582297591746054421">אתרים קוראים בדרך כלל את הלוח כדי לתמוך בתכונות כמו שמירה על עיצוב הטקסט שהועתק אליו</translation>
 <translation id="4582563038311694664">איפוס כל ההגדרות</translation>

@@ -3948,13 +3948,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="5082296146261894974">Cho phép người dùng nhấp vào thông báo trong Trung tâm điều khiển điện thoại để chạy ứng dụng Eche.</translation>
 <translation id="5082572440690475059">Cho phép quyền đọc qua API Hệ thống tệp trên các trang web này</translation>
 <translation id="5085647276663819155">Vô hiệu hóa xem trước bản in</translation>
-<translation id="5087974224086385270">Chế độ cài đặt này quyết định lượng dữ liệu người dùng được lưu giữ sau khi <ph name="LACROS_NAME" /> tắt.
-
-      Nếu bạn đặt chính sách này thành <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, thì mọi dữ liệu người dùng sẽ bị xoá. Đây là chế độ an toàn nhất.
-
-      Nếu bạn đặt chính sách này thành <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, thì hầu hết dữ liệu người dùng sẽ bị xoá. Chỉ các tệp độc lập với trình duyệt được giữ lại (chẳng hạn như Tệp đã tải xuống).
-
-      Nếu bạn đặt chính sách này thành <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, thì mọi dữ liệu người dùng sẽ được lưu giữ. Chế độ này có nguy cơ bị lỗi cao, yêu cầu định dạng lại để khôi phục.</translation>
 <translation id="5090791951240382356">Cho phép hợp nhất các chính sách từ điển thuộc các nguồn khác nhau</translation>
 <translation id="5091315650312105069">Cho phép dùng phương thức xác thực <ph name="BASIC_AUTH" /> cho HTTP</translation>
 <translation id="5099239365323299669">Kể từ M106, hệ thống sẽ không còn hỗ trợ hạn mức cố định. Chính sách này sẽ bật lại chức năng hạn mức cố định cho đến M107.

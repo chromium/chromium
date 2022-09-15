@@ -373,6 +373,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3151786313568798007">Oriëntasie</translation>
 <translation id="3153444934357957346">Jy kan net tot en met <ph name="MULTI_PROFILE_USER_LIMIT" /> rekeninge in veelvoudige aanmelding hê.</translation>
 <translation id="3154351730702813399">Die toesteladministrateur kan dalk jou blaai-aktiwiteit monitor.</translation>
+<translation id="3157931365184549694">Stel terug</translation>
 <translation id="316086887565479535">Ongesteunde programme in templaat</translation>
 <translation id="3161500364292033097">Maak lessenaar en vensters toe</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> rol tans jou <ph name="DEVICE_TYPE" /> terug. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>
@@ -476,7 +477,6 @@ Koppel jou toestel aan krag.</translation>
 <translation id="3735740477244556633">Rangskik volgens</translation>
 <translation id="3742055079367172538">Skermkiekie geneem</translation>
 <translation id="3765841986579723851">Vandag gewysig</translation>
-<translation id="3771549900096082774">Hoëkontrasmodus</translation>
 <translation id="3773700760453577392">'n Administrateur laat nie veelvuldige aanmeldings deur <ph name="USER_EMAIL" /> toe nie.
 Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3779139509281456663">Koppel tans <ph name="NAME" /></translation>
@@ -577,12 +577,10 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4312840429157639164">Kamera is geglip na hoek bo regs. Konflik met stelseloppervlak.</translation>
 <translation id="4316910396681052118">ALLE PROGRAMME</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Jy het die sleutelbordkortpad vir hoë kontras gedruk. Wil jy dit aanskakel?</translation>
 <translation id="4322742403972824594">Die kortpadsleutel Ctrl + Alt + oppyl het verander. Om die Home-sleutel te gebruik moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + linkspyl druk.</translation>
 <translation id="4333628967105022692">Lacros word nie gesteun terwyl veelvuldige gebruikers aangemeld is nie.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
 <translation id="4351433414020964307">Assistent laai tans …</translation>
-<translation id="4356930093361201197">hoëkontrasmodus</translation>
 <translation id="4371348193907997655">Uitsaai-instellings</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; seinsterkte <ph name="SIGNAL_STRENGTH" /> persent</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
@@ -878,7 +876,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5980301590375426705">Verlaat gas-sessie</translation>
 <translation id="598407983968395253">Gebruik templaat</translation>
 <translation id="598882571027504733">Herbegin jou Chromebook met die sleutelbord aangeheg om die opdatering te kry.</translation>
-<translation id="5992218262414051481">Hoëkontras-modus is geaktiveer. Druk weer Ctrl+Search+H om dit af te skakel.</translation>
 <translation id="6012623610530968780">Bladsy <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Verlaat tans spieëlmodus</translation>
 <translation id="602001110135236999">Rollees links</translation>
@@ -1234,7 +1231,6 @@ Nuwe installasie</translation>
 <translation id="8051716679295756675">Templaat genaamd <ph name="DESK_TEMPLATE_NAME" /> bestaan reeds</translation>
 <translation id="8052898407431791827">Gekopieer na knipbord</translation>
 <translation id="8054466585765276473">Bereken tans batterytyd.</translation>
-<translation id="8061464966246066292">Hoë kontras</translation>
 <translation id="8083540854303889870">Gestoor vir later</translation>
 <translation id="8091387634532529612">Outomatiese opdaterings</translation>
 <translation id="8098591350844501178">Hou op om skerm na <ph name="RECEIVER_NAME" /> toe uit te saai</translation>

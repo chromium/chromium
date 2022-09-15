@@ -1176,6 +1176,7 @@
 <translation id="208634871997892083">Винаги включена VPN</translation>
 <translation id="2087822576218954668">Отпечатване: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Регистрирането се поддържа само след като инсталирате <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">По-малко</translation>
 <translation id="208928984520943006">Можете по всяко време да преминете към началния екран, като прекарате пръст нагоре от долната част на екрана.</translation>
 <translation id="2089566709556890888">Сърфирайте безопасно с Google Chrome</translation>
 <translation id="2089795179672254991">Извеждане на запитване, когато сайт иска да преглежда текста и изображенията, копирани в буферната памет (препоръчително)</translation>
@@ -2256,6 +2257,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3046178388369461825">Свободното място на диска за Linux е критично малко</translation>
 <translation id="3046910703532196514">Уеб страница, цялата</translation>
 <translation id="304747341537320566">Машини за синтезиран говор</translation>
+<translation id="3048051495640130973">От настройките можете да управлявате кога да се включва режимът за запазване на батерията</translation>
 <translation id="3048336643003835855">HID устройства от доставчика <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Регистрационни файлове за Cast и устройството</translation>
 <translation id="3051250416341590778">Размер на показваните елементи</translation>
@@ -2513,6 +2515,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3325910708063135066">Камерата и микрофонът са изключени в системните предпочитания за Mac</translation>
 <translation id="3327050066667856415">Устройствата Chromebook са проектирани с мисъл за сигурността. Устройството ви е автоматично защитено от злонамерен софтуер – няма нужда от допълнителни програми.</translation>
 <translation id="3328489342742826322">При възстановяването от резервно копие ще бъдат изтрити съществуващите приложения за Linux и данните в папката с файлове на Linux.</translation>
+<translation id="3329013043687509092">Насищане</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Информация за приложението</translation>
 <translation id="3333190335304955291">Можете да изключите тази услуга от настройките.</translation>
@@ -2846,6 +2849,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3641456520301071208">Сайтовете могат да извеждат запитвания за достъп до местоположението ви</translation>
 <translation id="3642070413432681490">Ограждане на курсора</translation>
 <translation id="3642699533549879077">Когато друг човек погледне към екрана, ще получите сигнал и съдържанието на известията ще бъде скрито.</translation>
+<translation id="3643962751030964445">Това устройство се управлява от <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Преместете малко пръста си, за да бъде заснета друга част от отпечатъка.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Получихте <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}other{Получихте <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Открито е устройство <ph name="USB_DEVICE_NAME" /></translation>
@@ -3299,6 +3303,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4050534976465737778">Уверете се, че двете устройства са отключени и са близо едно до друго, както и че функцията за Bluetooth е включена. Ако споделяте с устройство Chromebook, което не е в контактите ви, не забравяйте да включите „Видимост наблизо“ (отворете лентата на състоянието и включете „Видимост наблизо“). <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Миниатюрен</translation>
 <translation id="4054070260844648638">Вижда се от всички</translation>
+<translation id="4056223980640387499">Сепия</translation>
 <translation id="4056908315660577142">Достигнахте времевия лимит, зададен от родителя ви за <ph name="APP_NAME" /> в Chrome. Можете да използвате приложението утре в продължение на <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Преглед в магазина</translation>
@@ -3416,6 +3421,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4175137578744761569">Светлолилаво и бяло</translation>
 <translation id="4175737294868205930">Постоянно хранилище</translation>
 <translation id="4176463684765177261">Деактивирано</translation>
+<translation id="4176864026061939326">Това устройство се управлява. Администраторът му изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4180788401304023883">Да се изтрие ли сертификатът на сертифициращ орган „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Езици</translation>
@@ -3835,7 +3841,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4579876313423027742">За известията в браузъра отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Повторно влизане в Google Мениджър на пароли</translation>
 <translation id="4580596421317071374">Паролите са запазени в <ph name="GOOGLE_PASSWORD_MANAGER" /> на това устройство.</translation>
-<translation id="4580626299762849806">Импортирането на паролите не е възможно. Проверете дали файлът <ph name="FILENAME" /> е форматиран правилно.</translation>
 <translation id="4581774856936278355">Грешка при възстановяването на Linux</translation>
 <translation id="4582297591746054421">Сайтовете обикновено четат буферната ви памет, за да осигуряват функции като запазване на форматирането на копирания от вас текст</translation>
 <translation id="4582563038311694664">Нулиране на всички настройки</translation>
@@ -6583,6 +6588,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7267875682732693301">Продължавайте да вдигате пръста си, за да добавите различните части от отпечатъка си</translation>
 <translation id="7267898843336437186">Изберете папка, която сайтът може да преглежда</translation>
 <translation id="7268127947535186412">Тази настройка се управлява от собственика на устройството.</translation>
+<translation id="7269229526547981029">Този потребителски профил се управлява от <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7269736181983384521">Пренос на данни за „Споделяне наблизо“</translation>
 <translation id="7272674038937250585">Няма описание</translation>
 <translation id="7273110280511444812">последно свързване на <ph name="DATE" /></translation>
@@ -7594,6 +7600,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известие}other{# нови известия}}</translation>
 <translation id="821119981794423735">За да импортирате пароли в Google Мениджър на пароли за <ph name="USER_EMAIL" />, изберете CSV файл</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Изтегля се файл}other{Изтеглят се файлове}}</translation>
+<translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> управлява този потребителски профил и изисква да създадете отделен такъв за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8213449224684199188">Преминахте в режим за снимки</translation>
 <translation id="8214489666383623925">Отваряне на файл...</translation>
 <translation id="8215129063232901118">Осъществявайте достъп до функциите на телефона си от устройството си <ph name="DEVICE_TYPE" /></translation>

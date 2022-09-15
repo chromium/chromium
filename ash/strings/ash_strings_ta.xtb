@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">திசையமைப்பு</translation>
 <translation id="3153444934357957346">பல உள்நுழைவில் <ph name="MULTI_PROFILE_USER_LIMIT" /> கணக்குகள் வரை மட்டுமே வைத்திருக்கலாம்.</translation>
 <translation id="3154351730702813399">சாதன நிர்வாகி உங்கள் உலாவல் செயல்பாட்டைக் கண்காணிக்கக்கூடும்.</translation>
+<translation id="3157931365184549694">மீட்டமை</translation>
 <translation id="316086887565479535">டெம்ப்ளேட்டில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
 <translation id="3161500364292033097">டெஸ்க் மற்றும் சாளரங்களை மூடும்</translation>
 <translation id="316356270129335934">உங்கள் <ph name="DEVICE_TYPE" /> ஐ முந்தைய பதிப்பிற்கு <ph name="MANAGER" /> மாற்றுகிறது. சாதனம் மீட்டமைக்கப்பட்டு, அனைத்துத் தரவும் நீக்கப்படும்.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">இதன்படி வரிசைப்படுத்து</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
 <translation id="3765841986579723851">இன்று திருத்தப்பட்டது</translation>
-<translation id="3771549900096082774">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" />க்கு, பல உள்நுழைவை நிர்வாகி அனுமதிக்கவில்லை. தொடர, எல்லாப் பயனர்களும் வெளியேற வேண்டும்.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ஐ இணைக்கிறது</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">கேமரா மாதிரிக்காட்சி மேல் வலது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>
 <translation id="4316910396681052118">எல்லாப் பயன்பாடுகளும்</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">உயர் ஒளி மாறுபாட்டின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="4322742403972824594">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + மேல்நோக்கிய அம்புக்குறி. Home பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + இடது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
 <translation id="4333628967105022692">பல பயனர்கள் உள்நுழைந்திருக்கும்போது Lacros உலாவியைப் பயன்படுத்த இயலாது.</translation>
 <translation id="4338109981321384717">உருப்பெருக்கி</translation>
 <translation id="4351433414020964307">அசிஸ்டண்ட்டை ஏற்றுகிறது...</translation>
-<translation id="4356930093361201197">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="4371348193907997655">அலைபரப்பு அமைப்புகள்</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /> சதவீதம்</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">விருந்தினரிலிருந்து வெளியேறவும்</translation>
 <translation id="598407983968395253">டெம்ப்ளேட்டைப் பயன்படுத்து</translation>
 <translation id="598882571027504733">புதுப்பிப்பைப் பெற, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
-<translation id="5992218262414051481">அதிக ஒளி மாறுபாட்டுப் பயன்முறை இயக்கப்பட்டது. அதை முடக்க, Ctrl+தேடல்+Hஐ மீண்டும் அழுத்தவும்.</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> இல் <ph name="SELECTED_PAGE" />வது பக்கம்</translation>
 <translation id="6018164090099858612">கண்ணாடிப் பயன்முறையிலிருந்து வெளியேறுகிறது</translation>
 <translation id="602001110135236999">இடப்புறம் செல்</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>
-<translation id="8061464966246066292">உயர் மாறுபாடு</translation>
 <translation id="8083540854303889870">பின்னர் பயன்படுத்தச் சேமிக்கப்பட்டவை</translation>
 <translation id="8091387634532529612">தானியங்குப் புதுப்பிப்புகள்</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புவதை நிறுத்து</translation>

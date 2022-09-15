@@ -1180,6 +1180,7 @@
 <translation id="208634871997892083">연결 유지 VPN</translation>
 <translation id="2087822576218954668">인쇄: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">등록은 <ph name="DEVICE_OS" /> 설치 후에만 지원됩니다.</translation>
+<translation id="2089090684895656482">숨기기</translation>
 <translation id="208928984520943006">언제든지 홈 화면으로 이동하려면 하단에서 위로 스와이프하세요.</translation>
 <translation id="2089566709556890888">Chrome으로 안전하게 탐색</translation>
 <translation id="2089795179672254991">사이트에서 클립보드에 복사된 텍스트 및 이미지를 보려는 경우 확인(권장)</translation>
@@ -2261,6 +2262,7 @@
 <translation id="3046178388369461825">Linux 디스크 공간이 매우 부족함</translation>
 <translation id="3046910703532196514">웹페이지, 전부</translation>
 <translation id="304747341537320566">음성 엔진</translation>
+<translation id="3048051495640130973">설정에서 절전 모드를 사용 설정하는 시점을 제어할 수 있습니다.</translation>
 <translation id="3048336643003835855">HID 기기(업체 ID: <ph name="VENDOR_ID" />)</translation>
 <translation id="3048917188684939573">전송 및 기기 로그</translation>
 <translation id="3051250416341590778">디스플레이 크기</translation>
@@ -2518,6 +2520,7 @@
 <translation id="3325910708063135066">Mac 시스템 환경설정에서 카메라와 마이크가 사용 중지되었습니다</translation>
 <translation id="3327050066667856415">Chromebook은 안전하게 설계되었습니다. 기기는 멀웨어로부터 자동으로 보호되고 있으며 소프트웨어가 추가로 필요하지 않습니다.</translation>
 <translation id="3328489342742826322">백업에서 복원하면 Linux 파일 폴더에 있는 기존 Linux 애플리케이션과 데이터가 삭제됩니다.</translation>
+<translation id="3329013043687509092">채도</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">앱 정보</translation>
 <translation id="3333190335304955291">이 서비스는 설정에서 사용 중지할 수 있습니다.</translation>
@@ -2851,6 +2854,7 @@
 <translation id="3641456520301071208">사이트에서 위치 정보를 요청할 수 있음</translation>
 <translation id="3642070413432681490">원 커서</translation>
 <translation id="3642699533549879077">다른 사람이 내 화면을 보면 알려 주고 알림 콘텐츠는 숨깁니다.</translation>
+<translation id="3643962751030964445"><ph name="DEVICE_MANAGER" />에서 관리하는 기기입니다. <ph name="DEVICE_MANAGER" />에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
 <translation id="3645372836428131288">지문의 다른 부분이 인식되도록 손가락을 살짝 움직이세요.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> 발견됨</translation>
@@ -3303,6 +3307,7 @@
 <translation id="4050534976465737778">두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 켜져 있어야 합니다. 연락처에 없는 Chromebook과 공유하는 경우 Nearby 전체 공개가 사용 설정되어 있는지 확인하세요. 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">작게</translation>
 <translation id="4054070260844648638">모두에게 공개</translation>
+<translation id="4056223980640387499">세피아</translation>
 <translation id="4056908315660577142">부모님이 설정한 <ph name="APP_NAME" /> Chrome 앱 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">스토어에서 보기</translation>
@@ -3418,6 +3423,7 @@
 <translation id="4175137578744761569">연한 보라색 및 흰색</translation>
 <translation id="4175737294868205930">영구 저장소</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
+<translation id="4176864026061939326">관리되는 기기입니다. 기기 관리자에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
 <translation id="4180788401304023883">CA 인증서 '<ph name="CERTIFICATE_NAME" />'을(를) 삭제하겠습니까?</translation>
 <translation id="4181602000363099176">20배</translation>
 <translation id="4181841719683918333">언어</translation>
@@ -3549,6 +3555,7 @@
 <translation id="4306119971288449206">앱은 '<ph name="CONTENT_TYPE" />' 콘텐츠 유형으로 제공되어야 합니다</translation>
 <translation id="4307992518367153382">기본설정</translation>
 <translation id="4309165024397827958">위치 정보 액세스 권한이 있는 Android 앱과 서비스가 기기의 위치를 사용하도록 허용합니다. Google에서는 위치 정확도와 위치 기반 서비스를 개선하기 위해 위치 데이터를 주기적으로 수집하여 익명으로 사용할 수 있습니다.</translation>
+<translation id="4309183709806093061">시스템 오디오도 공유합니다. 오디오 피드백을 방지하기 위해 이 기기는 음소거됩니다.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K(<ph name="NUM_KILOBYTES_LIVE" />K 활성)</translation>
 <translation id="4310132194679586591">기기에서 이 링크를 여는 데 사용할 앱을 선택합니다</translation>
 <translation id="4310139701823742692">파일 형식이 잘못되었습니다. PPD 파일을 확인하고 다시 시도하세요.</translation>
@@ -3837,7 +3844,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4579876313423027742">브라우저 알림의 경우 <ph name="LINK_BEGIN" />Chrome 브라우저 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="4580587929153007251">Google 비밀번호 관리자에 다시 로그인합니다.</translation>
 <translation id="4580596421317071374">비밀번호는 이 기기의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
-<translation id="4580626299762849806">비밀번호를 가져올 수 없습니다. <ph name="FILENAME" />를 확인하고 형식이 올바른지 확인하세요.</translation>
 <translation id="4581774856936278355">Linux 복원 중 오류 발생</translation>
 <translation id="4582297591746054421">사이트에서는 일반적으로 복사한 텍스트 형식 유지와 같은 기능을 사용하기 위해 클립보드를 읽어 옵니다.</translation>
 <translation id="4582563038311694664">모든 설정 초기화</translation>
@@ -4563,6 +4569,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />에서 관리하는 계정입니다.</translation>
 <translation id="5307030433605830021">지원되지 않는 소스</translation>
 <translation id="5307386115243749078">블루투스 스위치 페어링</translation>
+<translation id="5307958609248661362">Google 비밀번호 관리자 만료됨</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5309418307557605830">Google 어시스턴트는 이런 기능도 제공합니다</translation>
 <translation id="5311304534597152726">다음으로 로그인</translation>
@@ -6584,6 +6591,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7267875682732693301">손가락을 뗀 후 다시 터치하여 지문의 다른 부분을 추가하세요.</translation>
 <translation id="7267898843336437186">사이트에서 볼 수 있는 폴더를 선택하세요</translation>
 <translation id="7268127947535186412">기기 소유자가 관리하는 설정입니다.</translation>
+<translation id="7269229526547981029"><ph name="PROFILE_MANAGER" />에서 관리하는 프로필입니다. <ph name="ACCOUNT_MANAGER" />에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
 <translation id="7269736181983384521">Nearby Share 데이터 사용량</translation>
 <translation id="7272674038937250585">제공된 설명이 없음</translation>
 <translation id="7273110280511444812">최근 첨부 날짜: <ph name="DATE" /></translation>
@@ -7362,6 +7370,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7988805580376093356">OS는 그대로 두고 USB에서 <ph name="DEVICE_OS" />을 실행하세요</translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
 <translation id="7992203134935383159">음성 합성</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">프로세스 우선순위</translation>
 <translation id="7999229196265990314">생성된 파일:
         
@@ -7596,6 +7605,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{새 알림}other{새 알림 #개}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" />의 Google 비밀번호 관리자에 비밀번호를 가져오려면 CSV 파일을 선택하세요</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{다운로드 진행 중}other{다운로드 진행 중}}</translation>
+<translation id="8212601853154459483">이 프로필은 <ph name="PROFILE_MANAGER" />에서 관리하며 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 별도의 프로필 생성이 필요합니다</translation>
 <translation id="8213449224684199188">사진 모드 시작됨</translation>
 <translation id="8214489666383623925">파일 열기...</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" />에서 휴대전화의 기능에 액세스</translation>

@@ -1176,6 +1176,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="208634871997892083">VPN isiyozimwa kamwe</translation>
 <translation id="2087822576218954668">Chapisha: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Kipengele cha kuandikisha kinaweza tu kutumiwa baada ya kusakinisha <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Chache</translation>
 <translation id="208928984520943006">Ili ufungue Skrini ya kwanza wakati wowote, telezesha kidole juu kutoka chini.</translation>
 <translation id="2089566709556890888">Vinjari kwa usalama kwa kutumia Google Chrome</translation>
 <translation id="2089795179672254991">Iulize wakati tovuti ingependa kuona maandishi na picha zilizonakiliwa kwenye ubao wa kunakili (inapendekezwa)</translation>
@@ -2515,6 +2516,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3325910708063135066">Kamera na maikrofoni imezimwa katika Mapendeleo ya Mfumo wa Mac</translation>
 <translation id="3327050066667856415">Chromebook zimebuniwa kuimarisha usalama. Kifaa chako kimelindwa kiotomatiki dhidi ya programu hasidi – huhitaji programu ya ziada.</translation>
 <translation id="3328489342742826322">Hatua ya kurejesha kutoka kwa nakala iliyohifadhiwa itafuta data na programu za Linux katika folda yako ya faili za Linux.</translation>
+<translation id="3329013043687509092">Kukolea</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Maelezo ya programu</translation>
 <translation id="3333190335304955291">Unaweza kuzima huduma hii kwenye Mipangilio.</translation>
@@ -3301,6 +3303,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4050534976465737778">Hakikisha kuwa vifaa vyote viwili vimefunguliwa, vinakaribiana na Bluetooth imewashwa. Iwapo unashiriki na kifaa cha Chromebook ambacho hakipo kwenye anwani zako, hakikisha kwamba kipengele cha Uonekanaji wa karibu kimewashwa (fungua eneo la hali, kisha uwashe Uonekanaji wa karibu). <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Ndogo sana</translation>
 <translation id="4054070260844648638">Inaonekana na kila mtu</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Umefikisha kikomo cha muda wa kutumia <ph name="APP_NAME" /> kwenye programu ya Chrome uliowekwa na mzazi wako. Utaweza kuitumia kwa <ph name="TIME_LIMIT" /> kesho.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Angalia katika Duka la Wavuti</translation>
@@ -3836,7 +3839,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4579876313423027742">Kwa ajili ya arifa za kivinjari, nenda kwenye <ph name="LINK_BEGIN" />Mipangilio ya kivinjari cha Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Ingia tena katika akaunti ya Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="4580596421317071374">Manenosiri huhifadhiwa kwenye <ph name="GOOGLE_PASSWORD_MANAGER" /> katika kifaa hiki.</translation>
-<translation id="4580626299762849806">Imeshindwa kupakia manenosiri. Angalia <ph name="FILENAME" /> na uhakikishe imeundwa kwa usahihi.</translation>
 <translation id="4581774856936278355">Hitilafu imetokea wakati wa kurejesha Linux</translation>
 <translation id="4582297591746054421">Tovuti husoma ubao wako wa kunakili kwa ajili ya vipengele kama vile kudumisha muundo wa maandishi uliyoyanakili</translation>
 <translation id="4582563038311694664">Weka upya mipangilio yote</translation>

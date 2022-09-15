@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2148716181193084225">วันนี้</translation>
+<translation id="2161132820593978283">ลองใช้การจัดเฟรมกล้องเพื่อให้คุณอยู่ตรงกลางหน้าจอของวิดีโอคอล เปิดได้ในการตั้งค่าด่วน</translation>
 <translation id="2170530631236737939">ใช้ 3 นิ้วเลื่อนลงเพื่อออกจาก "ภาพรวม"</translation>
 <translation id="219905428774326614">Launcher, แอปทั้งหมด</translation>
 <translation id="2201071101391734388">รูปภาพล่าสุด <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /></translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">ไม่เชื่อมต่อ</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="2412593942846481727">มีเวอร์ชันอัปเดต</translation>
+<translation id="2426051945783024481">เฟรมกล้องจะอยู่ตรงกลางโดยอัตโนมัติ</translation>
 <translation id="2427507373259914951">คลิกซ้าย</translation>
 <translation id="2429753432712299108">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ ก่อนที่จะยอมรับ โปรดยืนยันว่ารหัสผ่านนี้ปรากฏบนอุปกรณ์นั้น: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
@@ -373,6 +375,7 @@
 <translation id="3151786313568798007">การวางแนว</translation>
 <translation id="3153444934357957346">คุณมีบัญชีได้สูงสุด <ph name="MULTI_PROFILE_USER_LIMIT" /> บัญชีในการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="3154351730702813399">ผู้ดูแลระบบของอุปกรณ์อาจตรวจสอบกิจกรรมการท่องเว็บของคุณ</translation>
+<translation id="3157931365184549694">คืนค่า</translation>
 <translation id="316086887565479535">แอปที่ไม่รองรับในเทมเพลต</translation>
 <translation id="3161500364292033097">ปิดเดสก์และหน้าต่าง</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> จะย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
@@ -476,7 +479,6 @@
 <translation id="3735740477244556633">จัดเรียงตาม</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
 <translation id="3765841986579723851">แก้ไขวันนี้</translation>
-<translation id="3771549900096082774">โหมดคอนทราสต์สูง</translation>
 <translation id="3773700760453577392">ผู้ดูแลระบบไม่อนุญาตให้ <ph name="USER_EMAIL" /> ลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี ผู้ใช้ทุกคนต้องออกจากระบบเพื่อดำเนินการต่อ</translation>
 <translation id="3779139509281456663">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +578,10 @@
 <translation id="4312840429157639164">จัดกล้องพอดีกับมุมขวาบนแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
 <translation id="4316910396681052118">แอปทั้งหมด</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">คุณกดแป้นพิมพ์ลัดสำหรับคอนทราสต์สูง จะเปิดคอนทราสต์สูงไหม</translation>
 <translation id="4322742403972824594">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรขึ้น หากต้องการใช้แป้น Home ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรซ้าย</translation>
 <translation id="4333628967105022692">ไม่รองรับ Lacros ขณะที่มีผู้ใช้ลงชื่อเข้าใช้หลายคน</translation>
 <translation id="4338109981321384717">แว่นขยาย</translation>
 <translation id="4351433414020964307">Assistant กำลังโหลด...</translation>
-<translation id="4356930093361201197">โหมดคอนทราสต์สูง</translation>
 <translation id="4371348193907997655">การตั้งค่าการแคสต์</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /> เปอร์เซ็นต์</translation>
 <translation id="4378551569595875038">กำลังเชื่อมต่อ</translation>
@@ -877,7 +877,6 @@
 <translation id="5980301590375426705">ออกเซสชันผู้มาเยือน</translation>
 <translation id="598407983968395253">ใช้เทมเพลต</translation>
 <translation id="598882571027504733">หากต้องการรับอัปเดต ให้รีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
-<translation id="5992218262414051481">เปิดใช้โหมดคอนทราสต์สูงอยู่ กด Ctrl+Search+H อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">กำลังออกจากโหมดมิเรอร์</translation>
 <translation id="602001110135236999">เลื่อนไปทางซ้าย</translation>
@@ -1043,6 +1042,7 @@
 <translation id="6960565108681981554">ไม่ได้เปิดการใช้งาน โปรดติดต่อผู้ให้บริการเครือข่าย</translation>
 <translation id="6961121602502368900">ฟีเจอร์ปิดเสียงโทรศัพท์ใช้งานไม่ได้ในโปรไฟล์งาน</translation>
 <translation id="6961840794482373852">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรขึ้น หากต้องการใช้แป้น Page Up ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
+<translation id="696267987219125751">การจัดเฟรมกล้องปิดอยู่</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
@@ -1133,6 +1133,7 @@
 <translation id="7513922695575567867">ปฏิทิน, สัปดาห์วันที่ <ph name="DATE" />, เลือกวันที่ <ph name="SELECTED_DATE" /> อยู่</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">การจัดเฟรมกล้องเปิดอยู่</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
@@ -1151,6 +1152,7 @@
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7609951632080598826">มุมมองปฏิทิน <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">เชื่อมต่อกล้องอีกครั้งแล้ว</translation>
+<translation id="761736749114493194">เปิด/ปิดการจัดเฟรมกล้อง <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">แสดงการตั้งค่าการแชร์ใกล้เคียง</translation>
 <translation id="7634648064048557203">จัดกล้องพอดีกับมุมขวาล่างแล้ว</translation>
@@ -1233,7 +1235,6 @@
 <translation id="8051716679295756675">มีเทมเพลตชื่อ <ph name="DESK_TEMPLATE_NAME" /> อยู่แล้ว</translation>
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="8054466585765276473">กำลังคำนวณเวลาใช้งานแบตเตอรี่</translation>
-<translation id="8061464966246066292">ความคมชัดสูง</translation>
 <translation id="8083540854303889870">บันทึกไว้ใช้ภายหลัง</translation>
 <translation id="8091387634532529612">การอัปเดตอัตโนมัติ</translation>
 <translation id="8098591350844501178">หยุดแคสต์หน้าจอไปยัง <ph name="RECEIVER_NAME" /></translation>
@@ -1312,6 +1313,7 @@
 <translation id="851458219935658693">แสดงหน้าต่างจากเดสก์ปัจจุบัน เลือกปุ่มตัวเลือกแล้ว</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ของคุณอาจไม่ชาร์จเมื่อเครื่องเปิดอยู่</translation>
 <translation id="8535393432370007982">เลิกทำการจัดเรียงลำดับตามสี</translation>
+<translation id="8541078764854166027">จัดเฟรมกล้อง</translation>
 <translation id="8542053257095774575">ไม่มีเดสก์หรือเทมเพลตที่บันทึกไว้</translation>
 <translation id="8546059259582788728">เลิกทำการจัดเรียงเรียบร้อยแล้ว</translation>
 <translation id="8551588720239073785">การตั้งค่าวันที่และเวลา</translation>

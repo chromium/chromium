@@ -373,6 +373,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3151786313568798007">Orientare</translation>
 <translation id="3153444934357957346">Conectarea multiplă acceptă maximum <ph name="MULTI_PROFILE_USER_LIMIT" /> conturi.</translation>
 <translation id="3154351730702813399">Este posibil ca administratorul dispozitivului să monitorizeze activitatea de navigare.</translation>
+<translation id="3157931365184549694">Restabilește</translation>
 <translation id="316086887565479535">Aplicații neacceptate în șablon</translation>
 <translation id="3161500364292033097">Închide desktopul și ferestrele</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> aduce dispozitivul <ph name="DEVICE_TYPE" /> la starea anterioară. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
@@ -476,7 +477,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3735740477244556633">Sortează după</translation>
 <translation id="3742055079367172538">Captură de ecran efectuată</translation>
 <translation id="3765841986579723851">Editat astăzi</translation>
-<translation id="3771549900096082774">Mod de contrast ridicat</translation>
 <translation id="3773700760453577392">Un administrator a interzis conectarea multiplă pentru <ph name="USER_EMAIL" />. Toți utilizatorii trebuie să se deconecteze pentru a continua.</translation>
 <translation id="3779139509281456663">Se conectează <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4312840429157639164">Camera foto este aliniată cu colțul din dreapta sus. Conflict cu platforma de sistem.</translation>
 <translation id="4316910396681052118">TOATE APLICAȚIILE</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Ai accesat comanda rapidă de la tastatură pentru contrast ridicat. Vrei să-l activezi?</translation>
 <translation id="4322742403972824594">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în sus s-a schimbat. Pentru a folosi tasta Home, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre stânga.</translation>
 <translation id="4333628967105022692">Lacros nu este acceptat dacă se conectează mai mulți utilizatori.</translation>
 <translation id="4338109981321384717">Lupă</translation>
 <translation id="4351433414020964307">Asistentul se încarcă...</translation>
-<translation id="4356930093361201197">mod de contrast ridicat</translation>
 <translation id="4371348193907997655">Setări pentru proiectare</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %</translation>
 <translation id="4378551569595875038">Se conectează</translation>
@@ -877,7 +875,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5980301590375426705">Ieși ca invitat</translation>
 <translation id="598407983968395253">Folosește șablonul</translation>
 <translation id="598882571027504733">Pentru a obține actualizarea, repornește Chromebookul cu tastatura atașată.</translation>
-<translation id="5992218262414051481">Modul Contrast ridicat este activat. Apasă din nou pe Ctrl + tasta de căutare + H pentru a-l dezactiva.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> din <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Se iese din modul oglindă</translation>
 <translation id="602001110135236999">Derulează la stânga</translation>
@@ -1233,7 +1230,6 @@ Instalare nouă</translation>
 <translation id="8051716679295756675">Șablonul numit <ph name="DESK_TEMPLATE_NAME" /> există deja</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>
 <translation id="8054466585765276473">Se calculează durata bateriei.</translation>
-<translation id="8061464966246066292">Contrast ridicat</translation>
 <translation id="8083540854303889870">Salvate pentru mai târziu</translation>
 <translation id="8091387634532529612">Actualizări automate</translation>
 <translation id="8098591350844501178">Nu mai proiecta ecranul pe dispozitivul <ph name="RECEIVER_NAME" /></translation>

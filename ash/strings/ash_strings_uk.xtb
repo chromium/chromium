@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">Орієнтація</translation>
 <translation id="3153444934357957346">Максимальна кількість паралельних входів в обліковий запис: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Адміністратор пристрою може відстежувати дані веб-перегляду.</translation>
+<translation id="3157931365184549694">Відновити</translation>
 <translation id="316086887565479535">Непідтримувані додатки в шаблоні</translation>
 <translation id="3161500364292033097">Закрити робочий стіл і вікна</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> повертає на пристрої <ph name="DEVICE_TYPE" /> попередню версію. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
 <translation id="3765841986579723851">Змінено сьогодні</translation>
-<translation id="3771549900096082774">Режим високого контрасту</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
 <translation id="3779139509281456663">Підключення пристрою <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">Зображення з камери закріплено у верхньому правому куті, що конфліктує із системною платформою.</translation>
 <translation id="4316910396681052118">УСІ ДОДАТКИ</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Ви натиснули комбінацію клавіш для високого контрасту. Увімкнути?</translation>
 <translation id="4322742403972824594">Комбінацію клавіш Ctrl + Alt + стрілка вгору змінено. Щоб скористатися клавішею Home, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вліво.</translation>
 <translation id="4333628967105022692">Lacros не підтримується, коли вхід здійснено в декілька облікових записів.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">Завантаження Асистента…</translation>
-<translation id="4356930093361201197">режим високого контрасту</translation>
 <translation id="4371348193907997655">Налаштування трансляції</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Підключення…</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">Закрити сеанс гостя</translation>
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
-<translation id="5992218262414051481">Увімкнено режим високого контрасту. Щоб вимкнути його, знову натисніть Ctrl+Search+H.</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Вихід із режиму віддзеркалення</translation>
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">Шаблон <ph name="DESK_TEMPLATE_NAME" /> вже існує</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8054466585765276473">Обчислення часу роботи акумулятора.</translation>
-<translation id="8061464966246066292">Високий контраст</translation>
 <translation id="8083540854303889870">Збережено на потім</translation>
 <translation id="8091387634532529612">Автоматичні оновлення</translation>
 <translation id="8098591350844501178">Зупинити трансляцію екрана на пристрій "<ph name="RECEIVER_NAME" />"</translation>

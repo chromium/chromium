@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">სურვილისამებრ, შეგიძლიათ ეკრანის სექციებს შორის გადაადგილებაც. მაგალითად, შესაძლებელია გამშვებს, თაროსა და თქვენს Chrome ჩანართებს შორის გადაადგილება. შემდეგ სექციაზე გადასასვლელად ოთხი თითით გადაფურცლეთ მარცხნიდან მარჯვნივ. გასაგრძელებლად ცადეთ აღნიშნული კომბინაციის გამოყენება.</translation>
 <translation id="2624431853467395961">სწავლის რეჟიმის გახსნა</translation>
 <translation id="2626530649491650971">დაწკაპუნებადი</translation>
+<translation id="263637551280112393">დააჭირეთ კლავიშთა კომბინაციას Search+Shift+შორისი</translation>
 <translation id="2637227747952042642">მათემატიკა</translation>
 <translation id="2638785836053527382">ჩამოტვირთვა განახლდა <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox-ის მოდიფიკატორი</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">შემდეგი სექცია არ არის</translation>
 <translation id="5368000168321181111">Earcons გამორთულია</translation>
 <translation id="5368505757342402527">ჩამოტვირთულია <ph name="PROGRESS" />% <ph name="FILE_NAME" />. დარჩენილია დაახლოებით <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">ხანგრძლივი დაწკაპუნება</translation>
 <translation id="5400836586163650660">ნაცრისფერი</translation>
 <translation id="5402367795255837559">ბრაილის შრიფტი</translation>
 <translation id="5402791055281059602">გაფრთხილება მოდალურ ფანჯარაში</translation>

@@ -454,6 +454,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="3435465986463792564">Több ablak is meg van nyitva Önnél? Itt kezelheti őket.</translation>
 <translation id="3443221991560634068">Az aktuális oldal újratöltése</translation>
 <translation id="3444179773590444986">Megosztja velünk véleményét a webhelyeknél használt sötét témával kapcsolatban?</translation>
+<translation id="3452832259067974318">Adatai védelme érdekében a Chrome nem tölti ki automatikusan a jelszót ebben a mezőben.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ütemezett letöltés}other{# ütemezett letöltés}}</translation>
 <translation id="3474624961160222204">Folytatás mint <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Kiválaszthatja keresőmotorját</translation>
@@ -679,6 +680,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">A jelszavakat ezen az eszközön menti a rendszer a Jelszókezelőbe.</translation>
 <translation id="4766678251456904326">Fiók hozzáadása az eszközhöz</translation>
+<translation id="4787736314074622408">Törli a következőt: <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Segít a műveletek (pl. fizetés) elvégzésében a weben</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket.

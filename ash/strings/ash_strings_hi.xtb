@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">अभिविन्‍यास</translation>
 <translation id="3153444934357957346">एक से ज़्यादा साइन-इन की सुविधा के लिए आपके पास ज़्यादा से ज़्यादा <ph name="MULTI_PROFILE_USER_LIMIT" /> खाते हो सकते हैं.</translation>
 <translation id="3154351730702813399">डिवाइस व्यवस्थापक आपकी ब्राउज़िंग गतिविधि की निगरानी कर सकता है.</translation>
+<translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="316086887565479535">टेंप्लेट में मौजूद, काम नहीं करने वाले ऐप्लिकेशन</translation>
 <translation id="3161500364292033097">डेस्क और विंडो बंद करें</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, आपके <ph name="DEVICE_TYPE" /> को रोल बैक कर रहा है. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट लिया गया</translation>
 <translation id="3765841986579723851">इसमें, आज बदलाव किया गया था</translation>
-<translation id="3771549900096082774">उच्च कंट्रास्ट मोड</translation>
 <translation id="3773700760453577392">किसी एडमिन ने <ph name="USER_EMAIL" /> के लिए एक से ज़्यादा 'साइन इन' नामंज़ूर कर दिए हैं.
 जारी रखने के लिए सभी उपयोगकर्ताओं को साइन आउट करना होगा.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> कनेक्ट हो रहा है</translation>
@@ -577,12 +577,10 @@
 <translation id="4312840429157639164">कैमरा इनपुट की झलक, अब ऊपर दाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="4316910396681052118">सभी ऐप्लिकेशन</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">आपने 'हाई कंट्रास्ट' का कीबोर्ड शॉर्टकट दबाया है. क्या आप इसे चालू करना चाहते हैं?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Home बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + लेफ़्ट ऐरो दबाएं.</translation>
 <translation id="4333628967105022692">अगर एक से ज़्यादा उपयोगकर्ताओं ने साइन इन किया हो, तो Lacros काम नहीं करता.</translation>
 <translation id="4338109981321384717">आवर्धक ग्लास</translation>
 <translation id="4351433414020964307">Assistant सेवा लोड हो रही है...</translation>
-<translation id="4356930093361201197">ज़्यादा कॉन्ट्रास्ट (हाई कॉन्ट्रास्ट) वाला मोड</translation>
 <translation id="4371348193907997655">कास्ट करने की सेटिंग</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत है</translation>
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
@@ -878,7 +876,6 @@
 <translation id="5980301590375426705">मेहमान मोड से निकलें</translation>
 <translation id="598407983968395253">टेंप्लेट का इस्तेमाल करें</translation>
 <translation id="598882571027504733">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करें.</translation>
-<translation id="5992218262414051481">हाई कंट्रास्ट मोड चालू है. उसे टॉगल करने के लिए फिर से Ctrl+Search+H दबाएं.</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> में से <ph name="SELECTED_PAGE" /> पेज</translation>
 <translation id="6018164090099858612">मिरर मोड से बाहर निकाला जा रहा है</translation>
 <translation id="602001110135236999">बाईं ओर स्क्रोल करें</translation>
@@ -1234,7 +1231,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम का टेंप्लेट पहले से मौजूद है</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8054466585765276473">बैटरी समय की गणना की जा रही है.</translation>
-<translation id="8061464966246066292">उच्च स्क्रीन की रोशनी</translation>
 <translation id="8083540854303889870">बाद के लिए सेव किया गया</translation>
 <translation id="8091387634532529612">अपने-आप होने वाले अपडेट</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> को स्‍क्रीन कास्‍ट करना बंद करें</translation>

@@ -78,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
 <translation id="1722687688096767818">Потребителският профил се добавя...</translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> елемента бяха преместени в кошчето</translation>
 <translation id="1729953886957086472">Немски (Германия)</translation>
 <translation id="1730235522912993863">Китайски (цандзие)</translation>
 <translation id="1731889557567069540">Копирахте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Няма елементи, съответстващи на &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Информация</translation>
 <translation id="2902734494705624966">Американска разширена клавиатура</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> елемента се преместват в кошчето</translation>
 <translation id="290843123675549676">Маратхи</translation>
 <translation id="2923240520113693977">естонски</translation>
 <translation id="2938685643439809023">монголски</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Пица</translation>
 <translation id="5081517858322016911">Ще бъдат изтрити файлове, заемащи <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> елемента се преместват в(ъв) „<ph name="FOLDER_NAME" />“</translation>
+<translation id="5092200349368278146">Преместихте <ph name="FILE_NAME" /> в кошчето</translation>
 <translation id="509429900233858213">Възникна грешка.</translation>
 <translation id="5098629044894065541">иврит</translation>
 <translation id="5102922915594634436">Управление на синхронизираните папки</translation>
@@ -561,6 +564,7 @@
 <translation id="5845721951356578987">Медицинска сестра</translation>
 <translation id="5861477046012235702">Геймър</translation>
 <translation id="5864471791310927901">Търсенето на DHCP сървър не бе успешно</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> се премества в кошчето</translation>
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="5911887972742538906">Възникна грешка при инсталирането на приложението за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>

@@ -78,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ സിപ്പ് ചെയ്യുന്നു...</translation>
 <translation id="1722687688096767818">പ്രൊഫെെൽ ചേർക്കുന്നു...</translation>
 <translation id="1726100011689679555">നെയിം സെർവറുകൾ</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="1729953886957086472">ജർമ്മൻ (ജർമ്മനി)</translation>
 <translation id="1730235522912993863">ചൈനീസ് സാങ്‌ചി</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തി.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">ഇനങ്ങളൊന്നും &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; എന്നതുമായി പൊരുത്തപ്പെടുന്നില്ല്ല</translation>
 <translation id="2894654529758326923">വിവരം</translation>
 <translation id="2902734494705624966">യുഎസ് വിപുലീകൃതം</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കുന്നു</translation>
 <translation id="290843123675549676">മറാഠി</translation>
 <translation id="2923240520113693977">എസ്റ്റോണിയന്‍</translation>
 <translation id="2938685643439809023">മംഗോളിയന്‍</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">പിസ്സ</translation>
 <translation id="5081517858322016911">ഫയലുകളിൽ <ph name="TOTAL_FILE_SIZE" /> ഇല്ലാതാക്കപ്പെടും</translation>
 <translation id="508423945471810158"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ നീക്കുന്നു</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="509429900233858213">ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5098629044894065541">ഹീബ്രു</translation>
 <translation id="5102922915594634436">സമന്വയിപ്പിച്ച ഫോൾഡറുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -561,6 +564,7 @@
 <translation id="5845721951356578987">നഴ്‌സ്</translation>
 <translation id="5861477046012235702">ഗെയിമർ</translation>
 <translation id="5864471791310927901">DHCP തിരയൽ പരാജയപ്പെട്ടു</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കുന്നു</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, സജീവമാക്കിയിട്ടില്ല, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="5911887972742538906">നിങ്ങളുടെ Linux ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്ന സമയത്ത് ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="5912396950572065471">ഫോർമാറ്റ്</translation>

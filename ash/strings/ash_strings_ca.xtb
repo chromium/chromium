@@ -373,6 +373,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3151786313568798007">Orientació</translation>
 <translation id="3153444934357957346">Només pots tenir <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes com a màxim en un inici de sessió múltiple.</translation>
 <translation id="3154351730702813399">És possible que l'administrador del dispositiu supervisi l'activitat de navegació.</translation>
+<translation id="3157931365184549694">Restaura</translation>
 <translation id="316086887565479535">Aplicacions no admeses a la plantilla</translation>
 <translation id="3161500364292033097">Tanca l'escriptori i les finestres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> està tornant el dispositiu <ph name="DEVICE_TYPE" /> a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
@@ -476,7 +477,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3735740477244556633">Ordena per</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
 <translation id="3765841986579723851">Editat avui</translation>
-<translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
 <translation id="3779139509281456663">S'estan connectant els <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4312840429157639164">La càmera s'ha ajustat a l'extrem superior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="4316910396681052118">TOTES LES APLICACIONS</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Has premut la tecla de drecera de l'alt contrast. Vols activar-lo?</translation>
 <translation id="4322742403972824594">La tecla de drecera Ctrl+Alt+fletxa amunt ha canviat. Per fer servir la tecla d'inici, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa esquerra.</translation>
 <translation id="4333628967105022692">Lacros no s'admet quan hi ha diversos usuaris amb la sessió iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">L'Assistent s'està carregant...</translation>
-<translation id="4356930093361201197">Mode d'alt contrast</translation>
 <translation id="4371348193907997655">Configuració d'emissió</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />; intensitat del senyal: <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connectant...</translation>
@@ -877,7 +875,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
 <translation id="598407983968395253">Utilitza la plantilla</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
-<translation id="5992218262414051481">El mode d'alt contrast està activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
 <translation id="6012623610530968780">Pàgina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">S'està sortint del mode de mirall</translation>
 <translation id="602001110135236999">Desplaça't cap a l'esquerra</translation>
@@ -1230,7 +1227,6 @@ Instal·lació nova</translation>
 <translation id="8051716679295756675">La plantilla anomenada <ph name="DESK_TEMPLATE_NAME" /> ja existeix</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
-<translation id="8061464966246066292">Contrast alt</translation>
 <translation id="8083540854303889870">Desat per a més tard</translation>
 <translation id="8091387634532529612">Actualitzacions automàtiques</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>

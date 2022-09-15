@@ -78,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> element sıxılır...</translation>
 <translation id="1722687688096767818">Profil əlavə edilir...</translation>
 <translation id="1726100011689679555">Ad serverləri</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> element Zibil qutusuna köçürüldü</translation>
 <translation id="1729953886957086472">Alman (Almaniya)</translation>
 <translation id="1730235522912993863">Çin dili (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> element kopyalanıb.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Heç bir element &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; məhsuluna uyğun gəlmədi.</translation>
 <translation id="2894654529758326923">Məlumat</translation>
 <translation id="2902734494705624966">Genişlənmiş ABŞ klaviaturası</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> element Zibil qutusuna köçürülür</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Eston</translation>
 <translation id="2938685643439809023">Monqolca</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> həcmində fayllar silinəcək</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> element <ph name="FOLDER_NAME" /> qovluğuna köçürülür</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> Zibil qutusuna köçürüldü</translation>
 <translation id="509429900233858213">Xəta baş verdi.</translation>
 <translation id="5098629044894065541">İvrit</translation>
 <translation id="5102922915594634436">Sinxronlaşdırılmış qovluqları idarə edin</translation>
@@ -560,6 +563,7 @@
 <translation id="5845721951356578987">Tibb bacısı</translation>
 <translation id="5861477046012235702">Oyunçu</translation>
 <translation id="5864471791310927901">DHCP axtarış uğursuz oldu</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> Zibil qutusuna köçürülür</translation>
 <translation id="5896749729057314184">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivdir, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="5911887972742538906">Linux tətbiqi quraşdırılan zaman xəta baş verdi.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -662,6 +666,7 @@
 <translation id="6874758081814639712">Tay-çi ilə məşğul olan adam</translation>
 <translation id="6876155724392614295">Velosiped</translation>
 <translation id="6878261347041253038">Devanaqari klaviaturası (fonetik)</translation>
+<translation id="6881853403185175088">Ofis</translation>
 <translation id="6885780034956018177">İlbiz</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6898028766943174120">Digər alt qovluqlar...</translation>

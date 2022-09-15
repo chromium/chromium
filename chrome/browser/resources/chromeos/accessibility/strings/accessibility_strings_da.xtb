@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Du kan også navigere mellem sektioner på en skærm. Du kan f.eks. navigere mellem applisten, hylden og dine Chrome-faner. Hvis du vil gå til næste sektion, skal du stryge fra venstre mod højre med fire fingre. Prøv det nu for at fortsætte.</translation>
 <translation id="2624431853467395961">Åbn indlæringstilstanden</translation>
 <translation id="2626530649491650971">klikbart</translation>
+<translation id="263637551280112393">Tryk på søgetasten + Shift + mellemrumstasten</translation>
 <translation id="2637227747952042642">Matematik</translation>
 <translation id="2638785836053527382">Download af <ph name="FILE_NAME" /> er genoptaget</translation>
 <translation id="2639750663247012216">Ændringstast til ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Der er ikke flere afsnit</translation>
 <translation id="5368000168321181111">Earcons fra</translation>
 <translation id="5368505757342402527"><ph name="PROGRESS" /> % af download af <ph name="FILE_NAME" /> er fuldført. Der er ca. <ph name="TIME" /> <ph name="UNITS" /> tilbage.</translation>
+<translation id="5381388086899614489">langt klik</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">En modal advarsel</translation>

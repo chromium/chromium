@@ -2521,6 +2521,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3325910708063135066">Mae'r camera a'r meicroffon wedi'u diffodd yn Dewisiadau System Mac</translation>
 <translation id="3327050066667856415">Mae Chromebooks wedi'u dylunio ar gyfer diogelwch. Mae eich dyfais wedi'i hamddiffyn rhag drwgwedd yn awtomatig - does dim angen meddalwedd ychwanegol.</translation>
 <translation id="3328489342742826322">Bydd adfer o gopi wrth gefn yn dileu apiau a data Linux sydd eisoes yn bodoli yn eich ffolder ffeiliau Linux.</translation>
+<translation id="3329013043687509092">Dirlawnder</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Gwybodaeth yr ap</translation>
 <translation id="3333190335304955291">Gallwch ddiffodd y gwasanaeth hwn yn y Gosodiadau.</translation>
@@ -3307,6 +3308,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4050534976465737778">Gwnewch yn siŵr bod y ddwy ddyfais wedi'u datgloi, yn agos at ei gilydd, a bod Bluetooth wedi'i droi ymlaen. Os ydych yn rhannu â Chromebook nad yw yn eich cysylltiadau, gwnewch yn siŵr bod ganddo Gwelededd Gerllaw wedi ei droi ymlaen (agorwch yr ardal statws, yna trowch Gwelededd Gerllaw ymlaen). <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Bach iawn</translation>
 <translation id="4054070260844648638">Yn weladwy i bawb</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Rydych wedi cyrraedd y terfyn amser y mae eich rhiant wedi'i osod ar gyfer yr ap <ph name="APP_NAME" /> yn Chrome. Gallwch ei ddefnyddio am <ph name="TIME_LIMIT" /> yfory.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Gweld yn Store</translation>
@@ -3844,7 +3846,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4579876313423027742">Am hysbysiadau porwr, ewch i <ph name="LINK_BEGIN" />Osodiadau Porwr Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Mewngofnodwch i Reolwr Cyfrineiriau Google eto</translation>
 <translation id="4580596421317071374">Mae cyfrineiriau'n cael eu cadw o dan <ph name="GOOGLE_PASSWORD_MANAGER" /> ar y ddyfais hon.</translation>
-<translation id="4580626299762849806">Methu â mewnforio cyfrineiriau. Gwiriwch <ph name="FILENAME" /> a gwnewch yn siŵr ei fod wedi'i fformatio'n gywir.</translation>
 <translation id="4581774856936278355">Bu gwall wrth adfer Linux</translation>
 <translation id="4582297591746054421">Mae gwefannau fel arfer yn darllen eich clipfwrdd ar gyfer nodweddion megis cadw fformat y testun y gwnaethoch ei gopïo</translation>
 <translation id="4582563038311694664">Ailosod pob gosodiad</translation>

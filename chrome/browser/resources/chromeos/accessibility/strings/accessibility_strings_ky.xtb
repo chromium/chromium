@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Экрандагы бөлүмдөрдүн арасында да өтө аласыз. Мисалы, жүргүзгүч, текче жана Chrome өтмөктөрүнүн арасында да өтө аласыз. Кийинки бөлүмгө өтүү үчүн төрт манжаңыз менен солдон оңго сүрүңүз. Улантуу үчүн азыр аткарып көрүңүз.</translation>
 <translation id="2624431853467395961">Үйрөнүү режимин ачуу</translation>
 <translation id="2626530649491650971">чыкылдатылуучу</translation>
+<translation id="263637551280112393">Search+Shift+Space баскычтарын басыңыз</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> жүктөп алуу улантылууда</translation>
 <translation id="2639750663247012216">ChromeVox өзгөрткүчү</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Кийинки бөлүм жок</translation>
 <translation id="5368000168321181111">Кулак кагыштар өчүк</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> файлынын <ph name="PROGRESS" />% жүктөлүп алынды. Болжол менен <ph name="TIME" /> <ph name="UNITS" /> калды.</translation>
+<translation id="5381388086899614489">коё бербей басып туруу</translation>
 <translation id="5400836586163650660">Боз</translation>
 <translation id="5402367795255837559">Брайл</translation>
 <translation id="5402791055281059602">Модалдык эскертүү</translation>

@@ -78,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை ஜிப் செய்கிறது...</translation>
 <translation id="1722687688096767818">சுயவிவரத்தைச் சேர்க்கிறது...</translation>
 <translation id="1726100011689679555">பெயர் சேவையகங்கள்</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் 'நீக்கியவை' ஃபோல்டருக்கு நகர்த்தப்பட்டன</translation>
 <translation id="1729953886957086472">ஜெர்மன் (ஜெர்மனி)</translation>
 <translation id="1730235522912993863">சீனம் (கான்ஜி)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் /கோப்பகங்கள் நகலெடுக்கப்பட்டன.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; உடன் பொருந்தும் உருப்படிகள் எதுவுமில்லை</translation>
 <translation id="2894654529758326923">தகவல்</translation>
 <translation id="2902734494705624966">யு.எஸ். விரிவாக்கப்பட்டது</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் 'நீக்கியவை' ஃபோல்டருக்கு நகர்த்தப்படுகின்றன</translation>
 <translation id="290843123675549676">மராத்தி</translation>
 <translation id="2923240520113693977">எஸ்தோனியன்</translation>
 <translation id="2938685643439809023">மங்கோலியன்</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">பீட்சா</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> அளவுள்ள ஃபைல்கள்  நீக்கப்படும்</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் /ஃபோல்டர்களை <ph name="FOLDER_NAME" />க்கு நகர்த்துகிறது</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> 'நீக்கியவை' ஃபோல்டருக்கு நகர்த்தப்பட்டது</translation>
 <translation id="509429900233858213">பிழை ஏற்பட்டது.</translation>
 <translation id="5098629044894065541">ஹீப்ரு</translation>
 <translation id="5102922915594634436">ஒத்திசைத்த ஃபோல்டர்களை நிர்வகி</translation>
@@ -561,6 +564,7 @@
 <translation id="5845721951356578987">செவிலியர்</translation>
 <translation id="5861477046012235702">கேமர்</translation>
 <translation id="5864471791310927901">DHCP பார்வையிடுதல் தோல்வி</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> 'நீக்கியவை' ஃபோல்டருக்கு நகர்த்தப்படுகிறது</translation>
 <translation id="5896749729057314184">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="5911887972742538906">உங்கள் Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது.</translation>
 <translation id="5912396950572065471">ஃபார்மேட்</translation>
@@ -663,6 +667,7 @@
 <translation id="6874758081814639712">டாய் ச்சீ செய்யும் நபர்</translation>
 <translation id="6876155724392614295">பைக்</translation>
 <translation id="6878261347041253038">தேவநாகரி கீபோர்டு (ஒலிப்புமுறை)</translation>
+<translation id="6881853403185175088">Office</translation>
 <translation id="6885780034956018177">நத்தை</translation>
 <translation id="6896758677409633944">நகலெடு</translation>
 <translation id="6898028766943174120">மேலும் துணை ஃபோல்டர்கள்...</translation>

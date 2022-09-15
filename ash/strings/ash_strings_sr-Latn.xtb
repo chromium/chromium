@@ -373,6 +373,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3151786313568798007">Položaj</translation>
 <translation id="3153444934357957346">Možete da imate najviše <ph name="MULTI_PROFILE_USER_LIMIT" /> naloga za višestruko prijavljivanje.</translation>
 <translation id="3154351730702813399">Administrator uređaja može da prati aktivnosti pregledanja.</translation>
+<translation id="3157931365184549694">Ponovo otvori</translation>
 <translation id="316086887565479535">Nepodržane aplikacije u šablonu</translation>
 <translation id="3161500364292033097">Zatvorite radnu površinu i prozore</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vraća <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se resetovati i svi podaci će biti izbrisani.</translation>
@@ -476,7 +477,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3735740477244556633">Sortiraj prema</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3765841986579723851">Izmenjeno danas</translation>
-<translation id="3771549900096082774">Režim visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator je zabranio višestruko prijavljivanje za <ph name="USER_EMAIL" />. Svi korisnici moraju da se odjave da bismo nastavili sa sesijom.</translation>
 <translation id="3779139509281456663">Povezuje se <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -577,12 +577,10 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4312840429157639164">Kamera je uklopljena u gornji desni ugao. Neusaglašenost sa površinom sistema.</translation>
 <translation id="4316910396681052118">SVE APLIKACIJE</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Pritisnuli ste tastersku prečicu za visoki kontrast. Želite li da je uključite?</translation>
 <translation id="4322742403972824594">Tasterska prečica Ctrl + Alt + strelica nagore je promenjena. Da biste koristili taster Home, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nalevo.</translation>
 <translation id="4333628967105022692">Lacros nije podržan kada je prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Pomoćnik se učitava...</translation>
-<translation id="4356930093361201197">režim visokog kontrasta</translation>
 <translation id="4371348193907997655">Podešavanja prebacivanja</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, jačina signala <ph name="SIGNAL_STRENGTH" /> posto</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
@@ -878,7 +876,6 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5980301590375426705">Zatvori kao gost</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastasturom.</translation>
-<translation id="5992218262414051481">Režim visokog kontrasta je omogućen. Pritisnite Ctrl + taster za pretragu + H ponovo da biste ga isključili.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Izlazak iz režima sa preslikavanjem</translation>
 <translation id="602001110135236999">Pomeri nalevo</translation>
@@ -1234,7 +1231,6 @@ Novo instaliranje</translation>
 <translation id="8051716679295756675">Šablon pod naslovom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>
 <translation id="8052898407431791827">Kopirano je u privremenu memoriju</translation>
 <translation id="8054466585765276473">Izračunavanje vremena trajanja baterije.</translation>
-<translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8083540854303889870">Sačuvano za kasnije</translation>
 <translation id="8091387634532529612">Automatska ažuriranja</translation>
 <translation id="8098591350844501178">Zaustavi prebacivanje ekrana na <ph name="RECEIVER_NAME" /></translation>

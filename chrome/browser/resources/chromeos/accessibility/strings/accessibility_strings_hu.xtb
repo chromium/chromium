@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">A képernyő szakaszai között is mozoghat. Lépkedhet például az indító, a polc és a Chrome-lapok között. A következő szakaszhoz lépéshez csúsztasson balról jobbra négy ujjával. Próbálja ki most a folytatáshoz.</translation>
 <translation id="2624431853467395961">Tanuló mód megnyitása</translation>
 <translation id="2626530649491650971">rákattintható</translation>
+<translation id="263637551280112393">Nyomja le a Keresés + Shift + szóköz billentyűkombinációt</translation>
 <translation id="2637227747952042642">Matematika</translation>
 <translation id="2638785836053527382">A következő letöltése folytatódik: <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox módosítógomb</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Nincs következő szakasz</translation>
 <translation id="5368000168321181111">Hangjelzések kikapcsolva</translation>
 <translation id="5368505757342402527"><ph name="PROGRESS" />%-ban kész a következő letöltése: <ph name="FILE_NAME" />. Körülbelül <ph name="TIME" /> <ph name="UNITS" /> van hátra.</translation>
+<translation id="5381388086899614489">hosszú kattintás</translation>
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Modális riasztás</translation>

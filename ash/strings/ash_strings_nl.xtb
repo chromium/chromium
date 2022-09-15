@@ -373,6 +373,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3151786313568798007">Stand</translation>
 <translation id="3153444934357957346">Je kunt maximaal <ph name="MULTI_PROFILE_USER_LIMIT" /> accounts hebben in Toegang tot meerdere accounts.</translation>
 <translation id="3154351730702813399">De apparaatbeheerder kan je browseactiviteit controleren.</translation>
+<translation id="3157931365184549694">Herstellen</translation>
 <translation id="316086887565479535">Niet-ondersteunde apps in template</translation>
 <translation id="3161500364292033097">Bureau en vensters sluiten</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> zet je <ph name="DEVICE_TYPE" /> terug naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
@@ -476,7 +477,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
 <translation id="3765841986579723851">Vandaag bewerkt</translation>
-<translation id="3771549900096082774">Modus voor hoog contrast</translation>
 <translation id="3773700760453577392">Een beheerder heeft geen toestemming gegeven voor toegang tot meerdere accounts voor <ph name="USER_EMAIL" />. Alle gebruikers moeten uitloggen om door te gaan.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> koppelen</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4312840429157639164">Camera uitgelijnd op de rechterbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="4316910396681052118">ALLE APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Je hebt op de sneltoets voor hoog contrast gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="4322742403972824594">De sneltoets Ctrl + Alt + pijl-omhoog is veranderd. Als je de toets Home wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-links.</translation>
 <translation id="4333628967105022692">Lacros wordt niet ondersteund terwijl er meerdere gebruikers zijn ingelogd.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
 <translation id="4351433414020964307">Assistent wordt geladen...</translation>
-<translation id="4356930093361201197">modus voor hoog contrast</translation>
 <translation id="4371348193907997655">Cast-instellingen</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
@@ -877,7 +875,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5980301590375426705">Gastsessie sluiten</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
-<translation id="5992218262414051481">De modus voor hoog contrast staat aan. Druk nogmaals op Ctrl+Zoeken+H om deze uit te zetten.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>
@@ -1230,7 +1227,6 @@ Nieuwe installatie</translation>
 <translation id="8051716679295756675">Er bestaat al een template met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Gekopieerd naar klembord</translation>
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
-<translation id="8061464966246066292">Hoog contrast</translation>
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
 <translation id="8091387634532529612">Automatische updates</translation>
 <translation id="8098591350844501178">Schermcast naar <ph name="RECEIVER_NAME" /> stopzetten</translation>

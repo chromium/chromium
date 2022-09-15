@@ -1161,6 +1161,7 @@
 <translation id="208634871997892083">始终开启的 VPN</translation>
 <translation id="2087822576218954668">打印：<ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">安装 <ph name="DEVICE_OS" /> 后才能注册。</translation>
+<translation id="2089090684895656482">收起</translation>
 <translation id="208928984520943006">从屏幕底部向上滑动即可随时回到主屏幕。</translation>
 <translation id="2089566709556890888">使用 Google Chrome 进行安全浏览</translation>
 <translation id="2089795179672254991">当网站想查看复制到剪贴板的文字和图片时询问您（推荐）</translation>
@@ -2495,6 +2496,7 @@
 <translation id="3325910708063135066">已在 Mac 系统偏好设置中关闭摄像头和麦克风</translation>
 <translation id="3327050066667856415">Chromebook 旨在确保安全。您的设备会自动防范恶意软件 - 无需安装其他软件。</translation>
 <translation id="3328489342742826322">使用备份进行恢复会致使系统删除您“Linux 文件”文件夹中的现有 Linux 应用和数据。</translation>
+<translation id="3329013043687509092">饱和度</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">应用信息</translation>
 <translation id="3333190335304955291">您可在“设置”中关闭此服务。</translation>
@@ -3280,6 +3282,7 @@
 <translation id="4050534976465737778">请确保这两部设备均已解锁、相距很近且均已开启蓝牙。如果您的分享对象是一部不在您通讯录中的 Chromebook，请确保已为它开启“附近分享”的高可见度模式（先打开状态区，然后开启“附近分享”的高可见度模式）。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4054070260844648638">对所有人可见</translation>
+<translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4056908315660577142">您已达到您家长为 Chrome 应用“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">在应用店中查看</translation>
@@ -3814,7 +3817,6 @@
 <translation id="4579876313423027742">若要设置浏览器通知，请转到 <ph name="LINK_BEGIN" />Chrome 浏览器设置<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">请重新登录 Google 密码管理工具</translation>
 <translation id="4580596421317071374">系统会将密码保存到此设备上的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
-<translation id="4580626299762849806">无法导入密码。请检查 <ph name="FILENAME" /> 并确保其格式无误。</translation>
 <translation id="4581774856936278355">恢复 Linux 容器时出错</translation>
 <translation id="4582297591746054421">网站通常会读取您的剪贴板内容以实现某些功能（例如保留您所复制文字的格式）</translation>
 <translation id="4582563038311694664">重置所有设置</translation>

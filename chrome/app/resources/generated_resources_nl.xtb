@@ -1168,6 +1168,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="208634871997892083">Always-on VPN</translation>
 <translation id="2087822576218954668">Afdrukken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Inschrijving wordt alleen ondersteund nadat je <ph name="DEVICE_OS" /> hebt geïnstalleerd.</translation>
+<translation id="2089090684895656482">Minder</translation>
 <translation id="208928984520943006">Je kunt het startscherm op elk moment openen door vanaf de onderkant omhoog te swipen.</translation>
 <translation id="2089566709556890888">Beveiligd browsen met Google Chrome</translation>
 <translation id="2089795179672254991">Vragen wanneer een site de tekst en afbeeldingen wil bekijken die naar het klembord zijn gekopieerd (aanbevolen)</translation>
@@ -2503,6 +2504,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3325910708063135066">Camera en microfoon staan uit in Systeemvoorkeuren van je Mac</translation>
 <translation id="3327050066667856415">Chromebooks zijn ontworpen voor beveiliging. Je apparaat is automatisch beveiligd tegen malware. Je hebt geen extra software nodig.</translation>
 <translation id="3328489342742826322">Als je herstelt vanuit een back-up, worden bestaande Linux-apps en gegevens in je map met Linux-bestanden verwijderd.</translation>
+<translation id="3329013043687509092">Verzadiging</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">App-informatie</translation>
 <translation id="3333190335304955291">Je kunt deze service in Instellingen uitzetten.</translation>
@@ -3289,6 +3291,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4050534976465737778">Zorg dat beide apparaten zijn ontgrendeld, bij elkaar in de buurt zijn en dat bluetooth aanstaat. Als je content deelt met een Chromebook die niet in je contacten staat, zorg je dat 'Dichtbij aan' aanstaat (open het statusgedeelte en selecteer dan Dichtbij aan). <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Heel klein</translation>
 <translation id="4054070260844648638">Zichtbaar voor iedereen</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Je hebt de tijdslimiet bereikt die je ouder heeft ingesteld voor de <ph name="APP_NAME" />-app voor Chrome. Je kunt de app morgen <ph name="TIME_LIMIT" /> gebruiken.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Bekijken in de Web Store</translation>
@@ -3537,6 +3540,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4306119971288449206">Apps moeten worden weergegeven met inhoudstype '<ph name="CONTENT_TYPE" />'</translation>
 <translation id="4307992518367153382">Basisinstellingen</translation>
 <translation id="4309165024397827958">Geef Android-apps en -services met locatierechten toestemming de locatie van je apparaat te gebruiken. Google kan periodiek geanonimiseerde locatiegegevens verzamelen en gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren.</translation>
+<translation id="4309183709806093061">Systeemaudio ook delen. Dit apparaat wordt uitgezet om audiofeedback te voorkomen.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K live)</translation>
 <translation id="4310132194679586591">Selecteer een app op je apparaat om deze link te openen</translation>
 <translation id="4310139701823742692">Bestand heeft een onjuiste indeling. Controleer het PPD-bestand en probeer het opnieuw.</translation>
@@ -3824,7 +3828,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4579876313423027742">Ga voor browsermeldingen naar <ph name="LINK_BEGIN" />Chrome-browserinstellingen<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Log weer in bij Google Wachtwoordmanager</translation>
 <translation id="4580596421317071374">Wachtwoorden worden opgeslagen in <ph name="GOOGLE_PASSWORD_MANAGER" /> op dit apparaat.</translation>
-<translation id="4580626299762849806">Kan wachtwoorden niet importeren. Check of <ph name="FILENAME" /> de juiste indeling heeft.</translation>
 <translation id="4581774856936278355">Fout bij het herstellen van Linux</translation>
 <translation id="4582297591746054421">Sites lezen je klembord meestal voor functies zoals behoud van opmaak van de tekst die je hebt gekopieerd</translation>
 <translation id="4582563038311694664">Alle instellingen opnieuw instellen</translation>
@@ -4549,6 +4552,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5305145881844743843">Account wordt beheerd door <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Bron niet ondersteund</translation>
 <translation id="5307386115243749078">Bluetooth-schakelaar koppelen</translation>
+<translation id="5307958609248661362">Time-out voor Google Wachtwoordmanager</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5309418307557605830">De Google Assistent werkt hier ook</translation>
 <translation id="5311304534597152726">Inloggen als</translation>
@@ -7340,6 +7344,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7988805580376093356">Houd je OS en voer <ph name="DEVICE_OS" /> uit via USB.</translation>
 <translation id="7991296728590311172">Instellingen voor Toegang via schakelaar</translation>
 <translation id="7992203134935383159">Spraaksynthese</translation>
+<translation id="799570308305997052">Webweergave</translation>
 <translation id="7997826902155442747">Procesprioriteit</translation>
 <translation id="7999229196265990314">De volgende bestanden zijn gemaakt:
 

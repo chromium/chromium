@@ -373,6 +373,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3151786313568798007">Orientering</translation>
 <translation id="3153444934357957346">Du kan högst använda <ph name="MULTI_PROFILE_USER_LIMIT" /> konton för multiinloggning.</translation>
 <translation id="3154351730702813399">Enhetsadministratören kan övervaka din webbaktivitet.</translation>
+<translation id="3157931365184549694">Återställ</translation>
 <translation id="316086887565479535">Appar som inte stöds i mallen</translation>
 <translation id="3161500364292033097">Stäng skrivbord och fönster</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> återställer din <ph name="DEVICE_TYPE" /> till en tidigare version. Enheten återställs och all data raderas.</translation>
@@ -476,7 +477,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3735740477244556633">Sortera efter</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3765841986579723851">Redigerades i dag</translation>
-<translation id="3771549900096082774">Högkontrastläge</translation>
 <translation id="3773700760453577392">En administratör har förbjudit multiinloggning för <ph name="USER_EMAIL" />. Alla användare måste logga ut för att fortsätta.</translation>
 <translation id="3779139509281456663">Ansluter <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4312840429157639164">Kameran har fästs i det övre högra hörnet. Konflikt med systemyta.</translation>
 <translation id="4316910396681052118">ALLA APPAR</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Du tryckte på kortkommandot för högkontrastläge. Vill du aktivera funktionen?</translation>
 <translation id="4322742403972824594">Kortkommandot Ctrl + Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" /> tangenten + vänsterpil för att använda Home-tangenten.</translation>
 <translation id="4333628967105022692">Det finns inget stöd för Lacros när flera användare är inloggade.</translation>
 <translation id="4338109981321384717">Förstoringsglas</translation>
 <translation id="4351433414020964307">Assistenten läses in …</translation>
-<translation id="4356930093361201197">högkontrastläge</translation>
 <translation id="4371348193907997655">Inställningar för att casta</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Ansluter ...</translation>
@@ -877,7 +875,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
-<translation id="5992218262414051481">Högkontrastläget har aktiverats. Tryck på Ctrl+Sök+H igen om du vill inaktivera det.</translation>
 <translation id="6012623610530968780">Sida <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
 <translation id="602001110135236999">Scrolla åt vänster</translation>
@@ -1233,7 +1230,6 @@ Nyligen installerad</translation>
 <translation id="8051716679295756675">Det finns redan en mall som heter <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopierat till urklipp</translation>
 <translation id="8054466585765276473">Batteritiden beräknas.</translation>
-<translation id="8061464966246066292">Hög kontrast</translation>
 <translation id="8083540854303889870">Har sparats till senare</translation>
 <translation id="8091387634532529612">Automatiska uppdateringar</translation>
 <translation id="8098591350844501178">Sluta casta skärmen till <ph name="RECEIVER_NAME" /></translation>

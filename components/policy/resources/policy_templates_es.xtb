@@ -110,6 +110,7 @@
 <translation id="1099282607296956954">Habilitar el aislamiento de todos los sitios web</translation>
 <translation id="1100840127293327071">No marcar la opción de conservar los datos de navegación previos de forma predeterminada</translation>
 <translation id="1105572260329131950">Usar iconos predeterminados en el caso de las conexiones seguras</translation>
+<translation id="1105711894873068933">Después de que se inhabilite <ph name="LACROS_NAME" />, se eliminarán todos los datos de usuario al realizar el siguiente inicio de sesión.</translation>
 <translation id="1107538157073168076">Inhabilitar extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1117535567637097036">Los controladores de protocolo configurados a través de esta política no se utilizan al procesar los intents de Android.</translation>
@@ -2581,6 +2582,7 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       ponerse en contacto con Quirks Server para descargar los archivos de configuración.
 
       Si a esta política se le asigna el valor "True" o no se le asigna ninguno, <ph name="PRODUCT_OS_NAME" /> se pondrá en contacto automáticamente con Quirks Server, descargará los archivos de configuración (si están disponibles) y los almacenará en el dispositivo.  Estos archivos pueden utilizarse, por ejemplo, para mejorar la calidad de la pantalla de los monitores conectados.</translation>
+<translation id="351654132746710200">Después de que se inhabilite <ph name="LACROS_NAME" />, no se realizará ninguna migración de datos. Se eliminará la carpeta <ph name="LACROS_NAME" /> y los usuarios seguirán utilizando los datos restantes.</translation>
 <translation id="3522257170445891912">El flujo de autenticación de inicio de sesión puede ser de dos formas diferentes, en función del valor que se le asigne a esta política:
 
       Si se le asigna el valor GAIA, el inicio de sesión se hace a través del flujo de autenticación normal de GAIA.
@@ -3373,6 +3375,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si no se le asigna ningún valor, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> se aplicará en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de URL válidos, visita el sitio https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, a partir de la versión M85 no se admiten en esta política los patrones con los comodines "*" y "[*.]" en el host.</translation>
+<translation id="4369307906396795087">Las secuencias de comandos de workers (web workers, service workers, etc.) utilizan la comprobación poco estricta de tipos de MIME. Las secuencias de comandos de workers que tengan tipos de MIME antiguos, como <ph name="MIMETYPE_TEXT_ASCII" />, funcionarán.</translation>
 <translation id="4370937370030117032">Inhabilitar el envío de nombres de usuario y de archivo a impresoras nativas</translation>
 <translation id="4372704773119750918">No permitir que el usuario de empresa forme parte de la función de varios perfiles (usuario principal o secundario)</translation>
 <translation id="4377599627073874279">Permitir que todos los sitios muestren todas las imágenes</translation>
@@ -4191,6 +4194,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se establece esta política, los usuarios que utilicen el desbloqueo rápido deben introducir su contraseña en la pantalla de bloqueo cada día.</translation>
 <translation id="5306186200045823863">Confiar en la infraestructura de PKI antigua de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo Incógnito</translation>
+<translation id="5308551343115571396">Después de que se inhabilite <ph name="LACROS_NAME" />, intentaremos conservar tantos datos de usuario como sea posible y eliminaremos todos los datos del navegador.</translation>
 <translation id="5311275381462687162">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> predeterminada</translation>
 <translation id="5312253627576569499">Porcentaje de ajuste del retraso de atenuación de pantalla cuando se observa la actividad del usuario con la pantalla atenuada o poco después de que esta se haya desactivado</translation>
 <translation id="5317852436044398288">Si se establece la política, se podrá definir una lista de los patrones de URL que pueden usar la captura de ventanas y pestañas.
@@ -4334,6 +4338,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se le asigna ningún valor, el usuario podrá controlar la visibilidad de las tarjetas. Las tarjetas serán visibles de forma predeterminada.
       </translation>
+<translation id="5448022937220253000">Elige qué ocurrirá con los datos de usuario después de que se inhabilite <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API Event.path estará disponible.</translation>
 <translation id="5455609857202311243">Ignorar la aprobación de políticas de KDC durante la autenticación de HTTP</translation>
 <translation id="5455888515928026628">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
@@ -6420,6 +6425,11 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si se habilita esta política o no se establece, se activará la conversión de unidades de Respuestas rápidas.
       Si se inhabilita esta política, no se activará la conversión de unidades de Respuestas rápidas.</translation>
+<translation id="7582095958259051083">Si se habilita esta política, la recogida de datos anónima con clave de URL, que envía las URL de las páginas que el usuario visita a Google para mejorar las búsquedas y la navegación, siempre estará activa.
+
+      Si se inhabilita la política, no se realizará la recogida de datos anónima con clave de URL.
+
+      Si no se establece la política, el usuario podrá cambiar este ajuste manualmente.</translation>
 <translation id="7587345076013230465">Pedir al usuario que seleccione el certificado de cliente cuando la política de selección automática encuentre coincidencias con varios certificados en la pantalla de inicio de sesión</translation>
 <translation id="7587921466180902617">Habilitar dogfood de Grabación de pantalla para usuarios de Family Link</translation>
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
@@ -7131,6 +7141,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8337114537412769126">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar sugerencias con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda de sugerencias se enviarán mediante el método GET.</translation>
+<translation id="8337961007759352651">Las secuencias de comandos de workers (web workers, service workers, etc.) requieren un tipo de MIME de JavaScript, como <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Las secuencias de comandos de workers que tengan tipos de MIME antiguos, como <ph name="MIMETYPE_TEXT_ASCII" />, se rechazarán.</translation>
 <translation id="8339089771335211509">WebRTC solo usará la interfaz al conectarse a una red pública, y no se conectará a través de direcciones IP privadas.</translation>
 <translation id="8339420913453596618">Segundo factor inhabilitado</translation>
 <translation id="8344454543174932833">Importa los marcadores desde el navegador predeterminado en la primera ejecución.</translation>
@@ -7407,6 +7418,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8634062512783775032">Usa <ph name="AES_KL_NAME" /> como algoritmo de cifrado para el cifrado del almacenamiento de los datos del usuario, si se admite</translation>
 <translation id="8637566476051166626">Puertos de red con permiso explícito</translation>
 <translation id="8643838501942693770">Habilitar las cookies de terceros, pero permitir al usuario cambiar este ajuste</translation>
+<translation id="864611373241249369">Después de inhabilitar <ph name="LACROS_NAME" />, intentaremos migrar todos los datos.</translation>
 <translation id="8648844602494595665">Esta política controla el uso del icono del candado en el omnibox.
        A partir de Chrome M93, hay un icono nuevo en el omnibox que se usa en el caso de las conexiones seguras.
        Si se habilita esta política, Chrome usará el icono del candado actual en el caso de las conexiones seguras.
@@ -7439,12 +7451,23 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
 
       Las URLs de esta política no deben entrar en conflicto con las de la política <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. En caso de conflicto, esta política prevalece sobre <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="8667754887193084187">Esta política habilita la comprobación estricta de tipos de MIME para secuencias de comandos de workers.
+
+      Si la política se habilita o no se establece, las secuencias de comandos de workers utilizarán la comprobación estricta de tipos de MIME para JavaScript, que es el nuevo comportamiento predeterminado. Las secuencias de comandos de workers con tipos de MIME antiguos se rechazarán.
+
+      Si se inhabilita la política, las secuencias de comandos de workers utilizarán una comprobación poco estricta de tipos de MIME, de manera que las secuencias de comandos de workers con tipos de MIME antiguos, como <ph name="MIMETYPE_TEXT_ASCII" />, se seguirán cargando y ejecutando.
+
+      Tradicionalmente, los navegadores han utilizado la comprobación poco estricta de tipos de MIME, por lo que se admitían recursos con varios tipos de MIME antiguos. Por ejemplo, en los recursos de JavaScript, <ph name="MIMETYPE_TEXT_ASCII" /> es un tipo de MIME antiguo compatible. Esto puede ocasionar problemas de seguridad, ya que permite que se carguen recursos como secuencias de comandos que nunca se han concebido para utilizarse como tales. Chrome empezará a utilizar la comprobación estricta de tipos de MIME próximamente. Si la política está habilitada, se hará un seguimiento del comportamiento predeterminado. Si está inhabilitada, los administradores podrán conservar el comportamiento antiguo si así lo desean.
+
+      Consulta https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage para obtener información sobre los tipos de medios JavaScript/ECMAScript.
+      </translation>
 <translation id="8669313549017524373">Si se le asigna el valor RestoreOnStartupIsURLs a <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />, al establecer <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> en una lista de URLs, se especificarán las URL que se abren.
 
       Si no se le asigna ningún valor, la página Nueva pestaña se abrirá al iniciar el navegador.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="8671119576957984818">Habilitar el centro para compartir escritorio</translation>
+<translation id="8671193325113134911">Habilitar la comprobación estricta de tipos de MIME para secuencias de comandos de workers</translation>
 <translation id="8671314659400112135">Si esta política se habilita o no se establece, se permitirá que <ph name="PRODUCT_NAME" /> aplique la mitigación de seguridad de puntos de extensión adicionales para bloquear puntos de extensión antiguos en el proceso del navegador.
 
       Si esta política se inhabilita, se reducirán la seguridad y la estabilidad de <ph name="PRODUCT_NAME" />, ya que se podría cargar código desconocido y potencialmente hostil en el proceso del navegador de <ph name="PRODUCT_NAME" />. Por ello, esta política solo debe inhabilitarse si hay problemas de compatibilidad con un software de terceros que deba ejecutarse en el proceso del navegador de <ph name="PRODUCT_NAME" />.
@@ -7816,6 +7839,9 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si no se asigna ningún valor a esta política, no se aplicará la selección automática en ningún sitio web.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="906349948439898016">WebSQL está habilitado en contextos no seguros de forma predeterminada a partir de la versión M105, pero puede inhabilitarse mediante una marca de Chrome.
+          Si se asigna el valor false a esta política o no se le asigna ninguno, se podrá inhabilitar WebSQL en contextos no seguros.
+          Si se le asigna el valor true, WebSQL no se podrá inhabilitar.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="9069588907259547232">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre el volumen de audio del dispositivo.
 

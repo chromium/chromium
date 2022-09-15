@@ -1165,6 +1165,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="208634871997892083">Durchgehend aktives VPN</translation>
 <translation id="2087822576218954668">Drucken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Die Anmeldung wird erst nach der Installation von <ph name="DEVICE_OS" /> unterstützt.</translation>
+<translation id="2089090684895656482">Weniger</translation>
 <translation id="208928984520943006">Du kannst jederzeit von unten nach oben wischen, um den Startbildschirm aufzurufen.</translation>
 <translation id="2089566709556890888">Sicher surfen mit Google Chrome</translation>
 <translation id="2089795179672254991">Nachfragen, wenn eine Website Texte und Bilder aus der Zwischenablage abrufen möchte (empfohlen)</translation>
@@ -2500,6 +2501,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3325910708063135066">Kamera und Mikrofon wurden in den Mac-Systemeinstellungen ausgeschaltet</translation>
 <translation id="3327050066667856415">Chromebooks sind auf Sicherheit ausgelegt. Dein Gerät ist automatisch vor Malware geschützt – ganz ohne zusätzliche Software.</translation>
 <translation id="3328489342742826322">Bei der Wiederherstellung aus einer Sicherung werden bestehende Linux-Anwendungen und -Daten in deinen Linux-Dateiordnern gelöscht.</translation>
+<translation id="3329013043687509092">Sättigung</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">App-Info</translation>
 <translation id="3333190335304955291">Du kannst diesen Dienst in den Einstellungen deaktivieren.</translation>
@@ -3286,6 +3288,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4050534976465737778">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn du Inhalte mit einem Chromebook teilen möchtest, das sich nicht in deinen Kontakten befindet, muss die Nearby-Sichtbarkeit aktiviert sein. Öffne dazu den Statusbereich und schalte „Nearby-Sichtbarkeit“ ein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Winzig</translation>
 <translation id="4054070260844648638">Für alle sichtbar</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Du hast das Zeitlimit erreicht, das deine Eltern für die Chrome-App <ph name="APP_NAME" /> festgelegt haben. Morgen kannst du die App wieder <ph name="TIME_LIMIT" /> lang nutzen.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Im Store ansehen</translation>
@@ -3535,6 +3538,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4306119971288449206">Für Apps muss der Inhaltstyp "<ph name="CONTENT_TYPE" />" bereitgestellt werden</translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
 <translation id="4309165024397827958">Android-Apps und -Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erfassen und diese zur Verbesserung der Standortgenauigkeit und standortbasierter Dienste verwenden.</translation>
+<translation id="4309183709806093061">Auch Audio des Systems teilen. Dieses Gerät wird stummgeschaltet, um eine Rückkopplung zu verhindern.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
 <translation id="4310132194679586591">Wähle eine App auf deinem Gerät aus, um diesen Link zu öffnen</translation>
 <translation id="4310139701823742692">Die Datei hat das falsche Format. Prüfe die PPD-Datei und versuche es noch einmal.</translation>
@@ -3822,7 +3826,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4579876313423027742">Die Browserbenachrichtigungen findest du in den <ph name="LINK_BEGIN" />Chrome-Browsereinstellungen<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Melde dich wieder im Google Passwortmanager an</translation>
 <translation id="4580596421317071374">Passwörter werden auf diesem Gerät im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
-<translation id="4580626299762849806">Import der Passwörter nicht möglich. Prüfe, ob <ph name="FILENAME" /> richtig formatiert ist.</translation>
 <translation id="4581774856936278355">Fehler beim Wiederherstellen von Linux</translation>
 <translation id="4582297591746054421">Websites lesen normalerweise die Zwischenablage aus, um Funktionen wie die Beibehaltung der Formatierung von Texten in der Zwischenablage umzusetzen</translation>
 <translation id="4582563038311694664">Alle Einstellungen zurücksetzen</translation>
@@ -4548,6 +4551,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5305145881844743843">Dieses Konto wird von <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> verwaltet</translation>
 <translation id="5307030433605830021">Quelle nicht unterstützt</translation>
 <translation id="5307386115243749078">Bluetooth-Schalter koppeln</translation>
+<translation id="5307958609248661362">Zeitüberschreitung beim Google Passwortmanager</translation>
 <translation id="5308380583665731573">Verbinden</translation>
 <translation id="5309418307557605830">Google Assistant funktioniert hier auch</translation>
 <translation id="5311304534597152726">Anmeldung als</translation>
@@ -7343,6 +7347,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7988805580376093356">Behalte dein Betriebssystem und führe <ph name="DEVICE_OS" /> über USB aus.</translation>
 <translation id="7991296728590311172">Einstellungen für Schalterzugriff</translation>
 <translation id="7992203134935383159">Sprachsynthese</translation>
+<translation id="799570308305997052">Webansicht</translation>
 <translation id="7997826902155442747">Prozesspriorität</translation>
 <translation id="7999229196265990314">Folgende Dateien wurden erstellt:
         

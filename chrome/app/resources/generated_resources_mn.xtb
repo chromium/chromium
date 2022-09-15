@@ -1176,6 +1176,7 @@
 <translation id="208634871997892083">Үргэлж асаалттай VPN</translation>
 <translation id="2087822576218954668">Хэвлэх: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Бүртгэлийг зөвхөн таныг <ph name="DEVICE_OS" />-г суулгасны дараа дэмждэг.</translation>
+<translation id="2089090684895656482">Хумих</translation>
 <translation id="208928984520943006">Үндсэн нүүр лүү хүссэн үедээ очихын тулд доороос дээш шударна.</translation>
 <translation id="2089566709556890888">Google Chrome-р аюулгүй хайгаарай</translation>
 <translation id="2089795179672254991">Сайт түр санах ойд хуулсан текст, зургийг харах хүсэлтэй үед асуух (санал болгосон)</translation>
@@ -2514,6 +2515,7 @@
 <translation id="3325910708063135066">Камер болон микрофоныг Mac-н системийн сонголтод унтраасан байна</translation>
 <translation id="3327050066667856415">Chromebook-г аюулгүй байдалд зориулж бүтээсэн. Таны төхөөрөмж хортой кодоос автоматаар хамгаалагддаг бөгөөд нэмэлт программ хангамж шаардлагагүй.</translation>
 <translation id="3328489342742826322">Нөөцлөлтөөс сэргээх нь таны Linux-н файлын фолдерт байгаа Linux-н апп болон өгөгдлийг устгана.</translation>
+<translation id="3329013043687509092">Өнгөний нэвчилт</translation>
 <translation id="3331321258768829690">( <ph name="UTCOFFSET" /> ) <ph name="LONGTZNAME" /> ( <ph name="EXEMPLARCITY" /> )</translation>
 <translation id="3331974543021145906">Аппликейшний мэдээлэл...</translation>
 <translation id="3333190335304955291">Та энэ үйлчилгээг Тохиргоо хэсэгт унтраах боломжтой.</translation>
@@ -3299,6 +3301,7 @@
 <translation id="4050534976465737778">Хоёр төхөөрөмжийн түгжээг хоёуланг нь тайлсан эсэх, хоорондоо ойрхон эсэх, Bluetooth-г нь асаасан эсэхээ шалгана уу. Хэрэв та өөрийн харилцагчдад байхгүй Chromebook-тэй хуваалцаж байвал энэ нь Ойролцоо харагдцыг асаасан эсэхийг шалгана уу (төлөв байдал илэрхийлэгчийг нээж, дараа нь Ойролцоо харагдцыг асаана уу). <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Өчүүхэн</translation>
 <translation id="4054070260844648638">Бүх хүнд харагдана</translation>
+<translation id="4056223980640387499">Сепиа</translation>
 <translation id="4056908315660577142">Та <ph name="APP_NAME" /> Chrome апп дээр таны эцэг эхийн тохируулсан цагийн хязгаарт хүрсэн байна. Та түүнийг маргааш <ph name="TIME_LIMIT" />-н турш ашиглах боломжтой.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Дэлгүүрт харах</translation>
@@ -3837,7 +3840,6 @@
 <translation id="4579876313423027742">Хөтчийн мэдэгдэл авах бол <ph name="LINK_BEGIN" />Chrome хөтийн тохиргоо<ph name="LINK_END" /> руу очно уу</translation>
 <translation id="4580587929153007251">Google Нууц үгний менежерт дахин нэвтэрнэ үү</translation>
 <translation id="4580596421317071374">Нууц үгнүүдийг энэ төхөөрөмж дээрх <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгалсан.</translation>
-<translation id="4580626299762849806">Нууц үгнүүдийг импортлох боломжгүй байна. <ph name="FILENAME" />-г шалгаад зөв форматалсан эсэхийг шалгана уу.</translation>
 <translation id="4581774856936278355">Linux-г сэргээхэд алдаа гарлаа</translation>
 <translation id="4582297591746054421">Сайтууд ихэвчлэн таны хуулсан текстийн форматыг хадгалах зэрэг онцлогуудад зориулж таны түр санах ойг уншдаг</translation>
 <translation id="4582563038311694664">Бүх тохиргоог дахин тохируулах</translation>

@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">방향</translation>
 <translation id="3153444934357957346">멀티 로그인에는 계정을 <ph name="MULTI_PROFILE_USER_LIMIT" />개까지만 사용할 수 있습니다.</translation>
 <translation id="3154351730702813399">기기 관리자가 탐색 활동을 모니터링할 수 있습니다.</translation>
+<translation id="3157931365184549694">복구</translation>
 <translation id="316086887565479535">템플릿에 지원되지 않는 앱이 있습니다</translation>
 <translation id="3161500364292033097">데스크 및 창 닫기</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백 중입니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">정렬 기준</translation>
 <translation id="3742055079367172538">찍은 스크린샷</translation>
 <translation id="3765841986579723851">오늘 수정됨</translation>
-<translation id="3771549900096082774">고대비 모드</translation>
 <translation id="3773700760453577392">관리자가 <ph name="USER_EMAIL" />의 멀티 로그인을 허용하지 않습니다. 계속하려면 모든 사용자가 로그아웃해야 합니다.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> 연결 중</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="4316910396681052118">모든 앱</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">고대비 단축키를 누르셨습니다. 사용 설정할까요?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + 위쪽 화살표 단축키가 변경되었습니다. Home 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 왼쪽 화살표 키를 누르세요.</translation>
 <translation id="4333628967105022692">Lacros는 여러 사용자가 로그인된 상태에서 지원되지 않습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
 <translation id="4351433414020964307">어시스턴트 로드 중...</translation>
-<translation id="4356930093361201197">고대비 모드</translation>
 <translation id="4371348193907997655">전송 설정</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />퍼센트</translation>
 <translation id="4378551569595875038">연결 중...</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">게스트 세션 종료</translation>
 <translation id="598407983968395253">템플릿 사용</translation>
 <translation id="598882571027504733">업데이트하려면 키보드가 연결된 상태로 Chromebook을 다시 시작하세요.</translation>
-<translation id="5992218262414051481">고대비 모드가 사용 설정되었습니다. 사용 중지하려면 다시 Ctrl+Search+H를 누르세요.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" />페이지</translation>
 <translation id="6018164090099858612">미러링 모드 종료 중</translation>
 <translation id="602001110135236999">왼쪽으로 스크롤</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">이름이 <ph name="DESK_TEMPLATE_NAME" />인 템플릿이 이미 있습니다.</translation>
 <translation id="8052898407431791827">클립보드에 복사됨</translation>
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>
-<translation id="8061464966246066292">고대비</translation>
 <translation id="8083540854303889870">저장된 항목</translation>
 <translation id="8091387634532529612">자동 업데이트</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />에 화면 전송 중지</translation>

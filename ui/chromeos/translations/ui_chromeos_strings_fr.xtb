@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="1722687688096767818">Ajout du profil…</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés vers la corbeille</translation>
 <translation id="1729953886957086472">Allemand (Allemagne)</translation>
 <translation id="1730235522912993863">Chinois (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> éléments copiés.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Aucun élément ne correspond à votre recherche ("<ph name="SEARCH_STRING" />").</translation>
 <translation id="2894654529758326923">Informations</translation>
 <translation id="2902734494705624966">Étendu américain</translation>
+<translation id="2906052776158021882">Déplacement de <ph name="NUMBER_OF_ITEMS" /> éléments vers la corbeille…</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonien</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> de fichiers seront supprimés</translation>
 <translation id="508423945471810158">Transfert de <ph name="NUMBER_OF_ITEMS" /> éléments vers <ph name="FOLDER_NAME" />…</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> déplacé vers la corbeille</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
 <translation id="5098629044894065541">Hébreu</translation>
 <translation id="5102922915594634436">Gérer les dossiers synchronisés</translation>
@@ -561,6 +564,7 @@
 <translation id="5845721951356578987">Personnel de santé</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
+<translation id="5887342613489958822">Déplacement de <ph name="FILE_NAME" /> vers la corbeille…</translation>
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, désactivé, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
 <translation id="5912396950572065471">Format</translation>

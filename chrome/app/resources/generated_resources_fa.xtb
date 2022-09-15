@@ -1177,6 +1177,7 @@
 <translation id="208634871997892083">‏VPN همیشه فعال</translation>
 <translation id="2087822576218954668">چاپ: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">ثبت‌نام فقط پس‌از نصب <ph name="DEVICE_OS" /> پشتیبانی می‌شود.</translation>
+<translation id="2089090684895656482">کمتر</translation>
 <translation id="208928984520943006">هرزمان خواستید به «صفحه اصلی» بروید، از پایین صفحه تند به‌سمت بالا بکشید.</translation>
 <translation id="2089566709556890888">‏با Google Chrome ایمن مرور کنید</translation>
 <translation id="2089795179672254991">وقتی سایتی می‌خواهد به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند، سؤال شود (توصیه می‌شود)</translation>
@@ -2515,6 +2516,7 @@
 <translation id="3325910708063135066">‏در «اولویت‌های سیستم Mac»، دوربین و میکروفون خاموش‌اند</translation>
 <translation id="3327050066667856415">‏دستگاه‌های Chromebook برای امنیت طراحی شده‌اند. دستگاه شما دربرابر بدافزار به‌طور خودکار محافظت می‌شود – بدون نیاز به نرم‌افزار اضافی.</translation>
 <translation id="3328489342742826322">‏با بازیابی از داده‌های پشتیبان‌گیری‌شده، برنامه‌ها و داده‌های Linux موجود در پوشه فایل‌های Linux حذف خواهد شد.</translation>
+<translation id="3329013043687509092">اشباع رنگ</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">اطلاعات برنامه</translation>
 <translation id="3333190335304955291">می‌توانید این سرویس را در تنظیمات خاموش کنید.</translation>
@@ -3301,6 +3303,7 @@
 <translation id="4050534976465737778">‏مطمئن شوید قفل هر دو دستگاه باز باشد، نزدیک یکدیگر باشند، و بلوتوث آن‌ها روشن باشد. اگر دستگاه Chromebook که با آن هم‌رسانی می‌کنید در مخاطبین شما نیست، مطمئن شوید «نمایان برای اطراف» در آن روشن باشد (ناحیه نشانگر وضعیت را باز کنید، سپس «نمایان برای اطراف» را روشن کنید). <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">بسیار کوچک</translation>
 <translation id="4054070260844648638">نمایان برای همه</translation>
+<translation id="4056223980640387499">سپیا</translation>
 <translation id="4056908315660577142">‏به حداکثر زمانی که ولی‌تان برای برنامه Chrome‏ <ph name="APP_NAME" /> تنظیم کرده است رسیده‌اید. می‌توانید فردا به‌مدت <ph name="TIME_LIMIT" /> از آن استفاده کنید.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">مشاهده در فروشگاه</translation>
@@ -3838,7 +3841,6 @@
 <translation id="4579876313423027742">‏برای اعلان‌های مرور، به <ph name="LINK_BEGIN" />تنظیمات مرورگر Chrome<ph name="LINK_END" /> بروید</translation>
 <translation id="4580587929153007251">‏دوباره به سیستم «مدیر گذرواژه Google» وارد شوید</translation>
 <translation id="4580596421317071374">گذرواژه‌ها در <ph name="GOOGLE_PASSWORD_MANAGER" /> در این دستگاه ذخیره می‌شود.</translation>
-<translation id="4580626299762849806">گذرواژه‌ها وارد نشد. <ph name="FILENAME" /> را بررسی کنید و مطمئن شوید درست قالب‌بندی شده باشد.</translation>
 <translation id="4581774856936278355">‏خطا هنگام بازیابی Linux</translation>
 <translation id="4582297591746054421">سایت‌ها معمولاً بریده‌دان را برای ارائه ویژگی‌هایی مانند حفظ قالب نوشتاری که کپی می‌کنید می‌خوانند</translation>
 <translation id="4582563038311694664">بازنشانی همه تنظیمات</translation>

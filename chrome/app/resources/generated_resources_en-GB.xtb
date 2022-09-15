@@ -1180,6 +1180,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="208634871997892083">Always-on VPN</translation>
 <translation id="2087822576218954668">Print: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Enrolment is only supported after you install <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Less</translation>
 <translation id="208928984520943006">To get to the home screen at any time, swipe up from the bottom.</translation>
 <translation id="2089566709556890888">Browse safely with Google Chrome</translation>
 <translation id="2089795179672254991">Ask when a site wants to see text and images copied to the clipboard (recommended)</translation>
@@ -2518,6 +2519,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3325910708063135066">Camera and microphone are turned off in Mac System Preferences</translation>
 <translation id="3327050066667856415">Chromebooks are designed for security. Your device is protected from malware automatically – no extra software required.</translation>
 <translation id="3328489342742826322">Restoring from a backup will delete existing Linux applications and data in your Linux files folder.</translation>
+<translation id="3329013043687509092">Saturation</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">App info</translation>
 <translation id="3333190335304955291">You can turn this service off in settings.</translation>
@@ -3304,6 +3306,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4050534976465737778">Make sure that both devices are unlocked, close together and have Bluetooth turned on. If you’re sharing with a Chromebook not in your contacts, make sure that it has Nearby visibility turned on (open the status area, then turn on Nearby visibility). <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Tiny</translation>
 <translation id="4054070260844648638">Visible to everyone</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">You reached the time limit that your parent set for <ph name="APP_NAME" /> Chrome app. You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">View in Store</translation>
@@ -3842,7 +3845,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4579876313423027742">For browser notifications, go to <ph name="LINK_BEGIN" />Chrome browser settings<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Sign back in to Google Password Manager</translation>
 <translation id="4580596421317071374">Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> on this device.</translation>
-<translation id="4580626299762849806">Can't import passwords. Check <ph name="FILENAME" /> and make sure that it's formatted correctly.</translation>
 <translation id="4581774856936278355">Error while restoring Linux</translation>
 <translation id="4582297591746054421">Sites usually read your clipboard for features like keeping the formatting of text that you copied</translation>
 <translation id="4582563038311694664">Reset all settings</translation>

@@ -1168,6 +1168,7 @@
 <translation id="208634871997892083">‏ہمیشہ آن VPN</translation>
 <translation id="2087822576218954668">پرنٹ کریں: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> انسٹال کرنے کے بعد ہی اندراج تعاون یافتہ ہوتا ہے۔</translation>
+<translation id="2089090684895656482">کم</translation>
 <translation id="208928984520943006">کسی بھی وقت ہوم اسکرین پر جانے کے لیے، نیچے سے اوپر کی طرف سوائپ کریں۔</translation>
 <translation id="2089566709556890888">‏Google Chrome کے ساتھ محفوظ طریقے سے براؤز کریں</translation>
 <translation id="2089795179672254991">جب کوئی سائٹ کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھنا چاہے تو پوچھیں (تجویز کردہ)</translation>
@@ -2505,6 +2506,7 @@
 <translation id="3325910708063135066">‏Mac سسٹم کی ترجیحات میں کیمرا اور مائیکروفون آف ہیں</translation>
 <translation id="3327050066667856415">‏Chromebooks سیکیورٹی کے لئے ڈیزائن کیے گئے ہیں۔ آپ کا آلہ میلوئیر سے خود کار طور پر محفوظ ہے - کسی اضافی سافٹ ویئر کی ضرورت نہیں ہے۔</translation>
 <translation id="3328489342742826322">‏بیک اپ سے بحال کرنے سے آپ کے Linux فائلز کے فولڈر موجود ڈیٹا اور موجود Linux ایپلیکیشنز حذف ہو جائیں گی۔</translation>
+<translation id="3329013043687509092">سیرابی</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ایپ کی معلومات</translation>
 <translation id="3333190335304955291">آپ اس سروس کو ترتیبات میں جا کر آف کر سکتے ہیں۔</translation>
@@ -3291,6 +3293,7 @@
 <translation id="4050534976465737778">‏یہ یقینی بنائیں کہ دونوں آلات غیر مقفل ہیں، وہ ایک دوسرے کے قریب ہیں اور ان کے بلوٹوتھ آن ہیں۔ اگر آپ کسی ایسے Chromebook کے ساتھ اشتراک کر رہے ہیں جو آپ کے رابطوں میں نہیں ہے تو یہ یقینی بنائیں کہ اس میں قریبی آلات کی مرئیت آن ہے (اسٹیٹس ایریا کھولیں، پھر قریبی آلات کی مرئیت کا انتخاب کریں)۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">چھوٹا</translation>
 <translation id="4054070260844648638">ہر کسی کیلئے مرئی</translation>
+<translation id="4056223980640387499">سیپیا</translation>
 <translation id="4056908315660577142">‏<ph name="APP_NAME" /> Chrome ایپ کے لیے آپ کے والدین کی سیٹ کی ہوئی آپ کی وقت کی حد پوری ہو گئی۔ اب آپ اسے <ph name="TIME_LIMIT" /> تک کل استعمال کر سکتے ہیں۔</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">اسٹور میں دیکھیں</translation>
@@ -3827,7 +3830,6 @@
 <translation id="4579876313423027742">‏براؤزر کی اطلاعات کے لیے، <ph name="LINK_BEGIN" />Chrome براؤزر کی ترتیبات<ph name="LINK_END" /> پر جائیں</translation>
 <translation id="4580587929153007251">‏Google پاس ورڈ مینیجر میں دوبارہ سائن ان کریں</translation>
 <translation id="4580596421317071374">اس آلے پر پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہوتے ہیں۔</translation>
-<translation id="4580626299762849806">پاس ورڈز درآمد کرنے سے قاصر۔ <ph name="FILENAME" /> چیک کریں اور یقینی بنائیں کہ اسے درست طریقے سے فارمیٹ کیا گیا ہے۔</translation>
 <translation id="4581774856936278355">‏Linux کو بحال کرنے کے دوران خرابی</translation>
 <translation id="4582297591746054421">آپ کے کاپی کردہ ٹیکسٹ کی فارمیٹنگ برقرار رکھنے جیسی خصوصیات کے لیے سائٹس عام طور پر آپ کی کلپ بورڈ پڑھتی ہیں</translation>
 <translation id="4582563038311694664">سبھی ترتیبات کو دوبارہ سیٹ کریں</translation>

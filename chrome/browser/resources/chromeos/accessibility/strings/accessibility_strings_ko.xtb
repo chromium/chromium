@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">또한 화면의 섹션 간에 이동할 수 있습니다. 예를 들어 런처, 실행기, Chrome 탭 간에 이동할 수 있습니다. 다음 섹션으로 이동하려면 네 손가락을 왼쪽에서 오른쪽으로 스와이프하세요. 계속하려면 지금 해 보세요.</translation>
 <translation id="2624431853467395961">학습 모드 열기</translation>
 <translation id="2626530649491650971">clickable</translation>
+<translation id="263637551280112393">검색+Shift+스페이스바 누르세요</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> 다운로드가 다시 시작되었습니다</translation>
 <translation id="2639750663247012216">ChromeVox 특수키</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">다음 섹션이 없습니다</translation>
 <translation id="5368000168321181111">이어콘 사용 안함</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> 다운로드가 <ph name="PROGRESS" />% 완료되었으며 약 <ph name="TIME" /><ph name="UNITS" /> 남았습니다</translation>
+<translation id="5381388086899614489">길게 클릭</translation>
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5402367795255837559">점자</translation>
 <translation id="5402791055281059602">모달 알림</translation>

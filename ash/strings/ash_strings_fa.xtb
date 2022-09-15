@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">جهت‌‌</translation>
 <translation id="3153444934357957346">در ورود چندگانه به سیستم، می‌توانید حداکثر از <ph name="MULTI_PROFILE_USER_LIMIT" /> حساب استفاده کنید.</translation>
 <translation id="3154351730702813399">سرپرست دستگاه ممکن است فعالیت مرور شما را پایش کند</translation>
+<translation id="3157931365184549694">بازیابی</translation>
 <translation id="316086887565479535">برنامه‌های پشتیبانی‌نشده در الگو</translation>
 <translation id="3161500364292033097">بستن میزکار و پنجره‌ها</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> درحال تنزل دادن <ph name="DEVICE_TYPE" /> است. دستگاهتان بازنشانی و همه داده‌ها حذف خواهد شد.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
 <translation id="3765841986579723851">امروز ویرایش شده است</translation>
-<translation id="3771549900096082774">حالت تضاد بالا</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
 <translation id="3779139509281456663">درحال اتصال <ph name="NAME" /></translation>
 <translation id="3783640748446814672">دگرساز</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">دوربین به گوشه بالا سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="4316910396681052118">همه برنامه‌ها</translation>
 <translation id="4321179778687042513">مهار</translation>
-<translation id="4321776623976362024">میان‌بر صفحه‌کلید مربوط به کنتراست بالا را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="4322742403972824594">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه اصلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای چپ» را فشار دهید.</translation>
 <translation id="4333628967105022692">‏وقتی چند کاربر به سیستم وارد شده باشند، از Lacros پشتیبانی نمی‌شود.</translation>
 <translation id="4338109981321384717">ذره‌بین</translation>
 <translation id="4351433414020964307">دستیار درحال بار کردن است...</translation>
-<translation id="4356930093361201197">حالت تضاد بالا</translation>
 <translation id="4371348193907997655">تنظیمات پخش محتوا</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
 <translation id="4378551569595875038">در حال اتصال..</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">خروج از مهمان</translation>
 <translation id="598407983968395253">استفاده از الگو</translation>
 <translation id="598882571027504733">‏برای دریافت به‌روزرسانی، Chromebook را با صفحه‌کلید متصل بازراه‌اندازی کنید.</translation>
-<translation id="5992218262414051481">‏«حالت تضاد بالا» فعال شد. برای خاموش کردن آن، Ctrl+Search+H را دوباره فشار دهید.</translation>
 <translation id="6012623610530968780">صفحه <ph name="SELECTED_PAGE" /> از <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">خروج از حالت آینه</translation>
 <translation id="602001110135236999">پیمایش به چپ</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">الگویی با نام <ph name="DESK_TEMPLATE_NAME" /> ازقبل وجود دارد</translation>
 <translation id="8052898407431791827">در بریده‌دان کپی شد</translation>
 <translation id="8054466585765276473">درحال محاسبه زمان شارژ باتری.</translation>
-<translation id="8061464966246066292">کنتراست بالا</translation>
 <translation id="8083540854303889870">برای بعد ذخیره شده است</translation>
 <translation id="8091387634532529612">به‌روزرسانی‌های خودکار</translation>
 <translation id="8098591350844501178">توقف ارسال محتوای صفحه به <ph name="RECEIVER_NAME" /></translation>

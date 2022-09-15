@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">अभिमुखीकरण</translation>
 <translation id="3153444934357957346">तपाईंसँग बहुविध साइन-इनमा <ph name="MULTI_PROFILE_USER_LIMIT" /> सम्म खाताहरू मात्रै हुन सक्छ।</translation>
 <translation id="3154351730702813399">यन्त्रको प्रशासकले तपाईंको ब्राउजिङ सम्बन्धी गतिविधिको अनुगमन गर्न सक्छ।</translation>
+<translation id="3157931365184549694">पुन: भण्डारण</translation>
 <translation id="316086887565479535">टेम्प्लेटमा प्रयोग गर्न नमिल्ने एपहरू छन्</translation>
 <translation id="3161500364292033097">डेस्क तथा विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तपाईंको <ph name="DEVICE_TYPE" /> मा अघिल्लो संस्करण रिस्टोर गर्दै छ। तपाईंको डिभाइस रिसेट हुने छ र डिभाइसमा भएका सबै डेटा मेटाइने छ।</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">यसअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3742055079367172538">स्क्रिनसट लिइयो</translation>
 <translation id="3765841986579723851">आज सम्पादन गरिएको</translation>
-<translation id="3771549900096082774">उच्च कन्ट्रास्ट मोड</translation>
 <translation id="3773700760453577392">कुनै प्रशासकले <ph name="USER_EMAIL" /> बाट एकभन्दा बढी साइन इन गर्ने अनुमति दिनुभएको छैन। जारी राख्न सबै प्रयोगकर्ताहरूले अनिवार्य रूपमा साइन आउट गर्नु पर्छ।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> कनेक्ट गरिँदै छ</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">क्यामेरा सिरानको दायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="4316910396681052118">सबै एपहरू</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">तपाईंले उच्च कन्ट्रास्ट मोडको किबोर्ड सर्टकट थिच्नुभयो। तपाईं यसलाई सक्रिय गर्न चाहनुहुन्छ?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + अप एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Home की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + लेफ्ट एरो थिच्नुहोस्।</translation>
 <translation id="4333628967105022692">एकभन्दा बढी प्रयोगकर्ताहरू साइन इन अवस्थामा हुँदा Lacros ले काम गर्दैन।</translation>
 <translation id="4338109981321384717">म्याग्निफाइङ्ग ग्लास</translation>
 <translation id="4351433414020964307">सहायक लोड हुँदैछ...</translation>
-<translation id="4356930093361201197">उच्च कन्ट्रास्ट मोड</translation>
 <translation id="4371348193907997655">कास्टका सेटिङहरू</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत छ</translation>
 <translation id="4378551569595875038">जडान गर्दै...</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">अतिथि सत्रबाट निस्कनु…</translation>
 <translation id="598407983968395253">टेम्प्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="598882571027504733">अद्यावधिक प्राप्त गर्न, उक्त किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook पुनः सुरु गर्नुहोस्।</translation>
-<translation id="5992218262414051481">उच्च कन्ट्रास्ट मोड सक्षम गरिएको छ। यसलाई टगल गर्दै निष्क्रिय पार्न फेरि Ctrl+Search+H थिच्नुहोस्।</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> मध्ये <ph name="SELECTED_PAGE" /> पृष्ठ</translation>
 <translation id="6018164090099858612">मिरर मोडबाट बाहिर निस्कँदै</translation>
 <translation id="602001110135236999">बायाँतिर स्क्रोल गर्नुहोस्</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम गरेको टेम्प्लेट पहिल्यैदेखि छ</translation>
 <translation id="8052898407431791827">कपी गरेर क्लिपबोर्डमा पेस्ट गरियो</translation>
 <translation id="8054466585765276473">ब्याटरि समय हिसाब गर्दै।</translation>
-<translation id="8061464966246066292">उच्च कन्ट्रास्ट</translation>
 <translation id="8083540854303889870">पछि खरिद गर्नका लागि सेभ गरिएका वस्तु</translation>
 <translation id="8091387634532529612">स्वतः अपडेट गर्ने सुविधा</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> मा स्क्रिन casting गर्ने काम रोक्नुहोस्</translation>

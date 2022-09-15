@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
 <translation id="1722687688096767818">프로필 추가 중...</translation>
 <translation id="1726100011689679555">네임서버</translation>
+<translation id="1726600877401297672">항목 <ph name="NUMBER_OF_ITEMS" />개를 휴지통으로 이동함</translation>
 <translation id="1729953886957086472">독일어(독일)</translation>
 <translation id="1730235522912993863">중국어(창힐수입법)</translation>
 <translation id="1731889557567069540">항목 <ph name="NUMBER_OF_ITEMS" />개를 복사했습니다.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">&lt;b&gt;'<ph name="SEARCH_STRING" />'&lt;/b&gt;와(과) 일치하는 항목 없음</translation>
 <translation id="2894654529758326923">정보</translation>
 <translation id="2902734494705624966">영어(미국) 확장</translation>
+<translation id="2906052776158021882">항목 <ph name="NUMBER_OF_ITEMS" />개를 휴지통으로 이동하는 중</translation>
 <translation id="290843123675549676">마라타어</translation>
 <translation id="2923240520113693977">에스토니아어</translation>
 <translation id="2938685643439809023">몽고어</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">피자</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" />의 파일이 삭제됩니다.</translation>
 <translation id="508423945471810158">항목 <ph name="NUMBER_OF_ITEMS" />개를 <ph name="FOLDER_NAME" /> 폴더로 이동 중</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> 파일을 휴지통으로 이동함</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
 <translation id="5098629044894065541">히브리어</translation>
 <translation id="5102922915594634436">동기화된 폴더 관리</translation>
@@ -561,6 +564,7 @@
 <translation id="5845721951356578987">간호사</translation>
 <translation id="5861477046012235702">게이머</translation>
 <translation id="5864471791310927901">DHCP 조회 실패</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> 파일을 휴지통으로 이동하는 중</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="5911887972742538906">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
 <translation id="5912396950572065471">포맷</translation>
@@ -663,6 +667,7 @@
 <translation id="6874758081814639712">태극권을 하는 사람</translation>
 <translation id="6876155724392614295">자전거</translation>
 <translation id="6878261347041253038">데바나가리 키보드(음역)</translation>
+<translation id="6881853403185175088">Office</translation>
 <translation id="6885780034956018177">달팽이</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6898028766943174120">하위 폴더 더보기...</translation>

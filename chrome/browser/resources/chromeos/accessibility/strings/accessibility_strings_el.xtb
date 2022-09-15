@@ -239,6 +239,7 @@
 <translation id="2619344480613750862">Μπορείτε επίσης να μετακινείστε ανάμεσα στις διάφορες ενότητες της οθόνης. Για παράδειγμα, μπορείτε να μετακινηθείτε ανάμεσα στην εφαρμογή εκκίνησης, το ράφι και τις καρτέλες του Chrome. Για να μετακινηθείτε στην επόμενη ενότητα, σύρετε από τα αριστερά προς τα δεξιά με τέσσερα δάχτυλα. Δοκιμάστε το τώρα για να συνεχίσετε.</translation>
 <translation id="2624431853467395961">Άνοιγμα λειτουργίας εκμάθησης</translation>
 <translation id="2626530649491650971">με δυνατότητα κλικ</translation>
+<translation id="263637551280112393">Πατήστε τα πλήκτρα Αναζήτηση+Shift+Space</translation>
 <translation id="2637227747952042642">Μαθηματικά</translation>
 <translation id="2638785836053527382">Συνεχίζεται η λήψη του αρχείου <ph name="FILE_NAME" />.</translation>
 <translation id="2639750663247012216">Τροποποιητής ChromeVox</translation>
@@ -651,6 +652,7 @@
 <translation id="5355014376930441909">Δεν υπάρχει επόμενη ενότητα.</translation>
 <translation id="5368000168321181111">Ηχητικά μηνύματα ανενεργά</translation>
 <translation id="5368505757342402527">Ολοκληρώθηκε το <ph name="PROGRESS" />% της λήψης του αρχείου <ph name="FILE_NAME" />. Απομένουν <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">παρατεταμένο κλικ</translation>
 <translation id="5400836586163650660">Γκρι</translation>
 <translation id="5402367795255837559">Μπράιγ</translation>
 <translation id="5402791055281059602">Μια αποκλειστική ειδοποίηση</translation>

@@ -373,6 +373,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3151786313568798007">Orientamento</translation>
 <translation id="3153444934357957346">Puoi avere massimo <ph name="MULTI_PROFILE_USER_LIMIT" /> account per l'accesso simultaneo.</translation>
 <translation id="3154351730702813399">L'amministratore del dispositivo potrebbe monitorare l'attività di navigazione.</translation>
+<translation id="3157931365184549694">Ripristina</translation>
 <translation id="316086887565479535">App non supportate nel modello</translation>
 <translation id="3161500364292033097">Chiudi scrivania e finestre</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sta eseguendo il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
@@ -476,7 +477,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3735740477244556633">Ordina per</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
 <translation id="3765841986579723851">Modificato oggi</translation>
-<translation id="3771549900096082774">Modalità ad alto contrasto</translation>
 <translation id="3773700760453577392">Un amministratore ha vietato l'accesso simultaneo per <ph name="USER_EMAIL" />.
  Per continuare, devono disconnettersi tutti gli utenti.</translation>
 <translation id="3779139509281456663">Connessione di <ph name="NAME" /> in corso…</translation>
@@ -577,12 +577,10 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4312840429157639164">Fotocamera allineata all'angolo in alto a destra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="4316910396681052118">TUTTE LE APP</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Hai premuto la scorciatoia da tastiera per l'alto contrasto. Vuoi attivarlo?</translation>
 <translation id="4322742403972824594">La scorciatoia da tastiera Ctrl + Alt + Freccia su è cambiata. Per usare il tasto Home, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia sinistra.</translation>
 <translation id="4333628967105022692">Lacros non è supportato quando più utenti hanno effettuato l'accesso.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
 <translation id="4351433414020964307">L'assistente è in fase di caricamento…</translation>
-<translation id="4356930093361201197">modalità ad alto contrasto</translation>
 <translation id="4371348193907997655">Impostazioni di trasmissione</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensità segnale: <ph name="SIGNAL_STRENGTH" /> percento</translation>
 <translation id="4378551569595875038">Connessione...</translation>
@@ -878,7 +876,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5980301590375426705">Esci come Ospite</translation>
 <translation id="598407983968395253">Utilizza modello</translation>
 <translation id="598882571027504733">Per scaricare l'aggiornamento, riavvia il Chromebook con la tastiera collegata.</translation>
-<translation id="5992218262414051481">Modalità ad alto contrasto attivata. Premi di nuovo CTRL + tasto per la ricerca + H per disattivarla.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> di <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Uscita dalla modalità di mirroring</translation>
 <translation id="602001110135236999">Scorri a sinistra</translation>
@@ -1234,7 +1231,6 @@ Nuova installazione</translation>
 <translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>
-<translation id="8061464966246066292">Contrasto elevato</translation>
 <translation id="8083540854303889870">Elementi salvati per dopo</translation>
 <translation id="8091387634532529612">Aggiornamenti automatici</translation>
 <translation id="8098591350844501178">Interrompi la trasmissione dello schermo su <ph name="RECEIVER_NAME" /></translation>

@@ -1171,6 +1171,7 @@
 <translation id="208634871997892083">‏شبكة افتراضية خاصة (VPN) قيد التشغيل دائمًا</translation>
 <translation id="2087822576218954668">الطباعة: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">لن يُتاح التسجيل إلا بعد تثبيت نظام التشغيل <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">أقل</translation>
 <translation id="208928984520943006">للوصول إلى الشاشة الرئيسية في أي وقت، مرّر سريعًا بإصبعك من أسفل الشاشة إلى أعلاها.</translation>
 <translation id="2089566709556890888">‏التصفح بأمان باستخدام Google Chrome</translation>
 <translation id="2089795179672254991">طلب الإذن عند محاولة أحد المواقع الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة (موصى به)</translation>
@@ -1506,6 +1507,7 @@
 <translation id="2356070529366658676">طلب</translation>
 <translation id="2357330829548294574">إزالة <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">‏السماح للمواقع الإلكترونية باستخدام JavaScript</translation>
+<translation id="2358777858338503863">انقر للسماح بوصول الإضافة إلى الموقع الإلكتروني <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">‏قد لا تستجيب تطبيقات Linux.</translation>
 <translation id="2359345697448000899">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "الأدوات".</translation>
 <translation id="2359556993567737338">الاتصال بجهاز عبر بلوتوث</translation>
@@ -2507,6 +2509,7 @@
 <translation id="3325910708063135066">‏تم إيقاف الكاميرا والميكروفون في إعدادات نظام Mac المفضلة</translation>
 <translation id="3327050066667856415">‏يتم تصميم أجهزة Chromebook للحفاظ على الأمان. جهازك محمي من البرامج الضارة بشكل تلقائي ولا يتطلب أي برامج إضافية.</translation>
 <translation id="3328489342742826322">‏ستؤدي الاستعادة من نسخة احتياطية إلى حذف تطبيقات Linux الحالية والبيانات في مجلد "ملفات Linux".</translation>
+<translation id="3329013043687509092">تشبع اللون</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">معلومات التطبيق</translation>
 <translation id="3333190335304955291">يمكنك إيقاف هذه الخدمة من خلال الإعدادات.</translation>
@@ -3291,6 +3294,7 @@
 <translation id="4050534976465737778">‏تأكَّد من فتح قفل كلا الجهازَين وقرِّبهما من بعضهما وفعِّل البلوتوث فيهما. وإذا كنت تشارك الملفات مع جهاز Chromebook غير مدرَج في جهات اتصالك، يُرجى التأكُّد من تفعيل وضع الظهور في الميزة "مشاركة عن قرب" (يُرجى فتح منطقة الحالة، ثم اختيار وضع الظهور في الميزة "مشاركة عن قرب"). <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">دقيق</translation>
 <translation id="4054070260844648638">مرئي للجميع</translation>
+<translation id="4056223980640387499">بني داكن</translation>
 <translation id="4056908315660577142">‏لقد وصلت إلى الحدّ الزمني الذي ضبطه أحد الوالدَين لتطبيق <ph name="APP_NAME" /> في Chrome. يمكنك استخدامه لمدة <ph name="TIME_LIMIT" /> غدًا.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">عرض في المتجر</translation>
@@ -3540,6 +3544,7 @@
 <translation id="4306119971288449206">يجب عرض التطبيقات باستخدام نوع المحتوى "<ph name="CONTENT_TYPE" />".</translation>
 <translation id="4307992518367153382">الإعدادات الأساسية</translation>
 <translation id="4309165024397827958">‏يمكنك السماح لتطبيقات وخدمات Android الحاصلة على إذن بتحديد الموقع الجغرافي بأن تستخدم الموقع الجغرافي لجهازك، مع العلم أنّ Google قد تجمع بيانات الموقع الجغرافي بصفة دورية وقد تستخدمها بدون الكشف عن هوية المستخدم لتحسين دقة المواقع الجغرافية والخدمات المستندة إليها.</translation>
+<translation id="4309183709806093061">مشاركة صوت النظام أيضًا. سيتم كتم صوت هذا الجهاز لمنع الارتجاع الصوتي.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />كيلوبايت (<ph name="NUM_KILOBYTES_LIVE" />كيلوبايت مباشرة)</translation>
 <translation id="4310132194679586591">اختيار تطبيق على جهازك لفتح هذا الرابط</translation>
 <translation id="4310139701823742692">‏الملف بتنسيق خاطئ. تحقق من ملف PPD وأعد المحاولة.</translation>
@@ -3795,6 +3800,7 @@
 <translation id="4554591392113183336">الإضافة الخارجية في نفس الإصدار أو إصدار أقل مقارنة بالموجودة حاليًا.</translation>
 <translation id="4555769855065597957">ظل</translation>
 <translation id="4555863373929230635">‏لحفظ كلمات المرور في حسابك على Google، عليك تسجيل الدخول وتفعيل المزامنة.</translation>
+<translation id="4556194354084985730">يمكنك تسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات باستخدام كلمات المرور المحفوظة. في حال إيقاف هذا الإعداد، سيتم طلب الحصول على تأكيد منك قبل تسجيل الدخول إلى المواقع الإلكترونية والتطبيقات.</translation>
 <translation id="4558426062282641716">تمّ طلب إذن للتشغيل التلقائي</translation>
 <translation id="4559617833001311418">تم السماح لهذا الموقع بالوصول إلى أجهزة استشعار الإضاءة أو الحركة.</translation>
 <translation id="4561893854334016293">لم يتم تغيير أذونات مؤخرًا.</translation>
@@ -3826,7 +3832,6 @@
 <translation id="4579876313423027742">‏بالنسبة إلى إشعارات المتصفِّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات متصفِّح Chrome<ph name="LINK_END" />.</translation>
 <translation id="4580587929153007251">‏يجب إعادة تسجيل الدخول إلى "مدير كلمات المرور في Google".</translation>
 <translation id="4580596421317071374">يتم حفظ كلمات المرور في <ph name="GOOGLE_PASSWORD_MANAGER" /> على هذا الجهاز.</translation>
-<translation id="4580626299762849806">يتعذّر استيراد كلمات المرور. يُرجى مراجعة الملف <ph name="FILENAME" /> والتأكد من تنسيقه بشكلٍ صحيح.</translation>
 <translation id="4581774856936278355">‏حدث خطأ أثناء استعادة Linux</translation>
 <translation id="4582297591746054421">تقرأ المواقع الإلكترونية عادةً الحافظة لتتيح ميزات، مثل الحفاظ على صيغة النص الذي نسخته.</translation>
 <translation id="4582563038311694664">إعادة ضبط كل الإعدادات</translation>
@@ -4552,6 +4557,7 @@
 <translation id="5305145881844743843">تتم إدارة هذا الحساب من خلال <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5307030433605830021">المصدر غير متاح</translation>
 <translation id="5307386115243749078">إقران مفتاح تبديل يعمل باستخدام بلوتوث</translation>
+<translation id="5307958609248661362">‏انتهت مهلة مصادقة "مدير كلمات المرور في Google"</translation>
 <translation id="5308380583665731573">اتصال</translation>
 <translation id="5309418307557605830">‏يمكن استخدام "مساعد Google" أيضًا على هذا الجهاز</translation>
 <translation id="5311304534597152726">تسجيل الدخول باسم</translation>
@@ -5349,6 +5355,7 @@
 <translation id="6077476112742402730">تحويل الكلام إلى نص</translation>
 <translation id="6078121669093215958">{0,plural, =1{نافذة ضيف}zero{# نافذة ضيف مفتوحة}two{نافذتا ضيف مفتوحتان}few{# نوافذ ضيف مفتوحة}many{# نافذة ضيف مفتوحة}other{# نافذة ضيف مفتوحة}}</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
+<translation id="6078742430369906859">قد يتم تقييد إمكانية الاتصال على "<ph name="NETWORK_ID" />".</translation>
 <translation id="6078752646384677957">الرجاء التحقق من الميكروفون ومستويات الصوت.</translation>
 <translation id="6078769373519310690">‏يريد "<ph name="CHROME_EXTENSION_NAME" />" الاتصال بجهاز HID</translation>
 <translation id="608029822688206592">‏لم يتم العثور على شبكة. يُرجى إدخال شريحة SIM وإعادة المحاولة.</translation>
@@ -6067,6 +6074,7 @@
 <translation id="6779447100905857289">سلات التسوّق الخاصة بك</translation>
 <translation id="677965093459947883">صغير جدًا</translation>
 <translation id="6781005693196527806">&amp;إدارة محركات البحث...</translation>
+<translation id="6781012982807899368">ستظهر هنا كلمات المرور المحفوظة. <ph name="BEGIN_LINK" /> استيراد كلمات المرور<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">رابط رسومات الشعار المبتكرة</translation>
 <translation id="6781658011335120230">‏<ph name="BEGIN_PARAGRAPH1" />يمكن أن تشمل بيانات التطبيق أيّ بيانات حفظها التطبيق (بناءً على إعدادات مطوّر البرامج)، بما في ذلك بيانات مثل جهات الاتصال والرسائل والصور. لن يتم احتساب بيانات النُسخ الاحتياطية ضمن مساحة التخزين المتوفّرة في Drive لحساب طفلك.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />يمكنك إيقاف هذه الخدمة من خلال الإعدادات.<ph name="END_PARAGRAPH2" /></translation>
@@ -7220,6 +7228,7 @@
 <translation id="7870790288828963061">‏لا توجد إصدارات أحدث لتطبيق Kiosk. لا يوجد شيء لتحديثه. يُرجى إزالة جهاز USB.</translation>
 <translation id="7871049986386271121">تفعيل الإضافة دائمًا على الموقع الإلكتروني هذا</translation>
 <translation id="7871109039747854576">استخدام مفتاحيَ <ph name="COMMA" /> و<ph name="PERIOD" /> لتصفّح قائمة خيارات</translation>
+<translation id="7872494313446521576">انقر للسماح بوصول الإضافة "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" إلى الموقع الإلكتروني <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">غير مفعَّل</translation>
 <translation id="7872758299142009420">استنفدت عدد المجموعات المدمَجة المسموح به: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">‏خلفيات Chrome</translation>
@@ -7357,6 +7366,7 @@
 <translation id="7988805580376093356">‏الإبقاء على نظام التشغيل الحالي وتشغيل <ph name="DEVICE_OS" /> من محرّك أقراص USB</translation>
 <translation id="7991296728590311172">إعدادات الوصول عبر مفتاح التحويل</translation>
 <translation id="7992203134935383159">تركيب الكلام</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">أولوية المعالجة</translation>
 <translation id="7999229196265990314">تم إنشاء الملفات التالية:
         
@@ -7898,6 +7908,7 @@
 <translation id="8523493869875972733">الإبقاء على التغييرات</translation>
 <translation id="8523849605371521713">تمت الإضافة من قبل السياسة</translation>
 <translation id="8524783101666974011">‏حفظ البطاقات في حسابك على Google</translation>
+<translation id="8525157245469383124">‏التنسيق المستخدَم لرقم التعريف على متجر بائع التجزئة هو ABC-1234.</translation>
 <translation id="8525306231823319788">ملء الشاشة</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">إضافة اللغات</translation>

@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">Ustvarjanje arhiva zip s toliko elementi: <ph name="NUMBER_OF_ITEMS" /> …</translation>
 <translation id="1722687688096767818">Dodajanje profila …</translation>
 <translation id="1726100011689679555">Imenski strežniki</translation>
+<translation id="1726600877401297672">Št. elementov, premaknjenih v smetnjak: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="1729953886957086472">nemščina (Nemčija)</translation>
 <translation id="1730235522912993863">kitajščina (cangče)</translation>
 <translation id="1731889557567069540">Št. kopiranih elementov: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Noben element se ne ujema s poizvedbo &lt;b&gt;»<ph name="SEARCH_STRING" />«&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Podatki</translation>
 <translation id="2902734494705624966">Združene države (razširjena)</translation>
+<translation id="2906052776158021882">Premikanje elementov v smetnjak (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="290843123675549676">maratščina</translation>
 <translation id="2923240520113693977">estonščina</translation>
 <translation id="2938685643439809023">mongolščina</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911">Izbrisanih bo za <ph name="TOTAL_FILE_SIZE" /> datotek</translation>
 <translation id="508423945471810158">Premikanje toliko elementov v mapo <ph name="FOLDER_NAME" />: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="5092200349368278146">Datoteka <ph name="FILE_NAME" /> je premaknjena v smetnjak</translation>
 <translation id="509429900233858213">Napaka.</translation>
 <translation id="5098629044894065541">hebrejščina</translation>
 <translation id="5102922915594634436">Upravljanje sinhroniziranih map</translation>
@@ -561,6 +564,7 @@
 <translation id="5845721951356578987">Zdravstvena tehnica</translation>
 <translation id="5861477046012235702">Igričar</translation>
 <translation id="5864471791310927901">Iskanje DHCP-ja ni uspelo</translation>
+<translation id="5887342613489958822">Premikanje datoteke <ph name="FILE_NAME" /> v smetnjak</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" />. omrežje od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivirano, moč signala <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="5911887972742538906">Med nameščanjem aplikacije za Linux je prišlo do napake.</translation>
 <translation id="5912396950572065471">Oblika</translation>

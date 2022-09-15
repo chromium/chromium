@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">Чиглэл</translation>
 <translation id="3153444934357957346">Та олон зэрэг нэвтрэлтэд хамгийн ихдээ <ph name="MULTI_PROFILE_USER_LIMIT" /> бүртгэл ашиглах боломжтой.</translation>
 <translation id="3154351730702813399">Төхөөрөмжийн админ таны хайлтын үйл ажиллагааг хянаж байж магадгүй.</translation>
+<translation id="3157931365184549694">Дахин сэргээх</translation>
 <translation id="316086887565479535">Загвар дахь дэмжигдээгүй аппууд</translation>
 <translation id="3161500364292033097">Дэлгэц болон цонхнуудыг хаана уу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> таны <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцааж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3742055079367172538">Дэлгэцний зургийг авсан болно (Screenshot)</translation>
 <translation id="3765841986579723851">Өнөөдөр зассан</translation>
-<translation id="3771549900096082774">Өндөр ялгаралтай горим</translation>
 <translation id="3773700760453577392">Админ <ph name="USER_EMAIL" />-д олон зэрэг нэвтрэхийг зөвшөөрөөгүй байна. 
 Үргэлжлүүлэхийн тулд бүх хэрэглэгч гарах шаардлагатай.</translation>
 <translation id="3779139509281456663"><ph name="NAME" />-д холбогдож байна</translation>
@@ -577,12 +577,10 @@
 <translation id="4312840429157639164">Камерыг баруун дээд булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="4316910396681052118">БҮХ АПП</translation>
 <translation id="4321179778687042513">Ctrl</translation>
-<translation id="4321776623976362024">Та өндөр нягтралын товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Home товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Зүүн сумыг дарна уу.</translation>
 <translation id="4333628967105022692">Олон хэрэглэгч нэвтэрсэн үед Lacros-г дэмждэггүй.</translation>
 <translation id="4338109981321384717">Томруулдаг шил</translation>
 <translation id="4351433414020964307">Туслах ачаалж байна...</translation>
-<translation id="4356930093361201197">өндөр ялгаралтай горим</translation>
 <translation id="4371348193907997655">Дамжуулах тохиргоо</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /> хувь</translation>
 <translation id="4378551569595875038">Холбож байна...</translation>
@@ -878,7 +876,6 @@
 <translation id="5980301590375426705">Зочноос гарах</translation>
 <translation id="598407983968395253">Загварыг ашиглах</translation>
 <translation id="598882571027504733">Шинэчлэлт авахын тулд Chromebook-ээ хавсаргасан гараар шинэчилнэ үү.</translation>
-<translation id="5992218262414051481">Өндөр ялгаралтай горимыг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Search+H-г дахин дарна уу.</translation>
 <translation id="6012623610530968780">Хуудас <ph name="TOTAL_PAGE_NUM" />-н <ph name="SELECTED_PAGE" /></translation>
 <translation id="6018164090099858612">Толь горимоос гарч байна</translation>
 <translation id="602001110135236999">Зүүн тийш гүйлгэх</translation>
@@ -1234,7 +1231,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> нэртэй загвар аль хэдийн байна</translation>
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
 <translation id="8054466585765276473">Цэнэгний хугацааг тооцож байна.</translation>
-<translation id="8061464966246066292">Өндөр ялгарал</translation>
 <translation id="8083540854303889870">Дараа ашиглахаар хадгалсан</translation>
 <translation id="8091387634532529612">Автомат шинэчлэлт</translation>
 <translation id="8098591350844501178">Дэлгэцийг <ph name="RECEIVER_NAME" />-д дамжуулахыг зогсоох</translation>

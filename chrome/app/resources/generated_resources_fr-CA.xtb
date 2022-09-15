@@ -1169,6 +1169,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="208634871997892083">RPV permanent</translation>
 <translation id="2087822576218954668">Imprimer : <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">L'inscription est uniquement prise en charge après l'installation de <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Moins</translation>
 <translation id="208928984520943006">Pour revenir à l'écran d'accueil en tout temps, balayez l'écran du bas vers le haut.</translation>
 <translation id="2089566709556890888">Naviguez en toute sécurité avec Google Chrome</translation>
 <translation id="2089795179672254991">Demander lorsqu'un site veut voir le texte et les images copiés dans le presse-papiers (recommandé)</translation>
@@ -1504,6 +1505,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2356070529366658676">Demander</translation>
 <translation id="2357330829548294574">Supprimer <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Les sites peuvent utiliser JavaScript</translation>
+<translation id="2358777858338503863">Cliquez pour autoriser sur <ph name="ORIGIN" /> :</translation>
 <translation id="2359071692152028734">Les applications Linux peuvent ne plus répondre.</translation>
 <translation id="2359345697448000899">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Outils ».</translation>
 <translation id="2359556993567737338">Connecter un appareil Bluetooth</translation>
@@ -2504,6 +2506,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3325910708063135066">L'appareil photo et le microphone sont désactivés dans les Préférences Système du Mac</translation>
 <translation id="3327050066667856415">Les Chromebook sont conçus en fonction de la sécurité. Votre appareil est automatiquement protégé contre les logiciels malveillants. Aucun logiciel supplémentaire n'est requis.</translation>
 <translation id="3328489342742826322">La restauration à partir d'une sauvegarde supprimera les applications Linux existantes et les données dans vos dossiers Linux.</translation>
+<translation id="3329013043687509092">Saturation</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Détails de l'application</translation>
 <translation id="3333190335304955291">Vous pouvez désactiver ce service dans le menu Paramètres.</translation>
@@ -3290,6 +3293,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4050534976465737778">Assurez-vous que les deux appareils sont déverrouillés, à proximité l'un de l'autre, et que le Bluetooth est activé. Si vous effectuez le partage avec un Chromebook qui ne figure pas dans vos contacts, assurez-vous que le partage à proximité est activé sur celui-ci. Pour ce faire, ouvrez la zone de notifications, puis sélectionnez le partage à proximité. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Très petite</translation>
 <translation id="4054070260844648638">Visible par tous</translation>
+<translation id="4056223980640387499">Sépia</translation>
 <translation id="4056908315660577142">Tu as atteint la durée limite que ton parent a définie pour l'application Chrome <ph name="APP_NAME" />. Tu pourras l'utiliser de nouveau pendant <ph name="TIME_LIMIT" /> demain.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Afficher dans la boutique</translation>
@@ -3794,6 +3798,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4554591392113183336">La version d'extension externe est égale ou inférieure à celle existante.</translation>
 <translation id="4555769855065597957">Ombre</translation>
 <translation id="4555863373929230635">Pour enregistrer des mots de passe dans votre compte Google, connectez-vous et activez la synchronisation.</translation>
+<translation id="4556194354084985730">Connectez-vous facilement aux sites et aux applications grâce à vos mots de passe enregistrés. Lorsque cette fonctionnalité est désactivée, une confirmation vous est demandée avant que vous puissiez vous connecter.</translation>
 <translation id="4558426062282641716">Autorisation de lancement automatique demandée</translation>
 <translation id="4559617833001311418">Ce site accède à vos capteurs de mouvement et de luminosité.</translation>
 <translation id="4561893854334016293">Aucune autorisation n'a récemment été modifiée</translation>
@@ -3825,7 +3830,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4579876313423027742">Pour les notifications du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres du navigateur Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Reconnectez-vous au gestionnaire de mots de passe de Google</translation>
 <translation id="4580596421317071374">Les mots de passe sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> sur cet appareil.</translation>
-<translation id="4580626299762849806">Impossible d'importer les mots de passe. Vérifiez <ph name="FILENAME" /> et assurez-vous que son format est correct.</translation>
 <translation id="4581774856936278355">Une erreur s'est produite lors de la restauration du conteneur Linux</translation>
 <translation id="4582297591746054421">Les sites lisent généralement le contenu de votre presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
@@ -5348,6 +5352,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6077476112742402730">Parler pour taper</translation>
 <translation id="6078121669093215958">{0,plural, =1{Fenêtre d'invité}one{# fenêtre d'invité ouverte}other{# fenêtres d'invité ouvertes}}</translation>
 <translation id="6078323886959318429">Ajouter un raccourci</translation>
+<translation id="6078742430369906859">La connectivité sur « <ph name="NETWORK_ID" /> » peut être limitée</translation>
 <translation id="6078752646384677957">Veuillez vérifier votre microphone et vos niveaux audio.</translation>
 <translation id="6078769373519310690">« <ph name="CHROME_EXTENSION_NAME" /> » souhaite se connecter à un appareil HID</translation>
 <translation id="608029822688206592">Aucun réseau trouvé. Veuillez insérer votre carte SIM et réessayer.</translation>
@@ -6060,6 +6065,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6779447100905857289">vos paniers</translation>
 <translation id="677965093459947883">Très petit</translation>
 <translation id="6781005693196527806">&amp;Gérer les moteurs de recherche…</translation>
+<translation id="6781012982807899368">Les mots de passe enregistrés s'affichent ici. <ph name="BEGIN_LINK" />Importer des mots de passe<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Lien du logo commémoratif</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />Les données d'application correspondent à toutes les données enregistrées par une application (en fonction des paramètres définis par le développeur), y compris les données, comme les contacts, les messages et les photos. Les données des sauvegardes ne sont pas prises en compte dans le quota de stockage Disque de votre enfant.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez désactiver ce service dans le menu Paramètres.<ph name="END_PARAGRAPH2" /></translation>
@@ -7212,6 +7218,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7870790288828963061">Aucune application de kiosque avec une version plus récente trouvée. Aucune mise à jour à effectuer. Veuillez retirer la clé USB.</translation>
 <translation id="7871049986386271121">Toujours sur ce site</translation>
 <translation id="7871109039747854576">Utiliser les touches <ph name="COMMA" /> et <ph name="PERIOD" /> pour paginer une liste de choix</translation>
+<translation id="7872494313446521576">Cliquez pour autoriser « <ph name="EXTENSIONS_REQUESTING_ACCESS" /> » sur <ph name="ORIGIN" /> :</translation>
 <translation id="787268756490971083">Désactivé</translation>
 <translation id="7872758299142009420">Trop de groupes imbriqués : <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Arrière-plans Chrome</translation>
@@ -7888,6 +7895,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8523493869875972733">Conserver les modifications</translation>
 <translation id="8523849605371521713">Ajoutée par une règle</translation>
 <translation id="8524783101666974011">Enregistrez des cartes dans votre compte Google</translation>
+<translation id="8525157245469383124">Le format de l'identification du détaillant-magasin est ABC-1234</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Ajouter des langues</translation>

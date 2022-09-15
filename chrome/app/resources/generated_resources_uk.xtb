@@ -1183,6 +1183,7 @@
 <translation id="208634871997892083">VPN завжди ввімкнено</translation>
 <translation id="2087822576218954668">Друк: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Зареєструватися можна лише після встановлення <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Менше</translation>
 <translation id="208928984520943006">Щоб будь-коли повернутися на головний екран, проведіть пальцем знизу вгору.</translation>
 <translation id="2089566709556890888">Безпечний перегляд сайтів у Google Chrome</translation>
 <translation id="2089795179672254991">Запитувати, коли сайт хоче переглядати тексти й зображення в буфері обміну (рекомендується)</translation>
@@ -1521,6 +1522,7 @@
 <translation id="2356070529366658676">Запитати</translation>
 <translation id="2357330829548294574">Видалити користувача <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Сайти можуть використовувати JavaScript</translation>
+<translation id="2358777858338503863">Натисніть, щоб надати розширенню доступ до сайту <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Додатки Linux можуть перестати відповідати.</translation>
 <translation id="2359345697448000899">Керуйте своїми розширеннями, натиснувши вкладку "Розширення" в меню "Інструменти".</translation>
 <translation id="2359556993567737338">Підключити пристрій Bluetooth</translation>
@@ -2262,6 +2264,7 @@
 <translation id="3046178388369461825">На диску Linux дуже мало вільного місця</translation>
 <translation id="3046910703532196514">Веб-сторінка, повністю</translation>
 <translation id="304747341537320566">Системи синтезу мовлення</translation>
+<translation id="3048051495640130973">У налаштуваннях ви можете вказати, коли має вмикатися режим енергозбереження</translation>
 <translation id="3048336643003835855">Пристрої HID від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Журнали трансляції та пристрою</translation>
 <translation id="3051250416341590778">Розмір дисплея</translation>
@@ -2519,6 +2522,7 @@
 <translation id="3325910708063135066">Камеру та мікрофон вимкнено в параметрах системи Mac</translation>
 <translation id="3327050066667856415">Безпека комп'ютерів Chromebook – наша основна мета. Ваш пристрій має автоматичний захист від зловмисного програмного забезпечення, тому вам не потрібно встановлювати інші додатки.</translation>
 <translation id="3328489342742826322">Якщо відновити резервну копію, буде видалено наявні додатки й дані Linux у папці з файлами Linux.</translation>
+<translation id="3329013043687509092">Насиченість</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Про додаток</translation>
 <translation id="3333190335304955291">Цей сервіс можна вимкнути в налаштуваннях.</translation>
@@ -2852,6 +2856,7 @@
 <translation id="3641456520301071208">Сайти можуть просити доступ до геоданих</translation>
 <translation id="3642070413432681490">Обведення курсора миші в коло</translation>
 <translation id="3642699533549879077">Якщо хтось дивиться на ваш екран, вас повідомлять про це, а вміст сповіщення буде приховано.</translation>
+<translation id="3643962751030964445">Цим пристроєм керує <ph name="DEVICE_MANAGER" />. Адміністратор <ph name="DEVICE_MANAGER" /> просить створити новий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">Трохи перемістіть палець, щоб зісканувати іншу частину відбитка.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> отримано з пристрою <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Виявлено пристрій <ph name="USB_DEVICE_NAME" /></translation>
@@ -3304,6 +3309,7 @@
 <translation id="4050534976465737778">Переконайтеся, що обидва пристрої розблоковані, розташовані поруч і на них увімкнено Bluetooth. Якщо ви хочете надіслати файли на комп'ютер Chromebook, якого немає у ваших контактах, відкрийте на ньому панель стану і ввімкніть "Видимість поблизу". <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Дуже малий</translation>
 <translation id="4054070260844648638">Пристрій видимий усім</translation>
+<translation id="4056223980640387499">Сепія</translation>
 <translation id="4056908315660577142">Досягнено ліміту часу використання, який батьки встановили для додатка <ph name="APP_NAME" /> у Chrome. Завтра ти зможеш користуватися ним <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Переглянути в магазині</translation>
@@ -3421,6 +3427,7 @@
 <translation id="4175137578744761569">Світло-фіолетовий і білий</translation>
 <translation id="4175737294868205930">Постійна пам’ять</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
+<translation id="4176864026061939326">Цим пристроєм керує адміністратор. Він просить створити новий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4180788401304023883">Видалити сертифікат Центру сертифікації "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мови</translation>
@@ -3808,6 +3815,7 @@
 <translation id="4554591392113183336">Зовнішнє розширення має таку саму або нижчу версію порівняно з наявним.</translation>
 <translation id="4555769855065597957">Shadow</translation>
 <translation id="4555863373929230635">Щоб зберігати паролі в обліковому записі Google, увійдіть у нього й увімкніть синхронізацію.</translation>
+<translation id="4556194354084985730">Легко входьте в обліковий запис на сайтах і в додатках за допомогою збережених паролів. Якщо цю функцію вимкнути, потрібно буде вводити пароль під час кожного входу.</translation>
 <translation id="4558426062282641716">Потрібен дозвіл на автозапуск</translation>
 <translation id="4559617833001311418">Цей сайт має доступ до датчиків руху чи світла.</translation>
 <translation id="4561893854334016293">Немає нещодавно змінених дозволів</translation>
@@ -3839,7 +3847,6 @@
 <translation id="4579876313423027742">Щоб переглянути сповіщення веб-переглядача, перейдіть у <ph name="LINK_BEGIN" />налаштування Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Знову ввійдіть у Менеджер паролів Google</translation>
 <translation id="4580596421317071374">Паролі зберігаються в сервісі <ph name="GOOGLE_PASSWORD_MANAGER" /> на цьому пристрої.</translation>
-<translation id="4580626299762849806">Не вдалось імпортувати паролі. Переконайтеся, що формат файлу <ph name="FILENAME" /> правильний.</translation>
 <translation id="4581774856936278355">Сталася помилка під час відновлення Linux</translation>
 <translation id="4582297591746054421">Сайти зазвичай переглядають буфер обміну для роботи таких функцій, як зберігання форматування скопійованого тексту</translation>
 <translation id="4582563038311694664">Скинути всі налаштування</translation>
@@ -5359,6 +5366,7 @@
 <translation id="6077476112742402730">Голосове введення</translation>
 <translation id="6078121669093215958">{0,plural, =1{Гість}one{# вікно в режимі гостя}few{# вікна в режимі гостя}many{# вікон у режимі гостя}other{# вікна в режимі гостя}}</translation>
 <translation id="6078323886959318429">Додати ярлик</translation>
+<translation id="6078742430369906859">Підключення до мережі "<ph name="NETWORK_ID" />" може бути обмежено</translation>
 <translation id="6078752646384677957">Перевірте рівень мікрофона та звуку.</translation>
 <translation id="6078769373519310690"><ph name="CHROME_EXTENSION_NAME" /> хоче під'єднатися до пристрою HID</translation>
 <translation id="608029822688206592">Мережу не знайдено. Вставте SIM-карту й повторіть спробу.</translation>
@@ -6075,6 +6083,7 @@
 <translation id="6779447100905857289">ваші картки</translation>
 <translation id="677965093459947883">Дуже малий</translation>
 <translation id="6781005693196527806">&amp;Керувати пошуковими системами…</translation>
+<translation id="6781012982807899368">Тут відображатимуться збережені паролі. <ph name="BEGIN_LINK" />Імпортувати паролі<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Посилання на дудл</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />Даними додатків може бути будь-яка інформація, яку вони зберігають (залежно від налаштувань розробника), зокрема такі відомості, як контакти, повідомлення та фотографії. Резервні копії даних не займають простір на Диску вашої дитини.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Цей сервіс можна вимкнути в налаштуваннях.<ph name="END_PARAGRAPH2" /></translation>
@@ -6587,6 +6596,7 @@
 <translation id="7267875682732693301">Піднімайте й знов опускайте палець, щоб повністю відсканувати відбиток</translation>
 <translation id="7267898843336437186">Виберіть папку, яку може переглядати цей сайт</translation>
 <translation id="7268127947535186412">Цим налаштуванням керує власник пристрою.</translation>
+<translation id="7269229526547981029">Цим профілем керує <ph name="PROFILE_MANAGER" />. Адміністратор <ph name="ACCOUNT_MANAGER" /> просить створити новий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7269736181983384521">Використання трафіку функцією "Передавання поблизу"</translation>
 <translation id="7272674038937250585">Немає опису</translation>
 <translation id="7273110280511444812">останнє підключення: <ph name="DATE" /></translation>
@@ -7226,6 +7236,7 @@
 <translation id="7870790288828963061">Новіші версії додатків-терміналів не знайдено. Помилка оновлення. Витягніть носій USB.</translation>
 <translation id="7871049986386271121">Завжди на цьому сайті</translation>
 <translation id="7871109039747854576">Використовувати клавіші <ph name="COMMA" /> і <ph name="PERIOD" />, щоб переходити між варіантами в списку</translation>
+<translation id="7872494313446521576">Натисніть, щоб надати розширенню "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" доступ до сайту <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Вимкнено</translation>
 <translation id="7872758299142009420">Забагато вбудованих груп: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Фони Chrome</translation>
@@ -7597,6 +7608,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Нове сповіщення}one{# нове сповіщення}few{# нові сповіщення}many{# нових сповіщень}other{# нового сповіщення}}</translation>
 <translation id="821119981794423735">Щоб імпортувати паролі в Google Менеджер паролів для облікового запису <ph name="USER_EMAIL" />, виберіть файл CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Триває завантаження}one{Тривають завантаження}few{Тривають завантаження}many{Тривають завантаження}other{Тривають завантаження}}</translation>
+<translation id="8212601853154459483">Цим профілем керує <ph name="PROFILE_MANAGER" />. Адміністратор просить створити окремий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8213449224684199188">Увімкнено режим фото</translation>
 <translation id="8214489666383623925">Відкрити файл...</translation>
 <translation id="8215129063232901118">Користуватися функціями вашого телефона просто з пристрою <ph name="DEVICE_TYPE" /></translation>
@@ -7902,6 +7914,7 @@
 <translation id="8523493869875972733">Залишити зміни</translation>
 <translation id="8523849605371521713">Додано політикою</translation>
 <translation id="8524783101666974011">Збережіть картки в обліковому записі Google</translation>
+<translation id="8525157245469383124">Формат ідентифікатора роздрібного магазину: ABC-1234</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Додати мови</translation>

@@ -215,6 +215,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2132302418721800944">Gravar ecrã inteiro</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
 <translation id="2148716181193084225">Hoje</translation>
+<translation id="2161132820593978283">Experimente o enquadramento da câmara para ficar no centro do ecrã nas videochamadas. Ative-o nas Definições rápidas.</translation>
 <translation id="2170530631236737939">Deslize rapidamente para baixo com três dedos para sair da Vista geral.</translation>
 <translation id="219905428774326614">Launcher, todas as aplicações</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2405664212338326887">Sem ligação</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2412593942846481727">Atualização disponível</translation>
+<translation id="2426051945783024481">O enquadramento da câmara foi centrado automaticamente</translation>
 <translation id="2427507373259914951">Clicar com o botão esquerdo do rato</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Antes de aceitar, confirme que esta chave está indicada nesse dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
@@ -373,6 +375,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3151786313568798007">Orientação</translation>
 <translation id="3153444934357957346">Apenas pode ter, no máximo, <ph name="MULTI_PROFILE_USER_LIMIT" /> contas no início de sessão integrado.</translation>
 <translation id="3154351730702813399">O gestor do dispositivo pode monitorizar a sua atividade de navegação:</translation>
+<translation id="3157931365184549694">Restaurar</translation>
 <translation id="316086887565479535">Apps não suportadas no modelo</translation>
 <translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está a reverter o dispositivo <ph name="DEVICE_TYPE" />. O seu dispositivo será reposto e todos os dados serão eliminados.</translation>
@@ -476,7 +479,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
 <translation id="3765841986579723851">Editado hoje</translation>
-<translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador não permitiu o início de sessão integrado para <ph name="USER_EMAIL" />. Todos os utilizadores têm de terminar sessão para continuar.</translation>
 <translation id="3779139509281456663">A ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +578,10 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4312840429157639164">Câmara ajustada ao canto superior direito. Há um conflito com a superfície do sistema.</translation>
 <translation id="4316910396681052118">TODAS AS APLICAÇÕES</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Premiu o atalho de teclado de alto contraste. Pretende ativá-lo?</translation>
 <translation id="4322742403972824594">O atalho de teclado Ctrl + Alt + seta para cima foi alterado. Para utilizar a tecla Início, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a esquerda.</translation>
 <translation id="4333628967105022692">O Lacros não é suportado enquanto vários utilizadores tiverem sessão iniciada.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">A carregar o Assistente...</translation>
-<translation id="4356930093361201197">modo de alto contraste</translation>
 <translation id="4371348193907997655">Definições de transmissão</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal a <ph name="SIGNAL_STRENGTH" /> por cento</translation>
 <translation id="4378551569595875038">A ligar...</translation>
@@ -877,7 +877,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5980301590375426705">Sair sess. de conv.</translation>
 <translation id="598407983968395253">Utilizar modelo</translation>
 <translation id="598882571027504733">Para obter a atualização, reinicie o Chromebook com o teclado ligado.</translation>
-<translation id="5992218262414051481">Modo de alto contraste ativado. Prima Ctrl + Pesquisa + H novamente para o desativar.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">A sair do modo espelhado</translation>
 <translation id="602001110135236999">Deslocar para a esquerda</translation>
@@ -1043,6 +1042,7 @@ Nova instalação</translation>
 <translation id="6960565108681981554">Não ativada. Contacte o seu operador.</translation>
 <translation id="6961121602502368900">A funcionalidade Silenciar telemóvel não está disponível no perfil de trabalho.</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima foi alterado. Para utilizar a tecla Página para cima, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
+<translation id="696267987219125751">O enquadramento da câmara está desativado.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Começar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1133,6 +1133,7 @@ Nova instalação</translation>
 <translation id="7513922695575567867">Atualmente, está selecionada a semana de <ph name="DATE" />, <ph name="SELECTED_DATE" />, do calendário.</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">O enquadramento da câmara está ativado.</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">De momento, as apps para Linux e as janelas de navegação anónima não são suportadas. As outras apps serão guardadas.</translation>
@@ -1151,6 +1152,7 @@ Nova instalação</translation>
 <translation id="7607002721634913082">Em pausa</translation>
 <translation id="7609951632080598826">Vista de calendário, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">A câmara restabeleceu a ligação.</translation>
+<translation id="761736749114493194">Ative/desative o enquadramento da câmara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostre as definições da funcionalidade Partilhar na proximidade.</translation>
 <translation id="7634648064048557203">Câmara ajustada ao canto inferior direito</translation>
@@ -1233,7 +1235,6 @@ Nova instalação</translation>
 <translation id="8051716679295756675">O modelo denominado <ph name="DESK_TEMPLATE_NAME" /> já existe</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">A calcular tempo da bateria.</translation>
-<translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8083540854303889870">Guardados para mais tarde</translation>
 <translation id="8091387634532529612">Atualizações automáticas</translation>
 <translation id="8098591350844501178">Parar a transmissão do ecrã para <ph name="RECEIVER_NAME" /></translation>
@@ -1312,6 +1313,7 @@ Nova instalação</translation>
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
 <translation id="8535393432370007982">Anular ordenação por cor</translation>
+<translation id="8541078764854166027">Enquad. câmara</translation>
 <translation id="8542053257095774575">Nenhum espaço de trabalho ou modelo guardado</translation>
 <translation id="8546059259582788728">Ordenação anulada com êxito</translation>
 <translation id="8551588720239073785">Definições de data e hora</translation>

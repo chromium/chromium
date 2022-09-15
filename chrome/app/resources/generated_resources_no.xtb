@@ -1174,6 +1174,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="208634871997892083">Alltid-på-VPN</translation>
 <translation id="2087822576218954668">Skriv ut: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Registrering støttes bare etter at du har installert <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Mindre</translation>
 <translation id="208928984520943006">For å gå til startskjermen når som helst, sveip opp fra bunnen.</translation>
 <translation id="2089566709556890888">Surf trygt med Google Chrome</translation>
 <translation id="2089795179672254991">Spør meg når et nettsted ber om å se tekst og bilder som er kopiert til utklippstavlen (anbefales)</translation>
@@ -2512,6 +2513,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3325910708063135066">Kameraet og mikrofonen er slått av i Mac-systemvalgene</translation>
 <translation id="3327050066667856415">Chromebook er designet for sikkerhet. Enheten din er automatisk beskyttet mot skadelig programvare – du trenger ingen tilleggsprogramvare.</translation>
 <translation id="3328489342742826322">Når du gjenoppretter fra en sikkerhetskopi, slettes eksisterende Linux-programmer og -data i mappen for Linux-filer.</translation>
+<translation id="3329013043687509092">Metning</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Appinformasjon</translation>
 <translation id="3333190335304955291">Du kan slå av denne tjenesten i Innstillinger.</translation>
@@ -3296,6 +3298,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4050534976465737778">Kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. Hvis du deler med en Chromebook som ikke er i kontaktene dine, må du sørge for at den har Nærdeling påslått (åpne statusfeltet, og slå på Nærdeling). <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Bitteliten</translation>
 <translation id="4054070260844648638">Synlig for alle</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Du har nådd tidsgrensen som forelderen din har angitt for Chrome-appen <ph name="APP_NAME" />. Du kan bruke den i <ph name="TIME_LIMIT" /> i morgen.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Se i Nettmarked</translation>
@@ -3833,7 +3836,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4579876313423027742">For nettleservarsler går du til <ph name="LINK_BEGIN" />innstillinger for Chrome-nettleseren<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Logg på Google Passordlagring igjen</translation>
 <translation id="4580596421317071374">Passord lagres i <ph name="GOOGLE_PASSWORD_MANAGER" /> på denne enheten.</translation>
-<translation id="4580626299762849806">Kan ikke importere passordene. Sjekk <ph name="FILENAME" />, og forsikre deg om at den er riktig formatert.</translation>
 <translation id="4581774856936278355">Feil under gjenoppretting av Linux</translation>
 <translation id="4582297591746054421">Nettsteder leser vanligvis utklippstavlen din for å kunne tilby funksjoner som å beholde formateringen på teksten du har kopiert</translation>
 <translation id="4582563038311694664">Tilbakestill alle innstillingene</translation>

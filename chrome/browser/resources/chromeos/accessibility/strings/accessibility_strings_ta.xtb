@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">திரையில் உள்ள பிரிவுகளுக்கு இடையேயும் மாறலாம். எடுத்துக்காட்டு: தொடக்கி, ஷெல்ஃப், Chrome தாவல்கள் ஆகியவற்றுக்கு இடையே மாறலாம். அடுத்த பிரிவுக்குச் செல்ல, நான்கு விரல்களால் இடதுபுறத்திலிருந்து வலதுபுறம் ஸ்வைப் செய்யலாம். தொடர, இப்போதே செய்து பாருங்கள்.</translation>
 <translation id="2624431853467395961">கற்றல் பயன்முறையைத் திறக்கவும்</translation>
 <translation id="2626530649491650971">கிளிக் செய்யத்தக்கது</translation>
+<translation id="263637551280112393">Search+Shift+Space பட்டன்களை அழுத்தவும்</translation>
 <translation id="2637227747952042642">கணிதம்</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> ஃபைலின் பதிவிறக்கம் மீண்டும் தொடங்கியது</translation>
 <translation id="2639750663247012216">ChromeVox மாற்றி</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">அடுத்த பிரிவு எதுவும் இல்லை</translation>
 <translation id="5368000168321181111">ஆடியோ செய்திகளை முடக்கு</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> <ph name="PROGRESS" />% பதிவிறக்கப்பட்டுள்ளது. இன்னும் சுமார் <ph name="TIME" /> <ph name="UNITS" /> மீதமுள்ளன.</translation>
+<translation id="5381388086899614489">நீண்ட கிளிக்கிற்கு</translation>
 <translation id="5400836586163650660">கிரே</translation>
 <translation id="5402367795255837559">பிரெய்ல்</translation>
 <translation id="5402791055281059602">கட்டாய விழிப்பூட்டல்</translation>

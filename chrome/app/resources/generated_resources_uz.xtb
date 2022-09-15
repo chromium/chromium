@@ -1167,6 +1167,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="208634871997892083">Doimiy VPN</translation>
 <translation id="2087822576218954668">Chop etish: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> oʻrnatilgandan keyin roʻyxatdan oʻtish mumkin.</translation>
+<translation id="2089090684895656482">Kamroq</translation>
 <translation id="208928984520943006">Istalgan vaqtda bosh ekranga qaytish uchun pastdan tepaga suring.</translation>
 <translation id="2089566709556890888">Google Chrome yordamida internetda xavfsiz ishlaysiz</translation>
 <translation id="2089795179672254991">Saytlar klipbordga nusxalangan matn va rasmlarni ko‘rmoqchi bo‘lganda xabar berilsin (tavsiya etiladi)</translation>
@@ -2505,6 +2506,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3325910708063135066">Kamera va mikrofon Mac tizim sozlamalaridan faolsizlantirilgan</translation>
 <translation id="3327050066667856415">Chromebook qurilmalari yuqori xavfsizlik uchun ishlab chiqilgan. Qurilmangiz zararli dasturlarni avtomatik aniqlaydi va buning uchun qoʻshimcha dasturlarni talab qilmaydi.</translation>
 <translation id="3328489342742826322">Zaxiradan tiklasangiz, mavjud Linux ilovalari va Linux fayllari jildi olib tashlanadi</translation>
+<translation id="3329013043687509092">To‘liqlik</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Ilova haqida</translation>
 <translation id="3333190335304955291">Bu xizmatni Sozlamalar orqali faolsizlantirish mumkin.</translation>
@@ -3291,6 +3293,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4050534976465737778">Ikkala qurilma ham ochiq, orasidagi masofa yaqin va Bluetooth yoniq ekanini tekshiring. Agar kontaktlardan tashqari Chromebook qurilmasiga fayl yuborsangiz, unda Yaqin-atrofga yuborish (holat qatorida Yaqin-atrofga yuborishni tanlang) funksiyasi yoniqligini tekshiring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Kichkina</translation>
 <translation id="4054070260844648638">Hammaga koʻrinadi</translation>
+<translation id="4056223980640387499">Sepiya</translation>
 <translation id="4056908315660577142">Ota-onangiz Chromedagi <ph name="APP_NAME" /> ilovasi uchun belgilagan foydalanish vaqti tugadi. Ertaga yana <ph name="TIME_LIMIT" /> ishlata olasiz.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Internet-do‘konda ochish</translation>
@@ -3829,7 +3832,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4579876313423027742">Brauzer bildirishnomalari <ph name="LINK_BEGIN" />Chrome brauzeri sozlamalari<ph name="LINK_END" /> sahifasida boshqariladi</translation>
 <translation id="4580587929153007251">Google parollar menejeriga qayta kiring</translation>
 <translation id="4580596421317071374">Bu qurilmadagi parollar <ph name="GOOGLE_PASSWORD_MANAGER" />ga saqlanadi.</translation>
-<translation id="4580626299762849806">Parollar import qilinmadi. <ph name="FILENAME" /> faylini va uning bexato formatda ekanini tekshiring.</translation>
 <translation id="4581774856936278355">Linux tiklanmadi</translation>
 <translation id="4582297591746054421">Saytlar odatda nusxalanayotgan matn formatini saqlab qolish uchun klipbord axborotini oʻqiydi</translation>
 <translation id="4582563038311694664">Barcha sozlamalarni dastlabki holatga qaytarish</translation>

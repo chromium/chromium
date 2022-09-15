@@ -373,6 +373,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3151786313568798007">Orientacja</translation>
 <translation id="3153444934357957346">W wielokrotnym logowaniu nie możesz mieć więcej kont niż <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Administrator urządzenia może monitorować Twoją aktywność związaną z przeglądaniem.</translation>
+<translation id="3157931365184549694">Przywróć</translation>
 <translation id="316086887565479535">Nieobsługiwane aplikacje w szablonie</translation>
 <translation id="3161500364292033097">Zamknij biurko i okna</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> przywraca na urządzeniu <ph name="DEVICE_TYPE" /> wcześniejszą wersję systemu operacyjnego. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
@@ -476,7 +477,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3735740477244556633">Sortuj według</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
 <translation id="3765841986579723851">Edytowane dzisiaj</translation>
-<translation id="3771549900096082774">Tryb wysokiego kontrastu</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
 <translation id="3779139509281456663">Łączę z urządzeniem <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4312840429157639164">Podgląd z kamery został przyciągnięty do prawego górnego rogu. Konflikt z obszarem systemowym.</translation>
 <translation id="4316910396681052118">WSZYSTKIE APLIKACJE</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Naciśnięto skrót klawiszowy wysokiego kontrastu. Czy chcesz go włączyć?</translation>
 <translation id="4322742403972824594">Skrót klawiszowy Ctrl + Alt + strzałka w górę został zmieniony. Aby użyć klawisza Home, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w lewo.</translation>
 <translation id="4333628967105022692">Kiedy zalogowanych jest wielu użytkowników, przeglądarka Lacros nie jest obsługiwana.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Trwa ładowanie Asystenta…</translation>
-<translation id="4356930093361201197">Tryb wysokiego kontrastu</translation>
 <translation id="4371348193907997655">Ustawienia przesyłania</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, siła sygnału <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Łączę...</translation>
@@ -877,7 +875,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5980301590375426705">Zakończ sesję gościa</translation>
 <translation id="598407983968395253">Użyj szablonu</translation>
 <translation id="598882571027504733">Aby pobrać aktualizację, uruchom Chromebooka ponownie z podłączoną klawiaturą.</translation>
-<translation id="5992218262414051481">Tryb wysokiego kontrastu został włączony. Aby go wyłączyć, naciśnij ponownie Ctrl+Search+H.</translation>
 <translation id="6012623610530968780">Strona <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Wyłączam tryb odbicia lustrzanego</translation>
 <translation id="602001110135236999">Przewiń w lewo</translation>
@@ -1232,7 +1229,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8051716679295756675">Szablon o nazwie <ph name="DESK_TEMPLATE_NAME" /> już istnieje</translation>
 <translation id="8052898407431791827">Skopiowano do schowka</translation>
 <translation id="8054466585765276473">Obliczanie czasu pracy na baterii.</translation>
-<translation id="8061464966246066292">Wysoki kontrast</translation>
 <translation id="8083540854303889870">Zapisane na później</translation>
 <translation id="8091387634532529612">Automatyczne aktualizacje</translation>
 <translation id="8098591350844501178">Zakończ przesyłanie ekranu do: <ph name="RECEIVER_NAME" /></translation>

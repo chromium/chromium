@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">ກຳລັງຊິບ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="1722687688096767818">ກຳລັງເພີ່ມໂປຣໄຟລ໌...</translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
+<translation id="1726600877401297672">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="1729953886957086472">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ)</translation>
 <translation id="1730235522912993863">ພາສາຈີນ (Cangjie)</translation>
 <translation id="1731889557567069540">ສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">ບໍ່ມີລາຍການຖືກຄູ່ກັນ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ຂໍ້ມູນ</translation>
 <translation id="2902734494705624966">US ຂະ​ຫຍາຍ</translation>
+<translation id="2906052776158021882">ກຳລັງຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="290843123675549676">ພາສາມາຣາທີ</translation>
 <translation id="2923240520113693977">ພາສາເອສໂຕ​ເນຍ</translation>
 <translation id="2938685643439809023">ພາສາມົງໂກລີ</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">ພິດຊ່າ</translation>
 <translation id="5081517858322016911">ລະບົບຈະລຶບໄຟລ໌ <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">ກຳລັງຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປຍັງ <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">ຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="509429900233858213">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
 <translation id="5098629044894065541">ພາສາຮິບຣູ</translation>
 <translation id="5102922915594634436">ຈັດການໂຟນເດີທີ່ຊິ້ງຂໍ້ມູນ</translation>
@@ -560,6 +563,7 @@
 <translation id="5845721951356578987">ພະຍາບານ</translation>
 <translation id="5861477046012235702">ຜູ້ຫຼິ້ນເກມ</translation>
 <translation id="5864471791310927901">ຊອກຫາ DHCP ບໍ່ສໍາເລັດ</translation>
+<translation id="5887342613489958822">ກຳລັງຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="5896749729057314184">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ບໍ່ໄດ້ເປີດໃຊ້, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="5911887972742538906">ເກີດຜິດພາດໃນລະຫວ່າງການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux ຂອງທ່ານ.</translation>
 <translation id="5912396950572065471">ຮູບແບບ</translation>

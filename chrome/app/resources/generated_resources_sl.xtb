@@ -1183,6 +1183,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="208634871997892083">Stalno vklopljen VPN</translation>
 <translation id="2087822576218954668">Tiskanje: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Včlanitev je podprta šele po namestitvi sistema <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Manj</translation>
 <translation id="208928984520943006">Če se želite kadar koli vrniti na začetni zaslon, s prstom povlecite z dna zaslona navzgor.</translation>
 <translation id="2089566709556890888">Varno brskanje z Google Chromom</translation>
 <translation id="2089795179672254991">Vprašaj, ko želi spletno mesto videti besedilo in slike, kopirane v odložišče (priporočljivo)</translation>
@@ -2263,6 +2264,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3046178388369461825">Na disku z Linuxom kritično primanjkuje prostora</translation>
 <translation id="3046910703532196514">Spletna stran, dokončano</translation>
 <translation id="304747341537320566">Mehanizmi za govor</translation>
+<translation id="3048051495640130973">V nastavitvah lahko nadzirate, kdaj se vklopi varčevanje z energijo baterije</translation>
 <translation id="3048336643003835855">Naprave HID ponudnika <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Dnevniki predvajanja in naprav</translation>
 <translation id="3051250416341590778">Velikost prikaza</translation>
@@ -2520,6 +2522,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3325910708063135066">Fotoaparat in mikrofon sta izklopljena v nastavitvah sistema macOS</translation>
 <translation id="3327050066667856415">Chromebooki so zasnovani za varnost. Vaša naprava je samodejno zaščitena pred zlonamerno programsko opremo. Ne potrebujete posebne programske opreme.</translation>
 <translation id="3328489342742826322">Z obnovitvijo varnostno kopiranih podatkov bodo izbrisane obstoječe aplikacije za Linux in podatki v mapi z datotekami za Linux.</translation>
+<translation id="3329013043687509092">Nasičenost</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Podatki o aplikaciji</translation>
 <translation id="3333190335304955291">To storitev lahko izklopite v nastavitvah.</translation>
@@ -2853,6 +2856,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3641456520301071208">Spletna mesta lahko zahtevajo lokacijo.</translation>
 <translation id="3642070413432681490">Krog okoli kazalca</translation>
 <translation id="3642699533549879077">Ko nekdo drug pogleda na vaš zaslon, boste prejeli opozorilo in vsebina obvestila bo skrita.</translation>
+<translation id="3643962751030964445">To napravo upravlja <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> zahteva nov profil za račun <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">Rahlo premaknite prst, da bo zajet drug del prstnega odtisa.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}one{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}two{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}few{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}other{Priloge (<ph name="ATTACHMENTS" />) so prejete iz naprave <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Zaznana naprava USB: <ph name="USB_DEVICE_NAME" /></translation>
@@ -3305,6 +3309,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4050534976465737778">Prepričajte se, da sta obe napravi odklenjeni, blizu druga druge ter imata vklopljen Bluetooth. Če delite s Chromebookom, ki ni med vašimi stiki, mora biti v njem vklopljena funkcija Vidnost v bližini (odprite območje stanja in vklopite Vidnost v bližini). <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Drobna</translation>
 <translation id="4054070260844648638">Vidna vsem</translation>
+<translation id="4056223980640387499">Sepija</translation>
 <translation id="4056908315660577142">Dosegel(-la) si časovno omejitev, ki jo je starš nastavil za aplikacijo <ph name="APP_NAME" /> za Chrome. Jutri jo lahko uporabljaš <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Ogled v Trgovini</translation>
@@ -3422,6 +3427,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4175137578744761569">Svetlo vijolična in bela</translation>
 <translation id="4175737294868205930">Trajno shranjevanje</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>
+<translation id="4176864026061939326">Ta naprava je upravljana. Skrbnik naprave zahteva nov profil za račun <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4180788401304023883">Ali želite izbrisati overjeno potrdilo »<ph name="CERTIFICATE_NAME" />«?</translation>
 <translation id="4181602000363099176">20 x</translation>
 <translation id="4181841719683918333">Jeziki</translation>
@@ -3841,7 +3847,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4579876313423027742">Za obvestila brskalnika obiščite <ph name="LINK_BEGIN" />nastavitve brskalnika Chrome<ph name="LINK_END" />.</translation>
 <translation id="4580587929153007251">Znova se prijavite v Googlovega upravitelja gesel.</translation>
 <translation id="4580596421317071374">Gesla se shranjujejo v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" /> v tej napravi.</translation>
-<translation id="4580626299762849806">Gesel ni mogoče uvoziti. Preverite, ali je <ph name="FILENAME" /> pravilno oblikovana.</translation>
 <translation id="4581774856936278355">Napaka pri obnavljanju Linuxa</translation>
 <translation id="4582297591746054421">Spletna mesta običajno preberejo odložišče zaradi funkcij, kot je ohranjanje oblike kopiranega besedila.</translation>
 <translation id="4582563038311694664">Ponastavi vse nastavitve</translation>
@@ -6596,6 +6601,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7267875682732693301">Še naprej privzdigujte prst, da dodate različne dele prstnega odtisa.</translation>
 <translation id="7267898843336437186">Izberite mapo, ki si jo to spletno mesto lahko ogleda</translation>
 <translation id="7268127947535186412">To nastavitev upravlja lastnik naprave.</translation>
+<translation id="7269229526547981029">Ta profil upravlja organizacija <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> zahteva nov profil za račun <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7269736181983384521">Prenesena količina podatkov s funkcijo deljenja v bližini</translation>
 <translation id="7272674038937250585">Ni opisa</translation>
 <translation id="7273110280511444812">nazadnje priključeno <ph name="DATE" /></translation>
@@ -7607,6 +7613,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obvestilo}one{# novo obvestilo}two{# novi obvestili}few{# nova obvestila}other{# novih obvestil}}</translation>
 <translation id="821119981794423735">Če želite v Googlov upravitelj gesel uvoziti gesla za račun <ph name="USER_EMAIL" />, izberite datoteko CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Poteka prenos}one{Poteka prenos}two{Potekata prenosa}few{Potekajo prenosi}other{Potekajo prenosi}}</translation>
+<translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> upravlja ta profil in zahteva, da ustvarite ločen profil za račun <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8213449224684199188">Izbran je način za fotografije</translation>
 <translation id="8214489666383623925">Odpri datoteko ...</translation>
 <translation id="8215129063232901118">Dostopajte do zmožnosti telefona v napravi <ph name="DEVICE_TYPE" />.</translation>

@@ -373,6 +373,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3151786313568798007">Orientācija</translation>
 <translation id="3153444934357957346">Vairākkārtējas pierakstīšanās laikā var izmantot ne vairāk kā <ph name="MULTI_PROFILE_USER_LIMIT" /> kontus.</translation>
 <translation id="3154351730702813399">Ierīces administrators var uzraudzīt jūsu pārlūkošanas darbības.</translation>
+<translation id="3157931365184549694">Atjaunot</translation>
 <translation id="316086887565479535">Veidnē ir neatbalstītas lietotnes</translation>
 <translation id="3161500364292033097">Aizvērt darbvietu un logus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ierīcē <ph name="DEVICE_TYPE" /> atjauno iepriekšējo versiju. Ierīce tiks atiestatīta, un visi dati tiks izdzēsti.</translation>
@@ -476,7 +477,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3735740477244556633">Kārtot pēc</translation>
 <translation id="3742055079367172538">Ekrānuzņēmums ir uzņemts</translation>
 <translation id="3765841986579723851">Rediģēts šodien</translation>
-<translation id="3771549900096082774">Augsta kontrasta režīms</translation>
 <translation id="3773700760453577392">Administrators ir aizliedzis lietotājam <ph name="USER_EMAIL" /> vairākkārtēju pierakstīšanos. Lai turpinātu, visiem lietotājiem ir jāizrakstās.</translation>
 <translation id="3779139509281456663">Tiek veidots savienojums ar ierīci <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4312840429157639164">Kamera pārnesta uz labo augšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="4316910396681052118">VISAS LIETOTNES</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Jūs nospiedāt augsta kontrasta īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
 <translation id="4322742403972824594">Šie īsinājumtaustiņi ir mainījušies: Ctrl + Alt + augšupvērstais bulttaustiņš. Lai izmantotu sākumvietas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + kreisais bulttaustiņš.</translation>
 <translation id="4333628967105022692">Pārlūks Lacros netiek atbalstīts, ja ir pierakstījušies vairāki lietotāji.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Notiek Asistenta ielāde...</translation>
-<translation id="4356930093361201197">augsta kontrasta režīms</translation>
 <translation id="4371348193907997655">Apraides iestatījumi</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signāla stiprums ir <ph name="SIGNAL_STRENGTH" />%.</translation>
 <translation id="4378551569595875038">Pievienojas...</translation>
@@ -877,7 +875,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5980301590375426705">Aizvērt viesa sesiju</translation>
 <translation id="598407983968395253">Izmantot veidni</translation>
 <translation id="598882571027504733">Lai iegūtu atjauninājumu, restartējiet savu Chromebook datoru ar pievienoto tastatūru.</translation>
-<translation id="5992218262414051481">Augsta kontrasta režīms ir iespējots. Lai to izslēgtu, vēlreiz nospiediet Ctrl+Search+H.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. lapa no <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Notiek iziešana no spoguļošanas režīma</translation>
 <translation id="602001110135236999">Ritināt pa kreisi</translation>
@@ -1233,7 +1230,6 @@ Jauna instalācija</translation>
 <translation id="8051716679295756675">Veidne ar nosaukumu “<ph name="DESK_TEMPLATE_NAME" />” jau pastāv.</translation>
 <translation id="8052898407431791827">Kopēts starpliktuvē</translation>
 <translation id="8054466585765276473">Notiek akumulatora darbības ilguma aprēķināšana.</translation>
-<translation id="8061464966246066292">Augsts kontrasts</translation>
 <translation id="8083540854303889870">Saglabāti vēlākai izmantošanai</translation>
 <translation id="8091387634532529612">Automātiskie atjauninājumi</translation>
 <translation id="8098591350844501178">Apturēt ekrāna apraidi uztvērējā “<ph name="RECEIVER_NAME" />”</translation>

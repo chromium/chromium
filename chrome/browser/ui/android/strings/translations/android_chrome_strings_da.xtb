@@ -454,6 +454,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
 <translation id="3443221991560634068">Genindlæs den aktuelle side</translation>
 <translation id="3444179773590444986">Vil du dele feedback om Mørkt tema på websites?</translation>
+<translation id="3452832259067974318">Af hensyn til beskyttelsen af dine personlige oplysninger udfylder Chrome ikke din adgangskode automatisk i dette felt.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 planlagt download.}one{# planlagt download.}other{# planlagte downloads.}}</translation>
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Du kan vælge din søgemaskine</translation>
@@ -679,6 +680,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Adgangskoder gemmes i Adgangskodeadministrator på denne enhed</translation>
 <translation id="4766678251456904326">Føj konto til enhed</translation>
+<translation id="4787736314074622408">Vil du slette <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Hjælper dig med at udføre opgaver som f.eks. betaling overalt på nettet</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.

@@ -1165,6 +1165,7 @@
 <translation id="208634871997892083">હંમેશાં ચાલુ VPN</translation>
 <translation id="2087822576218954668">પ્રિન્ટ: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">તમે <ph name="DEVICE_OS" /> ઇન્સ્ટૉલ કરો તે પછી જ નોંધણીને સપોર્ટ આપવામાં આવે છે.</translation>
+<translation id="2089090684895656482">ઓછું</translation>
 <translation id="208928984520943006">કોઈપણ સમયે હોમસ્ક્રીન મેળવવા માટે, નીચેથી ઉપરની તરફ સ્વાઇપ કરો.</translation>
 <translation id="2089566709556890888">Google Chrome સાથે સુરક્ષિત રીતે બ્રાઉઝ કરો</translation>
 <translation id="2089795179672254991">જ્યારે ક્લિપબોર્ડ પર કૉપિ કરેલી ટેક્સ્ટ અને છબીઓને સાઇટ જોવા માંગે ત્યારે પૂછો (સુઝાવ આપેલો છે)</translation>
@@ -2501,6 +2502,7 @@
 <translation id="3325910708063135066">Mac સિસ્ટમ પસંદગીઓમાં કૅમેરા અને માઇક્રોફોન બંધ છે</translation>
 <translation id="3327050066667856415">Chromebooksની ડિઝાઇન જ સુરક્ષાને ધ્યાનમાં રાખીને કરવામાં આવી છે. તમારું ડિવાઇસ માલવેરથી ઑટોમૅટિક રીતે જ સુરક્ષિત રહે છે – આના માટે કોઈ વધારાનું સૉફ્ટવેર જરૂરી નથી.</translation>
 <translation id="3328489342742826322">કોઈ બૅકઅપમાંથી રિસ્ટોર કરવાથી હાલની બધી Linux ઍપ્લિકેશનો અને તમારા Linux ફાઇલો ફોલ્ડરમાંનો ડેટા ડિલીટ થઈ જશે.</translation>
+<translation id="3329013043687509092">સંતૃપ્તતા</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ઍપની માહિતી</translation>
 <translation id="3333190335304955291">તમે આ સેવાને સેટિંગમાંથી બંધ કરી શકો છો.</translation>
@@ -3287,6 +3289,7 @@
 <translation id="4050534976465737778">ખાતરી કરો કે બન્ને ડિવાઇસ અનલૉક કરેલા અને નજીક જ હોય તેમજ તેમાં બ્લૂટૂથની સુવિધા ચાલુ કરેલી હોય. જો તમે તમારા સંપર્કોમાં ન હોય એવી Chromebook સાથે શેર કરી રહ્યાં હો, તો ખાતરી કરો કે તેમાં 'નજીકની દૃશ્યતા' સુવિધા ચાલુ કરી હોય (સ્ટેટસ એરિયા ખોલો અને તેના પછી 'નજીકની દૃશ્યતા' પસંદ કરો). <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">નાનું</translation>
 <translation id="4054070260844648638">દરેકને દૃશ્યક્ષમ</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ઍપ માટે તમારા માતાપિતાએ સેટ કરેલી સમયમર્યાદાએ તમે પહોંચી ગયા છો. તમે આવતી કાલે <ph name="TIME_LIMIT" /> માટે તેનો ઉપયોગ કરી શકશો.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">સ્ટોરમાં જુઓ</translation>
@@ -3536,6 +3539,7 @@
 <translation id="4306119971288449206">ઍપ "<ph name="CONTENT_TYPE" />" કન્ટેન્ટ-પ્રકાર સાથે ઉપલબ્ધ કરાવવી જોઈએ</translation>
 <translation id="4307992518367153382">પાયાગત</translation>
 <translation id="4309165024397827958">તમારા ડિવાઇસના સ્થાનનો ઉપયોગ કરવા માટે, સ્થાનની પરવાનગી ધરાવતી Android ઍપ અને સેવાઓને મંજૂરી આપો. Google સમય-સમય પર સ્થાન ડેટા એકત્રિત કરી અને આ ડેટાને સ્થાનની સચોટતા અને સ્થાન-આધારિત સેવાઓને બહેતર બનાવવા માટે અનામી રીતે ઉપયોગમાં લઈ શકે છે.</translation>
+<translation id="4309183709806093061">સિસ્ટમનો ઑડિયો પણ શેર કરો. પ્રતિસાદ ટાળવા માટે આ ડિવાઇસ મ્યૂટ કરવામાં આવશે.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K લાઇવ)</translation>
 <translation id="4310132194679586591">આ લિંક ખોલવા માટે તમારા પર કોઈ ઍપ પસંદ કરો</translation>
 <translation id="4310139701823742692">ખોટા ફોર્મેટની ફાઇલ છે. PPD ફાઇલ તપાસો અને ફરી પ્રયાસ કરો.</translation>
@@ -3823,7 +3827,6 @@
 <translation id="4579876313423027742">બ્રાઉઝરના નોટિફિકેશન માટે, <ph name="LINK_BEGIN" />Chrome બ્રાઉઝર સેટિંગ<ph name="LINK_END" /> પર જાઓ</translation>
 <translation id="4580587929153007251">Google Password Managerમાં ફરી સાઈન ઇન કરો</translation>
 <translation id="4580596421317071374">પાસવર્ડ આ ડિવાઇસ પરના <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવે છે.</translation>
-<translation id="4580626299762849806">પાસવર્ડ આયાત કરી શકાતા નથી. <ph name="FILENAME" /> ચેક કરો અને તે યોગ્ય રીતે ફૉર્મેટ કરેલું હોય તેની ખાતરી કરો.</translation>
 <translation id="4581774856936278355">Linuxની પુનઃસ્થાપના કરતી વખતે ભૂલ આવી</translation>
 <translation id="4582297591746054421">સાઇટ સામાન્ય રીતે, તમે કૉપિ કરેલી ટેક્સ્ટનું ફૉર્મેટિંગ જાળવી રાખવા જેવી સુવિધાઓ માટે તમારું ક્લિપબોર્ડ વાંચે છે</translation>
 <translation id="4582563038311694664">તમામ સેટિંગને રીસેટ કરો</translation>
@@ -4549,6 +4552,7 @@
 <translation id="5305145881844743843">આ એકાઉન્ટ <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="5307030433605830021">સૉર્સ સમર્થિત નથી</translation>
 <translation id="5307386115243749078">બ્લૂટૂથ સ્વિચ જોડો</translation>
+<translation id="5307958609248661362">Google Password Managerનો સમય સમાપ્ત થયો</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5309418307557605830">Google Assistant અહીં પણ કાર્ય કરે છે</translation>
 <translation id="5311304534597152726">આ તરીકે સાઇન ઇન કરી રહ્યાં છે</translation>
@@ -7351,6 +7355,7 @@ USB ડિવાઇસ</translation>
 <translation id="7988805580376093356">તમારી OSને અકબંધ રહેવા દો અને <ph name="DEVICE_OS" />ને USBમાંથી ચલાવો.</translation>
 <translation id="7991296728590311172">સ્વિચ ઍક્સેસ સેટિંગ</translation>
 <translation id="7992203134935383159">સ્પીચ સિન્થેસીસ</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">પ્રાધાન્યતા પર પ્રક્રિયા કરો</translation>
 <translation id="7999229196265990314">નીચેની ફાઇલો બનાવાઈ: એક્સટેન્શન: <ph name="EXTENSION_FILE" />કી ફાઇલ: <ph name="KEY_FILE" />તમારી કી ફાઇલને સુરક્ષિત સ્થાન પર મૂકો. તમને તેની જરૂરિયાત તમારા એક્સટેન્શનના નવા વર્ઝન બનાવવા માટે પડશે.</translation>
 <translation id="8002274832045662704">વિગતવાર પ્રિન્ટરની ગોઠવણી</translation>

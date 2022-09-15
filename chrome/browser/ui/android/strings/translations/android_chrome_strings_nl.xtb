@@ -454,6 +454,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="3435465986463792564">Heb je veel vensters open? Beheer ze hier.</translation>
 <translation id="3443221991560634068">De huidige pagina opnieuw laden</translation>
 <translation id="3444179773590444986">Feedback delen over donker thema voor sites?</translation>
+<translation id="3452832259067974318">Ter bescherming van je privacy vult Chrome je wachtwoord niet automatisch in dit veld in.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download gepland}other{# downloads gepland}}</translation>
 <translation id="3474624961160222204">Doorgaan als <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Je kunt je zoekmachine kiezen</translation>
@@ -679,6 +680,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Wachtwoorden worden opgeslagen in Wachtwoordmanager op dit apparaat</translation>
 <translation id="4766678251456904326">Account toevoegen aan apparaat</translation>
+<translation id="4787736314074622408">Wil je <ph name="ITEM_TITLE" /> verwijderen?</translation>
 <translation id="4791358705705538979">Hiermee kun je op internet taken afronden, zoals betalen.</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Wachtwoordzinversleuteling is niet van toepassing op betaalmethoden en adressen van Google Pay.

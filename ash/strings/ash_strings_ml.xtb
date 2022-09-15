@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">ഓറിയന്റേഷൻ</translation>
 <translation id="3153444934357957346">ഒന്നിലധികം സൈൻ ഇന്നുകളിൽ നിങ്ങൾക്ക് <ph name="MULTI_PROFILE_USER_LIMIT" /> അക്കൗണ്ടുകൾ വരെ മാത്രമേ ഉണ്ടായിരിക്കാൻ പാടുള്ളൂ.</translation>
 <translation id="3154351730702813399">നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്‌റ്റിവിറ്റി ഉപകരണ അഡ്‌മിൻ നിരീക്ഷിച്ചേക്കാം.</translation>
+<translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="316086887565479535">ടെംപ്ലേറ്റിൽ പിന്തുണയ്ക്കാത്ത ആപ്പുകളുണ്ട്</translation>
 <translation id="3161500364292033097">ഡെസ്‌ക്കും വിൻഡോകളും അടയ്ക്കുക</translation>
 <translation id="316356270129335934">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മുമ്പത്തെ പതിപ്പിലേക്ക് <ph name="MANAGER" /> പുനഃസ്ഥാപിക്കുന്നു. നിങ്ങളുടെ ഉപകരണം റീസെറ്റ് ചെയ്യുകയും എല്ലാ ഡാറ്റയും ഇല്ലാതാകുകയും ചെയ്യും.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">ഇപ്രകാരം അടുക്കുക</translation>
 <translation id="3742055079367172538">സ്‌ക്രീൻഷോട്ട് എടുത്തു</translation>
 <translation id="3765841986579723851">ഇന്ന് എഡിറ്റ് ചെയ്തത്</translation>
-<translation id="3771549900096082774">ഉയർന്ന ദൃശ്യതീവ്രതാ മോഡ്</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> എന്ന ഇമെയിലിലേക്ക് ഒന്നിലധികം പേർ സൈൻ ഇൻ ചെയ്യുന്നത് ഒരു അഡ്‌മിനിസ്‌ട്രേറ്റർ വിലക്കിയിരിക്കുന്നു. തുടരാൻ, എല്ലാ ഉപയോക്താക്കളും സൈൻ ഔട്ട് ചെയ്യണം.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">മുകളിൽ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
 <translation id="4316910396681052118">എല്ലാ ആപ്പുകളും</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">നിങ്ങൾ ഉയർന്ന ദൃശ്യതീവ്രതയ്‌ക്കുള്ള കീബോഡ് കുറുക്കുവഴി അമർത്തി. അത് ഓണാക്കണോ?</translation>
 <translation id="4322742403972824594">'Ctrl + Alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Home കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="4333628967105022692">ഒന്നിലേറെ ഉപയോക്താക്കൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ Lacros-ന് പിന്തുണയുണ്ടാകില്ല.</translation>
 <translation id="4338109981321384717">മാഗ്‌നിഫൈയിംഗ് ഗ്ലാസ്</translation>
 <translation id="4351433414020964307">സഹായി ലോഡുചെയ്യുന്നു...</translation>
-<translation id="4356930093361201197">ഉയർന്ന ദൃശ്യതീവ്രതാ മോഡ്</translation>
 <translation id="4371348193907997655">കാസ്‌റ്റ് ക്രമീകരണം</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /> ശതമാനം</translation>
 <translation id="4378551569595875038">കണക്റ്റിംഗ്...</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">ഗസ്റ്റ് എക്സിറ്റ്</translation>
 <translation id="598407983968395253">ടെംപ്ലേറ്റ് ഉപയോഗിക്കുക</translation>
 <translation id="598882571027504733">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
-<translation id="5992218262414051481">ഉയർന്ന ദൃശ്യതീവ്രത മോഡ് പ്രവർത്തനക്ഷമമാക്കി. ഇത് ഓഫാക്കാൻ, Ctrl+തിരയൽ+H വീണ്ടും അമർത്തുക.</translation>
 <translation id="6012623610530968780">പേജ് <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">മിറർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="602001110135236999">ഇടത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> എന്ന പേരിലുള്ള ടെംപ്ലേറ്റ് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="8052898407431791827">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
 <translation id="8054466585765276473">ബാറ്ററി സമയം കണക്കാക്കുന്നു.</translation>
-<translation id="8061464966246066292">ഉയർന്ന ദൃശ്യ തീവ്രത</translation>
 <translation id="8083540854303889870">പിന്നീട് കാണാൻ സംരക്ഷിച്ചവ</translation>
 <translation id="8091387634532529612">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് സ്‌ക്രീൻ കാസ്‌റ്റുചെയ്യുന്നത് നിർത്തുക</translation>

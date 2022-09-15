@@ -1179,6 +1179,7 @@
 <translation id="208634871997892083">VPN नेहमी सुरू ठेवा</translation>
 <translation id="2087822576218954668">प्रिंट: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">तुम्ही <ph name="DEVICE_OS" /> इंस्टॉल केल्यानंतरच नोंदणीला सपोर्ट आहे.</translation>
+<translation id="2089090684895656482">निम्न</translation>
 <translation id="208928984520943006">होम स्क्रीनवर कधीही जाण्यासाठी, तळापासून वर स्वाइप करा.</translation>
 <translation id="2089566709556890888">Google Chrome ने सुरक्षितरित्या ब्राउझ करा</translation>
 <translation id="2089795179672254991">साइटला तुम्ही क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज पाहायच्‍या असतील, तेव्हा विचारा (शिफारस केलेले)</translation>
@@ -2259,6 +2260,7 @@
 <translation id="3046178388369461825">Linux डिस्कवरील जागा अतिशय कमी आहे</translation>
 <translation id="3046910703532196514">वेबपेज, संपूर्ण</translation>
 <translation id="304747341537320566">स्पीच इंजीन</translation>
+<translation id="3048051495640130973">बॅटरी सेव्हर कधी सुरू होईल हे तुम्ही सेटिंग्जमध्ये नियंत्रित करू शकता</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> या विक्रेत्याकडील HID डिव्हाइस</translation>
 <translation id="3048917188684939573">Cast आणि डिव्हाइसचे लॉग</translation>
 <translation id="3051250416341590778">डिस्प्ले आकार</translation>
@@ -2516,6 +2518,7 @@
 <translation id="3325910708063135066">Mac सिस्टम प्राधान्ये मधील कॅमेरा आणि मायक्रोफोन बंद आहे</translation>
 <translation id="3327050066667856415">Chromebook सुरक्षेसाठी डिझाइन केलेली आहेत. तुमच्या डिव्हाइसचे मालवेअरपासून आपोआप संरक्षण केले जाते - अतिरिक्त सॉफ्टवेअरची गरज नाही.</translation>
 <translation id="3328489342742826322">बॅकअपमधून रिस्टोअर केल्याने तुमची अस्तित्वात असलेली Linux ॲप्लिकेशन आणि तुमच्या Linux फाइल फोल्डरमध्ये असलेला डेटा हटवला जाईल.</translation>
+<translation id="3329013043687509092">संपृक्तता</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ॲप माहिती</translation>
 <translation id="3333190335304955291">ही सेवा तुम्ही सेटिंग्जमध्ये बंद करू शकता.</translation>
@@ -2849,6 +2852,7 @@
 <translation id="3641456520301071208">साइट तुमचे स्थान विचारू शकतात</translation>
 <translation id="3642070413432681490">वर्तुळाकार कर्सर</translation>
 <translation id="3642699533549879077">दुसरी एखादी व्यक्ती तुमच्या स्क्रीनकडे पाहते, तेव्हा तुम्हाला इशारा मिळेल आणि सूचनेचा आशय लपवला जाईल.</translation>
+<translation id="3643962751030964445">हे डिव्हाइस <ph name="DEVICE_MANAGER" /> द्वारे व्यवस्थापित आहे. <ph name="DEVICE_MANAGER" /> द्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
 <translation id="3645372836428131288">फिंगरप्रिंटचा वेगळा भाग कॅप्चर करण्यासाठी बोट किंचित हलवा.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />कडून <ph name="ATTACHMENTS" /> मिळाला}other{<ph name="DEVICE_NAME" />कडून <ph name="ATTACHMENTS" /> मिळाले}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> आढळले</translation>
@@ -3301,6 +3305,7 @@
 <translation id="4050534976465737778">दोन्‍ही डिव्‍हाइस अनलॉक असल्‍याची, एकमेकांच्‍या जवळ धरल्‍याची आणि त्‍यांचे ब्लूटूथ सुरू असल्‍याची खात्री करा. तुम्ही तुमच्या संपर्कामध्ये नसलेल्या Chromebook सह शेअर करत असल्यास, Nearby दृश्यमानता सुरू केली असल्याची खात्री करा (स्थिती क्षेत्र उघडा, त्यानंतर Nearby दृश्यमानता सुरू करा). <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548"> लघु</translation>
 <translation id="4054070260844648638">सर्वांना दृश्यमान</translation>
+<translation id="4056223980640387499">सेपिया</translation>
 <translation id="4056908315660577142">तुम्ही तुमच्या पालकाने <ph name="APP_NAME" /> Chrome अ‍ॅपसाठी सेट केलेली वेळ मर्यादा गाठली आहे. तुम्ही ते उद्या <ph name="TIME_LIMIT" /> साठी वापरू शकता.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">स्टोअर मध्ये पहा</translation>
@@ -3416,6 +3421,7 @@
 <translation id="4175137578744761569">फिकट जांभळा आणि पांढरा</translation>
 <translation id="4175737294868205930">सातत्यपूर्ण स्टोरेज</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
+<translation id="4176864026061939326">हे डिव्हाइस व्यवस्थापित केलेले आहे. तुमच्या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरद्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
 <translation id="4180788401304023883">CA सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" हटवायचे?</translation>
 <translation id="4181602000363099176">२०x</translation>
 <translation id="4181841719683918333">भाषा</translation>
@@ -3835,7 +3841,6 @@
 <translation id="4579876313423027742">ब्राउझर सूचनांसाठी, <ph name="LINK_BEGIN" />Chrome ब्राउझर सेटिंग्ज<ph name="LINK_END" /> वर जा</translation>
 <translation id="4580587929153007251">Google Password Manager मध्ये पुन्हा साइन इन करा</translation>
 <translation id="4580596421317071374">पासवर्ड या डिव्हाइसवर <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये सेव्ह केले जातात.</translation>
-<translation id="4580626299762849806">पासवर्ड इंपोर्ट करू शकत नाही. <ph name="FILENAME" /> तपासा आणि ती योग्य प्रकारे फॉरमॅट केली असल्याची खात्री करा.</translation>
 <translation id="4581774856936278355">Linux रिस्टोअर करताना एरर आली</translation>
 <translation id="4582297591746054421">तुम्ही कॉपी केलेल्या मजकुराचे फॉरमॅटिंग कायम ठेवणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा क्लिपबोर्ड वाचतात</translation>
 <translation id="4582563038311694664">सर्व सेटिंग्ज रीसेट करा</translation>
@@ -6583,6 +6588,7 @@
 <translation id="7267875682732693301">तुमच्‍या फिंगरप्रिंटचे वेगवेगळे भाग जोडण्यासाठी तुमचे बोट उचलत राहा</translation>
 <translation id="7267898843336437186">ही साइट पाहू शकते असे फोल्डर निवडा</translation>
 <translation id="7268127947535186412">हे सेटिंग डिव्हाइसच्या मालकाद्वारे व्यवस्थापित केले जाते.</translation>
+<translation id="7269229526547981029">ही प्रोफाइल <ph name="PROFILE_MANAGER" /> द्वारे व्यवस्थापित आहे. <ph name="ACCOUNT_MANAGER" /> द्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
 <translation id="7269736181983384521">Nearby सह शेअरिंग डेटा वापर</translation>
 <translation id="7272674038937250585">वर्णन दिलेले नाही</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> रोजी अंतिम संलग्न केले</translation>
@@ -7592,6 +7598,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नवीन सूचना}other{# नवीन सूचना}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> साठी Google Password Manager मध्ये पासवर्ड इंपोर्ट करण्यासाठी, CSV फाइल निवडा</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड सुरू आहे}other{डाउनलोड सुरू आहेत}}</translation>
+<translation id="8212601853154459483">ही प्रोफाइल <ph name="PROFILE_MANAGER" /> द्वारे व्यवस्थापित केली जाते आणि तुम्ही <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी स्वतंत्र प्रोफाइल तयार करणे आवश्यक आहे</translation>
 <translation id="8213449224684199188">फोटो मोड टाकला</translation>
 <translation id="8214489666383623925">फाइल उघडा...</translation>
 <translation id="8215129063232901118">तुमच्या <ph name="DEVICE_TYPE" /> वरून तुमच्या फोनच्या क्षमता अ‍ॅक्सेस करा</translation>

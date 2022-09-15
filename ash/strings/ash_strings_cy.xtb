@@ -373,6 +373,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3151786313568798007">Gogwydd</translation>
 <translation id="3153444934357957346">Dim ond hyd at <ph name="MULTI_PROFILE_USER_LIMIT" /> o gyfrifon y gallwch eu cael yn y modd mewngofnodi o sawl cyfrif.</translation>
 <translation id="3154351730702813399">Mae'n bosib y bydd gweinyddwr y ddyfais yn monitro eich gweithgarwch pori.</translation>
+<translation id="3157931365184549694">Adfer</translation>
 <translation id="316086887565479535">Apiau heb eu cefnogi mewn templed</translation>
 <translation id="3161500364292033097">Cau desg a ffenestri</translation>
 <translation id="316356270129335934">Mae <ph name="MANAGER" /> yn rholio eich <ph name="DEVICE_TYPE" /> yn ôl. Bydd eich dyfais yn ailosod a bydd eich data yn cael eu dileu.</translation>
@@ -476,7 +477,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3735740477244556633">Trefnu yn ôl</translation>
 <translation id="3742055079367172538">Wedi tynnu sgrinlun</translation>
 <translation id="3765841986579723851">Golygwyd heddiw</translation>
-<translation id="3771549900096082774">Modd Cyferbyniad Uchel</translation>
 <translation id="3773700760453577392">Mae gweinyddwr wedi gwrthod mewngofnodi o sawl cyfrif ar gyfer <ph name="USER_EMAIL" />. Rhaid i bob defnyddiwr allgofnodi i barhau.</translation>
 <translation id="3779139509281456663">Wrthi'n cysylltu <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4312840429157639164">Mae'r camera wedi'i snapio i'r gornel dde uchaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="4316910396681052118">POB AP</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Gwnaethoch bwyso llwybr byr y bysellfwrdd i gael cyferbyniad uchel. Ydych chi am ei droi ymlaen?</translation>
 <translation id="4322742403972824594">Mae'r llwybr byr bysellfwrdd Ctrl + Alt + Saeth i fyny wedi newid. I ddefnyddio'r fysell Home, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth Chwith.</translation>
 <translation id="4333628967105022692">Ni chefnogir Lacros tra bod sawl defnyddiwr wedi'u mewngofnodi.</translation>
 <translation id="4338109981321384717">Chwyddwydr</translation>
 <translation id="4351433414020964307">Mae Assistant yn llwytho...</translation>
-<translation id="4356930093361201197">modd cyferbyniad uchel</translation>
 <translation id="4371348193907997655">Gosodiadau Castio</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, cryfder signal <ph name="SIGNAL_STRENGTH" /> y cant</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
@@ -877,7 +875,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5980301590375426705">Gadael gwestai</translation>
 <translation id="598407983968395253">Defnyddio templed</translation>
 <translation id="598882571027504733">I gael y diweddariad, ailgychwynnwch eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
-<translation id="5992218262414051481">Mae'r Modd Cyferbyniad Uchel wedi'i alluogi. Pwyswch Ctrl+Search+H eto i'w toglo.</translation>
 <translation id="6012623610530968780">Tudalen <ph name="SELECTED_PAGE" /> o <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Wrthi'n gadael y modd adlewyrchu</translation>
 <translation id="602001110135236999">Sgrolio i'r chwith</translation>
@@ -1233,7 +1230,6 @@ Gosodiad newydd</translation>
 <translation id="8051716679295756675">Mae'r templed o'r enw <ph name="DESK_TEMPLATE_NAME" /> eisoes yn bodoli</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="8054466585765276473">Wrthi'n cyfrifo amser y batri.</translation>
-<translation id="8061464966246066292">Cyferbyniad uchel</translation>
 <translation id="8083540854303889870">Cadwyd ar gyfer nes ymlaen</translation>
 <translation id="8091387634532529612">Diweddariadau awtomatig</translation>
 <translation id="8098591350844501178">Stopio castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>

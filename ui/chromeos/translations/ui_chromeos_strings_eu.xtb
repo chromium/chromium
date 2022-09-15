@@ -78,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elementu konpimatzen…</translation>
 <translation id="1722687688096767818">Profila gehitzen…</translation>
 <translation id="1726100011689679555">Izen-zerbitzariak</translation>
+<translation id="1726600877401297672">Eraman dira zaborrontzira <ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="1729953886957086472">Alemana (Alemania)</translation>
 <translation id="1730235522912993863">Txinatarra (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatu dira.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Ez dago &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; bilaketarekin bat datorren elementurik</translation>
 <translation id="2894654529758326923">Informazioa</translation>
 <translation id="2902734494705624966">AEBko teklatu hedatua</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> elementu zaborrontzira eramaten</translation>
 <translation id="290843123675549676">Maratharra</translation>
 <translation id="2923240520113693977">Estoniarra</translation>
 <translation id="2938685643439809023">Mongoliarra</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Fitxategiei dagozkien <ph name="TOTAL_FILE_SIZE" /> ezabatuko dira</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> elementu <ph name="FOLDER_NAME" /> karpetara eramaten</translation>
+<translation id="5092200349368278146">Eraman da zaborrontzira <ph name="FILE_NAME" /></translation>
 <translation id="509429900233858213">Errore bat gertatu da.</translation>
 <translation id="5098629044894065541">Hebrearra</translation>
 <translation id="5102922915594634436">Kudeatu sinkronizatutako karpetak</translation>
@@ -560,6 +563,7 @@
 <translation id="5845721951356578987">Erizaina</translation>
 <translation id="5861477046012235702">Jokalaria</translation>
 <translation id="5864471791310927901">DHCP bilaketak huts egin du</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> zaborrontzira eramaten</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>
 <translation id="5911887972742538906">Errore bat gertatu da Linux aplikazioa instalatzean.</translation>
 <translation id="5912396950572065471">Formatua</translation>

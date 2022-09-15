@@ -373,6 +373,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3151786313568798007">Orientação</translation>
 <translation id="3153444934357957346">Só é possível ter até <ph name="MULTI_PROFILE_USER_LIMIT" /> contas em login múltiplo.</translation>
 <translation id="3154351730702813399">O administrador do dispositivo pode monitorar sua atividade de navegação.</translation>
+<translation id="3157931365184549694">Restaurar</translation>
 <translation id="316086887565479535">Apps sem suporte no modelo</translation>
 <translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revertendo seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
@@ -476,7 +477,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3765841986579723851">Editado hoje</translation>
-<translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador desativou o login múltiplo para <ph name="USER_EMAIL" />. Todos os usuários precisam sair para continuar.</translation>
 <translation id="3779139509281456663">Conectando <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4312840429157639164">Câmera alinhada ao canto direito de cima. Conflito com a superfície do sistema.</translation>
 <translation id="4316910396681052118">TODOS OS APPS</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Você pressionou o atalho de teclado para o alto contraste. Gostaria de ativá-lo?</translation>
 <translation id="4322742403972824594">O atalho de teclado Ctrl + Alt + seta para cima mudou. Para usar a tecla Home, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para a esquerda.</translation>
 <translation id="4333628967105022692">O Lacros não é compatível com o login de vários usuários.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">O Assistente está sendo carregado…</translation>
-<translation id="4356930093361201197">modo de alto contraste</translation>
 <translation id="4371348193907997655">Configurações de transmissão</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Conectando...</translation>
@@ -877,7 +875,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5980301590375426705">Sair sessão visit.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para receber a atualização, reinicie seu Chromebook com o teclado conectado.</translation>
-<translation id="5992218262414051481">Modo de alto contraste ativado. Pressione Ctrl+Pesquisa+H novamente para desativá-lo.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Saindo do modo espelhado</translation>
 <translation id="602001110135236999">Rolar para a esquerda</translation>
@@ -1233,7 +1230,6 @@ Nova instalação</translation>
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
-<translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>
 <translation id="8091387634532529612">Atualizações automáticas</translation>
 <translation id="8098591350844501178">Parar de transmitir tela para <ph name="RECEIVER_NAME" /></translation>

@@ -1183,6 +1183,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="208634871997892083">Visada įjungtas VPN</translation>
 <translation id="2087822576218954668">Spausdinti: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Registracija palaikoma tik įdiegus „<ph name="DEVICE_OS" />“.</translation>
+<translation id="2089090684895656482">Mažiau</translation>
 <translation id="208928984520943006">Norėdami bet kuriuo metu pereiti į pagrindinį ekraną, perbraukite aukštyn iš apačios.</translation>
 <translation id="2089566709556890888">Saugiai naršykite naudodami „Google Chrome“</translation>
 <translation id="2089795179672254991">Paklausti, kai svetainė nori matyti tekstą ir vaizdus, nukopijuotus į iškarpinę (rekomenduojama)</translation>
@@ -2521,6 +2522,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3325910708063135066">Fotoaparatas ir mikrofonas išjungti „Mac“ sistemos nuostatose</translation>
 <translation id="3327050066667856415">„Chromebook“ įrenginiuose pasirūpinta sauga. Jūsų įrenginys yra automatiškai apsaugotas nuo kenkėjiškų programų, todėl nereikia jokios papildomos programinės įrangos.</translation>
 <translation id="3328489342742826322">Atkūrus atsargines failų kopijas bus ištrintos „Linux“ failų aplanke esančios „Linux“ programos ir duomenys.</translation>
+<translation id="3329013043687509092">Spalvų sodrumas</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Programos informacija</translation>
 <translation id="3333190335304955291">Šią paslaugą galite išjungti skiltyje „Nustatymai“.</translation>
@@ -3307,6 +3309,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4050534976465737778">Įsitikinkite, kad abu įrenginiai yra atrakinti, vienas šalia kito ir juose įjungtas „Bluetooth“ ryšys. Bendrindami su „Chromebook“ įrenginiu, kurio nėra jūsų kontaktuose, įsitikinkite, kad jame įjungta matomumo netoliese funkcija (atidarykite būsenos sritį, tada įjunkite matomumo netoliese funkciją). <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Mažytis</translation>
 <translation id="4054070260844648638">Matoma visiems</translation>
+<translation id="4056223980640387499">Sepija</translation>
 <translation id="4056908315660577142">Pasiekėte laiko apribojimą, kurį vienas iš tėvų nustatė „Chrome“ programai „<ph name="APP_NAME" />“. Rytoj galėsite ją naudoti <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Peržiūrėti parduotuvėje</translation>
@@ -3556,6 +3559,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4306119971288449206">Teikiamų programų turinio tipas turi būti „<ph name="CONTENT_TYPE" />“</translation>
 <translation id="4307992518367153382">Pagrindai</translation>
 <translation id="4309165024397827958">Leiskite „Android“ programoms ir paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti įrenginio vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir juos naudoti kaip anoniminius, siekdama tiksliau nustatyti vietovę ir gerinti paslaugas pagal vietovę.</translation>
+<translation id="4309183709806093061">Bendrinti ir sistemos garso įrašą. Šis įrenginys bus nutildytas, kad būtų išvengta atsiliepimų.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB tiesiogiai)</translation>
 <translation id="4310132194679586591">Pasirinkite programą įrenginyje, kad atidarytumėte šią nuorodą</translation>
 <translation id="4310139701823742692">Failas netinkamo formato. Patikrinkite PPD failą ir bandykite dar kartą.</translation>
@@ -3844,7 +3848,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4579876313423027742">Jei reikia naršyklės pranešimų, eikite į <ph name="LINK_BEGIN" />„Chrome“ naršyklės nustatymų skiltį<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Vėl prisijunkite prie „Google“ slaptažodžių tvarkyklės</translation>
 <translation id="4580596421317071374">Slaptažodžiai išsaugomi skiltyje „<ph name="GOOGLE_PASSWORD_MANAGER" />“ šiame įrenginyje</translation>
-<translation id="4580626299762849806">Nepavyko importuoti slaptažodžių. Patikrinkite failą <ph name="FILENAME" /> ir įsitikinkite, kad jis tinkamai suformatuotas.</translation>
 <translation id="4581774856936278355">Atkuriant „Linux“ įvyko klaida</translation>
 <translation id="4582297591746054421">Paprastai svetainėse nuskaitoma jūsų iškarpinė ieškant tam tikrų funkcijų, pvz., norint išlaikyti nukopijuoto teksto formatavimą</translation>
 <translation id="4582563038311694664">Nustatyti visus nustatymus iš naujo</translation>
@@ -4570,6 +4573,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5305145881844743843">Šią paskyrą tvarko <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Šaltinis nepalaikomas</translation>
 <translation id="5307386115243749078">Susieti „Bluetooth“ jungiklį</translation>
+<translation id="5307958609248661362">Baigėsi „Google“ slaptažodžių tvarkyklės skirtasis laikas</translation>
 <translation id="5308380583665731573">Prisijungti</translation>
 <translation id="5309418307557605830">„Google“ padėjėjas veikia ir čia</translation>
 <translation id="5311304534597152726">Prisijungiama kaip</translation>
@@ -7376,6 +7380,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7988805580376093356">Išlaikykite esamą OS ir paleiskite „<ph name="DEVICE_OS" />“ iš USB.</translation>
 <translation id="7991296728590311172">Prieigos jungikliu nustatymai</translation>
 <translation id="7992203134935383159">Kalbos sintezė</translation>
+<translation id="799570308305997052">Žiniatinklio rodinys</translation>
 <translation id="7997826902155442747">Apdorojimo pirmumas</translation>
 <translation id="7999229196265990314">Sukurti šie failai:
 

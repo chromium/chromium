@@ -497,7 +497,7 @@
 <translation id="1465827627707997754">पिज़्ज़ा का टुकड़ा</translation>
 <translation id="1467432559032391204">बाएं</translation>
 <translation id="1468571364034902819">इस प्रोफ़ाइल का इस्तेमाल नहीं कर सकते</translation>
-<translation id="1470084204649225129">{NUM_TABS,plural, =1{टैब को नए ग्रुप में शामिल करें}one{टैब को नए ग्रुप में शामिल करें}other{टैब को नए ग्रुप में शामिल करें}}</translation>
+<translation id="1470084204649225129">{NUM_TABS,plural, =1{टैब को नए ग्रुप में जोड़ें}one{टैब को नए ग्रुप में जोड़ें}other{टैब को नए ग्रुप में जोड़ें}}</translation>
 <translation id="1470350905258700113">इस डिवाइस का इस्तेमाल करें</translation>
 <translation id="1470946456740188591">कैरेट ब्राउज़िंग को चालू या बंद करने के लिए, शॉर्टकट Ctrl+Search+7 का इस्तेमाल करें</translation>
 <translation id="1472675084647422956">और दिखाएं</translation>
@@ -1181,6 +1181,7 @@
 <translation id="208634871997892083">हमेशा-चालू वीपीएन</translation>
 <translation id="2087822576218954668">प्रिंट: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196"><ph name="DEVICE_OS" /> इंस्टॉल करने के बाद ही डिवाइस का नाम दर्ज किया जा सकता है.</translation>
+<translation id="2089090684895656482">कम</translation>
 <translation id="208928984520943006">किसी भी समय होम स्क्रीन पर जाने के लिए, स्क्रीन के सबसे निचले हिस्से से ऊपर की ओर स्वाइप करें.</translation>
 <translation id="2089566709556890888">Google Chrome के ज़रिए सुरक्षित रूप से ब्राउज़ करें</translation>
 <translation id="2089795179672254991">जब कोई साइट क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
@@ -2519,6 +2520,7 @@
 <translation id="3325910708063135066">Mac सिस्टम प्राथमिकताओं में कैमरा और माइक्रोफ़ोन किए गए हैं</translation>
 <translation id="3327050066667856415">Chromebook में सुरक्षा का इंतज़ाम किया गया है. आपका डिवाइस, मैलवेयर से अपने-आप सुरक्षित है. आपको कोई दूसरा सॉफ़्टवेयर इंस्टॉल करने की ज़रूरत नहीं है.</translation>
 <translation id="3328489342742826322">बैकअप डेटा बहाल करने से, आपके Linux फ़ाइलों और फ़ोल्डर में मौजूद Linux ऐप्लिकेशन और डेटा मिट जाएंगे.</translation>
+<translation id="3329013043687509092">संतृप्तता</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ऐप्लिकेशन की जानकारी</translation>
 <translation id="3333190335304955291">सेटिंग में जाकर आप यह सेवा बंद कर सकते हैं</translation>
@@ -3304,6 +3306,7 @@
 <translation id="4050534976465737778">पक्का करें कि दोनों डिवाइस अनलॉक किए गए हों और एक-दूसरे के पास रखे हों. साथ ही, दोनों का ब्लूटूथ चालू हो. अगर आप किसी ऐसे Chromebook के साथ फ़ाइलें शेयर कर रहे हैं जो आपकी संपर्क सूची में नहीं है, तो पक्का करें कि उसमें 'आस-पास के डिवाइस को दिखे' सुविधा चालू हो (स्टेटस एरिया खोलकर यह सुविधा चालू करें). <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">छोटा</translation>
 <translation id="4054070260844648638">सभी लोगों को दिख रहा है</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">आप उस समयसीमा तक पहुंच गए हैं जो आपके माता-पिता ने <ph name="APP_NAME" /> Chrome ऐप्लिकेशन के लिए तय की थी. आप इसे कल <ph name="TIME_LIMIT" /> के लिए इस्तेमाल कर सकते हैं.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">स्टोर में देखें</translation>
@@ -3841,7 +3844,6 @@
 <translation id="4579876313423027742">ब्राउज़र की सूचनाओं के लिए, <ph name="LINK_BEGIN" />Chrome ब्राउज़र सेटिंग<ph name="LINK_END" /> पर जाएं</translation>
 <translation id="4580587929153007251">Google Password Manager में फिर से साइन इन करें</translation>
 <translation id="4580596421317071374">इस डिवाइस पर, पासवर्ड, <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किए जाते हैं.</translation>
-<translation id="4580626299762849806">पासवर्ड इंपोर्ट नहीं किए जा सके. <ph name="FILENAME" /> की जांच करें और पक्का करें कि इसका फ़ॉर्मैट सही हो.</translation>
 <translation id="4581774856936278355">Linux को बहाल करते समय गड़बड़ी हुई</translation>
 <translation id="4582297591746054421">आम तौर पर, साइटें आपके क्लिपबोर्ड को पढ़ती हैं. आप जो टेक्स्ट कॉपी करते हैं उसकी फ़ॉर्मैटिंग सही रखने जैसी सुविधाओं के लिए ऐसा किया जाता है</translation>
 <translation id="4582563038311694664">सभी सेटिंग रीसेट करें</translation>
@@ -6495,7 +6497,7 @@
 <translation id="7170236477717446850">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="7171000599584840888">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="7171259390164035663">रजिस्टर न करें</translation>
-<translation id="7172470549472604877">{NUM_TABS,plural, =1{टैब को नए ग्रुप में शामिल करें}one{टैब को नए ग्रुप में शामिल करें}other{टैब को नए ग्रुप में शामिल करें}}</translation>
+<translation id="7172470549472604877">{NUM_TABS,plural, =1{टैब को नए ग्रुप में जोड़ें}one{टैब को नए ग्रुप में जोड़ें}other{टैब को नए ग्रुप में जोड़ें}}</translation>
 <translation id="7173114856073700355">सेटिंग खोलें</translation>
 <translation id="7174199383876220879">नया! अपने संगीत, वीडियो, और दूसरी चीज़ें नियंत्रित करें.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> को कॉन्फ़िगर करें</translation>

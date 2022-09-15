@@ -1170,6 +1170,7 @@
 <translation id="208634871997892083">Постоянная сеть VPN</translation>
 <translation id="2087822576218954668">Печать: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Зарегистрироваться можно только после установки <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Свернуть</translation>
 <translation id="208928984520943006">Чтобы вернуться на главный экран, проведите вверх от нижнего края экрана.</translation>
 <translation id="2089566709556890888">Безопасный браузер Google Chrome</translation>
 <translation id="2089795179672254991">Запрашивать мое разрешение на доступ сайтов к тексту и изображениям, скопированным в буфер обмена (рекомендуется)</translation>
@@ -2247,6 +2248,7 @@
 <translation id="3046178388369461825">На диске Linux почти нет места</translation>
 <translation id="3046910703532196514">Веб-страница полностью</translation>
 <translation id="304747341537320566">Синтезаторы речи</translation>
+<translation id="3048051495640130973">Чтобы указать, при каких условиях включается режим энергосбережения, перейдите в настройки.</translation>
 <translation id="3048336643003835855">HID-устройства от поставщика с идентификатором <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Журналы трансляций и устройств</translation>
 <translation id="3051250416341590778">Масштаб изображения на дисплее</translation>
@@ -2504,6 +2506,7 @@
 <translation id="3325910708063135066">Камера и микрофон отключены в системных настройках macOS</translation>
 <translation id="3327050066667856415">Создавая Chromebook, мы уделили большое внимание безопасности. Вам не нужно устанавливать дополнительные программы для защиты от вредоносного ПО.</translation>
 <translation id="3328489342742826322">При восстановлении из резервной копии будут удалены все существующие Linux-приложения и данные в папке "Файлы Linux".</translation>
+<translation id="3329013043687509092">Насыщенность</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">О приложении</translation>
 <translation id="3333190335304955291">Эту функцию можно отключить в настройках.</translation>
@@ -2837,6 +2840,7 @@
 <translation id="3641456520301071208">Разрешить сайтам запрашивать ваше местоположение</translation>
 <translation id="3642070413432681490">Обводка курсора</translation>
 <translation id="3642699533549879077">Если другой человек посмотрит на экран вашего устройства, вы увидите предупреждение и содержание уведомления будет скрыто.</translation>
+<translation id="3643962751030964445">Этим устройством управляет <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="3648348069317717750">Обнаружено устройство "<ph name="USB_DEVICE_NAME" />"</translation>
@@ -3289,6 +3293,7 @@
 <translation id="4050534976465737778">Оба устройства должны быть разблокированы и находиться рядом. Убедитесь, что вы включили на них Bluetooth. Чтобы обмениваться данными с устройством Chromebook, которого нет в ваших контактах, включите на нем параметр "Широкий доступ". Для этого откройте панель состояния. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Мелкий</translation>
 <translation id="4054070260844648638">Доступно всем</translation>
+<translation id="4056223980640387499">Сепия</translation>
 <translation id="4056908315660577142">Время, установленное родителями для приложения Chrome "<ph name="APP_NAME" />", истекло. Лимит на завтра: <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Открыть в Интернет-магазине</translation>
@@ -3406,6 +3411,7 @@
 <translation id="4175137578744761569">Сиреневый с белым</translation>
 <translation id="4175737294868205930">Постоянное хранилище</translation>
 <translation id="4176463684765177261">Отключено</translation>
+<translation id="4176864026061939326">Это управляемое устройство. Его администратор требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4180788401304023883">Удалить сертификат "<ph name="CERTIFICATE_NAME" />" Центра сертификации?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Языки</translation>
@@ -3531,12 +3537,13 @@
 <translation id="4301671483919369635">У этой страницы есть доступ для изменения файлов</translation>
 <translation id="4302577930366020750">Чтобы использовать Steam, перезапустите устройство.</translation>
 <translation id="4303079906735388947">Установите новый PIN-код для электронного ключа.</translation>
-<translation id="4304713468139749426">Диспетчер паролей</translation>
+<translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4305402730127028764">Копировать на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="4305817255990598646">Переключиться</translation>
 <translation id="4306119971288449206">Приложения должны иметь тип контента "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4309165024397827958">Предоставить приложениям и сервисам Android доступ к данным о местоположении устройства. Чтобы повышать точность геолокации и улучшать некоторые сервисы, компания Google может периодически собирать анонимные геоданные пользователей.</translation>
+<translation id="4309183709806093061">Также предоставить доступ к аудиоданным системы. Чтобы избежать акустических помех, звук на устройстве будет отключен.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ активно)</translation>
 <translation id="4310132194679586591">Выберите на устройстве приложение, в котором откроется эта ссылка.</translation>
 <translation id="4310139701823742692">Неверный формат файла PPD. Исправьте проблему и повторите попытку.</translation>
@@ -3824,7 +3831,6 @@
 <translation id="4579876313423027742">Чтобы включить уведомления, перейдите в <ph name="LINK_BEGIN" />настройки браузера Chrome<ph name="LINK_END" />.</translation>
 <translation id="4580587929153007251">Войдите в Google Менеджер паролей.</translation>
 <translation id="4580596421317071374">Место хранения паролей на этом устройстве: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="4580626299762849806">Не удалось импортировать пароли. Убедитесь, что у файла <ph name="FILENAME" /> правильный формат.</translation>
 <translation id="4581774856936278355">Не удалось восстановить данные Linux</translation>
 <translation id="4582297591746054421">Обычно сайтам нужен доступ к буферу обмена, чтобы использовать некоторые функции, например сохранять форматирование скопированного текста.</translation>
 <translation id="4582563038311694664">Сбросить все настройки</translation>
@@ -4550,6 +4556,7 @@
 <translation id="5305145881844743843">Этим аккаунтом управляет администратор домена <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5307030433605830021">Источник не поддерживается</translation>
 <translation id="5307386115243749078">Подключить переключатель Bluetooth</translation>
+<translation id="5307958609248661362">Google Менеджер паролей: превышено время ожидания</translation>
 <translation id="5308380583665731573">Подключение</translation>
 <translation id="5309418307557605830">Google Ассистент работает и на этом устройстве</translation>
 <translation id="5311304534597152726">Вход в аккаунт</translation>
@@ -6577,6 +6584,7 @@
 <translation id="7267875682732693301">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
 <translation id="7267898843336437186">Выберите папку, которая будет доступна этому сайту</translation>
 <translation id="7268127947535186412">Этим параметром управляет владелец устройства.</translation>
+<translation id="7269229526547981029">Этим профилем управляет <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7269736181983384521">Обмен с окружением: передача данных</translation>
 <translation id="7272674038937250585">Описания нет</translation>
 <translation id="7273110280511444812">последнее подключение: <ph name="DATE" /></translation>
@@ -7353,6 +7361,7 @@
 <translation id="7988805580376093356">Оставить текущую ОС и запустить <ph name="DEVICE_OS" /> с USB-накопителя</translation>
 <translation id="7991296728590311172">Настройки функции Switch Access</translation>
 <translation id="7992203134935383159">Синтез речи</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Приоритет процессов</translation>
 <translation id="7999229196265990314">Созданы следующие файлы:
 
@@ -7587,6 +7596,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
 <translation id="821119981794423735">Чтобы импортировать пароли в Google Менеджер паролей для <ph name="USER_EMAIL" />, загрузите их в формате CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Выполняется скачивание}one{Выполняется скачивание}few{Выполняется скачивание}many{Выполняется скачивание}other{Выполняется скачивание}}</translation>
+<translation id="8212601853154459483">Этим профилем управляет <ph name="PROFILE_MANAGER" />. Необходимо создать отдельный профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="8213449224684199188">Включён режим фотосъёмки</translation>
 <translation id="8214489666383623925">Открыть файл...</translation>
 <translation id="8215129063232901118">Доступ к функциям телефона на устройстве <ph name="DEVICE_TYPE" /></translation>

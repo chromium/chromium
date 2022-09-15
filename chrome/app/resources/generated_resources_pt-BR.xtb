@@ -1181,6 +1181,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="208634871997892083">VPN sempre ativa</translation>
 <translation id="2087822576218954668">Imprimir: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Só é possível fazer o registro após a instalação do <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Menos</translation>
 <translation id="208928984520943006">Para acessar a tela inicial a qualquer momento, deslize de baixo para cima.</translation>
 <translation id="2089566709556890888">Navegue com segurança com o Google Chrome</translation>
 <translation id="2089795179672254991">Perguntar quando um site quiser ver os textos e imagens copiados para a área de transferência (recomendado)</translation>
@@ -2261,6 +2262,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3046178388369461825">O espaço em disco do Linux está criticamente baixo</translation>
 <translation id="3046910703532196514">Página da web, completa</translation>
 <translation id="304747341537320566">Mecanismos de fala</translation>
+<translation id="3048051495640130973">Nas configurações, é possível controlar quando a Economia de bateria é ativada.</translation>
 <translation id="3048336643003835855">Dispositivos HID do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Registros de dispositivos e transmissão</translation>
 <translation id="3051250416341590778">Tamanho da tela</translation>
@@ -2518,6 +2520,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3325910708063135066">A câmera e o microfone estão desativados nas preferências do sistema do Mac</translation>
 <translation id="3327050066667856415">Os Chromebooks são desenvolvidos para serem seguros. Seu dispositivo é automaticamente protegido contra malwares, sem a necessidade de softwares extras.</translation>
 <translation id="3328489342742826322">A restauração de um backup exclui todos os aplicativos e dados da sua pasta de arquivos do Linux.</translation>
+<translation id="3329013043687509092">Saturação</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informações sobre o aplicativo</translation>
 <translation id="3333190335304955291">Você pode desativar esse serviço nas configurações.</translation>
@@ -2852,6 +2855,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3641456520301071208">Os sites podem solicitar sua localização</translation>
 <translation id="3642070413432681490">Circular cursor</translation>
 <translation id="3642699533549879077">Quando outra pessoa olhar para sua tela, você vai receber um alerta e o conteúdo das notificações ficará oculto.</translation>
+<translation id="3643962751030964445">Este dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />. Um novo perfil foi solicitado por <ph name="DEVICE_MANAGER" /> para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Mova o dedo levemente para capturar outra parte da impressão digital.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recebido do <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> recebido do <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recebidos do <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> detectado</translation>
@@ -3304,6 +3308,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4050534976465737778">Confirme se os dois dispositivos estão desbloqueados, perto um do outro e com o Bluetooth ativado. Se você estiver compartilhando com um Chromebook que não está nos seus contatos, ative a visibilidade do Compartilhar por proximidade na área de status. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Minúscula</translation>
 <translation id="4054070260844648638">Visível para todos</translation>
+<translation id="4056223980640387499">Sépia</translation>
 <translation id="4056908315660577142">Você atingiu o limite de tempo que seu pai/mãe definiu para o app <ph name="APP_NAME" /> do Chrome. Você poderá usá-lo por <ph name="TIME_LIMIT" /> amanhã.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Ver na Store</translation>
@@ -3421,6 +3426,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4175137578744761569">Roxo-claro e branco</translation>
 <translation id="4175737294868205930">Armazenamento persistente</translation>
 <translation id="4176463684765177261">Desativado</translation>
+<translation id="4176864026061939326">Este dispositivo é gerenciado. O administrador dele solicitou um novo perfil para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4180788401304023883">Quer excluir a Autoridade de certificação do certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -3552,6 +3558,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4306119971288449206">Os apps precisam ser veiculados com o tipo de conteúdo "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Básico</translation>
 <translation id="4309165024397827958">Permitir que apps e serviços do Android com permissão de localização usem o local do dispositivo. O Google pode coletar dados de local periodicamente e os usar de forma anônima para melhorar a precisão de local e os serviços com base em localização.</translation>
+<translation id="4309183709806093061">Compartilhar também o áudio do sistema. Este dispositivo vai ser silenciado para evitar feedback.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K ativos)</translation>
 <translation id="4310132194679586591">Selecione um app no seu dispositivo para abrir este link</translation>
 <translation id="4310139701823742692">O arquivo está no formato errado. Verifique o arquivo PPD e tente novamente.</translation>
@@ -3840,7 +3847,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4579876313423027742">Para definir as notificações do navegador, acesse <ph name="LINK_BEGIN" />Configurações do navegador Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Faça login novamente no Gerenciador de senhas do Google</translation>
 <translation id="4580596421317071374">As senhas são salvas no <ph name="GOOGLE_PASSWORD_MANAGER" /> neste dispositivo.</translation>
-<translation id="4580626299762849806">Não é possível importar as senhas. Confira se o arquivo <ph name="FILENAME" /> está formatado corretamente.</translation>
 <translation id="4581774856936278355">Erro ao restaurar o Linux</translation>
 <translation id="4582297591746054421">Os sites geralmente leem a área de transferência para recursos como manter a formatação do texto copiado</translation>
 <translation id="4582563038311694664">Redefinir todas as configurações</translation>
@@ -4566,6 +4572,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5305145881844743843">Esta conta é gerenciada por <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Fonte incompatível</translation>
 <translation id="5307386115243749078">Parear interruptor Bluetooth</translation>
+<translation id="5307958609248661362">O Gerenciador de senhas do Google expirou</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5309418307557605830">O Google Assistente também funciona aqui</translation>
 <translation id="5311304534597152726">Login como</translation>
@@ -6590,6 +6597,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7267875682732693301">Repita o processo de tocar e levantar o dedo para registrar todas as partes da sua impressão digital</translation>
 <translation id="7267898843336437186">Selecione uma pasta que este site pode ver</translation>
 <translation id="7268127947535186412">Esta configuração é gerenciada pelo proprietário do dispositivo.</translation>
+<translation id="7269229526547981029">Este perfil é gerenciado por <ph name="PROFILE_MANAGER" />. Um novo perfil foi solicitado por <ph name="ACCOUNT_MANAGER" /> para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7269736181983384521">Uso de dados do Compartilhar por proximidade</translation>
 <translation id="7272674038937250585">Nenhuma descrição fornecida</translation>
 <translation id="7273110280511444812">Conectado pela última vez em <ph name="DATE" /></translation>
@@ -7367,6 +7375,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7988805580376093356">Continuar com seu SO e executar o <ph name="DEVICE_OS" /> usando um dispositivo USB.</translation>
 <translation id="7991296728590311172">Configurações do acesso com interruptor</translation>
 <translation id="7992203134935383159">Sintetização de voz</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Prioridade de processo</translation>
 <translation id="7999229196265990314">Os seguintes arquivos foram criados:
         
@@ -7601,6 +7610,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
 <translation id="821119981794423735">Se quiser importar senhas para o Gerenciador de senhas do Google da conta <ph name="USER_EMAIL" />, selecione um arquivo CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{O download está em andamento}one{O download está em andamento}other{Os downloads estão em andamento}}</translation>
+<translation id="8212601853154459483">Este perfil é gerenciado por <ph name="PROFILE_MANAGER" />, e você precisa criar outro para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8213449224684199188">Alterado para o modo de foto</translation>
 <translation id="8214489666383623925">Abrir arquivo...</translation>
 <translation id="8215129063232901118">Acessar as funcionalidades do smartphone no seu <ph name="DEVICE_TYPE" /></translation>

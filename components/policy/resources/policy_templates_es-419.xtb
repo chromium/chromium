@@ -110,6 +110,7 @@
 <translation id="1099282607296956954">Permite el aislamiento de todos los sitios</translation>
 <translation id="1100840127293327071">No marcar la opción para conservar los datos de navegación existentes de forma predeterminada</translation>
 <translation id="1105572260329131950">Usar los íconos predeterminados para conexiones seguras</translation>
+<translation id="1105711894873068933">Después de inhabilitar <ph name="LACROS_NAME" />, se quitarán todos los datos del usuario durante el siguiente acceso.</translation>
 <translation id="1107538157073168076">Inhabilitar la extensión de estadísticas</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda parcial de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
@@ -2573,6 +2574,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
       Si esta política se configura como falsa, el dispositivo no intentará comunicarse con Quirks Server para descargar archivos de configuración.
 
       Si la política se configura como verdadera o no se configura, <ph name="PRODUCT_OS_NAME" /> se comunicará automáticamente con Quirks Server, descargará archivos de configuración, si están disponibles, y los guardará en el dispositivo.  Estos archivos pueden usarse, por ejemplo, para mejorar la calidad de visualización de los monitores conectados.</translation>
+<translation id="351654132746710200">Después de inhabilitar <ph name="LACROS_NAME" />, no se realizará la migración de datos. Se quitará la carpeta <ph name="LACROS_NAME" /> y los usuarios seguirán usando los datos restantes.</translation>
 <translation id="3522257170445891912">Según el valor que se establezca para esta política, el flujo de autenticación de acceso será una de las siguientes opciones:
 
       Si se establece como GAIA, el acceso se implementará mediante el flujo de autenticación de GAIA normal.
@@ -4195,6 +4197,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si no estableces la política, los usuarios que utilizan el desbloqueo rápido ingresarán sus contraseñas en la pantalla de bloqueo una vez al día.</translation>
 <translation id="5306186200045823863">Habilitar la confianza en la infraestructura de PKI heredada de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo incógnito</translation>
+<translation id="5308551343115571396">Después de inhabilitar <ph name="LACROS_NAME" />, intentaremos conservar la mayor cantidad de datos del usuario posible y quitar todos los datos de navegación.</translation>
 <translation id="5311275381462687162">Configuración predeterminada del atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /> para el comportamiento de las cookies</translation>
 <translation id="5312253627576569499">El porcentaje en que debe ajustarse la demora de atenuación de la pantalla cuando se observa actividad del usuario con la pantalla atenuada o poco después de que esta se haya apagado.</translation>
 <translation id="5317852436044398288">Si estableces la política, podrás especificar una lista de patrones de las URL que pueden usar la captura de pestañas y ventanas.
@@ -4338,6 +4341,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si no la estableces, el usuario podrá controlar la visibilidad de las tarjetas. Las tarjetas son visibles de forma predeterminada.
       </translation>
+<translation id="5448022937220253000">Elegir qué sucede con los datos del usuario después de inhabilitar <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">La API de Event.path estará disponible.</translation>
 <translation id="5455609857202311243">Ignorar la aprobación de la política de KDC durante la autenticación de HTTP</translation>
 <translation id="5455888515928026628">Durante el acceso mediante la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> podrá realizar la autenticación a través de un servidor (en línea) o de una contraseña almacenada en caché (sin conexión).
@@ -7415,6 +7419,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8634062512783775032">Usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario (en caso de ser compatible)</translation>
 <translation id="8637566476051166626">Puertos de red habilitados de forma explícita</translation>
 <translation id="8643838501942693770">Permite las cookies de terceros, pero también que el usuario cambie esta configuración</translation>
+<translation id="864611373241249369">Después de inhabilitar <ph name="LACROS_NAME" />, intentaremos migrar todos los datos.</translation>
 <translation id="8648844602494595665">Esta política controla el tratamiento para el ícono de bloqueo en el cuadro multifunción.
        A partir de la versión Chrome M93, hay un nuevo ícono en el cuadro multifunción para conexiones seguras.
        Si habilitas la política, Chrome usará el ícono de bloqueo existente para conexiones seguras.
@@ -7824,6 +7829,9 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no se configura esta política, no se implementará la selección automática para ningún sitio.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="906349948439898016">A partir de M105, WebSQL está activado de forma predeterminada en contextos no seguros, pero se puede inhabilitar a través de la función experimental de Chrome.
+          Si estableces esta política como falsa o no la estableces, se podrá inhabilitar WebSQL en contextos no seguros.
+          Si la estableces como verdadera, WebSQL no podrá inhabilitarse.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="9069588907259547232">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el volumen del audio del dispositivo.
 

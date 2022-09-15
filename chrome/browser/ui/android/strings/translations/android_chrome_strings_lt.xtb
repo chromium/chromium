@@ -454,6 +454,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="3435465986463792564">Atidaryta daug langų? Galite tvarkyti juos čia</translation>
 <translation id="3443221991560634068">Iš naujo įkelti dabartinį puslapį</translation>
 <translation id="3444179773590444986">Bendrinti atsiliepimą apie tamsiąją temą, skirtą svetainėms?</translation>
+<translation id="3452832259067974318">Siekiant apsaugoti jūsų privatumą, „Chrome“ šio lauko automatiškai nepildys jūsų slaptažodžiu.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Suplanuotas 1 atsisiuntimas}one{Suplanuotas # atsisiuntimas}few{Suplanuoti # atsisiuntimai}many{Suplanuota # atsisiuntimo}other{Suplanuota # atsisiuntimų}}</translation>
 <translation id="3474624961160222204">Tęsti kaip <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Galite pasirinkti paieškos variklį</translation>
@@ -679,6 +680,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4763480195061959176">vaizdo įrašas</translation>
 <translation id="4766313118839197559">Slaptažodžiai saugomi Slaptažodžių tvarkyklėje šiame įrenginyje</translation>
 <translation id="4766678251456904326">Pridėti paskyrą prie įrenginio</translation>
+<translation id="4787736314074622408">Ar norite ištrinti „<ph name="ITEM_TITLE" />“?</translation>
 <translation id="4791358705705538979">Padedama jums atlikti užduotis, pvz., atsiskaitymo veiksmus, žiniatinklyje</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“.

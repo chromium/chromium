@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">Προσανατολισμός</translation>
 <translation id="3153444934357957346">Μπορείτε να χρησιμοποιήσετε έως <ph name="MULTI_PROFILE_USER_LIMIT" /> λογαριασμούς στη λειτουργία σύνδεσης σε πολλούς λογαριασμούς.</translation>
 <translation id="3154351730702813399">Ο διαχειριστής της συσκευής μπορεί να παρακολουθεί τη δραστηριότητα περιήγησής σας.</translation>
+<translation id="3157931365184549694">Επαναφορά</translation>
 <translation id="316086887565479535">Μη υποστηριζόμενες εφαρμογές στο πρότυπο</translation>
 <translation id="3161500364292033097">Κλείσιμο γραφείου και παραθύρων</translation>
 <translation id="316356270129335934">Ο τομέας <ph name="MANAGER" /> επαναφέρει τη συσκευή <ph name="DEVICE_TYPE" /> σε προηγούμενη έκδοση. Θα γίνει επαναφορά της συσκευής σας και όλα τα δεδομένα θα διαγραφούν.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">Ταξινόμηση κατά</translation>
 <translation id="3742055079367172538">Το στιγμιότυπο οθόνης έχει ληφθεί</translation>
 <translation id="3765841986579723851">Έγινε επεξεργασία σήμερα</translation>
-<translation id="3771549900096082774">Λειτουργία υψηλής αντίθεσης</translation>
 <translation id="3773700760453577392">Ένας διαχειριστής δεν επιτρέπει τη σύνδεση σε πολλούς λογαριασμούς για τον χρήστη <ph name="USER_EMAIL" />. Όλοι οι χρήστες πρέπει να αποσυνδεθούν για να συνεχίσετε.</translation>
 <translation id="3779139509281456663">Σύνδεση <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω δεξιά γωνία. Διένεξη με επιφάνεια συστήματος.</translation>
 <translation id="4316910396681052118">ΟΛΕΣ ΟΙ ΕΦΑΡΜΟΓΕΣ</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Πατήσατε τη συντόμευση πληκτρολογίου για την υψηλή αντίθεση. Θέλετε να την ενεργοποιήσετε;</translation>
 <translation id="4322742403972824594">Η συντόμευση πληκτρολογίου Ctrl + Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Home, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Αριστερό βέλος.</translation>
 <translation id="4333628967105022692">Το Lacros δεν υποστηρίζεται κατά τη σύνδεση πολλών χρηστών.</translation>
 <translation id="4338109981321384717">Μεγεθυντικός φακός</translation>
 <translation id="4351433414020964307">Γίνεται φόρτωση του Βοηθού…</translation>
-<translation id="4356930093361201197">λειτουργία υψηλής αντίθεσης</translation>
 <translation id="4371348193907997655">Ρυθμίσεις μετάδοσης</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" /> τοις εκατό</translation>
 <translation id="4378551569595875038">Σύνδεση…</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">Έξοδος επισκέπτη</translation>
 <translation id="598407983968395253">Χρήση προτύπου</translation>
 <translation id="598882571027504733">Για να λάβετε την ενημέρωση, επανεκκινήστε το Chromebook με το συνδεδεμένο πληκτρολόγιο.</translation>
-<translation id="5992218262414051481">Η Λειτουργία υψηλής αντίθεσης ενεργοποιήθηκε. Πατήστε Ctrl+Search+H ξανά για να την απενεργοποιήσετε.</translation>
 <translation id="6012623610530968780">Σελίδα <ph name="SELECTED_PAGE" /> από <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Έξοδος από λειτουργία κατοπτρισμού</translation>
 <translation id="602001110135236999">Κύλιση αριστερά</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">Το πρότυπο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /> υπάρχει ήδη.</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>
 <translation id="8054466585765276473">Υπολογισμός χρόνου μπαταρίας που απομένει.</translation>
-<translation id="8061464966246066292">Υψηλή αντίθεση</translation>
 <translation id="8083540854303889870">Αποθηκεύτηκε για αργότερα</translation>
 <translation id="8091387634532529612">Αυτόματες ενημερώσεις</translation>
 <translation id="8098591350844501178">Διακοπή μετάδοσης οθόνης σε <ph name="RECEIVER_NAME" /></translation>

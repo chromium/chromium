@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Вы можете перемещаться между разделами на экране, например между панелью запуска и вкладками Chrome. Чтобы перейти к следующему разделу, проведите четырьмя пальцами слева направо. Попробуйте сделать это прямо сейчас.</translation>
 <translation id="2624431853467395961">Перейти в режим обучения</translation>
 <translation id="2626530649491650971">clickable</translation>
+<translation id="263637551280112393">Нажмите Поиск + Shift + Пробел</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">Скачивание файла "<ph name="FILE_NAME" />" возобновлено</translation>
 <translation id="2639750663247012216">Модификатор ChromeVox.</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Следующего раздела нет</translation>
 <translation id="5368000168321181111">Звуковые сигналы отключены.</translation>
 <translation id="5368505757342402527">Скачивание файла <ph name="FILE_NAME" /> завершено на <ph name="PROGRESS" /> %. Осталось примерно <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">нажмите и удерживайте</translation>
 <translation id="5400836586163650660">Серый</translation>
 <translation id="5402367795255837559">Шрифт Брайля</translation>
 <translation id="5402791055281059602">Модальное оповещение</translation>

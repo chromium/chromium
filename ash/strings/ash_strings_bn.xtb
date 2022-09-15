@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">ফুল স্ক্রিন রেকর্ড করুন</translation>
 <translation id="2135456203358955318">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2148716181193084225">আজ</translation>
+<translation id="2161132820593978283">ভিডিও কলের কেন্দ্রে থাকার জন্য ক্যামেরা ফ্রেমিং ব্যবহার করুন। 'দ্রুত সেটিংস' থেকে এটি চালু করুন।</translation>
 <translation id="2170530631236737939">'এক নজরে' মোড থেকে বেরিয়ে আসতে তিনটি আঙুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>
 <translation id="219905428774326614">লঞ্চার, সমস্ত অ্যাপ</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" />-এর মধ্যে <ph name="INDEX" /> নম্বরের সাম্প্রতিক ফটো</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">কানেক্ট করা নেই</translation>
 <translation id="2408955596600435184">আপনার পিন লিখুন</translation>
 <translation id="2412593942846481727">আপডেট উপলভ্য</translation>
+<translation id="2426051945783024481">ক্যামেরা ফ্রেম অটোমেটিক কেন্দ্রে আছে</translation>
 <translation id="2427507373259914951">বাঁদিকের বোতামে ক্লিক করুন</translation>
 <translation id="2429753432712299108">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। স্বীকার করার আগে, এই পাস কীটি ডিভাইসে প্রদর্শিত হয়েছে কিনা নিশ্চিত করুন: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
@@ -373,6 +375,7 @@
 <translation id="3151786313568798007">সজ্জা</translation>
 <translation id="3153444934357957346">একধিক সাইন-ইনে আপনার সর্বাধিক <ph name="MULTI_PROFILE_USER_LIMIT" />টি অ্যাকাউন্ট থাকতে পারে।</translation>
 <translation id="3154351730702813399">ডিভাইস প্রশাসক আপনার ব্রাউজিং অ্যাক্টিভিটি পর্যবেক্ষণ করতে পারেন।</translation>
+<translation id="3157931365184549694">পুনরুদ্ধার করুন</translation>
 <translation id="316086887565479535">টেমপ্লেটে এমন কিছু অ্যাপ আছে যা কাজ করে না</translation>
 <translation id="3161500364292033097">ডেস্ক ও উইন্ডো বন্ধ করুন</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আগের ভার্সনে ফিরিয়ে নিয়ে যাচ্ছে। আপনার ডিভাইস রিসেট করা হবে এবং সব ডেটা মুছে যাবে।</translation>
@@ -476,7 +479,6 @@
 <translation id="3735740477244556633">এই অনুসারে সাজান</translation>
 <translation id="3742055079367172538">স্ক্রিনশট নেওয়া হয়েছে</translation>
 <translation id="3765841986579723851">আজ এডিট করা হয়েছে</translation>
-<translation id="3771549900096082774">উচ্চ কনট্রাস্ট মোড</translation>
 <translation id="3773700760453577392">একজন অ্যাডমিনিস্ট্রেটর <ph name="USER_EMAIL" />-র জন্য একাধিক সাইন-ইন বাতিল করেছেন। চালিয়ে যাওয়ার জন্য, সব ব্যবহারকারীকে অবশ্যই সাইন-আউট করতে হবে।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> কানেক্ট করা হচ্ছে</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +578,10 @@
 <translation id="4312840429157639164">ক্যামেরাটি উপরে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="4316910396681052118">সব অ্যাপ</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">উচ্চ কনট্রাস্টের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
 <translation id="4322742403972824594">Ctrl + Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Home কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Left Arrow কী প্রেস করুন।</translation>
 <translation id="4333628967105022692">একাধিক ব্যবহারকারী সাইন-ইন করে থাকাকালীন, Lacros কাজ করে না।</translation>
 <translation id="4338109981321384717">আতস কাচ</translation>
 <translation id="4351433414020964307">সহায়ক লোড হচ্ছে...</translation>
-<translation id="4356930093361201197">উচ্চ-কনট্রাস্ট মোড</translation>
 <translation id="4371348193907997655">কাস্ট সেটিংস</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" /> শতাংশ</translation>
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
@@ -877,7 +877,6 @@
 <translation id="5980301590375426705">অতিথি থেকে প্রস্থান</translation>
 <translation id="598407983968395253">টেমপ্লেট ব্যবহার করুন</translation>
 <translation id="598882571027504733">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করুন।</translation>
-<translation id="5992218262414051481">উচ্চ কনট্রাস্ট মোড চালু করা হয়েছে। টগল করে বন্ধ করার জন্য Ctrl+Search+H টিপুন।</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />টি পৃষ্ঠার মধ্যে <ph name="SELECTED_PAGE" />টি পৃষ্ঠা</translation>
 <translation id="6018164090099858612">মিরর মোড থেকে প্রস্থান করছে</translation>
 <translation id="602001110135236999">বাঁ দিকে স্ক্রল করুন</translation>
@@ -1043,6 +1042,7 @@
 <translation id="6960565108681981554">চালু করা নেই। আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>
 <translation id="6961840794482373852">Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Up কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Up Arrow কী প্রেস করুন।</translation>
+<translation id="696267987219125751">ক্যামেরা ফ্রেমিং বন্ধ আছে।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1133,6 +1133,7 @@
 <translation id="7513922695575567867">ক্যালেন্ডার, <ph name="DATE" /> তারিখের সপ্তাহ, <ph name="SELECTED_DATE" /> তারিখ বর্তমানে বেছে নেওয়া হয়েছে।</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">ক্যামেরা ফ্রেমিং চালু আছে।</translation>
 <translation id="7526573455193969409">নেটওয়ার্কের উপরে নজর রাখা হতে পারে</translation>
 <translation id="7536035074519304529">আইপি অ্যাড্রেস: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">বর্তমানে Linux অ্যাপ ও ছদ্মবেশী উইন্ডো ব্যবহারের সুবিধা নেই। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
@@ -1151,6 +1152,7 @@
 <translation id="7607002721634913082">বিরত রয়েছে</translation>
 <translation id="7609951632080598826">ক্যালেন্ডার ভিউ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ক্যামেরা আবার কানেক্ট করা হয়েছে।</translation>
+<translation id="761736749114493194">ক্যামেরা ফ্রেমিং টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ফারেনহাইট</translation>
 <translation id="7633755430369750696">'নিয়ারবাই শেয়ার' সেটিংস দেখুন।</translation>
 <translation id="7634648064048557203">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
@@ -1233,7 +1235,6 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামের টেমপ্লেট আগে থেকেই আছে</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8054466585765276473">ব্যাটারি সময় গণনা করা হচ্ছে।</translation>
-<translation id="8061464966246066292">উচ্চ বৈসাদৃশ্য</translation>
 <translation id="8083540854303889870">পরবর্তী সময়ের জন্য সেভ করুন</translation>
 <translation id="8091387634532529612">অটোমেটিক আপডেট</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা বন্ধ করুন</translation>
@@ -1312,6 +1313,7 @@
 <translation id="851458219935658693">বর্তমান ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
 <translation id="8517041960877371778">আপনার <ph name="DEVICE_TYPE" /> চালু থাকা অবস্থায় চার্জ নাও হতে পারে।</translation>
 <translation id="8535393432370007982">রঙ অনুযায়ী বেছে নেওয়ার সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
+<translation id="8541078764854166027">ক্যামেরা ফ্রেমিং</translation>
 <translation id="8542053257095774575">সেভ করা কোনও ডেস্ক বা টেমপ্লেট নেই</translation>
 <translation id="8546059259582788728">বেছে নেওয়ার সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>
 <translation id="8551588720239073785">তারিখ ও সময়ের সেটিংস</translation>

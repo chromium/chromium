@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">Compressione di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="1722687688096767818">Aggiunta del profilo in corso…</translation>
 <translation id="1726100011689679555">Server dei nomi</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> elementi spostati nel cestino</translation>
 <translation id="1729953886957086472">Tedesco (Germania)</translation>
 <translation id="1730235522912993863">Cinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementi copiati.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Nessun elemento corrispondente a &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informazioni</translation>
 <translation id="2902734494705624966">Tastiera estesa USA</translation>
+<translation id="2906052776158021882">Spostamento di <ph name="NUMBER_OF_ITEMS" /> elementi nel cestino…</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estone</translation>
 <translation id="2938685643439809023">Mongolo</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Verranno eliminati <ph name="TOTAL_FILE_SIZE" /> di file</translation>
 <translation id="508423945471810158">Spostamento di <ph name="NUMBER_OF_ITEMS" /> elementi in <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> spostato nel cestino</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
 <translation id="5098629044894065541">Ebraico</translation>
 <translation id="5102922915594634436">Gestisci cartelle sincronizzate</translation>
@@ -560,6 +563,7 @@
 <translation id="5845721951356578987">Infermiera</translation>
 <translation id="5861477046012235702">Giocatore</translation>
 <translation id="5864471791310927901">Ricerca DHCP non riuscita</translation>
+<translation id="5887342613489958822">Spostamento di <ph name="FILE_NAME" /> nel cestino…</translation>
 <translation id="5896749729057314184">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
 <translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>

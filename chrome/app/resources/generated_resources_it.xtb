@@ -1168,6 +1168,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="208634871997892083">VPN sempre attiva</translation>
 <translation id="2087822576218954668">Stampa: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">La registrazione è supportata solo dopo l'installazione di <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Meno</translation>
 <translation id="208928984520943006">Per andare alla schermata Home in qualsiasi momento, scorri dal basso verso l'alto.</translation>
 <translation id="2089566709556890888">Naviga in sicurezza con Google Chrome</translation>
 <translation id="2089795179672254991">Chiedi conferma quando un sito vuole leggere il testo e le immagini copiati negli appunti (opzione consigliata)</translation>
@@ -2245,6 +2246,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3046178388369461825">Lo spazio sul disco Linux sta per esaurirsi</translation>
 <translation id="3046910703532196514">Pagina web, completa</translation>
 <translation id="304747341537320566">Motori di riconoscimento vocale</translation>
+<translation id="3048051495640130973">Puoi stabilire quando attivare Risparmio energetico nelle impostazioni</translation>
 <translation id="3048336643003835855">Dispositivi HID del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Log del dispositivo e della trasmissione</translation>
 <translation id="3051250416341590778">Dimensioni display</translation>
@@ -2502,6 +2504,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3325910708063135066">La videocamera e il microfono sono disattivati nelle Preferenze di Sistema del Mac</translation>
 <translation id="3327050066667856415">I Chromebook sono pensati per la sicurezza. Il tuo dispositivo è protetto automaticamente da malware, senza l'installazione di altro software.</translation>
 <translation id="3328489342742826322">Il ripristino da un backup elimina le applicazioni Linux esistenti e i dati nelle tue cartelle di file Linux.</translation>
+<translation id="3329013043687509092">Saturazione</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informazioni app</translation>
 <translation id="3333190335304955291">Puoi disattivare questo servizio nelle Impostazioni.</translation>
@@ -2835,6 +2838,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3641456520301071208">I siti possono chiederti la posizione</translation>
 <translation id="3642070413432681490">Cerchia il puntatore</translation>
 <translation id="3642699533549879077">Quando qualcuno osserva il tuo schermo, riceverai un avviso e il contenuto della notifica sarà nascosto.</translation>
+<translation id="3643962751030964445">Questo dispositivo è gestito da <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> richiede un nuovo profilo per l'account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3645372836428131288">Muovi leggermente il dito per acquisire una parte diversa dell'impronta digitale.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" /> completata}other{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" /> completata}}</translation>
 <translation id="3648348069317717750">Rilevato dispositivo <ph name="USB_DEVICE_NAME" /></translation>
@@ -3287,6 +3291,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4050534976465737778">Assicurati che entrambi i dispositivi siano sbloccati e vicini, nonché che il Bluetooth sia attivo. Se vuoi attivare la condivisione con un dispositivo Chromebook non presente nei tuoi contatti, assicurati che su tale dispositivo sia attiva la funzionalità Visibilità nelle vicinanze (apri l'area di stato e attiva l'opzione Visibilità nelle vicinanze). <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Minuscolo</translation>
 <translation id="4054070260844648638">Visibile a tutti</translation>
+<translation id="4056223980640387499">Seppia</translation>
 <translation id="4056908315660577142">Hai raggiunto il tempo massimo impostato dal genitore per l'app di Chrome <ph name="APP_NAME" />. Domani potrai utilizzare l'app per <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Visualizza nello Store</translation>
@@ -3404,6 +3409,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4175137578744761569">Lilla e bianco</translation>
 <translation id="4175737294868205930">Archiviazione persistente</translation>
 <translation id="4176463684765177261">Disattivato</translation>
+<translation id="4176864026061939326">Questo dispositivo è gestito. L'amministratore richiede un nuovo profilo per l'account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4180788401304023883">Eliminare il certificato CA "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Lingue</translation>
@@ -3822,7 +3828,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4579876313423027742">Per le notifiche del browser, vai a <ph name="LINK_BEGIN" />Impostazioni del browser Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Accedi di nuovo a Gestore delle password di Google</translation>
 <translation id="4580596421317071374">Le password vengono salvate in <ph name="GOOGLE_PASSWORD_MANAGER" /> su questo dispositivo.</translation>
-<translation id="4580626299762849806">Impossibile importare le password. Controlla il file <ph name="FILENAME" /> e verifica che sia formattato correttamente.</translation>
 <translation id="4581774856936278355">Errore durante il ripristino di Linux</translation>
 <translation id="4582297591746054421">In genere, i siti leggono gli appunti per funzionalità come il mantenimento della formattazione del testo copiato</translation>
 <translation id="4582563038311694664">Ripristina tutte le impostazioni</translation>
@@ -6566,6 +6571,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7267875682732693301">Solleva ripetutamente il dito per aggiungere le varie parti dell'impronta</translation>
 <translation id="7267898843336437186">Seleziona una cartella visibile da questo sito</translation>
 <translation id="7268127947535186412">Questa impostazione è gestita dal proprietario del dispositivo.</translation>
+<translation id="7269229526547981029">Questo profilo è gestito da <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> richiede un nuovo profilo per l'account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7269736181983384521">Utilizzo dei dati Condivisione nelle vicinanze</translation>
 <translation id="7272674038937250585">Nessuna descrizione fornita</translation>
 <translation id="7273110280511444812">Ultimo collegamento in data <ph name="DATE" /></translation>
@@ -7577,6 +7583,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuova notifica}other{# nuove notifiche}}</translation>
 <translation id="821119981794423735">Seleziona un file CSV per importare password in Gestore delle password di Google per <ph name="USER_EMAIL" /></translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download in corso}other{Download in corso}}</translation>
+<translation id="8212601853154459483">Questo profilo è gestito da <ph name="PROFILE_MANAGER" /> e richiede la creazione di un profilo separato per l'account <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8213449224684199188">Modalità foto attivata</translation>
 <translation id="8214489666383623925">Apri file...</translation>
 <translation id="8215129063232901118">Accedi alle funzionalità del telefono dal tuo <ph name="DEVICE_TYPE" /></translation>

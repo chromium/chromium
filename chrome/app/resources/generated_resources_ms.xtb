@@ -1180,6 +1180,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="208634871997892083">VPN sentiasa dihidupkan</translation>
 <translation id="2087822576218954668">Cetak: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Pendaftaran hanya disokong selepas anda memasang <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Kurang</translation>
 <translation id="208928984520943006">Untuk pergi ke skrin Utama pada bila-bila masa, leret ke atas dari bawah.</translation>
 <translation id="2089566709556890888">Semak imbas dengan selamat menggunakan Google Chrome</translation>
 <translation id="2089795179672254991">Tanya apabila tapak ingin melihat teks dan imej yang disalin ke papan keratan (disyorkan)</translation>
@@ -2518,6 +2519,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3325910708063135066">Kamera dan mikrofon dimatikan dalam Pilihan Sistem Mac</translation>
 <translation id="3327050066667856415">Chromebook direka untuk keselamatan. Peranti anda dilindungi daripada perisian hasad secara automatik – tiada perisian tambahan diperlukan.</translation>
 <translation id="3328489342742826322">Tindakan memulihkan daripada sandaran akan memadamkan aplikasi dan data Linux yang sedia ada dalam folder fail Linux anda.</translation>
+<translation id="3329013043687509092">Ketepuan</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Maklumat apl</translation>
 <translation id="3333190335304955291">Anda boleh mematikan perkhidmatan ini dalam Tetapan.</translation>
@@ -3304,6 +3306,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4050534976465737778">Pastikan kedua-dua peranti dibuka dikunci, berada berhampiran satu sama lain dan Bluetooth telah dihidupkan. Jika anda membuat perkongsian dengan Chromebook yang tiada dalam kenalan anda, pastikan Keterlihatan berdekatan dihidupkan (buka ruang status, kemudian hidupkan Keterlihatan berdekatan). <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Sangat Kecil</translation>
 <translation id="4054070260844648638">Kelihatan kepada semua orang</translation>
+<translation id="4056223980640387499">Sepia</translation>
 <translation id="4056908315660577142">Anda telah mencapai had masa yang ditetapkan oleh ibu/bapa anda untuk apl Chrome <ph name="APP_NAME" />. Anda boleh menggunakan apl tersebut selama <ph name="TIME_LIMIT" /> esok.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Lihat di Gedung</translation>
@@ -3553,6 +3556,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4306119971288449206">Apl mesti disampaikan dengan jenis kandungan "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Asas</translation>
 <translation id="4309165024397827958">Benarkan apl Android dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti anda. Google boleh mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.</translation>
+<translation id="4309183709806093061">Turut berkongsi audio sistem. Peranti ini akan diredamkan untuk mengelakkan maklum balas.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K langsung)</translation>
 <translation id="4310132194679586591">Pilih apl pada peranti anda untuk membuka pautan ini</translation>
 <translation id="4310139701823742692">Format fail salah. Semak fail PPD dan cuba lagi.</translation>
@@ -3841,7 +3845,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4579876313423027742">Untuk pemberitahuan penyemak imbas, pergi ke <ph name="LINK_BEGIN" />Tetapan penyemak imbas Chrome<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Log masuk semula ke Google Password Manager</translation>
 <translation id="4580596421317071374">Kata laluan disimpan pada <ph name="GOOGLE_PASSWORD_MANAGER" /> pada peranti ini.</translation>
-<translation id="4580626299762849806">Tidak dapat mengimport kata laluan. Semak dan pastikan <ph name="FILENAME" /> diformatkan dengan betul.</translation>
 <translation id="4581774856936278355">Ralat semasa memulihkan Linux</translation>
 <translation id="4582297591746054421">Tapak biasanya membaca papan keratan anda untuk ciri seperti mengekalkan format teks yang anda salin</translation>
 <translation id="4582563038311694664">Tetapkan semula semua tetapan</translation>
@@ -4567,6 +4570,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5305145881844743843">Akaun ini diurus oleh <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Sumber tidak disokong</translation>
 <translation id="5307386115243749078">Gandingkan suis Bluetooth</translation>
+<translation id="5307958609248661362">Google Password Manager telah tamat masa</translation>
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5309418307557605830">Google Assistant berfungsi di sini juga</translation>
 <translation id="5311304534597152726">Melog masuk sebagai</translation>
@@ -7366,6 +7370,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7988805580376093356">Kekalkan OS anda dan jalankan <ph name="DEVICE_OS" /> daripada USB.</translation>
 <translation id="7991296728590311172">Tetapan Akses Suis</translation>
 <translation id="7992203134935383159">Sintesis pertuturan</translation>
+<translation id="799570308305997052">Paparan web</translation>
 <translation id="7997826902155442747">Keutamaan Proses</translation>
 <translation id="7999229196265990314">Mencipta fail berikut:
 

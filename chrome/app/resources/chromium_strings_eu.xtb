@@ -210,6 +210,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6072279588547424923">Gehitu da <ph name="EXTENSION_NAME" /> luzapena Chromium-en</translation>
 <translation id="608006075545470555">Gehitu laneko profila arakatzaile honetan</translation>
 <translation id="6096348254544841612">Pertsonalizatu eta kontrolatu Chromium. Eguneratze bat erabilgarri dago.</translation>
+<translation id="6119438414301547735">Eman Chromium-eko tresna-barran sarbide-eskaerak erakusteko baimena luzapenari</translation>
 <translation id="6120345080069858279">Chromium-ek Google-ko kontuan gordeko du pasahitz hau. Ez duzu gogoratu beharko.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> arriskutsua da; horregatik, blokeatu egin du Chromium-ek.</translation>
 <translation id="6134968993075716475">Arakatze segurua desaktibatuta dago. Aktibatzea gomendatzen du Chromium-ek.</translation>
@@ -331,6 +332,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8453117565092476964">Instalatzailearen artxiboa hondatuta dago edo baliogabea da. Deskargatu Chromium berriro.</translation>
 <translation id="8463672209299734063">Aukerakoa: lagundu Chromium OS-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
 <translation id="8493179195440786826">Chromium zaharkituta dago</translation>
+<translation id="8522220489792889625">Aktiboki erabiltzen ari ez zaren fitxen memoria berreskuratzen du Chromium-ek, behar den moduan. Ezarpenetan alda dezakezu aukera hori.</translation>
 <translation id="8550334526674375523">Laneko profila eta profil pertsonala guztiz bereizita daude.</translation>
 <translation id="8558383651099478961">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chromium-en. Ezin da gehitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Etorkizunean Chromium-en eguneratzeak eskuratzeko, macOS 10.13 edo bertsio berriago bat beharko duzu. Ordenagailu hau macOS 10.12 erabiltzen ari da.</translation>

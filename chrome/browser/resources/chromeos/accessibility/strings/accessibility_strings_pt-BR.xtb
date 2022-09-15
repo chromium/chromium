@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Também é possível mudar de seção na tela. Por exemplo, você pode alternar entre o acesso rápido, a estante e as guias do Chrome. Para acessar a próxima seção, deslize da esquerda para a direita com quatro dedos. Tente agora para continuar.</translation>
 <translation id="2624431853467395961">Abre o modo de aprendizado</translation>
 <translation id="2626530649491650971">clicável</translation>
+<translation id="263637551280112393">Pressione Pesquisar + Shift + barra de espaço</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">Download de <ph name="FILE_NAME" /> retomado</translation>
 <translation id="2639750663247012216">Teclas modificadoras do ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Nenhuma seção a seguir</translation>
 <translation id="5368000168321181111">Earcons desativados</translation>
 <translation id="5368505757342402527">Download de <ph name="FILE_NAME" /> <ph name="PROGRESS" />% completo. Tempo restante: cerca de <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">clique longo</translation>
 <translation id="5400836586163650660">Cinza</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Um alerta em uma janela modal</translation>

@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">方向</translation>
 <translation id="3153444934357957346">使用多重登入功能時，最多只能有 <ph name="MULTI_PROFILE_USER_LIMIT" /> 個帳戶。</translation>
 <translation id="3154351730702813399">裝置管理員可能會監控您的瀏覽活動。</translation>
+<translation id="3157931365184549694">還原</translation>
 <translation id="316086887565479535">範本中有不支援的應用程式</translation>
 <translation id="3161500364292033097">關閉桌面和視窗</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回復您的 <ph name="DEVICE_TYPE" />。您的裝置將會重設，且所有資料將會被刪除。</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">排序方式</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
 <translation id="3765841986579723851">今天編輯過</translation>
-<translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
 <translation id="3779139509281456663">正在連接「<ph name="NAME" />」</translation>
 <translation id="3783640748446814672">Alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">攝錄機已經對齊右上角，同系統平台有衝突。</translation>
 <translation id="4316910396681052118">所有應用程式</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">您已按下高對比度的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="4322742403972824594">「Ctrl + Alt + 向上箭咀」的鍵盤快速鍵已變更。如要使用 Home 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向左箭咀。</translation>
 <translation id="4333628967105022692">有多位使用者登入時不支援 Lacros 瀏覽器。</translation>
 <translation id="4338109981321384717">放大鏡</translation>
 <translation id="4351433414020964307">正在載入小幫手…</translation>
-<translation id="4356930093361201197">高對比模式</translation>
 <translation id="4371348193907997655">投放設定</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，訊號強度為 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">連線中…</translation>
@@ -876,7 +874,6 @@
 <translation id="5980301590375426705">結束訪客工作階段</translation>
 <translation id="598407983968395253">使用範本</translation>
 <translation id="598882571027504733">如要下載更新，請連接鍵盤並重新啟動 Chromebook。</translation>
-<translation id="5992218262414051481">已啟用高對比模式。再次按下 Ctrl+Search+H 鍵即可停用。</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
 <translation id="6018164090099858612">正在退出鏡像模式</translation>
 <translation id="602001110135236999">向左捲動</translation>
@@ -1231,7 +1228,6 @@
 <translation id="8051716679295756675">名為「<ph name="DESK_TEMPLATE_NAME" />」的範本已存在</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
-<translation id="8061464966246066292">高對比模式</translation>
 <translation id="8083540854303889870">已儲存以供日後使用</translation>
 <translation id="8091387634532529612">自動更新</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>

@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">Арыентацыя</translation>
 <translation id="3153444934357957346">Максімальная колькасць уліковых запісаў для функцыі ўваходу ў некалькі ўліковых запісаў: <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Адміністратар прылады можа сачыць за вашымі дзеяннямі ў браўзеры.</translation>
+<translation id="3157931365184549694">Аднавіць</translation>
 <translation id="316086887565479535">У шаблоне ёсць праграмы, якія не падтрымліваюцца</translation>
 <translation id="3161500364292033097">Закрыць працоўны стол і вокны</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> выконвае адкат на прыладзе <ph name="DEVICE_TYPE" />. Налады прылады будуць скінуты, а ўсе даныя выдалены.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
 <translation id="3765841986579723851">Зменена сёння</translation>
-<translation id="3771549900096082774">Рэжым высокай кантраснасці</translation>
 <translation id="3773700760453577392">Адміністратар забараніў уваход у некалькі ўліковых запісаў для карыстальніка <ph name="USER_EMAIL" />. Каб працягнуць, усе карыстальнікі павінны выйсці.</translation>
 <translation id="3779139509281456663">Ідзе падключэнне прылады "<ph name="NAME" />"</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">Акно перадпрагляду камеры прывязана да правага верхняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
 <translation id="4316910396681052118">УСЕ ПРАГРАМЫ</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Вы націснулі спалучэнне клавіш для рэжыму высокай кантраснасці. Уключыць высокую кантраснасць?</translation>
 <translation id="4322742403972824594">Змянілася прызначэнне спалучэння клавіш Ctrl + Alt + стрэлка ўверх. Каб выканаць дзеянне клавішы Home, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўлева.</translation>
 <translation id="4333628967105022692">Lacros не падтрымліваецца, калі ўваход ажыццёўлены з некалькіх уліковых запісаў адразу.</translation>
 <translation id="4338109981321384717">Павелічальнае шкло</translation>
 <translation id="4351433414020964307">Ідзе загрузка Памочніка...</translation>
-<translation id="4356930093361201197">рэжым высокай кантраснасці</translation>
 <translation id="4371348193907997655">Налады трансляцыі</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">Выйсці з гасцявога рэжыму</translation>
 <translation id="598407983968395253">Выкарыстаць шаблон</translation>
 <translation id="598882571027504733">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook.</translation>
-<translation id="5992218262414051481">Рэжым высокай кантраснасці ўключаны. Каб выключыць яго, зноў націсніце Ctrl + Пошук + H.</translation>
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Выхад з рэжыму адлюстравання</translation>
 <translation id="602001110135236999">Прагартаць улева</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">Ужо існуе шаблон з назвай "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
-<translation id="8061464966246066292">Высокая кантраснасць</translation>
 <translation id="8083540854303889870">Захавана на будучыню</translation>
 <translation id="8091387634532529612">Аўтаматычныя абнаўленні</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>

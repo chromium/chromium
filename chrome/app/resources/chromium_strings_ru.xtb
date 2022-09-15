@@ -138,7 +138,7 @@
 <translation id="4230135487732243613">Связать данные Chromium с этим аккаунтом?</translation>
 <translation id="4271805377592243930">Справка Chromium</translation>
 <translation id="4285930937574705105">Установка не удалась из-за неизвестной ошибки. Если Chromium продолжает работать, закройте его и повторите попытку.</translation>
-<translation id="4304713468139749426">Диспетчер паролей</translation>
+<translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4334294535648607276">Скачивание завершено.</translation>
 <translation id="439358628917130594">Согласно действующим правилам <ph name="MANAGER" />, до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Chromium OS.</translation>
 <translation id="4407044323746248786">Закрыть Chromium?</translation>
@@ -206,6 +206,7 @@
 <translation id="6072279588547424923">Расширение "<ph name="EXTENSION_NAME" />" добавлено в Chromium</translation>
 <translation id="608006075545470555">Добавление рабочего профиля в браузер</translation>
 <translation id="6096348254544841612">Новая версия Chromium уже вышла!</translation>
+<translation id="6119438414301547735">Разрешить расширению показывать запросы доступа на панели инструментов Chromium</translation>
 <translation id="6120345080069858279">Этот пароль будет сохранен в аккаунте Google. Вам не нужно его запоминать.</translation>
 <translation id="6129621093834146363">Chromium заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
 <translation id="6134968993075716475">Безопасный просмотр отключен. Chromium рекомендует включить его.</translation>

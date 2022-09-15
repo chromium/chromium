@@ -3329,6 +3329,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Allerdings werden ab M85 Muster mit den Platzhaltern „*“ und „[*.]“ auf dem Host für diese Richtlinie nicht mehr unterstützt.</translation>
+<translation id="4369307906396795087">Skripts für Worker (Web Worker, Service Worker usw.) verwenden die laxe MIME-Typprüfung. Das heißt, auch Worker-Skripts mit älteren MIME-Typen wie <ph name="MIMETYPE_TEXT_ASCII" /> funktionieren.</translation>
 <translation id="4370937370030117032">Senden von Nutzer- und Dateinamen an native Drucker deaktivieren</translation>
 <translation id="4372704773119750918">Nutzer in Unternehmen dürfen keine Mehrfachprofile verwenden (weder als primärer, noch als sekundärer Nutzer)</translation>
 <translation id="4377599627073874279">Anzeige aller Bilder auf allen Websites zulassen</translation>
@@ -3911,13 +3912,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="5082296146261894974">Ermöglicht Nutzern, auf die Phone Hub-Benachrichtigung zu klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5082572440690475059">Lesezugriff über die File System API auf diesen Websites erlauben</translation>
 <translation id="5085647276663819155">Druckvorschau deaktivieren</translation>
-<translation id="5087974224086385270">Mit dieser Einstellung wird festgelegt, wie viele Nutzerdaten nach der Deaktivierung von <ph name="LACROS_NAME" /> gespeichert werden.
-
-      Wenn die Richtlinie auf <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> gesetzt ist, werden alle Nutzerdaten entfernt. Das ist die sicherste Option.
-
-      Wenn die Richtlinie auf <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> gesetzt ist, werden die meisten Nutzerdaten entfernt. Es werden dann nur browserunabhängige Dateien gespeichert, z. B. Downloads.
-
-      Wenn die Richtlinie auf <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> gesetzt ist, bleiben alle Nutzerdaten erhalten. Diese Option ist sehr fehleranfällig. Zur Wiederherstellung ist dann ein Zurücksetzen auf die Werkseinstellungen per Powerwash erforderlich.</translation>
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
 <translation id="5091315650312105069"><ph name="BASIC_AUTH" /> die Authentifizierung für HTTP erlauben</translation>
 <translation id="5099239365323299669">Ab Version M106 wird das persistente Kontingent nicht mehr unterstützt. Durch diese Richtlinie wird die Funktion für persistente Kontingente bis Version M107 wieder aktiviert.
@@ -6348,6 +6342,11 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Einheitenumrechnung über „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Einheitenumrechnung über „Schnellinfo“ deaktiviert.</translation>
+<translation id="7582095958259051083">Ist diese Richtlinie aktiviert, ist die anonymisierte URL-Datenerfassung immer aktiv. Das heißt, URLs der von Nutzern besuchten Seiten werden an Google gesendet, um Suchanfragen und das Surfen zu verbessern.
+
+      Wenn die Richtlinie deaktiviert ist, erfolgt keine anonymisierte URL-Datenerfassung.
+
+      Wenn die Richtlinie nicht konfiguriert ist, können die Nutzer diese Einstellung manuell ändern.</translation>
 <translation id="7587345076013230465">Nutzer auffordern, auf dem Anmeldebildschirm das Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt</translation>
 <translation id="7587921466180902617">Screencast-Dogfood für Family Link-Nutzer aktivieren</translation>
 <translation id="759957074386651883">Safe Browsing-Einstellungen</translation>
@@ -7066,6 +7065,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8337114537412769126">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />" die Parameter für die Vorschlagsuche mit POST an. Die Richtlinie besteht aus kommagetrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie <ph name="SEARCH_TERM_MARKER" /> ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />" nicht konfiguriert, wird die Vorschlagsuchanfrage mithilfe der GET-Methode gesendet.</translation>
+<translation id="8337961007759352651">Skripts für Worker (Web Worker, Service Worker usw.) erfordern einen JavaScript-MIME-Typ wie <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Das heißt, Worker-Skripts mit älteren MIME-Typen wie <ph name="MIMETYPE_TEXT_ASCII" /> werden abgelehnt.</translation>
 <translation id="8339089771335211509">WebRTC verwendet nur die Schnittstelle, die mit dem öffentlichen Internet verbunden ist, und stellt keine Verbindung über private IP-Adressen her.</translation>
 <translation id="8339420913453596618">Zweiter Authentifizierungsfaktor deaktiviert</translation>
 <translation id="8344454543174932833">Lesezeichen bei erster Ausführung aus Standardbrowser importieren</translation>
@@ -7371,12 +7371,23 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />“, sofern sie konfiguriert ist. Andernfalls wird die persönliche Einstellung des Nutzers verwendet.
 
       URLs in dieser Richtlinie dürfen nicht im Widerspruch zu denen stehen, die über „<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />“ konfiguriert wurden. Sonst hat diese Richtlinie Vorrang vor „<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />“.</translation>
+<translation id="8667754887193084187">Mit dieser Richtlinie wird die strikte MIME-Typprüfung für Worker-Skripts aktiviert.
+
+      Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, werden bei Worker-Skripts strikte MIME-Typprüfungen für JavaScript durchgeführt. Das ist das neue Standardverhalten. Worker-Skripts mit älteren MIME-Typen werden abgelehnt.
+
+      Wenn diese Richtlinie deaktiviert ist, wird bei Worker-Skripts die laxe MIME-Typprüfung durchgeführt, sodass Worker-Skripts mit älteren MIME-Typen wie <ph name="MIMETYPE_TEXT_ASCII" /> weiterhin geladen und ausgeführt werden.
+
+      In Browsern wurde bisher die laxe MIME-Typprüfung verwendet, sodass Ressourcen mit einer Reihe von älteren MIME-Typen unterstützt wurden. Für JavaScript-Ressourcen ist zum Beispiel <ph name="MIMETYPE_TEXT_ASCII" /> ein alter unterstützter MIME-Typ. Dies kann zu Sicherheitsproblemen führen, da Ressourcen so als Skripts geladen werden können, die nie als solche gedacht waren. Chrome wird in naher Zukunft auf eine strikte MIME-Typprüfung umgestellt. Wenn die Richtlinie aktiviert ist, wird das Standardverhalten angewendet. Wenn die Richtlinie deaktiviert ist, können Administratoren das bisherige Verhalten beibehalten.
+
+      Weitere Informationen zu den Medientypen JavaScript/ECMAScript findest du unter https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
+      </translation>
 <translation id="8669313549017524373">Ist die Richtlinie <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> auf „RestoreOnStartupIsURLs“ gesetzt, wird durch Einrichten von <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> auf eine Liste von URLs angegeben, welche URLs geöffnet werden.
 
       Ist die Richtlinie nicht konfiguriert, öffnet sich die „Neuer Tab“-Seite beim Start.
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="8671119576957984818">Desktop-Freigabe-Hub aktivieren</translation>
+<translation id="8671193325113134911">Strikte MIME-Typprüfung für Worker-Skripts aktivieren</translation>
 <translation id="8671314659400112135">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, darf <ph name="PRODUCT_NAME" /> die zusätzliche Risikominderung für Erweiterungspunkte anwenden, um alte Erweiterungspunkte im Browserprozess zu blockieren.
 
       Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dann unbekannter und potenziell schädlicher Code in den Browserprozess von <ph name="PRODUCT_NAME" /> geladen werden kann. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb des Browserprozesses von <ph name="PRODUCT_NAME" /> ausgeführt werden muss.

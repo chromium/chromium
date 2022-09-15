@@ -373,6 +373,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3151786313568798007">Umumo</translation>
 <translation id="3153444934357957346">Ungaba nama-akhawunti angafika kwangu-<ph name="MULTI_PROFILE_USER_LIMIT" /> kuphela ekungeneni ngemvume okuningi.</translation>
 <translation id="3154351730702813399">Umlawuli wedivayisi angangamela umsebenzi wakho wokupheqa.</translation>
+<translation id="3157931365184549694">Buyisela</translation>
 <translation id="316086887565479535">Ama-app angasekelwe kusifanekiso</translation>
 <translation id="3161500364292033097">Vala itafula namawindi</translation>
 <translation id="316356270129335934">I-<ph name="MANAGER" /> ibuyisa i-<ph name="DEVICE_TYPE" /> yakho. Idivayisi yakho izosethwa kabusha futhi yonke idatha izosulwa.</translation>
@@ -476,7 +477,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="3735740477244556633">Hlunga nge-</translation>
 <translation id="3742055079367172538">Kuthathwe isithombe-skrini</translation>
 <translation id="3765841986579723851">Kuhlelwe namuhla</translation>
-<translation id="3771549900096082774">Imodi yokugqama okuphezulu</translation>
 <translation id="3773700760453577392">Umlawuli akazange avumele ukungena ngemvume okuningi kwe-<ph name="USER_EMAIL" />. Bonke abasebenzisi kumele baphume ngemvume ukuze baqhubeke.</translation>
 <translation id="3779139509281456663">Iyaxhuma ku-<ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="4312840429157639164">Ikhamera iqondaniswe ekhoneni elingaphezulu ngakwesokudla. Ukungqubuzana nendawo yesistimu.</translation>
 <translation id="4316910396681052118">ZONKE IZINHLELO ZOKUSEBENZA</translation>
 <translation id="4321179778687042513">i-ctrl</translation>
-<translation id="4321776623976362024">Ucindezele isinqamuleli sekhibhodi sokugqamisa okuphezulu. Uyafuna ukusivula?</translation>
 <translation id="4322742403972824594">Isifinyezo sekhibhodi sika-Ctrl + Alt + Umcibisholo Waphezulu sishintshile. Ukuze usebenzise ukhiye we-Home, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Wangakwesobunxele.</translation>
 <translation id="4333628967105022692">I-Lacros ayisekelwa ngenkathi abasebenzisi abaningi bangene ngemvume.</translation>
 <translation id="4338109981321384717">Ingilazi yokusondeza</translation>
 <translation id="4351433414020964307">Umsizi uyalayisha...</translation>
-<translation id="4356930093361201197">Imodi yokugqama okuphezulu</translation>
 <translation id="4371348193907997655">Izilungiselelo Zokusakaza</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, iphesenti lamandla wesiginali ngu-<ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="4378551569595875038">Iyaxhuma...</translation>
@@ -877,7 +875,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5980301590375426705">Phuma kusihambeli</translation>
 <translation id="598407983968395253">Sebenzisa isifanekiso</translation>
 <translation id="598882571027504733">Ukuze uthole izibuyekezo, qalisa kabusha i-Chromebook ngekhibhodi enamathiselwe.</translation>
-<translation id="5992218262414051481">Imodi yokugqama okuphezulu inikwe amandla. Cindezela u-Ctrl+Usesho+H futhi ukuze uyiguqule uyivale.</translation>
 <translation id="6012623610530968780">Ikhasi elingu-<ph name="SELECTED_PAGE" /> kwangu-<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Ukuphuma kumodi ye-mirror</translation>
 <translation id="602001110135236999">Skrolela ngakwesokunxele</translation>
@@ -1233,7 +1230,6 @@ Ukufaka okusha</translation>
 <translation id="8051716679295756675">Isifanekiso esiqanjwe ngokuthi <ph name="DESK_TEMPLATE_NAME" /> sesikhona kakade</translation>
 <translation id="8052898407431791827">Kukopishelwe kuklibhodi</translation>
 <translation id="8054466585765276473">Ibala isikhathi sebhethri</translation>
-<translation id="8061464966246066292">Ukugqama okuphezulu</translation>
 <translation id="8083540854303889870">Kulondolozelwe kamuva</translation>
 <translation id="8091387634532529612">Ukubuyekezwa okuzenzekelayo</translation>
 <translation id="8098591350844501178">Misa ukusakaza isikrini ku-<ph name="RECEIVER_NAME" /></translation>

@@ -3368,6 +3368,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se a política não tiver definição, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. A partir da versão M85, padrões com caracteres curinga "*" e "[*.]" no host não serão mais compatíveis com esta política.</translation>
+<translation id="4369307906396795087">Os scripts para workers (como Web workers, service workers etc.) usam a verificação não rigorosa de tipo MIME. Os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão funcionar.</translation>
 <translation id="4370937370030117032">Desativar o envio do nome de usuário e do nome de arquivo para impressoras nativas</translation>
 <translation id="4372704773119750918">Não permitir que o usuário corporativo faça parte de diversos perfis (primários ou secundários)</translation>
 <translation id="4377599627073874279">Permitir que todos os sites exibam todas as imagens</translation>
@@ -3952,13 +3953,6 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="5082296146261894974">Permite que os usuários cliquem na notificação do recurso Seu smartphone para abrir o app Eche.</translation>
 <translation id="5082572440690475059">Permitir acesso de leitura com a API File System nestes sites</translation>
 <translation id="5085647276663819155">Desativar visualização da impressão</translation>
-<translation id="5087974224086385270">Esta configuração decide quantos dados do usuário são mantidos após a desativação do <ph name="LACROS_NAME" />.
-
-      Se a política é definida como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, todos os dados do usuário são removidos. Essa é a opção mais segura.
-
-      Se a política é definida como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, a maioria dos dados do usuário é removida. Apenas arquivos independentes do navegador vão ser mantidos, como os downloads.
-
-      Se a política é definida como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, todos os dados do usuário são mantidos. Essa opção tem um alto risco de falha, exigindo a execução de um Powerwash para recuperação.</translation>
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
 <translation id="5091315650312105069">Permitir autenticação <ph name="BASIC_AUTH" /> para conexões HTTP</translation>
 <translation id="5099239365323299669">Da versão M106 em diante, não vai mais haver suporte para a cota persistente. Esta política vai reativar a funcionalidade de cota persistente até a versão M107.
@@ -6409,6 +6403,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Se ela estiver ativada ou for deixada sem definição, a conversão de unidades das Respostas rápidas ficará ativada.
       Se a política for desativada, a conversão de unidades das Respostas rápidas ficará desativada.</translation>
+<translation id="7582095958259051083">Se a política for ativada, a coleta de dados anônimos inseridos no URL, que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e a navegação, vai ficar sempre ativa.
+
+      Se a política for desativada, não vai haver coleta de dados anônimos inseridos no URL.
+
+      Se ela for deixada sem definição, o usuário poderá mudar a configuração manualmente.</translation>
 <translation id="7587345076013230465">Pedir para o usuário selecionar o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados na tela de login</translation>
 <translation id="7587921466180902617">Ativar o dogfood do Screencast para usuários do Family Link</translation>
 <translation id="759957074386651883">Configurações da política Safe Browsing</translation>
@@ -7109,6 +7108,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8337114537412769126">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará os parâmetros durante a pesquisa sugerida com POST. Ele consiste em pares nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como <ph name="SEARCH_TERM_MARKER" />, ele será substituído pelos dados dos termos de pesquisa reais.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa sugerida serão enviadas usando o método get.</translation>
+<translation id="8337961007759352651">Os scripts para workers (como Web worker, service workers etc.) exigem um tipo MIME JavaScript, como <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão ser rejeitados.</translation>
 <translation id="8339089771335211509">O WebRTC usará apenas a interface conectada à Internet pública e não se conectará usando endereços IP particulares.</translation>
 <translation id="8339420913453596618">Segundo fator desativado</translation>
 <translation id="8344454543174932833">Importar favoritos do navegador padrão na primeira execução</translation>
@@ -7422,12 +7422,23 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> será aplicada, caso esteja definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Os URLs desta política não devem entrar em conflito com os configurados pela <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre a <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="8667754887193084187">Esta política ativa a verificação rigorosa de tipo MIME para scripts de worker.
+
+      Quando ela for ativada ou deixada sem definição, os scripts de worker vão usar a verificação rigorosa de tipo MIME para JavaScript, que é o novo comportamento padrão. Os scripts de worker com tipos MIME legados vão ser rejeitados.
+
+      Quando desativada, os scripts de worker vão usar a verificação não rigorosa de tipo MIME. Assim, os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão continuar sendo carregados e executados.
+
+      Tradicionalmente, os navegadores usavam a verificação não rigorosa de tipo MIME, de modo que havia suporte para recursos com vários tipos MIME legados. Por exemplo, para recursos JavaScript, o <ph name="MIMETYPE_TEXT_ASCII" /> é um tipo MIME legado com suporte. Isso pode causar problemas de segurança, permitindo carregar recursos como scripts, sem que eles tenham sido criados para esse uso. O Chrome vai passar a usar verificação rigorosa de tipo MIME em breve. A política ativada vai acompanhar o comportamento padrão. Se a política for desativada, os administradores poderão manter o comportamento legado, se quiserem.
+
+      Consulte https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage (link em inglês) para ver detalhes sobre os tipos de mídia JavaScript / ECMAScript.
+      </translation>
 <translation id="8669313549017524373">Se <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> for definida como RestoreOnStartupIsURLs, definir <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> como uma lista de URLs especifica quais serão abertos.
 
       Se ela não for definida, a página Nova guia será aberta na inicialização.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="8671119576957984818">Ativar hub de compartilhamento da área de trabalho</translation>
+<translation id="8671193325113134911">Ativar a verificação rigorosa de tipo MIME para scripts de worker</translation>
 <translation id="8671314659400112135">Se a política for ativada ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> vai poder aplicar a mitigação de segurança de pontos de extensão para bloquear pontos de extensão legados no processo do navegador.
 
       Se a política for desativada, a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, já que códigos desconhecidos e possivelmente hostis poderão ser carregados nos processos do navegador <ph name="PRODUCT_NAME" />. Desative a política apenas se softwares de terceiros que precisam ser executados nos processos do navegador <ph name="PRODUCT_NAME" /> apresentarem problemas de compatibilidade.

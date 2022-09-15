@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ဇစ်လုပ်နေသည်…</translation>
 <translation id="1722687688096767818">ပရိုဖိုင် ပေါင်းထည့်နေသည်...</translation>
 <translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
+<translation id="1726600877401297672">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အမှိုက်ပုံးသို့ ရွှေ့လိုက်သည်</translation>
 <translation id="1729953886957086472">ဂျာမန် (ဂျာမနီ)</translation>
 <translation id="1730235522912993863">တရုတ် ချန်ကျီ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးထားသည်။</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;နှင့် တိုက်ဆိုင်သည့် အရာများ မရှိ</translation>
 <translation id="2894654529758326923">အချက်အလက်များ</translation>
 <translation id="2902734494705624966">တိုးချဲ့ US</translation>
+<translation id="2906052776158021882">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အမှိုက်ပုံးသို့ ရွှေ့နေသည်</translation>
 <translation id="290843123675549676">မာရာသီ</translation>
 <translation id="2923240520113693977">အက်စ်တိုနီယမ်</translation>
 <translation id="2938685643439809023">မွန်ဂိုဘာသာ</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">ပီဇာ</translation>
 <translation id="5081517858322016911">ဖိုင် <ph name="TOTAL_FILE_SIZE" /> ကို ဖျက်လိုက်ပါမည်</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ခုကို <ph name="FOLDER_NAME" /> သို့ ရွှေ့နေသည်</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> ကို အမှိုက်ပုံးသို့ ရွှေ့လိုက်သည်</translation>
 <translation id="509429900233858213">အမှား တစ်ခု ကြုံခဲ့ရသည်။</translation>
 <translation id="5098629044894065541">ဟီဘရူး</translation>
 <translation id="5102922915594634436">စင့်ခ်လုပ်ထားသောဖိုင်တွဲများ စီမံရန်</translation>
@@ -560,6 +563,7 @@
 <translation id="5845721951356578987">သူနာပြု</translation>
 <translation id="5861477046012235702">ဂိမ်းကစားသူ</translation>
 <translation id="5864471791310927901">DHCP ရှာဖွေမှု မအောင်မြင်ခဲ့</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> ကို အမှိုက်ပုံးသို့ ရွှေ့နေသည်</translation>
 <translation id="5896749729057314184">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊<ph name="NETWORK_NAME" />၊ ဖွင့်မထားပါ၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
 <translation id="5911887972742538906">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="5912396950572065471">ဖော်မက်</translation>

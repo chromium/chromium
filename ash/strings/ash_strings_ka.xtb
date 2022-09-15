@@ -373,6 +373,7 @@
 <translation id="3151786313568798007">ორიენტაცია</translation>
 <translation id="3153444934357957346">მრავალჯერადი შესვლის ფუნქციისთვის შესაძლებელია მხოლოდ <ph name="MULTI_PROFILE_USER_LIMIT" /> ანგარიშის გამოყენება.</translation>
 <translation id="3154351730702813399">მოწყობილობის ადმინისტრატორს თქვენ მიერ ვების დათვალიერების მონიტორინგი შეუძლია.</translation>
+<translation id="3157931365184549694">აღდგენა</translation>
 <translation id="316086887565479535">მხარდაუჭერელი აპები შაბლონში</translation>
 <translation id="3161500364292033097">სამუშაო მაგიდისა და ფანჯრების დახურვა</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> აბრუნებს თქვენს <ph name="DEVICE_TYPE" />-ს წინა ვერსიაზე. თქვენი მოწყობილობა გადაყენდება და ყველა მონაცემი წაიშლება.</translation>
@@ -476,7 +477,6 @@
 <translation id="3735740477244556633">დალაგება</translation>
 <translation id="3742055079367172538">ეკრანის ანაბეჭდი გადაღებულია</translation>
 <translation id="3765841986579723851">დღეს რედაქტირებული</translation>
-<translation id="3771549900096082774">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="3773700760453577392">ადმინისტრატორმა აკრძალა მრავალჯერადი შესვლა <ph name="USER_EMAIL" />-ისთვის. გასაგრძელებლად საჭიროა ყველა მომხმარებლის გამოსვლა სისტემიდან.</translation>
 <translation id="3779139509281456663">მიმდინარეობს <ph name="NAME" />-ის დაკავშირება</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -576,12 +576,10 @@
 <translation id="4312840429157639164">კამერა მიზიდულია ზედა მარჯვენა კუთხეში. ის კონფლიქტშია სისტემის ზედაპირთან.</translation>
 <translation id="4316910396681052118">ყველა აპი</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">თქვენ დააჭირეთ მაღალკონტრასტული რეჟიმის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
 <translation id="4322742403972824594">კლავიატურის მალსახმობი „Ctrl + Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Home კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + მარცხნივ მიმართულ ისარს.</translation>
 <translation id="4333628967105022692">Lacros მხარდაუჭერელია, როცა სისტემაში შესულია რამდენიმე მომხმარებელი.</translation>
 <translation id="4338109981321384717">გამადიდებელი შუშა</translation>
 <translation id="4351433414020964307">ასისტენტი იტვირთება...</translation>
-<translation id="4356930093361201197">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="4371348193907997655">ტრანსლირების პარამეტრები</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" /> პროცენტი</translation>
 <translation id="4378551569595875038">დაკავშირება…</translation>
@@ -877,7 +875,6 @@
 <translation id="5980301590375426705">სტუმრის რეჟიმიდან გამოსვლა</translation>
 <translation id="598407983968395253">შაბლონის გამოყენება</translation>
 <translation id="598882571027504733">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook და არ გამოართოთ კლავიატურა.</translation>
-<translation id="5992218262414051481">მაღალკონტრასტული რეჟიმი ჩართულია. გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას: Ctrl+Search+H.</translation>
 <translation id="6012623610530968780">გვერდი <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" />-დან</translation>
 <translation id="6018164090099858612">მიმდინარეობს სარკის რეჟიმიდან გამოსვლა</translation>
 <translation id="602001110135236999">გადაადგილება მარცხნივ</translation>
@@ -1233,7 +1230,6 @@
 <translation id="8051716679295756675">შაბლონი სახელად „<ph name="DESK_TEMPLATE_NAME" />“ უკვე არსებობს</translation>
 <translation id="8052898407431791827">დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>
-<translation id="8061464966246066292">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="8083540854303889870">შენახულია სამომავლოდ</translation>
 <translation id="8091387634532529612">ავტომატური განახლებები</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />-ში ეკრანის ტრანსლირების შეწყვეტა</translation>

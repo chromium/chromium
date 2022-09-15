@@ -238,6 +238,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2619344480613750862">İsterseniz ekrandaki bölümler arasında geçiş yapabilirsiniz. Örneğin, başlatıcı, raf ve Chrome sekmeleriniz arasında dolaşabilirsiniz. Sonraki bölüme geçmek için dört parmağınızla soldan sağa kaydırın. Devam etmek için şimdi bunu yapmayı deneyin.</translation>
 <translation id="2624431853467395961">Öğrenme modunu açar</translation>
 <translation id="2626530649491650971">tıklanabilir</translation>
+<translation id="263637551280112393">Arama + Üst Karakter + Boşluk tuşlarına basın</translation>
 <translation id="2637227747952042642">Matematik</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" /> dosyasını indirme işlemi devam ediyor</translation>
 <translation id="2639750663247012216">ChromeVox değiştirici</translation>
@@ -650,6 +651,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5355014376930441909">Sonraki bölüm yok</translation>
 <translation id="5368000168321181111">Ses sinyalleri kapalı</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" /> dosyası %<ph name="PROGRESS" /> oranında indirildi. Yaklaşık <ph name="TIME" /> <ph name="UNITS" /> kaldı.</translation>
+<translation id="5381388086899614489">uzun tıklama</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Modal uyarı</translation>

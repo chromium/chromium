@@ -696,6 +696,7 @@
 <translation id="1640283014264083726">RSA এনক্রিপশানের সাথে PKCS #1 MD4</translation>
 <translation id="1641113438599504367">নিরাপদ ব্রাউজিং</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" />-এর জন্য আরও অ্যাকশন</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{১টি পাসওয়ার্ড সঠিকভাবে ফর্ম্যাট না থাকার জন্য ইমপোর্ট করা যায়নি}one{{NUM_PASSWORDS}টি পাসওয়ার্ড সঠিকভাবে ফর্ম্যাট না থাকার জন্য ইমপোর্ট করা যায়নি}other{{NUM_PASSWORDS}টি পাসওয়ার্ড সঠিকভাবে ফর্ম্যাট না থাকার জন্য ইমপোর্ট করা যায়নি}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> এবং <ph name="NUMBER_OF_DEVICES" />টি অন্য ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা আছে</translation>
 <translation id="1642494467033190216">অন্যান্য ডিবাগিং বৈশিষ্ট্যগুলি চালু করার আগে rootfs সুরক্ষা সরানোর এবং আবার চালু করার প্রয়োজন৷</translation>
 <translation id="1643072738649235303">SHA-1 সহ X9.62 ECDSA স্বাক্ষর</translation>
@@ -1181,6 +1182,7 @@
 <translation id="208634871997892083">সবসময় চালু ভিপিএন</translation>
 <translation id="2087822576218954668">প্রিন্ট করুন: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">আপনি <ph name="DEVICE_OS" /> ইনস্টল করার পরেই শুধুমাত্র এনরোল করা যাবে।</translation>
+<translation id="2089090684895656482">কম</translation>
 <translation id="208928984520943006">যেকোনও সময় হোম স্ক্রিনে যেতে স্ক্রিনের নিচের দিক থেকে উপরে সোয়াইপ করুন।</translation>
 <translation id="2089566709556890888">Google Chrome দিয়ে নিরাপদে ব্রাউজ করুন</translation>
 <translation id="2089795179672254991">ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি কোনও সাইট দেখতে চাইলে আপনাকে জিজ্ঞেস করা হবে (আমরা এটি সুপারিশ করছি)</translation>
@@ -1844,6 +1846,7 @@
 <translation id="2673135533890720193">আপনার ব্রাউজিং ইতিহাস পড়ুন</translation>
 <translation id="2674764818721168631">বন্ধ করা আছে</translation>
 <translation id="2678063897982469759">পুনঃ সক্ষম</translation>
+<translation id="2678100101831051676">কাস্ট করা যায়নি।</translation>
 <translation id="268053382412112343">Hi&amp;story</translation>
 <translation id="2681124317993121768">গেস্ট প্রোফাইল কাজ করে না</translation>
 <translation id="2682498795777673382">তোমার অভিভাবকের থেকে আপডেট</translation>
@@ -2519,6 +2522,7 @@
 <translation id="3325910708063135066">Mac-এর সিস্টেম অভিরুচিতে ক্যামেরা ও মাইক্রোফোন বন্ধ করা আছে</translation>
 <translation id="3327050066667856415">Chromebook তৈরি করা হয়েছে সুরক্ষাকে প্রাধান্য দিয়ে। তাই আপনার ডিভাইস ম্যালওয়্যার থেকে অটোমেটিক সুরক্ষিত – কোনও অতিরিক্ত সফ্টওয়্যারের প্রয়োজন নেই।</translation>
 <translation id="3328489342742826322">কোনও ব্যাক-আপ থেকে ফিরিয়ে আনলে আপনার Linux ফাইল ফোল্ডারে আগে থেকে থাকা Linux অ্যাপ্লিকেশন ও ডেটা মুছে দেওয়া হবে।</translation>
+<translation id="3329013043687509092">পরিপৃক্তি</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">অ্যাপ্লিকেশানের তথ্য</translation>
 <translation id="3333190335304955291">আপনি সেটিংসে গিয়ে এই পরিষেবাটি বন্ধ করতে পারেন।</translation>
@@ -3304,6 +3308,7 @@
 <translation id="4050534976465737778">এটি নিশ্চিত করুন যেন উভয় ডিভাইস আনলক থাকে ও পরস্পরের কাছাকাছি থাকে এবং তার সাথে যেন ব্লুটুথও চালু করা থাকে। যদি আপনি এমন কোনও Chromebook-এর সাথে ফাইল শেয়ার করেন যেটি আপনার পরিচিতিতে নেই, তাহলে এটি নিশ্চিত করে নিন ডিভাইসে নিয়ারবাই শেয়ার ফিচার যেন চালু করা থাকে ('স্ট্যাটাস এরিয়া' বিকল্প খুলুন, তারপরে 'নিয়ারবাই শেয়ার' ফিচার চালু করুন)। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">অতি ক্ষুদ্র</translation>
 <translation id="4054070260844648638">সবাই দেখতে পাবে</translation>
+<translation id="4056223980640387499">সেপিয়া</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" />-এর জন্য আপনার অভিভাবক যে সময়সীমা সেট করেছেন তা পার হয়ে গেছে। আগামীকাল আপনি আবার এটি <ph name="TIME_LIMIT" />-এর জন্য ব্যবহার করতে পারবেন।</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">দোকানে দেখুন</translation>
@@ -3554,6 +3559,7 @@
 <translation id="4306119971288449206">অ্যাপ "<ph name="CONTENT_TYPE" />" কন্টেন্ট-প্রকার সহ হওয়া উচিত</translation>
 <translation id="4307992518367153382">বুনিয়াদি</translation>
 <translation id="4309165024397827958">লোকেশন অ্যাক্সেস করার অনুমতি আছে এমন Android অ্যাপ ও পরিষেবাকে আপনার ডিভাইসের লোকেশন ব্যবহার করার অনুমতি দিন। Google সময়ান্তরে লোকেশন ডেটা সংগ্রহ করতে এবং লোকেশন নির্ধারণের নির্ভুলতা ও লোকেশন ভিত্তিক পরিষেবার উন্নতি করার জন্য ব্যবহারকারীর পরিচয় গোপন রেখে ব্যবহার করতে পারে।</translation>
+<translation id="4309183709806093061">এছাড়াও সিস্টেম অডিও শেয়ার করুন। প্রতিক্রিয়া প্রতিরোধ করার জন্য এই ডিভাইসটি মিউট করা হবে।</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K লাইভ)</translation>
 <translation id="4310132194679586591">এই লিঙ্ক খুলতে আপনার ডিভাইসে কোনও একটি অ্যাপ বেছে নিন</translation>
 <translation id="4310139701823742692">ফাইলের ফর্ম্যাটটি ভুল। PPD ফাইল ঠিক আছে কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
@@ -3842,7 +3848,6 @@
 <translation id="4579876313423027742">ব্রাউজার সংক্রান্ত বিজ্ঞপ্তির জন্য, <ph name="LINK_BEGIN" />Chrome ব্রাউজার সেটিংস<ph name="LINK_END" /> বিভাগে যান</translation>
 <translation id="4580587929153007251">Google Password Manager-এ আবার সাইন-ইন করুন</translation>
 <translation id="4580596421317071374">এই ডিভাইসে পাসওয়ার্ড <ph name="GOOGLE_PASSWORD_MANAGER" />-এ সেভ করা হয়।</translation>
-<translation id="4580626299762849806">পাসওয়ার্ড ইমপোর্ট করা যাচ্ছে না। <ph name="FILENAME" /> চেক করুন এবং এটি সঠিকভাবে ফর্ম্যাট করা আছে কিনা কনফার্ম করুন।</translation>
 <translation id="4581774856936278355">Linux ফিরিয়ে আনার সময় সমস্যা হয়েছে</translation>
 <translation id="4582297591746054421">আপনার কপি করা টেক্সটের ফর্ম্যাটিং বজায় রাখার মতো ফিচারের জন্য সাইট সাধারণত ক্লিপবোর্ড পড়ে নেয়</translation>
 <translation id="4582563038311694664">সব সেটিংস রিসেট করুন</translation>
@@ -3876,6 +3881,7 @@
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" ব্যবহার করতে, পৃষ্ঠা আবার লোড করুন</translation>
 <translation id="4617270414136722281">এক্সটেনশন বিকল্প</translation>
 <translation id="4617880081511131945">কানেকশন সেট-আপ করা যায়নি</translation>
+<translation id="4618195822946934889">URL-এ শুধুমাত্র ASCII অক্ষর লেখা যাবে</translation>
 <translation id="4619564267100705184">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="4619615317237390068">অন্যান্য ডিভাইসগুলি থেকে ট্যাব</translation>
 <translation id="4620809267248568679">একটি এক্সটেনশনের মাধ্যমে এই সেটিং প্রয়োগ করা হয়৷</translation>
@@ -4569,6 +4575,7 @@
 <translation id="5305145881844743843">এই অ্যাকাউন্ট <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ম্যানেজ করছে</translation>
 <translation id="5307030433605830021">সোর্সটি সমর্থিত নয়</translation>
 <translation id="5307386115243749078">ব্লুটুথ সুইচ পেয়ার করুন</translation>
+<translation id="5307958609248661362">Google Password Manager টাইম-আউট</translation>
 <translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5309418307557605830">এখানেও Google Assistant কাজ করে</translation>
 <translation id="5311304534597152726">এই নামে সাইন-ইন করা হচ্ছে</translation>
@@ -5075,6 +5082,7 @@
 <translation id="5800351251499368110">সাইড প্যানেলে সার্চ বন্ধ করুন। সাইড প্যানেলে সার্চ বিকল্প খোলা আছে।</translation>
 <translation id="5801568494490449797">অভিরুচিসমূহ</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
+<translation id="5805268472388605531">অ্যাকসেন্ট চিহ্ন এবং বিশেষ অক্ষর দেখতে কীবোর্ড কী প্রেস করে ধরে থাকুন</translation>
 <translation id="5805697420284793859">উইন্ডো ম্যানেজার</translation>
 <translation id="5806447147478173900">দেখানো সাইটগুলি মোট যতটা স্টোরেজ ব্যবহার করেছে: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">০° (ডিফল্ট)</translation>
@@ -5717,6 +5725,7 @@
 <translation id="642469772702851743">এই ডিভাইসের (SN: <ph name="SERIAL_NUMBER" />) মালিক এটি লক করেছেন।</translation>
 <translation id="6425556984042222041">টেক্সট-টু-স্পিচ রেট</translation>
 <translation id="642729974267661262">সাউন্ড চালানোর অনুমতি দেওয়া হয়নি</translation>
+<translation id="6427608534767366138">"<ph name="NETWORK_ID" />"-এর জন্য প্রক্সি যাচাইকরণ প্রয়োজন</translation>
 <translation id="6429384232893414837">আপডেট করতে সমস্যা হয়েছে</translation>
 <translation id="6430814529589430811">Base64-এনকোডেড ASCII, একক সার্টিফিকেট</translation>
 <translation id="6431347207794742960">এই কম্পিউটারে সকল ব্যবহারকারীর জন্য <ph name="PRODUCT_NAME" /> স্বয়ংক্রিয় আপডেটগুলো সেটআপ করবে।</translation>
@@ -7371,6 +7380,7 @@
 <translation id="7988805580376093356">আপনার OS রাখুন এবং USB থেকে <ph name="DEVICE_OS" /> চালান।</translation>
 <translation id="7991296728590311172">সুইচ অ্যাক্সেস সেটিংস</translation>
 <translation id="7992203134935383159">টেক্সট-টু-স্পিচ</translation>
+<translation id="799570308305997052">ওয়েবভিউ</translation>
 <translation id="7997826902155442747">প্রক্রিয়ার অগ্রাধিকার</translation>
 <translation id="7999229196265990314">নিম্নোক্ত ফাইলগুলি তৈরি হয়েছে:
 
@@ -7843,6 +7853,7 @@
 <translation id="844063558976952706">সর্বদা এই সাইটে</translation>
 <translation id="8441313165929432954">টেথারিং চালু/বন্ধ করা</translation>
 <translation id="8443795068008423036">আপনার ডিভাইসটি আপ-টু-ডেট আছে দেখে নিয়ে আবার চেষ্টা করুন</translation>
+<translation id="8443986842926457191">URL-এ ২০৪৮টির বেশি অক্ষর রয়েছে</translation>
 <translation id="8446884382197647889">আরও জানুন</translation>
 <translation id="8447409163267621480">Ctrl অথবা Alt ব্যবহার করতে হবে</translation>
 <translation id="844850004779619592">কোনও কমান্ড খুঁজে পাওয়া যায়নি</translation>
@@ -7908,6 +7919,7 @@
 <translation id="851263357009351303">ছবিগুলি দেখানোর জন্য সর্বদা <ph name="HOST" />-কে অনুমতি দিন </translation>
 <translation id="8513108775083588393">অটো রোটেট</translation>
 <translation id="8514746246728959655">অন্য একটি নিরাপত্তা কী ব্যবহার করে দেখুন</translation>
+<translation id="8519895319663397036">পাসওয়ার্ড ইমপোর্ট করা যাচ্ছে না। ফাইলের সাইজ ১৫০ কেবি থেকে কম হতে হবে।</translation>
 <translation id="8523493869875972733">পরিবর্তনগুলি সেভ করুন</translation>
 <translation id="8523849605371521713">নীতির মাধ্যমে যোগ করা হয়েছে</translation>
 <translation id="8524783101666974011">আপনার Google অ্যাকাউন্টে কার্ড সেভ করুন</translation>

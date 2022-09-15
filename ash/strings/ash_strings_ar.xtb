@@ -374,6 +374,7 @@
 <translation id="3151786313568798007">الاتجاه</translation>
 <translation id="3153444934357957346">يمكنك الحصول فقط على ما يصل إلى <ph name="MULTI_PROFILE_USER_LIMIT" /> حساب في الدخول المتعدد.</translation>
 <translation id="3154351730702813399">قد يراقب مشرف الجهاز نشاط التصفح.</translation>
+<translation id="3157931365184549694">استعادة</translation>
 <translation id="316086887565479535">يحتوي النموذج على تطبيقات غير متوافقة.</translation>
 <translation id="3161500364292033097">إغلاق سطح المكتب والنوافذ</translation>
 <translation id="316356270129335934">يعمل <ph name="MANAGER" /> على إعادة جهاز <ph name="DEVICE_TYPE" /> إلى الإصدار السابق. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
@@ -478,7 +479,6 @@
 </translation>
 <translation id="3742055079367172538">تم التقاط لقطة الشاشة</translation>
 <translation id="3765841986579723851">تم تعديله اليوم.</translation>
-<translation id="3771549900096082774">وضع التباين العالي</translation>
 <translation id="3773700760453577392">منع أحد المشرفين الدخول المتعدد لـ <ph name="USER_EMAIL" />. لذا على جميع المستخدمين تسجيل الخروج للمتابعة.</translation>
 <translation id="3779139509281456663">جارٍ ربط <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
@@ -578,12 +578,10 @@
 <translation id="4312840429157639164">تم توجيه الكاميرا إلى الزاوية العلوية اليمنى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="4316910396681052118">جميع التطبيقات</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">لقد ضغطت على اختصار لوحة المفاتيح للتباين العالي. هل ترغب في تفعيله؟</translation>
 <translation id="4322742403972824594">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Home، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليسار".</translation>
 <translation id="4333628967105022692">‏لا يمكن استخدام متصفِّح Lacros إذا سجّل العديد من المستخدمين دخولهم.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
 <translation id="4351433414020964307">جارٍ تحميل المساعد...</translation>
-<translation id="4356930093361201197">وضع التباين العالي</translation>
 <translation id="4371348193907997655">إعدادات البث</translation>
 <translation id="4378479437904450384">قوة إشارة شبكة <ph name="WIRELESS_PROVIDER" /> هي <ph name="SIGNAL_STRENGTH" /> في المئة.</translation>
 <translation id="4378551569595875038">جارٍ الاتصال...</translation>
@@ -879,7 +877,6 @@
 <translation id="5980301590375426705">إنهاء جلسة الضيف</translation>
 <translation id="598407983968395253">استخدام النموذج</translation>
 <translation id="598882571027504733">‏للحصول على التحديث، يُرجى إعادة تشغيل جهاز Chromebook مع توصيل لوحة المفاتيح.</translation>
-<translation id="5992218262414051481">‏تم تفعيل وضع التباين العالي. اضغط على "Ctrl+Search+H" مرة أخرى لإيقافه.</translation>
 <translation id="6012623610530968780">صفحة <ph name="SELECTED_PAGE" /> من <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">جارٍ الخروج من وضع المرآة</translation>
 <translation id="602001110135236999">التمرير لليسار</translation>
@@ -1235,7 +1232,6 @@
 <translation id="8051716679295756675">سبق وأن تم إدخال نموذج باسم <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>
-<translation id="8061464966246066292">تباين عالٍ</translation>
 <translation id="8083540854303889870">محفوظة لوقت لاحق</translation>
 <translation id="8091387634532529612">التحديثات التلقائية</translation>
 <translation id="8098591350844501178">إيقاف إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>

@@ -2501,6 +2501,7 @@
 <translation id="3325910708063135066">Mac ସିଷ୍ଟମ୍ ଅଗ୍ରାଧିକାରଗୁଡ଼ିକରେ କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="3327050066667856415">Chromebook ସୁରକ୍ଷା ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି। ଆପଣଙ୍କ ଡିଭାଇସ୍ ସ୍ୱଚାଳିତ ଭାବରେ ମାଲୱେୟାର୍ ଠାରୁ ସୁରକ୍ଷିତ ଅଛି – କୌଣସି ଅତିରିକ୍ତ ସଫ୍ଟୱେର୍ ଆବଶ୍ୟକ ନାହିଁ।</translation>
 <translation id="3328489342742826322">କୌଣସି ବ୍ୟାକ୍‍ଅପ୍‍ରୁ ରିଷ୍ଟୋର୍ କରିବା ଦ୍ୱାରା ଆପଣଙ୍କର Linux ଫାଇଲ୍ସ ଫୋଲ୍ଡର୍‍‍ରେ ପୂର୍ବରୁ ଥିବା Linux ଆପ୍ଲିକେସନ୍ସ ଏବଂ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ।</translation>
+<translation id="3329013043687509092">ସମ୍ପୃକ୍ତି</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ଆପ୍ ସୂଚନା</translation>
 <translation id="3333190335304955291">ସେଟିଂସରେ ଆପଣ ଏହି ସେବାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
@@ -3286,6 +3287,7 @@
 <translation id="4050534976465737778">ଉଭୟ ଡିଭାଇସକୁ ଅନଲକ୍ କରାଯାଇଛି, ସେଗୁଡ଼ିକ ପାଖାପାଖି ରହିଛି ଏବଂ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ଯଦି ଆପଣ ଆପଣଙ୍କ ଯୋଗାଯୋଗରେ ନଥିବା ଏକ Chromebook ସହ ସେୟାର୍ କରୁଛନ୍ତି, ତେବେ ସେଥିରେ Nearby ଭିଜିବିଲିଟୀ ଚାଲୁ କରାଯାଇଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ (ସ୍ଥିତି କ୍ଷେତ୍ର ଖୋଲନ୍ତୁ, ତା'ପରେ Nearby ଭିଜିବିଲିଟୀ ଚାଲୁ କରନ୍ତୁ)। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">ଛୋଟ</translation>
 <translation id="4054070260844648638">ସମସ୍ତଙ୍କୁ ଦୃଶ୍ୟମାନ ହେବ</translation>
+<translation id="4056223980640387499">ସେପିଆ</translation>
 <translation id="4056908315660577142"><ph name="APP_NAME" /> Chrome ଆପ୍ ପାଇଁ ଆପଣଙ୍କ ବାପାମା ସେଟ୍ କରିଥିବା ସମୟ ସୀମାରେ ଆପଣ ପହଞ୍ଚି ଯାଇଛନ୍ତି। ଆପଣ ଏହାକୁ ଆସନ୍ତାକାଲି <ph name="TIME_LIMIT" /> ପାଇଁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">ଷ୍ଟୋର୍‌ରେ ଦେଖନ୍ତୁ</translation>
@@ -3824,7 +3826,6 @@
 <translation id="4579876313423027742">ବ୍ରାଉଜର ସମ୍ବନ୍ଧିତ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପାଇଁ <ph name="LINK_BEGIN" />Chrome ବ୍ରାଉଜର ସେଟିଂସ<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4580587929153007251">Google Password Managerରେ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4580596421317071374">ପାସୱାର୍ଡଗୁଡ଼ିକ ଏହି ଡିଭାଇସର <ph name="GOOGLE_PASSWORD_MANAGER" />ରେ ସେଭ କରାଯାଇଛି।</translation>
-<translation id="4580626299762849806">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ। <ph name="FILENAME" />କୁ ଯାଞ୍ଚ କରି ଏହା ସଠିକ୍ ଭାବେ ଫର୍ମାଟ ହୋଇଛି ନା ନାହିଁ ତାହା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4581774856936278355">Linux ରିଷ୍ଟୋର୍ ସମୟରେ ତ୍ରୁଟି</translation>
 <translation id="4582297591746054421">ଆପଣ କପି କରିଥିବା ଟେକ୍ସଟର ଫର୍ମାଟିଂକୁ ରଖିବା ପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡକୁ ପଢ଼ିଥାଏ</translation>
 <translation id="4582563038311694664">ସମସ୍ତ ସେଟିଂ ରିସେଟ୍‍ କରନ୍ତୁ</translation>

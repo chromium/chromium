@@ -78,6 +78,7 @@
 <translation id="1722487484194605434">Po ngjesh <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="1722687688096767818">Po shton profilin...</translation>
 <translation id="1726100011689679555">Serverët e emrave</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> artikuj u zhvendosën te "Koshi"</translation>
 <translation id="1729953886957086472">Gjermanisht (Gjermani)</translation>
 <translation id="1730235522912993863">Kinezisht Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> artikuj të kopjuar.</translation>
@@ -206,6 +207,7 @@
 <translation id="2888807692577297075">Asnjë artikull nuk përputhet me &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informacion</translation>
 <translation id="2902734494705624966">Amerikane e zgjeruar</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> artikuj po zhvendosen te "Koshi"</translation>
 <translation id="290843123675549676">Maratisht</translation>
 <translation id="2923240520113693977">Estonisht</translation>
 <translation id="2938685643439809023">Mongolisht</translation>
@@ -458,6 +460,7 @@
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> nga skedarët do të fshihen</translation>
 <translation id="508423945471810158">Po zhvendos <ph name="NUMBER_OF_ITEMS" /> artikuj në <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> u zhvendos te "Koshi"</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
 <translation id="5098629044894065541">Hebraisht</translation>
 <translation id="5102922915594634436">Menaxho dosjet e sinkronizuara</translation>
@@ -560,6 +563,7 @@
 <translation id="5845721951356578987">Infermier</translation>
 <translation id="5861477046012235702">Lojtar</translation>
 <translation id="5864471791310927901">Kërkimi i DHCP-së dështoi</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> po zhvendoset te "Koshi"</translation>
 <translation id="5896749729057314184">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, i paaktivizuar, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detajet</translation>
 <translation id="5911887972742538906">Ndodhi një gabim gjatë instalimit të aplikacionit tënd për Linux.</translation>
 <translation id="5912396950572065471">Formati</translation>

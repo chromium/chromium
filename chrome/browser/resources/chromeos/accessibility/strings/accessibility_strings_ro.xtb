@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Poți să comuți între două secțiuni ale eranului. De exemplu, comută între lansator, raft și filele Chrome. Pentru a trece la secțiunea următoare, glisează de la stânga la dreapta cu patru degete. Încearcă acum pentru a continua.</translation>
 <translation id="2624431853467395961">Deschide modul de învățare</translation>
 <translation id="2626530649491650971">pe care se poate da clic</translation>
+<translation id="263637551280112393">Apasă pe tasta de căutare + Shift + tasta de spațiu</translation>
 <translation id="2637227747952042642">Matematică</translation>
 <translation id="2638785836053527382">Descărcarea a fost reluată pentru <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">modificator ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Nu există o secțiune următoare</translation>
 <translation id="5368000168321181111">Semnalele audio sunt dezactivate</translation>
 <translation id="5368505757342402527">S-a descărcat <ph name="PROGRESS" />% din fișierul <ph name="FILE_NAME" />. Au mai rămas aproximativ <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">clic lung</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">O alertă în fereastră modală</translation>

@@ -1167,6 +1167,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="208634871997892083">Stalno uključen VPN</translation>
 <translation id="2087822576218954668">Štampanje: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Registrovanje je podržano samo kada instalirate <ph name="DEVICE_OS" />.</translation>
+<translation id="2089090684895656482">Manje</translation>
 <translation id="208928984520943006">Da biste došli na početni ekran u bilo kom trenutku, prevucite nagore od dna.</translation>
 <translation id="2089566709556890888">Pregledajte bezbedno uz Google Chrome</translation>
 <translation id="2089795179672254991">Pitaj kada sajt želi da vidi tekst i slike koji su kopirani u privremenu memoriju (preporučeno)</translation>
@@ -2502,6 +2503,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3325910708063135066">Kamera i mikrofon su isključeni u podešavanjima Mac sistema</translation>
 <translation id="3327050066667856415">Chromebook-ovi su osmišljeni za bezbednost. Uređaj je automatski zaštićen od malvera – nije potreban nikakav dodatan softver.</translation>
 <translation id="3328489342742826322">Vraćanjem iz rezervne kopije izbrisaće se postojeće Linux aplikacije i podaci u direktorijumu sa Linux datotekama.</translation>
+<translation id="3329013043687509092">Zasićenost boja</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3333190335304955291">Možete da isključite ovu uslugu u Podešavanjima.</translation>
@@ -3288,6 +3290,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4050534976465737778">Uverite se da su oba uređaja otključana, blizu jedan drugom i da je uključen Bluetooth. Ako delite sa Chromebook-om, koji nije u kontaktima, uverite se da mu je uključena Vidljivost u blizini (otvorite oblast statusa, pa uključite Vidljivost u blizini). <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Sićušna</translation>
 <translation id="4054070260844648638">Vidljivo svima</translation>
+<translation id="4056223980640387499">Sepija</translation>
 <translation id="4056908315660577142">Dostigao/la si vremensko ograničenje koje je roditelj podesio za Chrome aplikaciju<ph name="APP_NAME" />. Sutra imaš <ph name="TIME_LIMIT" /> na raspolaganju.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="4057896668975954729">Prikaži u prodavnici</translation>
@@ -3825,7 +3828,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4579876313423027742">Ako želite obaveštenja pregledača, idite u <ph name="LINK_BEGIN" />Podešavanja Chrome pregledača<ph name="LINK_END" /></translation>
 <translation id="4580587929153007251">Ponovo se prijavite u Google menadžer lozinki</translation>
 <translation id="4580596421317071374">Lozinke se čuvaju na ovom uređaju u:<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="4580626299762849806">Uvoz lozinki nije uspeo. Proverite fajl <ph name="FILENAME" /> i uverite se da je pravilno formatiran.</translation>
 <translation id="4581774856936278355">Greška pri vraćanju Linux-a</translation>
 <translation id="4582297591746054421">Sajtovi obično čitaju privremenu memoriju za potrebe funkcija poput zadržavanja formatiranja teksta koji ste kopirali</translation>
 <translation id="4582563038311694664">Resetuj sva podešavanja</translation>
