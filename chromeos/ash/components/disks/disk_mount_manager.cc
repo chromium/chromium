@@ -435,20 +435,15 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnUnmountDeviceRecursively(UnmountDeviceRecursivelyCallbackData* cb_data,
                                   const std::string& mount_path,
                                   base::OnceClosure done_callback,
-                                  MountError error_code) {
-    if (error_code == MountError::kPathNotMounted ||
-        error_code == MountError::kInvalidPath) {
-      // The path was already unmounted by something else.
-      error_code = MountError::kNone;
-    }
-
-    if (error_code == MountError::kNone) {
+                                  const MountError error) {
+    if (error == MountError::kPathNotMounted ||
+        error == MountError::kInvalidPath || error == MountError::kNone) {
       // Do standard processing for Unmount event.
-      OnUnmountPath(UnmountPathCallback(), mount_path, MountError::kNone);
-      VLOG(1) << "Unmounted '" << mount_path << "'";
+      OnUnmountPath(UnmountPathCallback(), mount_path, error);
     } else {
+      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
       // This causes the last non-success error to be reported.
-      cb_data->error_code = error_code;
+      cb_data->error_code = error;
     }
 
     std::move(done_callback).Run();
