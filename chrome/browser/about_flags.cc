@@ -3112,6 +3112,72 @@ const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
      std::size(kQuickDim10sQuickLock130sFeedback), nullptr},
 };
 
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale15Sample4[] = {
+    {"blur_scale", "0.15"},
+    {"blur_samples", "4"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale15Sample8[] = {
+    {"blur_scale", "0.15"},
+    {"blur_samples", "8"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale15Sample16[] = {
+    {"blur_scale", "0.15"},
+    {"blur_samples", "16"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale25Sample4[] = {
+    {"blur_scale", "0.25"},
+    {"blur_samples", "4"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale25Sample8[] = {
+    {"blur_scale", "0.25"},
+    {"blur_samples", "8"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale25Sample16[] = {
+    {"blur_scale", "0.25"},
+    {"blur_samples", "16"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale35Sample4[] = {
+    {"blur_scale", "0.35"},
+    {"blur_samples", "4"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale35Sample8[] = {
+    {"blur_scale", "0.35"},
+    {"blur_samples", "8"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale35Sample16[] = {
+    {"blur_scale", "0.35"},
+    {"blur_samples", "16"},
+};
+
+const FeatureEntry::FeatureVariation kVCBackgroundBlurVariations[] = {
+    {"Scale15Sample4", kVCBackgroundBlurScale15Sample4,
+     std::size(kVCBackgroundBlurScale15Sample4), nullptr},
+    {"Scale15Sample8", kVCBackgroundBlurScale15Sample8,
+     std::size(kVCBackgroundBlurScale15Sample8), nullptr},
+    {"Scale15Sample16", kVCBackgroundBlurScale15Sample16,
+     std::size(kVCBackgroundBlurScale15Sample16), nullptr},
+    {"Scale25Sample4", kVCBackgroundBlurScale25Sample4,
+     std::size(kVCBackgroundBlurScale25Sample4), nullptr},
+    {"Scale25Sample8", kVCBackgroundBlurScale25Sample8,
+     std::size(kVCBackgroundBlurScale25Sample8), nullptr},
+    {"Scale25Sample16", kVCBackgroundBlurScale25Sample16,
+     std::size(kVCBackgroundBlurScale25Sample16), nullptr},
+    {"Scale35Sample4", kVCBackgroundBlurScale35Sample4,
+     std::size(kVCBackgroundBlurScale35Sample4), nullptr},
+    {"Scale35Sample8", kVCBackgroundBlurScale35Sample8,
+     std::size(kVCBackgroundBlurScale35Sample8), nullptr},
+    {"Scale35Sample16", kVCBackgroundBlurScale35Sample16,
+     std::size(kVCBackgroundBlurScale35Sample16), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -8739,6 +8805,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kQuickDim,
                                     kQuickDimVariations,
                                     "QuickDim")},
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"vc-background-blur", flag_descriptions::kVCBackgroundBlurName,
+     flag_descriptions::kVCBackgroundBlurDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVCBackgroundBlur,
+                                    kVCBackgroundBlurVariations,
+                                    "VCBackgroundBlur")},
 #endif
 
 #if BUILDFLAG(IS_WIN)

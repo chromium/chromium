@@ -1365,6 +1365,10 @@ const base::Feature kQsRevamp{"QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether the vc background blur is enabled.
+const base::Feature kVCBackgroundBlur{"VCBackgroundBlur",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Quick Settings Network revamp, which updates Network
 // Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
 const base::Feature kQuickSettingsNetworkRevamp{
@@ -2579,6 +2583,10 @@ bool IsUseLoginShelfWidgetEnabled() {
 
 bool IsUseStorkSmdsServerAddressEnabled() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
+}
+
+bool IsVCBackgroundBlurEnabled() {
+  return base::FeatureList::IsEnabled(kVCBackgroundBlur);
 }
 
 bool IsWallpaperFastRefreshEnabled() {

@@ -62806,6 +62806,7 @@ from previous Chrome versions.
   <int value="1900508100" label="PasswordViewPageInSettings:enabled"/>
   <int value="1900529524" label="disable-touch-drag-drop"/>
   <int value="1901640438" label="EnableLauncherSearchNormalization:disabled"/>
+  <int value="1901847019" label="VCBackgroundBlur:enabled"/>
   <int value="1902274960" label="WebViewLogFirstPartyPageTimeSpent:enabled"/>
   <int value="1902894451" label="BorealisPermitted:enabled"/>
   <int value="1903206193" label="NewWindowAppMenu:disabled"/>
@@ -63167,6 +63168,7 @@ from previous Chrome versions.
   <int value="2123183411" label="BlinkHeapIncrementalMarking:enabled"/>
   <int value="2123567684" label="OptimizeLoadingIPCForSmallResources:enabled"/>
   <int value="2125732298" label="RetailCoupons:disabled"/>
+  <int value="2126030721" label="VCBackgroundBlur:disabled"/>
   <int value="2126203058" label="force-show-update-menu-badge"/>
   <int value="2127648677" label="OmniboxExperimentalSuggestScoring:disabled"/>
   <int value="2129184006" label="NTPOfflinePageDownloadSuggestions:enabled"/>

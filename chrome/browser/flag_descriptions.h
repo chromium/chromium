@@ -1664,6 +1664,9 @@ extern const char kUiPartialSwapDescription[];
 extern const char kUseSearchClickForRightClickName[];
 extern const char kUseSearchClickForRightClickDescription[];
 
+extern const char kVCBackgroundBlurName[];
+extern const char kVCBackgroundBlurDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 

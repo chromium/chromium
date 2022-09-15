@@ -6666,6 +6666,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "vc-background-blur",
+    "owners": [ "shafron", "skyostil", "charleszhao" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "verbose-logging-in-nacl",
     "owners": [ "fabiansommer", "native-client-dev@googlegroups.com" ],
     // This flag is useful for debugging NaCl-related issues.

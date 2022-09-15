@@ -2970,6 +2970,10 @@ const char kUseSearchClickForRightClickDescription[] =
     "webpages and apps to consume alt+click. When disabled the legacy "
     "behavior of remapping alt+click to right click will remain unchanged.";
 
+const char kVCBackgroundBlurName[] = "Enable vc background blur";
+const char kVCBackgroundBlurDescription[] =
+    "Enables background blur feature for video conferencing on chromebooks.";
+
 const char kV8VmFutureName[] = "Future V8 VM features";
 const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "

@@ -558,6 +558,8 @@ extern const base::Feature kQsRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickDim;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kVCBackgroundBlur;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickSettingsNetworkRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickUnlockFingerprint;
@@ -925,6 +927,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUploadOfficeToCloudEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseAuthFactorsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseLoginShelfWidgetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsUseStorkSmdsServerAddressEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVCBackgroundBlurEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperFastRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperFullScreenPreviewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
