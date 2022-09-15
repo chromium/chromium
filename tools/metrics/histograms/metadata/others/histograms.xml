@@ -4295,6 +4295,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Crypto.TPMDuration.{Operation}{SignatureAlgorithm}" units="ms"
+    expires_after="2023-02-12">
+  <owner>kristianm@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records status for various TPM operations
+    that Chrome artificially triggers on startup for measurement purposes. Note
+    that if new key creation fails, wrapped key creation and message signing
+    will not take place.
+  </summary>
+  <token key="Operation">
+    <variant name="MessageSigning"/>
+    <variant name="NewKeyCreation"/>
+    <variant name="WrappedKeyCreation"/>
+  </token>
+  <token key="SignatureAlgorithm">
+    <variant name="ECDSA"/>
+    <variant name="RSA"/>
+  </token>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.{Operation}{SignatureAlgorithm}"
+    enum="BooleanSuccess" expires_after="2023-02-12">
+  <owner>kristianm@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records status for various TPM actions that
+    Chrome artificially triggers on startup for measurement purposes. Note that
+    if new key creation fails, wrapped key creation and message signing will not
+    take place.
+  </summary>
+  <token key="Operation">
+    <variant name="MessageSigning"/>
+    <variant name="MessageVerify"/>
+    <variant name="NewKeyCreation"/>
+    <variant name="WrappedKeyCreation"/>
+  </token>
+  <token key="SignatureAlgorithm">
+    <variant name="ECDSA"/>
+    <variant name="RSA"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.TPMSupport2" enum="TPMSupport"
     expires_after="2023-02-12">
   <owner>agl@chromium.org</owner>

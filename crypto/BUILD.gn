@@ -55,6 +55,8 @@ component("crypto") {
     "symmetric_key.h",
     "unexportable_key.cc",
     "unexportable_key.h",
+    "unexportable_key_metrics.cc",
+    "unexportable_key_metrics.h",
   ]
 
   deps = [
@@ -165,6 +167,10 @@ test("crypto_unittests") {
     "symmetric_key_unittest.cc",
     "unexportable_key_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "unexportable_key_metrics_unittest.cc" ]
+  }
 
   # Some files are built when NSS is used for the platform certificate library.
   if (use_nss_certs) {
