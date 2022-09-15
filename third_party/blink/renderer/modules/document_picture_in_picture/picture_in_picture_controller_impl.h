@@ -144,6 +144,9 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // initialized successfully.
   bool EnsureService();
 
+  // Resolves a call to |CreateDocumentPictureInPictureWindow()|.
+  void ResolveOpenDocumentPictureInPicture();
+
   // Observer to watch a Document Picture in Picture window, so that the opener
   // can find out when it is being destroyed.
   class DocumentPictureInPictureObserver final
@@ -200,6 +203,13 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // `document_picture_in_picture_session_` instead.
   HeapMojoRemote<mojom::blink::PictureInPictureSession>
       video_picture_in_picture_session_;
+
+  // Used to force |CreateDocumentPictureInPictureWindow()| to be asynchronous.
+  TaskHandle open_document_pip_task_;
+
+  // The |ScriptPromiseResolver| associated with the most recent call to
+  // |CreateDocumentPictureInPictureWindow()| if it has not yet been resolved.
+  Member<ScriptPromiseResolver> open_document_pip_resolver_;
 };
 
 }  // namespace blink

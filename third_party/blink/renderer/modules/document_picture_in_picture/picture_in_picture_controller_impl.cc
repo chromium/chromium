@@ -412,12 +412,6 @@ bool PictureInPictureControllerImpl::IsExitAutoPictureInPictureAllowed() const {
   return (picture_in_picture_element_ == AutoPictureInPictureElement());
 }
 
-// While this API returns a Promise to the calling website, it is actually
-// currently synchronous since it uses the |window.open()| API to open the PiP
-// window. We still want the document PiP API to be asynchronous though,
-// because:
-// 1) We may eventually make this an asynchronous call to the browsser
-// 2) Other UAs may want to implement the API in an asynchronous way
 void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptState* script_state,
     LocalDOMWindow& opener,
@@ -459,9 +453,6 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   DCHECK(pip_document);
   pip_document->SetBaseURLOverride(opener.document()->BaseURL());
 
-  document_picture_in_picture_session_ =
-      MakeGarbageCollected<DocumentPictureInPictureSession>(local_dom_window);
-
   // Copy style sheets, if requested.
   if (options->copyStyleSheets()) {
     StyleSheetList& list = opener.document()->StyleSheets();
@@ -492,8 +483,33 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   document_pip_context_observer_->SetContextLifecycleNotifier(
       pip_document->GetExecutionContext());
 
-  // TODO(https://crbug.com/1329698): Resolve this in a posted task instead.
-  resolver->Resolve(document_picture_in_picture_session_);
+  // While this API could be synchronous since we're using the |window.open()|
+  // API to open the PiP window, we still use a Promise and post a task to make
+  // it asynchronous because:
+  // 1) We may eventually make this an asynchronous call to the browsser
+  // 2) Other UAs may want to implement the API in an asynchronous way
+
+  // If we have a task waiting already, just cancel the task and immediately
+  // resolve.
+  if (open_document_pip_task_.IsActive()) {
+    open_document_pip_task_.Cancel();
+    ResolveOpenDocumentPictureInPicture();
+  }
+
+  document_picture_in_picture_session_ =
+      MakeGarbageCollected<DocumentPictureInPictureSession>(local_dom_window);
+
+  // There should not be an unresolved ScriptPromiseResolver at this point.
+  // Leaving one unresolved and letting it get garbage collected will crash the
+  // renderer.
+  DCHECK(!open_document_pip_resolver_);
+  open_document_pip_resolver_ = resolver;
+
+  open_document_pip_task_ = PostCancellableTask(
+      *opener.GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
+      WTF::Bind(
+          &PictureInPictureControllerImpl::ResolveOpenDocumentPictureInPicture,
+          WrapPersistent(this)));
 }
 
 void PictureInPictureControllerImpl::
@@ -576,6 +592,7 @@ void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(picture_in_picture_service_);
   visitor->Trace(video_picture_in_picture_session_);
   visitor->Trace(document_pip_context_observer_);
+  visitor->Trace(open_document_pip_resolver_);
   PictureInPictureController::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -603,6 +620,13 @@ bool PictureInPictureControllerImpl::EnsureService() {
   GetSupplementable()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       picture_in_picture_service_.BindNewPipeAndPassReceiver(task_runner));
   return true;
+}
+
+void PictureInPictureControllerImpl::ResolveOpenDocumentPictureInPicture() {
+  CHECK(document_picture_in_picture_session_);
+  CHECK(open_document_pip_resolver_);
+  open_document_pip_resolver_->Resolve(document_picture_in_picture_session_);
+  open_document_pip_resolver_ = nullptr;
 }
 
 PictureInPictureControllerImpl::DocumentPictureInPictureObserver::

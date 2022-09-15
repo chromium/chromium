@@ -932,4 +932,26 @@ TEST_F(PictureInPictureControllerTestWithChromeClient, RequiresUserGesture) {
   EXPECT_FALSE(pictureInPictureSession);
 }
 
+TEST_F(PictureInPictureControllerTestWithChromeClient,
+       OpenDocumentPiPTwiceSynchronouslyDoesNotCrash) {
+  V8TestingScope v8_scope;
+  InitializeDocumentPictureInPictureOpener(v8_scope);
+
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  DocumentPictureInPictureSession* pictureInPictureSession1 =
+      OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
+                                          CopyStyleSheetOptions::kYes);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  DocumentPictureInPictureSession* pictureInPictureSession2 =
+      OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
+                                          CopyStyleSheetOptions::kYes);
+
+  // This should properly return two separate sessions.
+  EXPECT_NE(pictureInPictureSession1, pictureInPictureSession2);
+  EXPECT_NE(nullptr, pictureInPictureSession1);
+  EXPECT_NE(nullptr, pictureInPictureSession2);
+}
+
 }  // namespace blink
