@@ -111,8 +111,7 @@ ClientAndroid::ClientAndroid(content::WebContents* web_contents,
       dependencies_(
           DependenciesAndroid::CreateFromJavaDependencies(jdependencies)),
       annotate_dom_model_service_(dependencies_->GetCommonDependencies()
-                                      ->GetOrCreateAnnotateDomModelService(
-                                          web_contents->GetBrowserContext())),
+                                      ->GetOrCreateAnnotateDomModelService()),
       jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
@@ -399,8 +398,7 @@ void ClientAndroid::ShowFatalError(
 bool ClientAndroid::IsSupervisedUser(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return dependencies_->GetCommonDependencies()->IsSupervisedUser(
-      GetWebContents()->GetBrowserContext());
+  return dependencies_->GetCommonDependencies()->IsSupervisedUser();
 }
 
 void ClientAndroid::OnSpokenFeedbackAccessibilityServiceChanged(
@@ -501,8 +499,7 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
 }
 
 std::string ClientAndroid::GetSignedInEmail() const {
-  return dependencies_->GetCommonDependencies()->GetSignedInEmail(
-      GetWebContents()->GetBrowserContext());
+  return dependencies_->GetCommonDependencies()->GetSignedInEmail();
 }
 
 absl::optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {
@@ -547,8 +544,7 @@ AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
-  return dependencies_->GetCommonDependencies()->GetPersonalDataManager(
-      GetWebContents()->GetBrowserContext());
+  return dependencies_->GetCommonDependencies()->GetPersonalDataManager();
 }
 
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
@@ -785,13 +781,11 @@ bool ClientAndroid::NeedsUI() {
 
 bool ClientAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
   return dependencies_->GetCommonDependencies()
-      ->GetMakeSearchesAndBrowsingBetterEnabled(
-          GetWebContents()->GetBrowserContext());
+      ->GetMakeSearchesAndBrowsingBetterEnabled();
 }
 
 bool ClientAndroid::GetMetricsReportingEnabled() const {
-  return dependencies_->GetCommonDependencies()->GetMetricsReportingEnabled(
-      GetWebContents()->GetBrowserContext());
+  return dependencies_->GetCommonDependencies()->GetMetricsReportingEnabled();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientAndroid);

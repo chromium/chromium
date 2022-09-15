@@ -5,65 +5,80 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ASSISTANT_COMMON_DEPENDENCIES_CHROME_H_
 #define CHROME_BROWSER_AUTOFILL_ASSISTANT_COMMON_DEPENDENCIES_CHROME_H_
 
-#include "base/strings/string_piece.h"
-#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
-#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
-#include "components/metrics/metrics_service_accessor.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/variations/service/variations_service.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
+
+#include <memory>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
+
+class PrefService;
+class Profile;
+
+namespace autofill {
+class PersonalDataManager;
+}  // namespace autofill
+
+namespace password_manager {
+class PasswordManagerClient;
+}  // namespace password_manager
+
+namespace content {
+class WebContents;
+class BrowserContext;
+}  // namespace content
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
+
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
 
 namespace autofill_assistant {
 
 // Chrome implementation of the CommonDependencies interface.
 class CommonDependenciesChrome : public CommonDependencies {
  public:
-  CommonDependenciesChrome();
+  explicit CommonDependenciesChrome(content::BrowserContext* browser_context);
 
+  // CommonDependencies:
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const override;
-
   std::string GetLocale() const override;
-
   std::string GetCountryCode() const override;
-
-  autofill::PersonalDataManager* GetPersonalDataManager(
-      content::BrowserContext* browser_context) const override;
-
+  autofill::PersonalDataManager* GetPersonalDataManager() const override;
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;
-
-  std::string GetSignedInEmail(
-      content::BrowserContext* browser_context) const override;
-
-  bool IsSupervisedUser(
-      content::BrowserContext* browser_context) const override;
-
-  bool IsAllowedForMachineLearning(
-      content::BrowserContext* browser_context) const override;
-
+  PrefService* GetPrefs() const override;
+  std::string GetSignedInEmail() const override;
+  bool IsSupervisedUser() const override;
+  bool IsAllowedForMachineLearning() const override;
   // The AnnotateDomModelService is a KeyedService. There is only one per
   // BrowserContext.
-  AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
-      content::BrowserContext* browser_context) const override;
-
+  AnnotateDomModelService* GetOrCreateAnnotateDomModelService() const override;
   bool IsWebLayer() const override;
-
-  signin::IdentityManager* GetIdentityManager(
-      content::BrowserContext* browser_context) const override;
-
-  consent_auditor::ConsentAuditor* GetConsentAuditor(
-      content::BrowserContext* browser_context) const override;
-
+  signin::IdentityManager* GetIdentityManager() const override;
+  consent_auditor::ConsentAuditor* GetConsentAuditor() const override;
   version_info::Channel GetChannel() const override;
+  bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
+  bool GetMetricsReportingEnabled() const override;
 
-  bool GetMakeSearchesAndBrowsingBetterEnabled(
-      content::BrowserContext* browser_context) const override;
+ private:
+  // Helper method to return the profile associated with this object's
+  // `BrowserContext`.
+  Profile* GetProfile() const;
 
-  bool GetMetricsReportingEnabled(
-      content::BrowserContext* browser_context) const override;
+  // The `BrowserContext` of these dependencies. Since dependencies are
+  // injected either into class that extend either `WebContentsUserData<>` or
+  // `KeyedService` (or objects with the same life time), it is safe to
+  // assume that the `BrowserContext` remains alive and constant.
+  const raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace autofill_assistant

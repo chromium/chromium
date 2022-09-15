@@ -4,6 +4,9 @@
 //
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 
+#include <memory>
+#include <string>
+
 #include "base/values.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill_assistant/annotate_dom_model_service_factory.h"
@@ -35,7 +38,11 @@ using ::variations::VariationsService;
 
 namespace autofill_assistant {
 
-CommonDependenciesChrome::CommonDependenciesChrome() = default;
+CommonDependenciesChrome::CommonDependenciesChrome(
+    content::BrowserContext* browser_context)
+    : browser_context_(browser_context) {
+  DCHECK(browser_context_);
+}
 
 std::unique_ptr<AssistantFieldTrialUtil>
 CommonDependenciesChrome::CreateFieldTrialUtil() const {
@@ -51,13 +58,12 @@ std::string CommonDependenciesChrome::GetCountryCode() const {
       g_browser_process->variations_service());
 }
 
-PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager(
-    content::BrowserContext* browser_context) const {
-  if (!browser_context)
+PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager() const {
+  if (!browser_context_)
     return nullptr;
 
   return autofill::PersonalDataManagerFactory::GetForBrowserContext(
-      browser_context);
+      browser_context_);
 }
 
 PasswordManagerClient* CommonDependenciesChrome::GetPasswordManagerClient(
@@ -65,28 +71,23 @@ PasswordManagerClient* CommonDependenciesChrome::GetPasswordManagerClient(
   return ChromePasswordManagerClient::FromWebContents(web_contents);
 }
 
-std::string CommonDependenciesChrome::GetSignedInEmail(
-    content::BrowserContext* browser_context) const {
-  DCHECK(browser_context);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  if (!identity_manager) {
+PrefService* CommonDependenciesChrome::GetPrefs() const {
+  return GetProfile()->GetPrefs();
+}
+
+std::string CommonDependenciesChrome::GetSignedInEmail() const {
+  signin::IdentityManager* identity_manager = GetIdentityManager();
+  if (!identity_manager)
     return std::string();
-  }
+
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
       .email;
 }
 
-bool CommonDependenciesChrome::IsSupervisedUser(
-    content::BrowserContext* browser_context) const {
-  DCHECK(browser_context);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  if (!identity_manager) {
+bool CommonDependenciesChrome::IsSupervisedUser() const {
+  signin::IdentityManager* identity_manager = GetIdentityManager();
+  if (!identity_manager)
     return false;
-  }
 
   std::string gaia_id =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia;
@@ -95,15 +96,10 @@ bool CommonDependenciesChrome::IsSupervisedUser(
          signin::Tribool::kTrue;
 }
 
-bool CommonDependenciesChrome::IsAllowedForMachineLearning(
-    content::BrowserContext* browser_context) const {
-  DCHECK(browser_context);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  if (!identity_manager) {
+bool CommonDependenciesChrome::IsAllowedForMachineLearning() const {
+  signin::IdentityManager* identity_manager = GetIdentityManager();
+  if (!identity_manager)
     return true;
-  }
 
   std::string gaia_id =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia;
@@ -113,44 +109,38 @@ bool CommonDependenciesChrome::IsAllowedForMachineLearning(
 }
 
 AnnotateDomModelService*
-CommonDependenciesChrome::GetOrCreateAnnotateDomModelService(
-    content::BrowserContext* browser_context) const {
-  return AnnotateDomModelServiceFactory::GetForBrowserContext(browser_context);
+CommonDependenciesChrome::GetOrCreateAnnotateDomModelService() const {
+  return AnnotateDomModelServiceFactory::GetForBrowserContext(browser_context_);
 }
 
 bool CommonDependenciesChrome::IsWebLayer() const {
   return false;
 }
 
-signin::IdentityManager* CommonDependenciesChrome::GetIdentityManager(
-    content::BrowserContext* browser_context) const {
-  return IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
+signin::IdentityManager* CommonDependenciesChrome::GetIdentityManager() const {
+  return IdentityManagerFactory::GetForProfile(GetProfile());
 }
 
-consent_auditor::ConsentAuditor* CommonDependenciesChrome::GetConsentAuditor(
-    content::BrowserContext* browser_context) const {
-  return ConsentAuditorFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
+consent_auditor::ConsentAuditor* CommonDependenciesChrome::GetConsentAuditor()
+    const {
+  return ConsentAuditorFactory::GetForProfile(GetProfile());
 }
 
 version_info::Channel CommonDependenciesChrome::GetChannel() const {
   return chrome::GetChannel();
 }
 
-bool CommonDependenciesChrome::GetMakeSearchesAndBrowsingBetterEnabled(
-    content::BrowserContext* browser_context) const {
-  return Profile::FromBrowserContext(browser_context)
-      ->GetPrefs()
-      ->GetBoolean(
-          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
+bool CommonDependenciesChrome::GetMakeSearchesAndBrowsingBetterEnabled() const {
+  return GetPrefs()->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 }
 
-bool CommonDependenciesChrome::GetMetricsReportingEnabled(
-    content::BrowserContext* browser_context) const {
-  return Profile::FromBrowserContext(browser_context)
-      ->GetPrefs()
-      ->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+bool CommonDependenciesChrome::GetMetricsReportingEnabled() const {
+  return GetPrefs()->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+}
+
+Profile* CommonDependenciesChrome::GetProfile() const {
+  return Profile::FromBrowserContext(browser_context_);
 }
 
 }  // namespace autofill_assistant

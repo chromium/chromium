@@ -110,8 +110,7 @@ std::string ClientHeadless::GetEmailAddressForAccessTokenAccount() const {
 }
 
 std::string ClientHeadless::GetSignedInEmail() const {
-  return common_dependencies_->GetSignedInEmail(
-      GetWebContents()->GetBrowserContext());
+  return common_dependencies_->GetSignedInEmail();
 }
 
 absl::optional<std::pair<int, int>> ClientHeadless::GetWindowSize() const {
@@ -134,8 +133,7 @@ AccessTokenFetcher* ClientHeadless::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientHeadless::GetPersonalDataManager() const {
-  return common_dependencies_->GetPersonalDataManager(
-      GetWebContents()->GetBrowserContext());
+  return common_dependencies_->GetPersonalDataManager();
 }
 
 WebsiteLoginManager* ClientHeadless::GetWebsiteLoginManager() const {
@@ -222,8 +220,7 @@ void ClientHeadless::FetchAccessToken(
     base::OnceCallback<void(bool, const std::string&)> callback) {
   DCHECK(!fetch_access_token_callback_);
   fetch_access_token_callback_ = std::move(callback);
-  auto* identity_manager = common_dependencies_->GetIdentityManager(
-      GetWebContents()->GetBrowserContext());
+  auto* identity_manager = common_dependencies_->GetIdentityManager();
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
       kConsumerName, {kOAuth2Scope},
@@ -250,21 +247,18 @@ void ClientHeadless::OnAccessTokenFetchComplete(
 }
 
 void ClientHeadless::InvalidateAccessToken(const std::string& access_token) {
-  auto* identity_manager = common_dependencies_->GetIdentityManager(
-      GetWebContents()->GetBrowserContext());
+  auto* identity_manager = common_dependencies_->GetIdentityManager();
   identity_manager->RemoveAccessTokenFromCache(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
       {kOAuth2Scope}, access_token);
 }
 
 bool ClientHeadless::GetMakeSearchesAndBrowsingBetterEnabled() const {
-  return common_dependencies_->GetMakeSearchesAndBrowsingBetterEnabled(
-      GetWebContents()->GetBrowserContext());
+  return common_dependencies_->GetMakeSearchesAndBrowsingBetterEnabled();
 }
 
 bool ClientHeadless::GetMetricsReportingEnabled() const {
-  return common_dependencies_->GetMetricsReportingEnabled(
-      GetWebContents()->GetBrowserContext());
+  return common_dependencies_->GetMetricsReportingEnabled();
 }
 
 }  // namespace autofill_assistant

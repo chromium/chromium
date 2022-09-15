@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+class PrefService;
+
 namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
@@ -18,7 +20,6 @@ class PasswordManagerClient;
 
 namespace content {
 class WebContents;
-class BrowserContext;
 }  // namespace content
 
 namespace signin {
@@ -53,39 +54,33 @@ class CommonDependencies {
 
   virtual std::string GetCountryCode() const = 0;
 
-  virtual autofill::PersonalDataManager* GetPersonalDataManager(
-      content::BrowserContext* browser_context) const = 0;
+  virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 
   virtual password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const = 0;
 
-  virtual std::string GetSignedInEmail(
-      content::BrowserContext* browser_context) const = 0;
+  virtual PrefService* GetPrefs() const = 0;
 
-  virtual bool IsSupervisedUser(
-      content::BrowserContext* browser_context) const = 0;
+  virtual std::string GetSignedInEmail() const = 0;
 
-  virtual bool IsAllowedForMachineLearning(
-      content::BrowserContext* browser_context) const;
+  virtual bool IsSupervisedUser() const = 0;
 
-  virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
-      content::BrowserContext* browser_context) const = 0;
+  virtual bool IsAllowedForMachineLearning() const;
+
+  virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService()
+      const = 0;
 
   virtual bool IsWebLayer() const = 0;
 
-  virtual signin::IdentityManager* GetIdentityManager(
-      content::BrowserContext* browser_context) const = 0;
+  virtual signin::IdentityManager* GetIdentityManager() const = 0;
 
-  virtual consent_auditor::ConsentAuditor* GetConsentAuditor(
-      content::BrowserContext* browser_context) const = 0;
+  virtual consent_auditor::ConsentAuditor* GetConsentAuditor() const = 0;
 
   virtual version_info::Channel GetChannel() const = 0;
 
-  virtual bool GetMakeSearchesAndBrowsingBetterEnabled(
-      content::BrowserContext* browser_context) const;
+  virtual bool GetMakeSearchesAndBrowsingBetterEnabled() const;
 
-  virtual bool GetMetricsReportingEnabled(
-      content::BrowserContext* browser_context) const;
+  virtual bool GetMetricsReportingEnabled() const;
 };
 
 }  // namespace autofill_assistant

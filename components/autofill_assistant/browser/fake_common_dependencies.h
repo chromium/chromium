@@ -10,6 +10,8 @@
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/version_info/channel.h"
 
+class PrefService;
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -26,28 +28,20 @@ class FakeCommonDependencies : public CommonDependencies {
       const override;
   std::string GetLocale() const override;
   std::string GetCountryCode() const override;
-  autofill::PersonalDataManager* GetPersonalDataManager(
-      content::BrowserContext* browser_context) const override;
+  autofill::PersonalDataManager* GetPersonalDataManager() const override;
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;
-  std::string GetSignedInEmail(
-      content::BrowserContext* browser_context) const override;
-  bool IsSupervisedUser(
-      content::BrowserContext* browser_context) const override;
-  bool IsAllowedForMachineLearning(
-      content::BrowserContext* browser_context) const override;
-  AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
-      content::BrowserContext* browser_context) const override;
+  PrefService* GetPrefs() const override;
+  std::string GetSignedInEmail() const override;
+  bool IsSupervisedUser() const override;
+  bool IsAllowedForMachineLearning() const override;
+  AnnotateDomModelService* GetOrCreateAnnotateDomModelService() const override;
   bool IsWebLayer() const override;
-  signin::IdentityManager* GetIdentityManager(
-      content::BrowserContext* browser_context) const override;
-  consent_auditor::ConsentAuditor* GetConsentAuditor(
-      content::BrowserContext* browser_context) const override;
+  signin::IdentityManager* GetIdentityManager() const override;
+  consent_auditor::ConsentAuditor* GetConsentAuditor() const override;
   version_info::Channel GetChannel() const override;
-  bool GetMakeSearchesAndBrowsingBetterEnabled(
-      content::BrowserContext* browser_context) const override;
-  bool GetMetricsReportingEnabled(
-      content::BrowserContext* browser_context) const override;
+  bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
+  bool GetMetricsReportingEnabled() const override;
 
   // Intentionally public to allow tests direct access.
   std::string locale_;

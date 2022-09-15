@@ -55,7 +55,7 @@ FinchStarterHeuristicConfig::GetConditionSetsForClientState(
   }
 
   if (!platform_delegate->GetCommonDependencies()
-           ->GetMakeSearchesAndBrowsingBetterEnabled(browser_context) &&
+           ->GetMakeSearchesAndBrowsingBetterEnabled() &&
       !enabled_without_msbb_) {
     return empty_list->GetList();
   }

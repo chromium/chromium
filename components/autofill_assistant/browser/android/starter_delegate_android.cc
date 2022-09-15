@@ -63,8 +63,7 @@ StarterDelegateAndroid::StarterDelegateAndroid(
           web_contents)) {
   // Create the AnnotateDomModelService when the browser starts, such that it
   // starts listening to model changes early enough.
-  GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
-      web_contents->GetBrowserContext());
+  GetCommonDependencies()->GetOrCreateAnnotateDomModelService();
 }
 
 StarterDelegateAndroid::~StarterDelegateAndroid() = default;
@@ -241,19 +240,15 @@ void StarterDelegateAndroid::SetProactiveHelpSettingEnabled(bool enabled) {
 }
 
 bool StarterDelegateAndroid::GetIsLoggedIn() {
-  return !GetCommonDependencies()
-              ->GetSignedInEmail(GetWebContents().GetBrowserContext())
-              .empty();
+  return !GetCommonDependencies()->GetSignedInEmail().empty();
 }
 
 bool StarterDelegateAndroid::GetIsSupervisedUser() {
-  return GetCommonDependencies()->IsSupervisedUser(
-      GetWebContents().GetBrowserContext());
+  return GetCommonDependencies()->IsSupervisedUser();
 }
 
 bool StarterDelegateAndroid::GetIsAllowedForMachineLearning() {
-  return GetCommonDependencies()->IsAllowedForMachineLearning(
-      GetWebContents().GetBrowserContext());
+  return GetCommonDependencies()->IsAllowedForMachineLearning();
 }
 
 bool StarterDelegateAndroid::GetIsCustomTab() const {
@@ -333,8 +328,8 @@ void StarterDelegateAndroid::Start(
         GetWebsiteLoginManager(), base::DefaultTickClock::GetInstance(),
         RuntimeManager::GetForWebContents(&GetWebContents())->GetWeakPtr(),
         ukm::UkmRecorder::Get(),
-        starter_->GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
-            GetWebContents().GetBrowserContext()));
+        starter_->GetCommonDependencies()
+            ->GetOrCreateAnnotateDomModelService());
     headless_script_controller_ =
         std::make_unique<HeadlessScriptControllerImpl>(
             &GetWebContents(), starter_.get(), std::move(client));

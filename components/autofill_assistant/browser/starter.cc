@@ -399,8 +399,7 @@ void Starter::Init() {
   bool proactive_help_setting_enabled =
       platform_delegate_->GetProactiveHelpSettingEnabled();
   bool msbb_setting_enabled = platform_delegate_->GetCommonDependencies()
-                                  ->GetMakeSearchesAndBrowsingBetterEnabled(
-                                      web_contents()->GetBrowserContext());
+                                  ->GetMakeSearchesAndBrowsingBetterEnabled();
   bool feature_module_installed =
       platform_delegate_->GetFeatureModuleInstalled();
   bool prev_fetch_trigger_scripts_on_navigation =
@@ -506,8 +505,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   StartupMode startup_mode = StartupUtil().ChooseStartupModeForIntent(
       *pending_trigger_context_,
       {platform_delegate_->GetCommonDependencies()
-           ->GetMakeSearchesAndBrowsingBetterEnabled(
-               web_contents()->GetBrowserContext()),
+           ->GetMakeSearchesAndBrowsingBetterEnabled(),
        platform_delegate_->GetProactiveHelpSettingEnabled(),
        platform_delegate_->GetFeatureModuleInstalled()});
   Metrics::RecordStartRequest(ukm_recorder_, current_ukm_source_id_,

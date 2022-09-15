@@ -576,7 +576,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           autofill_assistant::features::kAutofillAssistantDesktop)) {
     autofill_assistant::CreateForWebContents(
         web_contents,
-        std::make_unique<autofill_assistant::CommonDependenciesChrome>(),
+        std::make_unique<autofill_assistant::CommonDependenciesChrome>(
+            web_contents->GetBrowserContext()),
         std::make_unique<autofill_assistant::PlatformDependenciesDesktop>());
   }
 #endif

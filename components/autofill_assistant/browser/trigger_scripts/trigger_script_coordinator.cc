@@ -66,8 +66,7 @@ TriggerScriptCoordinator::~TriggerScriptCoordinator() = default;
 // who have |kAutofillAssistantGetTriggerScriptsByHashPrefix| enabled.
 bool TriggerScriptCoordinator::ShouldGetTriggerScriptsByHashPrefix() {
   return !starter_delegate_->GetCommonDependencies()
-              ->GetMakeSearchesAndBrowsingBetterEnabled(
-                  web_contents()->GetBrowserContext()) &&
+              ->GetMakeSearchesAndBrowsingBetterEnabled() &&
          base::FeatureList::IsEnabled(
              autofill_assistant::features::
                  kAutofillAssistantGetTriggerScriptsByHashPrefix);

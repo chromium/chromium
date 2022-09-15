@@ -192,7 +192,8 @@ FastCheckoutClientImpl::CreateHeadlessScriptController() {
   std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
       autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
           GetWebContents().GetBrowserContext(),
-          std::make_unique<autofill_assistant::CommonDependenciesChrome>());
+          std::make_unique<autofill_assistant::CommonDependenciesChrome>(
+              GetWebContents().GetBrowserContext()));
   return autofill_assistant->CreateHeadlessScriptController(
       &GetWebContents(), fast_checkout_external_action_delegate_.get());
 }

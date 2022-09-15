@@ -93,19 +93,15 @@ void StarterDelegateDesktop::SetProactiveHelpSettingEnabled(bool enabled) {
 }
 
 bool StarterDelegateDesktop::GetIsLoggedIn() {
-  return !common_dependencies_
-              ->GetSignedInEmail(GetWebContents().GetBrowserContext())
-              .empty();
+  return !common_dependencies_->GetSignedInEmail().empty();
 }
 
 bool StarterDelegateDesktop::GetIsSupervisedUser() {
-  return common_dependencies_->IsSupervisedUser(
-      GetWebContents().GetBrowserContext());
+  return common_dependencies_->IsSupervisedUser();
 }
 
 bool StarterDelegateDesktop::GetIsAllowedForMachineLearning() {
-  return common_dependencies_->IsAllowedForMachineLearning(
-      GetWebContents().GetBrowserContext());
+  return common_dependencies_->IsAllowedForMachineLearning();
 }
 
 bool StarterDelegateDesktop::GetIsCustomTab() const {

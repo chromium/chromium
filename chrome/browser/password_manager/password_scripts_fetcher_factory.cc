@@ -46,7 +46,8 @@ KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
     std::unique_ptr<autofill_assistant::AutofillAssistant> autofill_assistant =
         autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
             browser_context,
-            std::make_unique<autofill_assistant::CommonDependenciesChrome>());
+            std::make_unique<autofill_assistant::CommonDependenciesChrome>(
+                browser_context));
 
     std::unique_ptr<CapabilitiesServiceImpl> service =
         std::make_unique<CapabilitiesServiceImpl>(
@@ -59,8 +60,9 @@ KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
   }
 
   return new password_manager::PasswordScriptsFetcherImpl(
-      std::make_unique<autofill_assistant::CommonDependenciesChrome>()
-          ->IsSupervisedUser(browser_context),
+      std::make_unique<autofill_assistant::CommonDependenciesChrome>(
+          browser_context)
+          ->IsSupervisedUser(),
       version_info::GetVersion(),
       browser_context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());

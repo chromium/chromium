@@ -83,8 +83,8 @@ WebLayerDependencies::CreateFieldTrialUtil() const {
   return std::make_unique<WebLayerAssistantFieldTrialUtil>();
 }
 
-autofill::PersonalDataManager* WebLayerDependencies::GetPersonalDataManager(
-    content::BrowserContext* browser_context) const {
+autofill::PersonalDataManager* WebLayerDependencies::GetPersonalDataManager()
+    const {
   // TODO(b/222671580): Add NOTREACHED?
   return nullptr;
 }
@@ -96,19 +96,15 @@ WebLayerDependencies::GetPasswordManagerClient(
   return nullptr;
 }
 
-std::string WebLayerDependencies::GetSignedInEmail(
-    content::BrowserContext* browser_context) const {
-  DCHECK(browser_context);
-  ProfileImpl* profile = ProfileImpl::FromBrowserContext(browser_context);
-  const ScopedJavaLocalRef<jstring> email =
-      Java_WebLayerAssistantStaticDependencies_getEmailOrNull(
-          AttachCurrentThread(), jstatic_dependencies_,
-          profile->GetJavaProfile());
-  return email.is_null() ? "" : ConvertJavaStringToUTF8(email);
+PrefService* WebLayerDependencies::GetPrefs() const {
+  return nullptr;
 }
 
-bool WebLayerDependencies::IsSupervisedUser(
-    content::BrowserContext* browser_context) const {
+std::string WebLayerDependencies::GetSignedInEmail() const {
+  return std::string();
+}
+
+bool WebLayerDependencies::IsSupervisedUser() const {
   // WebLayer does not support supervised users.
   return false;
 }
@@ -123,8 +119,7 @@ std::string WebLayerDependencies::GetCountryCode() const {
 }
 
 ::autofill_assistant::AnnotateDomModelService*
-WebLayerDependencies::GetOrCreateAnnotateDomModelService(
-    content::BrowserContext* browser_context) const {
+WebLayerDependencies::GetOrCreateAnnotateDomModelService() const {
   // TODO(b/222671580): Add NOTREACHED?
   return nullptr;
 }
@@ -138,14 +133,13 @@ bool WebLayerDependencies::IsWebLayer() const {
   return true;
 }
 
-signin::IdentityManager* WebLayerDependencies::GetIdentityManager(
-    content::BrowserContext* browser_context) const {
+signin::IdentityManager* WebLayerDependencies::GetIdentityManager() const {
   // TODO(b/222671580): implement.
   return nullptr;
 }
 
-consent_auditor::ConsentAuditor* WebLayerDependencies::GetConsentAuditor(
-    content::BrowserContext* browser_context) const {
+consent_auditor::ConsentAuditor* WebLayerDependencies::GetConsentAuditor()
+    const {
   return nullptr;
 }
 

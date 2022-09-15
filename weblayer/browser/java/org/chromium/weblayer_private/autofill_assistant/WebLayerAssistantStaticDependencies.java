@@ -11,7 +11,6 @@ import android.os.RemoteException;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.autofill_assistant.AssistantAccessTokenUtil;
@@ -128,7 +127,6 @@ public class WebLayerAssistantStaticDependencies
     }
 
     @Nullable
-    @CalledByNative
     private String getEmailOrNull(ProfileImpl profile) throws RemoteException {
         IUserIdentityCallbackClient userIdentityCallback = profile.getUserIdentityCallbackClient();
         if (userIdentityCallback == null) return null;

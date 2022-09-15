@@ -42,5 +42,6 @@ KeyedService* FastCheckoutCapabilitiesFetcherFactory::BuildServiceInstanceFor(
   return new FastCheckoutCapabilitiesFetcherImpl(
       autofill_assistant::AutofillAssistantFactory::CreateForBrowserContext(
           browser_context,
-          std::make_unique<autofill_assistant::CommonDependenciesChrome>()));
+          std::make_unique<autofill_assistant::CommonDependenciesChrome>(
+              browser_context)));
 }

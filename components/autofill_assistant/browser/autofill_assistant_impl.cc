@@ -131,7 +131,7 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
     const std::string& intent,
     GetCapabilitiesResponseCallback callback) {
   // Always return an empty response for supervised users.
-  if (dependencies_->IsSupervisedUser(browser_context_)) {
+  if (dependencies_->IsSupervisedUser()) {
     std::move(callback).Run(net::HTTP_OK, {});
     return;
   }
@@ -178,8 +178,7 @@ AutofillAssistantImpl::CreateHeadlessScriptController(
       website_login_manager, base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(web_contents)->GetWeakPtr(),
       ukm::UkmRecorder::Get(),
-      starter->GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
-          web_contents->GetBrowserContext()));
+      starter->GetCommonDependencies()->GetOrCreateAnnotateDomModelService());
   return std::make_unique<HeadlessScriptControllerImpl>(web_contents, starter,
                                                         std::move(client));
 }

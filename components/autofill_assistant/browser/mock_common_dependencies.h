@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_COMMON_DEPENDENCIES_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_COMMON_DEPENDENCIES_H_
 
-#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/common_dependencies.h"
+
+#include <memory>
+#include <string>
+
+#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace consent_auditor {
@@ -28,46 +32,35 @@ class MockCommonDependencies : public CommonDependencies {
   MOCK_METHOD(std::string, GetCountryCode, (), (const override));
   MOCK_METHOD(autofill::PersonalDataManager*,
               GetPersonalDataManager,
-              (content::BrowserContext*),
+              (),
               (const override));
   MOCK_METHOD(password_manager::PasswordManagerClient*,
               GetPasswordManagerClient,
               (content::WebContents*),
               (const override));
-  MOCK_METHOD(std::string,
-              GetSignedInEmail,
-              (content::BrowserContext*),
-              (const override));
-  MOCK_METHOD(bool,
-              IsSupervisedUser,
-              (content::BrowserContext*),
-              (const override));
-  MOCK_METHOD(bool,
-              IsAllowedForMachineLearning,
-              (content::BrowserContext*),
-              (const override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const override));
+  MOCK_METHOD(std::string, GetSignedInEmail, (), (const override));
+  MOCK_METHOD(bool, IsSupervisedUser, (), (const override));
+  MOCK_METHOD(bool, IsAllowedForMachineLearning, (), (const override));
   MOCK_METHOD(AnnotateDomModelService*,
               GetOrCreateAnnotateDomModelService,
-              (content::BrowserContext*),
+              (),
               (const override));
   MOCK_METHOD(bool, IsWebLayer, (), (const override));
   MOCK_METHOD(signin::IdentityManager*,
               GetIdentityManager,
-              (content::BrowserContext*),
+              (),
               (const override));
   MOCK_METHOD(consent_auditor::ConsentAuditor*,
               GetConsentAuditor,
-              (content::BrowserContext*),
+              (),
               (const override));
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
   MOCK_METHOD(bool,
               GetMakeSearchesAndBrowsingBetterEnabled,
-              (content::BrowserContext*),
+              (),
               (const override));
-  MOCK_METHOD(bool,
-              GetMetricsReportingEnabled,
-              (content::BrowserContext*),
-              (const override));
+  MOCK_METHOD(bool, GetMetricsReportingEnabled, (), (const override));
 };
 
 }  // namespace autofill_assistant
