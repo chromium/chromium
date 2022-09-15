@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/rand_util.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"

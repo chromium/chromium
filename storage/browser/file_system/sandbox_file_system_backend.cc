@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram.h"
-#include "base/task/task_runner_util.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/file_stream_reader.h"

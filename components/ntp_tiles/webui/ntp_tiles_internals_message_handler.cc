@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/ntp_tiles/constants.h"

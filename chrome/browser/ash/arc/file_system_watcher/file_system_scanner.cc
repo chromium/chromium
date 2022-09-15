@@ -11,6 +11,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/files/file_enumerator.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
 #include "content/public/browser/browser_task_traits.h"

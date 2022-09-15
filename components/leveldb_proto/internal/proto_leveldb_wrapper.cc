@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"

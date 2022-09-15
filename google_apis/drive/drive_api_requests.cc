@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/time_util.h"

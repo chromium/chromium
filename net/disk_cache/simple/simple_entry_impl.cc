@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"

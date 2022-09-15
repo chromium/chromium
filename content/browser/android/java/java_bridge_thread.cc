@@ -6,7 +6,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_ANDROID)

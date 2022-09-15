@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "content/common/content_export.h"
 
 #if defined(UNIT_TEST)

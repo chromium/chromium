@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"

@@ -18,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"

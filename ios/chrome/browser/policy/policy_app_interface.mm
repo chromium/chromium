@@ -11,7 +11,6 @@
 #import "base/json/json_string_value_serializer.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/task_runner_util.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/values.h"

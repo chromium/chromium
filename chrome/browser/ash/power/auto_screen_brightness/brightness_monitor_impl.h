@@ -10,7 +10,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/brightness_monitor.h"

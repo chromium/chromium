@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
