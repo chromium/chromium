@@ -199,8 +199,6 @@ after discussions on the right group.
       <annotation id="service_worker_script_load"/>
       <annotation id="download_web_contents_frame"/>
       <annotation id="sigined_exchange_cert_fetcher"/>
-      <annotation id="sigined_exchange_validity_pinger"/>
-      <annotation id="sigined_exchange_validity_pinger"/>
       <annotation id="web_bundle_loader"/>
       <annotation id="worker_script_load"/>
       <annotation id="blink_resource_loader"/>

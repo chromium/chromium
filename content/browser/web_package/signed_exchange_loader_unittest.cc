@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -17,39 +16,25 @@
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 using testing::_;
 
 namespace content {
 
-// Test params used for kSignedHTTPExchangePingValidity, which can be
-// removed once we're done with crbug.com/952811.
-class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
+class SignedExchangeLoaderTest : public testing::Test {
  public:
-  SignedExchangeLoaderTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kSignedHTTPExchangePingValidity);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kSignedHTTPExchangePingValidity);
-    }
-  }
-
+  SignedExchangeLoaderTest() = default;
   SignedExchangeLoaderTest(const SignedExchangeLoaderTest&) = delete;
   SignedExchangeLoaderTest& operator=(const SignedExchangeLoaderTest&) = delete;
 
@@ -113,54 +98,11 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
     mojo::Receiver<network::mojom::URLLoader> receiver_;
   };
 
-  // Used only when kSignedHTTPExchangePingValidity is enabled.
-  class MockValidityPingURLLoaderFactory
-      : public network::mojom::URLLoaderFactory {
-   public:
-    MockValidityPingURLLoaderFactory() = default;
-    ~MockValidityPingURLLoaderFactory() override = default;
-
-    void CreateLoaderAndStart(
-        mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-        int32_t request_id,
-        uint32_t options,
-        const network::ResourceRequest& url_request,
-        mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-        const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-        override {
-      ASSERT_FALSE(bool{ping_loader_});
-      ping_loader_ = std::make_unique<MockURLLoader>(std::move(receiver));
-      ping_loader_client_.Bind(std::move(client));
-    }
-    void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-        override {}
-
-    std::unique_ptr<MockURLLoader> ping_loader_;
-    mojo::Remote<network::mojom::URLLoaderClient> ping_loader_client_;
-  };
-
-  network::mojom::URLLoaderClient* ping_loader_client() {
-    return ping_loader_factory_.ping_loader_client_.get();
-  }
-
-  static std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-  ThrottlesGetter() {
-    return std::vector<std::unique_ptr<blink::URLLoaderThrottle>>();
-  }
-
-  scoped_refptr<network::SharedURLLoaderFactory> CreateMockPingLoaderFactory() {
-    return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-        &ping_loader_factory_);
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
-
-  MockValidityPingURLLoaderFactory ping_loader_factory_;
 };
 
-TEST_P(SignedExchangeLoaderTest, Simple) {
+TEST_F(SignedExchangeLoaderTest, Simple) {
   mojo::PendingRemote<network::mojom::URLLoader> loader;
   mojo::Remote<network::mojom::URLLoaderClient> loader_client;
   MockURLLoader mock_loader(loader.InitWithNewPipeAndPassReceiver());
@@ -197,8 +139,8 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
           std::move(client), std::move(endpoints),
           network::mojom::kURLLoadOptionNone,
           false /* should_redirect_to_fallback */, nullptr /* devtools_proxy */,
-          nullptr /* reporter */, CreateMockPingLoaderFactory(),
-          base::BindRepeating(&SignedExchangeLoaderTest::ThrottlesGetter),
+          nullptr /* reporter */, nullptr /* url_loader_factory */,
+          SignedExchangeLoader::URLLoaderThrottlesGetter(),
           net::NetworkIsolationKey(), FrameTreeNode::kFrameTreeNodeInvalidId,
           nullptr /* metric_recorder */, std::string() /* accept_langs */,
           false /* keep_entry_for_prefetch_cache */);
@@ -241,33 +183,11 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
       client_after_redirect.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(mock_client_after_redirect, OnReceiveResponse(_, _, _));
 
-  if (!base::FeatureList::IsEnabled(
-          features::kSignedHTTPExchangePingValidity)) {
-    run_loop.Run();
-    EXPECT_CALL(mock_client_after_redirect, OnComplete(_));
-  }
+  run_loop.Run();
+  EXPECT_CALL(mock_client_after_redirect, OnComplete(_));
 
   signed_exchange_loader->ConnectToClient(std::move(client_after_redirect));
   base::RunLoop().RunUntilIdle();
-
-  if (base::FeatureList::IsEnabled(features::kSignedHTTPExchangePingValidity)) {
-    // When kSignedHTTPExchangePingValidity is enabled, the
-    // client-after-redirect will be called only after the ping loader returns
-    // something.
-    ASSERT_TRUE(ping_loader_client());
-    EXPECT_CALL(mock_client_after_redirect, OnComplete(_));
-    ping_loader_client()->OnReceiveResponse(
-        network::mojom::URLResponseHead::New(),
-        mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
-    ping_loader_client()->OnComplete(
-        network::URLLoaderCompletionStatus(net::OK));
-    run_loop.Run();
-    base::RunLoop().RunUntilIdle();
-  }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SignedExchangeLoaderTest,
-                         ::testing::Values(false, true));
 
 }  // namespace content

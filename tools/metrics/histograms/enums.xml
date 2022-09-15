@@ -89807,12 +89807,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="Signature is expired"/>
 </enum>
 
-<enum name="SignedExchangeValidityPingResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure"/>
-  <int value="2" label="Unexpected redirect"/>
-</enum>
-
 <enum name="SigninAccessPoint">
   <int value="0" label="Start page"/>
   <int value="1" label="NTP Link"/>

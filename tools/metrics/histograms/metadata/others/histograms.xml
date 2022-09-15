@@ -12503,23 +12503,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SignedExchange.ValidityPingDuration" units="ms"
-    expires_after="2022-10-22">
-  <owner>ksakamoto@chromium.org</owner>
-  <owner>webpackage-dev@chromium.org</owner>
-  <summary>
-    The amount of time elapsed to ping the original publisher of the Signed
-    Exchanges.
-  </summary>
-</histogram>
-
-<histogram name="SignedExchange.ValidityPingResult"
-    enum="SignedExchangeValidityPingResult" expires_after="2022-10-22">
-  <owner>ksakamoto@chromium.org</owner>
-  <owner>webpackage-dev@chromium.org</owner>
-  <summary>Reports the result of the Signed Exchange validity ping.</summary>
-</histogram>
-
 <histogram name="SiteIsolatedCodeCache.JS.Behaviour"
     enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2022-07-24">
   <owner>mythria@chromium.org</owner>

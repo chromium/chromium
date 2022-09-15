@@ -903,10 +903,6 @@ const base::Feature kSignedExchangeReportingForDistributors{
 const base::Feature kSignedHTTPExchange{"SignedHTTPExchange",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether to send a ping to the inner URL upon navigation or not.
-const base::Feature kSignedHTTPExchangePingValidity{
-    "SignedHTTPExchangePingValidity", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Delays RenderProcessHost shutdown by a few seconds to allow the subframe's
 // process to be potentially reused. This aims to reduce process churn in
 // navigations where the source and destination share subframes.

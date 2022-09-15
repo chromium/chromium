@@ -224,7 +224,6 @@ CONTENT_EXPORT extern const base::Feature kSharedArrayBufferOnDesktop;
 CONTENT_EXPORT extern const base::Feature
     kSignedExchangeReportingForDistributors;
 CONTENT_EXPORT extern const base::Feature kSignedHTTPExchange;
-CONTENT_EXPORT extern const base::Feature kSignedHTTPExchangePingValidity;
 CONTENT_EXPORT extern const base::Feature
     kSiteIsolationForCrossOriginOpenerPolicy;
 CONTENT_EXPORT extern const base::FeatureParam<bool>

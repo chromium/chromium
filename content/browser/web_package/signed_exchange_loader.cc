@@ -18,7 +18,6 @@
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
-#include "content/browser/web_package/signed_exchange_validity_pinger.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -334,36 +333,6 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
 
   body_data_pipe_adapter_ = std::make_unique<network::SourceStreamToDataPipe>(
       std::move(payload_stream), std::move(producer_handle));
-
-  StartReadingBody();
-}
-
-void SignedExchangeLoader::StartReadingBody() {
-  DCHECK(body_data_pipe_adapter_);
-
-  // If it's not for prefetch, kSignedHTTPExchangePingValidity is enabled
-  // and validity_pinger_ is not initialized yet, create a validity pinger
-  // and start it to ping the validity URL before start reading the inner
-  // response body.
-  if (!(outer_request_.load_flags & net::LOAD_PREFETCH) &&
-      base::FeatureList::IsEnabled(features::kSignedHTTPExchangePingValidity) &&
-      !validity_pinger_) {
-    DCHECK(url_loader_factory_);
-    DCHECK(url_loader_throttles_getter_);
-    DCHECK(inner_request_url_);
-    // For now we just use the fallback (request) URL to ping.
-    // TODO(kinuko): Use the validity URL extracted from the exchange.
-    validity_pinger_ = SignedExchangeValidityPinger::CreateAndStart(
-        *inner_request_url_, url_loader_factory_,
-        url_loader_throttles_getter_.Run(),
-        outer_request_.throttling_profile_id,
-        base::BindOnce(&SignedExchangeLoader::StartReadingBody,
-                       weak_factory_.GetWeakPtr()));
-    DCHECK(validity_pinger_);
-    return;
-  }
-
-  validity_pinger_.reset();
 
   // Start reading.
   body_data_pipe_adapter_->Start(base::BindOnce(
