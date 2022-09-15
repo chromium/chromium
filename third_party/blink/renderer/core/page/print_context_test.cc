@@ -466,7 +466,9 @@ TEST_P(PrintContextTest, LinkTargetBoundingBox) {
   EXPECT_SKRECT_EQ(50, 60, 200, 100, operations[0].rect);
 }
 
-TEST_P(PrintContextTest, ScaledVerticalRL) {
+// Here are a few tests to check that shrink to fit doesn't mess up page count.
+
+TEST_P(PrintContextTest, ScaledVerticalRL1) {
   SetBodyInnerHTML(R"HTML(
     <style>html { writing-mode:vertical-rl; }</style>
     <div style="break-after:page;">x</div>
@@ -476,6 +478,105 @@ TEST_P(PrintContextTest, ScaledVerticalRL) {
   int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
                                                gfx::SizeF(500, 500));
   EXPECT_EQ(2, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledVerticalRL2) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:vertical-rl; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="inline-size:10000px; block-size:500px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(2, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledVerticalRL3) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:vertical-rl; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="break-after:page; inline-size:10000px; block-size:10px;"></div>
+    <div style="inline-size:10000px; block-size:10px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(3, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledVerticalLR1) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:vertical-lr; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="inline-size:10000px; block-size:10px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(2, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledVerticalLR2) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:vertical-lr; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="inline-size:10000px; block-size:500px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(2, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledVerticalLR3) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:vertical-lr; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="break-after:page; inline-size:10000px; block-size:10px;"></div>
+    <div style="inline-size:10000px; block-size:10px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(3, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledHorizontalTB1) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:horizontal-tb; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="inline-size:10000px; block-size:10px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(2, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledHorizontalTB2) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:horizontal-tb; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="inline-size:10000px; block-size:500px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(2, page_count);
+}
+
+TEST_P(PrintContextTest, ScaledHorizontalTB3) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:horizontal-tb; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="break-after:page; inline-size:10000px; block-size:10px;"></div>
+    <div style="inline-size:10000px; block-size:10px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               gfx::SizeF(500, 500));
+  EXPECT_EQ(3, page_count);
 }
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextFrameTest);
