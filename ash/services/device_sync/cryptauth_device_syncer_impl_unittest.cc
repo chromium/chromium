@@ -1500,6 +1500,71 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
       GetAllTestDevicesWithoutRemoteMetadata());
 }
 
+TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
+       LastSyncTimestampNotSetIfEcheDisabled) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {},
+                                 /* disabled_features= */ {features::kEcheSWA});
+
+  CryptAuthDevice device = GetLocalDeviceForTest();
+  device.feature_states[multidevice::SoftwareFeature::kEcheHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  cryptauthv2::AttestationData* attestation_data =
+      device.better_together_device_metadata->mutable_attestation_data();
+  attestation_data->set_type(
+      cryptauthv2::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
+  attestation_data->add_certificates(
+      FakeAttestationCertificatesSyncer::kFakeCert);
+  cryptauthv2::DeviceMetadataPacket packet =
+      GetLocalDeviceMetadataPacketForTest(device);
+
+  CallSync();
+  FinishMetadataSyncerAttempt({packet}, GetGroupKey() /* new_group_key */,
+                              absl::nullopt /* encrypted_group_private_key */,
+                              cryptauthv2::GetClientDirectiveForTest(),
+                              CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  base::flat_set<std::string> device_ids = {device.instance_id()};
+  FinishFeatureStatusGetterAttempt(
+      device_ids, CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  RunDeviceMetadataDecryptor({packet}, GetGroupKey().private_key(),
+                             {} /* device_ids_to_fail */);
+  FinishShareGroupPrivateKeyAttempt(
+      CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+
+  VerifyNumberOfSuccessfulAttestationSyncCalls(0);
+}
+
+TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
+       LastSyncTimestampSetIfEcheEnabled) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
+                                 /* disabled_features= */ {});
+
+  CryptAuthDevice device = GetLocalDeviceForTest();
+  device.feature_states[multidevice::SoftwareFeature::kEcheHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  cryptauthv2::AttestationData* attestation_data =
+      device.better_together_device_metadata->mutable_attestation_data();
+  attestation_data->set_type(
+      cryptauthv2::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
+  attestation_data->add_certificates("certificate");
+  cryptauthv2::DeviceMetadataPacket packet =
+      GetLocalDeviceMetadataPacketForTest(device);
+
+  CallSync();
+  FinishMetadataSyncerAttempt({packet}, GetGroupKey() /* new_group_key */,
+                              absl::nullopt /* encrypted_group_private_key */,
+                              cryptauthv2::GetClientDirectiveForTest(),
+                              CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  base::flat_set<std::string> device_ids = {device.instance_id()};
+  FinishFeatureStatusGetterAttempt(
+      device_ids, CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  RunDeviceMetadataDecryptor({packet}, GetGroupKey().private_key(),
+                             {} /* device_ids_to_fail */);
+  FinishShareGroupPrivateKeyAttempt(
+      CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+
+  VerifyNumberOfSuccessfulAttestationSyncCalls(1);
+}
+
 }  // namespace device_sync
 
 }  // namespace ash

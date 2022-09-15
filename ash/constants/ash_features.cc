@@ -377,12 +377,6 @@ const base::Feature kCrosPrivacyHubDogfood{"CrosPrivacyHubDogfood",
 const base::Feature kCrosPrivacyHubFuture{"CrosPrivacyHubFuture",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables generation of attestation certificates used by Cross Device features,
-// including Eche and Phone Hub.
-const base::Feature kCrossDeviceAttestationCertificateGeneration{
-    "CrossDeviceAttestationCertificateGeneration",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
 // with a button to close desk and windows and a button to combine desks (the
 // legacy behavior).
@@ -1927,11 +1921,6 @@ bool IsClipboardHistoryNudgeSessionResetEnabled() {
 
 bool IsClipboardHistoryReorderEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryReorder);
-}
-
-bool IsCrossDeviceAttestationCertificateGenerationEnabled() {
-  return base::FeatureList::IsEnabled(
-      kCrossDeviceAttestationCertificateGeneration);
 }
 
 bool IsDesksCloseAllEnabled() {

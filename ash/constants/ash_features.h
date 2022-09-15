@@ -172,8 +172,6 @@ extern const base::Feature kCrosPrivacyHubDogfood;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCrosPrivacyHubFuture;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kCrossDeviceAttestationCertificateGeneration;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCrostiniBullseyeUpgrade;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDesksTemplates;
@@ -755,8 +753,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubDogfoodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubFutureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubMVPEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosNextWMPEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsCrossDeviceAttestationCertificateGenerationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDesksCloseAllEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryFlowUIEnabled();
