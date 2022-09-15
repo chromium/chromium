@@ -243,29 +243,30 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
-  void EnableFeatureList(const std::vector<base::Feature>& features) {
+  void EnableDefaultFeatureList() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/features,
-        /*disabled_features=*/{});
-  }
-
-  void EnableDefaultFeatureList() {
-    EnableFeatureList({
-        features::kSystemChinesePhysicalTyping,
-        features::kAssistPersonalInfo,
-        features::kAssistPersonalInfoEmail,
-        features::kAssistPersonalInfoName,
-    });
+        /*enabled_features=*/
+        {
+            features::kSystemChinesePhysicalTyping,
+            features::kAssistPersonalInfo,
+            features::kAssistPersonalInfoEmail,
+            features::kAssistPersonalInfoName,
+        },
+        /*disabled_features=*/{ash::features::kImeRuleConfig});
   }
 
   void EnableDefaultFeatureListWithMultiWord() {
-    EnableFeatureList({
-        features::kAssistPersonalInfo,
-        features::kAssistPersonalInfoEmail,
-        features::kAssistPersonalInfoName,
-        features::kAssistMultiWord,
-    });
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kAssistPersonalInfo,
+            features::kAssistPersonalInfoEmail,
+            features::kAssistPersonalInfoName,
+            features::kAssistMultiWord,
+        },
+        /*disabled_features=*/{ash::features::kImeRuleConfig});
   }
 
  private:

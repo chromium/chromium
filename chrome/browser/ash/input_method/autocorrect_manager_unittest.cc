@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
@@ -289,12 +291,15 @@ class MockSuggestionHandler : public SuggestionHandlerInterface {
 class AutocorrectManagerTest : public testing::Test {
  protected:
   AutocorrectManagerTest() : manager_(&mock_suggestion_handler_) {
+    // Disable ImeRulesConfigs by default.
+    feature_list_.InitWithFeatures({}, {ash::features::kImeRuleConfig});
     ui::IMEBridge::Get()->SetInputContextHandler(
         &mock_ime_input_context_handler_);
     keyboard_client_ = ChromeKeyboardControllerClient::CreateForTest();
     keyboard_client_->set_keyboard_visible_for_test(false);
   }
 
+  ::base::test::ScopedFeatureList feature_list_;
   ui::MockIMEInputContextHandler mock_ime_input_context_handler_;
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler_;
   AutocorrectManager manager_;
