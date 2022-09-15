@@ -82,7 +82,6 @@ class HistoryClustersViewBinder {
         } else if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
             OnClickListener clickListener = model.get(HistoryClustersItemProperties.CLICK_HANDLER);
             clusterView.setOnClickListener(clickListener);
-            clusterView.setEndButtonClickListener(clickListener);
         } else if (key == HistoryClustersItemProperties.DIVIDER_IS_THICK) {
             clusterView.setHasThickDivider(
                     model.get(HistoryClustersItemProperties.DIVIDER_IS_THICK));

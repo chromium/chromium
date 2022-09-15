@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history_clusters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -41,6 +42,7 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         super(context, attrs);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -48,6 +50,8 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         mDividerView.addToParent(this, generateDefaultLayoutParams());
         mEndButtonView.setVisibility(GONE);
         mEndButtonView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        mEndButtonView.setOnTouchListener(
+                (v, event) -> HistoryClusterView.this.onTouchEvent(event));
         setAccessibilityDelegate(new AccessibilityDelegate() {
             @Override
             public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
@@ -115,10 +119,6 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
 
     void setIconDrawableVisibility(int visibility) {
         mStartIconView.setVisibility(visibility);
-    }
-
-    public void setEndButtonClickListener(OnClickListener clickListener) {
-        mEndButtonView.setOnClickListener(clickListener);
     }
 
     public void setAccessibilityState(@ClusterViewAccessibilityState int accessibilityState) {
