@@ -1826,7 +1826,9 @@ if (!is_android) {
       "../browser/media/webrtc/region_capture_browsertest.cc",
       "../browser/media/webrtc/same_origin_observer_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
-      "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",
+
+      # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
+      # "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",
       "../browser/media/webrtc/webrtc_browsertest_perf.cc",
       "../browser/media/webrtc/webrtc_browsertest_perf.h",
       "../browser/media/webrtc/webrtc_browsertest_perf_unittest.cc",
@@ -4543,7 +4545,9 @@ if (!is_android) {
       # for Fuchsia.
       sources -= [
         "../browser/media/encrypted_media_browsertest.cc",
-        "../browser/media/webrtc/webrtc_apprtc_browsertest.cc",
+
+        # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
+        #"../browser/media/webrtc/webrtc_apprtc_browsertest.cc",
         "../browser/media/webrtc/webrtc_video_quality_browsertest.cc",
         "../browser/media/wv_test_license_server_config.cc",
         "../browser/media/wv_test_license_server_config.h",
@@ -4851,22 +4855,23 @@ if (is_chromeos_lacros) {
 if (is_linux || is_chromeos || is_mac || is_win || is_android) {
   import("//tools/binary_size/sizes.gni")
 
-  if (!is_android) {
-    group("browser_tests_apprtc") {
-      testonly = true
-      data_deps = [ ":browser_tests" ]
-      data = [
-        "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/out/app_engine/",
-        "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/temp/google-cloud-sdk/",
-        "//third_party/webrtc/rtc_tools/testing/browsertest/collider/",
-      ]
-      if (is_win) {
-        write_runtime_deps = "$root_out_dir/$target_name.exe.runtime_deps"
-      } else {
-        write_runtime_deps = "$root_out_dir/$target_name.runtime_deps"
-      }
-    }
-  }
+  # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
+  #  if (!is_android) {
+  #    group("browser_tests_apprtc") {
+  #      testonly = true
+  #      data_deps = [ ":browser_tests" ]
+  #      data = [
+  #        "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/out/app_engine/",
+  #        "//third_party/webrtc/rtc_tools/testing/browsertest/apprtc/temp/google-cloud-sdk/",
+  #        "//third_party/webrtc/rtc_tools/testing/browsertest/collider/",
+  #      ]
+  #      if (is_win) {
+  #        write_runtime_deps = "$root_out_dir/$target_name.exe.runtime_deps"
+  #      } else {
+  #        write_runtime_deps = "$root_out_dir/$target_name.runtime_deps"
+  #      }
+  #    }
+  #  }
 
   sizes_test("chrome_sizes") {
     data_deps = [ "//chrome" ]
