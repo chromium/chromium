@@ -116,6 +116,9 @@ CSSValueID CSSParserToken::FunctionId() const {
 
 bool CSSParserToken::HasStringBacking() const {
   CSSParserTokenType token_type = GetType();
+  if (value_is_inline_) {
+    return false;
+  }
   return token_type == kIdentToken || token_type == kFunctionToken ||
          token_type == kAtKeywordToken || token_type == kHashToken ||
          token_type == kUrlToken || token_type == kDimensionToken ||
@@ -139,19 +142,19 @@ bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
 
   if (value_is_8bit_) {
     return other.value_is_8bit_
-               ? Equal(static_cast<const LChar*>(value_data_char_raw_),
-                       static_cast<const LChar*>(other.value_data_char_raw_),
+               ? Equal(static_cast<const LChar*>(ValueDataCharRaw()),
+                       static_cast<const LChar*>(other.ValueDataCharRaw()),
                        value_length_)
-               : Equal(static_cast<const LChar*>(value_data_char_raw_),
-                       static_cast<const UChar*>(other.value_data_char_raw_),
+               : Equal(static_cast<const LChar*>(ValueDataCharRaw()),
+                       static_cast<const UChar*>(other.ValueDataCharRaw()),
                        value_length_);
   } else {
     return other.value_is_8bit_
-               ? Equal(static_cast<const UChar*>(value_data_char_raw_),
-                       static_cast<const LChar*>(other.value_data_char_raw_),
+               ? Equal(static_cast<const UChar*>(ValueDataCharRaw()),
+                       static_cast<const LChar*>(other.ValueDataCharRaw()),
                        value_length_)
-               : Equal(static_cast<const UChar*>(value_data_char_raw_),
-                       static_cast<const UChar*>(other.value_data_char_raw_),
+               : Equal(static_cast<const UChar*>(ValueDataCharRaw()),
+                       static_cast<const UChar*>(other.ValueDataCharRaw()),
                        value_length_);
   }
 }
