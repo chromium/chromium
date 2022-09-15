@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -29,6 +31,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -131,7 +134,9 @@ public class SyncSettingsUtils {
     public static String getSyncErrorHint(Context context, @SyncError int error) {
         switch (error) {
             case SyncError.AUTH_ERROR:
-                return context.getString(R.string.hint_sync_auth_error);
+                return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
+                        ? context.getString(R.string.hint_sync_auth_error_modern)
+                        : context.getString(R.string.hint_sync_auth_error);
             case SyncError.CLIENT_OUT_OF_DATE:
                 return context.getString(
                         R.string.hint_client_out_of_date, BuildInfo.getInstance().hostPackageLabel);
