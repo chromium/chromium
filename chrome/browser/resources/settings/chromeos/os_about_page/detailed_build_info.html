@@ -70,11 +70,13 @@
         icon-aria-label="$i18n{aboutManagedEndOfLifeSubtitle}"
         tooltip-position="bottom">
     </cr-tooltip-icon>
-    <cr-toggle
-        id="managedAutoUpdateToggle"
-        checked="[[isManagedAutoUpdateEnabled_]]"
-        disabled>
-    </cr-toggle>
+    <template is="dom-if" if="[[showManagedAutoUpdateToggle_]]" restamp>
+      <cr-toggle
+          id="managedAutoUpdateToggle"
+          checked="[[isManagedAutoUpdateEnabled_]]"
+          disabled>
+      </cr-toggle>
+    </template>
   </div>
 </template>
 <template is="dom-if" if="[[showConsumerAutoUpdateToggle_]]">

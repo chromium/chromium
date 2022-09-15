@@ -36,7 +36,6 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_manager/user_manager.h"
 #include "components/version_ui/version_ui_constants.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -389,27 +388,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                              user_manager->GetOwnerAccountId().GetUserEmail());
     }
 
-    // Hide toggle by default.
-    bool show_cau_toggle = false;
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
-    if (identity_manager && !is_enterprise_managed) {
-      const std::string& gaia_id =
-          user_manager->GetActiveUser()->GetAccountId().GetGaiaId();
-      const AccountInfo account_info =
-          identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
-      // If the user falls under New Deal..
-      if (account_info.capabilities.can_toggle_auto_updates() ==
-          signin::Tribool::kTrue) {
-        // Show toggle based on user's capabilities.
-        show_cau_toggle = true;
-      }
-    }
-
-    show_cau_toggle = show_cau_toggle &&
-                      chromeos::features::IsConsumerAutoUpdateToggleAllowed();
     html_source->AddBoolean("isConsumerAutoUpdateTogglingAllowed",
-                            show_cau_toggle && is_current_owner);
-    html_source->AddBoolean("showConsumerAutoUpdateToggle", show_cau_toggle);
+                            is_current_owner);
+    html_source->AddBoolean("showAutoUpdateToggle",
+                            ShouldShowAUToggle(user_manager->GetActiveUser()));
   }
 
   html_source->AddString("aboutBrowserVersion",
@@ -527,6 +509,30 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kCopyDetailedBuildInfo};
   RegisterNestedSettingBulk(mojom::Subpage::kDetailedBuildInfo,
                             kDetailedBuildInfoSettings, generator);
+}
+
+bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
+  if (!active_user)
+    return false;
+
+  AccountId account_id = active_user->GetAccountId();
+  if (account_id.GetAccountType() != AccountType::GOOGLE)
+    return false;
+
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+  if (!identity_manager)
+    return false;
+
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
+  // If the user falls under New Deal..
+  if (account_info.capabilities.can_toggle_auto_updates() ==
+      signin::Tribool::kTrue) {
+    // Show toggle based on user's capabilities.
+    return chromeos::features::IsConsumerAutoUpdateToggleAllowed();
+  }
+
+  return false;
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

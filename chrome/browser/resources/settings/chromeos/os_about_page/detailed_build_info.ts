@@ -150,8 +150,20 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
       showConsumerAutoUpdateToggle_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('showConsumerAutoUpdateToggle') &&
+          return loadTimeData.getBoolean('showAutoUpdateToggle') &&
               !loadTimeData.getBoolean('isManaged');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Whether or not to show the managed auto update toggle.
+       */
+      showManagedAutoUpdateToggle_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showAutoUpdateToggle') &&
+              loadTimeData.getBoolean('isManaged');
         },
         readOnly: true,
       },
@@ -174,6 +186,7 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
   private isManaged_: boolean;
   private isConsumerAutoUpdateTogglingAllowed_: boolean;
   private showConsumerAutoUpdateToggle_: boolean;
+  private showManagedAutoUpdateToggle_: boolean;
 
   private aboutPageBrowserProxy_: AboutPageBrowserProxy;
   private deviceNameBrowserProxy_: DeviceNameBrowserProxy;
@@ -294,10 +307,6 @@ class SettingsDetailedBuildInfoElement extends SettingsDetailedBuildInfoBase {
 
   private shouldShowPolicyIndicator_(): boolean {
     return this.getDeviceNameIndicatorType_() !== CrPolicyIndicatorType.NONE;
-  }
-
-  private shouldShowConsumerAutoUpdateToggle_(): boolean {
-    return !this.isManaged_;
   }
 
   private getDeviceNameIndicatorType_(): string {

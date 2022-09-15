@@ -9,6 +9,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/user_manager/user_manager.h"
 
 namespace content {
 class WebUIDataSource;
@@ -40,6 +41,9 @@ class AboutSection : public OsSettingsSection {
   std::string GetSectionPath() const override;
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
+
+  // Returns if the auto update toggle should be shown for the active user.
+  bool ShouldShowAUToggle(user_manager::User* active_user);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void UpdateReportIssueSearchTags();
