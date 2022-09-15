@@ -42,7 +42,6 @@ class MODULES_EXPORT DocumentPictureInPicture : public ScriptWrappable,
 
   static const char kSupplementName[];
 
- protected:
   void Trace(Visitor*) const override;
 };
 
