@@ -3857,24 +3857,18 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
 
       case TestMPArchType::kPortal: {
         GURL portal_url(embedded_test_server()->GetURL("/title1.html"));
-        WebContentsAddedObserver contents_observer;
-        TestNavigationObserver portal_nav_observer(portal_url);
-        portal_nav_observer.StartWatchingNewWebContents();
 
         // Create a portal.
-        EXPECT_TRUE(
-            ExecJs(web_contents()->GetPrimaryMainFrame(),
-                   JsReplace("{"
-                             "  let portal = document.createElement('portal');"
-                             "  portal.src = $1;"
-                             "  document.body.appendChild(portal);"
-                             "}",
-                             portal_url),
-                   EXECUTE_SCRIPT_NO_USER_GESTURE));
-
-        const auto portal_observer =
-            get_observer(contents_observer.GetWebContents());
-        portal_nav_observer.WaitForNavigationFinished();
+        const char script[] = R"(
+           new Promise(async resolve => {
+             let portal = document.createElement('portal');
+             portal.src = $1;
+             portal.onload = resolve;
+             document.body.appendChild(portal);
+           });
+        )";
+        ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                           content::JsReplace(script, portal_url)));
         break;
       }
     }
