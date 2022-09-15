@@ -24,6 +24,10 @@ declare_args() {
   # doesn't use PartitionAlloc at all, and doesn't wish to incur the library
   # size increase (crbug.com/674570).
   use_partition_alloc = true
+
+  # RAW_PTR_EXCLUSION macro is disabled on official builds because it increased
+  # binary size. This flag can be used to enable it for official builds too.
+  force_enable_raw_ptr_exclusion = false
 }
 
 if (!use_partition_alloc && use_allocator == "partition") {

@@ -5,9 +5,10 @@
 #ifndef BASE_MEMORY_RAW_PTR_EXCLUSION_H_
 #define BASE_MEMORY_RAW_PTR_EXCLUSION_H_
 
+#include "base/allocator/buildflags.h"
 #include "build/build_config.h"
 
-#if defined(OFFICIAL_BUILD)
+#if defined(OFFICIAL_BUILD) && !BUILDFLAG(FORCE_ENABLE_RAW_PTR_EXCLUSION)
 // The annotation changed compiler output and increased binary size so disable
 // for official builds.
 // TODO(crbug.com/1320670): Remove when issue is resolved.

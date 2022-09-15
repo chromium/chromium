@@ -37,6 +37,8 @@ buildflag_header("buildflags") {
 
     # Not to be used directly - see `partition_alloc_config.h`.
     "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
+
+    "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
   ]
 }
 
