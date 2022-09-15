@@ -30,7 +30,6 @@
 #endif
 #if BUILDFLAG(IS_MAC)
 #include <malloc/malloc.h>
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/process/memory_unittest_mac.h"

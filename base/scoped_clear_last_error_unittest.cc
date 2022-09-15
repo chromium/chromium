@@ -10,7 +10,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#include "base/logging.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace base {

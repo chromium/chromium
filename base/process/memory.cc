@@ -4,14 +4,6 @@
 
 #include "base/process/memory.h"
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif  // BUILDFLAG(IS_WIN)
-
 #include <string.h>
 
 #include "base/allocator/buildflags.h"
@@ -19,10 +11,17 @@
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
+#include "build/build_config.h"
+
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 #include "base/allocator/partition_allocator/page_allocator.h"
 #endif
-#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 

@@ -20,7 +20,6 @@
 @class NSFont;
 @class UIFont;
 #else  // __OBJC__
-#include <CoreFoundation/CoreFoundation.h>
 class NSBundle;
 class NSFont;
 class NSString;
