@@ -62,7 +62,7 @@ bool ProfileCanBeManaged(Profile* profile);
 
 // Returns the UTF8-encoded string representation of the entity that manages
 // `profile` or nullopt if unmanaged. `profile` must be not-null.
-std::string GetAccountManagerName(Profile* profile);
+std::string GetBrowserManagerName(Profile* profile);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

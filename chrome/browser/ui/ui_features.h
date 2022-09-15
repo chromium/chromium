@@ -29,8 +29,6 @@ extern const base::Feature kAllowWindowDragUsingSystemDragDrop;
 extern const base::Feature kDesktopPWAsAppHomePage;
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-extern const base::Feature kFlexOrgManagementDisclosure;
-
 extern const base::Feature kChromeLabs;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

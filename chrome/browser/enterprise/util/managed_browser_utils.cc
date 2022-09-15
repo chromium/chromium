@@ -230,12 +230,17 @@ bool ProfileCanBeManaged(Profile* profile) {
 
 #if BUILDFLAG(IS_ANDROID)
 
-std::string GetAccountManagerName(Profile* profile) {
+std::string GetBrowserManagerName(Profile* profile) {
   DCHECK(profile);
 
   // @TODO(https://crbug.com/1227786): There are some use-cases where the
   // expected behavior of chrome://management is to show more than one domain.
-  return GetAccountManagerIdentity(profile).value_or(std::string());
+  absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
+  if (!manager &&
+      base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
+    manager = GetDeviceManagerIdentity();
+  }
+  return manager.value_or(std::string());
 }
 
 // static
@@ -247,11 +252,11 @@ jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(
 
 // static
 base::android::ScopedJavaLocalRef<jstring>
-JNI_ManagedBrowserUtils_GetAccountManagerName(
+JNI_ManagedBrowserUtils_GetBrowserManagerName(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& profile) {
   return base::android::ConvertUTF8ToJavaString(
-      env, GetAccountManagerName(ProfileAndroid::FromProfileAndroid(profile)));
+      env, GetBrowserManagerName(ProfileAndroid::FromProfileAndroid(profile)));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

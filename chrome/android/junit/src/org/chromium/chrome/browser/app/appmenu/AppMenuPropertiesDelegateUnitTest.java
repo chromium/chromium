@@ -217,7 +217,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         mJniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Mockito.when(mManagedBrowserUtilsJniMock.isBrowserManaged(mProfile)).thenReturn(false);
-        Mockito.when(mManagedBrowserUtilsJniMock.getAccountManagerName(mProfile)).thenReturn("");
+        Mockito.when(mManagedBrowserUtilsJniMock.getBrowserManagerName(mProfile)).thenReturn("");
 
         mBookmarkBridgeSupplier.set(mBookmarkBridge);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);

@@ -74,6 +74,8 @@ extern const base::Feature kKeyPinningComponentUpdater;
 extern const base::Feature kAppBoundEncryptionMetrics;
 #endif
 
+extern const base::Feature kFlexOrgManagementDisclosure;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

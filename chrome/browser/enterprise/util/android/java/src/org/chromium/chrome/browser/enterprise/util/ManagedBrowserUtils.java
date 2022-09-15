@@ -21,13 +21,13 @@ public class ManagedBrowserUtils {
     }
 
     /** Wrapper around native call to get profile manager's representation string. */
-    public static String getAccountManagerName(Profile profile) {
-        return (profile != null) ? ManagedBrowserUtilsJni.get().getAccountManagerName(profile) : "";
+    public static String getBrowserManagerName(Profile profile) {
+        return (profile != null) ? ManagedBrowserUtilsJni.get().getBrowserManagerName(profile) : "";
     }
 
     @NativeMethods
     public interface Natives {
         boolean isBrowserManaged(Profile profile);
-        String getAccountManagerName(Profile profile);
+        String getBrowserManagerName(Profile profile);
     }
 }
