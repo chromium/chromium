@@ -25,7 +25,7 @@ const proto::SegmentId kSegmentId =
 const proto::SegmentId kSegmentId2 =
     proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER;
 
-base::flat_set<SegmentId> ids_missing_from_cache;
+base::flat_set<SegmentId> ids_needing_update;
 
 proto::SegmentInfo CreateSegment(SegmentId segment_id) {
   proto::SegmentInfo info;
@@ -41,7 +41,7 @@ class SegmentInfoCacheTest : public testing::Test {
 
  protected:
   void SetUpCache(bool cache_enabled) {
-    ids_missing_from_cache.clear();
+    ids_needing_update.clear();
     DCHECK(!segment_info_cache_);
     segment_info_cache_ = std::make_unique<SegmentInfoCache>(cache_enabled);
   }
@@ -53,70 +53,100 @@ class SegmentInfoCacheTest : public testing::Test {
 };
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoFromEmptyCache) {
-  SetUpCache(true /*cache_enabled*/);
+  SetUpCache(/*cache_enabled=*/true);
 
   auto segment_info_ = segment_info_cache_->GetSegmentInfo(kSegmentId);
-  EXPECT_FALSE(segment_info_.has_value());
+  EXPECT_EQ(SegmentInfoCache::CachedItemState::kNotCached, segment_info_.first);
+  EXPECT_EQ(absl::nullopt, segment_info_.second);
 }
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoFromCache) {
-  SetUpCache(true /*cache_enabled*/);
+  SetUpCache(/*cache_enabled=*/true);
+
   segment_info_cache_->UpdateSegmentInfo(kSegmentId, CreateSegment(kSegmentId));
   auto segment_info_ = segment_info_cache_->GetSegmentInfo(kSegmentId);
-  EXPECT_TRUE(segment_info_.has_value());
-  EXPECT_EQ(kSegmentId, segment_info_->segment_id());
+  EXPECT_EQ(SegmentInfoCache::CachedItemState::kCachedAndFound,
+            segment_info_.first);
+  EXPECT_EQ(kSegmentId, segment_info_.second->segment_id());
+
+  // Calling GetSegmentInfo method again.
+  segment_info_ = segment_info_cache_->GetSegmentInfo(kSegmentId);
+  EXPECT_EQ(SegmentInfoCache::CachedItemState::kCachedAndFound,
+            segment_info_.first);
+  EXPECT_EQ(kSegmentId, segment_info_.second->segment_id());
 }
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoForSegmentsFromCache) {
-  SetUpCache(true /*cache_enabled*/);
+  SetUpCache(/*cache_enabled=*/true);
+
+  // Updating SegmentInfo for 'kSegmentId' and calling GetSegmentInfoForSegments
+  // with superset of segment ids.
   segment_info_cache_->UpdateSegmentInfo(kSegmentId, CreateSegment(kSegmentId));
   auto segments_so_far = segment_info_cache_->GetSegmentInfoForSegments(
-      {kSegmentId, kSegmentId2}, ids_missing_from_cache);
+      {kSegmentId, kSegmentId2}, ids_needing_update);
   EXPECT_EQ(1u, segments_so_far.get()->size());
   EXPECT_EQ(kSegmentId, segments_so_far.get()->at(0).first);
-  EXPECT_THAT(ids_missing_from_cache, testing::ElementsAre(kSegmentId2));
+  EXPECT_THAT(ids_needing_update, testing::ElementsAre(kSegmentId2));
 
-  ids_missing_from_cache.clear();
+  // Updating SegmentInfo for 'kSegmentId2' and calling
+  // GetSegmentInfoForSegments with all segment ids.
+  ids_needing_update.clear();
   segment_info_cache_->UpdateSegmentInfo(kSegmentId2,
                                          CreateSegment(kSegmentId2));
   segments_so_far = segment_info_cache_->GetSegmentInfoForSegments(
-      {kSegmentId, kSegmentId2}, ids_missing_from_cache);
+      {kSegmentId, kSegmentId2}, ids_needing_update);
   EXPECT_EQ(2u, segments_so_far.get()->size());
   EXPECT_EQ(kSegmentId, segments_so_far.get()->at(0).first);
   EXPECT_EQ(kSegmentId2, segments_so_far.get()->at(1).first);
-  EXPECT_TRUE(ids_missing_from_cache.empty());
+  EXPECT_TRUE(ids_needing_update.empty());
+
+  // Updating absl::nullopt for 'kSegmentId2' and calling
+  // GetSegmentInfoForSegments with all segment ids.
+  ids_needing_update.clear();
+  segment_info_cache_->UpdateSegmentInfo(kSegmentId2, absl::nullopt);
+  segments_so_far = segment_info_cache_->GetSegmentInfoForSegments(
+      {kSegmentId, kSegmentId2}, ids_needing_update);
+  EXPECT_EQ(1u, segments_so_far.get()->size());
+  EXPECT_EQ(kSegmentId, segments_so_far.get()->at(0).first);
+  EXPECT_TRUE(ids_needing_update.empty());
+  EXPECT_EQ(SegmentInfoCache::CachedItemState::kCachedAndNotFound,
+            segment_info_cache_->GetSegmentInfo(kSegmentId2).first);
 }
 
 TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
-  SetUpCache(true /*cache_enabled*/);
+  SetUpCache(/*cache_enabled=*/true);
 
   proto::SegmentInfo created_segment_info = CreateSegment(kSegmentId);
   segment_info_cache_->UpdateSegmentInfo(kSegmentId, created_segment_info);
 
   auto segment_info_ = segment_info_cache_->GetSegmentInfo(kSegmentId);
-
-  EXPECT_TRUE(segment_info_.has_value());
-  EXPECT_EQ(kSegmentId, segment_info_->segment_id());
+  EXPECT_EQ(SegmentInfoCache::CachedItemState::kCachedAndFound,
+            segment_info_.first);
+  EXPECT_EQ(kSegmentId, segment_info_.second->segment_id());
 
   // Update model_version of segment_info
   created_segment_info.set_model_version(4);
   segment_info_cache_->UpdateSegmentInfo(kSegmentId, created_segment_info);
 
   segment_info_ = segment_info_cache_->GetSegmentInfo(kSegmentId);
-  EXPECT_TRUE(segment_info_.has_value());
-  EXPECT_EQ(kSegmentId, segment_info_->segment_id());
-  EXPECT_EQ(4, segment_info_->model_version());
+  EXPECT_EQ(SegmentInfoCache::CachedItemState::kCachedAndFound,
+            segment_info_.first);
+  EXPECT_EQ(kSegmentId, segment_info_.second->segment_id());
+  EXPECT_EQ(4, segment_info_.second->model_version());
 }
 
 TEST_F(SegmentInfoCacheTest, GetOrUpdateSegmentInfoWhenCacheDisabled) {
-  SetUpCache(false /*cache_enabled*/);
+  SetUpCache(/*cache_enabled=*/false);
+
   segment_info_cache_->UpdateSegmentInfo(kSegmentId, CreateSegment(kSegmentId));
   auto segment_info_ = segment_info_cache_->GetSegmentInfo(kSegmentId);
-  EXPECT_FALSE(segment_info_.has_value());
+  EXPECT_EQ(SegmentInfoCache::CachedItemState::kNotCached, segment_info_.first);
+  EXPECT_EQ(absl::nullopt, segment_info_.second);
+
   auto segments_so_far = segment_info_cache_->GetSegmentInfoForSegments(
-      {kSegmentId}, ids_missing_from_cache);
+      {kSegmentId}, ids_needing_update);
   EXPECT_TRUE(segments_so_far.get()->empty());
-  EXPECT_THAT(ids_missing_from_cache, testing::ElementsAre(kSegmentId));
+  EXPECT_THAT(ids_needing_update, testing::ElementsAre(kSegmentId));
 }
 
 }  // namespace segmentation_platform

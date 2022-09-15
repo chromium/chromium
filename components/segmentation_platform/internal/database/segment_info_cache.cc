@@ -19,33 +19,46 @@ SegmentInfoCache::SegmentInfoCache(bool cache_enabled)
 
 SegmentInfoCache::~SegmentInfoCache() = default;
 
-absl::optional<SegmentInfo> SegmentInfoCache::GetSegmentInfo(
-    SegmentId segment_id) const {
+// The cache could return 3 states conceptually for a given SegmentId:
+// 1. Never checked in cache or database before, needs update
+// (`Status::kNotCached`, `absl::nullopt`)
+// 2. Checked in database and not available (`Status::kCachedAndNotFound`,
+// `absl::nullopt`)
+// 3. Available in database and cache (`Status::kCachedAndFound`, `SegmentInfo`)
+std::pair<SegmentInfoCache::CachedItemState, absl::optional<SegmentInfo>>
+SegmentInfoCache::GetSegmentInfo(SegmentId segment_id) const {
   if (!cache_enabled_) {
-    return absl::nullopt;
+    return std::make_pair(SegmentInfoCache::CachedItemState::kNotCached,
+                          absl::nullopt);
   }
   auto it = segment_info_cache_.find(segment_id);
-  return it == segment_info_cache_.end() ? absl::nullopt : it->second;
+  return (it == segment_info_cache_.end())
+             ? std::make_pair(SegmentInfoCache::CachedItemState::kNotCached,
+                              absl::nullopt)
+             : it->second;
 }
 
 std::unique_ptr<SegmentInfoCache::SegmentInfoList>
 SegmentInfoCache::GetSegmentInfoForSegments(
     const base::flat_set<SegmentId>& segment_ids,
-    base::flat_set<SegmentId>& ids_missing_from_cache) const {
+    base::flat_set<SegmentId>& ids_needing_update) const {
   std::unique_ptr<SegmentInfoCache::SegmentInfoList> segments_so_far =
       std::make_unique<SegmentInfoCache::SegmentInfoList>();
 
   if (!cache_enabled_) {
-    ids_missing_from_cache.insert(segment_ids.begin(), segment_ids.end());
+    ids_needing_update.insert(segment_ids.begin(), segment_ids.end());
     return segments_so_far;
   }
 
   for (SegmentId target : segment_ids) {
-    absl::optional<SegmentInfo> info = GetSegmentInfo(target);
-    if (info != absl::nullopt) {
-      segments_so_far->emplace_back(std::make_pair(target, info.value()));
-    } else {
-      ids_missing_from_cache.insert(target);
+    std::pair<SegmentInfoCache::CachedItemState, absl::optional<SegmentInfo>>
+        info = GetSegmentInfo(target);
+    if (info.first == SegmentInfoCache::CachedItemState::kNotCached) {
+      ids_needing_update.insert(target);
+    } else if (info.first ==
+               SegmentInfoCache::CachedItemState::kCachedAndFound) {
+      segments_so_far->emplace_back(
+          std::make_pair(target, std::move(info.second.value())));
     }
   }
   return segments_so_far;
@@ -58,9 +71,12 @@ void SegmentInfoCache::UpdateSegmentInfo(
     return;
   }
   if (segment_info.has_value()) {
-    segment_info_cache_[segment_id] = std::move(segment_info);
+    segment_info_cache_[segment_id] =
+        std::make_pair(SegmentInfoCache::CachedItemState::kCachedAndFound,
+                       std::move(segment_info));
   } else {
-    segment_info_cache_.erase(segment_id);
+    segment_info_cache_[segment_id] = std::make_pair(
+        SegmentInfoCache::CachedItemState::kCachedAndNotFound, absl::nullopt);
   }
 }
 

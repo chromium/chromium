@@ -61,12 +61,12 @@ void SegmentInfoDatabase::OnMultipleSegmentInfoLoaded(
 void SegmentInfoDatabase::GetSegmentInfoForSegments(
     const base::flat_set<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback) {
-  base::flat_set<SegmentId> ids_missing_from_cache;
+  base::flat_set<SegmentId> ids_needing_update;
 
   auto segments_so_far =
-      cache_->GetSegmentInfoForSegments(segment_ids, ids_missing_from_cache);
+      cache_->GetSegmentInfoForSegments(segment_ids, ids_needing_update);
 
-  if (ids_missing_from_cache.empty()) {
+  if (ids_needing_update.empty()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::move(segments_so_far)));
@@ -75,7 +75,7 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
 
   // Converting list of segment ids to string as per database requirement.
   std::vector<std::string> keys_to_fetch_from_db =
-      SegmentIdsToString(ids_missing_from_cache);
+      SegmentIdsToString(ids_needing_update);
 
   database_->LoadEntriesWithFilter(
       base::BindRepeating(
@@ -90,9 +90,10 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
 
 void SegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                          SegmentInfoCallback callback) {
-  absl::optional<SegmentInfo> segment_info = cache_->GetSegmentInfo(segment_id);
-  if (segment_info) {
-    std::move(callback).Run(std::move(segment_info));
+  std::pair<SegmentInfoCache::CachedItemState, absl::optional<SegmentInfo>>
+      segment_info = cache_->GetSegmentInfo(segment_id);
+  if (segment_info.first != SegmentInfoCache::CachedItemState::kNotCached) {
+    std::move(callback).Run(std::move(segment_info.second));
     return;
   }
 

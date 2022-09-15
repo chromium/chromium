@@ -92,7 +92,8 @@ class SegmentInfoDatabaseTest : public testing::Test,
                                        ? absl::make_optional(prediction_result)
                                        : absl::nullopt,
                                    base::DoNothing());
-    if (segment_info_cache_->GetSegmentInfo(segment_id) == absl::nullopt) {
+    if (segment_info_cache_->GetSegmentInfo(segment_id).first ==
+        SegmentInfoCache::CachedItemState::kNotCached) {
       db_->GetCallback(true);
     }
     db_->UpdateCallback(true);
@@ -102,7 +103,8 @@ class SegmentInfoDatabaseTest : public testing::Test,
     segment_db_->GetSegmentInfo(
         segment_id, base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                                    base::Unretained(this)));
-    if (segment_info_cache_->GetSegmentInfo(segment_id) == absl::nullopt) {
+    if (segment_info_cache_->GetSegmentInfo(segment_id).first ==
+        SegmentInfoCache::CachedItemState::kNotCached) {
       db_->GetCallback(true);
     }
 
@@ -123,7 +125,8 @@ class SegmentInfoDatabaseTest : public testing::Test,
                        base::Unretained(this), loop.QuitClosure()));
 
     for (SegmentId segment_id : segment_ids) {
-      if (segment_info_cache_->GetSegmentInfo(segment_id) == absl::nullopt) {
+      if (segment_info_cache_->GetSegmentInfo(segment_id).first ==
+          SegmentInfoCache::CachedItemState::kNotCached) {
         db_->LoadCallback(true);
         break;
       }
@@ -169,7 +172,8 @@ TEST_P(SegmentInfoDatabaseTest, Get) {
   segment_db_->GetSegmentInfo(
       kSegmentId, base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                                  base::Unretained(this)));
-  if (segment_info_cache_->GetSegmentInfo(kSegmentId) == absl::nullopt) {
+  if (segment_info_cache_->GetSegmentInfo(kSegmentId).first ==
+      SegmentInfoCache::CachedItemState::kNotCached) {
     db_->GetCallback(true);
   }
   EXPECT_TRUE(get_segment_result_.has_value());
