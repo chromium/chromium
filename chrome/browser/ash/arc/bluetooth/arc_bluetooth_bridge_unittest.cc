@@ -119,7 +119,7 @@ class ArcBluetoothBridgeTest : public testing::Test {
         nullptr, arc_bridge_service_.get());
     fake_bluetooth_instance_ = std::make_unique<FakeBluetoothInstance>();
     arc_bridge_service_->bluetooth()->SetInstance(
-        fake_bluetooth_instance_.get(), 17);
+        fake_bluetooth_instance_.get(), 20);
     WaitForInstanceReady(arc_bridge_service_->bluetooth());
 
     device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
@@ -476,4 +476,36 @@ TEST_F(ArcBluetoothBridgeTest, SingleAdvertisement) {
   EXPECT_EQ(0, NumActiveAdvertisements());
 }
 
+TEST_F(ArcBluetoothBridgeTest, ServiceChanged) {
+  // Set up device and service
+  AddTestDevice();
+
+  bluez::BluezDBusManager* dbus_manager = bluez::BluezDBusManager::Get();
+  auto* fake_bluetooth_gatt_service_client =
+      static_cast<bluez::FakeBluetoothGattServiceClient*>(
+      dbus_manager->GetBluetoothGattServiceClient());
+
+  device::BluetoothDevice* device = adapter_->GetDevices()[0];
+  device::BluetoothRemoteGattService* service =
+      device->GetGattService(fake_bluetooth_gatt_service_client->GetHeartRateServicePath().value());
+
+  // When OnServiceChanged is called, service changed flag will be set
+  // true, while reset_service_changed_flag will set this flag to false.
+  // Here is to test whether OnServiceChanged is called after GattServiceAdded
+  // and GattServiceRemoved is called.
+  fake_bluetooth_instance_->reset_service_changed_flag();
+  EXPECT_FALSE(fake_bluetooth_instance_->get_service_changed_flag());
+  arc_bluetooth_bridge_->GattServiceAdded(adapter_.get(), device, service);
+  EXPECT_TRUE(fake_bluetooth_instance_->get_service_changed_flag());
+
+  fake_bluetooth_instance_->reset_service_changed_flag();
+  EXPECT_FALSE(fake_bluetooth_instance_->get_service_changed_flag());
+  arc_bluetooth_bridge_->GattServiceRemoved(adapter_.get(), device, service);
+  EXPECT_TRUE(fake_bluetooth_instance_->get_service_changed_flag());
+
+  fake_bluetooth_instance_->reset_service_changed_flag();
+  EXPECT_FALSE(fake_bluetooth_instance_->get_service_changed_flag());
+  arc_bluetooth_bridge_->GattServiceChanged(adapter_.get(), service);
+  EXPECT_TRUE(fake_bluetooth_instance_->get_service_changed_flag());
+}
 }  // namespace arc

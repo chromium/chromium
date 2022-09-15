@@ -156,4 +156,8 @@ void FakeBluetoothInstance::OnMTUReceived(
     mojom::BluetoothAddressPtr remote_addr,
     uint16_t mtu) {}
 
+void FakeBluetoothInstance::OnServiceChanged(
+    mojom::BluetoothAddressPtr remote_addr) {
+        service_changed_flag_ = true;
+    }
 }  // namespace arc

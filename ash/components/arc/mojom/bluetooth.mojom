@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 20
+// Next MinVersion: 21
 
 module arc.mojom;
 
@@ -493,7 +493,7 @@ interface BluetoothHost {
       => (BluetoothStatus status, pending_receiver<BluetoothConnectSocketClient>? client);
 };
 
-// Next Method ID: 24
+// Next Method ID: 25
 // Deprecated Method ID: 0, 2, 6, 11, 12
 interface BluetoothInstance {
   // Establishes full-duplex communication with the host.
@@ -537,6 +537,9 @@ interface BluetoothInstance {
                                  BluetoothGattID char_id,
                                  bool is_notify,
                                  array<uint8> value);
+  // Used to notify service change, called when service is added or
+  // removed.
+  [MinVersion=20] OnServiceChanged@24(BluetoothAddress remote_addr);
 
   // Bluetooth Gatt Server functions
   [MinVersion=3] RequestGattRead@14(

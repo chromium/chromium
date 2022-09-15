@@ -179,6 +179,8 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
   void OnMTUReceived(mojom::BluetoothAddressPtr remote_addr,
                      uint16_t mtu) override;
 
+  void OnServiceChanged(mojom::BluetoothAddressPtr remote_addr) override;
+
   const std::vector<std::vector<mojom::BluetoothPropertyPtr>>&
   device_found_data() const {
     return device_found_data_;
@@ -208,6 +210,14 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
     return gatt_db_result_;
   }
 
+  bool get_service_changed_flag() {
+    return service_changed_flag_;
+  }
+
+  void reset_service_changed_flag() {
+    service_changed_flag_ = false;
+  }
+
  private:
   std::vector<std::vector<mojom::BluetoothPropertyPtr>> device_found_data_;
   std::vector<std::vector<mojom::BluetoothPropertyPtr>>
@@ -222,6 +232,9 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::BluetoothHost> host_remote_;
+
+  // To indicate whether OnServiceChanged is called.
+  bool service_changed_flag_;
 };
 
 }  // namespace arc

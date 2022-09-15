@@ -734,6 +734,7 @@ void ArcBluetoothBridge::GattServiceAdded(BluetoothAdapter* adapter,
   if (!arc_bridge_service_->bluetooth()->IsConnected())
     return;
   // Placeholder for GATT client functionality
+  GattServiceChanged(adapter, service);
 }
 
 void ArcBluetoothBridge::GattServiceRemoved(
@@ -743,6 +744,7 @@ void ArcBluetoothBridge::GattServiceRemoved(
   if (!arc_bridge_service_->bluetooth()->IsConnected())
     return;
   // Placeholder for GATT client functionality
+  GattServiceChanged(adapter, service);
 }
 
 void ArcBluetoothBridge::GattServicesDiscovered(BluetoothAdapter* adapter,
@@ -775,7 +777,16 @@ void ArcBluetoothBridge::GattServiceChanged(
     BluetoothRemoteGattService* service) {
   if (!arc_bridge_service_->bluetooth()->IsConnected())
     return;
-  // Placeholder for GATT client functionality
+  BluetoothDevice* device = service->GetDevice();
+  if (!device)
+    return;
+
+  auto* btle_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->bluetooth(), OnServiceChanged);
+  if (!btle_instance)
+    return;
+  btle_instance->OnServiceChanged(
+      mojom::BluetoothAddress::From(device->GetAddress()));
 }
 
 void ArcBluetoothBridge::GattCharacteristicAdded(
