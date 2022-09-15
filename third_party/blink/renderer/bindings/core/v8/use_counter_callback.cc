@@ -386,6 +386,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kTurboFanOsrCompileStarted:
       blink_feature = WebFeature::kV8TurboFanOsrCompileStarted;
       break;
+    case v8::Isolate::kAsyncStackTaggingCreateTaskCall:
+      blink_feature = WebFeature::kV8AsyncStackTaggingCreateTaskCall;
+      break;
 
     default:
       // This can happen if V8 has added counters that this version of Blink

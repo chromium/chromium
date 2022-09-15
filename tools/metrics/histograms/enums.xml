@@ -41414,6 +41414,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4351" label="ViewportDependentLazyLoadedImageWithSizesAttribute"/>
   <int value="4352" label="XRWebGLBindingGetCameraImage"/>
   <int value="4353" label="SelectiveInOrderScript"/>
+  <int value="4354" label="V8AsyncStackTaggingCreateTaskCall"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
