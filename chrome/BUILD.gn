@@ -572,7 +572,7 @@ if (is_win) {
     args =
         [
           "-b",
-          "${branding_path_component}_strings",
+          "${branding_path_product}_strings",
           "-v",
           chrome_version_full,
           "-g",
