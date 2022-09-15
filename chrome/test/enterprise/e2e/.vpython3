@@ -2,12 +2,24 @@
 # scripts in our repo and is used in LUCI to create reproducible bubbles in
 # which to run our ./test.py script.
 #
-# You can also use this locally by invoking `vpython` instead of `python` when
+# You can also use this locally by invoking `vpython3` instead of `python3` when
 # running the test scripts.
 #
 # More information:
 # https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
 python_version: "3.8"
+
+verify_pep425_tag: [
+    {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
+# TODO(https://crbug.com/1363689): Uncomment when this wheel has been added.
+#   {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+
+    {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
+    {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
+
+    {python: "cp38", abi: "cp38", platform: "win32"},
+    {python: "cp38", abi: "cp38", platform: "win_amd64"}
+]
 
 wheel: <
   name: "infra/celab/celab/windows-amd64"
