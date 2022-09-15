@@ -390,6 +390,12 @@
         ],
         'os_type': 'chromeos',
       },
+      'lacros-arm64-archive-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'os_type': 'chromeos',
+      },
       'lacros64-archive-rel': {
         'additional_compile_targets': [
           'chrome',

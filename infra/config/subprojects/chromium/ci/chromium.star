@@ -253,6 +253,54 @@ ci.builder(
 )
 
 ci.builder(
+    name = "lacros-arm64-archive-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros",
+        short_name = "arm64",
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "checkout_lacros_sdk",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_cros_boards = [
+                "arm64-generic",
+            ],
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+    ),
+    cores = 32,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "lacros-arm64-archive-rel.json",
+            ],
+        },
+    },
+    # TODO(crbug.com/1363272): Enable tree_closing/sheriff when stable.
+    tree_closing = False,
+    sheriff_rotations = args.ignore_default(None),
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+)
+
+ci.builder(
     name = "linux-archive-dbg",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

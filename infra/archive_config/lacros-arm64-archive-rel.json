@@ -1,0 +1,35 @@
+{
+   "archive_datas":[
+      {
+         "files":[
+            "chrome",
+            "chrome_100_percent.pak",
+            "chrome_200_percent.pak",
+            "chrome_crashpad_handler",
+            "headless_lib_data.pak",
+            "headless_lib_strings.pak",
+            "icudtl.dat",
+            "icudtl.dat.hash",
+            "libEGL.so",
+            "libGLESv2.so",
+            "metadata.json",
+            "resources.pak",
+            "snapshot_blob.bin"
+         ],
+         "file_globs": [
+            "locales/*.pak"
+         ],
+         "gcs_bucket":"chromium-browser-snapshots",
+         "gcs_path":"lacros_arm64/{%position%}/lacros.zip",
+         "archive_type":"ARCHIVE_TYPE_ZIP"
+      },
+      {
+         "files":[
+            "metadata.json"
+         ],
+         "gcs_bucket":"chromium-browser-snapshots",
+         "gcs_path":"lacros_arm64/{%position%}",
+         "archive_type":"ARCHIVE_TYPE_FILES"
+      }
+   ]
+}
