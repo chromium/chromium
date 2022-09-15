@@ -16,6 +16,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -71,6 +72,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
   // This function will also update the |uv_rect| based on what clipping was
   // applied to |display_rect|.
+  // |clip_rect| should be in the same space as |candidate|'s |display_rect|.
   static void ApplyClip(OverlayCandidate& candidate,
                         const gfx::RectF& clip_rect);
 
@@ -83,8 +85,17 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   OverlayCandidate(const OverlayCandidate& other);
   ~OverlayCandidate();
 
+  // Transform |content_rect| to target space. I.e. with |transform| applied.
+  // |content_rect| will be the smallest axis aligned bounding rect containing
+  // the transformed rect.
+  // This is a no-op if |transform| is |gfx::OverlayTransform|.
+  void TransformRectToTargetSpace(gfx::RectF& content_rect) const;
+
   // Transformation to apply to layer during composition.
-  gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
+  // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
+  // does not affect |display_rect|.
+  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
+      gfx::OVERLAY_TRANSFORM_NONE;
   // Format of the buffer to scanout.
   gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   // ColorSpace of the buffer for scanout.
@@ -93,13 +104,18 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   absl::optional<gfx::HDRMetadata> hdr_metadata;
   // Size of the resource, in pixels.
   gfx::Size resource_size_in_pixels;
-  // Rect on the display to position the overlay to. Implementer must convert
-  // to integer coordinates if setting |overlay_handled| to true.
+  // Rect in content space that, when combined with |transform|, is the bounds
+  // to position the overlay to. When |transform| is a |gx::OverlayTransform|,
+  // this is the bounds of the quad rect with its transform applied, so that
+  // content and target space for this overlay are the same.
+  //
+  // Implementer must convert to integer coordinates if setting
+  // |overlay_handled| to true.
   gfx::RectF display_rect;
   // Crop within the buffer to be placed inside |display_rect|.
   gfx::RectF uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
-  // Clip rect in the target content space after composition, or empty if the
-  // quad is not clipped.
+  // Clip rect in the target space after composition, or nullopt if the quad is
+  // not clipped.
   absl::optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
@@ -167,7 +183,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Hints for overlay prioritization when delegated composition is used.
   gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
 
-  // Specifies the rounded corners of overlay candidate.
+  // Specifies the rounded corners of overlay candidate, in target space.
   gfx::RRectF rounded_corners;
 
   // A (ideally) unique key used to temporally identify a specific overlay

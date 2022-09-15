@@ -43,7 +43,9 @@ bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
                                   QuadList::ConstIterator quad_list_end) {
   // The rects are rounded as they're snapped by the compositor to pixel unless
   // it is AA'ed, in which case, it won't be overlaid.
-  gfx::Rect display_rect = gfx::ToRoundedRect(candidate.display_rect);
+  gfx::RectF target_rect_f = candidate.display_rect;
+  candidate.TransformRectToTargetSpace(target_rect_f);
+  gfx::Rect target_rect = gfx::ToRoundedRect(target_rect_f);
 
   // Check that no visible quad overlaps the candidate.
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
@@ -53,7 +55,7 @@ bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
         gfx::RectF(overlap_iter->rect)));
 
     if (!OverlayCandidate::IsInvisibleQuad(*overlap_iter) &&
-        display_rect.Intersects(overlap_rect)) {
+        target_rect.Intersects(overlap_rect)) {
       return true;
     }
   }
@@ -70,6 +72,13 @@ void OverlayCandidate::ApplyClip(OverlayCandidate& candidate,
         candidate.uv_rect, candidate.display_rect, intersect_clip_display);
     candidate.display_rect = intersect_clip_display;
     candidate.uv_rect = uv_rect;
+  }
+}
+
+void OverlayCandidate::TransformRectToTargetSpace(
+    gfx::RectF& content_rect) const {
+  if (absl::holds_alternative<gfx::Transform>(transform)) {
+    absl::get<gfx::Transform>(transform).TransformRect(&content_rect);
   }
 }
 
