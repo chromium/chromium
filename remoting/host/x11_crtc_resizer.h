@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/gfx/x/randr.h"
@@ -42,17 +43,46 @@ class X11CrtcResizer {
   // This operates only on |active_crtcs_| without making any X server calls.
   // It sets the new mode and width/height for the given CRTC. And it changes
   // any xy-offsets as needed, to avoid overlaps between CRTCs.
+  // This method calls NormalizeCrtcs() so you don't need to call it manually.
   void UpdateActiveCrtcs(x11::RandR::Crtc crtc,
                          x11::RandR::Mode mode,
                          const webrtc::DesktopSize& new_size);
+
+  // This operates only on |active_crtcs_| without making any X server calls.
+  // It sets the new mode, offsets and width/height for the given CRTC. Unlike
+  // UpdateActiveCrtcs, this method does not change any xy-offsets to avoid
+  // overlaps.
+  void UpdateActiveCrtc(x11::RandR::Crtc crtc,
+                        x11::RandR::Mode mode,
+                        const webrtc::DesktopRect& new_rect);
+
+  // Adds a new CRTC to |active_crtcs_|. This method does not make any X server
+  // calls, and it does not change xy-offsets of any existing CRTCs.
+  void AddActiveCrtc(x11::RandR::Crtc crtc,
+                     x11::RandR::Mode mode,
+                     const std::vector<x11::RandR::Output>& outputs,
+                     const webrtc::DesktopRect& new_rect);
+
+  // Removes a CRTC from |active_crtcs_|. This method does not make any X server
+  // calls.
+  void RemoveActiveCrtc(x11::RandR::Crtc crtc);
 
   // Disables any CRTCs whose offsets are being changed. The caller is
   // responsible for disabling the CRTC being resized, so there is no need to
   // do it here.
   void DisableChangedCrtcs();
 
+  // Computes the bounding-box of the CRTCs after active CRTCs have been
+  // modified. If the bounding-box is not aligned at the origin, all the CRTC
+  // offsets are shifted the same amount so that the new bounding-box's top-left
+  // corner is at (0, 0).
+  void NormalizeCrtcs();
+
   // Returns the bounding box of |active_crtcs_| from their current xy-offsets
   // and sizes.
+  // NormalizeCrtcs() needs to be called first if (Update|Add|Remove)ActiveCrtc
+  // has been called (not including UpdateActiveCrtcs which takes a DesktopSize
+  // instead of DesktopRect).
   webrtc::DesktopSize GetBoundingBox() const;
 
   // Applies any changed CRTCs back to the X server. This will re-enable any
@@ -113,20 +143,11 @@ class X11CrtcResizer {
   // NormalizeCrtcs() will be called afterwards to fix both these issues.
   // The implementation may also re-order |active_crtcs_|, for example, a
   // stacking-algorithm may want to sort the list first.
-  // |crtc_to_resize| points to the CRTC being resized, and its width and height
-  // have the old values. Note that any re-ordering of the list may invalidate
-  // this reference. This is a convenience to avoid searching the list again -
-  // |resized_crtc_| will also hold the same CRTC's ID.
+  // |crtc_to_resize| points to the CRTC being resized.
   // |new_size| is the new size of |crtc_to_resize|. This method is responsible
   // for setting the new width/height values of the CRTC.
-  void RelayoutCrtcs(CrtcInfo& crtc_to_resize,
+  void RelayoutCrtcs(x11::RandR::Crtc crtc_to_resize,
                      const webrtc::DesktopSize& new_size);
-
-  // Computes the bounding-box of the CRTCs after adjustments have been
-  // proposed by the layout algorithm. If the bounding-box is not aligned at
-  // the origin, all the CRTC offsets are shifted the same amount so that the
-  // new bounding-box's top-left corner is at (0, 0).
-  void NormalizeCrtcs();
 
   // Returns true if the CRTCs appear to be roughly laid out vertically.
   bool LayoutIsVertical() const;
@@ -136,10 +157,12 @@ class X11CrtcResizer {
   // preserved. If they are not all right-aligned, this will position the
   // monitors against the left edge of the desktop.
   // On return, the CRTC being resized will have the new width/height.
-  void PackVertically(const webrtc::DesktopSize& new_size);
+  void PackVertically(const webrtc::DesktopSize& new_size,
+                      x11::RandR::Crtc resized_crtc);
 
   // Behaves similarly, but stacks the CRTCs horizontally.
-  void PackHorizontally(const webrtc::DesktopSize& new_size);
+  void PackHorizontally(const webrtc::DesktopSize& new_size,
+                        x11::RandR::Crtc resized_crtc);
 
   // Transposes all the CRTCs by swapping x and y coordinates. This allows
   // the vertical layout code to be re-used for horizontal layout.
@@ -157,10 +180,10 @@ class X11CrtcResizer {
   // properties.
   std::vector<CrtcInfo> active_crtcs_;
 
-  // Stores the CRTC being resized. This is needed so that ApplyActiveCrtcs()
-  // will set this CRTC's new size in the X server, even if its xy-offsets are
+  // Stores the CRTCs being updated. This is needed so that ApplyActiveCrtcs()
+  // will set the CRTCs' new sizes in the X server, even if their xy-offsets are
   // unchanged.
-  x11::RandR::Crtc resized_crtc_{0};
+  base::flat_set<x11::RandR::Crtc> updated_crtcs_;
 
   // Bounding-box size computed by NormalizeCrtcs().
   webrtc::DesktopSize bounding_box_size_{};

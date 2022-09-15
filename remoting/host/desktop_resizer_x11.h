@@ -7,6 +7,8 @@
 
 #include <string.h>
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/logging.h"
@@ -15,6 +17,8 @@
 #include "ui/gfx/x/randr.h"
 
 namespace remoting {
+
+class X11CrtcResizer;
 
 // Wrapper class for the XRRScreenResources struct.
 class ScreenResources {
@@ -51,20 +55,29 @@ class DesktopResizerX11 : public DesktopResizer {
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
+  using OutputInfoList = std::vector<
+      std::pair<x11::RandR::Output, x11::RandR::GetOutputInfoReply>>;
+
   // Add a mode matching the specified resolution and switch to it.
   void SetResolutionForOutput(x11::RandR::Output output,
                               const ScreenResolution& resolution);
 
-  // Create a mode, and attach it to the output. If the mode already exists, it
-  // is left unchanged. Returns the new mode ID, or None (0) on failure.
-  x11::RandR::Mode CreateMode(x11::RandR::Output output,
-                              const std::string& name,
-                              int width,
-                              int height);
+  // Removes the existing mode from the output and replaces it with the new
+  // size. Returns the new mode ID, or None (0) on failure.
+  x11::RandR::Mode UpdateMode(x11::RandR::Output output, int width, int height);
 
   // Remove the specified mode from the output, and delete it. If the mode is in
   // use, it is not deleted.
+  // |name| should be set to GetModeNameForOutput(output). The parameter is to
+  // avoid creating the mode name twice.
   void DeleteMode(x11::RandR::Output output, const std::string& name);
+
+  // Updates the root window using the bounding box of the CRTCs, then
+  // re-activate all CRTCs.
+  void UpdateRootWindow(X11CrtcResizer& resizer);
+
+  // Gets a list of outputs that are not connected to any CRTCs.
+  OutputInfoList GetDisabledOutputs();
 
   raw_ptr<x11::Connection> connection_;
   const raw_ptr<x11::RandR> randr_ = nullptr;
