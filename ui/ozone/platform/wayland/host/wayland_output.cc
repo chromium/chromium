@@ -174,6 +174,13 @@ void WaylandOutput::OutputHandleGeometry(void* data,
                                          int32_t output_transform) {
   WaylandOutput* wayland_output = static_cast<WaylandOutput*>(data);
   if (wayland_output) {
+    // It looks like there is a bug in libffi - only the 8th arg is affected.
+    // Possibly it is not following the calling convention of the ABI? Eg. the
+    // lib has some off-by-1-error where it's supposed to pass 8 args in regs
+    // and the rest on the stack but instead it's passing 7 in regs. This is
+    // out of our control. Given the output_transform is always correct,
+    // unpoison the value to make MSAN happy.
+    MSAN_UNPOISON(&output_transform, sizeof(int32_t));
     wayland_output->origin_ = gfx::Point(x, y);
     wayland_output->panel_transform_ = output_transform;
   }
