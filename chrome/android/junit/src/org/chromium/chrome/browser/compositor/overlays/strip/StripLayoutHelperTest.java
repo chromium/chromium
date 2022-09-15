@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -71,6 +72,8 @@ import java.util.List;
 public class StripLayoutHelperTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Mock
+    private View mInteractingTabView;
     @Mock
     private LayoutUpdateHost mUpdateHost;
     @Mock
@@ -1222,6 +1225,19 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Groups on Tab Strip")
+    public void testReorder_HapticFeedback() {
+        // Mock 5 tabs.
+        initializeTest(false, false, 0);
+
+        // Start reorder mode on first tab.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+
+        // Verify we performed haptic feedback for a long-press.
+        verify(mInteractingTabView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
     public void testReorder_NoGroups() {
         // Mock 5 tabs.
         initializeTest(false, false, true, 0, 5);
@@ -1643,12 +1659,14 @@ public class StripLayoutHelperTest {
             for (int i = 0; i < numTabs; i++) {
                 mModel.addTab(TEST_TAB_TITLES[i]);
                 when(mModel.getTabAt(i).isHidden()).thenReturn(tabIndex != i);
+                when(mModel.getTabAt(i).getView()).thenReturn(mInteractingTabView);
                 when(mTabGroupModelFilter.getRootId(eq(mModel.getTabAt(i)))).thenReturn(i);
             }
         } else {
             for (int i = 0; i < numTabs; i++) {
                 mModel.addTab("Tab " + i);
                 when(mModel.getTabAt(i).isHidden()).thenReturn(tabIndex != i);
+                when(mModel.getTabAt(i).getView()).thenReturn(mInteractingTabView);
                 when(mTabGroupModelFilter.getRootId(eq(mModel.getTabAt(i)))).thenReturn(i);
             }
         }

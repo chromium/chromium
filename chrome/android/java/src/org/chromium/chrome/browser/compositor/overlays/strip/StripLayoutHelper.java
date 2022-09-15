@@ -16,6 +16,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -1747,9 +1748,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mScroller.startScroll(Math.round(mScrollOffset), 0, (int) fastExpandDelta, 0, time,
                     getExpandDuration());
         } else if (mTabGroupsEnabled) {
+            Tab tab = getTabById(mInteractingTab.getId());
             computeAndUpdateTabGroupMargins(true, true);
-            setTabGroupDimmed(
-                    mTabGroupModelFilter.getRootId(getTabById(mInteractingTab.getId())), false);
+            setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
+            performHapticFeedback(tab);
         }
 
         // 7. Request an update.
@@ -2655,5 +2657,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         builder.append(mContext.getResources().getString(resId));
 
         stripTab.setAccessibilityDescription(builder.toString(), title);
+    }
+
+    private void performHapticFeedback(Tab tab) {
+        View tabView = tab.getView();
+        if (tabView == null) return;
+        tabView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
     }
 }
