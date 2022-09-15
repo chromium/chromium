@@ -33,7 +33,6 @@ import multiprocessing
 import optparse
 import sys
 import traceback
-import six
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
@@ -60,7 +59,7 @@ def main(argv, stderr):
     else:
         host = Host()
 
-    if six.PY3 and stderr.isatty():
+    if stderr.isatty():
         stderr.reconfigure(write_through=True)
     printer = printing.Printer(host, options, stderr)
 
@@ -779,9 +778,3 @@ def run(port, options, args, printer):
     _log.debug('Testing completed. Exit status: %d', run_details.exit_code)
     printer.flush()
     return run_details
-
-
-if __name__ == '__main__':
-    if not six.PY2:
-        multiprocessing.set_start_method('spawn')
-    sys.exit(main(sys.argv[1:], sys.stderr))
