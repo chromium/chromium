@@ -2141,6 +2141,10 @@ bool IsStartAssistantAudioDecoderOnDemandEnabled() {
   return base::FeatureList::IsEnabled(kStartAssistantAudioDecoderOnDemand);
 }
 
+bool IsImeTrayHideVoiceButtonEnabled() {
+  return base::FeatureList::IsEnabled(kImeTrayHideVoiceButton);
+}
+
 bool IsImprovedDesksKeyboardShortcutsEnabled() {
   return base::FeatureList::IsEnabled(kImprovedDesksKeyboardShortcuts);
 }

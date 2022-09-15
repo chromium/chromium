@@ -60,6 +60,7 @@ namespace {
 // Used for testing.
 const int kEmojiButtonId = 1;
 const int kSettingsButtonId = 2;
+const int kVoiceButtonId = 3;
 
 // Insets for the title view (dp).
 constexpr auto kTitleViewPadding = gfx::Insets::TLBR(0, 0, 0, 16);
@@ -260,6 +261,7 @@ class ImeButtonsView : public views::View {
                               base::Unretained(this),
                               input_method::ImeKeyset::kVoice),
           kImeMenuMicrophoneIcon, IDS_ASH_STATUS_TRAY_IME_VOICE);
+      voice_button_->SetID(kVoiceButtonId);
       AddChildView(voice_button_);
     }
   }
@@ -436,7 +438,21 @@ bool ImeMenuTray::ShouldShowBottomButtons() {
 
   is_emoji_enabled_ = ime_controller_->is_emoji_enabled();
   is_handwriting_enabled_ = ime_controller_->is_handwriting_enabled();
-  is_voice_enabled_ = ime_controller_->is_voice_enabled();
+
+  if (ash::features::IsImeTrayHideVoiceButtonEnabled()) {
+    const bool is_dictation_enabled =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetFeature(AccessibilityControllerImpl::FeatureType::kDictation)
+            .enabled();
+
+    // Only enable voice button in IME tray if the function is enabled and
+    // the accessibility dictation is not enabled in the shelf.
+    is_voice_enabled_ =
+        ime_controller_->is_voice_enabled() && !is_dictation_enabled;
+  } else {
+    is_voice_enabled_ = ime_controller_->is_voice_enabled();
+  }
 
   return is_emoji_enabled_ || is_handwriting_enabled_ || is_voice_enabled_;
 }

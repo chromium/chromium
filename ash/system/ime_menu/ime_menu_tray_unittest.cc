@@ -5,6 +5,7 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
@@ -17,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -36,6 +38,7 @@ namespace {
 
 const int kEmojiButtonId = 1;
 const int kSettingsButtonId = 2;
+const int kVoiceButtonId = 3;
 
 ImeMenuTray* GetTray() {
   return StatusAreaWidgetTestHelper::GetStatusAreaWidget()->ime_menu_tray();
@@ -63,6 +66,12 @@ class ImeMenuTrayTest : public AshTestBase {
   ~ImeMenuTrayTest() override = default;
 
  protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kImeTrayHideVoiceButton}, {});
+    AshTestBase::SetUp();
+  }
+
   // Returns true if the IME menu tray is visible.
   bool IsVisible() { return GetTray()->GetVisible(); }
 
@@ -92,6 +101,11 @@ class ImeMenuTrayTest : public AshTestBase {
   views::View* GetSettingsButton() const {
     return static_cast<views::View*>(
         GetTray()->bubble_->bubble_view()->GetViewByID(kSettingsButtonId));
+  }
+
+  views::View* GetVoiceButton() const {
+    return static_cast<views::View*>(
+        GetTray()->bubble_->bubble_view()->GetViewByID(kVoiceButtonId));
   }
 
   void SetUpKioskSession() {
@@ -139,6 +153,9 @@ class ImeMenuTrayTest : public AshTestBase {
       return false;
     return ImeListViewTestApi(GetTray()->ime_list_view_).GetToggleView();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that visibility of IME menu tray should be consistent with the
@@ -521,6 +538,48 @@ TEST_F(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
       0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
   EXPECT_TRUE(IsBubbleShown());
   EXPECT_FALSE(MenuHasOnScreenKeyboardToggle());
+}
+
+TEST_F(ImeMenuTrayTest, ShowVoiceButtonWhenDictationDisabled) {
+  // Enable all extra input options.
+  Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
+      /*is_extra_input_options_enabled=*/true,
+      /*is_emoji_enabled=*/true,
+      /*is_handwriting_enabled=*/true, /*is_voice_enabled=*/true);
+
+  // Disable accessibility dictation.
+  Shell::Get()
+      ->accessibility_controller()
+      ->GetFeature(AccessibilityControllerImpl::FeatureType::kDictation)
+      .SetEnabled(false);
+
+  // Show IME tray bubble.
+  GetTray()->ShowBubble();
+
+  // Voice button should be shown.
+  views::View* voice_button = GetVoiceButton();
+  EXPECT_TRUE(voice_button);
+}
+
+TEST_F(ImeMenuTrayTest, HideVoiceButtonWhenDictationEnabled) {
+  // Enable all extra input options.
+  Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
+      /*is_extra_input_options_enabled=*/true,
+      /*is_emoji_enabled=*/true,
+      /*is_handwriting_enabled=*/true, /*is_voice_enabled=*/true);
+
+  // Enable accessibility dictation.
+  Shell::Get()
+      ->accessibility_controller()
+      ->GetFeature(AccessibilityControllerImpl::FeatureType::kDictation)
+      .SetEnabled(true);
+
+  // Show IME tray bubble.
+  GetTray()->ShowBubble();
+
+  // Voice button should be hidden.
+  views::View* voice_button = GetVoiceButton();
+  EXPECT_FALSE(voice_button);
 }
 
 }  // namespace ash
