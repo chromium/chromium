@@ -16,6 +16,7 @@
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -210,7 +211,7 @@ void SubscriptionsServerProxy::Get(SubscriptionType type,
   } else {
     VLOG(1) << "Unsupported type for Get query";
     std::move(callback).Run(
-        std::make_unique<std::vector<CommerceSubscription>>());
+        false, std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
 
@@ -299,6 +300,12 @@ void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
     GetSubscriptionsFetcherCallback callback,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
+  if (responses->http_status_code != net::HTTP_OK || responses->error_type) {
+    VLOG(1) << "Fail to get subscriptions from server";
+    std::move(callback).Run(
+        false, std::make_unique<std::vector<CommerceSubscription>>());
+    return;
+  }
   data_decoder::DataDecoder::ParseJsonIsolated(
       responses->response,
       base::BindOnce(&SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed,
@@ -317,13 +324,13 @@ void SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed(
         if (auto subscription = Deserialize(subscription_json))
           subscriptions->push_back(*subscription);
       }
-      std::move(callback).Run(std::move(subscriptions));
+      std::move(callback).Run(true, std::move(subscriptions));
       return;
     }
   }
 
-  VLOG(1) << "Fail to get subscriptions from response";
-  std::move(callback).Run(std::move(subscriptions));
+  VLOG(1) << "User has no subscriptions";
+  std::move(callback).Run(true, std::move(subscriptions));
 }
 
 base::Value SubscriptionsServerProxy::Serialize(

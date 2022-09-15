@@ -32,8 +32,8 @@ enum class SubscriptionType;
 struct CommerceSubscription;
 
 using ManageSubscriptionsFetcherCallback = base::OnceCallback<void(bool)>;
-using GetSubscriptionsFetcherCallback = base::OnceCallback<void(
-    std::unique_ptr<std::vector<CommerceSubscription>>)>;
+using GetSubscriptionsFetcherCallback = base::OnceCallback<
+    void(bool, std::unique_ptr<std::vector<CommerceSubscription>>)>;
 
 class SubscriptionsServerProxy {
  public:

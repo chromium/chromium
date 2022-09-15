@@ -92,13 +92,14 @@ class MockSubscriptionsServerProxy : public SubscriptionsServerProxy {
 
   // Mock the server fetch responses for Get requests. |subscription_id| is used
   // to generate a CommerceSubscription to be returned.
-  void MockGetResponses(std::string subscription_id) {
+  void MockGetResponses(std::string subscription_id, bool succeeded = true) {
     ON_CALL(*this, Get)
-        .WillByDefault(
-            [subscription_id](SubscriptionType type,
-                              GetSubscriptionsFetcherCallback callback) {
-              std::move(callback).Run(BuildSubscriptions(subscription_id));
-            });
+        .WillByDefault([subscription_id, succeeded](
+                           SubscriptionType type,
+                           GetSubscriptionsFetcherCallback callback) {
+          std::move(callback).Run(succeeded,
+                                  BuildSubscriptions(subscription_id));
+        });
   }
 };
 
@@ -214,7 +215,7 @@ TEST_F(SubscriptionsManagerTest, TestInitSucceeded) {
   CreateManagerAndVerify(true);
 }
 
-TEST_F(SubscriptionsManagerTest, TestInitFailed) {
+TEST_F(SubscriptionsManagerTest, TestInitFailedDueToStorage) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(false);
@@ -223,6 +224,17 @@ TEST_F(SubscriptionsManagerTest, TestInitFailed) {
   EXPECT_CALL(*mock_storage_,
               UpdateStorage(_, _, AreExpectedSubscriptions("111")))
       .Times(1);
+
+  CreateManagerAndVerify(false);
+}
+
+TEST_F(SubscriptionsManagerTest, TestInitFailedDueToServer) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111", false);
+  mock_storage_->MockUpdateResponses(true);
+  EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
+  EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
+  EXPECT_CALL(*mock_storage_, UpdateStorage).Times(0);
 
   CreateManagerAndVerify(false);
 }

@@ -18,6 +18,7 @@ include_rules = [
   "+components/url_formatter",
   "+mojo/public/cpp/bindings",
   "+net/base/registry_controlled_domains/registry_controlled_domain.h",
+  "+net/http",
   "+net/traffic_annotation",
   "+services/data_decoder/public",
   "+services/network/public/cpp",

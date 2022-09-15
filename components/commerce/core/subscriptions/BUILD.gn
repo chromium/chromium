@@ -23,6 +23,7 @@ source_set("subscriptions") {
     "//components/leveldb_proto",
     "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:identity_manager",
+    "//net:net",
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",

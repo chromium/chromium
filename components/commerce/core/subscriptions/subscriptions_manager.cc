@@ -201,9 +201,23 @@ void SubscriptionsManager::ProcessUnsubscribeRequest(Request request) {
 void SubscriptionsManager::GetRemoteSubscriptionsAndUpdateStorage(
     SubscriptionType type,
     base::OnceCallback<void(bool)> callback) {
-  server_proxy_->Get(type, base::BindOnce(&SubscriptionsStorage::UpdateStorage,
-                                          base::Unretained(storage_.get()),
-                                          type, std::move(callback)));
+  server_proxy_->Get(
+      type, base::BindOnce(
+                &SubscriptionsManager::HandleGetSubscriptionsResponse,
+                weak_ptr_factory_.GetWeakPtr(), type, std::move(callback)));
+}
+
+void SubscriptionsManager::HandleGetSubscriptionsResponse(
+    SubscriptionType type,
+    base::OnceCallback<void(bool)> callback,
+    bool succeeded,
+    std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {
+  if (!succeeded) {
+    std::move(callback).Run(false);
+  } else {
+    storage_->UpdateStorage(type, std::move(callback),
+                            std::move(remote_subscriptions));
+  }
 }
 
 void SubscriptionsManager::HandleManageSubscriptionsResponse(

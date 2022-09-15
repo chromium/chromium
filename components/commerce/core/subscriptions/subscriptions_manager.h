@@ -115,6 +115,12 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
       SubscriptionType type,
       base::OnceCallback<void(bool)> callback);
 
+  void HandleGetSubscriptionsResponse(
+      SubscriptionType type,
+      base::OnceCallback<void(bool)> callback,
+      bool succeeded,
+      std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
+
   void HandleManageSubscriptionsResponse(
       SubscriptionType type,
       base::OnceCallback<void(bool)> callback,
