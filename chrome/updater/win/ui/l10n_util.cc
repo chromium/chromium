@@ -78,4 +78,15 @@ std::wstring GetLocalizedStringF(UINT base_message_id,
                                          replacements, nullptr);
 }
 
+std::wstring GetLocalizedErrorString(DWORD exit_code) {
+  switch (exit_code) {
+    case updater::UNSUPPORTED_WINDOWS_VERSION:
+      return GetLocalizedString(IDS_INSTALL_OS_NOT_SUPPORTED_BASE);
+    default:
+      std::wstring error = L"Updater error ";
+      error.append(std::to_wstring(exit_code));
+      return error;
+  }
+}
+
 }  // namespace updater

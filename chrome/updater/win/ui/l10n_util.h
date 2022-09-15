@@ -5,7 +5,11 @@
 #ifndef CHROME_UPDATER_WIN_UI_L10N_UTIL_H_
 #define CHROME_UPDATER_WIN_UI_L10N_UTIL_H_
 
+#include <windows.h>
+
 #include <string>
+
+#include "chrome/updater/win/installer/exit_code.h"
 
 using UINT = unsigned int;
 
@@ -24,6 +28,10 @@ std::wstring GetLocalizedStringF(UINT base_message_id,
 // arguments.
 std::wstring GetLocalizedStringF(UINT base_message_id,
                                  std::vector<std::wstring> replacements);
+
+// Returns a localized version of the error message associated with an exit
+// code.
+std::wstring GetLocalizedErrorString(DWORD exit_code);
 
 }  // namespace updater
 

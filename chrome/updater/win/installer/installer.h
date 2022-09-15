@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/installer/string.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 
 namespace updater {
 
