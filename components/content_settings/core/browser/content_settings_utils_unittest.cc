@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -129,6 +130,15 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   for (int i = 1; i < CONTENT_SETTING_NUM_SETTINGS; ++i) {
     auto s = static_cast<ContentSetting>(i);
     EXPECT_FALSE(IsMorePermissive(s, s));
+  }
+}
+
+TEST(ContentSettingsUtilsTest, GetCoarseTime) {
+  base::Time now = base::Time::Now();
+  for (int i = 0; i < 20; i++) {
+    base::Time time = now + base::Days(i);
+    EXPECT_LE(GetCoarseTime(time), time);
+    EXPECT_GE(GetCoarseTime(time), time - GetCoarseTimePrecision());
   }
 }
 

@@ -68,11 +68,6 @@ const char kObsoleteInstalledWebAppMetadataExceptionsPref[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
-// Get a timestamp with week-precision.
-base::Time GetCoarseTime(base::Time time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::Days(time.ToDeltaSinceWindowsEpoch().InDaysFloored() / 7) * 7);
-}
 }  // namespace
 
 // ////////////////////////////////////////////////////////////////////////////

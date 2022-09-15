@@ -268,6 +268,7 @@ source_set("unit_tests") {
     "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",
     "permission_uma_util_unittest.cc",
+    "unused_site_permissions_service_unittest.cc",
   ]
   if (!is_android) {
     sources += [
@@ -291,6 +292,7 @@ source_set("unit_tests") {
     "//components/keyed_service/content",
     "//components/prefs:test_support",
     "//components/strings:components_strings_grit",
+    "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/ukm/content",
     "//components/variations",

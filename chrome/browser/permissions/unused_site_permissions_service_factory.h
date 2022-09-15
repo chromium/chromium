@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PERMISSIONS_UNUSED_SITE_PERMISSIONS_SERVICE_FACTORY_H_
 
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/permissions/unused_site_permissions_service.h"
 
 class Profile;
 
@@ -17,6 +16,10 @@ struct DefaultSingletonTraits;
 
 namespace content {
 class BrowserContext;
+}
+
+namespace permissions {
+class UnusedSitePermissionsService;
 }
 
 class UnusedSitePermissionsServiceFactory

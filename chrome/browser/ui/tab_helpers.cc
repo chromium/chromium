@@ -53,6 +53,7 @@
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/performance_hints/performance_hints_observer.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_tab_helper.h"
+#include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -131,6 +132,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/unused_site_permissions_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -527,6 +529,12 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   if (commerce::isContextualConsentEnabled()) {
     commerce_hint::CommerceHintTabHelper::CreateForWebContents(web_contents);
+  }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kRecordPermissionExpirationTimestamps)) {
+    auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+    permissions::UnusedSitePermissionsService::TabHelper::CreateForWebContents(
+        web_contents, service);
   }
 #endif
 

@@ -32,7 +32,7 @@ bool ParseContentSettingValue(const base::Value& value,
 ContentSetting ValueToContentSetting(const base::Value& value) {
   ContentSetting setting = CONTENT_SETTING_DEFAULT;
   bool valid = ParseContentSettingValue(value, &setting);
-  DCHECK(valid);
+  DCHECK(valid) << value.DebugString();
   return setting;
 }
 

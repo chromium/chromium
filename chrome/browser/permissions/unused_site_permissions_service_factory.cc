@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/permissions/unused_site_permissions_service.h"
 
 // static
 UnusedSitePermissionsServiceFactory*
@@ -34,5 +35,8 @@ UnusedSitePermissionsServiceFactory::~UnusedSitePermissionsServiceFactory() =
 
 KeyedService* UnusedSitePermissionsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new permissions::UnusedSitePermissionsService(context);
+  auto* service = new permissions::UnusedSitePermissionsService(
+      HostContentSettingsMapFactory::GetForProfile(context));
+  service->StartRepeatedUpdates();
+  return service;
 }

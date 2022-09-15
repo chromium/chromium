@@ -186,9 +186,24 @@ bool CanTrackLastVisit(ContentSettingsType type) {
   if (type == ContentSettingsType::NOTIFICATIONS)
     return false;
 #endif
+  // Protocol handler don't actually use their content setting and don't have
+  // a valid "initial default" value.
+  if (type == ContentSettingsType::PROTOCOL_HANDLERS)
+    return false;
+
   auto* info =
       content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
   return info && info->GetInitialDefaultSetting() == CONTENT_SETTING_ASK;
+}
+
+base::Time GetCoarseTime(base::Time time) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      time.ToDeltaSinceWindowsEpoch().FloorToMultiple(
+          GetCoarseTimePrecision()));
+}
+
+base::TimeDelta GetCoarseTimePrecision() {
+  return base::Days(7);
 }
 
 }  // namespace content_settings
