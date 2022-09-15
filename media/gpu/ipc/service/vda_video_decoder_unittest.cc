@@ -107,7 +107,8 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
                        base::Unretained(this)),
         base::BindRepeating(&VdaVideoDecoderTest::CreateAndInitializeVda,
                             base::Unretained(this)),
-        GetCapabilities());
+        GetCapabilities(),
+        VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
     vdavd_ = std::make_unique<AsyncDestroyVideoDecoder<VdaVideoDecoder>>(
         base::WrapUnique(vdavd));
     client_ = vdavd;
@@ -280,7 +281,8 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   scoped_refptr<PictureBufferManager> CreatePictureBufferManager(
       PictureBufferManager::ReusePictureBufferCB reuse_cb) {
     DCHECK(!pbm_);
-    pbm_ = PictureBufferManager::Create(std::move(reuse_cb));
+    pbm_ = PictureBufferManager::Create(/*allocate_gpu_memory_buffers=*/false,
+                                        std::move(reuse_cb));
     return pbm_;
   }
 

@@ -74,14 +74,19 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
     MediaLog* media_log,
     const VideoDecodeAccelerator::Config& config) {
   GpuVideoDecodeGLClient gl_client;
-  gl_client.get_context = base::BindRepeating(
-      &CommandBufferHelper::GetGLContext, command_buffer_helper);
-  gl_client.make_context_current = base::BindRepeating(
-      &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
-  gl_client.bind_image = base::BindRepeating(&BindImage, command_buffer_helper);
-  gl_client.is_passthrough = command_buffer_helper->IsPassthrough();
-  gl_client.supports_arb_texture_rectangle =
-      command_buffer_helper->SupportsTextureRectangle();
+  // |command_buffer_helper| is nullptr in IMPORT mode in which case, we
+  // shouldn't need to do any GL calls.
+  if (command_buffer_helper) {
+    gl_client.get_context = base::BindRepeating(
+        &CommandBufferHelper::GetGLContext, command_buffer_helper);
+    gl_client.make_context_current = base::BindRepeating(
+        &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
+    gl_client.bind_image =
+        base::BindRepeating(&BindImage, command_buffer_helper);
+    gl_client.is_passthrough = command_buffer_helper->IsPassthrough();
+    gl_client.supports_arb_texture_rectangle =
+        command_buffer_helper->SupportsTextureRectangle();
+  }
 
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> factory =
       GpuVideoDecodeAcceleratorFactory::Create(gl_client);
@@ -119,17 +124,23 @@ std::unique_ptr<VideoDecoder> VdaVideoDecoder::Create(
     const gfx::ColorSpace& target_color_space,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    GetStubCB get_stub_cb) {
+    GetStubCB get_stub_cb,
+    VideoDecodeAccelerator::Config::OutputMode output_mode) {
   auto* decoder = new VdaVideoDecoder(
       std::move(parent_task_runner), std::move(gpu_task_runner),
       std::move(media_log), target_color_space,
-      base::BindOnce(&PictureBufferManager::Create),
-      base::BindOnce(&CreateCommandBufferHelper, std::move(get_stub_cb)),
+      base::BindOnce(&PictureBufferManager::Create,
+                     /*allocate_gpu_memory_buffers=*/output_mode ==
+                         VideoDecodeAccelerator::Config::OutputMode::IMPORT),
+      output_mode == VideoDecodeAccelerator::Config::OutputMode::ALLOCATE
+          ? base::BindOnce(&CreateCommandBufferHelper, std::move(get_stub_cb))
+          : base::NullCallback(),
       base::BindRepeating(&CreateAndInitializeVda, gpu_preferences,
                           gpu_workarounds),
       GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeCapabilities(
           GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
-              gpu_preferences, gpu_workarounds)));
+              gpu_preferences, gpu_workarounds)),
+      output_mode);
 
   return std::make_unique<AsyncDestroyVideoDecoder<VdaVideoDecoder>>(
       base::WrapUnique(decoder));
@@ -143,7 +154,8 @@ VdaVideoDecoder::VdaVideoDecoder(
     CreatePictureBufferManagerCB create_picture_buffer_manager_cb,
     CreateCommandBufferHelperCB create_command_buffer_helper_cb,
     CreateAndInitializeVdaCB create_and_initialize_vda_cb,
-    const VideoDecodeAccelerator::Capabilities& vda_capabilities)
+    const VideoDecodeAccelerator::Capabilities& vda_capabilities,
+    VideoDecodeAccelerator::Config::OutputMode output_mode)
     : parent_task_runner_(std::move(parent_task_runner)),
       gpu_task_runner_(std::move(gpu_task_runner)),
       media_log_(std::move(media_log)),
@@ -152,6 +164,7 @@ VdaVideoDecoder::VdaVideoDecoder(
           std::move(create_command_buffer_helper_cb)),
       create_and_initialize_vda_cb_(std::move(create_and_initialize_vda_cb)),
       vda_capabilities_(vda_capabilities),
+      output_mode_(output_mode),
       timestamps_(128) {
   DVLOG(1) << __func__;
   DCHECK(parent_task_runner_->BelongsToCurrentThread());
@@ -342,13 +355,16 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
 
   // Set up |command_buffer_helper_|.
   if (!reinitializing_) {
-    command_buffer_helper_ = std::move(create_command_buffer_helper_cb_).Run();
-    if (!command_buffer_helper_) {
-      parent_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
-                         DecoderStatus::Codes::kFailed));
-      return;
+    if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::ALLOCATE) {
+      command_buffer_helper_ =
+          std::move(create_command_buffer_helper_cb_).Run();
+      if (!command_buffer_helper_) {
+        parent_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
+                           DecoderStatus::Codes::kFailed));
+        return;
+      }
     }
 
     picture_buffer_manager_->Initialize(gpu_task_runner_,
@@ -368,7 +384,7 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
   vda_config.hdr_metadata = config_.hdr_metadata();
   // vda_config.sps = [Only used by AVDA]
   // vda_config.pps = [Only used by AVDA]
-  // vda_config.output_mode = [Only used by ARC]
+  vda_config.output_mode = output_mode_;
   // vda_config.supported_output_formats = [Only used by PPAPI]
 
   // Create and initialize the VDA.
@@ -508,6 +524,13 @@ int VdaVideoDecoder::GetMaxDecodeRequests() const {
   return 4;
 }
 
+bool VdaVideoDecoder::FramesHoldExternalResources() const {
+  DVLOG(3) << __func__;
+  DCHECK(parent_task_runner_->BelongsToCurrentThread());
+
+  return output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT;
+}
+
 void VdaVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
   DVLOG(2) << __func__ << "(" << static_cast<int>(status.code()) << ")";
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
@@ -534,6 +557,27 @@ void VdaVideoDecoder::ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                      textures_per_buffer, dimensions, texture_target));
 }
 
+void VdaVideoDecoder::ProvidePictureBuffersWithVisibleRect(
+    uint32_t requested_num_of_buffers,
+    VideoPixelFormat format,
+    uint32_t textures_per_buffer,
+    const gfx::Size& dimensions,
+    const gfx::Rect& visible_rect,
+    uint32_t texture_target) {
+  if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT) {
+    // In IMPORT mode, we (as the client of the underlying VDA) are responsible
+    // for buffer allocation with no textures (i.e., |texture_target| is
+    // irrelevant). Therefore, the logic in the base version of
+    // ProvidePictureBuffersWithVisibleRect() is not applicable.
+    ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
+                          dimensions, texture_target);
+    return;
+  }
+  VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
+      requested_num_of_buffers, format, textures_per_buffer, dimensions,
+      visible_rect, texture_target);
+}
+
 void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
                                                  VideoPixelFormat pixel_format,
                                                  uint32_t planes,
@@ -550,11 +594,14 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
   if (pixel_format == PIXEL_FORMAT_UNKNOWN)
     pixel_format = PIXEL_FORMAT_XRGB;
 
-  std::vector<PictureBuffer> picture_buffers =
-      picture_buffer_manager_->CreatePictureBuffers(
+  std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
+      picture_buffers_and_gmbs = picture_buffer_manager_->CreatePictureBuffers(
           count, pixel_format, planes, texture_size, texture_target,
-          vda_->GetSharedImageTextureAllocationMode());
-  if (picture_buffers.empty()) {
+          output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT
+              ? VideoDecodeAccelerator::TextureAllocationMode::
+                    kDoNotAllocateGLTextures
+              : vda_->GetSharedImageTextureAllocationMode());
+  if (picture_buffers_and_gmbs.empty()) {
     parent_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VdaVideoDecoder::EnterErrorState, parent_weak_this_));
@@ -562,7 +609,19 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
   }
 
   DCHECK(gpu_weak_vda_);
+  std::vector<PictureBuffer> picture_buffers;
+  for (const auto& picture_buffer_and_gmb : picture_buffers_and_gmbs) {
+    picture_buffers.push_back(picture_buffer_and_gmb.first);
+  }
   vda_->AssignPictureBuffers(std::move(picture_buffers));
+
+  if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::IMPORT) {
+    for (auto& picture_buffer_and_gmb : picture_buffers_and_gmbs) {
+      vda_->ImportBufferForPicture(picture_buffer_and_gmb.first.id(),
+                                   pixel_format,
+                                   std::move(picture_buffer_and_gmb.second));
+    }
+  }
 }
 
 void VdaVideoDecoder::DismissPictureBuffer(int32_t picture_buffer_id) {
@@ -774,10 +833,12 @@ void VdaVideoDecoder::NotifyError(VideoDecodeAccelerator::Error error) {
 }
 
 gpu::SharedImageStub* VdaVideoDecoder::GetSharedImageStub() const {
+  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
   return command_buffer_helper_->GetSharedImageStub();
 }
 
 CommandBufferHelper* VdaVideoDecoder::GetCommandBufferHelper() const {
+  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
   return command_buffer_helper_.get();
 }
 

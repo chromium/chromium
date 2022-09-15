@@ -107,7 +107,8 @@ class MojoMediaClientImpl : public MojoMediaClient {
     if (GetDecoderImplementationType() == VideoDecoderType::kVda) {
       if (!gpu_task_runner_) {
         gpu_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-            {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+            {base::WithBaseSyncPrimitives(), base::MayBlock()},
+            base::SingleThreadTaskRunnerThreadMode::DEDICATED);
       }
       // TODO(b/195769334): we should pass meaningful gpu::Preferences and
       // gpu::GpuDriverBugWorkarounds so that we can restrict the supported
@@ -116,7 +117,8 @@ class MojoMediaClientImpl : public MojoMediaClient {
           /*parent_task_runner=*/std::move(task_runner), gpu_task_runner_,
           std::move(log), target_color_space, gpu::GpuPreferences(),
           gpu::GpuDriverBugWorkarounds(),
-          /*get_stub_cb=*/base::NullCallback());
+          /*get_stub_cb=*/base::NullCallback(),
+          VideoDecodeAccelerator::Config::OutputMode::IMPORT);
     } else {
       return VideoDecoderPipeline::Create(
           /*client_task_runner=*/std::move(task_runner),

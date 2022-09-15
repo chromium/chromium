@@ -59,8 +59,9 @@ class VdaVideoDecoder : public VideoDecoder,
   // unique_ptr<VideoDecoder>.
   //
   // |get_stub_cb|: Callback to retrieve the CommandBufferStub that should be
-  //     used for allocating textures and mailboxes. This callback will be
-  //     called on the GPU thread.
+  //     used for allocating textures and mailboxes. This is only used when
+  //     |output_mode| is ALLOCATE. This callback will be called on the GPU
+  //     thread.
   //
   // See VdaVideoDecoder() for other arguments.
   static std::unique_ptr<VideoDecoder> Create(
@@ -70,7 +71,8 @@ class VdaVideoDecoder : public VideoDecoder,
       const gfx::ColorSpace& target_color_space,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      GetStubCB get_stub_cb);
+      GetStubCB get_stub_cb,
+      VideoDecodeAccelerator::Config::OutputMode output_mode);
 
   VdaVideoDecoder(const VdaVideoDecoder&) = delete;
   VdaVideoDecoder& operator=(const VdaVideoDecoder&) = delete;
@@ -90,6 +92,7 @@ class VdaVideoDecoder : public VideoDecoder,
   bool NeedsBitstreamConversion() const override;
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
+  bool FramesHoldExternalResources() const override;
 
  private:
   friend class VdaVideoDecoderTest;
@@ -102,10 +105,21 @@ class VdaVideoDecoder : public VideoDecoder,
   // |media_log|: MediaLog object to log to.
   // |target_color_space|: Color space of the output device.
   // |create_picture_buffer_manager_cb|: PictureBufferManager factory.
-  // |create_command_buffer_helper_cb|: CommandBufferHelper factory.
+  // |create_command_buffer_helper_cb|: CommandBufferHelper factory. This is
+  //     only used when |output_mode| is ALLOCATE.
   // |create_and_initialize_vda_cb|: VideoDecodeAccelerator factory.
   // |vda_capabilities|: Capabilities of the VDA that
   //     |create_and_initialize_vda_cb| will produce.
+  // |output_mode|: How to manage memory for output frames:
+  //     - ALLOCATE: output buffer allocation is expected to be done by a
+  //     combination of the PictureBufferManager (for texture allocation,
+  //     possibly) and the VDA when AssignPictureBuffers() is called. In this
+  //     case, the VdaVideoDecoder will output Mailbox-backed VideoFrames.
+  //     - IMPORT, output buffer allocation is done by the PictureBufferManager
+  //     (to allocate GpuMemoryBuffers without textures) and these buffers are
+  //     imported into the VDA by calling ImportBufferForPicture(). In this
+  //     case, the VdaVideoDecoder will output GpuMemoryBuffer-backed
+  //     VideoFrames.
   VdaVideoDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -114,7 +128,8 @@ class VdaVideoDecoder : public VideoDecoder,
       CreatePictureBufferManagerCB create_picture_buffer_manager_cb,
       CreateCommandBufferHelperCB create_command_buffer_helper_cb,
       CreateAndInitializeVdaCB create_and_initialize_vda_cb,
-      const VideoDecodeAccelerator::Capabilities& vda_capabilities);
+      const VideoDecodeAccelerator::Capabilities& vda_capabilities,
+      VideoDecodeAccelerator::Config::OutputMode output_mode);
 
   // media::VideoDecodeAccelerator::Client implementation.
   void NotifyInitializationComplete(DecoderStatus status) override;
@@ -123,6 +138,12 @@ class VdaVideoDecoder : public VideoDecoder,
                              uint32_t textures_per_buffer,
                              const gfx::Size& dimensions,
                              uint32_t texture_target) override;
+  void ProvidePictureBuffersWithVisibleRect(uint32_t requested_num_of_buffers,
+                                            VideoPixelFormat format,
+                                            uint32_t textures_per_buffer,
+                                            const gfx::Size& dimensions,
+                                            const gfx::Rect& visible_rect,
+                                            uint32_t texture_target) override;
   void DismissPictureBuffer(int32_t picture_buffer_id) override;
   void PictureReady(const Picture& picture) override;
   void NotifyEndOfBitstreamBuffer(int32_t bitstream_buffer_id) override;
@@ -167,6 +188,7 @@ class VdaVideoDecoder : public VideoDecoder,
   CreateCommandBufferHelperCB create_command_buffer_helper_cb_;
   CreateAndInitializeVdaCB create_and_initialize_vda_cb_;
   const VideoDecodeAccelerator::Capabilities vda_capabilities_;
+  const VideoDecodeAccelerator::Config::OutputMode output_mode_;
 
   //
   // Parent thread state.

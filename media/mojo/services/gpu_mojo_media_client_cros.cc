@@ -147,7 +147,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       return VdaVideoDecoder::Create(
           traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
           *traits.target_color_space, traits.gpu_preferences,
-          *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
+          *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
+          VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
     }
     default: {
       return nullptr;
