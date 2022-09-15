@@ -418,8 +418,8 @@ class CommandBufferSetup {
         context_state_.get(), shared_image_manager_.get(),
         /*image_factory=*/nullptr, /*memory_tracker=*/nullptr,
         /*is_for_display_compositor=*/false);
-    for (uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-         usage <= SHARED_IMAGE_USAGE_OOP_RASTERIZATION; usage <<= 1) {
+    for (uint32_t usage = SHARED_IMAGE_USAGE_GLES2; usage <= LAST_CLIENT_USAGE;
+         usage <<= 1) {
       Mailbox::Name name;
       memset(name, 0, sizeof(name));
       name[0] = usage;
