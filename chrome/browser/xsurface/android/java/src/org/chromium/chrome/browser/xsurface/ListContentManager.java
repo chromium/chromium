@@ -65,9 +65,9 @@ public interface ListContentManager {
         return 0;
     }
 
-    /** Returns column count the item at index should span across. */
-    default int getSpanCount(int index) {
-        return 1;
+    /** Returns whether the item at index should span across all columns. */
+    default boolean isFullSpan(int index) {
+        return false;
     }
 
     /** Adds an observer to be notified when the list content changes. */
