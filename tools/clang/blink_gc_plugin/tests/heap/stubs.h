@@ -381,14 +381,6 @@ using namespace WTF;
   void* operator new(size_t) = delete;                     \
   void* operator new(size_t, void*) = delete
 
-#define USING_FAST_MALLOC()                                                  \
- public:                                                                     \
-  void* operator new(size_t) { return reinterpret_cast<void*>(0x12345678); } \
-  void* operator new(size_t, void* location) { return location; }            \
-                                                                             \
- private:                                                                    \
-  typedef int __thisIsHereToForceASemicolonAfterThisMacro
-
 #define GC_PLUGIN_IGNORE(bug) \
   __attribute__((annotate("blink_gc_plugin_ignore")))
 

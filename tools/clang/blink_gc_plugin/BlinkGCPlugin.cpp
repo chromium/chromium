@@ -45,10 +45,6 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_members_on_stack_check = true;
       } else if (arg == "fix-bugs-of-is-considered-abstract") {
         options_.fix_bugs_of_is_considered_abstract = true;
-      } else if (arg.find("ignored-paths-for-default-malloc=") == 0) {
-        options_.ignored_paths_for_default_malloc = SplitArg(arg);
-      } else if (arg.find("allowed-paths-for-default-malloc=") == 0) {
-        options_.allowed_paths_for_default_malloc = SplitArg(arg);
       } else {
         llvm::errs() << "Unknown blink-gc-plugin argument: " << arg << "\n";
         return false;
@@ -58,21 +54,6 @@ class BlinkGCPluginAction : public PluginASTAction {
   }
 
  private:
-  std::vector<std::string> SplitArg(const std::string& arg) {
-    std::vector<std::string> result;
-    size_t start = arg.find('=');
-    assert(start != std::string::npos);
-    start++;
-    size_t end = arg.find(',', start);
-    while (end != std::string::npos) {
-      result.push_back(arg.substr(start, end));
-      start = end + 1;
-      end = arg.find(',', start);
-    }
-    result.push_back(arg.substr(start, end));
-    return result;
-  }
-
   BlinkGCPluginOptions options_;
 };
 

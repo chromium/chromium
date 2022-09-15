@@ -26,10 +26,8 @@ private:
 
 template<typename T>
 class TemplatedObject {
-  USING_FAST_MALLOC();
-
- private:
-  T m_part;
+private:
+    T m_part;
 };
 
 }

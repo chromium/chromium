@@ -9,9 +9,7 @@
 
 namespace blink {
 
-class NonHeapObject {
-  USING_FAST_MALLOC();
-};
+class NonHeapObject { };
 
 class HeapObject : public GarbageCollected<HeapObject> {
  public:
