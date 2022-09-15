@@ -30,11 +30,13 @@ struct EntryInfo {
 
 enum class Result {
   kSuccess,
-  kFailedToOpen,
   kFailedToAllocate,
-  kFailedToExtract,
   kBadCrc,
   kMemoryMappingFailed,
+  kMalformedArchive,
+  kIoError,
+  kDiskFull,
+  kUnknownError,
 };
 
 class Delegate {
@@ -64,6 +66,11 @@ public:
 // buffer when multiple 'files' are contained in one 7z 'folder'.
 void Extract(base::File seven_zip_file, base::File temp_file,
              Delegate &delegate);
+
+// Ensures that the one-time initialization of the LZMA SDK has been performed.
+// This is usually called by `Extract` when needed, but is exposed here for
+// fuzzer support.
+void EnsureLzmaSdkInitialized();
 
 } // namespace seven_zip
 
