@@ -94,6 +94,7 @@
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #endif
 
+using ::testing::_;
 using ::testing::Return;
 
 namespace {
@@ -148,12 +149,18 @@ void ValidateSitesWithFps(
       ASSERT_EQ(owner_etldplus1, *site_group.GetDict().FindString("fpsOwner"));
       if (owner_etldplus1 == "google.com") {
         ASSERT_EQ(2, *site_group.GetDict().FindInt("fpsNumMembers"));
+        ASSERT_EQ(false,
+                  *site_group.GetDict().FindBool("fpsEnterpriseManaged"));
+      } else if (owner_etldplus1 == "example.com") {
+        ASSERT_EQ(1, *site_group.GetDict().FindInt("fpsNumMembers"));
+        ASSERT_EQ(true, *site_group.GetDict().FindBool("fpsEnterpriseManaged"));
       }
     } else {
       // The site is not part of a FPS therefore doesn't have `fpsOwner` or
       // `fpsNumMembers` set. `FindString` and `FindInt` should return null.
       ASSERT_FALSE(site_group.GetDict().FindString("fpsOwner"));
       ASSERT_FALSE(site_group.GetDict().FindInt("fpsNumMembers"));
+      ASSERT_FALSE(site_group.GetDict().FindBool("fpsEnterpriseManaged"));
     }
   }
 }
@@ -3069,13 +3076,24 @@ TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
 
 TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
   base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
+      {ConvertEtldToSchemefulSite("example.com"),
+       ConvertEtldToSchemefulSite("example.com")},
       {ConvertEtldToSchemefulSite("google.com"),
        ConvertEtldToSchemefulSite("google.com")},
       {ConvertEtldToSchemefulSite("google.com.au"),
        ConvertEtldToSchemefulSite("google.com")},
   };
+
   EXPECT_CALL(*mock_privacy_sandbox_service(), GetFirstPartySets())
       .WillOnce(Return(first_party_sets));
+  EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
+      .Times(2)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("example.com")))
+      .Times(1)
+      .WillOnce(Return(true));
 
   SetUpCookiesTreeModel();
 

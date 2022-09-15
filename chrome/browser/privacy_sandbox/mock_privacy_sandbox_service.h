@@ -39,6 +39,10 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               GetRequiredPromptType,
               (),
               (override));
+  MOCK_METHOD(bool,
+              IsPartOfManagedFirstPartySet,
+              (const net::SchemefulSite& site),
+              (override, const));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

@@ -107,6 +107,7 @@ constexpr char kHasInstalledPWA[] = "hasInstalledPWA";
 constexpr char kIsInstalled[] = "isInstalled";
 constexpr char kFpsOwner[] = "fpsOwner";
 constexpr char kFpsNumMembers[] = "fpsNumMembers";
+constexpr char kFpsEnterpriseManaged[] = "fpsEnterpriseManaged";
 constexpr char kZoom[] = "zoom";
 // Placeholder value for ETLD+1 until a valid origin is added. If an ETLD+1
 // only has placeholder, then create an ETLD+1 origin.
@@ -560,6 +561,10 @@ void ConvertSiteGroupMapToList(
     if (fps_map.count(entry.first)) {
       site_group.Set(kFpsOwner, fps_map[entry.first].first);
       site_group.Set(kFpsNumMembers, fps_map[entry.first].second);
+      auto schemeful_site = ConvertEtldToSchemefulSite(entry.first);
+      site_group.Set(kFpsEnterpriseManaged,
+                     privacy_sandbox_service->IsPartOfManagedFirstPartySet(
+                         schemeful_site));
     }
     list_value->Append(std::move(site_group));
   }

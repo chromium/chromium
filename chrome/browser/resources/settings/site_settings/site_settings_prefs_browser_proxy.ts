@@ -66,6 +66,7 @@ export interface SiteGroup {
   origins: OriginInfo[];
   fpsOwner?: string;
   fpsNumMembers?: number;
+  fpsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
 }
 

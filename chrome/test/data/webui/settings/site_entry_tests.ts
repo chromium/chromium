@@ -628,4 +628,33 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
     assertEquals(
         '· Allowed for 1 foo.com site', fpsMembershipLabel.innerText.trim());
   });
+
+  test('first party set policy shown when managed key is true', function() {
+    // Set site group with first party set information.
+    const fooSiteGroup = JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+    fooSiteGroup.fpsOwner = 'foo.com';
+    fooSiteGroup.fpsNumMembers = 1;
+    fooSiteGroup.fpsEnterpriseManaged = true;
+    testElement.siteGroup = fooSiteGroup;
+    flush();
+    // Assert first party set policy is shown.
+    const fpsPolicy =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
+    assertFalse(fpsPolicy!.hidden);
+  });
+
+  test(
+      'first party set policy undefined when managed key is false', function() {
+        // Set site group with first party set information.
+        const fooSiteGroup = JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+        fooSiteGroup.fpsOwner = 'foo.com';
+        fooSiteGroup.fpsNumMembers = 1;
+        fooSiteGroup.fpsEnterpriseManaged = false;
+        testElement.siteGroup = fooSiteGroup;
+        flush();
+        // Assert first party set policy is null.
+        const fpsPolicy =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
+        assertEquals(null, fpsPolicy);
+      });
 });

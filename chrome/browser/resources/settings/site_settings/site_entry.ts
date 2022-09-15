@@ -89,6 +89,11 @@ export class SiteEntryElement extends SiteEntryElementBase {
       },
 
       /**
+       * Mock preference used to power managed policy icon for first party sets.
+       */
+      fpsEnterprisePref_: Object,
+
+      /**
        * The position of this site-entry in its parent list.
        */
       listIndex: {
@@ -139,6 +144,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   static get observers() {
     return [
       'updateFpsMembershipLabel_(siteGroup.fpsNumMembers, siteGroup.fpsOwner)',
+      'updatePolicyPref_(siteGroup.fpsEnterpriseManaged)',
     ];
   }
 
@@ -152,6 +158,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private cookiesNum_: string[];
   sortMethod?: SortMethod;
   private enableConsolidatedSiteStorageControls_: boolean;
+  private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
 
   private button_: Element|null = null;
   private localDataBrowserProxy_: LocalDataBrowserProxy =
@@ -348,6 +355,27 @@ export class SiteEntryElement extends SiteEntryElementBase {
               this.siteGroup.fpsNumMembers!, this.siteGroup.fpsOwner!)
           .then(label => this.fpsMembershipLabel_ = label);
     }
+  }
+
+  /**
+   * Evaluates whether the policy icon should be shown.
+   * @returns False when `fpsEnterprisePref_` is undefined, otherwise true.
+   */
+  private shouldShowPolicyPrefIndicator_(): boolean {
+    this.updatePolicyPref_();
+    return !!this.fpsEnterprisePref_;
+  }
+
+  /**
+   * Updates `fpsEnterprisePref_` based on `siteGroup.fpsEnterpriseManaged`.
+   */
+  private updatePolicyPref_() {
+    this.fpsEnterprisePref_ = this.siteGroup.fpsEnterpriseManaged ?
+        Object.assign({
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+        }) :
+        undefined;
   }
 
   /**
