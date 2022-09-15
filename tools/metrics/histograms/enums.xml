@@ -66787,6 +66787,7 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="RTP_STREAM_ERROR"/>
   <int value="11" label="ENCODING_ERROR"/>
   <int value="12" label="CAST_TRANSPORT_ERROR"/>
+  <int value="13" label="OPENSCREEN_SESSION_ERROR"/>
 </enum>
 
 <enum name="MirrorType">

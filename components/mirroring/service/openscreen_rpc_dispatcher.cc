@@ -18,9 +18,7 @@ OpenscreenRpcDispatcher::OpenscreenRpcDispatcher(
     : messenger_(messenger) {}
 
 OpenscreenRpcDispatcher::~OpenscreenRpcDispatcher() {
-  if (callback_) {
-    Unsubscribe();
-  }
+  Unsubscribe();
 }
 
 void OpenscreenRpcDispatcher::Subscribe(
@@ -55,8 +53,10 @@ void OpenscreenRpcDispatcher::OnMessage(
 }
 
 void OpenscreenRpcDispatcher::Unsubscribe() {
-  callback_.Reset();
-  messenger_->ResetHandler(openscreen::cast::ReceiverMessage::Type::kRpc);
+  if (callback_) {
+    callback_.Reset();
+    messenger_->ResetHandler(openscreen::cast::ReceiverMessage::Type::kRpc);
+  }
 }
 
 bool OpenscreenRpcDispatcher::SendOutboundMessage(

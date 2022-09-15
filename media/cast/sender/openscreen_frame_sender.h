@@ -91,6 +91,8 @@ class OpenscreenFrameSender : public FrameSender,
   const scoped_refptr<CastEnvironment> cast_environment_;
 
   // The backing Open Screen sender implementation.
+  // TODO(https://crbug.com/1363500): the OenscreenFrameSender should own the
+  // openscreen::cast::Sender instance as a unique pointer.
   raw_ptr<openscreen::cast::Sender> const sender_;
 
   // The frame sender client.

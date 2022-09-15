@@ -12,13 +12,16 @@
 #include "media/mojo/mojom/remoting_common.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 
-namespace media {
-namespace cast {
+namespace openscreen::cast {
+class Sender;
+}  // namespace openscreen::cast
+
+namespace media::cast {
 class CastEnvironment;
 class CastTransport;
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 namespace mirroring {
 
@@ -73,6 +76,23 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   void OnMessageFromSink(const std::vector<uint8_t>& response);
 
   // Called when OFFER/ANSWER exchange for a remoting session succeeds.
+  // New way using openscreen::cast::Sender objects.
+  // NOTE: either `audio_sender` or `video_sender` must not be nullptr,
+  // and must either outlive `this` or live until `Stop` is called. If
+  // either is nullptr, the associated config should be default constructed as
+  // it is ignored.
+  // TODO(https://crbug.com/1363516): make audio and video configs
+  // absl::optional instead of default constructed.
+  void StartRpcMessaging(
+      scoped_refptr<media::cast::CastEnvironment> cast_environment,
+      openscreen::cast::Sender* audio_sender,
+      openscreen::cast::Sender* video_sender,
+      const media::cast::FrameSenderConfig& audio_config,
+      const media::cast::FrameSenderConfig& video_config);
+
+  // Old way using a cast transport.
+  // TODO(https://crbug.com/1316434): should be removed once libcast sender is
+  // successfully launched.
   void StartRpcMessaging(
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
       media::cast::CastTransport* transport,
@@ -87,12 +107,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   // further starting of media remoting during this mirroring session.
   void OnRemotingFailed();
 
-  // media::mojom::Remoter implememtation. Stops the current remoting session.
-  // This could be called either by the RemotingSource or the Session.
+  // media::mojom::Remoter implementation.
+  // Stops the current remoting session with a given |reason|.
   void Stop(media::mojom::RemotingStopReason reason) override;
 
  private:
-  // media::mojom::Remoter implememtation.
+  // media::mojom::Remoter implementation.
   void Start() override;
   void StartDataStreams(
       mojo::ScopedDataPipeConsumerHandle audio_pipe,
@@ -106,6 +126,28 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
       media::mojom::Remoter::EstimateTransmissionCapacityCallback callback)
       override;
 
+  void StartOpenscreenDataStreams(
+      mojo::ScopedDataPipeConsumerHandle audio_pipe,
+      mojo::ScopedDataPipeConsumerHandle video_pipe,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          audio_sender_receiver,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          video_sender_receiver);
+
+  void StartLegacyDataStreams(
+      mojo::ScopedDataPipeConsumerHandle audio_pipe,
+      mojo::ScopedDataPipeConsumerHandle video_pipe,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          audio_sender_receiver,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+          video_sender_receiver);
+
+  // Called by the public |StartRpcMessaging| methods.
+  void StartRpcMessagingInternal(
+      scoped_refptr<media::cast::CastEnvironment> cast_environment,
+      const media::cast::FrameSenderConfig& audio_config,
+      const media::cast::FrameSenderConfig& video_config);
+
   // Called by RemotingSender when error occurred. Will stop this remoting
   // session and fallback to mirroring.
   void OnRemotingDataStreamError();
@@ -118,7 +160,15 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   std::unique_ptr<RemotingSender> audio_sender_;
   std::unique_ptr<RemotingSender> video_sender_;
-  raw_ptr<media::cast::CastTransport> transport_;
+
+  // Used only if StartRpcMessaging is called with a cast transport.
+  raw_ptr<media::cast::CastTransport> transport_ = nullptr;
+
+  // Used only if StartRpcMessaging is called with openscreen::cast::Sender
+  // objects.
+  raw_ptr<openscreen::cast::Sender> openscreen_audio_sender_ = nullptr;
+  raw_ptr<openscreen::cast::Sender> openscreen_video_sender_ = nullptr;
+
   media::cast::FrameSenderConfig audio_config_;
   media::cast::FrameSenderConfig video_config_;
 

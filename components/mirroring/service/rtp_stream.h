@@ -70,6 +70,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   void InsertVideoFrame(scoped_refptr<media::VideoFrame> video_frame);
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
 
  private:
   void OnRefreshTimerFired();
@@ -100,9 +101,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
 
   // Called by AudioCaptureClient when new audio data is available.
   void InsertAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                   const base::TimeTicks& estimated_capture_time);
+                   base::TimeTicks estimated_capture_time);
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
 
   // Get the real time encoder bitrate usage. Note that not all encoders support
   // changing the bitrate in realtime.

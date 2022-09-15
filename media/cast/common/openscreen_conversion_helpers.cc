@@ -61,10 +61,8 @@ openscreen::cast::EncodedFrame::Dependency ToOpenscreenDependency(
           INDEPENDENTLY_DECODABLE;
     case media::cast::EncodedFrame::Dependency::KEY:
       return openscreen::cast::EncodedFrame::Dependency::KEY_FRAME;
-    default:
-      NOTREACHED();
-      break;
   }
+  NOTREACHED();
 }
 const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
     const SenderEncodedFrame& encoded_frame) {
@@ -77,6 +75,107 @@ const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
       absl::Span<uint8_t>(const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(
                               encoded_frame.data.data())),
                           encoded_frame.data.size()));
+}
+
+openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::cast::Codec codec) {
+  switch (codec) {
+    case CODEC_AUDIO_REMOTE:
+      return openscreen::cast::AudioCodec::kNotSpecified;
+    case CODEC_AUDIO_OPUS:
+      return openscreen::cast::AudioCodec::kOpus;
+    case CODEC_AUDIO_AAC:
+      return openscreen::cast::AudioCodec::kAac;
+    default:
+      NOTREACHED();
+      return openscreen::cast::AudioCodec::kNotSpecified;
+  }
+}
+
+openscreen::cast::VideoCodec ToOpenscreenVideoCodec(media::cast::Codec codec) {
+  switch (codec) {
+    case CODEC_VIDEO_REMOTE:
+      return openscreen::cast::VideoCodec::kNotSpecified;
+    case CODEC_VIDEO_VP8:
+      return openscreen::cast::VideoCodec::kVp8;
+    case CODEC_VIDEO_H264:
+      return openscreen::cast::VideoCodec::kH264;
+    case CODEC_VIDEO_VP9:
+      return openscreen::cast::VideoCodec::kVp9;
+    case CODEC_VIDEO_AV1:
+      return openscreen::cast::VideoCodec::kAv1;
+    default:
+      NOTREACHED();
+      return openscreen::cast::VideoCodec::kNotSpecified;
+  }
+}
+media::cast::Codec ToCodec(openscreen::cast::AudioCodec codec) {
+  switch (codec) {
+    case openscreen::cast::AudioCodec::kNotSpecified:
+      return CODEC_AUDIO_REMOTE;
+    case openscreen::cast::AudioCodec::kOpus:
+      return CODEC_AUDIO_OPUS;
+    case openscreen::cast::AudioCodec::kAac:
+      return CODEC_AUDIO_AAC;
+  }
+  NOTREACHED();
+  return CODEC_UNKNOWN;
+}
+
+media::cast::Codec ToCodec(openscreen::cast::VideoCodec codec) {
+  switch (codec) {
+    case openscreen::cast::VideoCodec::kNotSpecified:
+      return CODEC_VIDEO_REMOTE;
+    case openscreen::cast::VideoCodec::kVp8:
+      return CODEC_VIDEO_VP8;
+    case openscreen::cast::VideoCodec::kH264:
+      return CODEC_VIDEO_H264;
+    case openscreen::cast::VideoCodec::kVp9:
+      return CODEC_VIDEO_VP9;
+    case openscreen::cast::VideoCodec::kAv1:
+      return CODEC_VIDEO_AV1;
+    case openscreen::cast::VideoCodec::kHevc:
+      return CODEC_UNKNOWN;
+  }
+  NOTREACHED();
+  return CODEC_UNKNOWN;
+}
+
+openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address) {
+  const auto version = address.IsIPv6() ? openscreen::IPAddress::Version::kV6
+                                        : openscreen::IPAddress::Version::kV4;
+  return openscreen::IPAddress(version, address.bytes().data());
+}
+
+openscreen::cast::AudioCaptureConfig ToOpenscreenAudioConfig(
+    const FrameSenderConfig& config) {
+  return openscreen::cast::AudioCaptureConfig{
+      .codec = media::cast::ToOpenscreenAudioCodec(config.codec),
+      .channels = config.channels,
+      .bit_rate = config.max_bitrate,
+      .sample_rate = config.rtp_timebase,
+      .target_playout_delay =
+          std::chrono::milliseconds(config.max_playout_delay.InMilliseconds()),
+      .codec_parameter = std::string()};
+}
+
+openscreen::cast::VideoCaptureConfig ToOpenscreenVideoConfig(
+    const FrameSenderConfig& config) {
+  // Currently we just hardcode 1080P as the resolution.
+  static constexpr openscreen::cast::Resolution kResolutions[] = {{1920, 1080}};
+
+  // NOTE: currently we only support a frame rate of 30FPS, so casting
+  // directly to an integer is fine.
+  return openscreen::cast::VideoCaptureConfig{
+      .codec = media::cast::ToOpenscreenVideoCodec(config.codec),
+      .max_frame_rate =
+          openscreen::SimpleFraction{static_cast<int>(config.max_frame_rate),
+                                     1},
+      .max_bit_rate = config.max_bitrate,
+      .resolutions =
+          std::vector(std::begin(kResolutions), std::end(kResolutions)),
+      .target_playout_delay =
+          std::chrono::milliseconds(config.max_playout_delay.InMilliseconds()),
+      .codec_parameter = std::string()};
 }
 
 }  // namespace media::cast

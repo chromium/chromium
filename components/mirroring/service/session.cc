@@ -304,7 +304,7 @@ class Session::AudioCapturingCallback final
  public:
   using AudioDataCallback =
       base::RepeatingCallback<void(std::unique_ptr<media::AudioBus> audio_bus,
-                                   const base::TimeTicks& recorded_time)>;
+                                   base::TimeTicks recorded_time)>;
   AudioCapturingCallback(AudioDataCallback audio_data_callback,
                          base::OnceClosure error_callback)
       : audio_data_callback_(std::move(audio_data_callback)),

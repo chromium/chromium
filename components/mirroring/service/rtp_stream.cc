@@ -85,6 +85,10 @@ void VideoRtpStream::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
   video_sender_->SetTargetPlayoutDelay(playout_delay);
 }
 
+base::TimeDelta VideoRtpStream::GetTargetPlayoutDelay() const {
+  return video_sender_->GetTargetPlayoutDelay();
+}
+
 void VideoRtpStream::OnRefreshTimerFired() {
   DVLOG(1) << "VideoRtpStream is requesting another refresh frame.";
   expecting_a_refresh_frame_ = true;
@@ -106,12 +110,16 @@ AudioRtpStream::AudioRtpStream(
 AudioRtpStream::~AudioRtpStream() {}
 
 void AudioRtpStream::InsertAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                                 const base::TimeTicks& capture_time) {
+                                 base::TimeTicks capture_time) {
   audio_sender_->InsertAudio(std::move(audio_bus), capture_time);
 }
 
 void AudioRtpStream::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
   audio_sender_->SetTargetPlayoutDelay(playout_delay);
+}
+
+base::TimeDelta AudioRtpStream::GetTargetPlayoutDelay() const {
+  return audio_sender_->GetTargetPlayoutDelay();
 }
 
 int AudioRtpStream::GetEncoderBitrate() const {

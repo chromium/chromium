@@ -14,6 +14,7 @@
 namespace mirroring {
 
 class Session;
+class OpenscreenSessionHost;
 
 class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
     : public mojom::MirroringService {
@@ -38,9 +39,17 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
 
   void OnDisconnect();
 
+  // The receiver for the mirroring service API.
   mojo::Receiver<mojom::MirroringService> receiver_;
+
+  // The IO task runner for this utility process.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  std::unique_ptr<Session> session_;  // Current mirroring session.
+
+  // The current legacy mirroring session, if any.
+  std::unique_ptr<Session> session_;
+
+  // The current Open Screen session host, if any.
+  std::unique_ptr<OpenscreenSessionHost> session_host_;
 };
 
 }  // namespace mirroring

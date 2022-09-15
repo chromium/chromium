@@ -883,7 +883,8 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
     const std::string receiver_model_name{};
     auto session_params = mirroring::mojom::SessionParameters::New(
         mirroring::mojom::SessionType::AUDIO_AND_VIDEO, endpoint.address(),
-        receiver_model_name, base::Milliseconds(kTargetPlayoutDelayMs));
+        receiver_model_name, "sender-123", "receiver-456",
+        base::Milliseconds(kTargetPlayoutDelayMs));
 
     host_->Start(std::move(session_params), std::move(observer_remote),
                  std::move(channel_remote),

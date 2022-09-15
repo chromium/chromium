@@ -455,11 +455,13 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   // called.
   DCHECK(channel_to_service_receiver_);
 
-  host_->Start(SessionParameters::New(
-                   session_type, cast_data_.ip_endpoint.address(),
-                   cast_data_.model_name, cast_source->target_playout_delay()),
-               std::move(observer_remote), std::move(channel_remote),
-               std::move(channel_to_service_receiver_));
+  host_->Start(
+      SessionParameters::New(session_type, cast_data_.ip_endpoint.address(),
+                             cast_data_.model_name, session.destination_id(),
+                             message_handler_->source_id(),
+                             cast_source->target_playout_delay()),
+      std::move(observer_remote), std::move(channel_remote),
+      std::move(channel_to_service_receiver_));
 }
 
 void MirroringActivity::StopMirroring() {

@@ -31,12 +31,20 @@ class MockUdpSocket final : public network::TestUDPSocket {
   ~MockUdpSocket() override;
 
   MOCK_METHOD0(OnSend, void());
+  MOCK_METHOD0(OnSendTo, void());
 
   // network::mojom::UDPSocket implementation.
+  void Bind(const net::IPEndPoint& local_addr,
+            network::mojom::UDPSocketOptionsPtr options,
+            BindCallback callback) override;
   void Connect(const net::IPEndPoint& remote_addr,
                network::mojom::UDPSocketOptionsPtr options,
                ConnectCallback callback) override;
   void ReceiveMore(uint32_t num_additional_datagrams) override;
+  void SendTo(const net::IPEndPoint& dest_addr,
+              base::span<const uint8_t> data,
+              const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+              SendToCallback callback) override;
   void Send(base::span<const uint8_t> data,
             const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
             SendCallback callback) override;

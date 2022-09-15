@@ -21,6 +21,8 @@ class VideoEncodeAccelerator;
 
 namespace cast {
 
+// TODO(https://crbug.com/1363514): should be removed in favor of
+// media::VideoCodec, media::AudioCodec.
 enum Codec {
   CODEC_UNKNOWN,
   CODEC_AUDIO_OPUS,
@@ -158,6 +160,7 @@ struct FrameSenderConfig {
   base::TimeDelta max_playout_delay;
 
   // Starting playout delay when streaming animated content.
+  // TODO(https://crbug.com/1363694): animated playout delay should be removed.
   base::TimeDelta animated_playout_delay;
 
   // RTP payload type enum: Specifies the type/encoding of frame data.
