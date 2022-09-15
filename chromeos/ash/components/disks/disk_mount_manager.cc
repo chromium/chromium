@@ -100,15 +100,24 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    // Hidden and non-existent devices should not be mounted.
-    if (type == MountType::kDevice) {
-      Disks::const_iterator it = disks_.find(source_path);
-      if (it == disks_.end() || it->get()->is_hidden()) {
-        OnMountCompleted({MountError::kInternal, source_path, type});
-        return;
-      }
+    const Disks::const_iterator it = disks_.find(source_path);
+    if (it != disks_.end()) {
+      VLOG(1) << "Disk '" << source_path << "' is already registered";
+      DCHECK(*it);
+      DCHECK_EQ((*it)->device_path(), source_path);
+    } else {
+      VLOG(1) << "Disk '" << source_path << "' is not registered yet";
     }
 
+    // Hidden and non-existent devices should not be mounted.
+    if (type == MountType::kDevice &&
+        (it == disks_.end() || (*it)->is_hidden())) {
+      VLOG(1) << "Disk '" << source_path << "' should not be mounted";
+      OnMountCompleted({MountError::kInternal, source_path, type});
+      return;
+    }
+
+    VLOG(1) << "Mounting Disk '" << source_path << "'...";
     cros_disks_client_->Mount(
         source_path, source_format, mount_label, mount_options, access_mode,
         RemountOption::kMountNewDevice,
