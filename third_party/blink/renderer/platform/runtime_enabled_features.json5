@@ -121,7 +121,7 @@
     // in features_generated.{h,cc}.
     //
     // The default value of the base::Feature instance is:
-    //  base::FEATURE_ENABELD_BY_DEFAULT if 'status' field is 'stable", and
+    //  base::FEATURE_ENABLED_BY_DEFAULT if 'status' field is 'stable", and
     //  base::FEATURE_DISABLED_BY_DEFAULT otheriwse.
     // It can be overridden by 'base_feature_status' field.
     //
@@ -147,7 +147,7 @@
     // Specify how the flag value is updated from the base::Feature value. This
     // field is used only if base_feature is not empty.
     //
-    // * "enabeld_or_overridden"
+    // * "enabled_or_overridden"
     // - If the base::Feature default is overridden by field trial or command
     //   line, set Blink feature to the state of the base::Feature;
     // - Otherwise if the base::Feature is enabled, enable the Blink feature.
@@ -156,7 +156,7 @@
     // * "overridden"
     //   Enables the Blink feature when the base::Feature is overridden by field
     //   trial or command line. Otherwise no change. Its difference from
-    //   "enabledOrOverriden" is that the Blink feature isn't affected by the
+    //   "enabled_or_overridden" is that the Blink feature isn't affected by the
     //   default state of the base::Feature.
     //
     //   This is useful for Blink origin trial features especially those
@@ -1194,7 +1194,7 @@
       // Shared objects by OPFS and non-OPFS File System Access API.
       name: "FileSystemAccess",
       implied_by: ["FileSystemAccessLocal", "FileSystemAccessOriginPrivate"],
-      
+
     },
     {
       name: "FileSystemAccessAccessHandle",
