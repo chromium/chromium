@@ -41,9 +41,6 @@ class AppServiceTest {
 
   bool AreIconImageEqual(const gfx::ImageSkia& src, const gfx::ImageSkia& dst);
 
-  // Allow AppService async callbacks to run.
-  void WaitForAppService();
-
  private:
   raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
 };

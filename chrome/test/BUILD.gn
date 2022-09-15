@@ -7512,6 +7512,7 @@ test("unit_tests") {
       "//components/services/app_service/public/cpp:app_update",
       "//components/services/app_service/public/cpp:instance_update",
       "//components/services/app_service/public/cpp:preferred_apps",
+      "//components/services/app_service/public/cpp:types",
       "//components/session_manager/core",
       "//components/soda:soda",
       "//components/webapk:proto",

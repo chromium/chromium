@@ -76,8 +76,4 @@ bool AppServiceTest::AreIconImageEqual(const gfx::ImageSkia& src,
                                     dst.GetRepresentation(1.0f).GetBitmap());
 }
 
-void AppServiceTest::WaitForAppService() {
-  base::RunLoop().RunUntilIdle();
-}
-
 }  // namespace apps

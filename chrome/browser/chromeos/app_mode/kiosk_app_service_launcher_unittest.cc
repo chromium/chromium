@@ -69,7 +69,6 @@ class KioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     app_service_test_.UninstallAllApps(profile());
     app_service_test_.SetUp(profile());
-    app_service_test_.WaitForAppService();
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
     publisher_ = std::make_unique<FakePublisher>(app_service_, kTestAppType);
     launcher_ = std::make_unique<KioskAppServiceLauncher>(profile());

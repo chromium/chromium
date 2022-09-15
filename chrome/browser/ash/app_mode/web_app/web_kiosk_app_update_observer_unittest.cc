@@ -110,7 +110,6 @@ class WebKioskAppUpdateObserverTest : public BrowserWithTestWindowTest {
 
     app_service_test_.UninstallAllApps(profile());
     app_service_test_.SetUp(profile());
-    app_service_test_.WaitForAppService();
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
 
     // |WebKioskAppUpdateObserver| requires WebAppProvider to be ready before it

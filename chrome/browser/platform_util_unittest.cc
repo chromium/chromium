@@ -141,7 +141,6 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     app_service_proxy_->AppRegistryCache().OnApps(
         std::move(apps), apps::AppType::kChromeApp,
         /*should_notify_initialized=*/false);
-    app_service_test_.WaitForAppService();
   }
 
   void SetUp() override {

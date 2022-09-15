@@ -91,7 +91,6 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     app_service_test_.UninstallAllApps(profile());
     app_service_test_.SetUp(profile());
-    app_service_test_.WaitForAppService();
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
 
     fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
