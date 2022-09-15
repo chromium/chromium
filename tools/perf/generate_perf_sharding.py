@@ -229,10 +229,12 @@ def _GetBuilderPlatforms(builders, waterfall):
     return {b for b in bot_platforms.ALL_PLATFORMS if b.name in
                 builders}
   if waterfall == 'perf':
-    return bot_platforms.OFFICIAL_PLATFORMS
-  if waterfall == 'perf-fyi':
-    return bot_platforms.FYI_PLATFORMS
-  return bot_platforms.ALL_PLATFORMS
+    platforms = bot_platforms.OFFICIAL_PLATFORMS
+  elif waterfall == 'perf-fyi':
+    platforms = bot_platforms.FYI_PLATFORMS
+  else:
+    platforms = bot_platforms.ALL_PLATFORMS
+  return {p for p in platforms if not p.pinpoint_only}
 
 
 def _UpdateShardsForBuilders(args):
@@ -312,6 +314,8 @@ def _ValidateShardMaps(args):
 
   # Check that bot_platforms.py matches the actual shard maps
   for platform in bot_platforms.ALL_PLATFORMS:
+    if platform.pinpoint_only:
+      continue
     platform_benchmark_names = set(
         b.name for b in platform.benchmark_configs) | set(
             e.name for e in platform.executables)
@@ -342,6 +346,8 @@ def _ValidateShardMaps(args):
   # to make it clear that a benchmark is not running.
   scheduled_benchmarks = set()
   for platform in bot_platforms.ALL_PLATFORMS:
+    if platform.pinpoint_only:
+      continue
     scheduled_benchmarks = scheduled_benchmarks | _ParseBenchmarks(
         platform.shards_map_file_path)
   for benchmark in (

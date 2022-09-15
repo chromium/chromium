@@ -127,6 +127,7 @@ def _ValidateBrowserType(builder_name, test_config):
   elif 'Android' in builder_name or 'android' in builder_name:
     android_browsers = ('android-chromium', 'android-chrome',
                         'android-chrome-bundle', 'android-chrome-64-bundle',
+                        'android-trichrome-chrome-google-64-32-bundle',
                         'android-trichrome-bundle', 'exact')
     if browser_options.browser not in android_browsers:
       raise ValueError( 'The browser type for %s must be one of %s' % (

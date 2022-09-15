@@ -941,6 +941,42 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-new-pixel-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {},
+    },
+    'android-new-pixel-perf-pgo': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {},
+    },
+    'android-new-pixel-pro-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {},
+    },
+    'android-new-pixel-pro-perf-pgo': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {},
+    },
     'win-10_laptop_low_end-perf': {
         'tests': [
             {
@@ -1802,7 +1838,7 @@ def update_system_health_stories(filepath):
 def update_labs_docs_md(filepath):
   configs = collections.defaultdict(list)
   for tester in bot_platforms.ALL_PLATFORMS:
-    if not tester.is_fyi:
+    if not tester.is_fyi and not tester.pinpoint_only:
       configs[tester.platform].append(tester)
 
   with open(filepath, 'w', newline='') if sys.version_info.major == 3 else open(

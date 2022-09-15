@@ -38,6 +38,7 @@ class PerfPlatform(object):
                is_fyi=False,
                is_calibration=False,
                run_reference_build=False,
+               pinpoint_only=False,
                executables=None):
     benchmark_configs = benchmark_configs.Frozenset()
     self._name = name
@@ -48,6 +49,7 @@ class PerfPlatform(object):
     self._is_fyi = is_fyi
     self._is_calibration = is_calibration
     self.run_reference_build = run_reference_build
+    self.pinpoint_only = pinpoint_only
     self.executables = executables or frozenset()
     assert num_shards
     self._num_shards = num_shards
@@ -688,6 +690,30 @@ ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
 ANDROID_PIXEL4A_POWER_PGO = PerfPlatform(
     'android-pixel4a_power-perf-pgo', 'Android QD4A.200102.001.A1',
     _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS, 12, 'android')
+ANDROID_NEW_PIXEL = PerfPlatform('android-new-pixel-perf',
+                                 'Android T',
+                                 PerfSuite([]),
+                                 1,
+                                 'android',
+                                 pinpoint_only=True)
+ANDROID_NEW_PIXEL_PGO = PerfPlatform('android-new-pixel-perf-pgo',
+                                     'Android T',
+                                     PerfSuite([]),
+                                     1,
+                                     'android',
+                                     pinpoint_only=True)
+ANDROID_NEW_PIXEL_PRO = PerfPlatform('android-new-pixel-pro-perf',
+                                     'Android T',
+                                     PerfSuite([]),
+                                     1,
+                                     'android',
+                                     pinpoint_only=True)
+ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
+                                         'Android T',
+                                         PerfSuite([]),
+                                         1,
+                                         'android',
+                                         pinpoint_only=True)
 
 # Cros/Lacros
 LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '', _LACROS_BENCHMARK_CONFIGS,
