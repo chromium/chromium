@@ -644,6 +644,11 @@ bool IsEnrolledToDomain() {
 }
 
 bool IsDeviceRegisteredWithManagement() {
+  // GetRegisteredWithManagementStateStorage() can be true for devices running
+  // the Home sku, however the Home sku does not allow for management of the web
+  // browser. As such, we automatically exclude devices running the Home sku.
+  if (OSInfo::GetInstance()->version_type() == SUITE_HOME)
+    return false;
   return *GetRegisteredWithManagementStateStorage();
 }
 

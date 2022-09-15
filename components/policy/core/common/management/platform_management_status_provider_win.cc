@@ -26,11 +26,7 @@ EnterpriseMDMManagementStatusProvider::EnterpriseMDMManagementStatusProvider()
 
 EnterpriseManagementAuthority
 EnterpriseMDMManagementStatusProvider::FetchAuthority() {
-  return base::win::OSInfo::GetInstance()->version_type() !=
-                     base::win::SUITE_HOME &&
-                 base::win::IsDeviceRegisteredWithManagement()
-             ? CLOUD
-             : NONE;
+  return base::win::IsDeviceRegisteredWithManagement() ? CLOUD : NONE;
 }
 
 AzureActiveDirectoryStatusProvider::AzureActiveDirectoryStatusProvider()
