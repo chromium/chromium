@@ -377,6 +377,11 @@ void ThreadControllerImpl::PrioritizeYieldingToNative(base::TimeTicks) {
   NOTREACHED();
 }
 
+void ThreadControllerImpl::EnablePeriodicYieldingToNative(
+    base::TimeDelta delta) {
+  NOTREACHED();
+}
+
 }  // namespace internal
 }  // namespace sequence_manager
 }  // namespace base

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/fling_controller.h"
 #include "content/browser/renderer_host/input/input_router_client.h"
+#include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 namespace content {
@@ -31,6 +32,8 @@ class MockInputRouterClient : public InputRouterClient,
   void IncrementInFlightEventCount() override;
   void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) override;
+  void NotifyUISchedulerOfScrollStateUpdate(
+      BrowserUIThreadScheduler::ScrollState scroll_state) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
   void OnSetCompositorAllowedTouchAction(cc::TouchAction touch_action) override;
   void DidStartScrollingViewport() override;

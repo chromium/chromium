@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -540,75 +541,109 @@ TEST_F(ThreadControllerWithMessagePumpTest, QuitInterruptsBatch) {
   testing::Mock::VerifyAndClearExpectations(message_pump_);
 }
 
-TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ThreadControllerWithMessagePumpTest, PeriodicYieldingToNative) {
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
   testing::InSequence sequence;
-
   RunLoop run_loop;
-  const auto delayed_time = FromNow(Seconds(10));
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        clock_.Advance(Seconds(5));
-        MockCallback<OnceClosure> tasks[5];
-
-        // A: Post 5 application tasks, 4 immediate 1 delayed.
-        // B: Run one of them (enter active)
-        //   C: Expect we return immediate work item without yield_to_native
-        //      (default behaviour).
-        // D: Set PrioritizeYieldingToNative until 8 seconds and run second
-        //    task.
-        //   E: Expect we return immediate work item with yield_to_native.
-        // F: Exceed the PrioritizeYieldingToNative deadline and run third task.
-        //   G: Expect we return immediate work item without yield_to_native.
-        // H: Set PrioritizeYieldingToNative to Max() and run third of them
-        //   I: Expect we return a delayed work item with yield_to_native.
+        // B: Post 5 application tasks
+        //    First two combined should take 4 ms
+        //    Third one should take 4 ms
+        //    4th and 5th should be 1ms each
+        // B: EnabledPeriodicYieldingToNative within thread controller to 3ms
+        //    window.
+        // C: Call DoWork() to run the first 2 tasks
+        //   D: Expect we return immediate work and have executed Run() on
+        //      task 1 and 2, yield_to_native should be true
+        //      executed_task_count should be 2.
+        // E: Call DoWork() again to execute the 3rd task only,
+        //   F: yield_to_native should still be true.
+        //    executed_task_count should be 3
+        // G: Disable EnabledPeriodicYieldingToNative
+        // H: Task count should increment by 1 per execution as that's the
+        //    batch size, yield_to_native should remain false.
 
         // A:
-        task_source_.AddTask(FROM_HERE, tasks[0].Get());
-        task_source_.AddTask(FROM_HERE, tasks[1].Get());
-        task_source_.AddTask(FROM_HERE, tasks[2].Get());
-        task_source_.AddTask(FROM_HERE, tasks[3].Get());
-        task_source_.AddTask(FROM_HERE, tasks[4].Get(), delayed_time);
+        int executed_task_count = 0;
+        task_source_.AddTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](int* executed_task_count, SimpleTestTickClock* clock) {
+                  clock->Advance(base::Milliseconds(2));
+                  (*executed_task_count)++;
+                },
+                &executed_task_count, &clock_));
+        task_source_.AddTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](int* executed_task_count, SimpleTestTickClock* clock) {
+                  clock->Advance(base::Milliseconds(2));
+                  (*executed_task_count)++;
+                },
+                &executed_task_count, &clock_));
+        task_source_.AddTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](int* executed_task_count, SimpleTestTickClock* clock) {
+                  clock->Advance(base::Milliseconds(4));
+                  (*executed_task_count)++;
+                },
+                &executed_task_count, &clock_));
+        task_source_.AddTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](int* executed_task_count, SimpleTestTickClock* clock) {
+                  clock->Advance(base::Milliseconds(1));
+                  (*executed_task_count)++;
+                },
+                &executed_task_count, &clock_));
+        task_source_.AddTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](int* executed_task_count, SimpleTestTickClock* clock) {
+                  clock->Advance(base::Milliseconds(1));
+                  (*executed_task_count)++;
+                },
+                &executed_task_count, &clock_));
 
         // B:
-        EXPECT_CALL(tasks[0], Run());
-        auto next_work_item = thread_controller_.DoWork();
-        // C:
-        EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
-        EXPECT_FALSE(next_work_item.yield_to_native);
+        thread_controller_.EnablePeriodicYieldingToNative(
+            base::Milliseconds(3));
 
+        // C:
+        auto next_work_item = thread_controller_.DoWork();
         // D:
-        thread_controller_.PrioritizeYieldingToNative(FromNow(Seconds(3)));
-        EXPECT_CALL(tasks[1], Run());
-        next_work_item = thread_controller_.DoWork();
-        // E:
         EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
+        EXPECT_EQ(executed_task_count, 2);
         EXPECT_TRUE(next_work_item.yield_to_native);
 
-        // F:
-        clock_.Advance(Seconds(3));
-        EXPECT_CALL(tasks[2], Run());
+        // E:
         next_work_item = thread_controller_.DoWork();
-        // G:
+        // F:
         EXPECT_EQ(next_work_item.delayed_run_time, TimeTicks());
-        EXPECT_FALSE(next_work_item.yield_to_native);
+        EXPECT_EQ(executed_task_count, 3);
+        EXPECT_TRUE(next_work_item.yield_to_native);
+
+        // G:
+        thread_controller_.EnablePeriodicYieldingToNative(
+            base::TimeDelta::Max());
 
         // H:
-        thread_controller_.PrioritizeYieldingToNative(base::TimeTicks::Max());
-        EXPECT_CALL(tasks[3], Run());
         next_work_item = thread_controller_.DoWork();
-
-        // I:
-        EXPECT_EQ(next_work_item.delayed_run_time, delayed_time);
-        EXPECT_TRUE(next_work_item.yield_to_native);
-
-        EXPECT_FALSE(thread_controller_.DoIdleWork());
+        EXPECT_FALSE(next_work_item.yield_to_native);
+        EXPECT_EQ(executed_task_count, 4);
+        next_work_item = thread_controller_.DoWork();
+        EXPECT_FALSE(next_work_item.yield_to_native);
+        EXPECT_EQ(executed_task_count, 5);
       }));
 
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(message_pump_);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(ThreadControllerWithMessagePumpTest, EarlyQuit) {
   // This test ensures that a opt-of-runloop Quit() (which is possible with some
@@ -1015,6 +1050,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   RunLoop().Run();
 }
 
+#if not BUILDFLAG(IS_ANDROID)
 TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatches) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -1051,7 +1087,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
   EXPECT_EQ(task_counter, 2);
   ThreadControllerWithMessagePumpImpl::ResetFeatures();
 }
-
+#endif  // BUILDFLAG(IS_ANDROID)
 TEST_F(ThreadControllerWithMessagePumpTest,
        ThreadControllerActiveAdvancedNesting) {
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());

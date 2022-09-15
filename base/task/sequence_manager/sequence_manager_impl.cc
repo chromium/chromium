@@ -1208,6 +1208,14 @@ void SequenceManagerImpl::PrioritizeYieldingToNative(
   controller_->PrioritizeYieldingToNative(prioritize_until);
 }
 
+void SequenceManagerImpl::EnablePeriodicYieldingToNative(
+    base::TimeDelta interval) {
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
+              "SequenceManagerImpl::EnablePeriodicYieldingToNative",
+              "yield_interval_ms", interval.InMilliseconds());
+  controller_->EnablePeriodicYieldingToNative(interval);
+}
+
 void SequenceManagerImpl::AddDestructionObserver(
     CurrentThread::DestructionObserver* destruction_observer) {
   main_thread_only().destruction_observers.AddObserver(destruction_observer);

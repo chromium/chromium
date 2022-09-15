@@ -62,6 +62,17 @@ extern const BASE_EXPORT base::Feature kExplicitHighResolutionTimerWin;
 // Feature to run tasks by batches before pumping out messages.
 extern const BASE_EXPORT base::Feature kRunTasksByBatches;
 
+// Feature to run tasks by batches before pumping out messages.
+extern const BASE_EXPORT base::Feature kBrowserPeriodicYieldingToNative;
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam;
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeFlingInputAfterMsParam;
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeNoInputAfterMsParam;
+extern const BASE_EXPORT base::FeatureParam<TimeDelta>
+    kBrowserPeriodicYieldingToNativeDelay;
+
 BASE_EXPORT void InitializeTaskLeeway();
 BASE_EXPORT TimeDelta GetTaskLeeway();
 

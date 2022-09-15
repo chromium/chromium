@@ -98,6 +98,11 @@ struct WakeUp {
   TimeTicks latest_time() const;
 };
 
+struct WorkDetails {
+  absl::optional<WakeUp> next_wake_up;
+  TimeDelta work_interval;
+};
+
 // PendingTask with extra metadata for SequenceManager.
 struct BASE_EXPORT Task : public PendingTask {
   Task(internal::PostedTask posted_task,

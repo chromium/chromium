@@ -5,18 +5,22 @@
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequence_manager/tasks.h"
 #include "base/task/task_features.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -289,20 +293,37 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   work_deduplicator_.OnWorkStarted();
   LazyNow continuation_lazy_now(time_source_);
-  absl::optional<WakeUp> next_wake_up = DoWorkImpl(&continuation_lazy_now);
+  WorkDetails work_details = DoWorkImpl(&continuation_lazy_now);
+  absl::optional<WakeUp> next_wake_up = work_details.next_wake_up;
+  base::TimeDelta work_interval = work_details.work_interval;
 
   // If we are yielding after DoWorkImpl (a work batch) set the flag boolean.
   // This will inform the MessagePump to schedule a new continuation based on
   // the information below, but even if its immediate let the native sequence
   // have a chance to run.
+  bool yield_after_every_batch_of_one =
+      !main_thread_only().yield_to_native_after_batch.is_null() &&
+      continuation_lazy_now.Now() <
+          main_thread_only().yield_to_native_after_batch;
   // When we have |g_run_tasks_by_batches| active we want to always set the flag
   // to true to have a similar behavior on Android as on the desktop platforms
   // for this experiment.
-  if (g_run_tasks_by_batches.load(std::memory_order_relaxed) ||
-      (!main_thread_only().yield_to_native_after_batch.is_null() &&
-       continuation_lazy_now.Now() <
-           main_thread_only().yield_to_native_after_batch)) {
+  bool yield_after_every_batch_of_8_ms =
+      g_run_tasks_by_batches.load(std::memory_order_relaxed);
+  // if the periodic delta isn't max(), this means a valid value is in place and
+  // the controller should start alternating. Make sure we didn't terminate the
+  // loop by calling MoveReadyDelayedTasksToWorkQueues and not by executing for
+  // the allowed time
+  bool yield_with_delay_after_batch_of_period =
+      !periodic_yielding_to_native_interval_.is_max() &&
+      work_interval >= periodic_yielding_to_native_interval_;
+  // TODO(b/245151525): Only one of these experiments should probably exist,
+  // once we've got a production ready launchable experiment remove the others.
+  if (yield_after_every_batch_of_one || yield_after_every_batch_of_8_ms ||
+      yield_with_delay_after_batch_of_period) {
     next_work_info.yield_to_native = true;
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
+                 "ThreadControllerImpl_YieldToNative");
   }
   // Schedule a continuation.
   WorkDeduplicator::NextTask next_task =
@@ -345,7 +366,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   return next_work_info;
 }
 
-absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
+WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     LazyNow* continuation_lazy_now) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "ThreadControllerImpl::DoWork");
@@ -355,30 +376,27 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // helps spot nested loops that intentionally starve application tasks.
     TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
     if (main_thread_only().quit_runloop_after == TimeTicks::Max())
-      return absl::nullopt;
-    return WakeUp{main_thread_only().quit_runloop_after};
+      return WorkDetails{absl::nullopt, Nanoseconds(0)};
+    return WorkDetails{WakeUp{main_thread_only().quit_runloop_after},
+                       Nanoseconds(0)};
   }
 
   DCHECK(main_thread_only().task_source);
 
   // Keep running tasks for up to 8ms before yielding to the pump when
   // |g_run_tasks_by_batches| is true.
-  const base::TimeDelta batch_duration =
-      g_run_tasks_by_batches.load(std::memory_order_relaxed)
-          ? base::Milliseconds(8)
-          : base::Milliseconds(0);
+  const base::TimeDelta batch_duration = GetAlternationInterval();
 
   const absl::optional<base::TimeTicks> start_time =
       batch_duration.is_zero()
           ? absl::nullopt
           : absl::optional<base::TimeTicks>(time_source_->NowTicks());
   absl::optional<base::TimeTicks> recent_time = start_time;
-
+  base::TimeDelta work_executed = base::Milliseconds(0);
   // Loops for |batch_duration|, or |work_batch_size| times if |batch_duration|
   // is zero.
   for (int num_tasks_executed = 0;
-       (!batch_duration.is_zero() &&
-        (recent_time.value() - start_time.value()) < batch_duration) ||
+       (!batch_duration.is_zero() && work_executed < batch_duration) ||
        (batch_duration.is_zero() &&
         num_tasks_executed < main_thread_only().work_batch_size);
        ++num_tasks_executed) {
@@ -438,11 +456,14 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // If DidRunTask() read the clock (lazy_now_after_run_task.has_value()) or
     // if |batch_duration| > 0, store the clock value in `recent_time` so it can
     // be reused by SelectNextTask() at the next loop iteration.
-    if (lazy_now_after_run_task.has_value() || !batch_duration.is_zero())
+    if (lazy_now_after_run_task.has_value() || !batch_duration.is_zero()) {
       recent_time = lazy_now_after_run_task.Now();
-    else
+      // When |batch_duration| is zero |start_time| will be nullopt so rather
+      // than an additional conditional check here we just default to zero.
+      work_executed = recent_time.value() - start_time.value_or(*recent_time);
+    } else {
       recent_time.reset();
-
+    }
     // When Quit() is called we must stop running the batch because the
     // caller expects per-task granularity.
     if (main_thread_only().quit_pending)
@@ -450,7 +471,7 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
   }
 
   if (main_thread_only().quit_pending)
-    return absl::nullopt;
+    return {absl::nullopt, Nanoseconds(0)};
 
   work_deduplicator_.WillCheckForMoreWork();
 
@@ -462,8 +483,9 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
           : SequencedTaskSource::SelectTaskOption::kDefault;
   main_thread_only().task_source->RemoveAllCanceledDelayedTasksFromFront(
       continuation_lazy_now);
-  return main_thread_only().task_source->GetPendingWakeUp(continuation_lazy_now,
-                                                          select_task_option);
+  return {main_thread_only().task_source->GetPendingWakeUp(
+              continuation_lazy_now, select_task_option),
+          work_executed};
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
@@ -649,6 +671,11 @@ void ThreadControllerWithMessagePumpImpl::PrioritizeYieldingToNative(
   main_thread_only().yield_to_native_after_batch = prioritize_until;
 }
 
+void ThreadControllerWithMessagePumpImpl::EnablePeriodicYieldingToNative(
+    base::TimeDelta delta) {
+  periodic_yielding_to_native_interval_ = delta;
+}
+
 #if BUILDFLAG(IS_IOS)
 void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
   static_cast<MessagePumpCFRunLoopBase*>(pump_.get())->Attach(this);
@@ -662,6 +689,21 @@ void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
   static_cast<MessagePumpForUI*>(pump_.get())->Attach(this);
 }
 #endif
+
+base::TimeDelta ThreadControllerWithMessagePumpImpl::GetAlternationInterval() {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/245151525): If this experiment shows promise merge its behaviour
+  // with run_tasks_by_batches experiment below. For now we leave them separate
+  // for simplicity of evaluating the experiments separately.
+  return periodic_yielding_to_native_interval_.is_max()
+             ? base::Milliseconds(0)
+             : periodic_yielding_to_native_interval_;
+#else
+  return g_run_tasks_by_batches.load(std::memory_order_relaxed)
+             ? base::Milliseconds(8)
+             : base::Milliseconds(0);
+#endif
+}
 
 bool ThreadControllerWithMessagePumpImpl::ShouldQuitRunLoopWhenIdle() {
   if (run_level_tracker_.num_run_levels() == 0)

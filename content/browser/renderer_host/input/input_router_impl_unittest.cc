@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
+#include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/browser/site_instance_group.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/content_features.h"
@@ -171,6 +172,11 @@ class MockInputRouterImplClient : public InputRouterImplClient {
 
   void IncrementInFlightEventCount() override {
     input_router_client_.IncrementInFlightEventCount();
+  }
+
+  void NotifyUISchedulerOfScrollStateUpdate(
+      BrowserUIThreadScheduler::ScrollState scroll_state) override {
+    input_router_client_.NotifyUISchedulerOfScrollStateUpdate(scroll_state);
   }
 
   void DecrementInFlightEventCount(
