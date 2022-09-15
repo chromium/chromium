@@ -15,6 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -535,6 +536,7 @@ BookmarkModelMerger::BookmarkModelMerger(
     : bookmark_model_(bookmark_model),
       favicon_service_(favicon_service),
       bookmark_tracker_(bookmark_tracker),
+      remote_updates_size_(updates.size()),
       remote_forest_(BuildRemoteForest(std::move(updates), bookmark_tracker)),
       guid_to_match_map_(
           FindGuidMatchesOrReassignLocal(remote_forest_, bookmark_model_)) {
@@ -607,6 +609,8 @@ void BookmarkModelMerger::Merge() {
   base::UmaHistogramCounts100000(
       "Sync.BookmarkModelMerger.UnsyncedEntitiesUponCompletion",
       GetNumUnsyncedEntities(bookmark_tracker_));
+
+  ReportTimeMetrics();
 }
 
 // static
@@ -888,6 +892,7 @@ void BookmarkModelMerger::ProcessRemoteCreation(
     const RemoteTreeNode& remote_node,
     const bookmarks::BookmarkNode* local_parent,
     size_t index) {
+  TRACE_EVENT0("sync", "BookmarkModelMerger::ProcessRemoteCreation");
   DCHECK(!FindMatchingLocalNodeByGUID(remote_node));
 
   const EntityData& remote_update_entity = remote_node.entity();
@@ -977,6 +982,8 @@ size_t BookmarkModelMerger::FindMatchingChildBySemanticsStartingAt(
     const bookmarks::BookmarkNode* local_parent,
     size_t starting_child_index) const {
   DCHECK(local_parent);
+  TRACE_EVENT0("sync",
+               "BookmarkModelMerger::FindMatchingChildBySemanticsStartingAt");
   const auto& children = local_parent->children();
   DCHECK_LE(starting_child_index, children.size());
   const EntityData& remote_entity = remote_node.entity();
@@ -1050,6 +1057,25 @@ BookmarkModelMerger::GenerateUniquePositionForLocalCreation(
     DCHECK(FindMatchingRemoteNodeByGUID(parent->children()[i - 1].get()));
   }
   return syncer::UniquePosition::InitialPosition(suffix);
+}
+
+void BookmarkModelMerger::ReportTimeMetrics() {
+  base::TimeDelta all_time_elapsed = base::TimeTicks::Now() - started_;
+
+  base::UmaHistogramMediumTimes("Sync.BookmarkModelMergerTime",
+                                all_time_elapsed);
+  if (remote_updates_size_ >= 10000) {
+    base::UmaHistogramMediumTimes("Sync.BookmarkModelMergerTime.10kUpdates",
+                                  all_time_elapsed);
+  }
+  if (remote_updates_size_ >= 50000) {
+    base::UmaHistogramMediumTimes("Sync.BookmarkModelMergerTime.50kUpdates",
+                                  all_time_elapsed);
+  }
+  if (remote_updates_size_ >= 100000) {
+    base::UmaHistogramMediumTimes("Sync.BookmarkModelMergerTime.100kUpdates",
+                                  all_time_elapsed);
+  }
 }
 
 }  // namespace sync_bookmarks

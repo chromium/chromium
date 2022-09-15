@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
@@ -351,6 +352,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   DCHECK(model);
   DCHECK(favicon_service);
   DCHECK(IsValidBookmarkSpecifics(specifics));
+  TRACE_EVENT0("sync", "CreateBookmarkNodeFromSpecifics");
 
   const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   DCHECK(guid.is_valid());

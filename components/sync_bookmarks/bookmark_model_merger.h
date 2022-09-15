@@ -13,6 +13,7 @@
 
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
@@ -211,9 +212,17 @@ class BookmarkModelMerger {
       size_t index,
       const std::string& suffix) const;
 
+  void ReportTimeMetrics();
+
+  // The base time used to calculate elapsed time at different stages during the
+  // initial merge. Should be the first member to initialize before any other
+  // long operations like BuildRemoteForest().
+  const base::TimeTicks started_ = base::TimeTicks::Now();
+
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   const raw_ptr<favicon::FaviconService> favicon_service_;
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
+  const size_t remote_updates_size_;
   // Preprocessed remote nodes in the form a forest where each tree's root is a
   // permanent node. Computed upon construction via BuildRemoteForest().
   const RemoteForest remote_forest_;
