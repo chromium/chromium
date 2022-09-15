@@ -4,9 +4,14 @@
 
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
 
+#include <string>
+
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -39,39 +44,52 @@ Message ToProto(const std::string& input) {
   return response;
 }
 
-template <typename Response>
-class Receiver : public FetcherDelegate<Response> {
+// Convenience alias where the token value is know outright.
+base::expected<signin::AccessTokenInfo, GoogleServiceAuthError> ToAccessToken(
+    base::StringPiece access_token_value) {
+  return signin::AccessTokenInfo(std::string(access_token_value),
+                                 base::Time::Now() + base::Hours(1),
+                                 "id_token");
+}
+
+// Convenience alias where the token error value is know outright.
+base::expected<signin::AccessTokenInfo, GoogleServiceAuthError> ToAccessToken(
+    GoogleServiceAuthError::State error) {
+  return base::unexpected(GoogleServiceAuthError(error));
+}
+
+template <typename Request, typename Response>
+class Receiver {
  public:
-  const absl::optional<Response>& GetResponse() const { return response_; }
-  const absl::optional<std::string>& GetResponseBody() const {
-    return response_body_;
+  using Error = typename Fetcher<Request, Response>::Error;
+  const base::expected<Response, Error>& GetResult() const { return result_; }
+
+  void Receive(Error error, Response response) {
+    if (error != Error::NONE) {
+      result_ = base::unexpected(error);
+      return;
+    }
+    result_ = response;
   }
 
  private:
-  void OnSuccess(std::unique_ptr<Response> response) override {
-    response_.emplace(*response);
-  }
-  void OnFailure(base::StringPiece response_body) override {
-    response_body_.emplace(response_body);
-  }
-  void OnMalformedResponse(base::StringPiece response_body) override {
-    response_body_.emplace(response_body);
-  }
-
-  absl::optional<Response> response_;
-  absl::optional<std::string> response_body_;
+  base::expected<Response, Error> result_;
 };
 
 TEST_F(KidsExternalFetcherTest, AcceptsProtocolBufferRequests) {
-  Receiver<ListFamilyMembersResponse> receiver;
+  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
   ListFamilyMembersRequest request;
   request.set_family_id("mine");
   ListFamilyMembersResponse response;
   response.set_self_obfuscated_gaia_id("gaia_id");
 
   auto fetcher = CreateListFamilyMembersFetcher(
-      receiver, test_url_loader_factory_.GetSafeWeakWrapper());
-  fetcher->StartRequest(request, "token", "http://example.com");
+      test_url_loader_factory_.GetSafeWeakWrapper());
+  fetcher->StartRequest(
+      "http://example.com", request, ToAccessToken("token"),
+      base::BindOnce(&Receiver<ListFamilyMembersRequest,
+                               ListFamilyMembersResponse>::Receive,
+                     base::Unretained(&receiver)));
 
   TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
@@ -86,20 +104,42 @@ TEST_F(KidsExternalFetcherTest, AcceptsProtocolBufferRequests) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "http://example.com/", response.SerializeAsString());
 
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-
-  ASSERT_TRUE(receiver.GetResponse().has_value());
-  EXPECT_EQ((*receiver.GetResponse()).self_obfuscated_gaia_id(), "gaia_id");
+  ASSERT_TRUE(receiver.GetResult().has_value());
+  EXPECT_EQ((*receiver.GetResult()).self_obfuscated_gaia_id(), "gaia_id");
 }
 
-TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
-  Receiver<ListFamilyMembersResponse> receiver;
+TEST_F(KidsExternalFetcherTest, NoAccessToken) {
+  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
   ListFamilyMembersRequest request;
   request.set_family_id("mine");
 
   auto fetcher = CreateListFamilyMembersFetcher(
-      receiver, test_url_loader_factory_.GetSafeWeakWrapper());
-  fetcher->StartRequest(request, "token", "http://example.com");
+      test_url_loader_factory_.GetSafeWeakWrapper());
+  fetcher->StartRequest(
+      "http://example.com", request,
+      ToAccessToken(GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS),
+      base::BindOnce(&Receiver<ListFamilyMembersRequest,
+                               ListFamilyMembersResponse>::Receive,
+                     base::Unretained(&receiver)));
+
+  auto expected_error = Receiver<ListFamilyMembersRequest,
+                                 ListFamilyMembersResponse>::Error::INPUT_ERROR;
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(receiver.GetResult().error(), expected_error);
+}
+
+TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
+  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
+  ListFamilyMembersRequest request;
+  request.set_family_id("mine");
+
+  auto fetcher = CreateListFamilyMembersFetcher(
+      test_url_loader_factory_.GetSafeWeakWrapper());
+  fetcher->StartRequest(
+      "http://example.com", request, ToAccessToken("token"),
+      base::BindOnce(&Receiver<ListFamilyMembersRequest,
+                               ListFamilyMembersResponse>::Receive,
+                     base::Unretained(&receiver)));
 
   TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
@@ -114,17 +154,21 @@ TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
   std::string malformed_value("garbage");  // Not a valid marshaled proto.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "http://example.com/", malformed_value);
-  EXPECT_FALSE(receiver.GetResponse().has_value());
+  EXPECT_FALSE(receiver.GetResult().has_value());
 }
 
 TEST_F(KidsExternalFetcherTest, HandlesServerError) {
-  Receiver<ListFamilyMembersResponse> receiver;
+  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
   ListFamilyMembersRequest request;
   request.set_family_id("mine");
 
   auto fetcher = CreateListFamilyMembersFetcher(
-      receiver, test_url_loader_factory_.GetSafeWeakWrapper());
-  fetcher->StartRequest(request, "token", "http://example.com");
+      test_url_loader_factory_.GetSafeWeakWrapper());
+  fetcher->StartRequest(
+      "http://example.com", request, ToAccessToken("token"),
+      base::BindOnce(&Receiver<ListFamilyMembersRequest,
+                               ListFamilyMembersResponse>::Receive,
+                     base::Unretained(&receiver)));
 
   TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
@@ -138,7 +182,7 @@ TEST_F(KidsExternalFetcherTest, HandlesServerError) {
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "http://example.com/", /*content=*/"", net::HTTP_BAD_REQUEST);
-  EXPECT_FALSE(receiver.GetResponse().has_value());
+  EXPECT_FALSE(receiver.GetResult().has_value());
 }
 
 }  // namespace

@@ -6,13 +6,17 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/memory/safe_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -102,35 +106,46 @@ net::NetworkTrafficAnnotationTag GetDefaultNetworkTrafficAnnotationTag<
         })");
 }
 
-std::string GetFailureMessageFromResponseBody(
-    std::unique_ptr<std::string> response_body) {
-  return response_body ? *response_body : "No response body";
-}
-
 // A fetcher with underlying network::SharedURLLoaderFactory.
 template <typename Request, typename Response>
 class FetcherImpl final : public Fetcher<Request, Response> {
- public:
-  FetcherImpl(FetcherDelegate<Response>& delegate,
-              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : delegate_(delegate), url_loader_factory_(url_loader_factory) {}
+ private:
+  using Callback = typename Fetcher<Request, Response>::Callback;
+  using Error = typename Fetcher<Request, Response>::Error;
 
-  void StartRequest(const Request& request,
-                    base::StringPiece access_token,
-                    base::StringPiece url) override {
+ public:
+  FetcherImpl() = delete;
+  explicit FetcherImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : url_loader_factory_(url_loader_factory) {}
+
+  void StartRequest(base::StringPiece url,
+                    const Request& request,
+                    base::expected<signin::AccessTokenInfo,
+                                   GoogleServiceAuthError> access_token,
+                    Callback callback) override {
+    DCHECK(
+        callback);  // https://chromium.googlesource.com/chromium/src/+/master/docs/callback.md#creating-a-callback-that-does-nothing
+
+    if (!access_token.has_value()) {
+      std::move(callback).Run(Error::INPUT_ERROR, Response());
+      return;
+    }
+    base::StringPiece token_value = access_token.value().token;
+
     net::NetworkTrafficAnnotationTag traffic_annotation =
         GetDefaultNetworkTrafficAnnotationTag<Request>();
     DCHECK(!simple_url_loader_);
     std::string serialized_request = request.SerializeAsString();
     const GURL gurl(url);
     simple_url_loader_ = InitializeSimpleUrlLoader(
-        serialized_request, access_token, gurl, traffic_annotation);
+        serialized_request, token_value, gurl, traffic_annotation);
 
     DCHECK(simple_url_loader_);
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory_.get(),
         base::BindOnce(&FetcherImpl::OnSimpleUrlLoaderComplete,
-                       weak_ptr_factory_.GetSafeRef()));
+                       weak_ptr_factory_.GetSafeRef(), std::move(callback)));
   }
 
   // Not copyable
@@ -138,25 +153,23 @@ class FetcherImpl final : public Fetcher<Request, Response> {
   FetcherImpl& operator=(const FetcherImpl&) = delete;
 
  private:
-  void OnSimpleUrlLoaderComplete(std::unique_ptr<std::string> response_body) {
+  void OnSimpleUrlLoaderComplete(Callback callback,
+                                 std::unique_ptr<std::string> response_body) {
     if (!IsLoadingSuccessful(*simple_url_loader_) ||
         !HasHttpOkResponse(*simple_url_loader_)) {
-      delegate_.OnFailure(
-          GetFailureMessageFromResponseBody(std::move(response_body)));
+      std::move(callback).Run(Error::HTTP_ERROR, Response());
       return;
     }
 
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {
-      delegate_.OnMalformedResponse(
-          GetFailureMessageFromResponseBody(std::move(response_body)));
+      std::move(callback).Run(Error::PARSE_ERROR, Response());
       return;
     }
 
-    delegate_.OnSuccess(std::move(response));
+    std::move(callback).Run(Error::NONE, *response);
   }
 
-  FetcherDelegate<Response>& delegate_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   base::WeakPtrFactory<FetcherImpl> weak_ptr_factory_{this};
@@ -170,13 +183,11 @@ template class FetcherImpl<kids_chrome_management::ListFamilyMembersRequest,
 std::unique_ptr<Fetcher<kids_chrome_management::ListFamilyMembersRequest,
                         kids_chrome_management::ListFamilyMembersResponse>>
 CreateListFamilyMembersFetcher(
-    FetcherDelegate<kids_chrome_management::ListFamilyMembersResponse>&
-        delegate,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   return std::make_unique<
       FetcherImpl<kids_chrome_management::ListFamilyMembersRequest,
                   kids_chrome_management::ListFamilyMembersResponse>>(
-      delegate, url_loader_factory);
+      url_loader_factory);
 }
 
 }  // namespace chrome::kids

@@ -7,33 +7,39 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chrome::kids {
-
-// The receiver of fetch must implement FetcherDelegate, or provide an instance
-// that will outlive the request.
-template <typename Response>
-class FetcherDelegate {
- public:
-  virtual void OnSuccess(std::unique_ptr<Response> response) = 0;
-  virtual void OnFailure(base::StringPiece response_body) = 0;
-  virtual void OnMalformedResponse(base::StringPiece response_body) = 0;
-};
-
 // Use instance of Fetcher to start request and write the result onto the
 // receiving delegate. Every instance of Fetcher is disposable and should be
 // used only once.
 template <typename Request, typename Response>
 class Fetcher {
  public:
-  virtual void StartRequest(const Request& request,
-                            base::StringPiece access_token,
-                            base::StringPiece url) = 0;
+  enum Error {
+    NONE,
+    INPUT_ERROR,  // The request could not be performed due to prerequisites
+                  // error.
+    HTTP_ERROR,   // The request was performed, but http returned errors.
+    PARSE_ERROR,  // The request was performed without error, but http response
+                  // could not be parsed.
+  };
+  using Callback = base::OnceCallback<void(Error, Response)>;
+
+  virtual void StartRequest(base::StringPiece url,
+                            const Request& request,
+                            base::expected<signin::AccessTokenInfo,
+                                           GoogleServiceAuthError> access_token,
+                            Callback callback) = 0;
+
   virtual ~Fetcher() = default;
 };
 
@@ -41,8 +47,6 @@ class Fetcher {
 std::unique_ptr<Fetcher<kids_chrome_management::ListFamilyMembersRequest,
                         kids_chrome_management::ListFamilyMembersResponse>>
 CreateListFamilyMembersFetcher(
-    FetcherDelegate<kids_chrome_management::ListFamilyMembersResponse>&
-        delegate,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
 }  // namespace chrome::kids
