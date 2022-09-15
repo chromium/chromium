@@ -240,6 +240,27 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
+class MultiplePrerendersDevToolsProtocolTest
+    : public PrerenderDevToolsProtocolTest {
+ public:
+  MultiplePrerendersDevToolsProtocolTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPrerender2,
+          {{"max_num_of_running_speculation_rules", "4"}}},
+         {blink::features::kPrerender2MemoryControls,
+          // A value 100 allows prerenderings regardless of the current memory
+          // usage.
+          {{"acceptable_percent_of_system_memory", "100"},
+           // Allow prerendering on low-end trybot devices so that prerendering
+           // can run on any bots.
+           {"memory_threshold_in_mb", "0"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class SyntheticMouseEventTest : public DevToolsProtocolTest {
  public:
   SyntheticMouseEventTest() {
@@ -3541,6 +3562,72 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   NavigatePrimaryPage(kPrerenderingUrl2);
   ASSERT_TRUE(web_contents_impl
                   ->last_navigation_was_prerender_activation_for_devtools());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
+                       PrerenderActivation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender1");
+  const GURL kPrerenderingUrl2 = GetUrl("/title1.html?prerender2");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  AddPrerender(kPrerenderingUrl);
+  AddPrerender(kPrerenderingUrl2);
+
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl2));
+
+  Attach();
+  SendCommandSync("Page.enable");
+  SendCommandSync("Runtime.enable");
+
+  // Ensure that prerenderAttemptCompleted can be fired properly with
+  // multiple speculation rules is enabled.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  base::Value::Dict result =
+      WaitForNotification("Page.prerenderAttemptCompleted", true);
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
+
+  // TODO(crbug/1332386): Verifies that multiple activations can be received
+  // properly when crbug/1350676 is ready. kPrerenderingUrl2 should be canceled
+  // as navigating to kPrerenderingUrl2.
+  result = WaitForNotification("Page.prerenderAttemptCompleted", true);
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
+                       MultiplePrerendersCancellation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender1");
+  const GURL kPrerenderingUrl2 = GetUrl("/title1.html?prerender2");
+  const GURL kNavigateAwayUrl = GetUrl("/empty.html?navigateway");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  AddPrerender(kPrerenderingUrl);
+  AddPrerender(kPrerenderingUrl2);
+
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl2));
+
+  Attach();
+  SendCommandSync("Page.enable");
+  SendCommandSync("Runtime.enable");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kNavigateAwayUrl));
+
+  // Both prerendered pages should receive prerenderAttemptCompleted for
+  // cancelation reasons.
+  base::Value::Dict result =
+      WaitForNotification("Page.prerenderAttemptCompleted", true);
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
+  result = WaitForNotification("Page.prerenderAttemptCompleted", true);
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 }
 
 }  // namespace content
