@@ -8411,6 +8411,13 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kUnifiedPasswordManagerAndroid,
          kUnifiedPasswordManagerAndroidVariations,
          "UnifiedPasswordManagerAndroid")},
+
+    {"google-mobile-services-passwords-error-messages",
+     flag_descriptions::kUnifiedPasswordManagerErrorMessagesName,
+     flag_descriptions::kUnifiedPasswordManagerErrorMessagesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kUnifiedPasswordManagerErrorMessages)},
 #endif
 
     {"extension-workflow-justification",
@@ -8433,7 +8440,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeWhatsNewInMainMenuNewBadgeName,
      flag_descriptions::kChromeWhatsNewInMainMenuNewBadgeDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeWhatsNewInMainMenuNewBadge)},
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kChromeWhatsNewInMainMenuNewBadge)},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     {"sync-trusted-vault-passphrase-promo",
