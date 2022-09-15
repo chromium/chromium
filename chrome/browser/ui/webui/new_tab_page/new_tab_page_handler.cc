@@ -227,6 +227,13 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     background_image = nullptr;
   }
 
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpRemoveScrim) &&
+      background_image) {
+    // If a background image is defined and the scrim removal flag is active
+    // disable the scrim.
+    background_image->scrim_display = "none";
+  }
+
   // The special case handling that removes the scrim and forces dark foreground
   // colors should only be applied when the user does not have a custom
   // background selected and has installed a GWS theme with a bundled background

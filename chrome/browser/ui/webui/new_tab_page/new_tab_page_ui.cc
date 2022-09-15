@@ -475,6 +475,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       "moduleRecipeExtendedExperimentEnabled",
       !splitExperimentGroup.empty() && (splitExperimentGroup[0] == "historical" || splitExperimentGroup[0] == "mix"));
 
+  source->AddBoolean("removeScrim", base::FeatureList::IsEnabled(
+                                        ntp_features::kNtpRemoveScrim));
+
   RealboxHandler::SetupWebUIDataSource(source);
 
   webui::SetupWebUIDataSource(

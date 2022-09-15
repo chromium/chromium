@@ -7,6 +7,8 @@
     --ntp-module-width: var(--ntp-search-box-width);
     --ntp-module-layout-width: var(--ntp-search-box-width);
     --ntp-module-border-radius: 5px;
+    --ntp-protected-icon-background-color: transparent;
+    --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
   }
 
   @media (min-width: 560px) {
@@ -51,6 +53,13 @@
 
   :host([show-background-image_]) {
     --ntp-theme-text-shadow: 0 0 16px rgba(0, 0, 0, .3);
+  }
+
+  :host([show-background-image_][remove-scrim_]) {
+    --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
+        0px 0px 4px rgba(0, 0, 0, 0.3), 0px 0px 16px rgba(0, 0, 0, 0.2);
+    --ntp-protected-icon-background-color: rgba(0, 0, 0, .1);
+    --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .2);
   }
 
   #oneGoogleBar {
@@ -130,11 +139,11 @@
   }
 
   :host([show-background-image_]) #customizeButtonContainer {
-    background-color: transparent;
+    background-color: var(--ntp-protected-icon-background-color);
   }
 
   :host([show-background-image_]) #customizeButtonContainer:hover {
-    background-color: rgba(255, 255, 255, .1);
+    background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
   #customizeButton {
@@ -229,6 +238,15 @@
     position: fixed;
     text-shadow: var(--ntp-theme-text-shadow);
     z-index: -1;
+  }
+
+  :host([remove-scrim_]) #backgroundImageAttribution {
+    background-color: var(--ntp-protected-icon-background-color);
+    text-shadow: none;
+  }
+
+  :host([remove-scrim_]) #backgroundImageAttribution:hover {
+    background-color: var(--ntp-protected-icon-background-color-hovered);
   }
 
   :host-context([dir='ltr']) #backgroundImageAttribution {

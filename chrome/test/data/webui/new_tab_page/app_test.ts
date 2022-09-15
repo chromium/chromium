@@ -168,6 +168,45 @@ suite('NewTabPageAppTest', () => {
     }
   });
 
+  [true, false].forEach((removeScrim) => {
+    suite(`ogb theming removeScrim is ${removeScrim}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({removeScrim});
+      });
+
+      test('Ogb updates on ntp load', async () => {
+        // Act.
+
+        // Create a dark mode theme with a custom background.
+        const theme = createTheme(true);
+        theme.backgroundImage = createBackgroundImage('https://foo.com');
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+
+        // Notify the NTP that the ogb has loaded.
+        window.dispatchEvent(new MessageEvent('message', {
+          data: {
+            frameType: 'one-google-bar',
+            messageType: 'loaded',
+          },
+          source: window,
+          origin: window.origin,
+        }));
+
+        // Assert.
+
+        // Dark mode themes with background images and removeScrim set should
+        // apply background protection to the ogb.
+        assertEquals(1, windowProxy.getCallCount('postMessage'));
+        const [_, {type, applyLightTheme, applyBackgroundProtection}] =
+            windowProxy.getArgs('postMessage')[0];
+        assertEquals('updateAppearance', type);
+        assertEquals(true, applyLightTheme);
+        assertEquals(removeScrim, applyBackgroundProtection);
+      });
+    });
+  });
+
   suite('theming', () => {
     test('setting theme updates customize dialog', async () => {
       // Arrange.

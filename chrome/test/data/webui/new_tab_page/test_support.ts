@@ -87,14 +87,13 @@ export function createBackgroundImage(url: string): BackgroundImage {
   };
 }
 
-export function createTheme(): Theme {
+export function createTheme(isDark: boolean = false): Theme {
   const mostVisited = {
     backgroundColor: {value: 0xff00ff00},
-    isDark: false,
+    isDark,
     useTitlePill: false,
     useWhiteTileIcon: false,
   };
-
   return {
     backgroundColor: {value: 0xffff0000},
     backgroundImage: undefined,
@@ -102,7 +101,7 @@ export function createTheme(): Theme {
     backgroundImageAttribution2: '',
     backgroundImageAttributionUrl: undefined,
     dailyRefreshCollectionId: '',
-    isDark: false,
+    isDark,
     logoColor: undefined,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},

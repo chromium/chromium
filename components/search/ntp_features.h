@@ -54,6 +54,7 @@ extern const base::Feature kNtpPhotosModuleSplitSvgOptInArtWork;
 extern const base::Feature kNtpFeedModule;
 extern const base::Feature kNtpOneGoogleBar;
 extern const base::Feature kNtpRecipeTasksModule;
+extern const base::Feature kNtpRemoveScrim;
 extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpShortcuts;
 

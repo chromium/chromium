@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
@@ -267,7 +268,24 @@ class NewTabPageHandlerTest : public testing::Test {
   PromoServiceObserver* promo_service_observer_;
 };
 
-TEST_F(NewTabPageHandlerTest, SetTheme) {
+class NewTabPageHandlerThemeTest : public NewTabPageHandlerTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  NewTabPageHandlerThemeTest() {
+    if (RemoveScrim()) {
+      feature_list_.InitAndEnableFeature(ntp_features::kNtpRemoveScrim);
+    } else {
+      feature_list_.InitAndDisableFeature(ntp_features::kNtpRemoveScrim);
+    }
+  }
+
+  bool RemoveScrim() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
@@ -324,6 +342,12 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   EXPECT_EQ("no-repeat", theme->background_image->repeat_y);
   EXPECT_EQ("center", theme->background_image->position_x);
   EXPECT_EQ("top", theme->background_image->position_y);
+  if (RemoveScrim()) {
+    EXPECT_TRUE(theme->background_image->scrim_display.has_value());
+    EXPECT_EQ("none", theme->background_image->scrim_display.value());
+  } else {
+    EXPECT_FALSE(theme->background_image->scrim_display.has_value());
+  }
   EXPECT_FALSE(theme->background_image_attribution_1.has_value());
   EXPECT_FALSE(theme->background_image_attribution_2.has_value());
   EXPECT_FALSE(theme->background_image_attribution_url.has_value());
@@ -334,7 +358,7 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   EXPECT_EQ(false, theme->most_visited->is_dark);
 }
 
-TEST_F(NewTabPageHandlerTest, SetCustomBackground) {
+TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
   new_tab_page::mojom::ThemePtr theme;
   EXPECT_CALL(mock_page_, SetTheme)
       .Times(1)
@@ -374,7 +398,15 @@ TEST_F(NewTabPageHandlerTest, SetCustomBackground) {
   EXPECT_EQ("bar line", theme->background_image_attribution_2);
   EXPECT_EQ("https://foo.com/action", theme->background_image_attribution_url);
   EXPECT_EQ("baz collection", theme->daily_refresh_collection_id);
+  if (RemoveScrim()) {
+    EXPECT_TRUE(theme->background_image->scrim_display.has_value());
+    EXPECT_EQ("none", theme->background_image->scrim_display.value());
+  } else {
+    EXPECT_FALSE(theme->background_image->scrim_display.has_value());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, NewTabPageHandlerThemeTest, ::testing::Bool());
 
 TEST_F(NewTabPageHandlerTest, Histograms) {
   histogram_tester_.ExpectTotalCount(

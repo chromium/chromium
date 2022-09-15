@@ -110,18 +110,6 @@ export class AppElement extends PolymerElement {
         },
       },
 
-      oneGoogleBarLoaded_: {
-        type: Boolean,
-        observer: 'notifyOneGoogleBarDarkThemeEnabledChange_',
-      },
-
-      oneGoogleBarDarkThemeEnabled_: {
-        type: Boolean,
-        computed: `computeOneGoogleBarDarkThemeEnabled_(oneGoogleBarLoaded_,
-            theme_)`,
-        observer: 'notifyOneGoogleBarDarkThemeEnabledChange_',
-      },
-
       theme_: {
         observer: 'onThemeChange_',
         type: Object,
@@ -261,6 +249,12 @@ export class AppElement extends PolymerElement {
         observer: 'onPromoAndModulesLoadedChange_',
       },
 
+      removeScrim_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('removeScrim'),
+        reflectToAttribute: true,
+      },
+
       /**
        * If true, renders additional elements that were not deemed crucial to
        * to show up immediately on load.
@@ -269,9 +263,14 @@ export class AppElement extends PolymerElement {
     };
   }
 
+  static get observers() {
+    return [
+      'udpateOneGoogleBarAppearance_(oneGoogleBarLoaded_, removeScrim_, showBackgroundImage_, theme_)',
+    ];
+  }
+
   private oneGoogleBarIframePath_: string;
   private oneGoogleBarLoaded_: boolean;
-  private oneGoogleBarDarkThemeEnabled_: boolean;
   private theme_: Theme;
   private showCustomizeDialog_: boolean;
   private selectedCustomizeDialogPage_: string|null;
@@ -298,6 +297,7 @@ export class AppElement extends PolymerElement {
   private modulesLoaded_: boolean;
   private modulesShownToUser: boolean;
   private promoAndModulesLoaded_: boolean;
+  private removeScrim_: boolean;
   private lazyRender_: boolean;
 
   private callbackRouter_: PageCallbackRouter;
@@ -405,15 +405,18 @@ export class AppElement extends PolymerElement {
     performance.measure('app-creation', 'app-creation-start');
   }
 
-  private computeOneGoogleBarDarkThemeEnabled_(): boolean {
-    return this.theme_ && this.theme_.isDark;
-  }
-
-  private notifyOneGoogleBarDarkThemeEnabledChange_() {
+  // Called to update the OGB of relevant NTP state changes.
+  private udpateOneGoogleBarAppearance_() {
     if (this.oneGoogleBarLoaded_) {
+      const isNtpDarkTheme = this.theme_ && this.theme_.isDark;
       $$<IframeElement>(this, '#oneGoogleBar')!.postMessage({
-        type: 'enableDarkTheme',
-        enabled: this.oneGoogleBarDarkThemeEnabled_,
+        type: 'updateAppearance',
+        // We should be using a light OGB for dark themes and vice versa.
+        applyLightTheme: isNtpDarkTheme,
+        // Only apply background protection if using a custom background in
+        // combination with a light OGB theme.
+        applyBackgroundProtection:
+            this.removeScrim_ && this.showBackgroundImage_ && isNtpDarkTheme,
       });
     }
   }

@@ -28,6 +28,14 @@ TEST_F('NewTabPageAppTest', 'Misc', function() {
   runMochaSuite('NewTabPageAppTest misc');
 });
 
+TEST_F('NewTabPageAppTest', 'OgbThemingRemoveScrimFalse', function() {
+  runMochaSuite('NewTabPageAppTest ogb theming removeScrim is false');
+});
+
+TEST_F('NewTabPageAppTest', 'OgbThemingRemoveScrimTrue', function() {
+  runMochaSuite('NewTabPageAppTest ogb theming removeScrim is true');
+});
+
 TEST_F('NewTabPageAppTest', 'Theming', function() {
   runMochaSuite('NewTabPageAppTest theming');
 });
