@@ -5100,6 +5100,30 @@
             ]
         }
     ],
+    "IOSAutofillBranding": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillBrandingIOS"
+                    ]
+                },
+                {
+                    "name": "Enabled (Monotone)",
+                    "params": {
+                        "ios-autofill-branding-monotones": "true"
+                    },
+                    "enable_features": [
+                        "AutofillBrandingIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBackgroundRefresh": [
         {
             "platforms": [
