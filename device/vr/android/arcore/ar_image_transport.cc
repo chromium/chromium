@@ -128,8 +128,8 @@ void ArImageTransport::OnFrameAvailable() {
   // UV transform, that's usually a Y flip.
   transport_surface_texture_->GetTransformMatrix(
       &transport_surface_texture_uv_matrix_[0]);
-  transport_surface_texture_uv_transform_.matrix().setColMajor(
-      transport_surface_texture_uv_matrix_);
+  transport_surface_texture_uv_transform_ =
+      gfx::Transform::ColMajorF(transport_surface_texture_uv_matrix_);
 
   on_transport_frame_available_.Run(transport_surface_texture_uv_transform_);
 }
@@ -375,7 +375,7 @@ void ArImageTransport::CopyTextureToFramebuffer(
 
   // Draw the ARCore texture!
   float uv_transform_floats[16];
-  uv_transform.matrix().getColMajor(uv_transform_floats);
+  uv_transform.GetColMajorF(uv_transform_floats);
   ar_renderer_->Draw(texture, uv_transform_floats);
 }
 

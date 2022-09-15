@@ -83,10 +83,10 @@ gfx::Transform GetContentTransform(const gfx::RectF& bounds) {
   // old WebVR convention with origin at top left, so the Y range needs to be
   // mirrored.
   gfx::Transform transform;
-  transform.matrix().setRC(0, 0, bounds.width());
-  transform.matrix().setRC(1, 1, bounds.height());
-  transform.matrix().setRC(0, 3, bounds.x());
-  transform.matrix().setRC(1, 3, 1.f - bounds.y() - bounds.height());
+  transform.set_rc(0, 0, bounds.width());
+  transform.set_rc(1, 1, bounds.height());
+  transform.set_rc(0, 3, bounds.x());
+  transform.set_rc(1, 3, 1.f - bounds.y() - bounds.height());
   return transform;
 }
 
@@ -97,10 +97,8 @@ gfx::Size GetCameraImageSize(const gfx::Size& in, const gfx::Transform& xform) {
   // leaving just the scaling factors.
   double x = in.width();
   double y = in.height();
-  int width = std::round(
-      std::abs(x * xform.matrix().rc(0, 0) + y * xform.matrix().rc(1, 0)));
-  int height = std::round(
-      std::abs(x * xform.matrix().rc(0, 1) + y * xform.matrix().rc(1, 1)));
+  int width = std::round(std::abs(x * xform.rc(0, 0) + y * xform.rc(1, 0)));
+  int height = std::round(std::abs(x * xform.rc(0, 1) + y * xform.rc(1, 1)));
 
   DVLOG(3) << __func__ << ": uncropped size=" << in.ToString()
            << " cropped/rotated size=" << gfx::Size(width, height).ToString()
@@ -575,11 +573,12 @@ void ArCoreGl::RecalculateUvsAndProjection() {
   constexpr float depth_near = 0.1f;
   constexpr float depth_far = 1000.f;
   projection_ = arcore_->GetProjectionMatrix(depth_near, depth_far);
-  auto m = projection_.matrix();
-  float left = depth_near * (m.rc(2, 0) - 1.f) / m.rc(0, 0);
-  float right = depth_near * (m.rc(2, 0) + 1.f) / m.rc(0, 0);
-  float bottom = depth_near * (m.rc(2, 1) - 1.f) / m.rc(1, 1);
-  float top = depth_near * (m.rc(2, 1) + 1.f) / m.rc(1, 1);
+  float left = depth_near * (projection_.rc(2, 0) - 1.f) / projection_.rc(0, 0);
+  float right =
+      depth_near * (projection_.rc(2, 0) + 1.f) / projection_.rc(0, 0);
+  float bottom =
+      depth_near * (projection_.rc(2, 1) - 1.f) / projection_.rc(1, 1);
+  float top = depth_near * (projection_.rc(2, 1) + 1.f) / projection_.rc(1, 1);
 
   // Also calculate the inverse projection which is needed for converting
   // screen touches to world rays.

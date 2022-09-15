@@ -1152,9 +1152,7 @@ gfx::Transform ArCoreImpl::GetProjectionMatrix(float near, float far) {
   float matrix_4x4[16];
   ArCamera_getProjectionMatrix(arcore_session_.get(), arcore_camera.get(), near,
                                far, matrix_4x4);
-  gfx::Transform result;
-  result.matrix().setColMajor(matrix_4x4);
-  return result;
+  return gfx::Transform::ColMajorF(matrix_4x4);
 }
 
 float ArCoreImpl::GetEstimatedFloorHeight() {
