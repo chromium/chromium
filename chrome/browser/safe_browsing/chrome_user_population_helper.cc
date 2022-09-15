@@ -12,8 +12,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/user_population.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -78,6 +80,10 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
   bool is_history_sync_enabled =
       sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  bool is_signed_in =
+      identity_manager && SyncUtils::IsPrimaryAccountSignedIn(identity_manager);
 
   bool is_under_advanced_protection = false;
 
@@ -108,7 +114,7 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
 
   ChromeUserPopulation population = GetUserPopulation(
       profile->GetPrefs(), profile->IsOffTheRecord(), is_history_sync_enabled,
-      is_under_advanced_protection,
+      is_signed_in, is_under_advanced_protection,
       g_browser_process->browser_policy_connector(), std::move(num_profiles),
       std::move(num_loaded_profiles), std::move(num_open_profiles));
 

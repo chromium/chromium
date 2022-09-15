@@ -43,7 +43,7 @@ TEST(GetUserPopulationTest, PopulatesPopulation) {
   SetSafeBrowsingState(pref_service.get(),
                        SafeBrowsingState::STANDARD_PROTECTION);
   ChromeUserPopulation population =
-      GetUserPopulation(pref_service.get(), false, false, false, nullptr,
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
                         absl::optional<size_t>(), absl::optional<size_t>(),
                         absl::optional<size_t>());
   EXPECT_EQ(population.user_population(), ChromeUserPopulation::SAFE_BROWSING);
@@ -51,7 +51,7 @@ TEST(GetUserPopulationTest, PopulatesPopulation) {
   SetSafeBrowsingState(pref_service.get(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   population =
-      GetUserPopulation(pref_service.get(), false, false, false, nullptr,
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
                         absl::optional<size_t>(), absl::optional<size_t>(),
                         absl::optional<size_t>());
 
@@ -62,7 +62,7 @@ TEST(GetUserPopulationTest, PopulatesPopulation) {
                        SafeBrowsingState::STANDARD_PROTECTION);
   SetExtendedReportingPrefForTests(pref_service.get(), true);
   population =
-      GetUserPopulation(pref_service.get(), false, false, false, nullptr,
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
                         absl::optional<size_t>(), absl::optional<size_t>(),
                         absl::optional<size_t>());
   EXPECT_EQ(population.user_population(),
@@ -76,7 +76,7 @@ TEST(GetUserPopulationTest, PopulatesMBB) {
   pref_service->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   ChromeUserPopulation population =
-      GetUserPopulation(pref_service.get(), false, false, false, nullptr,
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
                         absl::optional<size_t>(), absl::optional<size_t>(),
                         absl::optional<size_t>());
   EXPECT_FALSE(population.is_mbb_enabled());
@@ -84,7 +84,7 @@ TEST(GetUserPopulationTest, PopulatesMBB) {
   pref_service->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   population =
-      GetUserPopulation(pref_service.get(), false, false, false, nullptr,
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
                         absl::optional<size_t>(), absl::optional<size_t>(),
                         absl::optional<size_t>());
   EXPECT_TRUE(population.is_mbb_enabled());
@@ -96,13 +96,13 @@ TEST(GetUserPopulationTest, PopulatesIncognito) {
 
   ChromeUserPopulation population =
       GetUserPopulation(pref_service.get(), /*is_incognito=*/false, false,
-                        false, nullptr, absl::optional<size_t>(),
+                        false, false, nullptr, absl::optional<size_t>(),
                         absl::optional<size_t>(), absl::optional<size_t>());
   EXPECT_FALSE(population.is_incognito());
 
   population =
       GetUserPopulation(pref_service.get(), /*is_incognito=*/true, false, false,
-                        nullptr, absl::optional<size_t>(),
+                        false, nullptr, absl::optional<size_t>(),
                         absl::optional<size_t>(), absl::optional<size_t>());
   EXPECT_TRUE(population.is_incognito());
 }
@@ -112,16 +112,33 @@ TEST(GetUserPopulationTest, PopulatesSync) {
   auto pref_service = CreatePrefService();
 
   ChromeUserPopulation population = GetUserPopulation(
-      pref_service.get(), false, /*is_history_sync_enabled=*/true, false,
+      pref_service.get(), false, /*is_history_sync_enabled=*/true, false, false,
       nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
       absl::optional<size_t>());
   EXPECT_TRUE(population.is_history_sync_enabled());
 
   population = GetUserPopulation(
       pref_service.get(), false, /*is_history_sync_enabled=*/false, false,
-      nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
+      false, nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
       absl::optional<size_t>());
   EXPECT_FALSE(population.is_history_sync_enabled());
+}
+
+TEST(GetUserPopulationTest, PopulatesSignedIn) {
+  base::test::TaskEnvironment task_environment;
+  auto pref_service = CreatePrefService();
+
+  ChromeUserPopulation population =
+      GetUserPopulation(pref_service.get(), false, false, /*is_signed_in=*/true,
+                        false, nullptr, absl::optional<size_t>(),
+                        absl::optional<size_t>(), absl::optional<size_t>());
+  EXPECT_TRUE(population.is_signed_in());
+
+  population = GetUserPopulation(
+      pref_service.get(), false, false, /*is_signed_in=*/false, false, nullptr,
+      absl::optional<size_t>(), absl::optional<size_t>(),
+      absl::optional<size_t>());
+  EXPECT_FALSE(population.is_signed_in());
 }
 
 TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
@@ -129,15 +146,15 @@ TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
   auto pref_service = CreatePrefService();
 
   ChromeUserPopulation population = GetUserPopulation(
-      pref_service.get(), false, false, /*is_under_advanced_protection=*/true,
-      nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
-      absl::optional<size_t>());
+      pref_service.get(), false, false, false,
+      /*is_under_advanced_protection=*/true, nullptr, absl::optional<size_t>(),
+      absl::optional<size_t>(), absl::optional<size_t>());
   EXPECT_TRUE(population.is_under_advanced_protection());
 
   population = GetUserPopulation(
-      pref_service.get(), false, false, /*is_under_advanced_protection=*/false,
-      nullptr, absl::optional<size_t>(), absl::optional<size_t>(),
-      absl::optional<size_t>());
+      pref_service.get(), false, false, false,
+      /*is_under_advanced_protection=*/false, nullptr, absl::optional<size_t>(),
+      absl::optional<size_t>(), absl::optional<size_t>());
   EXPECT_FALSE(population.is_under_advanced_protection());
 }
 
@@ -151,9 +168,9 @@ TEST(GetUserPopulationTest, PopulatesUserAgent) {
         /* enabled_features = */ {},
         /* disabled_features = */ {kBetterTelemetryAcrossReports});
     ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, nullptr,
-                          absl::optional<size_t>(), absl::optional<size_t>(),
-                          absl::optional<size_t>());
+        GetUserPopulation(pref_service.get(), false, false, false, false,
+                          nullptr, absl::optional<size_t>(),
+                          absl::optional<size_t>(), absl::optional<size_t>());
     EXPECT_EQ(population.user_agent(), "");
   }
   {
@@ -165,9 +182,9 @@ TEST(GetUserPopulationTest, PopulatesUserAgent) {
         version_info::GetProductNameAndVersionForUserAgent() + "/" +
         version_info::GetOSType();
     ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, nullptr,
-                          absl::optional<size_t>(), absl::optional<size_t>(),
-                          absl::optional<size_t>());
+        GetUserPopulation(pref_service.get(), false, false, false, false,
+                          nullptr, absl::optional<size_t>(),
+                          absl::optional<size_t>(), absl::optional<size_t>());
     EXPECT_EQ(population.user_agent(), user_agent);
   }
 }
@@ -182,9 +199,9 @@ TEST(GetUserPopulationTest, PopulatesProfileRelatedFields) {
         /* enabled_features = */ {},
         /* disabled_features = */ {kBetterTelemetryAcrossReports});
     ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, nullptr,
-                          absl::optional<size_t>(), absl::optional<size_t>(),
-                          absl::optional<size_t>());
+        GetUserPopulation(pref_service.get(), false, false, false, false,
+                          nullptr, absl::optional<size_t>(),
+                          absl::optional<size_t>(), absl::optional<size_t>());
     EXPECT_EQ(population.number_of_profiles(), 0);
     EXPECT_EQ(population.number_of_loaded_profiles(), 0);
     EXPECT_EQ(population.number_of_open_profiles(), 0);
@@ -192,7 +209,7 @@ TEST(GetUserPopulationTest, PopulatesProfileRelatedFields) {
     // If |kBetterTelemetryAcrossReports| is disabled, these fields should not
     // be populated even if the caller passes values for them.
     population = GetUserPopulation(
-        pref_service.get(), false, false, false, nullptr,
+        pref_service.get(), false, false, false, false, nullptr,
         /*num_profiles=*/3, /*num_loaded_profiles=*/2, /*num_open_profiles=*/1);
     EXPECT_EQ(population.number_of_profiles(), 0);
     EXPECT_EQ(population.number_of_loaded_profiles(), 0);
@@ -205,9 +222,9 @@ TEST(GetUserPopulationTest, PopulatesProfileRelatedFields) {
         /* disabled_features = */ {});
 
     ChromeUserPopulation population =
-        GetUserPopulation(pref_service.get(), false, false, false, nullptr,
-                          absl::optional<size_t>(), absl::optional<size_t>(),
-                          absl::optional<size_t>());
+        GetUserPopulation(pref_service.get(), false, false, false, false,
+                          nullptr, absl::optional<size_t>(),
+                          absl::optional<size_t>(), absl::optional<size_t>());
     EXPECT_EQ(population.number_of_profiles(), 0);
     EXPECT_EQ(population.number_of_loaded_profiles(), 0);
     EXPECT_EQ(population.number_of_open_profiles(), 0);
@@ -215,7 +232,7 @@ TEST(GetUserPopulationTest, PopulatesProfileRelatedFields) {
     // If |kBetterTelemetryAcrossReports| is enabled, these fields should be
     // populated if the caller passes values for them.
     population = GetUserPopulation(
-        pref_service.get(), false, false, false, nullptr,
+        pref_service.get(), false, false, false, false, nullptr,
         /*num_profiles=*/3, /*num_loaded_profiles=*/2, /*num_open_profiles=*/1);
     EXPECT_EQ(population.number_of_profiles(), 3);
     EXPECT_EQ(population.number_of_loaded_profiles(), 2);

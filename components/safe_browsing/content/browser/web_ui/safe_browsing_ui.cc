@@ -735,6 +735,10 @@ base::Value::Dict SerializeChromeUserPopulation(
   }
   population_dict.Set("page_load_tokens", std::move(page_load_tokens));
 
+  if (population.has_is_signed_in()) {
+    population_dict.Set("is_signed_in", population.is_signed_in());
+  }
+
   return population_dict;
 }
 
