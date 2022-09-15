@@ -31,15 +31,13 @@ class WebContents;
 namespace media_router {
 class MediaRouter;
 class QueryResultManager;
+struct MediaRouterUIParameters;
 
 // Provides cast services (lists of sinks, routes, start & terminate route) to
 // UI controllers
 class MediaRouteStarter : public content::PresentationObserver {
  public:
-  MediaRouteStarter(
-      const CastModeSet& initial_modes,
-      content::WebContents* web_contents,
-      std::unique_ptr<StartPresentationContext> start_presentation_context);
+  explicit MediaRouteStarter(MediaRouterUIParameters params);
   MediaRouteStarter(const MediaRouteStarter&) = delete;
   MediaRouteStarter& operator=(const MediaRouteStarter&) = delete;
 
@@ -110,6 +108,9 @@ class MediaRouteStarter : public content::PresentationObserver {
 
   void InitPresentationSources(const CastModeSet& initial_modes);
   void InitMirroringSources(const CastModeSet& initial_modes);
+  void InitRemotePlaybackSources(const CastModeSet& initial_modes,
+                                 media::VideoCodec video_codec,
+                                 media::AudioCodec audio_codec);
 
   content::BrowserContext* GetBrowserContext() const;
 

@@ -36,7 +36,8 @@ class AccessCodeCastDialogBrowserTest : public DialogBrowserTest {
     content::WebContents* web_contents =
         chrome_test_utils::GetActiveWebContents(this);
     std::unique_ptr<MediaRouteStarter> starter =
-        std::make_unique<MediaRouteStarter>(tab_mode, web_contents, nullptr);
+        std::make_unique<MediaRouteStarter>(
+            MediaRouterUIParameters(tab_mode, web_contents));
     AccessCodeCastDialog::Show(
         tab_mode, std::move(starter),
         AccessCodeCastDialogOpenLocation::kBrowserCastMenu);

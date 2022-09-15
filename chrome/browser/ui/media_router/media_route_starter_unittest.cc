@@ -48,13 +48,14 @@ namespace {
 constexpr char kPresentationId[] = "session-67890";
 constexpr char kLoggerComponent[] = "MediaRouteStarterTests";
 
-const CastModeSet kAllModes = {MediaCastMode::PRESENTATION,
-                               MediaCastMode::TAB_MIRROR,
-                               MediaCastMode::DESKTOP_MIRROR};
+const CastModeSet kDefaultModes = {MediaCastMode::PRESENTATION,
+                                   MediaCastMode::TAB_MIRROR,
+                                   MediaCastMode::DESKTOP_MIRROR};
 const CastModeSet kMirroringOnly = {MediaCastMode::TAB_MIRROR,
                                     MediaCastMode::DESKTOP_MIRROR};
 const CastModeSet kPresentationOnly = {MediaCastMode::PRESENTATION};
 const CastModeSet kDestkopMirrorOnly = {MediaCastMode::DESKTOP_MIRROR};
+const CastModeSet kRemotePlaybackOnly = {MediaCastMode::REMOTE_PLAYBACK};
 
 constexpr char kDefaultPresentationUrl[] = "https://defaultpresentation.com/";
 constexpr char kDefaultOriginUrl[] = "https://default.fakeurl/";
@@ -144,7 +145,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
     cast_sink_ = CreateCastSink(1);
     dial_sink_ = CreateDialSink(1);
 
-    CreateStarter(kAllModes, web_contents(), nullptr);
+    CreateStarterForDefaultModes();
   }
 
   void TearDown() override {
@@ -166,12 +167,12 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
         original_profile, base::BindRepeating(&MockMediaRouter::Create));
   }
 
-  void CreateStarter(
-      CastModeSet supported_modes,
-      content::WebContents* web_contents,
-      std::unique_ptr<StartPresentationContext> start_presentation_context) {
-    starter_ = std::make_unique<MediaRouteStarter>(
-        supported_modes, web_contents, std::move(start_presentation_context));
+  void CreateStarterForDefaultModes() {
+    CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents()));
+  }
+
+  void CreateStarter(MediaRouterUIParameters params) {
+    starter_ = std::make_unique<MediaRouteStarter>(std::move(params));
     starter_->SetLoggerComponent(kLoggerComponent);
     ON_CALL(*media_router(), GetLogger()).WillByDefault(Return(logger_.get()));
     // Store sink observers so that they can be notified in tests.
@@ -280,8 +281,9 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
                            base::Unretained(request_callbacks.get())),
             base::BindOnce(&PresentationRequestCallbacks::Error,
                            base::Unretained(request_callbacks.get())));
-    CreateStarter(kPresentationOnly, web_contents(),
-                  std::move(start_presentation_context));
+    CreateStarter(
+        MediaRouterUIParameters(kPresentationOnly, web_contents(),
+                                std::move(start_presentation_context)));
     return request_callbacks;
   }
 
@@ -418,7 +420,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
 // Demonstrates that when initialized with webcontents but no presentation
 // source the supported modes are mirroring only.
 TEST_F(MediaRouteStarterTest, Defaults_NoPresentation) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
   EXPECT_EQ(kMirroringOnly, query_result_manager()->GetSupportedCastModes());
 }
 
@@ -428,8 +430,8 @@ TEST_F(MediaRouteStarterTest, Defaults_WebContentPresentation) {
   presentation_manager()->SetDefaultPresentationRequest(
       default_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(), nullptr);
-  EXPECT_EQ(kAllModes, query_result_manager()->GetSupportedCastModes());
+  CreateStarterForDefaultModes();
+  EXPECT_EQ(kDefaultModes, query_result_manager()->GetSupportedCastModes());
 }
 
 // Demonstrates that if caller doesn't request mirroring that it is not
@@ -438,7 +440,7 @@ TEST_F(MediaRouteStarterTest, Defaults_WebContentPresentationOnly) {
   presentation_manager()->SetDefaultPresentationRequest(
       default_presentation_request());
 
-  CreateStarter(kPresentationOnly, web_contents(), nullptr);
+  CreateStarter(MediaRouterUIParameters(kPresentationOnly, web_contents()));
   EXPECT_EQ(kPresentationOnly, query_result_manager()->GetSupportedCastModes());
 }
 
@@ -449,9 +451,9 @@ TEST_F(MediaRouteStarterTest, Defaults_StartPresentationContext) {
   auto start_presentation_context =
       CreateStartPresentationContext(start_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(),
-                std::move(start_presentation_context));
-  EXPECT_EQ(kAllModes, query_result_manager()->GetSupportedCastModes());
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents(),
+                                        std::move(start_presentation_context)));
+  EXPECT_EQ(kDefaultModes, query_result_manager()->GetSupportedCastModes());
 
   // This is to deal with the error callback in the d'tor that's not part of
   // this test. See the Dtor_* tests below where this case is actually
@@ -459,10 +461,19 @@ TEST_F(MediaRouteStarterTest, Defaults_StartPresentationContext) {
   EXPECT_CALL(*this, RequestError(_));
 }
 
+// Demonstrates that when initialized with Remote Playback mode
+TEST_F(MediaRouteStarterTest, Defaults_RemotePlayback) {
+  CreateStarter(MediaRouterUIParameters(kRemotePlaybackOnly, web_contents(),
+                                        nullptr, media::VideoCodec::kVP8,
+                                        media::AudioCodec::kOpus));
+  EXPECT_EQ(kRemotePlaybackOnly,
+            query_result_manager()->GetSupportedCastModes());
+}
+
 // Demonstrates that when initialized with no webcontent or presentation source
 // the supported modes are desktop mirroring only.
 TEST_F(MediaRouteStarterTest, Defaults_NoWebContent) {
-  CreateStarter(kAllModes, nullptr, nullptr);
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, nullptr));
   EXPECT_EQ(kDestkopMirrorOnly,
             query_result_manager()->GetSupportedCastModes());
 }
@@ -471,7 +482,7 @@ TEST_F(MediaRouteStarterTest, Defaults_NoWebContent) {
 // request source has changed, that it alerts observers with the name of that
 // presentation request source.
 TEST_F(MediaRouteStarterTest, OnPresentationRequestSourceUpdated) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
   EXPECT_EQ(kMirroringOnly, query_result_manager()->GetSupportedCastModes());
 
   MockPresentationRequestSourceObserver observer(media_route_starter());
@@ -488,7 +499,7 @@ TEST_F(MediaRouteStarterTest, OnPresentationRequestSourceUpdated) {
 
   // Now that a default presentation has been added the available modes should
   // include presentation.
-  EXPECT_EQ(kAllModes, query_result_manager()->GetSupportedCastModes());
+  EXPECT_EQ(kDefaultModes, query_result_manager()->GetSupportedCastModes());
 }
 
 // Demonstrates that when MediaRouteStarter is notified that there is no
@@ -498,8 +509,8 @@ TEST_F(MediaRouteStarterTest, OnPresentationRequestSourceRemoved) {
   presentation_manager()->SetDefaultPresentationRequest(
       default_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(), nullptr);
-  EXPECT_EQ(kAllModes, query_result_manager()->GetSupportedCastModes());
+  CreateStarterForDefaultModes();
+  EXPECT_EQ(kDefaultModes, query_result_manager()->GetSupportedCastModes());
 
   MockPresentationRequestSourceObserver observer(media_route_starter());
 
@@ -578,7 +589,7 @@ TEST_F(MediaRouteStarterTest, Dtor_AbortError) {
 // CreateRouteParameters returns nothing.
 TEST_F(MediaRouteStarterTest, CreateRouteParameters_NoValidSource) {
   // No presentation available
-  CreateStarter(kMirroringOnly, web_contents(), nullptr);
+  CreateStarter(MediaRouterUIParameters(kMirroringOnly, web_contents()));
 
   // Add a sink
   UpdateSinks({cast_sink().sink()}, std::vector<url::Origin>());
@@ -592,7 +603,7 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_NoValidSource) {
 // Demonstrates that when desktop mirroring is available and requested that the
 // RouteParameters are properly filled out.
 TEST_F(MediaRouteStarterTest, CreateRouteParameters_DesktopMirroring) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   // Add a sink
   UpdateSinks({cast_sink().sink()}, std::vector<url::Origin>());
@@ -616,7 +627,7 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_TabMirroring) {
   SessionID::id_type tab_id =
       sessions::SessionTabHelper::IdForTab(web_contents()).id();
 
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   // Add a sink
   UpdateSinks({cast_sink().sink()}, std::vector<url::Origin>());
@@ -640,7 +651,7 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_WebContentPresentation) {
   presentation_manager()->SetDefaultPresentationRequest(
       default_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   // Add a presentation compatible sink
   UpdateSinks({cast_sink().sink()},
@@ -669,8 +680,8 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_StartPresentationContext) {
   auto start_presentation_context =
       CreateStartPresentationContext(start_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(),
-                std::move(start_presentation_context));
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents(),
+                                        std::move(start_presentation_context)));
 
   // Add a presentation compatible sink
   UpdateSinks({cast_sink().sink()},
@@ -699,7 +710,7 @@ TEST_F(MediaRouteStarterTest, CreateRouteParameters_StartPresentationContext) {
 
 // Demonstrates that desktop mirroring routes are created correctly.
 TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroring) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   set_expected_cast_result(mojom::RouteRequestResultCode::OK);
 
@@ -714,7 +725,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroring) {
 
 // Demonstrates that failures to create desktop mirroring routes are propagated.
 TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroringError) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   set_expected_cast_result(mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
 
@@ -726,7 +737,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_DesktopMirroringError) {
 
 // Demonstrates that tab mirroring routes are created correctly.
 TEST_F(MediaRouteStarterTest, StartRoute_TabMirroring) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   set_expected_cast_result(mojom::RouteRequestResultCode::OK);
 
@@ -742,7 +753,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_TabMirroring) {
 
 // Demonstrates that failures to create tab mirroring routes are propagated.
 TEST_F(MediaRouteStarterTest, StartRoute_TabMirroringError) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   set_expected_cast_result(mojom::RouteRequestResultCode::INVALID_ORIGIN);
 
@@ -758,7 +769,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_WebContentPresentation) {
   presentation_manager()->SetDefaultPresentationRequest(
       default_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   set_expected_cast_result(mojom::RouteRequestResultCode::OK);
   auto expected_result =
@@ -781,7 +792,7 @@ TEST_F(MediaRouteStarterTest, StartRoute_WebContentPresentationError) {
   presentation_manager()->SetDefaultPresentationRequest(
       default_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   set_expected_cast_result(mojom::RouteRequestResultCode::INVALID_ORIGIN);
   EXPECT_CALL(*presentation_manager(),
@@ -799,8 +810,8 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext) {
   auto start_presentation_context =
       CreateStartPresentationContext(start_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(),
-                std::move(start_presentation_context));
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents(),
+                                        std::move(start_presentation_context)));
 
   set_expected_cast_result(mojom::RouteRequestResultCode::OK);
   auto expected_result =
@@ -821,8 +832,8 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContextError) {
   auto start_presentation_context =
       CreateStartPresentationContext(start_presentation_request());
 
-  CreateStarter(kAllModes, web_contents(),
-                std::move(start_presentation_context));
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents(),
+                                        std::move(start_presentation_context)));
 
   set_expected_cast_result(
       mojom::RouteRequestResultCode::NO_SUPPORTED_PROVIDER);
@@ -884,7 +895,7 @@ class MediaRouteStarterIncognitoTest : public MediaRouteStarterTest {
 // RouteParameters are properly filled out - particularly that the off the
 // record is now true.
 TEST_F(MediaRouteStarterIncognitoTest, CreateRouteParameters_TabMirroring) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   // Add a sink
   UpdateSinks({cast_sink().sink()}, std::vector<url::Origin>());
@@ -898,7 +909,7 @@ TEST_F(MediaRouteStarterIncognitoTest, CreateRouteParameters_TabMirroring) {
 // Basically the same as the on the record case, but demonstrates that
 // the incognito parameter is passed into MR.
 TEST_F(MediaRouteStarterIncognitoTest, StartRoute_TabMirroring) {
-  CreateStarter(kAllModes, web_contents(), nullptr);
+  CreateStarterForDefaultModes();
 
   set_expected_cast_result(mojom::RouteRequestResultCode::OK);
 

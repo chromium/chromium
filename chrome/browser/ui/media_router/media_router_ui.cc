@@ -95,29 +95,26 @@ MediaRouterUI::~MediaRouterUI() {
 
 // static
 std::unique_ptr<MediaRouterUI> MediaRouterUI::CreateMediaRouterUI(
-    const CastModeSet& initial_modes,
-    content::WebContents* initiator,
-    std::unique_ptr<StartPresentationContext> start_presentation_context) {
-  DCHECK(initiator) << "Must have an initiator!";
-  auto media_route_starter = std::make_unique<MediaRouteStarter>(
-      initial_modes, initiator, std::move(start_presentation_context));
-  return std::make_unique<MediaRouterUI>(std::move(media_route_starter));
+    MediaRouterUIParameters params) {
+  DCHECK(params.initiator) << "Must have an initiator!";
+  return std::make_unique<MediaRouterUI>(
+      std::make_unique<MediaRouteStarter>(std::move(params)));
 }
 
 std::unique_ptr<MediaRouterUI> MediaRouterUI::CreateWithDefaultMediaSource(
     content::WebContents* initiator) {
-  return CreateMediaRouterUI({MediaCastMode::PRESENTATION}, initiator,
-                             /* start_presentation_context */ nullptr);
+  return CreateMediaRouterUI(
+      MediaRouterUIParameters({MediaCastMode::PRESENTATION}, initiator));
 }
 
 // static
 std::unique_ptr<MediaRouterUI>
 MediaRouterUI::CreateWithDefaultMediaSourceAndMirroring(
     content::WebContents* initiator) {
-  return CreateMediaRouterUI(
+  return CreateMediaRouterUI(MediaRouterUIParameters(
       {MediaCastMode::PRESENTATION, MediaCastMode::TAB_MIRROR,
        MediaCastMode::DESKTOP_MIRROR},
-      initiator, /* start_presentation_context */ nullptr);
+      initiator));
 }
 
 // static
@@ -126,8 +123,8 @@ MediaRouterUI::CreateWithStartPresentationContext(
     content::WebContents* initiator,
     std::unique_ptr<StartPresentationContext> context) {
   DCHECK(context) << "context must not be null!";
-  return CreateMediaRouterUI({MediaCastMode::PRESENTATION}, initiator,
-                             std::move(context));
+  return CreateMediaRouterUI(MediaRouterUIParameters(
+      {MediaCastMode::PRESENTATION}, initiator, std::move(context)));
 }
 
 // static
@@ -136,10 +133,23 @@ MediaRouterUI::CreateWithStartPresentationContextAndMirroring(
     content::WebContents* initiator,
     std::unique_ptr<StartPresentationContext> context) {
   DCHECK(context) << "context must not be null!";
-  return CreateMediaRouterUI(
+  return CreateMediaRouterUI(MediaRouterUIParameters(
       {MediaCastMode::PRESENTATION, MediaCastMode::TAB_MIRROR,
        MediaCastMode::DESKTOP_MIRROR},
-      initiator, std::move(context));
+      initiator, std::move(context)));
+}
+
+// static
+std::unique_ptr<MediaRouterUI>
+MediaRouterUI::CreateWithMediaSessionRemotePlayback(
+    content::WebContents* initiator,
+    media::VideoCodec video_codec,
+    media::AudioCodec audio_codec) {
+  DCHECK(video_codec != media::VideoCodec::kUnknown) << "Unknown video codec.";
+  DCHECK(audio_codec != media::AudioCodec::kUnknown) << "Unknown audio codec.";
+  return CreateMediaRouterUI(
+      MediaRouterUIParameters({MediaCastMode::REMOTE_PLAYBACK}, initiator,
+                              nullptr, video_codec, audio_codec));
 }
 
 void MediaRouterUI::DetachFromMediaRouteStarter() {

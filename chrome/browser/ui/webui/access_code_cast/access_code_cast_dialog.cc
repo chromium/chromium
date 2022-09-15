@@ -107,7 +107,8 @@ void AccessCodeCastDialog::ShowForDesktopMirroring(
     AccessCodeCastDialogOpenLocation open_location) {
   CastModeSet desktop_mode = {MediaCastMode::DESKTOP_MIRROR};
   std::unique_ptr<MediaRouteStarter> starter =
-      std::make_unique<MediaRouteStarter>(desktop_mode, nullptr, nullptr);
+      std::make_unique<MediaRouteStarter>(
+          MediaRouterUIParameters(desktop_mode, nullptr));
   Show(desktop_mode, std::move(starter), open_location,
        AccessCodeCastDialogMode::kSystem);
 }

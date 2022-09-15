@@ -8,12 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
 #include "url/origin.h"
 
 namespace extensions {
@@ -23,6 +26,8 @@ class ExtensionRegistry;
 class GURL;
 
 namespace media_router {
+
+class StartPresentationContext;
 
 // Returns the extension name for |url|, so that it can be displayed for
 // extension-initiated presentations.
@@ -56,6 +61,31 @@ struct RouteRequest {
 
   int id;
   MediaSink::Id sink_id;
+};
+
+// Contains parameters passed to MediaRouterUI's constructor.
+struct MediaRouterUIParameters {
+  MediaRouterUIParameters(
+      CastModeSet initial_modes,
+      content::WebContents* initiator,
+      std::unique_ptr<StartPresentationContext> start_presentation_context =
+          nullptr,
+      media::VideoCodec video_codec = media::VideoCodec::kUnknown,
+      media::AudioCodec audio_codec = media::AudioCodec::kUnknown);
+
+  MediaRouterUIParameters(const MediaRouterUIParameters& other) = delete;
+  MediaRouterUIParameters(MediaRouterUIParameters&& other);
+  ~MediaRouterUIParameters();
+  MediaRouterUIParameters& operator=(MediaRouterUIParameters&) = delete;
+  MediaRouterUIParameters& operator=(MediaRouterUIParameters&&) = default;
+
+  CastModeSet initial_modes;
+  raw_ptr<content::WebContents> initiator;
+  // Used to initialize MediaRouterUI with a PresentationRequest.
+  std::unique_ptr<StartPresentationContext> start_presentation_context;
+  // Used to initialize MediaRouterUI with RemotePlayback Media Source.
+  media::VideoCodec video_codec;
+  media::AudioCodec audio_codec;
 };
 
 // Contains common parameters for route requests to MediaRouter.

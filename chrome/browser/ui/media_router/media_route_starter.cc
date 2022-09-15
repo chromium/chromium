@@ -50,21 +50,21 @@ void RunRouteResponseCallbacks(
 
 }  // namespace
 
-MediaRouteStarter::MediaRouteStarter(
-    const CastModeSet& initial_modes,
-    content::WebContents* web_contents,
-    std::unique_ptr<StartPresentationContext> start_presentation_context)
-    : web_contents_(web_contents),
-      start_presentation_context_(std::move(start_presentation_context)),
+MediaRouteStarter::MediaRouteStarter(MediaRouterUIParameters params)
+    : web_contents_(params.initiator),
+      start_presentation_context_(std::move(params.start_presentation_context)),
       presentation_manager_(
-          web_contents ? WebContentsPresentationManager::Get(web_contents)
-                       : nullptr),
+          params.initiator
+              ? WebContentsPresentationManager::Get(params.initiator)
+              : nullptr),
       query_result_manager_(
           std::make_unique<QueryResultManager>(GetMediaRouter())) {
   if (presentation_manager_)
     presentation_manager_->AddObserver(this);
-  InitPresentationSources(initial_modes);
-  InitMirroringSources(initial_modes);
+  InitPresentationSources(params.initial_modes);
+  InitMirroringSources(params.initial_modes);
+  InitRemotePlaybackSources(params.initial_modes, params.video_codec,
+                            params.audio_codec);
 }
 
 MediaRouteStarter::~MediaRouteStarter() {
@@ -280,6 +280,26 @@ void MediaRouteStarter::InitMirroringSources(const CastModeSet& initial_modes) {
           MediaCastMode::TAB_MIRROR, {mirroring_source}, origin);
     }
   }
+}
+
+void MediaRouteStarter::InitRemotePlaybackSources(
+    const CastModeSet& initial_modes,
+    media::VideoCodec video_codec,
+    media::AudioCodec audio_codec) {
+  if (!IsCastModeAvailable(initial_modes, MediaCastMode::REMOTE_PLAYBACK)) {
+    return;
+  }
+  DCHECK(video_codec != media::VideoCodec::kUnknown) << "Unknown video codec.";
+  DCHECK(audio_codec != media::AudioCodec::kUnknown) << "Unknown audio codec.";
+
+  // Use a placeholder URL as origin for Remote Playback.
+  url::Origin origin = url::Origin::Create(GURL());
+  SessionID::id_type tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_).id();
+  GetQueryResultManager()->SetSourcesForCastMode(
+      MediaCastMode::REMOTE_PLAYBACK,
+      {MediaSource::ForRemotePlayback(tab_id, video_codec, audio_codec)},
+      origin);
 }
 
 content::BrowserContext* MediaRouteStarter::GetBrowserContext() const {

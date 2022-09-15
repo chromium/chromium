@@ -7,6 +7,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "url/gurl.h"
 
@@ -113,5 +114,22 @@ RouteParameters::RouteParameters(RouteParameters&& other) = default;
 RouteParameters::~RouteParameters() = default;
 
 RouteParameters& RouteParameters::operator=(RouteParameters&& other) = default;
+
+MediaRouterUIParameters::MediaRouterUIParameters(
+    CastModeSet initial_modes,
+    content::WebContents* initiator,
+    std::unique_ptr<StartPresentationContext> start_presentation_context,
+    media::VideoCodec video_codec,
+    media::AudioCodec audio_codec)
+    : initial_modes(initial_modes),
+      initiator(initiator),
+      start_presentation_context(std::move(start_presentation_context)),
+      video_codec(video_codec),
+      audio_codec(audio_codec) {}
+
+MediaRouterUIParameters::MediaRouterUIParameters(
+    MediaRouterUIParameters&& other) = default;
+
+MediaRouterUIParameters::~MediaRouterUIParameters() = default;
 
 }  // namespace media_router

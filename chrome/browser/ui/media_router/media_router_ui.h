@@ -86,6 +86,11 @@ class MediaRouterUI : public CastDialogController,
   CreateWithStartPresentationContextAndMirroring(
       content::WebContents* initiator,
       std::unique_ptr<StartPresentationContext> context);
+  // Initializes RemotePlayback source only.
+  static std::unique_ptr<MediaRouterUI> CreateWithMediaSessionRemotePlayback(
+      content::WebContents* initiator,
+      media::VideoCodec video_codec,
+      media::AudioCodec audio_codec);
 
   // CastDialogController:
   void AddObserver(CastDialogController::Observer* observer) override;
@@ -287,9 +292,7 @@ class MediaRouterUI : public CastDialogController,
   // Helper factory that creates both the |MediaRouteStarter| and then a
   // |MediaRouterUI| in a single step.
   static std::unique_ptr<MediaRouterUI> CreateMediaRouterUI(
-      const CastModeSet& initial_modes,
-      content::WebContents* initiator,
-      std::unique_ptr<StartPresentationContext> start_presentation_context);
+      MediaRouterUIParameters params);
 
   raw_ptr<content::WebContentsObserver> web_contents_observer_for_test_ =
       nullptr;

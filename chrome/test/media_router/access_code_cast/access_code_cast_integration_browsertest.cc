@@ -225,7 +225,8 @@ content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
 
   CastModeSet tab_mode = {MediaCastMode::TAB_MIRROR};
   std::unique_ptr<MediaRouteStarter> starter =
-      std::make_unique<MediaRouteStarter>(tab_mode, web_contents(), nullptr);
+      std::make_unique<MediaRouteStarter>(
+          MediaRouterUIParameters(tab_mode, web_contents()));
   AccessCodeCastDialog::Show(
       tab_mode, std::move(starter),
       AccessCodeCastDialogOpenLocation::kBrowserCastMenu);
