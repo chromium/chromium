@@ -2297,6 +2297,15 @@ void ComputedStyle::AddAppliedTextDecoration(
     list = base::MakeRefCounted<AppliedTextDecorationList>(list->data);
 
   list->data.push_back(decoration);
+
+  // Most of the time, this vector will only have a single element,
+  // and thus, the default Vector initial size of 4 is wasteful.
+  //
+  // In the rare case, AddAppliedTextDecoration() might be called twice
+  // for a single element (if it has both a simple underline and another
+  // decoration), and so this will cause two allocations instead of one,
+  // but that is an edge case we're willing to live with.
+  list->data.ShrinkToFit();
 }
 
 void ComputedStyle::OverrideTextDecorationColors(Color override_color) {
