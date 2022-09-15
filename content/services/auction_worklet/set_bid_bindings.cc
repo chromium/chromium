@@ -130,6 +130,10 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   DCHECK(ads_ && ad_components_)
       << "ReInitialize() must be called before each use";
 
+  // Undefined and null are interpreted as choosing not to bid.
+  if (generate_bid_result->IsNullOrUndefined())
+    return false;
+
   if (!generate_bid_result->IsObject()) {
     errors_out.push_back(base::StrCat({error_prefix, "bid not an object."}));
     return false;
@@ -137,11 +141,28 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
 
   gin::Dictionary result_dict(isolate, generate_bid_result.As<v8::Object>());
 
-  v8::Local<v8::Value> ad_object;
   double bid;
+  if (!result_dict.Get("bid", &bid)) {
+    errors_out.push_back(base::StrCat(
+        {error_prefix, "returned object must have numeric bid field."}));
+    return false;
+  }
+
+  if (!std::isfinite(bid)) {
+    // Bids should not be infinite or NaN.
+    errors_out.push_back(base::StringPrintf("%sbid of %lf is not a valid bid.",
+                                            error_prefix.c_str(), bid));
+    return false;
+  }
+  if (bid <= 0.0) {
+    // Not an error, just no bid.
+    return false;
+  }
+
+  v8::Local<v8::Value> ad_object;
   std::string render_url_string;
   // Parse and validate values.
-  if (!result_dict.Get("ad", &ad_object) || !result_dict.Get("bid", &bid) ||
+  if (!result_dict.Get("ad", &ad_object) ||
       !result_dict.Get("render", &render_url_string)) {
     errors_out.push_back(
         base::StrCat({error_prefix, "bid has incorrect structure."}));
@@ -172,17 +193,6 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
                         "set to true. Bid dropped from component auction."}));
       return false;
     }
-  }
-
-  if (!std::isfinite(bid) || bid < 0.0) {
-    // Bids should not be infinite or NaN.
-    errors_out.push_back(base::StringPrintf("%sbid of %lf is not a valid bid.",
-                                            error_prefix.c_str(), bid));
-    return false;
-  }
-  if (bid <= 0.0) {
-    // Not an error, just no bid.
-    return false;
   }
 
   GURL render_url(render_url_string);
