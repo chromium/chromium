@@ -299,6 +299,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   font_name_ = new_theme->font_name;
   font_size_ = new_theme->font_size;
+  letter_spacing_ = GetLetterSpacingValue(new_theme->letter_spacing);
   foreground_color_ = new_theme->foreground_color;
   background_color_ = new_theme->background_color;
 
@@ -315,6 +316,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("displayNodeIds", &ReadAnythingAppController::DisplayNodeIds)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
+      .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
       .SetProperty("foregroundColor",
                    &ReadAnythingAppController::ForegroundColor)
       .SetProperty("backgroundColor",
@@ -343,6 +345,10 @@ std::string ReadAnythingAppController::FontName() {
 
 float ReadAnythingAppController::FontSize() {
   return font_size_;
+}
+
+float ReadAnythingAppController::LetterSpacing() {
+  return letter_spacing_;
 }
 
 SkColor ReadAnythingAppController::ForegroundColor() {
@@ -421,9 +427,10 @@ void ReadAnythingAppController::OnConnected() {
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    float font_size,
                                                    SkColor foreground_color,
-                                                   SkColor background_color) {
+                                                   SkColor background_color,
+                                                   int letter_spacing) {
   OnThemeChanged(ReadAnythingTheme::New(font_name, font_size, foreground_color,
-                                        background_color));
+                                        background_color, letter_spacing));
 }
 
 void ReadAnythingAppController::SetContentForTesting(
@@ -433,6 +440,20 @@ void ReadAnythingAppController::SetContentForTesting(
   ui::AXTreeUpdate snapshot =
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
   OnAXTreeDistilled(snapshot, content_node_ids);
+}
+
+double ReadAnythingAppController::GetLetterSpacingValue(int letter_spacing) {
+  auto ls = static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
+  switch (ls) {
+    case read_anything::mojom::LetterSpacing::kTight:
+      return -0.05;
+    case read_anything::mojom::LetterSpacing::kDefault:
+      return 0;
+    case read_anything::mojom::LetterSpacing::kLoose:
+      return 0.05;
+    case read_anything::mojom::LetterSpacing::kVeryLoose:
+      return 0.1;
+  }
 }
 
 ui::AXNode* ReadAnythingAppController::GetAXNode(ui::AXNodeID ax_node_id) {

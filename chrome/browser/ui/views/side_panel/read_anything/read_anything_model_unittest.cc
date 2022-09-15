@@ -134,16 +134,26 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedColorsIndex) {
   model_->SetSelectedColorsByIndex(2);
 }
 
+TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLetterSpacingIndex) {
+  model_->AddObserver(&model_observer_1_);
+
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
+
+  model_->SetSelectedLetterSpacingByIndex(2);
+}
+
 TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
   std::string font_name;
-  model_->Init(font_name, 0.3, read_anything::mojom::Colors::kDefaultValue);
+  model_->Init(font_name, 0.3, read_anything::mojom::Colors::kDefaultValue,
+               read_anything::mojom::LetterSpacing::kDefaultValue);
   model_->DecreaseTextSize();
   EXPECT_NEAR(model_->GetFontScale(), 0.2, 0.01);
 }
 
 TEST_F(ReadAnythingModelTest, MaximumFontScaleIsEnforced) {
   std::string font_name;
-  model_->Init(font_name, 4.9, read_anything::mojom::Colors::kDefaultValue);
+  model_->Init(font_name, 4.9, read_anything::mojom::Colors::kDefaultValue,
+               read_anything::mojom::LetterSpacing::kDefaultValue);
   model_->IncreaseTextSize();
   EXPECT_NEAR(model_->GetFontScale(), 5.0, 0.01);
 }

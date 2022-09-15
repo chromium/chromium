@@ -106,6 +106,46 @@ class ReadAnythingColorsModel : public ui::ComboboxModel {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingLetterSpacingModel
+//
+//  A class that stores the data for the letter spacing combobox.
+//  This class is owned by the ReadAnythingModel and has the same lifetime as
+//  the browser.
+//
+class ReadAnythingLetterSpacingModel : public ui::ComboboxModel {
+ public:
+  ReadAnythingLetterSpacingModel();
+  ReadAnythingLetterSpacingModel(const ReadAnythingLetterSpacingModel&) =
+      delete;
+  ReadAnythingLetterSpacingModel& operator=(
+      const ReadAnythingLetterSpacingModel&) = delete;
+  ~ReadAnythingLetterSpacingModel() override;
+
+  bool IsValidLetterSpacingIndex(size_t index);
+  read_anything::mojom::LetterSpacing GetLetterSpacingAt(size_t index);
+
+ protected:
+  // ui::Combobox implementation:
+  absl::optional<size_t> GetDefaultIndex() const override;
+  size_t GetItemCount() const override;
+  ui::ImageModel GetIconAt(size_t index) const override;
+  std::u16string GetItemAt(size_t index) const override;
+  std::u16string GetDropDownTextAt(size_t index) const override;
+  ui::ImageModel GetDropDownIconAt(size_t index) const override;
+
+ private:
+  // Letter spacing choices for the drop down options in front-end.
+  std::vector<read_anything::mojom::LetterSpacing> letter_spacing_choices_;
+
+  // Default index for drop down, either one (normal spacing) or populated from
+  // prefs.
+  size_t default_index_ = 1;
+
+  // Display names for each letter spacing choice
+  std::u16string GetLetterSpacingName(
+      read_anything::mojom::LetterSpacing letter_spacing) const;
+};
+///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingModel
 //
 //  A class that stores data for the Read Anything feature.
@@ -130,7 +170,8 @@ class ReadAnythingModel {
 
   void Init(std::string& font_name,
             double font_scale,
-            read_anything::mojom::Colors colors);
+            read_anything::mojom::Colors colors,
+            read_anything::mojom::LetterSpacing letter_spacing);
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
@@ -142,10 +183,14 @@ class ReadAnythingModel {
   void DecreaseTextSize();
   void IncreaseTextSize();
   void SetSelectedColorsByIndex(size_t new_index);
+  void SetSelectedLetterSpacingByIndex(size_t new_index);
 
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
   double GetFontScale() { return font_scale_; }
   ReadAnythingColorsModel* GetColorsModel() { return colors_model_.get(); }
+  ReadAnythingLetterSpacingModel* GetLetterSpacingModel() {
+    return letter_spacing_model_.get();
+  }
 
  private:
   void NotifyAXTreeDistilled();
@@ -161,6 +206,8 @@ class ReadAnythingModel {
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_;
 
+  int letter_spacing_;
+
   // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
   // scrolls in sync.
   ui::AXTreeUpdate snapshot_;
@@ -169,6 +216,7 @@ class ReadAnythingModel {
   base::ObserverList<Observer> observers_;
   const std::unique_ptr<ReadAnythingFontModel> font_model_;
   const std::unique_ptr<ReadAnythingColorsModel> colors_model_;
+  const std::unique_ptr<ReadAnythingLetterSpacingModel> letter_spacing_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MODEL_H_

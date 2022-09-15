@@ -20,6 +20,9 @@ struct ReadAnythingTheme {
   // The various colors of the user's chosen theme.
   skia.mojom.SkColor foreground_color;
   skia.mojom.SkColor background_color;
+
+  // The enum value of the user's letter spacing choice.
+  int32 letter_spacing;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -37,6 +40,14 @@ enum Colors {
   kLight = 1,
   kDark = 2,
   kYellow = 3,
+};
+
+[Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2"]
+enum LetterSpacing {
+  kTight = 0,
+  [Default]kDefault = 1,
+  kLoose = 2,
+  kVeryLoose = 3,
 };
 
 // Browser-side handler for requests from WebUI page.

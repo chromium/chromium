@@ -27,18 +27,28 @@ ReadAnythingModel::ReadAnythingModel()
     : font_name_(kReadAnythingDefaultFontName),
       font_scale_(kReadAnythingDefaultFontScale),
       font_model_(std::make_unique<ReadAnythingFontModel>()),
-      colors_model_(std::make_unique<ReadAnythingColorsModel>()) {}
+      colors_model_(std::make_unique<ReadAnythingColorsModel>()),
+      letter_spacing_model_(
+          std::make_unique<ReadAnythingLetterSpacingModel>()) {}
 
 ReadAnythingModel::~ReadAnythingModel() = default;
 
-void ReadAnythingModel::Init(std::string& font_name,
-                             double font_scale,
-                             read_anything::mojom::Colors colors) {
+void ReadAnythingModel::Init(
+    std::string& font_name,
+    double font_scale,
+    read_anything::mojom::Colors colors,
+    read_anything::mojom::LetterSpacing letter_spacing) {
   // If this profile has previously selected choices that were saved to
   // prefs, check they are still a valid, and then assign if so.
   if (font_model_->IsValidFontName(font_name)) {
     font_model_->SetDefaultIndexFromPrefsFontName(font_name);
     font_name_ = font_name;
+  }
+
+  size_t letter_spacing_index = static_cast<size_t>((int)letter_spacing);
+  if (letter_spacing_model_->IsValidLetterSpacingIndex(letter_spacing_index)) {
+    letter_spacing_ =
+        (int)(letter_spacing_model_->GetLetterSpacingAt(letter_spacing_index));
   }
 
   font_scale_ = font_scale;
@@ -84,6 +94,14 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   NotifyThemeChanged();
 }
 
+void ReadAnythingModel::SetSelectedLetterSpacingByIndex(size_t new_index) {
+  // Check that the index is valid.
+  DCHECK(letter_spacing_model_->IsValidLetterSpacingIndex(new_index));
+
+  letter_spacing_ = (int)(letter_spacing_model_->GetLetterSpacingAt(new_index));
+  NotifyThemeChanged();
+}
+
 void ReadAnythingModel::SetDistilledAXTree(
     ui::AXTreeUpdate snapshot,
     std::vector<ui::AXNodeID> content_node_ids) {
@@ -120,7 +138,7 @@ void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
     obs.OnReadAnythingThemeChanged(ReadAnythingTheme::New(
         font_name_, kReadAnythingDefaultFontSize * font_scale_,
-        foreground_color_, background_color_));
+        foreground_color_, background_color_, letter_spacing_));
   }
 }
 
@@ -269,3 +287,74 @@ std::u16string ReadAnythingColorsModel::GetDropDownTextAt(size_t index) const {
 }
 
 ReadAnythingColorsModel::~ReadAnythingColorsModel() = default;
+
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingLetterSpacingModel
+///////////////////////////////////////////////////////////////////////////////
+
+ReadAnythingLetterSpacingModel::ReadAnythingLetterSpacingModel() {
+  letter_spacing_choices_.emplace_back(
+      read_anything::mojom::LetterSpacing::kTight);
+  letter_spacing_choices_.emplace_back(
+      read_anything::mojom::LetterSpacing::kDefault);
+  letter_spacing_choices_.emplace_back(
+      read_anything::mojom::LetterSpacing::kLoose);
+  letter_spacing_choices_.emplace_back(
+      read_anything::mojom::LetterSpacing::kVeryLoose);
+  letter_spacing_choices_.shrink_to_fit();
+}
+
+bool ReadAnythingLetterSpacingModel::IsValidLetterSpacingIndex(size_t index) {
+  return index < GetItemCount();
+}
+
+absl::optional<size_t> ReadAnythingLetterSpacingModel::GetDefaultIndex() const {
+  return default_index_;
+}
+
+size_t ReadAnythingLetterSpacingModel::GetItemCount() const {
+  return letter_spacing_choices_.size();
+}
+
+read_anything::mojom::LetterSpacing
+ReadAnythingLetterSpacingModel::GetLetterSpacingAt(size_t index) {
+  return letter_spacing_choices_[index];
+}
+
+// TODO (crbug.com/1266555): Change to translatable messages
+std::u16string ReadAnythingLetterSpacingModel::GetLetterSpacingName(
+    read_anything::mojom::LetterSpacing letter_spacing) const {
+  switch (letter_spacing) {
+    case read_anything::mojom::LetterSpacing::kTight:
+      return u"Tight";
+    case read_anything::mojom::LetterSpacing::kDefault:
+      return u"Default";
+    case read_anything::mojom::LetterSpacing::kLoose:
+      return u"Loose";
+    case read_anything::mojom::LetterSpacing::kVeryLoose:
+      return u"Very Loose";
+  }
+}
+
+std::u16string ReadAnythingLetterSpacingModel::GetDropDownTextAt(
+    size_t index) const {
+  DCHECK_LT(index, GetItemCount());
+  return GetLetterSpacingName(letter_spacing_choices_[index]);
+}
+
+std::u16string ReadAnythingLetterSpacingModel::GetItemAt(size_t index) const {
+  // Only display the icon in the toolbar, so return empty string here.
+  return std::u16string();
+}
+
+ui::ImageModel ReadAnythingLetterSpacingModel::GetIconAt(size_t index) const {
+  return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
+      kLetterSpacingIcon, kColorsIconSize, gfx::kPlaceholderColor));
+}
+
+ui::ImageModel ReadAnythingLetterSpacingModel::GetDropDownIconAt(
+    size_t index) const {
+  return ui::ImageModel();
+}
+
+ReadAnythingLetterSpacingModel::~ReadAnythingLetterSpacingModel() = default;

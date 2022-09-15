@@ -44,8 +44,9 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
 
   void MockModelInit(std::string font_name,
                      double font_scale,
-                     read_anything::mojom::Colors colors) {
-    model_->Init(font_name, font_scale, colors);
+                     read_anything::mojom::Colors colors,
+                     read_anything::mojom::LetterSpacing letter_spacing) {
+    model_->Init(font_name, font_scale, colors, letter_spacing);
   }
 
   std::string GetPrefFontName() {
@@ -96,7 +97,8 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMax) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 4.9, read_anything::mojom::Colors::kDefaultValue);
+  MockModelInit(font_name, 4.9, read_anything::mojom::Colors::kDefaultValue,
+                read_anything::mojom::LetterSpacing::kDefaultValue);
 
   MockOnFontSizeChanged(true);
 
@@ -107,7 +109,8 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 0.3, read_anything::mojom::Colors::kDefaultValue);
+  MockModelInit(font_name, 0.3, read_anything::mojom::Colors::kDefaultValue,
+                read_anything::mojom::LetterSpacing::kDefaultValue);
 
   MockOnFontSizeChanged(false);
 

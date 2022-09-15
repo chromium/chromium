@@ -74,6 +74,7 @@ class ReadAnythingAppController
   std::vector<ui::AXNodeID> DisplayNodeIds();
   std::string FontName();
   float FontSize();
+  float LetterSpacing();
   SkColor ForegroundColor();
   SkColor BackgroundColor();
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id);
@@ -105,7 +106,9 @@ class ReadAnythingAppController
   void SetThemeForTesting(const std::string& font_name,
                           float font_size,
                           SkColor foreground_color,
-                          SkColor background_color);
+                          SkColor background_color,
+                          int letter_spacing);
+  double GetLetterSpacingValue(int letter_spacing);
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id);
 
@@ -131,6 +134,7 @@ class ReadAnythingAppController
   int32_t end_offset_ = -1;
   std::string font_name_;
   float font_size_;
+  float letter_spacing_;
   SkColor foreground_color_;
   SkColor background_color_;
 };

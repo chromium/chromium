@@ -7153,6 +7153,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the Read Anything feature." translateable="false">
         Theme
       </message>
+      <message name="IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL" desc="Accessibility label for the letter spacing combobox of the Read Anything feature." translateable="false">
+        Letter spacing
+      </message>
 
       <!-- User note strings -->
       <message name="IDS_USER_NOTE_TITLE" desc="Title of the User note feature, which gives users access to private user notes.">

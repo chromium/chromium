@@ -146,8 +146,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.updateStyles({
       '--foreground-color': skColorToRgba(foregroundColor),
       '--background-color': skColorToRgba(backgroundColor),
-      '--read-anything-font-family': this.validatedFontName(),
-      '--read-anything-font-size': chrome.readAnything.fontSize + 'px',
+      '--font-family': this.validatedFontName(),
+      '--font-size': chrome.readAnything.fontSize + 'px',
+      '--letter-spacing': chrome.readAnything.letterSpacing + 'em',
     });
   }
 }

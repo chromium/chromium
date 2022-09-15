@@ -77,6 +77,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "laptop.icon",
     "laptop_and_smartphone.icon",
     "leading_scroll.icon",
+    "letter_spacing.icon",
     "media_controls_arrow_drop_down.icon",
     "media_controls_arrow_drop_up.icon",
     "media_toolbar_button.icon",
