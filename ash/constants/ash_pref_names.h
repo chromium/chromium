@@ -498,6 +498,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomNudges[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRecoveryFactorBehavior[];
+
 }  // namespace prefs
 }  // namespace ash
 

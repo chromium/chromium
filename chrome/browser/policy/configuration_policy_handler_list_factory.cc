@@ -1745,6 +1745,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kStrictMimetypeCheckForWorkerScriptsEnabled,
     prefs::kStrictMimetypeCheckForWorkerScriptsEnabled,
     base::Value::Type::BOOLEAN},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  { key::kRecoveryFactorBehavior,
+    ash::prefs::kRecoveryFactorBehavior,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 // clang-format on
 

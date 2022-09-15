@@ -32503,6 +32503,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1011" label="AssistantWebEnabled"/>
   <int value="1012" label="LacrosDataBackwardMigrationMode"/>
   <int value="1013" label="StrictMimetypeCheckForWorkerScriptsEnabled"/>
+  <int value="1014" label="RecoveryFactorBehavior"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

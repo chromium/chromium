@@ -16,7 +16,10 @@ static_library("auth_factor_config") {
     "recovery_factor_editor.h",
   ]
 
-  deps = [ "//ash/constants" ]
+  deps = [
+    "//ash/constants",
+    "//components/prefs:prefs",
+  ]
 
   public_deps = [
     "//chromeos/ash/services/auth_factor_config/public/mojom",

@@ -1078,6 +1078,12 @@ const char kAutozoomState[] = "ash.camera.autozoom_state";
 // nudge was shown.
 const char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 
+// An boolean pref that specifies the recovery service activation for user.
+// When the pref is set to `true`, the user data recovery is activated. When the
+// pref is set to `false`, the user data recovery is not activated. The default
+// value of the pref is `true`. Controlled by RecoveryFactorBehavior policy.
+const char kRecoveryFactorBehavior[] = "ash.recovery.recovery_factor_behavior";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

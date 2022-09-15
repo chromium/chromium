@@ -953,7 +953,8 @@
         'DeviceFamilyLinkAccountsAllowed',
         'DeviceLoginScreenPromptOnMultipleMatchingCertificates',
         'DeviceRunAutomaticCleanupOnLogin',
-        'DeviceAutofillSAMLUsername'
+        'DeviceAutofillSAMLUsername',
+        'RecoveryFactorBehavior'
       ],
     },
     {
@@ -17326,6 +17327,44 @@
 
       This policy affects online authentication on sign-in and lock screens.''',
       'arc_support': 'This policy has no effect on Android apps.',
+    },
+    {
+      'name': 'RecoveryFactorBehavior',
+      'owners': ['anastasiian@chromium.org', 'cros-lurs@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Activate account recovery',
+        },
+        {
+          'value': False,
+          'caption': 'Deactivate account recovery',
+        },
+      ],
+      'future_on': ['chrome_os'],
+      'features': {
+        'can_be_mandatory': True,
+        'can_be_recommended': True,
+        'dynamic_refresh' : False,
+        'per_profile' : True,
+      },
+      'default_for_enterprise_users': False,
+      'default': True,
+      'example_value': True,
+      'id': 1014,
+      'caption': '''Account recovery''',
+      'tags': [],
+      'desc': '''Specifies whether the account recovery service is activated for your users on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.
+
+      When the policy is enabled, the user data recovery is activated. When the policy is disabled or not set, the user data recovery is not activated.
+      Setting the policy level to recommended lets users change the account recovery activation through the settings page. Setting the policy level to mandatory means users can't change the account recovery activation.
+
+      On the policy value change the update process is completed on the next login to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device, after the new policy value was fetched.
+
+      Note: This setting only applies to new accounts that get added on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.
+      ''',
     },
     {
       'name': 'EasyUnlockAllowed',
@@ -34304,6 +34343,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1013,
+  'highest_id_currently_used': 1014,
   'highest_atomic_group_id_currently_used': 43
 }

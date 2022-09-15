@@ -9,6 +9,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+class PrefRegistrySimple;
+
 namespace ash::auth {
 
 // The implementation of the AuthFactorConfig service.
@@ -24,6 +26,8 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
 
   AuthFactorConfig(const AuthFactorConfig&) = delete;
   AuthFactorConfig& operator=(const AuthFactorConfig&) = delete;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   void BindReceiver(mojo::PendingReceiver<mojom::AuthFactorConfig> receiver);
 
