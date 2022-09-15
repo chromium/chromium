@@ -158,6 +158,15 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
     return tab;
   }
 
+  // Removes the tab from the viewmodel, but leaves the Tab view itself around
+  // so it can animate closed.
+  void RemoveTab(int model_index) {
+    bool was_active =
+        tab_container_->GetTabAtModelIndex(model_index)->IsActive();
+    tab_strip_controller_->RemoveTab(model_index);
+    tab_container_->RemoveTab(model_index, was_active);
+  }
+
   void AddTabToGroup(int model_index, tab_groups::TabGroupId group) {
     tab_container_->GetTabAtModelIndex(model_index)->set_group(group);
     tab_strip_controller_->AddTabToGroup(model_index, group);
@@ -257,4 +266,25 @@ TEST_F(CompoundTabContainerTest, MoveTabBetweenContainers) {
   // It should be unpinned and at index 1.
   EXPECT_EQ(moving_tab->parent(), unpinned_container);
   EXPECT_EQ(tab_container_->GetTabAtModelIndex(1), moving_tab);
+}
+
+TEST_F(CompoundTabContainerTest, RemoveTab) {
+  // Start with two pinned tabs and two unpinned tabs.
+  AddTab(0, TabPinned::kPinned);
+  AddTab(1, TabPinned::kPinned);
+  AddTab(2, TabPinned::kUnpinned);
+  AddTab(3, TabPinned::kUnpinned);
+
+  // Remove the last tab.
+  RemoveTab(3);
+  EXPECT_EQ(tab_container_->GetTabCount(), 3);
+  // Remove the middle tab.
+  RemoveTab(1);
+  EXPECT_EQ(tab_container_->GetTabCount(), 2);
+  // Remove the first tab.
+  RemoveTab(0);
+  EXPECT_EQ(tab_container_->GetTabCount(), 1);
+  // Remove the only remaining tab.
+  RemoveTab(0);
+  EXPECT_EQ(tab_container_->GetTabCount(), 0);
 }

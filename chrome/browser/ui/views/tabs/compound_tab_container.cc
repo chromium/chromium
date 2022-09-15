@@ -229,7 +229,7 @@ void CompoundTabContainer::MoveTab(int from_model_index, int to_model_index) {
 }
 
 void CompoundTabContainer::RemoveTab(int index, bool was_active) {
-  CHECK(controller_->IsValidModelIndex(index));
+  CHECK(IsValidViewModelIndex(index));
   if (index < NumPinnedTabs()) {
     pinned_tab_container_->RemoveTab(index, was_active);
   } else {
@@ -532,6 +532,12 @@ void CompoundTabContainer::HandleDragExited() {
 
 int CompoundTabContainer::NumPinnedTabs() const {
   return pinned_tab_container_->GetTabCount();
+}
+
+bool CompoundTabContainer::IsValidViewModelIndex(int index) const {
+  const int total_num_tabs = pinned_tab_container_->GetTabCount() +
+                             unpinned_tab_container_->GetTabCount();
+  return index >= 0 && index < total_num_tabs;
 }
 
 void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,

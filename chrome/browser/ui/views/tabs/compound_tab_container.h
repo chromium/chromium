@@ -101,6 +101,12 @@ class CompoundTabContainer : public TabContainer {
  private:
   int NumPinnedTabs() const;
 
+  // Returns true iff `index` is a valid index in the joint viewmodel index
+  // space of the two TabContainers, i.e. if there's a Tab view that corresponds
+  // to `index`. These index spaces are different when the model has added or
+  // removed a tab but we haven't finished processing that change ourselves.
+  bool IsValidViewModelIndex(int index) const;
+
   // Moves the tab at `from_model_index` from whichever TabContainer currently
   // holds it into the other TabContainer, inserting it into that container at
   // the index that corresponds to `to_model_index`.
