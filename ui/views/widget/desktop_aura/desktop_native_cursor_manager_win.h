@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_NATIVE_CURSOR_MANAGER_WIN_H_
 
 #include "base/win/registry.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 

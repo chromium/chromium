@@ -8,6 +8,10 @@
 #include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
 
+namespace gfx {
+class Size;
+}
+
 namespace ui {
 enum class CursorSize;
 }
