@@ -698,6 +698,13 @@ TEST(ParseInspectorError, InvalidArgumentCode) {
   ASSERT_EQ("invalid argument: Error description", status.message());
 }
 
+TEST(ParseInspectorError, NoTargetWithGivenIdFound) {
+  Status status = internal::ParseInspectorError(
+      "{\"code\": -32602, \"message\": \"No target with given id found\"}");
+  ASSERT_EQ(kNoSuchWindow, status.code());
+  ASSERT_EQ("no such window: No target with given id found", status.message());
+}
+
 TEST(ParseInspectorError, UnknownError) {
   const std::string error("{\"code\": 10, \"message\": \"Error description\"}");
   Status status = internal::ParseInspectorError(error);

@@ -40,6 +40,7 @@ const char kInspectorPushPermissionError[] =
     "Push Permission without userVisibleOnly:true isn't supported";
 const char kInspectorNoSuchFrameError[] =
     "Frame with the given id was not found.";
+const char kNoTargetWithGivenIdError[] = "No target with given id found";
 
 static constexpr int kSessionNotFoundInspectorCode = -32001;
 static constexpr int kCdpMethodNotFoundCode = -32601;
@@ -933,8 +934,12 @@ Status ParseInspectorError(const std::string& error_json) {
       return Status(kNoSuchFrame, error_message);
     }
     absl::optional<int> error_code = error_dict->FindIntPath("code");
-    if (error_code == kInvalidParamsInspectorCode)
+    if (error_code == kInvalidParamsInspectorCode) {
+      if (error_message == kNoTargetWithGivenIdError) {
+        return Status(kNoSuchWindow, error_message);
+      }
       return Status(kInvalidArgument, error_message);
+    }
   }
   return Status(kUnknownError, "unhandled inspector error: " + error_json);
 }
