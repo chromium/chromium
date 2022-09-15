@@ -201,7 +201,9 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
 
   void* handle = OpenDriverHandle();
   if (!handle) {
-    fprintf(stderr, "Loading Record Replay driver failed.\n");
+    const char* error = dlerror();
+    fprintf(stderr, "Loading Record Replay driver failed: %s\n",
+            error ? error : "<no error>");
     return;
   }
 

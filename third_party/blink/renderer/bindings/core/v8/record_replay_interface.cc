@@ -29,6 +29,8 @@ extern void FunctionCallbackRecordReplaySetClearPauseDataCallback(const Function
 
 } // namespace v8
 
+extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
+
 namespace blink {
 
 const char* gRecordReplayScript = R""""(
@@ -49,6 +51,7 @@ const {
   sha256DigestHex,
   writeToRecordingDirectory,
   addRecordingEvent,
+  featureEnabled,
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 const gSourceMapData = new Map();
@@ -77,8 +80,14 @@ function assert(v) {
 ///////////////////////////////////////////////////////////////////////////////
 
 function initMessages() {
+  if (!featureEnabled("cdp-messages")) {
+    return;
+  }
+
   setCDPMessageCallback(messageCallback);
   setBrowserEventsCallback(browserEventsCallback);
+  setCommandCallback(commandCallback);
+  setClearPauseDataCallback(clearPauseDataCallback);
 }
 
 let gNextMessageId = 1;
@@ -130,12 +139,14 @@ function browserEventsCallback(name, info) {
 // Methods for interacting with the record/replay driver.
 
 initMessages();
-setCommandCallback(commandCallback);
-setClearPauseDataCallback(clearPauseDataCallback);
-addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
-addEventListener("Debugger.scriptParsed", registerSourceMap);
-sendMessage("Runtime.enable");
-sendMessage("Debugger.enable");
+if (featureEnabled("listen-console")) {
+  addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
+  sendMessage("Runtime.enable");
+}
+if (featureEnabled("listen-debugger")) {
+  addEventListener("Debugger.scriptParsed", registerSourceMap);
+  sendMessage("Debugger.enable");
+}
 
 const CommandCallbacks = {
   "Target.getCurrentMessageContents": Target_getCurrentMessageContents,
@@ -1181,6 +1192,16 @@ static void AddRecordingEvent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   stream.close();
 }
 
+static void FeatureEnabled(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString());
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::String::Utf8Value feature(isolate, args[0]);
+  std::string nfeature(*feature);
+
+  bool enabled = V8RecordReplayFeatureEnabled(nfeature.c_str());
+  args.GetReturnValue().Set(enabled ? v8::True(isolate) : v8::False(isolate));
+}
+
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
@@ -1261,6 +1282,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       WriteToRecordingDirectory);
   SetFunctionProperty(isolate, args, "addRecordingEvent",
                       AddRecordingEvent);
+  SetFunctionProperty(isolate, args, "featureEnabled",
+                      FeatureEnabled);
 
   v8::Local<v8::String> source = ToV8String(isolate, gRecordReplayScript);
   v8::Local<v8::String> filename = ToV8String(isolate, "record-replay-internal");
