@@ -46,6 +46,12 @@ message ContentMetaData {
 
   // MimeType of the field as detected by Chrome.
   optional string content_type = 6;
+
+  // Source information, e.g., url or path.
+  optional string source = 7;
+
+  // Destination information, e.g., url or path.
+  optional string destination = 8;
 }
 
 message ClientMetadata {

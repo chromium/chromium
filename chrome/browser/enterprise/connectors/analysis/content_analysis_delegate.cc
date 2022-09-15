@@ -162,7 +162,7 @@ void ContentAnalysisDelegate::BypassWarnings(
       content_size += entry.size();
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, "Text data", std::string(), "text/plain",
+        profile_, url_, "", "", "Text data", std::string(), "text/plain",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         access_point_, content_size, text_response_, user_justification);
   }
@@ -180,7 +180,7 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.page_result = true;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, title_, /*sha256*/ std::string(),
+        profile_, url_, "", "", title_, /*sha256*/ std::string(),
         /*mime_type*/ std::string(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
         access_point_, /*content_size*/ -1, page_response_, user_justification);
@@ -384,7 +384,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
             text_complies);
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, "Text data", std::string(), "text/plain",
+      profile_, url_, "", "", "Text data", std::string(), "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       access_point_, content_size, result, response,
       CalculateEventResult(data_.settings, text_complies, should_warn));
@@ -462,7 +462,7 @@ void ContentAnalysisDelegate::PageRequestCallback(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, title_, /*sha256*/ std::string(),
+      profile_, url_, "", "", title_, /*sha256*/ std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
       access_point_, /*content_size*/ -1, result, response,
@@ -490,8 +490,8 @@ bool ContentAnalysisDelegate::UploadData() {
     // Passing the settings using a reference is safe here, because
     // MultiFileRequestHandler is owned by this class.
     files_request_handler_ = FilesRequestHandler::Create(
-        GetBinaryUploadService(), profile_, data_.settings, url_, access_point_,
-        data_.paths,
+        GetBinaryUploadService(), profile_, data_.settings, url_, "", "",
+        access_point_, data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
                        GetWeakPtr()));
     files_request_complete_ = !files_request_handler_->UploadData();

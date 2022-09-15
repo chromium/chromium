@@ -33,6 +33,8 @@ class RequestHandlerBase {
       Profile* profile,
       const enterprise_connectors::AnalysisSettings& analysis_settings,
       GURL url,
+      const std::string& source,
+      const std::string& destination,
       safe_browsing::DeepScanAccessPoint access_point);
 
   virtual ~RequestHandlerBase();
@@ -77,6 +79,8 @@ class RequestHandlerBase {
   base::raw_ptr<Profile> profile_ = nullptr;
   const enterprise_connectors::AnalysisSettings& analysis_settings_;
   GURL url_;
+  std::string source_;
+  std::string destination_;
   safe_browsing::DeepScanAccessPoint access_point_;
 
   // The request tokens of all the requests that make up the user action

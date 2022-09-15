@@ -696,7 +696,7 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
           continue;
 
         router->OnAnalysisConnectorWarningBypassed(
-            item->GetURL(), metadata.filename, metadata.sha256,
+            item->GetURL(), "", "", metadata.filename, metadata.sha256,
             metadata.mime_type,
             extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             metadata.scan_response.request_token(),

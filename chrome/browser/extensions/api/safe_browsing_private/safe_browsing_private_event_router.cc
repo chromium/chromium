@@ -167,6 +167,8 @@ const base::Feature SafeBrowsingPrivateEventRouter::kRealtimeReportingFeature{
 // Key names used with when building the dictionary to pass to the real-time
 // reporting API.
 const char SafeBrowsingPrivateEventRouter::kKeyUrl[] = "url";
+const char SafeBrowsingPrivateEventRouter::kKeySource[] = "source";
+const char SafeBrowsingPrivateEventRouter::kKeyDestination[] = "destination";
 const char SafeBrowsingPrivateEventRouter::kKeyUserName[] = "userName";
 const char SafeBrowsingPrivateEventRouter::kKeyIsPhishingUrl[] =
     "isPhishingUrl";
@@ -493,6 +495,8 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -505,18 +509,21 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
   if (result.tag() == "malware") {
     DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDeepScanningResult(
-        url, file_name, download_digest_sha256,
+        url, source, destination, file_name, download_digest_sha256,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
         mime_type, trigger, content_size, event_result, result.malware_family(),
         result.malware_category(), result.evidence_locker_filepath(), scan_id);
   } else if (result.tag() == "dlp") {
-    OnSensitiveDataEvent(url, file_name, download_digest_sha256, mime_type,
-                         trigger, scan_id, result, content_size, event_result);
+    OnSensitiveDataEvent(url, source, destination, file_name,
+                         download_digest_sha256, mime_type, trigger, scan_id,
+                         result, content_size, event_result);
   }
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& threat_type,
@@ -537,6 +544,14 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
+  // understands source and destination.
+  if (!source.empty()) {
+    event.Set(kKeySource, source);
+  }
+  if (!destination.empty()) {
+    event.Set(kKeyDestination, destination);
+  }
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
@@ -573,6 +588,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
 
 void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -590,6 +607,14 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
+  // understands source and destination.
+  if (!source.empty()) {
+    event.Set(kKeySource, source);
+  }
+  if (!destination.empty()) {
+    event.Set(kKeyDestination, destination);
+  }
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
@@ -616,6 +641,8 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -634,6 +661,14 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
+  // understands source and destination.
+  if (!source.empty()) {
+    event.Set(kKeySource, source);
+  }
+  if (!destination.empty()) {
+    event.Set(kKeyDestination, destination);
+  }
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());
@@ -663,6 +698,8 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
 
 void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -680,6 +717,14 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  // TODO(crbug.com/1363978): Remove `.empty()` checks once server-side
+  // understands source and destination.
+  if (!source.empty()) {
+    event.Set(kKeySource, source);
+  }
+  if (!destination.empty()) {
+    event.Set(kKeyDestination, destination);
+  }
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyProfileUserName, GetProfileUserName());

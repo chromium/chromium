@@ -14,6 +14,8 @@ FakeFilesRequestHandler::FakeFilesRequestHandler(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     GURL url,
+    const std::string& source,
+    const std::string& destination,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback)
@@ -21,6 +23,8 @@ FakeFilesRequestHandler::FakeFilesRequestHandler(
                                                  profile,
                                                  analysis_settings,
                                                  url,
+                                                 source,
+                                                 destination,
                                                  access_point,
                                                  paths,
                                                  std::move(callback)),
@@ -36,12 +40,14 @@ FakeFilesRequestHandler::Create(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     GURL url,
+    const std::string& source,
+    const std::string& destination,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     enterprise_connectors::FilesRequestHandler::CompletionCallback callback) {
   return std::make_unique<FakeFilesRequestHandler>(
       fake_file_upload_callback, upload_service, profile, analysis_settings,
-      url, access_point, paths, std::move(callback));
+      url, source, destination, access_point, paths, std::move(callback));
 }
 
 void FakeFilesRequestHandler::UploadFileForDeepScanning(

@@ -191,8 +191,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnAnalysisConnectorResult(
-            GURL("https://evil.com/sensitive_data.txt"), "sensitive_data.txt",
-            "sha256_of_data", "text/plain",
+            GURL("https://evil.com/sensitive_data.txt"), "", "",
+            "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
             event_result);
@@ -201,8 +201,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnUnscannedFileEvent(safe_browsing::EventResult result) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnUnscannedFileEvent(
-            GURL("https://evil.com/sensitive_data.txt"), "sensitive_data.txt",
-            "sha256_of_data", "text/plain",
+            GURL("https://evil.com/sensitive_data.txt"), "", "",
+            "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             safe_browsing::DeepScanAccessPoint::DOWNLOAD,
             "filePasswordProtected", 12345, result);

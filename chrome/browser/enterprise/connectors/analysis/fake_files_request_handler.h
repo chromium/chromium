@@ -30,6 +30,8 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
       Profile* profile,
       const enterprise_connectors::AnalysisSettings& analysis_settings,
       GURL url,
+      const std::string& source,
+      const std::string& destination,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);
@@ -42,6 +44,8 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
       Profile* profile,
       const enterprise_connectors::AnalysisSettings& analysis_settings,
       GURL url,
+      const std::string& source,
+      const std::string& destination,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       enterprise_connectors::FilesRequestHandler::CompletionCallback callback);

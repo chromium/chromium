@@ -118,8 +118,8 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
       ReportAnalysisConnectorWarningBypass(
-          profile, download->GetURL(), metadata.filename, metadata.sha256,
-          metadata.mime_type,
+          profile, download->GetURL(), "", "", metadata.filename,
+          metadata.sha256, metadata.mime_type,
           extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
           DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response,
           stored_result->user_justification);
@@ -127,7 +127,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   } else {
     std::string raw_digest_sha256 = download->GetHash();
     ReportAnalysisConnectorWarningBypass(
-        profile, download->GetURL(),
+        profile, download->GetURL(), "", "",
         download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
         download->GetMimeType(),

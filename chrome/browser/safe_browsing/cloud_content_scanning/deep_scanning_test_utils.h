@@ -36,6 +36,8 @@ class EventReportValidator {
 
   void ExpectDangerousDeepScanningResult(
       const std::string& expected_url,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_threat_type,
@@ -48,6 +50,8 @@ class EventReportValidator {
 
   void ExpectSensitiveDataEvent(
       const std::string& expected_url,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_trigger,
@@ -61,6 +65,8 @@ class EventReportValidator {
 
   void ExpectSensitiveDataEvents(
       const std::string& expected_url,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
       const std::vector<std::string>& expected_filenames,
       const std::vector<std::string>& expected_sha256s,
       const std::string& expected_trigger,
@@ -100,15 +106,18 @@ class EventReportValidator {
       const std::string& expected_username,
       const std::string& expected_scan_id);
 
-  void ExpectUnscannedFileEvent(const std::string& expected_url,
-                                const std::string& expected_filename,
-                                const std::string& expected_sha256,
-                                const std::string& expected_trigger,
-                                const std::string& expected_reason,
-                                const std::set<std::string>* expected_mimetypes,
-                                int64_t expected_content_size,
-                                const std::string& expected_result,
-                                const std::string& expected_username);
+  void ExpectUnscannedFileEvent(
+      const std::string& expected_url,
+      const absl::optional<std::string>& expected_source,
+      const absl::optional<std::string>& expected_destination,
+      const std::string& expected_filename,
+      const std::string& expected_sha256,
+      const std::string& expected_trigger,
+      const std::string& expected_reason,
+      const std::set<std::string>* expected_mimetypes,
+      int64_t expected_content_size,
+      const std::string& expected_result,
+      const std::string& expected_username);
 
   void ExpectUnscannedFileEvents(
       const std::string& expected_url,
@@ -179,6 +188,8 @@ class EventReportValidator {
 
   std::string event_key_;
   absl::optional<std::string> url_;
+  absl::optional<std::string> source_;
+  absl::optional<std::string> destination_;
   absl::optional<std::string> trigger_ = absl::nullopt;
   absl::optional<std::string> threat_type_ = absl::nullopt;
   absl::optional<std::string> unscanned_reason_ = absl::nullopt;

@@ -42,6 +42,8 @@ EventReportValidator::~EventReportValidator() {
 
 void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_url,
+    const absl::optional<std::string>& expected_source,
+    const absl::optional<std::string>& expected_destination,
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_trigger,
@@ -52,6 +54,8 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_username) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyUnscannedFileEvent;
   url_ = expected_url;
+  source_ = expected_source;
+  destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
   mimetypes_ = expected_mimetypes;
   trigger_ = expected_trigger;
@@ -104,6 +108,8 @@ void EventReportValidator::ExpectUnscannedFileEvents(
 
 void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::string& expected_url,
+    const absl::optional<std::string>& expected_source,
+    const absl::optional<std::string>& expected_destination,
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_threat_type,
@@ -115,6 +121,8 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const absl::optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
+  source_ = expected_source;
+  destination_ = expected_destination;
   filenames_and_hashes_[expected_filename] = expected_sha256;
   threat_type_ = expected_threat_type;
   mimetypes_ = expected_mimetypes;
@@ -136,6 +144,8 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
 
 void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_url,
+    const absl::optional<std::string>& expected_source,
+    const absl::optional<std::string>& expected_destination,
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_trigger,
@@ -148,6 +158,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  source_ = expected_source;
+  destination_ = expected_destination;
   dlp_verdicts_[expected_filename] = expected_dlp_verdict;
   filenames_and_hashes_[expected_filename] = expected_sha256;
   mimetypes_ = expected_mimetypes;
@@ -168,6 +180,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
 
 void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_url,
+    const absl::optional<std::string>& expected_source,
+    const absl::optional<std::string>& expected_destination,
     const std::vector<std::string>& expected_filenames,
     const std::vector<std::string>& expected_sha256s,
     const std::string& expected_trigger,
@@ -187,6 +201,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
 
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
+  source_ = expected_source;
+  destination_ = expected_destination;
   mimetypes_ = expected_mimetypes;
   trigger_ = expected_trigger;
   content_size_ = expected_content_size;
@@ -378,6 +394,9 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 
   // The event should match the expected values.
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUrl, url_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeySource, source_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyDestination,
+                destination_);
   ValidateFilenameMappedAttributes(event);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTrigger, trigger_);
   // `content_size_` needs a conversion since int64 are strings in base::Value.

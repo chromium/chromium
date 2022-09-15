@@ -437,9 +437,7 @@ TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
 class DeepScanningRequestAllFeaturesEnabledTest
     : public DeepScanningRequestTest {
  public:
-  DeepScanningRequestAllFeaturesEnabledTest() {
-    EnableAllFeatures();
-  }
+  DeepScanningRequestAllFeaturesEnabledTest() { EnableAllFeatures(); }
 };
 
 TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
@@ -601,9 +599,7 @@ TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
 
 class DeepScanningReportingTest : public DeepScanningRequestTest {
  public:
-  DeepScanningReportingTest() {
-    EnableAllFeatures();
-  }
+  DeepScanningReportingTest() { EnableAllFeatures(); }
 
   void SetUp() override {
     DeepScanningRequestTest::SetUp();
@@ -829,6 +825,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -887,6 +885,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -949,6 +949,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -1001,6 +1003,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -1054,6 +1058,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -1112,6 +1118,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -1255,6 +1263,8 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ secondary_files_targets_[0].BaseName().AsUTF8Unsafe(),
         // printf "foo.txt" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -1346,6 +1356,8 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     EventReportValidator validator(client_.get());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         {
             secondary_files_targets_[0].BaseName().AsUTF8Unsafe(),
             secondary_files_targets_[1].BaseName().AsUTF8Unsafe(),
@@ -1409,6 +1421,8 @@ TEST_F(DeepScanningReportingTest, Timeout) {
   EventReportValidator validator(client_.get());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "https://example.com/download.exe",
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
       /*filename*/ "download.exe",
       // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha256*/
@@ -1637,6 +1651,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/
@@ -1692,6 +1708,8 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
     EventReportValidator validator(client_.get());
     validator.ExpectUnscannedFileEvent(
         /*url*/ "https://example.com/download.exe",
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "download.exe",
         // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha256*/

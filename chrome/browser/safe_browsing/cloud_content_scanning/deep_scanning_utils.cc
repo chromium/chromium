@@ -137,6 +137,8 @@ void ModifyKey(ScanningCrashKey key, int delta) {
 void MaybeReportDeepScanningVerdict(
     Profile* profile,
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -154,9 +156,9 @@ void MaybeReportDeepScanningVerdict(
 
   std::string unscanned_reason = MaybeGetUnscannedReason(result);
   if (!unscanned_reason.empty()) {
-    router->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
-                                 mime_type, trigger, access_point,
-                                 unscanned_reason, content_size, event_result);
+    router->OnUnscannedFileEvent(
+        url, source, destination, file_name, download_digest_sha256, mime_type,
+        trigger, access_point, unscanned_reason, content_size, event_result);
   }
 
   if (result != BinaryUploadService::Result::SUCCESS)
@@ -171,15 +173,15 @@ void MaybeReportDeepScanningVerdict(
       else if (response_result.tag() == "dlp")
         unscanned_reason = "DLP_SCAN_FAILED";
 
-      router->OnUnscannedFileEvent(url, file_name, download_digest_sha256,
-                                   mime_type, trigger, access_point,
-                                   std::move(unscanned_reason), content_size,
-                                   event_result);
+      router->OnUnscannedFileEvent(url, source, destination, file_name,
+                                   download_digest_sha256, mime_type, trigger,
+                                   access_point, std::move(unscanned_reason),
+                                   content_size, event_result);
     } else if (response_result.triggered_rules_size() > 0) {
       router->OnAnalysisConnectorResult(
-          url, file_name, download_digest_sha256, mime_type, trigger,
-          response.request_token(), access_point, response_result, content_size,
-          event_result);
+          url, source, destination, file_name, download_digest_sha256,
+          mime_type, trigger, response.request_token(), access_point,
+          response_result, content_size, event_result);
     }
   }
 }
@@ -187,6 +189,8 @@ void MaybeReportDeepScanningVerdict(
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,
     const GURL& url,
+    const std::string& source,
+    const std::string& destination,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -207,8 +211,8 @@ void ReportAnalysisConnectorWarningBypass(
       continue;
 
     router->OnAnalysisConnectorWarningBypassed(
-        url, file_name, download_digest_sha256, mime_type, trigger,
-        response.request_token(), access_point, result, content_size,
+        url, source, destination, file_name, download_digest_sha256, mime_type,
+        trigger, response.request_token(), access_point, result, content_size,
         user_justification);
   }
 }

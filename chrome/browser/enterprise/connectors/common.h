@@ -36,6 +36,9 @@ namespace enterprise_connectors {
 // Alias to reduce verbosity when using TriggeredRule::Actions.
 using TriggeredRule = ContentAnalysisResponse::Result::TriggeredRule;
 
+// Pair to specify the source and destination.
+using SourceDestinationStringPair = std::pair<std::string, std::string>;
+
 // Keys used to read a connector's policy values.
 constexpr char kKeyServiceProvider[] = "service_provider";
 constexpr char kKeyLinuxVerification[] = "verification.linux";

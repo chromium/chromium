@@ -12,11 +12,15 @@ RequestHandlerBase::RequestHandlerBase(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     GURL url,
+    const std::string& source,
+    const std::string& destination,
     safe_browsing::DeepScanAccessPoint access_point)
     : upload_service_(upload_service),
       profile_(profile),
       analysis_settings_(analysis_settings),
       url_(url),
+      source_(source),
+      destination_(destination),
       access_point_(access_point) {}
 
 RequestHandlerBase::~RequestHandlerBase() = default;
@@ -44,6 +48,8 @@ void RequestHandlerBase::PrepareRequest(
   request->set_analysis_connector(connector);
   request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(url_.spec());
+  request->set_source(source_);
+  request->set_destination(destination_);
   request->set_tab_url(url_);
   request->set_per_profile_request(analysis_settings_.per_profile);
   for (const auto& tag : analysis_settings_.tags)

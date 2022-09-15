@@ -73,6 +73,8 @@ FilesRequestHandler::FilesRequestHandler(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     GURL url,
+    const std::string& source,
+    const std::string& destination,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback)
@@ -80,6 +82,8 @@ FilesRequestHandler::FilesRequestHandler(
                          profile,
                          analysis_settings,
                          url,
+                         source,
+                         destination,
                          access_point),
       paths_(paths),
       callback_(std::move(callback)) {
@@ -93,18 +97,20 @@ std::unique_ptr<FilesRequestHandler> FilesRequestHandler::Create(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& analysis_settings,
     GURL url,
+    const std::string& source,
+    const std::string& destination,
     safe_browsing::DeepScanAccessPoint access_point,
     const std::vector<base::FilePath>& paths,
     CompletionCallback callback) {
   if (GetFactoryStorage()->is_null()) {
-    return base::WrapUnique(
-        new FilesRequestHandler(upload_service, profile, analysis_settings, url,
-                                access_point, paths, std::move(callback)));
+    return base::WrapUnique(new FilesRequestHandler(
+        upload_service, profile, analysis_settings, url, source, destination,
+        access_point, paths, std::move(callback)));
   } else {
     // Use the factory to create a fake FilesRequestHandler.
     return GetFactoryStorage()->Run(upload_service, profile, analysis_settings,
-                                    url, access_point, paths,
-                                    std::move(callback));
+                                    url, source, destination, access_point,
+                                    paths, std::move(callback));
   }
 }
 
@@ -128,10 +134,10 @@ void FilesRequestHandler::ReportWarningBypass(
     size_t index = warning.first;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, paths_[index].AsUTF8Unsafe(), file_info_[index].sha256,
-        file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
-        access_point_, file_info_[index].size, warning.second,
-        user_justification);
+        profile_, url_, source_, destination_, paths_[index].AsUTF8Unsafe(),
+        file_info_[index].sha256, file_info_[index].mime_type,
+        AccessPointToTriggerString(access_point_), access_point_,
+        file_info_[index].size, warning.second, user_justification);
   }
 }
 
@@ -278,9 +284,10 @@ void FilesRequestHandler::FileRequestCallback(
   }
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, path.AsUTF8Unsafe(), file_info_[index].sha256,
-      file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
-      access_point_, file_info_[index].size, upload_result, response,
+      profile_, url_, source_, destination_, path.AsUTF8Unsafe(),
+      file_info_[index].sha256, file_info_[index].mime_type,
+      AccessPointToTriggerString(access_point_), access_point_,
+      file_info_[index].size, upload_result, response,
       CalculateEventResult(analysis_settings_, request_handler_result.complies,
                            result_is_warning));
 

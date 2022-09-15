@@ -789,6 +789,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
   EventReportValidator validator(client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ url.spec(),
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
       /*filename*/ "zipfile_two_archives.zip",
       // sha256sum chrome/test/data/safe_browsing/download_protection/\
       // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
@@ -1264,6 +1266,8 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
 
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ url.spec(),
+        /*source*/ absl::nullopt,
+        /*destination*/ absl::nullopt,
         /*filename*/ "zipfile_two_archives.zip",
         // sha256sum chrome/test/data/safe_browsing/download_protection/\
         // zipfile_two_archives.zip |  tr '[:lower:]' '[:upper:]'
@@ -1596,6 +1600,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1660,6 +1666,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1693,6 +1701,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   // download and move the file to its final destination.
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1757,6 +1767,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",
@@ -1852,6 +1864,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   std::set<std::string> mimetypes = {"text/plain"};
   validator.ExpectSensitiveDataEvent(
       /*url*/ url.spec(),
+      /*source*/ absl::nullopt,
+      /*destination*/ absl::nullopt,
       /*filename*/ "text.htm",
       // sha256sum chrome/test/data/save_page/text.txt | tr a-f A-F
       "9789A2E12D50EFA4B891D4EF95C5189FA4C98E34C84E1F8017CD8F574CA035DD",

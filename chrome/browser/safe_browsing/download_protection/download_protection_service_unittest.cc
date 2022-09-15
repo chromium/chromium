@@ -2901,9 +2901,11 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",          // URL, not set in this test
-      "a.exe",     // Simple filename without the directory
-      "68617368",  // SHA256 of the fake download
+      "",             // URL, not set in this test
+      absl::nullopt,  // source, not used for file downloads.
+      absl::nullopt,  // destination, not used for file downloads.
+      "a.exe",        // Simple filename without the directory
+      "68617368",     // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
@@ -3011,9 +3013,11 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",          // URL, not set in this test
-      "a.exe",     // Simple filename without the directory
-      "68617368",  // SHA256 of the fake download
+      "",             // URL, not set in this test
+      absl::nullopt,  // source, not used for file downloads.
+      absl::nullopt,  // destination, not used for file downloads.
+      "a.exe",        // Simple filename without the directory
+      "68617368",     // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
@@ -3070,9 +3074,11 @@ TEST_F(DownloadProtectionServiceTest,
   std::set<std::string> expected_mimetypes{"fake/mimetype"};
   EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
-      "",          // URL, not set in this test
-      "a.exe",     // Simple filename without the directory
-      "68617368",  // SHA256 of the fake download
+      "",             // URL, not set in this test
+      absl::nullopt,  // source, not used for file downloads.
+      absl::nullopt,  // destination, not used for file downloads.
+      "a.exe",        // Simple filename without the directory
+      "68617368",     // SHA256 of the fake download
       extensions::SafeBrowsingPrivateEventRouter::
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,

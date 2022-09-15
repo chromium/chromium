@@ -101,6 +101,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   Profile* profile_;
   safe_browsing::DeepScanAccessPoint access_point_;
   std::vector<storage::FileSystemURL> source_urls_;
+  storage::FileSystemURL source_url_;
   storage::FileSystemURL destination_url_;
   base::OnceClosure callback_;
   std::vector<RequestHandlerResult> results_;

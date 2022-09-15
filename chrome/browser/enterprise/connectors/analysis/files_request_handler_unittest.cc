@@ -219,7 +219,7 @@ class FilesRequestHandlerTest : public BaseTest {
             &FilesRequestHandlerTest::FakeFileUploadCallback,
             weak_ptr_factory_.GetWeakPtr(),
             settings.cloud_or_local_settings.is_cloud_analysis()),
-        /*upload_service=*/nullptr, profile_, settings, GURL(kTestUrl),
+        /*upload_service=*/nullptr, profile_, settings, GURL(kTestUrl), "", "",
         safe_browsing::DeepScanAccessPoint::UPLOAD, paths,
         base::BindOnce(
             [](base::RepeatingClosure runloop_closure,

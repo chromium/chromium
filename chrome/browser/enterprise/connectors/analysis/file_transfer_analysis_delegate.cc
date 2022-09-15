@@ -213,13 +213,14 @@ FileTransferAnalysisDelegate::FileTransferAnalysisDelegate(
     : settings_{std::move(settings)},
       profile_{profile},
       access_point_{access_point},
+      source_url_(std::move(source_url)),
       destination_url_{std::move(destination_url)},
       callback_{std::move(callback)} {
   DCHECK(profile);
   DCHECK(!callback_.is_null());
 
   get_file_urls_delegate_ = std::make_unique<GetFileURLsDelegate>(
-      file_system_context, source_url,
+      file_system_context, source_url_,
       base::BindOnce(&FileTransferAnalysisDelegate::OnGotFileSourceURLs,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -278,7 +279,8 @@ void FileTransferAnalysisDelegate::OnGotFileSourceURLs(
 
   request_handler_ = FilesRequestHandler::Create(
       safe_browsing::BinaryUploadService::GetForProfile(profile_, settings_),
-      profile_, settings_, GURL{}, access_point_, std::move(paths),
+      profile_, settings_, GURL{}, source_url_.path().AsUTF8Unsafe(),
+      destination_url_.path().AsUTF8Unsafe(), access_point_, std::move(paths),
       base::BindOnce(&FileTransferAnalysisDelegate::ContentAnalysisCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   request_handler_->UploadData();

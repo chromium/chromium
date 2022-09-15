@@ -142,6 +142,8 @@ class BinaryUploadService : public KeyedService {
     void set_analysis_connector(
         enterprise_connectors::AnalysisConnector connector);
     void set_url(const std::string& url);
+    void set_source(const std::string& source);
+    void set_destination(const std::string& destination);
     void set_csd(ClientDownloadRequest csd);
     void add_tag(const std::string& tag);
     void set_email(const std::string& email);
