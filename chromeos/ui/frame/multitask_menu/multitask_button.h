@@ -11,9 +11,9 @@
 namespace chromeos {
 
 // The base button for multitask menu to create Full Screen and Float buttons.
-class MultitaskBaseButton : public views::Button {
+class MultitaskButton : public views::Button {
  public:
-  METADATA_HEADER(MultitaskBaseButton);
+  METADATA_HEADER(MultitaskButton);
 
   // The types of single operated multitask button.
   enum class Type {
@@ -21,14 +21,14 @@ class MultitaskBaseButton : public views::Button {
     kFloat,  // The button that float the window.
   };
 
-  MultitaskBaseButton(PressedCallback callback,
-                      Type type,
-                      bool is_portrait_mode,
-                      const std::u16string& name);
+  MultitaskButton(PressedCallback callback,
+                  Type type,
+                  bool is_portrait_mode,
+                  const std::u16string& name);
 
-  MultitaskBaseButton(const MultitaskBaseButton&) = delete;
-  MultitaskBaseButton& operator=(const MultitaskBaseButton&) = delete;
-  ~MultitaskBaseButton() override = default;
+  MultitaskButton(const MultitaskButton&) = delete;
+  MultitaskButton& operator=(const MultitaskButton&) = delete;
+  ~MultitaskButton() override = default;
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;

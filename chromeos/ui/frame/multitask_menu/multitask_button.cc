@@ -23,10 +23,10 @@ constexpr gfx::Rect kFullPatternPortraitBounds(4, 4, 64, 100);
 
 }  // namespace
 
-MultitaskBaseButton::MultitaskBaseButton(PressedCallback callback,
-                                         Type type,
-                                         bool is_portrait_mode,
-                                         const std::u16string& name)
+MultitaskButton::MultitaskButton(PressedCallback callback,
+                                 Type type,
+                                 bool is_portrait_mode,
+                                 const std::u16string& name)
     : views::Button(std::move(callback)),
       type_(type),
       is_portrait_mode_(is_portrait_mode) {
@@ -41,7 +41,7 @@ MultitaskBaseButton::MultitaskBaseButton(PressedCallback callback,
   SetAccessibleName(name);
 }
 
-void MultitaskBaseButton::PaintButtonContents(gfx::Canvas* canvas) {
+void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags fill_flags;
   fill_flags.setAntiAlias(true);
   fill_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -91,12 +91,12 @@ void MultitaskBaseButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(gfx::RectF(bounds), kButtonCornerRadius, pattern_flags);
 }
 
-void MultitaskBaseButton::OnThemeChanged() {
+void MultitaskButton::OnThemeChanged() {
   // TODO(shidi): Implement the theme change after dark/light mode integration.
   views::Button::OnThemeChanged();
 }
 
-BEGIN_METADATA(MultitaskBaseButton, views::Button)
+BEGIN_METADATA(MultitaskButton, views::Button)
 END_METADATA
 
 }  // namespace chromeos

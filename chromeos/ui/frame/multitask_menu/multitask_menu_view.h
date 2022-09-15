@@ -16,7 +16,7 @@ class View;
 namespace chromeos {
 
 enum class SnapDirection;
-class MultitaskBaseButton;
+class MultitaskButton;
 class SplitButtonView;
 
 // Contains buttons which can fullscreen, snap, or float a window.
@@ -47,10 +47,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   SplitButtonView* partial_button_for_testing() {
     return partial_button_.get();
   }
-  MultitaskBaseButton* full_button_for_testing() { return full_button_.get(); }
-  MultitaskBaseButton* float_button_for_testing() {
-    return float_button_.get();
-  }
+  MultitaskButton* full_button_for_testing() { return full_button_.get(); }
+  MultitaskButton* float_button_for_testing() { return float_button_.get(); }
 
  private:
   // Callbacks for the buttons in the multitask menu view.
@@ -62,8 +60,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // Saved for testing purpose.
   raw_ptr<SplitButtonView> half_button_ = nullptr;
   raw_ptr<SplitButtonView> partial_button_ = nullptr;
-  raw_ptr<MultitaskBaseButton> full_button_ = nullptr;
-  raw_ptr<MultitaskBaseButton> float_button_ = nullptr;
+  raw_ptr<MultitaskButton> full_button_ = nullptr;
+  raw_ptr<MultitaskButton> float_button_ = nullptr;
 
   // The window which the buttons act on. It is guaranteed to outlive `this`.
   aura::Window* const window_;

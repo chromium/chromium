@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_H_
-#define CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_H_
+#ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_VIEW_H_
+#define CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_VIEW_H_
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
 
@@ -14,46 +14,17 @@
 
 namespace chromeos {
 
-// A button used for SplitButtonView to trigger primary/secondary split.
-class SplitButton : public views::Button {
- public:
-  METADATA_HEADER(SplitButton);
-  enum class SplitButtonType {
-    kHalfButtons,
-    kPartialButtons,
-  };
-
-  SplitButton(views::Button::PressedCallback pressed_callback,
-              base::RepeatingClosure hovered_callback,
-              const std::u16string& name,
-              const gfx::Insets& insets);
-
-  SplitButton(const SplitButton&) = delete;
-  SplitButton& operator=(const SplitButton&) = delete;
-  ~SplitButton() override;
-
-  void set_button_color(SkColor color) { button_color_ = color; }
-
-  // views::Button:
-  void OnPaintBackground(gfx::Canvas* canvas) override;
-  void StateChanged(ButtonState old_state) override;
-
- private:
-  SkColor button_color_;
-  // The insert between the button window pattern and the border.
-  gfx::Insets insets_;
-  // Callback to `SplitButtonView` to change button color.
-  // When one split button is hovered, both split buttons on SplitButtonView
-  // changed color.
-  base::RepeatingClosure hovered_callback_;
-};
-
 // A button view with 2 divided buttons, primary and secondary.
 class SplitButtonView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(SplitButtonView);
 
-  SplitButtonView(SplitButton::SplitButtonType type,
+  enum class SplitButtonType {
+    kHalfButtons,
+    kPartialButtons,
+  };
+
+  SplitButtonView(SplitButtonType type,
                   views::Button::PressedCallback primary_callback,
                   views::Button::PressedCallback secondary_callback,
                   bool is_portrait_mode);
@@ -63,6 +34,8 @@ class SplitButtonView : public views::BoxLayoutView {
   ~SplitButtonView() override = default;
 
  private:
+  class SplitButton;
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
@@ -80,7 +53,7 @@ class SplitButtonView : public views::BoxLayoutView {
   SplitButton* primary_button_;
   SplitButton* secondary_button_;
 
-  const SplitButton::SplitButtonType type_;
+  const SplitButtonType type_;
 
   SkColor border_color_ = kMultitaskButtonDefaultColor;
   SkColor fill_color_ = SK_ColorTRANSPARENT;
@@ -88,4 +61,4 @@ class SplitButtonView : public views::BoxLayoutView {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_H_
+#endif  // CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_VIEW_H_

@@ -21,7 +21,7 @@
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
-#include "chromeos/ui/frame/multitask_menu/split_button.h"
+#include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
@@ -44,7 +44,7 @@ namespace {
 
 using ::chromeos::FrameCaptionButtonContainerView;
 using ::chromeos::FrameSizeButton;
-using ::chromeos::MultitaskBaseButton;
+using ::chromeos::MultitaskButton;
 using ::chromeos::MultitaskMenu;
 using ::chromeos::SplitButtonView;
 using ::chromeos::WindowStateType;

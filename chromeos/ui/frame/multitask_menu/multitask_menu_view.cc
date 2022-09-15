@@ -13,7 +13,7 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
-#include "chromeos/ui/frame/multitask_menu/split_button.h"
+#include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 #include "ui/base/default_style.h"
@@ -69,7 +69,7 @@ MultitaskMenuView::MultitaskMenuView(
   // Half button.
   if (buttons & kHalfSplit) {
     auto half_button = std::make_unique<SplitButtonView>(
-        SplitButton::SplitButtonType::kHalfButtons,
+        SplitButtonView::SplitButtonType::kHalfButtons,
         base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
                             base::Unretained(this), /*left_top=*/true),
         base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
@@ -84,7 +84,7 @@ MultitaskMenuView::MultitaskMenuView(
   if (buttons & kPartialSplit &&
       chromeos::wm::features::IsPartialSplitEnabled()) {
     auto partial_button = std::make_unique<SplitButtonView>(
-        SplitButton::SplitButtonType::kPartialButtons,
+        SplitButtonView::SplitButtonType::kPartialButtons,
         base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
                             base::Unretained(this), /*left_top=*/true),
         base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
@@ -97,10 +97,10 @@ MultitaskMenuView::MultitaskMenuView(
 
   // Full screen button.
   if (buttons & kFullscreen) {
-    auto full_button = std::make_unique<MultitaskBaseButton>(
+    auto full_button = std::make_unique<MultitaskButton>(
         base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
                             base::Unretained(this)),
-        MultitaskBaseButton::Type::kFull, is_portrait_mode,
+        MultitaskButton::Type::kFull, is_portrait_mode,
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FULL));
     full_button_ = full_button.get();
     AddChildView(
@@ -109,10 +109,10 @@ MultitaskMenuView::MultitaskMenuView(
 
   // Float on top button.
   if (buttons & kFloat) {
-    auto float_button = std::make_unique<MultitaskBaseButton>(
+    auto float_button = std::make_unique<MultitaskButton>(
         base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
                             base::Unretained(this)),
-        MultitaskBaseButton::Type::kFloat, is_portrait_mode,
+        MultitaskButton::Type::kFloat, is_portrait_mode,
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT_ON_TOP));
     float_button_ = float_button.get();
     AddChildView(CreateButtonContainer(std::move(float_button),

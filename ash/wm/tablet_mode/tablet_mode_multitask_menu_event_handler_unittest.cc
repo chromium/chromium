@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
-#include "chromeos/ui/frame/multitask_menu/split_button.h"
+#include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/events/event_handler.h"

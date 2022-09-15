@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ui/frame/multitask_menu/split_button.h"
+#include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 
 #include <memory>
 
@@ -36,39 +36,59 @@ constexpr SkColor kSplitButtonSecondaryHoverColor =
 
 }  // namespace
 
-SplitButton::SplitButton(views::Button::PressedCallback pressed_callback,
-                         base::RepeatingClosure hovered_callback,
-                         const std::u16string& name,
-                         const gfx::Insets& insets)
-    : views::Button(std::move(pressed_callback)),
-      button_color_(kMultitaskButtonDefaultColor),
-      insets_(insets),
-      hovered_callback_(std::move(hovered_callback)) {
-  SetAccessibleName(name);
-}
+// -----------------------------------------------------------------------------
+// SplitButton:
+// A button used for SplitButtonView to trigger primary/secondary split.
+class SplitButtonView::SplitButton : public views::Button {
+ public:
+  SplitButton(views::Button::PressedCallback pressed_callback,
+              base::RepeatingClosure hovered_callback,
+              const std::u16string& name,
+              const gfx::Insets& insets)
+      : views::Button(std::move(pressed_callback)),
+        button_color_(kMultitaskButtonDefaultColor),
+        insets_(insets),
+        hovered_callback_(std::move(hovered_callback)) {
+    SetAccessibleName(name);
+  }
 
-SplitButton::~SplitButton() = default;
+  SplitButton(const SplitButton&) = delete;
+  SplitButton& operator=(const SplitButton&) = delete;
+  ~SplitButton() override {}
 
-void SplitButton::StateChanged(ButtonState old_state) {
-  if (old_state == STATE_HOVERED || GetState() == STATE_HOVERED)
-    hovered_callback_.Run();
-}
+  void set_button_color(SkColor color) { button_color_ = color; }
 
-void SplitButton::OnPaintBackground(gfx::Canvas* canvas) {
-  cc::PaintFlags pattern_flags;
-  pattern_flags.setAntiAlias(true);
-  pattern_flags.setColor(button_color_);
-  pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
-  gfx::Rect pattern_bounds = GetLocalBounds();
-  pattern_bounds.Inset(insets_);
-  canvas->DrawRoundRect(pattern_bounds, kButtonCornerRadius, pattern_flags);
-}
+  // views::Button:
+  void OnPaintBackground(gfx::Canvas* canvas) override {
+    cc::PaintFlags pattern_flags;
+    pattern_flags.setAntiAlias(true);
+    pattern_flags.setColor(button_color_);
+    pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
+    gfx::Rect pattern_bounds = GetLocalBounds();
+    pattern_bounds.Inset(insets_);
+    canvas->DrawRoundRect(pattern_bounds, kButtonCornerRadius, pattern_flags);
+  }
 
-BEGIN_METADATA(SplitButton, views::Button)
-END_METADATA
+  void StateChanged(ButtonState old_state) override {
+    if (old_state == STATE_HOVERED || GetState() == STATE_HOVERED)
+      hovered_callback_.Run();
+  }
+
+ private:
+  SkColor button_color_;
+  // The insert between the button window pattern and the border.
+  gfx::Insets insets_;
+  // Callback to `SplitButtonView` to change button color.
+  // When one split button is hovered, both split buttons on SplitButtonView
+  // changed color.
+  base::RepeatingClosure hovered_callback_;
+};
+
+// -----------------------------------------------------------------------------
+// SplitButtonView:
 
 SplitButtonView::SplitButtonView(
-    SplitButton::SplitButtonType type,
+    SplitButtonType type,
     views::Button::PressedCallback primary_callback,
     views::Button::PressedCallback secondary_callback,
     bool is_portrait_mode)
@@ -92,13 +112,12 @@ SplitButtonView::SplitButtonView(
       secondary_callback, secondary_hover_callback, kSecondaryButtonName,
       is_portrait_mode ? kSecondaryPortraitInsets : kSecondaryLandscapeInsets));
 
-  const int primary_width = type_ == SplitButton::SplitButtonType::kHalfButtons
+  const int primary_width = type_ == SplitButtonType::kHalfButtons
                                 ? kMultitaskHalfButtonWidth
                                 : kMultitaskTwoThirdButtonWidth;
-  const int secondary_width =
-      type_ == SplitButton::SplitButtonType::kHalfButtons
-          ? kMultitaskHalfButtonWidth
-          : kMultitaskOneThirdButtonWidth;
+  const int secondary_width = type_ == SplitButtonType::kHalfButtons
+                                  ? kMultitaskHalfButtonWidth
+                                  : kMultitaskOneThirdButtonWidth;
 
   primary_button_->SetPreferredSize(
       is_portrait_mode ? gfx::Size(kMultitaskHalfButtonHeight, primary_width)
