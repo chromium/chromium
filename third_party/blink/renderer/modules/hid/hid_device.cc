@@ -425,6 +425,10 @@ void HIDDevice::UpdateDeviceInfo(device::mojom::blink::HidDeviceInfoPtr info) {
   }
 }
 
+void HIDDevice::ResetIsForgotten() {
+  device_is_forgotten_ = false;
+}
+
 void HIDDevice::Trace(Visitor* visitor) const {
   visitor->Trace(parent_);
   visitor->Trace(connection_);

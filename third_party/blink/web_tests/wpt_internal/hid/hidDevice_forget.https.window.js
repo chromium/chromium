@@ -189,3 +189,21 @@ hid_test(async (t, fake) => {
   devices = await navigator.hid.getDevices();
   assert_equals(devices.length, 0);
 }, 'Permission is not remembered even after reconnection');
+
+hid_test(async (t, fake) => {
+  const guid = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  fake.setSelectedDevice(guid);
+
+  await trustedClick();
+  let devices = await navigator.hid.requestDevice({filters: []});
+  assert_equals(devices.length, 1);
+
+  await devices[0].forget();
+
+  await trustedClick();
+  devices = await navigator.hid.requestDevice({filters: []});
+  assert_equals(devices.length, 1);
+
+  await devices[0].open();
+  assert_true(devices[0].opened);
+}, 'Opening a device that has been forgotten previously is possible');

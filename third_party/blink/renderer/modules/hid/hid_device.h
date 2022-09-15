@@ -93,6 +93,7 @@ class MODULES_EXPORT HIDDevice
   bool HasPendingActivity() const override;
 
   void UpdateDeviceInfo(device::mojom::blink::HidDeviceInfoPtr info);
+  void ResetIsForgotten();
 
   static HIDReportItem* ToHIDReportItem(
       const device::mojom::blink::HidReportItem& report_item);

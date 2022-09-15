@@ -273,8 +273,11 @@ void HID::FinishRequestDevice(
   request_device_promises_.erase(resolver);
 
   HeapVector<Member<HIDDevice>> devices;
-  for (auto& device_info : device_infos)
-    devices.push_back(GetOrCreateDevice(std::move(device_info)));
+  for (auto& device_info : device_infos) {
+    auto* device = GetOrCreateDevice(std::move(device_info));
+    device->ResetIsForgotten();
+    devices.push_back(device);
+  }
 
   resolver->Resolve(devices);
 }
