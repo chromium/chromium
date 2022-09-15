@@ -919,38 +919,37 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.webState && self.bookmarkModel &&
       self.bookmarkModel->IsBookmarked(self.webState->GetVisibleURL());
 
-  NSArray<OverflowMenuAction*>* basePageActions;
+  NSMutableArray<OverflowMenuAction*>* pageActions =
+      [[NSMutableArray alloc] init];
+
   if (self.followAction &&
       GetFollowActionState(self.webState) != FollowActionStateHidden) {
     DCHECK(IsWebChannelsEnabled());
-    basePageActions = @[
-      self.followAction,
-      (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
-      self.readLaterAction, self.translateAction,
-      ([self userAgentType] != web::UserAgentType::DESKTOP)
-          ? self.requestDesktopAction
-          : self.requestMobileAction,
-      self.findInPageAction, self.textZoomAction
-    ];
-  } else {
-    basePageActions = @[
-      (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
-      self.readLaterAction, self.translateAction,
-      ([self userAgentType] != web::UserAgentType::DESKTOP)
-          ? self.requestDesktopAction
-          : self.requestMobileAction,
-      self.findInPageAction, self.textZoomAction
-    ];
+    [pageActions addObject:self.followAction];
   }
+
+  // Add actions before a possible Clear Browsing Data action.
+  [pageActions addObjectsFromArray:@[
+    (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
+    self.readLaterAction
+  ]];
 
   // Clear Browsing Data Action is not relevant in incognito, so don't show it.
   // History is also hidden for similar reasons.
   if (IsNewOverflowMenuCBDActionEnabled() && !self.isIncognito) {
-    self.pageActionsGroup.actions = [@[ self.clearBrowsingDataAction ]
-        arrayByAddingObjectsFromArray:basePageActions];
-  } else {
-    self.pageActionsGroup.actions = basePageActions;
+    [pageActions addObject:self.clearBrowsingDataAction];
   }
+
+  // Add actions after a possible Clear Browsing Data action.
+  [pageActions addObjectsFromArray:@[
+    self.translateAction,
+    ([self userAgentType] != web::UserAgentType::DESKTOP)
+        ? self.requestDesktopAction
+        : self.requestMobileAction,
+    self.findInPageAction, self.textZoomAction
+  ]];
+
+  self.pageActionsGroup.actions = pageActions;
 
   NSMutableArray<OverflowMenuAction*>* helpActions =
       [[NSMutableArray alloc] init];
