@@ -12,7 +12,7 @@
 
 namespace account_manager {
 
-// This interface is used by `AccountManagerFacadeImpl` to show system UI
+// This interface is used by `AccountManagerMojoService` to show system UI
 // (system dialogs, OS Settings etc.)
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerUI {
  public:
