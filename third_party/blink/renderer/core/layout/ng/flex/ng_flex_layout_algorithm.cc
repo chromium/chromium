@@ -154,7 +154,8 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
     return AxisEdge::kEnd;
   }
 
-  if (alignment == ItemPosition::kFlexEnd)
+  if (alignment == ItemPosition::kFlexEnd ||
+      alignment == ItemPosition::kLastBaseline)
     return AxisEdge::kEnd;
 
   if (alignment == ItemPosition::kCenter)

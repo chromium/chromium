@@ -697,6 +697,10 @@
       status: "stable",
     },
     {
+      name: "CSSLastBaseline",
+      status: "experimental",
+    },
+    {
       name: "CSSLayoutAPI",
       status: "experimental",
     },

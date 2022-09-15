@@ -130,17 +130,20 @@ CSSValueID GetBaselineKeyword(CSSValue& value) {
   return CSSValueID::kLastBaseline;
 }
 
-CSSValue* ConsumeBaselineKeyword(CSSParserTokenRange& range) {
+CSSValue* ConsumeFirstBaseline(CSSParserTokenRange& range) {
+  ConsumeIdent<CSSValueID::kFirst>(range);
+  return ConsumeIdent<CSSValueID::kBaseline>(range);
+}
+
+CSSValue* ConsumeBaseline(CSSParserTokenRange& range) {
   CSSIdentifierValue* preference =
       ConsumeIdent<CSSValueID::kFirst, CSSValueID::kLast>(range);
   CSSIdentifierValue* baseline = ConsumeIdent<CSSValueID::kBaseline>(range);
   if (!baseline)
     return nullptr;
   if (preference && preference->GetValueID() == CSSValueID::kLast) {
-    // We still don't have support for 'last baseline' in layout
-    // https://crbug.com/885175
-    // https://crbug.com/886585
-    return nullptr;
+    return MakeGarbageCollected<CSSValuePair>(
+        preference, baseline, CSSValuePair::kDropIdenticalValues);
   }
   return baseline;
 }
@@ -3454,8 +3457,11 @@ CSSValue* ConsumeSelfPositionOverflowPosition(
   if (IsAuto(id) || IsNormalOrStretch(id))
     return ConsumeIdent(range);
 
-  if (IsBaselineKeyword(id))
-    return ConsumeBaselineKeyword(range);
+  CSSValue* baseline = RuntimeEnabledFeatures::CSSLastBaselineEnabled()
+                           ? ConsumeBaseline(range)
+                           : ConsumeFirstBaseline(range);
+  if (baseline)
+    return baseline;
 
   CSSIdentifierValue* overflow_position = ConsumeOverflowPositionKeyword(range);
   if (!is_position_keyword(range.Peek().Id()))
@@ -3479,10 +3485,7 @@ CSSValue* ConsumeContentDistributionOverflowPosition(
         CSSValueID::kInvalid);
   }
 
-  if (IsBaselineKeyword(id)) {
-    CSSValue* baseline = ConsumeBaselineKeyword(range);
-    if (!baseline)
-      return nullptr;
+  if (CSSValue* baseline = ConsumeFirstBaseline(range)) {
     return MakeGarbageCollected<cssvalue::CSSContentDistributionValue>(
         CSSValueID::kInvalid, GetBaselineKeyword(*baseline),
         CSSValueID::kInvalid);
