@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
@@ -225,6 +226,39 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
       base::FeatureList::IsEnabled(features::kLowPriorityAsyncScriptExecution);
   if (!feature_enabled)
     return false;
+
+  Document* element_document = OriginalElementDocument();
+
+  if (!IsA<HTMLDocument>(element_document))
+    return false;
+
+  static const base::TimeDelta feature_limit =
+      features::kLowPriorityAsyncScriptExecutionFeatureLimitParam.Get();
+  if (!feature_limit.is_zero() &&
+      element_document->GetStartTime().Elapsed() > feature_limit) {
+    return false;
+  }
+
+  // Do not enable kLowPriorityAsyncScriptExecution on reload.
+  // No specific reason to use element document here instead of context
+  // document though.
+  Document& top_document = element_document->TopDocument();
+  if (top_document.Loader() &&
+      top_document.Loader()->IsReloadedOrFormSubmitted()) {
+    return false;
+  }
+
+  static const bool cross_site_only =
+      features::kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam.Get();
+  if (cross_site_only && GetResource() &&
+      element_document->GetExecutionContext()) {
+    scoped_refptr<const SecurityOrigin> url_origin =
+        SecurityOrigin::Create(GetResource()->Url());
+    if (url_origin->IsSameSiteWith(
+            element_document->GetExecutionContext()->GetSecurityOrigin())) {
+      return false;
+    }
+  }
 
   if (GetElement() && GetElement()->IsPotentiallyRenderBlocking())
     return false;

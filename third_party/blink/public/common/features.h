@@ -682,6 +682,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kLowPriorityAsyncScriptExecution;
 // lower priority queue until this timeout elapsed.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutForLowPriorityAsyncScriptExecution;
+// kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
+// than |feature_limit|. Zero value means no limit.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kLowPriorityAsyncScriptExecutionFeatureLimitParam;
+// kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam;
 
 // If enabled, DOMContentLoaded will be fired after all async scripts are
 // executed.

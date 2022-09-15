@@ -1298,6 +1298,17 @@ const base::FeatureParam<base::TimeDelta>
     kTimeoutForLowPriorityAsyncScriptExecution{
         &kLowPriorityAsyncScriptExecution, "timeout", base::Milliseconds(0)};
 
+// kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
+// than |feature_limit|. Zero value means no limit.
+const base::FeatureParam<base::TimeDelta>
+    kLowPriorityAsyncScriptExecutionFeatureLimitParam{
+        &kLowPriorityAsyncScriptExecution, "feature_limit", base::Seconds(0)};
+
+// kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam{
+        &kLowPriorityAsyncScriptExecution, "cross_site_only", false};
+
 const base::Feature kDOMContentLoadedWaitForAsyncScript{
     "DOMContentLoadedWaitForAsyncScript", base::FEATURE_DISABLED_BY_DEFAULT};
 
