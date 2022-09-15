@@ -75,6 +75,9 @@ class FastCheckoutClientImpl
   // the method is called again to refresh the information displayed in the UI.
   void ShowFastCheckoutUI();
 
+  // Turns keyboard suppression on and off.
+  void SetShouldSuppressKeyboard(bool suppress);
+
   // Registers when onboarding was completed successfully and the scripts
   // are ready to run.
   void OnOnboardingCompletedSuccessfully();

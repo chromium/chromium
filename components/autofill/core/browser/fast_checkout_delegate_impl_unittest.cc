@@ -211,6 +211,10 @@ TEST_F(FastCheckoutDelegateImplTest, HideFastCheckoutHidesIfShown) {
   EXPECT_FALSE(fast_checkout_delegate_->IsShowingFastCheckoutUI());
 }
 
+TEST_F(FastCheckoutDelegateImplTest, GetDriver) {
+  EXPECT_EQ(autofill_driver_.get(), fast_checkout_delegate_->GetDriver());
+}
+
 TEST_F(FastCheckoutDelegateImplTest, ResetFastCheckoutIfShown) {
   TryToShowFastCheckout(/*expected_success=*/true);
   EXPECT_CALL(autofill_client_, HideFastCheckout).Times(1);

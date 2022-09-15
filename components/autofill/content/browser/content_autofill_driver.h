@@ -229,7 +229,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // Sets whether the keyboard should be suppressed. Used to keep the keyboard
   // hidden while the bottom sheet (e.g. Touch To Fill) is shown. Forwarded to
   // the last-queried source remembered by ContentAutofillRouter.
-  void SetShouldSuppressKeyboard(bool suppress);
+  virtual void SetShouldSuppressKeyboard(bool suppress);
 
   // Callbacks that are called also in other functions by ContentAutofillRouter.
   void FocusNoLongerOnFormCallback(bool had_interacted_form);

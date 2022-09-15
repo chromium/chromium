@@ -12,6 +12,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -109,8 +110,7 @@ bool FastCheckoutClientImpl::Start(
       CreateFastCheckoutExternalActionDelegate();
   external_script_controller_ = CreateHeadlessScriptController();
 
-  // TODO(crbug.com/1334642): Stop keyboard and autofill suggestions from
-  // showing.
+  SetShouldSuppressKeyboard(true);
 
   external_script_controller_->StartScript(
       params_map,
@@ -145,6 +145,16 @@ void FastCheckoutClientImpl::ShowFastCheckoutUI() {
   fast_checkout_controller_->Show(profiles_to_suggest, cards_to_suggest);
 }
 
+void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
+  if (delegate_) {
+    autofill::ContentAutofillDriver* driver =
+        static_cast<autofill::ContentAutofillDriver*>(delegate_->GetDriver());
+    if (driver) {
+      driver->SetShouldSuppressKeyboard(suppress);
+    }
+  }
+}
+
 void FastCheckoutClientImpl::OnRunComplete(
     autofill_assistant::HeadlessScriptController::ScriptResult result) {
   // TODO(crbug.com/1338522): Handle failed result.
@@ -156,6 +166,11 @@ void FastCheckoutClientImpl::Stop() {
   fast_checkout_controller_.reset();
   is_running_ = false;
   personal_data_manager_observation_.Reset();
+
+  // `OnHidden` is not called if the bottom sheet never managed to show,
+  // e.g. due to a failed onboarding. This ensures that keyboard suppression
+  // stops.
+  SetShouldSuppressKeyboard(false);
 }
 
 bool FastCheckoutClientImpl::IsRunning() const {
@@ -183,11 +198,10 @@ FastCheckoutClientImpl::CreateHeadlessScriptController() {
 }
 
 void FastCheckoutClientImpl::OnHidden() {
-  // TODO(crbug.com/1334642): Allow keyboard and autofill suggestions from
-  // showing.
   if (delegate_) {
     delegate_->OnFastCheckoutUIHidden();
   }
+  SetShouldSuppressKeyboard(false);
 }
 
 void FastCheckoutClientImpl::OnOptionsSelected(

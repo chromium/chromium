@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/fast_checkout_delegate_impl.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 
@@ -88,6 +90,10 @@ void FastCheckoutDelegateImpl::HideFastCheckoutUI() {
     manager_->client()->HideFastCheckout();
     fast_checkout_state_ = FastCheckoutState::kWasShown;
   }
+}
+
+AutofillDriver* FastCheckoutDelegateImpl::GetDriver() {
+  return manager_->driver();
 }
 
 void FastCheckoutDelegateImpl::Reset() {

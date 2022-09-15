@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FAST_CHECKOUT_DELEGATE_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FAST_CHECKOUT_DELEGATE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/fast_checkout_delegate.h"
 
 namespace autofill {
 
+class AutofillDriver;
 class BrowserAutofillManager;
 
 class FastCheckoutDelegateImpl : public FastCheckoutDelegate {
@@ -24,6 +27,7 @@ class FastCheckoutDelegateImpl : public FastCheckoutDelegate {
   bool IsShowingFastCheckoutUI() const override;
   void HideFastCheckoutUI() override;
   void OnFastCheckoutUIHidden() override;
+  AutofillDriver* GetDriver() override;
   void Reset() override;
 
  private:

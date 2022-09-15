@@ -10,6 +10,8 @@
 
 namespace autofill {
 
+class AutofillDriver;
+
 // Enum that describes different outcomes to an attempt of triggering the
 // FastCheckout bottomsheet.
 // Do not remove or renumber entries in this enum. It needs to be kept in
@@ -63,6 +65,10 @@ class FastCheckoutDelegate {
   // Triggered after the fast checkout card is closed, either by dissmisal or by
   // accepting the options.
   virtual void OnFastCheckoutUIHidden() = 0;
+
+  // Returns a raw pointer to the Autofill driver. On implementations other than
+  // iOS, the pointer can safely be cast to a `ContentAutofillDriver*`.
+  virtual AutofillDriver* GetDriver() = 0;
 
   // Resets the internal state of the delegate.
   virtual void Reset() = 0;

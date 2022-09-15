@@ -199,6 +199,7 @@ class MockFastCheckoutDelegate : public FastCheckoutDelegate {
   MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (const, override));
   MOCK_METHOD(void, HideFastCheckoutUI, (), (override));
   MOCK_METHOD(void, OnFastCheckoutUIHidden, (), (override));
+  MOCK_METHOD(AutofillDriver*, GetDriver, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
 };
 
