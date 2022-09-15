@@ -153,10 +153,6 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo GetNonOriginKeyedEquivalentForMetrics(
       const IsolationContext& isolation_context) const;
 
-  // Returns a copy of `this` but with `is_sandboxed_` set to true, and
-  // `unique_sandbox_id_` set to `document_unique_id`.
-  SiteInfo SandboxedClone(int document_unique_id) const;
-
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.
   //

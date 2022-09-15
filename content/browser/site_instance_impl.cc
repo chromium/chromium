@@ -1408,14 +1408,32 @@ int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {
 }
 
 scoped_refptr<SiteInstanceImpl>
-SiteInstanceImpl::GetCompatibleSandboxedSiteInstance(int unique_sandbox_id) {
+SiteInstanceImpl::GetCompatibleSandboxedSiteInstance(
+    const UrlInfo& url_info,
+    const url::Origin& parent_origin) {
   DCHECK(!IsDefaultSiteInstance());
   DCHECK(has_site_);
-  const SiteInfo& site_info = GetSiteInfo();
-  DCHECK(!site_info.is_sandboxed());
+  DCHECK(!GetSiteInfo().is_sandboxed());
+  DCHECK(url_info.url.IsAboutSrcdoc());
 
-  auto result = browsing_instance_->GetSiteInstanceForSiteInfo(
-      site_info.SandboxedClone(unique_sandbox_id));
+  UrlInfo sandboxed_url_info = url_info;
+  // Since the input `url_info` has a srcdoc url, using the url as-is will
+  // result in a SiteInfo that's not very specific, so we need something more
+  // meaningful. Ideally we'd use the UrlInfo used to load the parent, but we
+  // don't have that anymore, so we use the parent's origin which should be
+  // close enough. We use GetTupleOrPrecursorTupleIfOpaque in case
+  // `parent_origin` is opaque.
+  sandboxed_url_info.url =
+      parent_origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
+  // The `url_info` should already have its is_sandboxed flag set if we're here.
+  DCHECK(sandboxed_url_info.is_sandboxed);
+  DCHECK(!sandboxed_url_info.origin);
+  // At this point assume all other fields in the input `url_info` are correct.
+  auto sandboxed_site_info =
+      SiteInfo::Create(GetIsolationContext(), sandboxed_url_info);
+
+  auto result =
+      browsing_instance_->GetSiteInstanceForSiteInfo(sandboxed_site_info);
   result->original_url_ = original_url_;
   return result;
 }

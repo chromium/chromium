@@ -3211,7 +3211,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       // iframes are normally considered to have the same origin as their
       // parents, so this seems reasonable.
       return parent->GetSiteInstance()->GetCompatibleSandboxedSiteInstance(
-          request->GetNavigationId());
+          url_info, parent->GetLastCommittedOrigin());
     }
     AppendReason(reason,
                  "GetSiteInstanceForNavigationRequest => parent-instance"

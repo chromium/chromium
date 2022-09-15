@@ -478,16 +478,6 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
   return non_oac_site_info;
 }
 
-SiteInfo SiteInfo::SandboxedClone(int document_unique_id) const {
-  SiteInfo sandboxed_copy(*this);
-  sandboxed_copy.is_sandboxed_ = true;
-  if (features::kIsolateSandboxedIframesGroupingParam.Get() ==
-      features::IsolateSandboxedIframesGrouping::kPerDocument) {
-    sandboxed_copy.unique_sandbox_id_ = document_unique_id;
-  }
-  return sandboxed_copy;
-}
-
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
 
 bool SiteInfo::IsSamePrincipalWith(const SiteInfo& other) const {

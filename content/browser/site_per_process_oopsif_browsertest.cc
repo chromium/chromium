@@ -265,6 +265,130 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// Test that a sandboxed srcdoc iframe loads properly when its parent's url is
+// different from its site_url. The child should get its own SiteInstance with a
+// site_url based on the full origin of the parent's original url.
+IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
+                       SrcdocSandboxedFrameWithNonSiteParent) {
+  GURL main_url(embedded_test_server()->GetURL("sub.a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed srcdoc child frame.
+  {
+    std::string js_str =
+        "const frame = document.createElement('iframe'); "
+        "frame.sandbox = ''; "
+        "frame.srcdoc = 'foo'; "
+        "document.body.appendChild(frame);";
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Check frametree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);  // sub.a.com
+
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->effective_frame_policy().sandbox_flags);
+
+  auto* parent_site_instance = root->current_frame_host()->GetSiteInstance();
+  auto* child_site_instance = child->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(parent_site_instance, child_site_instance);
+  EXPECT_TRUE(child_site_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_FALSE(parent_site_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_EQ(embedded_test_server()->GetURL("sub.a.com", "/"),
+            child_site_instance->GetSiteInfo().site_url());
+  EXPECT_EQ(GURL("http://a.com/"),
+            parent_site_instance->GetSiteInfo().site_url());
+}
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
+                       SrcdocSandboxedFrameInsideAboutBlank) {
+  // Open main page on a.foo.com. It will be put in a site instance with site
+  // url foo.com
+  GURL main_url(embedded_test_server()->GetURL("a.foo.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // Create an about:blank frame.
+  {
+    std::string js_str =
+        "const frame = document.createElement('iframe'); "
+        "frame.src = 'about:blank'; "
+        "document.body.appendChild(frame);";
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  // Create a sandboxed srcdoc frame inside the about:blank child.
+  {
+    std::string js_str =
+        "const frame = document.createElement('iframe'); "
+        "frame.sandbox = ''; "
+        "frame.srcdoc = 'foo'; "
+        "document.body.appendChild(frame);";
+    EXPECT_TRUE(ExecJs(child, js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+  ASSERT_EQ(1U, child->child_count());
+  FrameTreeNode* grand_child = child->child_at(0);
+  auto* grand_child_site_instance =
+      grand_child->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(grand_child_site_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_EQ(embedded_test_server()->GetURL("a.foo.com", "/"),
+            grand_child_site_instance->GetSiteInfo().site_url());
+}
+
+// Similar to SrcdocSandboxedFrameWithNonSiteParent, but this time the srcdoc
+// is opened from b.foo.com which is loaded in the SiteInstance that was
+// created for a.foo.com, so the SiteInstance cannot be used to specify the
+// origin the srcdoc should use, namely b.foo.com.
+IN_PROC_BROWSER_TEST_P(SitePerProcessPerOriginIsolatedSandboxedIframeTest,
+                       SrcdocSandboxedFrameWithNonSiteParent2) {
+  GURL main_url(embedded_test_server()->GetURL("a.foo.com", "/title1.html"));
+  GURL sibling_url(embedded_test_server()->GetURL("b.foo.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // Open a new window that will share the SiteInstance of the main window.
+  Shell* new_shell = OpenPopup(root, sibling_url, "");
+  FrameTreeNode* sibling =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
+            sibling->current_frame_host()->GetSiteInstance());
+
+  {
+    std::string js_str =
+        "const frame = document.createElement('iframe'); "
+        "frame.sandbox = ''; "
+        "frame.srcdoc = 'foo'; "
+        "document.body.appendChild(frame);";
+    EXPECT_TRUE(ExecJs(new_shell, js_str));
+    ASSERT_TRUE(WaitForLoadStop(new_shell->web_contents()));
+  }
+  ASSERT_EQ(1U, sibling->child_count());
+  FrameTreeNode* child = sibling->child_at(0);  // b.foo.com
+
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->effective_frame_policy().sandbox_flags);
+
+  auto* sibling_site_instance =
+      sibling->current_frame_host()->GetSiteInstance();
+  auto* child_site_instance = child->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(sibling_site_instance, child_site_instance);
+  EXPECT_TRUE(child_site_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_FALSE(sibling_site_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_EQ(embedded_test_server()->GetURL("b.foo.com", "/"),
+            child_site_instance->GetSiteInfo().site_url());
+  EXPECT_EQ(GURL("http://foo.com/"),
+            sibling_site_instance->GetSiteInfo().site_url());
+}
+
 // Test that sandboxed iframes that are same-site with their parent but
 // cross-origin from each other are put in different processes from each other,
 // when the 'per-origin' isolation grouping is active for
