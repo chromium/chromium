@@ -11,21 +11,14 @@
 
 module ash.cros_healthd.internal.mojom;
 
-import "chromeos/components/sensors/mojom/sensor.mojom";
-
 // Collects data from chromium to Healthd.
 //
-// NextMinVersion: 2, NextIndex: 3
+// NextMinVersion: 1, NextIndex: 2
 interface ChromiumDataCollector {
   // Get touchscreen devices info.
   GetTouchscreenDevices@0() => (array<TouchscreenDevice> devices);
   // Get the touchpad library name.
   GetTouchpadLibraryName@1() => (string library_name);
-  // TODO(b/244284172): Deprecate it once we could get SensorService via mojo
-  // service manager.
-  // Bind SensorService pending receiver.
-  [MinVersion=1] BindSensorService@2(
-    pending_receiver<chromeos.sensors.mojom.SensorService> receiver);
 };
 
 // Data of a touch screen device in chromium.

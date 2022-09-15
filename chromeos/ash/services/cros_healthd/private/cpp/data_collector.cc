@@ -13,7 +13,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/components/mojo_service_manager/connection.h"
-#include "chromeos/components/sensors/sensor_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
@@ -163,36 +162,6 @@ void DataCollector::Request(
     mojo::ScopedMessagePipeHandle receiver) {
   receiver_set_.Add(this, mojo::PendingReceiver<mojom::ChromiumDataCollector>(
                               std::move(receiver)));
-}
-
-void DataCollector::BindSensorService(
-    mojo::PendingReceiver<chromeos::sensors::mojom::SensorService>
-        pending_receiver) {
-  // There should be one valid connection to sensor client. Reset the last
-  // connection to bind the new one.
-  if (sensor_client_receiver_.is_bound())
-    sensor_client_receiver_.reset();
-
-  sensor_service_pending_receiver_ = std::move(pending_receiver);
-  if (!chromeos::sensors::BindSensorHalClient(
-          sensor_client_receiver_.BindNewPipeAndPassRemote())) {
-    LOG(ERROR) << "Failed to bind SensorHalClient via Healthd data collector.";
-    sensor_service_pending_receiver_.reset();
-  }
-}
-
-void DataCollector::SetUpChannel(
-    mojo::PendingRemote<chromeos::sensors::mojom::SensorService>
-        pending_remote) {
-  sensor_client_receiver_.reset();
-  if (!sensor_service_pending_receiver_.is_valid()) {
-    LOG(ERROR) << "No valid pending receiver of sensor service.";
-    return;
-  }
-  if (!mojo::FusePipes(std::move(sensor_service_pending_receiver_),
-                       std::move(pending_remote))) {
-    LOG(ERROR) << "Failed to fuse remote and receiver of SensorService.";
-  }
 }
 
 }  // namespace ash::cros_healthd::internal
