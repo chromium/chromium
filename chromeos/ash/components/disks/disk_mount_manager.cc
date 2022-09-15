@@ -474,8 +474,11 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     }
 
-    const MountPoint mount_info{entry.source_path, entry.mount_path,
-                                entry.mount_type, mount_condition};
+    const MountPoint mount_info{.source_path = entry.source_path,
+                                .mount_path = entry.mount_path,
+                                .mount_type = entry.mount_type,
+                                .mount_condition = mount_condition,
+                                .progress_percent = 100};
 
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
@@ -532,7 +535,31 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // CrosDisksClient::Observer override.
   void OnMountProgress(const MountEntry& entry) override {
-    VLOG(1) << "OnMountProgress: " << entry;
+    DCHECK_EQ(entry.error_code, MountError::kInProgress);
+
+    const auto [it, ok] =
+        mount_points_.insert({.source_path = entry.source_path,
+                              .mount_path = entry.mount_path,
+                              .mount_type = entry.mount_type,
+                              .mount_condition = MountCondition::kInProgress,
+                              .progress_percent = entry.progress_percent});
+    if (ok) {
+      DCHECK_EQ(it->mount_path, entry.mount_path);
+      VLOG(1) << "Added in-progress mount point '" << entry.mount_path
+              << "' with " << entry.progress_percent << "%";
+      return;
+    }
+
+    // const_cast is Ok since we're not modifying it->mount_path.
+    MountPoint& mount_point = const_cast<MountPoint&>(*it);
+    DCHECK_EQ(mount_point.mount_path, entry.mount_path);
+    DCHECK_EQ(mount_point.source_path, entry.source_path);
+    DCHECK_EQ(mount_point.mount_type, entry.mount_type);
+    DCHECK_EQ(mount_point.mount_condition, MountCondition::kInProgress);
+
+    mount_point.progress_percent = entry.progress_percent;
+    VLOG(1) << "Updated in-progress mount point '" << entry.mount_path
+            << "' to " << entry.progress_percent << "%";
   }
 
   // Callback for UnmountPath.

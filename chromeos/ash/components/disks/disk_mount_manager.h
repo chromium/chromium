@@ -109,6 +109,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
     MountType mount_type = MountType::kInvalid;
     // Condition of mount.
     MountCondition mount_condition = MountCondition::kNone;
+    // Progress percent between 0 and 100 when mount_condition is kInProgress.
+    int progress_percent = 0;
   };
 
   // Comparator sorting MountPoint objects by mount_path.
