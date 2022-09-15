@@ -554,8 +554,6 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
     const Desk* new_desk) {
   DCHECK(new_desk);
 
-  base::Time time_launch_started = base::Time::Now();
-
   // For Save & Recall, the underlying desk definition is deleted on launch. We
   // store the template ID here since we're about to move the desk template.
   const auto saved_desk_type = saved_desk->type();
@@ -585,7 +583,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
   saved_desk->SetDeskIndex(desk_index);
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
-      std::move(saved_desk), time_launch_started);
+      std::move(saved_desk));
 
   if (!overview_controller->InOverviewSession()) {
     // Note: it is the intention that we don't leave overview mode when

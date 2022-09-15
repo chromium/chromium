@@ -90,8 +90,7 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
   // Launches apps into the active desk. Ran immediately after a desk is created
   // for a template.
   virtual void LaunchAppsFromTemplate(
-      std::unique_ptr<DeskTemplate> desk_template,
-      base::Time time_launch_started) = 0;
+      std::unique_ptr<DeskTemplate> desk_template) = 0;
 
   // Checks whether `window` is supported in the desks templates feature.
   virtual bool IsWindowSupportedForDeskTemplate(aura::Window* window) const = 0;

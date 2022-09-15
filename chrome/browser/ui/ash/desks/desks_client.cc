@@ -117,12 +117,11 @@ void RecordTimeToLoadTemplateHistogram(const base::Time time_started) {
 class DesksClient::LaunchPerformanceTracker
     : public app_restore::AppRestoreInfo::Observer {
  public:
-  LaunchPerformanceTracker(base::Time time_launch_started,
-                           const std::set<int>& window_ids,
+  LaunchPerformanceTracker(const std::set<int>& window_ids,
                            base::GUID template_id,
                            DesksClient* templates_client)
       : tracked_window_ids_(window_ids),
-        time_launch_started_(time_launch_started),
+        time_launch_started_(base::Time::Now()),
         template_id_(template_id),
         templates_client_(templates_client) {
     scoped_observation_.Observe(app_restore::AppRestoreInfo::GetInstance());
@@ -326,8 +325,6 @@ void DesksClient::LaunchDeskTemplate(
     const base::GUID& template_uuid,
     LaunchDeskCallback callback,
     const std::u16string& customized_desk_name) {
-  base::Time launch_started = base::Time::Now();
-
   if (!active_profile_) {
     std::move(callback).Run(std::string(kNoCurrentUserError), {});
     return;
@@ -335,7 +332,7 @@ void DesksClient::LaunchDeskTemplate(
 
   if (launch_template_for_test_) {
     OnGetTemplateForDeskLaunch(
-        std::move(callback), customized_desk_name, base::Time(),
+        std::move(callback), customized_desk_name,
         desks_storage::DeskModel::GetEntryByUuidStatus::kOk,
         launch_template_for_test_->Clone());
     return;
@@ -345,8 +342,7 @@ void DesksClient::LaunchDeskTemplate(
       GetDeskModel()->GetEntryByUUID(template_uuid);
 
   OnGetTemplateForDeskLaunch(std::move(callback), customized_desk_name,
-                             launch_started, result.status,
-                             std::move(result.entry));
+                             result.status, std::move(result.entry));
 }
 
 void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
@@ -399,8 +395,7 @@ void DesksClient::GetAllDesks(GetAllDesksCallback callback) {
 }
 
 void DesksClient::LaunchAppsFromTemplate(
-    std::unique_ptr<ash::DeskTemplate> desk_template,
-    base::Time time_launch_started) {
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
   DCHECK(desk_template);
   DCHECK_EQ(desk_template->launch_id(), 0);
 
@@ -423,7 +418,7 @@ void DesksClient::LaunchAppsFromTemplate(
 
   template_ids_to_launch_performance_trackers_[desk_template->uuid()] =
       std::make_unique<LaunchPerformanceTracker>(
-          time_launch_started, GetWindowIDSetFromTemplate(desk_template.get()),
+          GetWindowIDSetFromTemplate(desk_template.get()),
           desk_template->uuid(), this);
 
   DCHECK(active_profile_);
@@ -533,7 +528,6 @@ void DesksClient::SetAllDeskPropertyByBrowserSessionId(
 void DesksClient::OnGetTemplateForDeskLaunch(
     LaunchDeskCallback callback,
     std::u16string customized_desk_name,
-    base::Time time_launch_started,
     desks_storage::DeskModel::GetEntryByUuidStatus status,
     std::unique_ptr<ash::DeskTemplate> saved_desk) {
   if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
@@ -569,7 +563,7 @@ void DesksClient::OnGetTemplateForDeskLaunch(
   const auto uuid = saved_desk->uuid();
 
   // Launch the windows as specified in the saved desk to a new desk.
-  LaunchAppsFromTemplate(std::move(saved_desk), time_launch_started);
+  LaunchAppsFromTemplate(std::move(saved_desk));
   if (saved_desk_type == ash::DeskTemplateType::kSaveAndRecall) {
     GetDeskModel()->DeleteEntry(
         uuid, base::BindOnce(&DesksClient::OnRecallSavedDesk,
