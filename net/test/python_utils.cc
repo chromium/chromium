@@ -6,14 +6,9 @@
 
 #include <memory>
 
-#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/path_service.h"
-#include "base/process/launch.h"
 #include "build/build_config.h"
 
 namespace {
@@ -43,23 +38,6 @@ void SetPythonPathInEnvironment(const std::vector<base::FilePath>& python_path,
   // PYTHONPATH on invocation. Since we are clearing and manipulating it
   // ourselves, we don't want vpython to throw out our hard work.
   (*map)[kVPythonClearPathEnv] = base::NativeEnvironmentString();
-}
-
-bool GetPythonCommand(base::CommandLine* python_cmd) {
-  DCHECK(python_cmd);
-
-// Use vpython to pick up src.git's vpython VirtualEnv spec.
-#if BUILDFLAG(IS_WIN)
-  python_cmd->SetProgram(base::FilePath(FILE_PATH_LITERAL("vpython.bat")));
-#else
-  python_cmd->SetProgram(base::FilePath(FILE_PATH_LITERAL("vpython")));
-#endif
-
-  // Launch python in unbuffered mode, so that python output doesn't mix with
-  // gtest output in buildbot log files. See http://crbug.com/147368.
-  python_cmd->AppendArg("-u");
-
-  return true;
 }
 
 bool GetPython3Command(base::CommandLine* python_cmd) {

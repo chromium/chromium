@@ -18,12 +18,6 @@ class FilePath;
 void SetPythonPathInEnvironment(const std::vector<base::FilePath>& python_path,
                                 base::EnvironmentMap* map);
 
-// Returns if a virtualenv is currently active.
-bool IsInPythonVirtualEnv();
-
-// Returns the command that should be used to launch Python.
-[[nodiscard]] bool GetPythonCommand(base::CommandLine* python_cmd);
-
 // Returns the command that should be used to launch Python 3.
 [[nodiscard]] bool GetPython3Command(base::CommandLine* python_cmd);
 
