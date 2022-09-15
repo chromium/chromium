@@ -402,7 +402,6 @@ void SavedDeskPresenter::DeleteEntry(
 
 void SavedDeskPresenter::LaunchSavedDesk(
     std::unique_ptr<DeskTemplate> saved_desk,
-    base::TimeDelta delay,
     aura::Window* root_window) {
   DesksController* desks_controller = DesksController::Get();
 
@@ -426,8 +425,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
 
   const Desk* new_desk = desks_controller->CreateNewDeskForTemplate(
       activate_desk, saved_desk->template_name());
-  LaunchSavedDeskIntoNewDesk(std::move(saved_desk), delay, root_window,
-                             new_desk);
+  LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 
   // Note: `LaunchSavedDeskIntoNewDesk` *may* cause overview mode to exit. This
   // means that the saved desk presenter may have been destroyed at this point.
@@ -552,7 +550,6 @@ void SavedDeskPresenter::OnDeleteEntry(
 
 void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
     std::unique_ptr<DeskTemplate> saved_desk,
-    base::TimeDelta delay,
     aura::Window* root_window,
     const Desk* new_desk) {
   DCHECK(new_desk);
@@ -588,7 +585,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
   saved_desk->SetDeskIndex(desk_index);
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
-      std::move(saved_desk), time_launch_started, delay);
+      std::move(saved_desk), time_launch_started);
 
   if (!overview_controller->InOverviewSession()) {
     // Note: it is the intention that we don't leave overview mode when

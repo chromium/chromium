@@ -48,8 +48,7 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
       int desired_icon_size,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) const override;
   void LaunchAppsFromTemplate(std::unique_ptr<ash::DeskTemplate> desk_template,
-                              base::Time time_launch_started,
-                              base::TimeDelta delay) override;
+                              base::Time time_launch_started) override;
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
   std::string GetAppShortName(const std::string& app_id) override;
   bool IsAppAvailable(const std::string& app_id) const override;

@@ -400,8 +400,7 @@ void DesksClient::GetAllDesks(GetAllDesksCallback callback) {
 
 void DesksClient::LaunchAppsFromTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template,
-    base::Time time_launch_started,
-    base::TimeDelta delay) {
+    base::Time time_launch_started) {
   DCHECK(desk_template);
   DCHECK_EQ(desk_template->launch_id(), 0);
 
@@ -436,7 +435,6 @@ void DesksClient::LaunchAppsFromTemplate(
   if (!handler)
     handler = std::make_unique<DesksTemplatesAppLaunchHandler>(active_profile_);
 
-  handler->set_delay(delay);
   handler->LaunchTemplate(*desk_template);
 
   // Install a timer that will clear the launch handler after a given duration.
@@ -571,8 +569,7 @@ void DesksClient::OnGetTemplateForDeskLaunch(
   const auto uuid = saved_desk->uuid();
 
   // Launch the windows as specified in the saved desk to a new desk.
-  LaunchAppsFromTemplate(std::move(saved_desk), time_launch_started,
-                         base::TimeDelta());
+  LaunchAppsFromTemplate(std::move(saved_desk), time_launch_started);
   if (saved_desk_type == ash::DeskTemplateType::kSaveAndRecall) {
     GetDeskModel()->DeleteEntry(
         uuid, base::BindOnce(&DesksClient::OnRecallSavedDesk,

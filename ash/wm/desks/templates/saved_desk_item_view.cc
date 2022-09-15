@@ -716,27 +716,17 @@ void SavedDeskItemView::OnDeleteButtonPressed() {
 }
 
 void SavedDeskItemView::OnGridItemPressed(const ui::Event& event) {
-  MaybeLaunchTemplate(event.IsShiftDown());
+  MaybeLaunchTemplate();
 }
 
-void SavedDeskItemView::MaybeLaunchTemplate(bool should_delay) {
+void SavedDeskItemView::MaybeLaunchTemplate() {
   if (is_template_name_being_modified_) {
     SavedDeskNameView::CommitChanges(GetWidget());
     return;
   }
 
-  // Make shift-click on the launch button launch apps with a delay. This allows
-  // developers to simulate delayed launch behaviors with ARC apps.
-  // TODO(crbug.com/1281685): Remove before feature launch.
-  base::TimeDelta delay;
-#if !defined(OFFICIAL_BUILD)
-  if (should_delay)
-    delay = base::Seconds(3);
-#endif
-
   saved_desk_util::GetSavedDeskPresenter()->LaunchSavedDesk(
-      desk_template_->Clone(), delay,
-      GetWidget()->GetNativeWindow()->GetRootWindow());
+      desk_template_->Clone(), GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 
 void SavedDeskItemView::OnTemplateNameChanged(const std::u16string& new_name) {
@@ -759,7 +749,7 @@ views::View* SavedDeskItemView::GetView() {
 }
 
 void SavedDeskItemView::MaybeActivateHighlightedView() {
-  MaybeLaunchTemplate(/*should_delay=*/false);
+  MaybeLaunchTemplate();
 }
 
 void SavedDeskItemView::MaybeCloseHighlightedView(bool primary_action) {

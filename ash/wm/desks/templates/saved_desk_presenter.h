@@ -65,10 +65,8 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void DeleteEntry(const base::GUID& uuid,
                    absl::optional<DeskTemplateType> record_for_type);
 
-  // Launches `saved_desk` into a new desk. `delay` is the time between each app
-  // launch, used for debugging.
+  // Launches `saved_desk` into a new desk.
   void LaunchSavedDesk(std::unique_ptr<DeskTemplate> saved_desk,
-                       base::TimeDelta delay,
                        aura::Window* root_window);
 
   // Calls the DeskModel to capture the active desk as a `template_type`, with a
@@ -95,7 +93,6 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
 
   // Launch `saved_desk` into `new_desk`.
   void LaunchSavedDeskIntoNewDesk(std::unique_ptr<DeskTemplate> saved_desk,
-                                  base::TimeDelta delay,
                                   aura::Window* root_window,
                                   const Desk* new_desk);
 
