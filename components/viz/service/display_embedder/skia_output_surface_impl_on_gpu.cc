@@ -2299,11 +2299,8 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
 
 void SkiaOutputSurfaceImplOnGpu::DestroySharedImage(gpu::Mailbox mailbox) {
   shared_image_factory_->DestroySharedImage(mailbox);
-  // Under normal circumstances the write access should be destroyed already in
-  // PostSubmit(), but if context was lost then SwapBuffersInternal will no-op
-  // and PostSubmit() will not be called.
-  DCHECK(!overlay_pass_accesses_.contains(mailbox) || context_is_lost_);
-  overlay_pass_accesses_.erase(mailbox);
+  // The write access should be destroyed already.
+  DCHECK(!overlay_pass_accesses_.contains(mailbox));
   skia_representations_.erase(mailbox);
   solid_color_images_.erase(mailbox);
 }
