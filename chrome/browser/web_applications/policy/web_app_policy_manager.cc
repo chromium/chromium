@@ -128,8 +128,7 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
                    });
 
   bool is_placeholder_url =
-      app_registrar_
-          ->LookupPlaceholderAppId(GURL(url.spec()), WebAppManagement::kPolicy)
+      app_registrar_->LookupPlaceholderAppId(url, WebAppManagement::kPolicy)
           .has_value();
 
   if (it == web_apps_list.end() || !is_placeholder_url)
