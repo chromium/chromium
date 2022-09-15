@@ -647,6 +647,8 @@ void LocalDOMWindow::AddConsoleMessageImpl(ConsoleMessage* console_message,
 
 scoped_refptr<base::SingleThreadTaskRunner>
 LocalDOMWindow::GetAgentGroupSchedulerCompositorTaskRunner() {
+  if (!GetFrame())
+    return nullptr;
   auto* frame_scheduler = GetFrame()->GetFrameScheduler();
   return frame_scheduler->GetAgentGroupScheduler()->CompositorTaskRunner();
 }
