@@ -1305,6 +1305,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     return;
   }
 
+  const base::TimeDelta timestamp =
+      base::Microseconds(next_frame->timestamp_us());
+
   scoped_refptr<media::VideoFrame> frame;
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
       next_frame->video_frame_buffer();
@@ -1317,6 +1320,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     const WebRtcVideoFrameAdapter* frame_adapter =
         static_cast<WebRtcVideoFrameAdapter*>(buffer.get());
     frame = frame_adapter->getMediaVideoFrame();
+    frame->set_timestamp(timestamp);
     const media::VideoFrame::StorageType storage = frame->storage_type();
     const bool is_memory_based_frame =
         storage == media::VideoFrame::STORAGE_UNOWNED_MEMORY ||
@@ -1331,9 +1335,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   if (requires_copy_or_scale) {
     TRACE_EVENT0("webrtc",
                  "RTCVideoEncoder::Impl::EncodeOneFrame::CopyOrScale");
-    const base::TimeDelta timestamp =
-        frame ? frame->timestamp()
-              : base::Milliseconds(next_frame->ntp_time_ms());
     // Native buffer scaling is performed by WebRtcVideoFrameAdapter, which may
     // be more efficient in some cases. E.g. avoiding I420 conversion or scaling
     // from a middle layer instead of top layer.
@@ -1443,10 +1444,10 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   }
   if (!failed_timestamp_match_) {
     DCHECK(std::find_if(pending_frames_.begin(), pending_frames_.end(),
-                        [&frame](const PendingFrame& entry) {
-                          return entry.media_timestamp_ == frame->timestamp();
+                        [timestamp](const PendingFrame& entry) {
+                          return entry.media_timestamp_ == timestamp;
                         }) == pending_frames_.end());
-    pending_frames_.emplace_back(frame->timestamp(), next_frame->timestamp(),
+    pending_frames_.emplace_back(timestamp, next_frame->timestamp(),
                                  next_frame->render_time_ms(),
                                  ActiveSpatialResolutions());
   }
@@ -1488,12 +1489,12 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
     frame = media::VideoFrame::WrapVideoFrame(
         black_gmb_frame_, black_gmb_frame_->format(),
         black_gmb_frame_->visible_rect(), black_gmb_frame_->natural_size());
-    frame->set_timestamp(base::Milliseconds(next_frame->ntp_time_ms()));
   } else {
     frame = static_cast<WebRtcVideoFrameAdapter*>(
                 next_frame->video_frame_buffer().get())
                 ->getMediaVideoFrame();
   }
+  frame->set_timestamp(base::Microseconds(next_frame->timestamp_us()));
 
   if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
