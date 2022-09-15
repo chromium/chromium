@@ -205,6 +205,8 @@ BubbleViewType BubbleTypeFromFeature() {
       reauthenticationModule:self.reauthenticationModule];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
+  self.formInputAccessoryViewController.brandingViewControllerDelegate =
+      self.formInputAccessoryMediator;
   [self.formInputAccessoryViewController.view
       addGestureRecognizer:self.formInputAccessoryTapRecognizer];
 

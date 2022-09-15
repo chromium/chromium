@@ -187,6 +187,12 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kTrialGroupV3PrefName, 0);
 
   registry->RegisterDictionaryPref(kPrefPromoObject);
+
+  // Registers prefs to count the remaining number of times autofill branding
+  // animation should perform. Defaults to 2, which is the maximum number of
+  // times a user should see autofill branding animation after installation.
+  registry->RegisterIntegerPref(
+      prefs::kAutofillBrandingIconAnimationRemainingCountPrefName, 2);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

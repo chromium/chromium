@@ -67,6 +67,8 @@ extern const char kNewTabPageLocationOverride[];
 
 extern const char kHttpsOnlyModeEnabled[];
 
+extern const char kAutofillBrandingIconAnimationRemainingCountPrefName[];
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_

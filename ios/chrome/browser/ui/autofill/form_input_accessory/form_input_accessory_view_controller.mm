@@ -23,7 +23,6 @@
 #endif
 
 @interface FormInputAccessoryViewController () <
-    BrandingViewControllerDelegate,
     FormSuggestionViewDelegate,
     ManualFillAccessoryViewControllerDelegate>
 
@@ -76,6 +75,7 @@
         manualFillAccessoryViewControllerDelegate;
     _manualFillAccessoryViewController =
         [[ManualFillAccessoryViewController alloc] initWithDelegate:self];
+    [self addChildViewController:_manualFillAccessoryViewController];
   }
   return self;
 }
@@ -90,7 +90,10 @@
   self.leadingView = [[UIStackView alloc] init];
   self.leadingView.axis = UILayoutConstraintAxisHorizontal;
   if (self.brandingVisible) {
+    [self addChildViewController:self.brandingViewController];
+    self.brandingViewController.delegate = self.brandingViewControllerDelegate;
     [self.leadingView addArrangedSubview:self.brandingViewController.view];
+    [self.brandingViewController didMoveToParentViewController:self];
   }
   [self.leadingView addArrangedSubview:self.formSuggestionView];
 
@@ -149,15 +152,15 @@
            self.formSuggestionView.suggestions.count == 0);
 }
 
-#pragma mark - Setters
-
 - (BrandingViewController*)brandingViewController {
   if (!_brandingViewController) {
-    _brandingViewController =
-        [[BrandingViewController alloc] initWithDelegate:self];
+    DCHECK(self.brandingVisible);
+    _brandingViewController = [[BrandingViewController alloc] init];
   }
   return _brandingViewController;
 }
+
+#pragma mark - Setters
 
 - (void)setPasswordButtonHidden:(BOOL)passwordButtonHidden {
   _passwordButtonHidden = passwordButtonHidden;
@@ -197,6 +200,16 @@
       _formInputPreviousButtonEnabled;
 }
 
+- (void)setBrandingViewControllerDelegate:
+    (id<BrandingViewControllerDelegate>)delegate {
+  _brandingViewControllerDelegate = delegate;
+  if (self.brandingVisible) {
+    // If the branding view controller is created previously without the
+    // delegate, attach it.
+    self.brandingViewController.delegate = delegate;
+  }
+}
+
 #pragma mark - Private
 
 // Resets this view to its original state. Can be animated.
@@ -219,22 +232,21 @@
 // Show or hide branding when the number of suggestions and/or buttons changes.
 - (void)updateBrandingVisibility {
   if (self.brandingVisible) {
+    self.brandingViewController.delegate = self.brandingViewControllerDelegate;
     UIView* branding = self.brandingViewController.view;
     if (branding.superview == nil) {
+      [self addChildViewController:self.brandingViewController];
       [self.leadingView insertArrangedSubview:branding atIndex:0];
+      [self.brandingViewController didMoveToParentViewController:self];
     }
   } else if (self.leadingView.subviews.count ==
              2) {  // Branding button and form suggestions view.
     UIView* branding = self.brandingViewController.view;
     DCHECK_EQ(branding, self.leadingView.arrangedSubviews[0]);
+    [self.brandingViewController willMoveToParentViewController:nil];
     [branding removeFromSuperview];
+    [self.brandingViewController removeFromParentViewController];
   }
-}
-
-#pragma mark - BrandingViewControllerDelegate
-
-- (void)brandingIconPressed {
-  base::RecordAction(base::UserMetricsAction("Autofill_BrandingTapped"));
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
