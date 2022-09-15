@@ -58,6 +58,9 @@ class CORE_EXPORT PendingBeacon
   // `PendingBeaconDispatcher::PendingBeacon` implementation.
   base::TimeDelta GetBackgroundTimeout() const override;
   void Send() override;
+  bool IsPending() const override { return pending_; }
+  void MarkNotPending() override { pending_ = false; }
+  ExecutionContext* GetExecutionContext() override { return ec_; }
 
  protected:
   explicit PendingBeacon(ExecutionContext* context,
@@ -74,10 +77,13 @@ class CORE_EXPORT PendingBeacon
   // A convenient method to return a TaskRunner which is able to keep working
   // even if the JS context is frozen.
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+  // Triggered by `timeout_timer_`.
   void TimeoutTimerFired(TimerBase*);
 
   Member<ExecutionContext> ec_;
+  // Connects to a PendingBeacon in the browser process.
   HeapMojoRemote<mojom::blink::PendingBeacon> remote_;
+
   String url_;
   const String method_;
   base::TimeDelta background_timeout_;

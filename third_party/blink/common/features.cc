@@ -1356,6 +1356,8 @@ const base::Feature kPendingBeaconAPI{"PendingBeaconAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<bool> kPendingBeaconAPIRequiresOriginTrial = {
     &kPendingBeaconAPI, "requires_origin_trial", false};
+const base::FeatureParam<bool> kPendingBeaconAPIForcesSendingOnNavigation = {
+    &blink::features::kPendingBeaconAPI, "send_on_navigation", true};
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 const base::Feature kPrefetchFontLookupTables{

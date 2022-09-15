@@ -36,6 +36,14 @@ struct ReverseBeaconTimeoutSorter {
 
 }  // namespace
 
+void PendingBeaconDispatcher::PendingBeacon::UnregisterFromDispatcher() {
+  auto* ec = GetExecutionContext();
+  DCHECK(ec);
+  auto* dispatcher = PendingBeaconDispatcher::From(*ec);
+  DCHECK(dispatcher);
+  dispatcher->Unregister(this);
+}
+
 // static
 const char PendingBeaconDispatcher::kSupplementName[] =
     "PendingBeaconDispatcher";
@@ -276,6 +284,37 @@ void PendingBeaconDispatcher::Trace(Visitor* visitor) const {
   visitor->Trace(remote_);
   visitor->Trace(pending_beacons_);
   visitor->Trace(background_timeout_descending_beacons_);
+}
+
+bool PendingBeaconDispatcher::HasPendingBeaconForTesting(
+    PendingBeacon* pending_beacon) const {
+  return pending_beacons_.Contains(pending_beacon);
+}
+
+void PendingBeaconDispatcher::OnDispatchPagehide() {
+  if (!features::kPendingBeaconAPIForcesSendingOnNavigation.Get()) {
+    return;
+  }
+
+  // At this point, the renderer can assume that all beacons on this document
+  // have (or will have) been sent out by browsers. The only work left is to
+  // update all beacons pending state such that they cannot be updated anymore.
+  //
+  // This is to mitigate potential privacy issue that when network changes
+  // after users think they have left a page, beacons queued in that page
+  // still exist and get sent through the new network, which leaks navigation
+  // history to the new network.
+  // See https://github.com/WICG/unload-beacon/issues/30.
+  //
+  // Note that the pagehide event might be dispatched a bit earlier than when
+  // beacons get sents by browser in same-site navigation.
+
+  for (auto& pending_beacon : pending_beacons_) {
+    if (pending_beacon->IsPending()) {
+      pending_beacon->MarkNotPending();
+    }
+  }
+  pending_beacons_.clear();
 }
 
 }  // namespace blink

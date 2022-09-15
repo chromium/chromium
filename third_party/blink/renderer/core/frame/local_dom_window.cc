@@ -93,6 +93,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/pending_beacon_dispatcher.h"
 #include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
@@ -836,6 +837,14 @@ void LocalDOMWindow::DispatchPagehideEvent(
     // TODO(crbug.com/1119291): Investigate whether this is possible or not.
     return;
   }
+
+  if (base::FeatureList::IsEnabled(features::kPendingBeaconAPI)) {
+    if (auto* dispatcher =
+            PendingBeaconDispatcher::From(*GetExecutionContext())) {
+      dispatcher->OnDispatchPagehide();
+    }
+  }
+
   DispatchEvent(
       *PageTransitionEvent::Create(event_type_names::kPagehide, persistence),
       document_.Get());

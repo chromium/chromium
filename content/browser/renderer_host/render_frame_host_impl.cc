@@ -8737,6 +8737,17 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
   return true;
 }
 
+void RenderFrameHostImpl::SendAllPendingBeaconsOnNavigation() {
+  if (auto* pending_beacon_host =
+          PendingBeaconHost::GetForCurrentDocument(this)) {
+    pending_beacon_host->SendAllOnNavigation();
+  }
+  // TODO(crbug.com/1293679): Address FencedFrame.
+  for (auto& child : children_) {
+    child->current_frame_host()->SendAllPendingBeaconsOnNavigation();
+  }
+}
+
 void RenderFrameHostImpl::CommitNavigation(
     NavigationRequest* navigation_request,
     blink::mojom::CommonNavigationParamsPtr common_params,

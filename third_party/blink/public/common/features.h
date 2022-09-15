@@ -756,6 +756,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kPendingBeaconAPI;
 // both in Chromium & in Blink.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPendingBeaconAPIRequiresOriginTrial;
+// Allows control to decide whether to forced sending out beacons on navigating
+// away a page (transitioning to dispatch pagehide event).
+// Details in https://github.com/WICG/unload-beacon/issues/30
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kPendingBeaconAPIForcesSendingOnNavigation;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // If enabled, font lookup tables will be prefetched on renderer startup.

@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
@@ -104,12 +105,35 @@ void PendingBeaconHost::Send(
   if (beacons.empty()) {
     return;
   }
+
   service_->SendBeacons(beacons, shared_url_factory_.get());
 }
 
 void PendingBeaconHost::SetReceiver(
     mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+void PendingBeaconHost::SendAllOnNavigation() {
+  if (!blink::features::kPendingBeaconAPIForcesSendingOnNavigation.Get()) {
+    return;
+  }
+
+  // Sends out all `beacons_` ASAP to avoid network change happens.
+  // This is to mitigate potential privacy issue that when network changes
+  // after users think they have left a page, beacons queued in that page
+  // still exist and get sent through the new network, which leaks navigation
+  // history to the new network.
+  // See https://github.com/WICG/unload-beacon/issues/30.
+
+  // Swaps out from private field first to make any potential subsequent send
+  // requests from renderer no-ops.
+  std::vector<std::unique_ptr<Beacon>> to_send;
+  to_send.swap(beacons_);
+  Send(to_send);
+
+  // Now all beacons are gone.
+  // The renderer-side beacons should update their pending states by themselves.
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PendingBeaconHost);

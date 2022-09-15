@@ -286,6 +286,7 @@ blink_core_tests_frame = [
   "mhtml_loading_test.cc",
   "performance_monitor_test.cc",
   "pending_beacon_dispatcher_test.cc",
+  "pending_beacon_test.cc",
   "policy_container_test.cc",
   "report_test.cc",
   "reporting_context_test.cc",

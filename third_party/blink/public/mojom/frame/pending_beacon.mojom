@@ -15,6 +15,12 @@ enum BeaconMethod {
 };
 
 // Interface for creating browser-side pending beacon objects.
+//
+// There is one instance of this interface per RenderFrameHost in the browser
+// process.
+//
+// All methods are called by renderer.
+//
 // API explainer here:
 // https://github.com/WICG/unload-beacon/blob/main/README.md
 interface PendingBeaconHost {
@@ -30,7 +36,12 @@ interface PendingBeaconHost {
 
 };
 
-// Interface for configuring and acting on pending beacons.
+// Interface for configuring and acting on a pending beacon in the browser.
+//
+// A pending beacon in the renderer process uses this interface to communicate
+// with its counterpart in the browser process.
+//
+// All methods are called by renderer.
 interface PendingBeacon {
 
   // Deactivates the pending beacon. After this call it will not be sent.

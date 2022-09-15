@@ -43,6 +43,15 @@ MATCHER(IsFrameHidden,
 
 class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
  protected:
+  using FeaturesType =
+      std::vector<base::test::ScopedFeatureList::FeatureAndParams>;
+
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    ContentBrowserTest::SetUp();
+  }
+  virtual const FeaturesType& GetEnabledFeatures() = 0;
+
   void SetUpOnMainThread() override {
     CheckPermissionStatus(blink::PermissionType::BACKGROUND_SYNC,
                           blink::mojom::PermissionStatus::GRANTED);
@@ -190,12 +199,45 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  base::test::ScopedFeatureList feature_list_;
+
   base::Lock count_lock_;
   size_t sent_beacon_count_ GUARDED_BY(count_lock_) = 0;
   std::unique_ptr<base::RunLoop> waiting_run_loop_;
 
   std::unique_ptr<RenderFrameHostWrapper> current_document_ = nullptr;
   std::unique_ptr<RenderFrameHostWrapper> previous_document_ = nullptr;
+};
+
+class PendingBeaconWithBackForwardCacheMetricsBrowserTestBase
+    : public PendingBeaconTimeoutBrowserTestBase,
+      public BackForwardCacheMetricsTestMatcher {
+ protected:
+  void SetUpOnMainThread() override {
+    // TestAutoSetUkmRecorder's constructor requires a sequenced context.
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    PendingBeaconTimeoutBrowserTestBase::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ukm_recorder_.reset();
+    histogram_tester_.reset();
+    PendingBeaconTimeoutBrowserTestBase::TearDownOnMainThread();
+  }
+
+  // `BackForwardCacheMetricsTestMatcher` implementation.
+  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
+    return *ukm_recorder_;
+  }
+  // `BackForwardCacheMetricsTestMatcher` implementation.
+  const base::HistogramTester& histogram_tester() override {
+    return *histogram_tester_;
+  }
+
+ private:
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 struct TestTimeoutType {
@@ -213,16 +255,12 @@ class PendingBeaconTimeoutNoBackForwardCacheBrowserTest
     : public PendingBeaconTimeoutBrowserTestBase,
       public testing::WithParamInterface<TestTimeoutType> {
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPendingBeaconAPI, {}},
-         {features::kBackForwardCache, {{"cache_size", "0"}}}},
-        {});
-    PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features = {
+        {blink::features::kPendingBeaconAPI, {{"send_on_navigation", "true"}}},
+        {features::kBackForwardCache, {{"cache_size", "0"}}}};
+    return enabled_features;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -253,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
                                     kBeaconEndpoint, GetParam().timeout));
   ASSERT_TRUE(WaitUntilPreviousDocumentDeleted());
 
-  WaitForAllBeaconsSent(total_beacon);
+  // The beacon should have been sent out after the page is gone.
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
@@ -270,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
                                     kBeaconEndpoint, GetParam().timeout));
   ASSERT_TRUE(WaitUntilPreviousDocumentDeleted());
 
-  WaitForAllBeaconsSent(total_beacon);
+  // The beacon should have been sent out after the page is gone.
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
@@ -282,21 +320,19 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
 class PendingBeaconBackgroundTimeoutBrowserTest
     : public PendingBeaconTimeoutBrowserTestBase {
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPendingBeaconAPI,
-          {{"PendingBeaconMaxBackgroundTimeoutInMs", "10000"}}},
-         {features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "5"}}},
-         // Forces BFCache to work in low memory device.
-         {features::kBackForwardCacheMemoryControls,
-          {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}},
-        {});
-    PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features = {
+        {blink::features::kPendingBeaconAPI,
+         {{"PendingBeaconMaxBackgroundTimeoutInMs", "60000"},
+          // Don't force sending out beacons on pagehide.
+          {"send_on_navigation", "false"}}},
+        {features::kBackForwardCache,
+         {{"TimeToLiveInBackForwardCacheInSeconds", "5"}}},
+        // Forces BFCache to work in low memory device.
+        {features::kBackForwardCacheMemoryControls,
+         {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}};
+    return enabled_features;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
@@ -518,48 +554,20 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest, SendMultipleOnTimeout) {
 // Sets a long BFCache timeout (1min) so that beacon won't be sent out due to
 // page eviction.
 class PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest
-    : public PendingBeaconTimeoutBrowserTestBase,
-      public BackForwardCacheMetricsTestMatcher {
+    : public PendingBeaconWithBackForwardCacheMetricsBrowserTestBase {
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPendingBeaconAPI, {}},
-         {features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}},
-         // Forces BFCache to work in low memory device.
-         {features::kBackForwardCacheMemoryControls,
-          {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}},
-        {});
-    PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features = {
+        {blink::features::kPendingBeaconAPI,
+         {// Don't force sending out beacons on pagehide.
+          {"send_on_navigation", "false"}}},
+        {features::kBackForwardCache,
+         {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}},
+        // Forces BFCache to work in low memory device.
+        {features::kBackForwardCacheMemoryControls,
+         {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}};
+    return enabled_features;
   }
-
-  void SetUpOnMainThread() override {
-    // TestAutoSetUkmRecorder's constructor requires a sequenced context.
-    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
-    PendingBeaconTimeoutBrowserTestBase::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    ukm_recorder_.reset();
-    histogram_tester_.reset();
-    PendingBeaconTimeoutBrowserTestBase::TearDownOnMainThread();
-  }
-
-  // `BackForwardCacheMetricsTestMatcher` implementation.
-  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
-    return *ukm_recorder_;
-  }
-  // `BackForwardCacheMetricsTestMatcher` implementation.
-  const base::HistogramTester& histogram_tester() override {
-    return *histogram_tester_;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -628,6 +636,124 @@ IN_PROC_BROWSER_TEST_F(
 
   WaitForAllBeaconsSent(total_beacon);
   // Verify that beacon is sent.
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// Tests to cover PendingBeacon's behaviors when enabled forced sending on
+// pagehide event.
+//
+// Setting a long `PendingBeaconMaxBackgroundTimeoutInMs` (1min), and a long
+// BFCache timeout (1min) so that beacon sending cannot be caused by reaching
+// max background timeout limit, and cannot be caused by BFCache eviction.
+class PendingBeaconSendOnPagehideBrowserTest
+    : public PendingBeaconWithBackForwardCacheMetricsBrowserTestBase {
+ protected:
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features = {
+        {blink::features::kPendingBeaconAPI,
+         {{"PendingBeaconMaxBackgroundTimeoutInMs", "60000"},
+          {"send_on_navigation", "true"}}},
+        {features::kBackForwardCache,
+         {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}},
+        // Forces BFCache to work in low memory device.
+        {features::kBackForwardCacheMemoryControls,
+         {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}};
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconSendOnPagehideBrowserTest,
+                       SendOnPagehideWhenPageIsPersisted) {
+  const size_t total_beacon = 3;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates 3 pending beacons with default backgroundTimeout & timeout.
+  // They should be sent out on transitioning to pagehide event.
+  RunScriptInANavigateToB(JsReplace(R"(
+    document.title = '';
+    let p1 = new PendingGetBeacon($1);
+    let p2 = new PendingPostBeacon($1);
+    let p3 = new PendingGetBeacon($1);
+    window.addEventListener('pagehide', (e) => {
+      document.title = e.persisted + '/' + p1.pending + '/' + p2.pending +
+                       '/' + p3.pending;
+    });
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // The same page A is still alive.
+  ExpectRestored(FROM_HERE);
+  // All beacons should have been sent out before previous pagehide.
+  std::u16string expected_title = u"true/false/false/false";
+  TitleWatcher title_watcher(web_contents(), expected_title);
+  EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconSendOnPagehideBrowserTest,
+                       SendOnPagehideBeforeBackgroundTimeout) {
+  const size_t total_beacon = 3;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates 3 pending beacons with long backgroundTimeout < BFCache TTL (1min).
+  // They should be sent out on transitioning to pagehide but before the end of
+  // backgroundTimeout and before BFCache TTL.
+  RunScriptInANavigateToB(JsReplace(R"(
+    document.title = '';
+    let p1 = new PendingGetBeacon($1, {backgroundTimeout: 20000});
+    let p2 = new PendingPostBeacon($1, {backgroundTimeout: 15000});
+    let p3 = new PendingGetBeacon($1, {backgroundTimeout: 10000});
+    window.addEventListener('pagehide', (e) => {
+      document.title = e.persisted + '/' + p1.pending + '/' + p2.pending +
+                       '/' + p3.pending;
+    });
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // The same page A is still alive.
+  ExpectRestored(FROM_HERE);
+  // All beacons should have been sent out.
+  std::u16string expected_title = u"true/false/false/false";
+  TitleWatcher title_watcher(web_contents(), expected_title);
+  EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconSendOnPagehideBrowserTest,
+                       SendOnPagehideBeforeTimeout) {
+  const size_t total_beacon = 3;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates 3 pending beacons with long timeout < BFCache TTL (1min).
+  // They should be sent out on transitioning to pagehide but before the end of
+  // timeout and before BFCache TTL.
+  RunScriptInANavigateToB(JsReplace(R"(
+    document.title = '';
+    let p1 = new PendingGetBeacon($1, {timeout: 20000});
+    let p2 = new PendingPostBeacon($1, {timeout: 10000});
+    let p3 = new PendingGetBeacon($1, {timeout: 15000});
+    window.addEventListener('pagehide', (e) => {
+      document.title = e.persisted + '/' + p1.pending + '/' + p2.pending +
+                       '/' + p3.pending;
+    });
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // The same page A is still alive.
+  ExpectRestored(FROM_HERE);
+  // All beacons should have been sent out.
+  std::u16string expected_title = u"true/false/false/false";
+  TitleWatcher title_watcher(web_contents(), expected_title);
+  EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 

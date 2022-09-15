@@ -86,9 +86,7 @@ void PendingBeacon::deactivate() {
     remote_->Deactivate();
     pending_ = false;
 
-    auto* dispatcher = PendingBeaconDispatcher::From(*ec_);
-    DCHECK(dispatcher);
-    dispatcher->Unregister(this);
+    UnregisterFromDispatcher();
   }
 }
 
@@ -97,9 +95,7 @@ void PendingBeacon::sendNow() {
     remote_->SendNow();
     pending_ = false;
 
-    auto* dispatcher = PendingBeaconDispatcher::From(*ec_);
-    DCHECK(dispatcher);
-    dispatcher->Unregister(this);
+    UnregisterFromDispatcher();
   }
 }
 

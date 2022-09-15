@@ -6,9 +6,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
@@ -33,26 +36,26 @@ using ::testing::UnorderedElementsAre;
 class MockPendingBeacon : public GarbageCollected<MockPendingBeacon>,
                           public PendingBeaconDispatcher::PendingBeacon {
  public:
+  using OnSendCallbackType = base::RepeatingCallback<void(int)>;
+
   MockPendingBeacon(ExecutionContext* ec,
                     int id,
                     base::TimeDelta background_timeout,
-                    base::RepeatingCallback<void(int)> on_send)
-      : remote_(ec),
+                    OnSendCallbackType on_send)
+      : ec_(ec),
+        remote_(ec),
         id_(id),
         background_timeout_(background_timeout),
         on_send_(on_send) {
     auto task_runner = ec->GetTaskRunner(PendingBeaconDispatcher::kTaskType);
-    mojo::PendingReceiver<mojom::blink::PendingBeacon> unused_receiver =
+    mojo::PendingReceiver<mojom::blink::PendingBeacon> receiver =
         remote_.BindNewPipeAndPassReceiver(task_runner);
 
     auto& dispatcher = PendingBeaconDispatcher::FromOrAttachTo(*ec);
-    dispatcher.CreateHostBeacon(this, std::move(unused_receiver), url_,
-                                method_);
+    dispatcher.CreateHostBeacon(this, std::move(receiver), url_, method_);
   }
 
-  MockPendingBeacon(ExecutionContext* ec,
-                    int id,
-                    base::RepeatingCallback<void(int)> on_send)
+  MockPendingBeacon(ExecutionContext* ec, int id, OnSendCallbackType on_send)
       : MockPendingBeacon(ec, id, base::Milliseconds(-1), on_send) {}
 
   // Not copyable or movable
@@ -60,31 +63,57 @@ class MockPendingBeacon : public GarbageCollected<MockPendingBeacon>,
   MockPendingBeacon& operator=(const MockPendingBeacon&) = delete;
   virtual ~MockPendingBeacon() = default;
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(remote_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(ec_);
+    visitor->Trace(remote_);
+  }
 
   // PendingBeaconDispatcher::Beacon Implementation.
   base::TimeDelta GetBackgroundTimeout() const override {
     return background_timeout_;
   }
-  void Send() override { on_send_.Run(id_); }
+  void Send() override {
+    on_send_.Run(id_);
+    PendingBeaconDispatcher::From(*ec_)->Unregister(this);
+  }
+  ExecutionContext* GetExecutionContext() override { return ec_; }
+  bool IsPending() const override { return is_pending_; }
+  void MarkNotPending() override { is_pending_ = false; }
 
  private:
   const KURL url_ = KURL("/");
   const mojom::blink::BeaconMethod method_ = mojom::blink::BeaconMethod::kGet;
+  Member<ExecutionContext> ec_;
   HeapMojoRemote<mojom::blink::PendingBeacon> remote_;
   const int id_;
   const base::TimeDelta background_timeout_;
   base::RepeatingCallback<void(int)> on_send_;
+  bool is_pending_ = true;
 };
 
 class PendingBeaconDispatcherTestBase : public ::testing::Test {
  protected:
+  using IdToTimeouts = std::vector<std::pair<int, base::TimeDelta>>;
+
   void TriggerDispatchOnBackgroundTimeout(V8TestingScope& scope) {
     auto* ec = scope.GetExecutionContext();
     // Ensures that a dispatcher is attached to `ec`.
     PendingBeaconDispatcher::FromOrAttachTo(*ec);
     scope.GetPage().SetVisibilityState(
         blink::mojom::PageVisibilityState::kHidden, /*is_initial_state=*/false);
+  }
+
+  HeapVector<Member<MockPendingBeacon>> CreateBeacons(
+      V8TestingScope& v8_scope,
+      const IdToTimeouts& id_to_timeouts,
+      MockPendingBeacon::OnSendCallbackType callback) {
+    HeapVector<Member<MockPendingBeacon>> beacons;
+    auto* ec = v8_scope.GetExecutionContext();
+    for (const auto& id_to_timeout : id_to_timeouts) {
+      beacons.push_back(MakeGarbageCollected<MockPendingBeacon>(
+          ec, id_to_timeout.first, id_to_timeout.second, callback));
+    }
+    return beacons;
   }
 };
 
@@ -146,15 +175,11 @@ TEST_P(PendingBeaconDispatcherBasicBeaconsTest,
   std::vector<int> beacons_sent_order;
 
   V8TestingScope scope;
-  auto* ec = scope.GetExecutionContext();
-  HeapVector<Member<MockPendingBeacon>> beacons;
-  for (const auto& id_to_timeout : id_to_timeouts) {
-    beacons.push_back(MakeGarbageCollected<MockPendingBeacon>(
-        ec, id_to_timeout.first, id_to_timeout.second,
-        base::BindLambdaForTesting([&beacons_sent_order](int id) {
-          beacons_sent_order.push_back(id);
-        })));
-  }
+  auto beacons =
+      CreateBeacons(scope, id_to_timeouts,
+                    base::BindLambdaForTesting([&beacons_sent_order](int id) {
+                      beacons_sent_order.push_back(id);
+                    }));
 
   TriggerDispatchOnBackgroundTimeout(scope);
   while (beacons_sent_order.size() < id_to_timeouts.size()) {
@@ -162,6 +187,10 @@ TEST_P(PendingBeaconDispatcherBasicBeaconsTest,
   }
 
   EXPECT_THAT(beacons_sent_order, testing::ContainerEq(GetParam().expected));
+  for (const auto& beacon : beacons) {
+    EXPECT_FALSE(PendingBeaconDispatcher::From(*scope.GetExecutionContext())
+                     ->HasPendingBeaconForTesting(beacon));
+  }
 }
 
 // Tests to cover the beacon bundling behavior on backgroundTimeout.
@@ -181,15 +210,11 @@ TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
   std::vector<int> beacons_sent_order;
 
   V8TestingScope scope;
-  auto* ec = scope.GetExecutionContext();
-  HeapVector<Member<MockPendingBeacon>> beacons;
-  for (const auto& id_to_timeout : id_to_timeouts) {
-    beacons.push_back(MakeGarbageCollected<MockPendingBeacon>(
-        ec, id_to_timeout.first, id_to_timeout.second,
-        base::BindLambdaForTesting([&beacons_sent_order](int id) {
-          beacons_sent_order.push_back(id);
-        })));
-  }
+  auto beacons =
+      CreateBeacons(scope, id_to_timeouts,
+                    base::BindLambdaForTesting([&beacons_sent_order](int id) {
+                      beacons_sent_order.push_back(id);
+                    }));
 
   TriggerDispatchOnBackgroundTimeout(scope);
   while (beacons_sent_order.size() < id_to_timeouts.size()) {
@@ -212,6 +237,10 @@ TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
   EXPECT_THAT(std::vector<int>(beacons_sent_order.begin() + 10,
                                beacons_sent_order.begin() + 12),
               UnorderedElementsAre(11, 12));
+  for (const auto& beacon : beacons) {
+    EXPECT_FALSE(PendingBeaconDispatcher::From(*scope.GetExecutionContext())
+                     ->HasPendingBeaconForTesting(beacon));
+  }
 }
 
 TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
@@ -227,15 +256,11 @@ TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
   std::vector<int> beacons_sent_order;
 
   V8TestingScope scope;
-  auto* ec = scope.GetExecutionContext();
-  HeapVector<Member<MockPendingBeacon>> beacons;
-  for (const auto& id_to_timeout : id_to_timeouts) {
-    beacons.push_back(MakeGarbageCollected<MockPendingBeacon>(
-        ec, id_to_timeout.first, id_to_timeout.second,
-        base::BindLambdaForTesting([&beacons_sent_order](int id) {
-          beacons_sent_order.push_back(id);
-        })));
-  }
+  auto beacons =
+      CreateBeacons(scope, id_to_timeouts,
+                    base::BindLambdaForTesting([&beacons_sent_order](int id) {
+                      beacons_sent_order.push_back(id);
+                    }));
 
   TriggerDispatchOnBackgroundTimeout(scope);
   while (beacons_sent_order.size() < id_to_timeouts.size()) {
@@ -258,6 +283,10 @@ TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
   EXPECT_THAT(std::vector<int>(beacons_sent_order.begin() + 10,
                                beacons_sent_order.begin() + 12),
               UnorderedElementsAre(1, 2));
+  for (const auto& beacon : beacons) {
+    EXPECT_FALSE(PendingBeaconDispatcher::From(*scope.GetExecutionContext())
+                     ->HasPendingBeaconForTesting(beacon));
+  }
 }
 
 TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
@@ -271,15 +300,11 @@ TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
   std::vector<int> beacons_sent_order;
 
   V8TestingScope scope;
-  auto* ec = scope.GetExecutionContext();
-  HeapVector<Member<MockPendingBeacon>> beacons;
-  for (const auto& id_to_timeout : id_to_timeouts) {
-    beacons.push_back(MakeGarbageCollected<MockPendingBeacon>(
-        ec, id_to_timeout.first, id_to_timeout.second,
-        base::BindLambdaForTesting([&beacons_sent_order](int id) {
-          beacons_sent_order.push_back(id);
-        })));
-  }
+  auto beacons =
+      CreateBeacons(scope, id_to_timeouts,
+                    base::BindLambdaForTesting([&beacons_sent_order](int id) {
+                      beacons_sent_order.push_back(id);
+                    }));
 
   TriggerDispatchOnBackgroundTimeout(scope);
   while (beacons_sent_order.size() < id_to_timeouts.size()) {
@@ -294,6 +319,59 @@ TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
   EXPECT_THAT(std::vector<int>(beacons_sent_order.begin() + 2,
                                beacons_sent_order.begin() + 7),
               UnorderedElementsAre(3, 4, 5, 6, 7));
+  for (const auto& beacon : beacons) {
+    EXPECT_FALSE(PendingBeaconDispatcher::From(*scope.GetExecutionContext())
+                     ->HasPendingBeaconForTesting(beacon));
+  }
+}
+
+class PendingBeaconDispatcherOnPagehideTest
+    : public PendingBeaconDispatcherTestBase {
+  void SetUp() override {
+    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features = {{blink::features::kPendingBeaconAPI,
+                             {{"send_on_navigation", "true"}}}};
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    PendingBeaconDispatcherTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PendingBeaconDispatcherOnPagehideTest,
+       OnPagehideUpdateAndUnregisterAllBeacons) {
+  const std::vector<std::pair<int, base::TimeDelta>> id_to_timeouts = {
+      {1, base::Milliseconds(0)},   {2, base::Milliseconds(0)},
+      {3, base::Milliseconds(100)}, {4, base::Milliseconds(100)},
+      {5, base::Milliseconds(100)}, {6, base::Milliseconds(101)},
+      {7, base::Milliseconds(101)},
+  };
+  std::vector<int> beacons_sent_order;
+
+  V8TestingScope scope;
+  auto beacons =
+      CreateBeacons(scope, id_to_timeouts,
+                    base::BindLambdaForTesting([&beacons_sent_order](int id) {
+                      beacons_sent_order.push_back(id);
+                    }));
+  for (const auto& beacon : beacons) {
+    EXPECT_TRUE(beacon->IsPending());
+  }
+
+  PendingBeaconDispatcher::From(*scope.GetExecutionContext())
+      ->OnDispatchPagehide();
+  test::RunPendingTasks();
+
+  // On page hide, all beacons should be marked as non-pending. However, none
+  // should be sent directly by the renderer; the browser is responsible for
+  // this.
+  EXPECT_THAT(beacons_sent_order, IsEmpty());
+  for (const auto& beacon : beacons) {
+    EXPECT_FALSE(beacon->IsPending());
+    EXPECT_FALSE(PendingBeaconDispatcher::From(*scope.GetExecutionContext())
+                     ->HasPendingBeaconForTesting(beacon));
+  }
 }
 
 }  // namespace blink

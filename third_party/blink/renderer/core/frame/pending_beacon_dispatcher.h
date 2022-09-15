@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_DISPATCHER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PENDING_BEACON_DISPATCHER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
@@ -79,10 +80,32 @@ class CORE_EXPORT PendingBeaconDispatcher
     // Implementation should ensure the returned TimeDelta is not negative.
     virtual base::TimeDelta GetBackgroundTimeout() const = 0;
     // Triggers beacon sending action.
-    // Implementation should also transitions this beacon into non-pending
-    // state. and call `PendingBeaconDispatcher::Unregister()` to unregister
-    // itself from further scheduling.
+    //
+    // The sending action may not be triggered if it decides not to do so.
+    // If triggered, implementation should also transitions this beacon into
+    // non-pending state, and call `PendingBeaconDispatcher::Unregister()` to
+    // unregister itself from further scheduling.
+    // If not triggered, the dispatcher will schedule to send this next time as
+    // long as this is still registered.
     virtual void Send() = 0;
+
+    virtual bool IsPending() const = 0;
+    virtual void MarkNotPending() = 0;
+    // Provides ExecutionContext where this beacon is created.
+    virtual ExecutionContext* GetExecutionContext() = 0;
+
+   protected:
+    // Unregisters this beacon from the PendingBeaconDispatcher associated with
+    // `GetExecutionContext()`.
+    //
+    // Calling this method will reduce the lifetime of this instance back to the
+    // lifetime of the corresponding JS object, i.e. it won't be extended by the
+    // PendingBeaconDispatcher anymore.
+    //
+    // After this call, all existing timers, either in this PendingBeacon or in
+    // PendingBeaconDispatcher, are not cancelled, but will be no-op when their
+    // callbacks are triggered.
+    void UnregisterFromDispatcher();
   };
 
   static const char kSupplementName[];
@@ -138,6 +161,16 @@ class CORE_EXPORT PendingBeaconDispatcher
 
   // `PageVisibilityObserver` implementation.
   void PageVisibilityChanged() override;
+
+  // Handles pagehide event.
+  //
+  // The browser will force sending out all beacons on navigating to a new page,
+  // i.e. on pagehide event. Whether or not the old page is put into
+  // BackForwardCache is not important.
+  //
+  // This method asks all owned `pending_beacons_` to update their state to
+  // non-pending and unregisters them from this dispatcher.
+  void OnDispatchPagehide();
 
  private:
   // Schedules a series of tasks to dispatch pending beacons according to
@@ -207,6 +240,24 @@ class CORE_EXPORT PendingBeaconDispatcher
   //
   // It is canceled when `CancelDispatchBeacons()` is called.
   TaskHandle task_handle_;
+
+  // For testing:
+  bool HasPendingBeaconForTesting(PendingBeacon* pending_beacon) const;
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconDispatcherBasicBeaconsTest,
+                           DispatchBeaconsOnBackgroundTimeout);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
+                           DispatchOrderedBeacons);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
+                           DispatchReversedBeacons);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
+                           DispatchDuplicatedBeacons);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconDispatcherOnPagehideTest,
+                           OnPagehideUpdateAndUnregisterAllBeacons);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconCreateTest, Create);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconSendTest, Send);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconSendTest, SendNow);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconSendTest,
+                           SetNonPendingAfterTimeoutTimerStart);
 };
 
 }  // namespace blink
