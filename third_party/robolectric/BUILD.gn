@@ -18,6 +18,7 @@ group("robolectric_runtime_jars") {
     "//third_party/robolectric/lib/android-all-instrumented-10-robolectric-5803371-i4.jar",
     "//third_party/robolectric/lib/android-all-instrumented-11-robolectric-6757853-i4.jar",
     "//third_party/robolectric/lib/android-all-instrumented-12-robolectric-7732740-i4.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-12.1-robolectric-8229987-i4.jar",
   ]
 }
 
