@@ -82,6 +82,7 @@ class MODULES_EXPORT MediaCapabilities final
     absl::optional<bool> db_is_smooth;
     absl::optional<bool> db_is_power_efficient;
     absl::optional<bool> is_gpu_factories_supported;
+    absl::optional<bool> is_builtin_video_codec;
     base::TimeTicks request_time;
     absl::optional<IdentifiableToken> input_token;
   };
@@ -157,7 +158,9 @@ class MODULES_EXPORT MediaCapabilities final
       const absl::optional<::media::learning::TargetHistogram>& histogram);
 
   // Callback for GetGpuFactoriesSupport().
-  void OnGpuFactoriesSupport(int callback_id, bool is_supported);
+  void OnGpuFactoriesSupport(int callback_id,
+                             bool is_supported,
+                             media::VideoCodec video_codec);
 
   // Resolves the callback with associated |callback_id| and removes it from the
   // |pending_callback_map_|.

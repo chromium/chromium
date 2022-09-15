@@ -1460,14 +1460,14 @@ void MediaCapabilities::GetGpuFactoriesSupport(
   // NotifyDecoderSupportKnown. In this case, report false as a means of clean
   // shutdown.
   if (!execution_context || execution_context->IsContextDestroyed()) {
-    OnGpuFactoriesSupport(callback_id, false);
+    OnGpuFactoriesSupport(callback_id, false, video_codec);
     return;
   }
 
   media::GpuVideoAcceleratorFactories* gpu_factories =
       Platform::Current()->GetGpuFactories();
   if (!gpu_factories) {
-    OnGpuFactoriesSupport(callback_id, false);
+    OnGpuFactoriesSupport(callback_id, false, video_codec);
     return;
   }
 
@@ -1500,8 +1500,10 @@ void MediaCapabilities::GetGpuFactoriesSupport(
       media::EmptyExtraData(), encryption_scheme);
 
   OnGpuFactoriesSupport(
-      callback_id, gpu_factories->IsDecoderConfigSupportedOrUnknown(config) ==
-                       media::GpuVideoAcceleratorFactories::Supported::kTrue);
+      callback_id,
+      gpu_factories->IsDecoderConfigSupportedOrUnknown(config) ==
+          media::GpuVideoAcceleratorFactories::Supported::kTrue,
+      video_codec);
 }
 
 void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
@@ -1546,6 +1548,14 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
   if (UseGpuFactoriesForPowerEfficient(execution_context,
                                        pending_cb->key_system_access)) {
     info->setPowerEfficient(*pending_cb->is_gpu_factories_supported);
+    // Builtin video codec guarantee a certain codec can be decoded under any
+    // circumstances, and if the result is not powerEfficient and the video
+    // codec is not builtin, that means the video will failed to play at the
+    // given video config, so change the supported value to false here.
+    if (!info->powerEfficient() &&
+        !pending_cb->is_builtin_video_codec.value_or(true)) {
+      info->setSupported(false);
+    }
   } else {
     info->setPowerEfficient(*pending_cb->db_is_power_efficient);
   }
@@ -1643,12 +1653,15 @@ void MediaCapabilities::OnPerfHistoryInfo(int callback_id,
 }
 
 void MediaCapabilities::OnGpuFactoriesSupport(int callback_id,
-                                              bool is_supported) {
-  DVLOG(2) << __func__ << " is_supported:" << is_supported;
+                                              bool is_supported,
+                                              media::VideoCodec video_codec) {
+  DVLOG(2) << __func__ << " video_codec:" << video_codec
+           << ", is_supported:" << is_supported;
   DCHECK(pending_cb_map_.Contains(callback_id));
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
 
   pending_cb->is_gpu_factories_supported = is_supported;
+  pending_cb->is_builtin_video_codec = media::IsBuiltInVideoCodec(video_codec);
 
   ResolveCallbackIfReady(callback_id);
 }

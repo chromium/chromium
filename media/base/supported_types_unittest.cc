@@ -324,4 +324,44 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
                                      kUnspecifiedLevel, color_space,
                                      gfx::HdrMetadataType::kSmpteSt2094_40}));
 }
+
+TEST(SupportedTypesTest, IsBuiltInVideoCodec) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kH264));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kH264));
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kTheora));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kTheora));
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP8));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kVP8));
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP9));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kVP9));
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kAV1));
+#else
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kAV1));
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kUnknown));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kMPEG4));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kVC1));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kMPEG2));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kHEVC));
+  EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kDolbyVision));
+}
 }  // namespace media

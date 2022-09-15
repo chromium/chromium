@@ -6,6 +6,7 @@
 #define MEDIA_BASE_SUPPORTED_TYPES_H_
 
 #include "base/containers/flat_set.h"
+#include "media/base/media_export.h"
 #include "media/base/media_types.h"
 
 namespace media {
@@ -21,6 +22,10 @@ MEDIA_EXPORT bool IsSupportedVideoType(const VideoType& type);
 // generally prefer the non-Default APIs above.
 MEDIA_EXPORT bool IsDefaultSupportedAudioType(const AudioType& type);
 MEDIA_EXPORT bool IsDefaultSupportedVideoType(const VideoType& type);
+
+// This function describe if the specific video codec is a built into the binary
+// or not.
+MEDIA_EXPORT bool IsBuiltInVideoCodec(VideoCodec codec);
 
 // This function lets the caller add additional codec profiles to those
 // supported by default. Used primarily to add hardware codec profiles once

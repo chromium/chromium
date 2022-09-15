@@ -225,7 +225,8 @@ bool IsHevcProfileSupported(const VideoType& type) {
   return base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport);
 #else
   return true;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_MAC)
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -395,6 +396,28 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
       return false;
 #endif
   }
+}
+
+bool IsBuiltInVideoCodec(VideoCodec codec) {
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  if (codec == VideoCodec::kTheora)
+    return true;
+  if (codec == VideoCodec::kVP8)
+    return true;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (codec == VideoCodec::kH264)
+    return true;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#if BUILDFLAG(ENABLE_LIBVPX)
+  if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9)
+    return true;
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  if (codec == VideoCodec::kAV1)
+    return true;
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+  return false;
 }
 
 void UpdateDefaultSupportedVideoProfiles(
