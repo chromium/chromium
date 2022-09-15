@@ -311,8 +311,8 @@ class DiskMountManagerImpl : public DiskMountManager,
   // DiskMountManager override.
   const Disk* FindDiskBySourcePath(
       const std::string& source_path) const override {
-    Disks::const_iterator disk_it = disks_.find(source_path);
-    return disk_it == disks_.end() ? nullptr : disk_it->get();
+    const Disks::const_iterator it = disks_.find(source_path);
+    return it == disks_.end() ? nullptr : it->get();
   }
 
   // DiskMountManager override.
@@ -320,13 +320,10 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // DiskMountManager override.
   bool AddDiskForTest(std::unique_ptr<Disk> disk) override {
-    if (disks_.find(disk->device_path()) != disks_.end()) {
-      LOG(ERROR) << "Attempt to add a duplicate disk";
-      return false;
-    }
-
-    disks_.insert(std::move(disk));
-    return true;
+    const auto [it, ok] = disks_.insert(std::move(disk));
+    LOG_IF(ERROR, !ok) << "Cannot add a duplicate disk '"
+                       << (*it)->device_path() << "'";
+    return ok;
   }
 
   // DiskMountManager override.
@@ -341,13 +338,10 @@ class DiskMountManagerImpl : public DiskMountManager,
     }
 
     const auto [it, ok] = mount_points_.insert(mount_point);
-    if (!ok) {
-      LOG(ERROR) << "Attempt to add a duplicate mount point '"
-                 << mount_point.mount_path << "'";
-      return false;
-    }
-
-    return true;
+    DCHECK_EQ(it->mount_path, mount_point.mount_path);
+    LOG_IF(ERROR, !ok) << "Cannot add a duplicate mount point '"
+                       << mount_point.mount_path << "'";
+    return ok;
   }
 
  private:
