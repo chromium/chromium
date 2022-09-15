@@ -203,7 +203,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
     // Note: don't append switches to this command since it will mess up the
     // -u in the python invocation!
     base::CommandLine compare_command(base::CommandLine::NO_PROGRAM);
-    EXPECT_TRUE(GetPythonCommand(&compare_command));
+    EXPECT_TRUE(GetPython3Command(&compare_command));
 
     compare_command.AppendArgPath(path_to_compare_script);
     compare_command.AppendArg("--label=" + test_label);

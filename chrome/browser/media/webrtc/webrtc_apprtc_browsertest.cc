@@ -98,7 +98,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
     }
 
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    EXPECT_TRUE(GetPythonCommand(&command_line));
+    EXPECT_TRUE(GetPython3Command(&command_line));
 
     command_line.AppendArgPath(appengine_dev_appserver);
     command_line.AppendArgPath(apprtc_dir);
