@@ -6725,6 +6725,7 @@ test("unit_tests") {
       "../browser/ui/extensions/extension_installed_waiter_unittest.cc",
       "../browser/ui/extensions/extension_message_bubble_bridge_unittest.cc",
       "../browser/ui/extensions/extension_settings_overridden_dialog_unittest.cc",
+      "../browser/ui/extensions/extensions_overrides/simple_overrides_unittest.cc",
       "../browser/ui/extensions/settings_api_bubble_helpers_unittest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_unittest.cc",
       "../browser/ui/global_error/global_error_service_unittest.cc",
