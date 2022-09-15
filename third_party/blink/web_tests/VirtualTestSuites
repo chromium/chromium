@@ -947,9 +947,12 @@
   {
     "prefix": "automatic-lazy-frame-loading",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/lazyembed"],
+    "bases": [
+      "wpt_internal/lazyembed",
+      "wpt_internal/async-script-scheduling"
+    ],
     "args": [
-      "--enable-features=AutomaticLazyFrameLoadingToEmbeds:timeout/1000,AutomaticLazyFrameLoadingToEmbedUrls:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed,AutomaticLazyFrameLoadingToAds:timeout/5000",
+      "--enable-features=AutomaticLazyFrameLoadingToEmbeds:timeout/1000,AutomaticLazyFrameLoadingToEmbedUrls:allowed_websites/http%3A%2F%2Fbad3p.test%3A3001%7C%2Fembed,AutomaticLazyFrameLoadingToAds:timeout/5000,DelayAsyncScriptExecution:target/cross_site_with_allow_list/limit/1m/allow_list/http%3A%2F%2Fbad3p.test",
       "--disable-field-trial-config"
     ]
   },
@@ -969,7 +972,13 @@
     "prefix": "async-script-scheduling-apply-to-cross-site-only",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:cross_site_only/true"]
+    "args": ["--enable-features=DelayAsyncScriptExecution:target/cross_site_only"]
+  },
+  {
+    "prefix": "async-script-scheduling-apply-to-allowlist",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:target/cross_site_with_allow_list/limit/1m/allow_list/http%3A%2F%2Fbad3p.test%7C%2Fwpt_internal%2Fasync-script-scheduling%2Fresources%2Fscript.sub.js"]
   },
   {
     "prefix": "async-script-scheduling-finished-parsing",

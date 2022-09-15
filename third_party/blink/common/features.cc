@@ -1273,8 +1273,18 @@ const base::FeatureParam<DelayAsyncScriptDelayType>
         DelayAsyncScriptDelayType::kFinishedParsing,
         &delay_async_script_execution_delay_types};
 
-const base::FeatureParam<bool> kDelayAsyncScriptExecutionCrossSiteOnlyParam{
-    &kDelayAsyncScriptExecution, "cross_site_only", false};
+const base::FeatureParam<DelayAsyncScriptTarget>::Option
+    delay_async_script_target_types[] = {
+        {DelayAsyncScriptTarget::kAll, "all"},
+        {DelayAsyncScriptTarget::kCrossSiteOnly, "cross_site_only"},
+        {DelayAsyncScriptTarget::kCrossSiteWithAllowList,
+         "cross_site_with_allow_list"},
+        {DelayAsyncScriptTarget::kCrossSiteWithAllowListReportOnly,
+         "cross_site_with_allow_list_report_only"},
+};
+const base::FeatureParam<DelayAsyncScriptTarget> kDelayAsyncScriptTargetParam{
+    &kDelayAsyncScriptExecution, "target", DelayAsyncScriptTarget::kAll,
+    &delay_async_script_target_types};
 
 // kDelayAsyncScriptExecution will delay executing async script at max
 // |delay_limit|.
@@ -1290,6 +1300,9 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<base::TimeDelta>
     kDelayAsyncScriptExecutionFeatureLimitParam{
         &kDelayAsyncScriptExecution, "feature_limit", base::Seconds(0)};
+
+const base::FeatureParam<std::string> kDelayAsyncScriptAllowList{
+    &kDelayAsyncScriptExecution, "allow_list", ""};
 
 const base::Feature kLowPriorityAsyncScriptExecution{
     "LowPriorityAsyncScriptExecution", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -668,12 +668,24 @@ enum class DelayAsyncScriptDelayType {
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kDelayAsyncScriptExecutionCrossSiteOnlyParam;
+enum class DelayAsyncScriptTarget {
+  kAll,
+  kCrossSiteOnly,
+  // Unlike other options (that are more like scheduling changes within the
+  // spec),  kCrossSiteWithAllowList and kCrossSiteWithAllowListReportOnly are
+  // used only for LazyEmbeds intervention.
+  kCrossSiteWithAllowList,
+  kCrossSiteWithAllowListReportOnly,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptTarget>
+    kDelayAsyncScriptTargetParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDelayAsyncScriptExecutionDelayLimitParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDelayAsyncScriptExecutionFeatureLimitParam;
+BLINK_COMMON_EXPORT extern const base::Feature kDelayAsyncScriptUrls;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kDelayAsyncScriptAllowList;
 
 // If enabled, async scripts will be run on a lower priority task queue.
 // See https://crbug.com/1348467.

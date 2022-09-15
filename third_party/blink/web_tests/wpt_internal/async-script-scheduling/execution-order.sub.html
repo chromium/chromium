@@ -37,7 +37,7 @@
     setup({ single_test: true })
       window.onload = e => {
         const actualOrder = logs.join(";");
-        const expectedOrder = "async_preload_or_blocking_render;async_preload_or_blocking_render;async;async;inline1;external;inline2;defer;DOMContentLoaded";
+        const expectedOrder = "async_preload_or_blocking_render;async_preload_or_blocking_render;async;async;async;inline1;external;inline2;defer;DOMContentLoaded";
         assert_equals(actualOrder, expectedOrder);
         done();
       };
@@ -52,6 +52,9 @@
   <script async src="resources/script.sub.js?pipe=trickle(d2)&label=async"></script>
   <!-- cross site async script -->
   <script async src="http://{{hosts[alt][]}}:{{ports[http][0]}}/wpt_internal/async-script-scheduling/resources/script.sub.js?pipe=trickle(d2)&label=async"></script>
+  <!-- cross site async script matched in the allowlist -->
+  <script async
+    src="http://bad3p.test:{{ports[http][0]}}/wpt_internal/async-script-scheduling/resources/script.sub.js?pipe=trickle(d2)&label=async"></script>
   <script async src="resources/script.sub.js?pipe=trickle(d1)&label=async_preload_or_blocking_render&1"></script>
   <link rel=stylesheet href=resources/main.css?pipe=trickle(d3)>
   <script>

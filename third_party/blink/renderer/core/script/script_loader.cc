@@ -298,14 +298,6 @@ bool IsEligibleForDelay(const Resource& resource,
   if (element.IsPotentiallyRenderBlocking())
     return false;
 
-  static const bool delay_async_script_execution_cross_site_only =
-      features::kDelayAsyncScriptExecutionCrossSiteOnlyParam.Get();
-  if (delay_async_script_execution_cross_site_only) {
-    // Cross-site scripts only.
-    if (IsSameSite(resource.Url(), element_document))
-      return false;
-  }
-
   // We don't delay async scripts that have matched a resource in the preload
   // cache, because we're using <link rel=preload> as a signal that the script
   // is higher-than-usual priority, and therefore should be executed earlier
@@ -320,7 +312,22 @@ bool IsEligibleForDelay(const Resource& resource,
     return false;
   }
 
-  return true;
+  static const features::DelayAsyncScriptTarget delay_async_script_target =
+      features::kDelayAsyncScriptTargetParam.Get();
+  switch (delay_async_script_target) {
+    case features::DelayAsyncScriptTarget::kAll:
+      return true;
+    case features::DelayAsyncScriptTarget::kCrossSiteOnly:
+      return !IsSameSite(resource.Url(), element_document);
+    case features::DelayAsyncScriptTarget::kCrossSiteWithAllowList:
+    case features::DelayAsyncScriptTarget::kCrossSiteWithAllowListReportOnly:
+      if (IsSameSite(resource.Url(), element_document))
+        return false;
+      DEFINE_STATIC_LOCAL(
+          UrlMatcher, url_matcher,
+          (UrlMatcher(features::kDelayAsyncScriptAllowList.Get())));
+      return url_matcher.Match(resource.Url());
+  }
 }
 
 // [Intervention, SelectiveInOrderScript, crbug.com/1356396]
@@ -1140,6 +1147,32 @@ PendingScript* ScriptLoader::PrepareScript(
       // preparation-time document's list of force-in-order scripts.
 
       {
+        // [Intervention, DelayAsyncScriptExecution, crbug.com/1340837]
+        // If the target is kCrossSiteWithAllowList or
+        // kCrossSiteWithAllowListReportOnly, record the metrics and override
+        // is_eligible_for_delay to be always false when
+        // kCrossSiteWithAllowListReportOnly.
+        if (is_eligible_for_delay &&
+            script_scheduling_type == ScriptSchedulingType::kAsync) {
+          static const features::DelayAsyncScriptTarget
+              delay_async_script_target =
+                  features::kDelayAsyncScriptTargetParam.Get();
+          // Currently LazyEmbeds(crbug.com/1247131) experiment uses
+          // DelayAsyncScript mechanism here.
+          if (delay_async_script_target ==
+                  features::DelayAsyncScriptTarget::kCrossSiteWithAllowList ||
+              delay_async_script_target ==
+                  features::DelayAsyncScriptTarget::
+                      kCrossSiteWithAllowListReportOnly) {
+            UseCounter::Count(element_document.TopDocument(),
+                              WebFeature::kAutomaticLazyEmbeds);
+          }
+          if (delay_async_script_target ==
+              features::DelayAsyncScriptTarget::
+                  kCrossSiteWithAllowListReportOnly) {
+            is_eligible_for_delay = false;
+          }
+        }
         // TODO(hiroshige): Here the context document is used as "node document"
         // while Step 14 uses |elementDocument| as "node document". Fix this.
         ScriptRunner* script_runner =
