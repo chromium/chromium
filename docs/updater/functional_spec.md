@@ -114,6 +114,17 @@ process is determined by command-line arguments:
         *   If --tag is specified, --install is assumed.
     *   --handoff=...
         *   As --tag.
+    *   --appargs="appguid=...&installerdata=..."
+        * Allows extra data (`installerdata`) to be communicated to the
+          application installer. One per application.
+        * `appguid` must be the first arg followed by the `installerdata`. The
+          same `appguid` must appear in `tag` value or `handoff` value.
+        * This is an alternative to using `installdataindex` in the tag. Where
+          `installdataindex` selects from a pre-defined set of `installerdata`
+          options, this value specifies the exact `installerdata` to use.
+        * The value of `installerdata` needs to be URL encoded.
+        * The data will be decoded and written to a file same as in
+          [installdataindex](#installdataindex).
     *   --offlinedir=...
         *   Performs offline install, which means no update check or file
             download is performed against the server during installation.
