@@ -996,10 +996,15 @@ void TabContainerImpl::AnimateTabSlotViewTo(TabSlotView* tab_slot_view,
 }
 
 void TabContainerImpl::SnapToIdealBounds() {
-  for (int i = 0; i < GetTabCount(); ++i)
+  for (int i = 0; i < GetTabCount(); ++i) {
+    if (GetTabAtModelIndex(i)->dragging())
+      continue;
     GetTabAtModelIndex(i)->SetBoundsRect(tabs_view_model_.ideal_bounds(i));
+  }
 
   for (const auto& header_pair : group_views_) {
+    if (header_pair.second->header()->dragging())
+      continue;
     header_pair.second->header()->SetBoundsRect(
         layout_helper_->group_header_ideal_bounds().at(header_pair.first));
     header_pair.second->UpdateBounds();

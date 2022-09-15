@@ -1198,6 +1198,12 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
   }
 
   initial_move_ = false;
+
+  // Snap the non-dragged tabs to their ideal bounds now, otherwise those tabs
+  // will animate to those bounds after attach, which looks flickery/bad. See
+  // https://crbug.com/1360330.
+  if (just_attached)
+    attached_context_->ForceLayout();
 }
 
 TabDragController::DetachPosition TabDragController::GetDetachPosition(
@@ -1371,6 +1377,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
     SetCapture(attached_context_);
   if (controller)
     attached_context_->OwnDragController(std::move(controller));
+
   SetTabDraggingInfo();
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
