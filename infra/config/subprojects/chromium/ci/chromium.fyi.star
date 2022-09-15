@@ -1160,11 +1160,11 @@ ci.builder(
     goma_jobs = 250,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 6 * time.hour,
-    reclient_cache_silo = "Comparison Windows - cache siloed",
+    reclient_cache_silo = "Comparison Windows (reproxy cache) - cache siloed",
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = 250,
     reclient_bootstrap_env = {
-        "RBE_experimental_goma_deps_cache": True,
+        "RBE_experimental_goma_deps_cache": "true",
     },
     os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
