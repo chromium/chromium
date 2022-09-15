@@ -17,6 +17,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/test/test_sync_service.h"
@@ -247,6 +248,43 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
   // Check the response is cached.
   EXPECT_NE(nullptr, GetCachedRealTimeUrlVerdict(url));
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestCanCheckSafeBrowsingDb_BypassAllowlistFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass}, {});
+  test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+
+  // Can check allowlist if SafeBrowsingEnterpriseRealTimeUrlCheckMode is
+  // disabled.
+  test_profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      REAL_TIME_CHECK_DISABLED);
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckSafeBrowsingDb());
+
+  // Bypass allowlist if the SafeBrowsingEnterpriseRealTimeUrlCheckMode pref is
+  // set.
+  test_profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  EXPECT_FALSE(enterprise_rt_service()->CanCheckSafeBrowsingDb());
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestCanCheckSafeBrowsingDb_CheckAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass});
+  test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+
+  test_profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  EXPECT_TRUE(enterprise_rt_service()->CanCheckSafeBrowsingDb());
 }
 
 }  // namespace safe_browsing

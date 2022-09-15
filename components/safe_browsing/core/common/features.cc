@@ -126,6 +126,10 @@ const base::Feature kOmitNonUserGesturesFromReferrerChain{
     "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kRealTimeUrlLookupForEnterpriseAllowlistBypass{
+    "SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSafeBrowsingCsbrrWithToken{
     "SafeBrowsingCsbrrWithToken", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -196,6 +200,7 @@ constexpr struct {
     {&kExtensionTelemetryPersistence, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
+    {&kRealTimeUrlLookupForEnterpriseAllowlistBypass, true},
     {&kSafeBrowsingCsbrrWithToken, true},
     {&kSafeBrowsingPageLoadToken, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
