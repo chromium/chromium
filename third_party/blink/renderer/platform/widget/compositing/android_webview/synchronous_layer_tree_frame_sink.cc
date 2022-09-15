@@ -479,7 +479,7 @@ void SynchronousLayerTreeFrameSink::DemandDrawSw(SkCanvas* canvas) {
   gfx::Rect viewport = gfx::SkIRectToRect(canvas_clip);
 
   // Converts 3x3 matrix to 4x4.
-  gfx::Transform transform(canvas->getTotalMatrix());
+  gfx::Transform transform = gfx::SkMatrixToTransform(canvas->getTotalMatrix());
 
   // We will resize the Display to ensure it covers the entire |viewport|, so
   // save it for later.
@@ -507,7 +507,7 @@ void SynchronousLayerTreeFrameSink::InvokeComposite(
   // must also be zero, since the rect needs to be in the coordinates of the
   // layer compositor.
   gfx::Transform adjusted_transform = transform;
-  adjusted_transform.matrix().postTranslate(-viewport.x(), -viewport.y(), 0);
+  adjusted_transform.PostTranslate(-viewport.OffsetFromOrigin());
   // Don't propagate the viewport origin, as it will affect the clip rect.
   client_->OnDraw(adjusted_transform, gfx::Rect(viewport.size()),
                   in_software_draw_, false /*skip_draw*/);

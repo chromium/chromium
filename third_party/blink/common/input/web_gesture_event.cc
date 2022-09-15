@@ -345,12 +345,11 @@ WebGestureEvent::CoalesceScrollAndPinch(
   }
   combined_scroll_pinch.ConcatTransform(GetTransformForEvent(new_event));
 
-  float combined_scale =
-      SkScalarToFloat(combined_scroll_pinch.matrix().rc(0, 0));
+  float combined_scale = SkScalarToFloat(combined_scroll_pinch.rc(0, 0));
   float combined_scroll_pinch_x =
-      SkScalarToFloat(combined_scroll_pinch.matrix().rc(0, 3));
+      SkScalarToFloat(combined_scroll_pinch.rc(0, 3));
   float combined_scroll_pinch_y =
-      SkScalarToFloat(combined_scroll_pinch.matrix().rc(1, 3));
+      SkScalarToFloat(combined_scroll_pinch.rc(1, 3));
   scroll_event->data.scroll_update.delta_x =
       (combined_scroll_pinch_x + pinch_event->PositionInWidget().x()) /
           combined_scale -

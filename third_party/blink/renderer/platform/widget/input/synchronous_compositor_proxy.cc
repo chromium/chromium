@@ -215,7 +215,7 @@ void SynchronousCompositorProxy::DoDemandDrawSw(
   }
   SkCanvas canvas(bitmap);
   canvas.clipRect(gfx::RectToSkRect(params->clip));
-  canvas.concat(params->transform.matrix().asM33());
+  canvas.concat(gfx::TransformToFlattenedSkMatrix(params->transform));
 
   layer_tree_frame_sink_->DemandDrawSw(&canvas);
 }

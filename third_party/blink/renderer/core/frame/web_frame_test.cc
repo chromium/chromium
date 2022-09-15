@@ -13698,14 +13698,9 @@ TEST_F(WebFrameSimTest, MainFrameTransformOffsetPixelSnapped) {
   RunPendingTasks();
   EXPECT_TRUE(remote_frame_host.GetIntersectionState()
                   ->main_frame_transform.IsIdentityOrIntegerTranslation());
-  EXPECT_EQ(remote_frame_host.GetIntersectionState()
-                ->main_frame_transform.matrix()
-                .rc(0, 3),
-            14.f);
-  EXPECT_EQ(remote_frame_host.GetIntersectionState()
-                ->main_frame_transform.matrix()
-                .rc(1, 3),
-            7.f);
+  EXPECT_EQ(gfx::Vector2dF(14.f, 7.f),
+            remote_frame_host.GetIntersectionState()
+                ->main_frame_transform.To2dTranslation());
   MainFrame().FirstChild()->Detach();
 }
 

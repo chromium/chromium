@@ -255,7 +255,7 @@ TEST(TransformationMatrixTest, ValidRangedMatrix) {
       EXPECT_TRUE(layout_rect.IsEmpty() || !layout_rect.IsEmpty());
 
       float a[16];
-      m.ToTransform().matrix().getColMajor(a);
+      m.ToTransform().GetColMajorF(a);
       EXPECT_TRUE(is_valid_array16(a));
       m.ToSkM44().getColMajor(a);
       EXPECT_TRUE(is_valid_array16(a));

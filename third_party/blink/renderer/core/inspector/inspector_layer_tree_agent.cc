@@ -219,11 +219,10 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
   gfx::Transform transform = layer->ScreenSpaceTransform();
 
   if (!transform.IsIdentity()) {
-    auto transform_array = std::make_unique<protocol::Array<double>>();
-    for (int col = 0; col < 4; ++col) {
-      for (int row = 0; row < 4; ++row)
-        transform_array->emplace_back(transform.matrix().rc(row, col));
-    }
+    auto transform_array = std::make_unique<protocol::Array<double>>(16);
+    // TODO(1359528): This conversion will disappear when we merge
+    // TransformationMatrix and gfx::Transform.
+    TransformationMatrix(transform).GetColMajor(transform_array->data());
     layer_object->setTransform(std::move(transform_array));
     // FIXME: rename these to setTransformOrigin*
     // TODO(pdr): Now that BlinkGenPropertyTrees has launched, we can remove

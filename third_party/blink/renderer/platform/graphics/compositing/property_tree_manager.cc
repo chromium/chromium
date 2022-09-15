@@ -79,8 +79,8 @@ static void UpdateCcTransformLocalMatrix(
       DCHECK(compositor_node.local.IsIdentity());
       DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
     } else {
-      compositor_node.local.matrix().setTranslate(translation.x(),
-                                                  translation.y(), 0);
+      compositor_node.local.MakeIdentity();
+      compositor_node.local.Translate(translation);
       DCHECK_EQ(gfx::Point3F(), transform_node.Origin());
       compositor_node.origin = gfx::Point3F();
     }
