@@ -65,7 +65,7 @@ class MailboxToSurfaceBridge {
 
   // Copies a GpuFence from the local context to the GPU process,
   // and issues a server wait for it.
-  virtual void WaitForClientGpuFence(gfx::GpuFence*) = 0;
+  virtual void WaitForClientGpuFence(gfx::GpuFence&) = 0;
 
   // Creates a GpuFence in the GPU process after the supplied sync_token
   // completes, and copies it for use in the local context. This is

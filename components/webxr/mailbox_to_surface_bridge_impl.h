@@ -66,7 +66,7 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
 
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
 
-  void WaitForClientGpuFence(gfx::GpuFence*) override;
+  void WaitForClientGpuFence(gfx::GpuFence&) override;
 
   void CreateGpuFence(const gpu::SyncToken& sync_token,
                       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>

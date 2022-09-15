@@ -347,10 +347,10 @@ void MailboxToSurfaceBridgeImpl::WaitSyncToken(
 }
 
 void MailboxToSurfaceBridgeImpl::WaitForClientGpuFence(
-    gfx::GpuFence* gpu_fence) {
+    gfx::GpuFence& gpu_fence) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
-  GLuint id = gl_->CreateClientGpuFenceCHROMIUM(gpu_fence->AsClientGpuFence());
+  GLuint id = gl_->CreateClientGpuFenceCHROMIUM(gpu_fence.AsClientGpuFence());
   gl_->WaitGpuFenceCHROMIUM(id);
   gl_->DestroyGpuFenceCHROMIUM(id);
 }
