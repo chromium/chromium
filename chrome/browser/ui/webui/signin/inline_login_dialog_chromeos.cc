@@ -166,12 +166,7 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS()
     : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string())) {}
 
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url)
-    : SystemWebDialogDelegate(url, std::u16string() /* title */),
-      delegate_(this),
-      url_(url) {
-  DCHECK(!dialog);
-  dialog = this;
-}
+    : InlineLoginDialogChromeOS(url, absl::nullopt, base::DoNothing()) {}
 
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
     const GURL& url,
