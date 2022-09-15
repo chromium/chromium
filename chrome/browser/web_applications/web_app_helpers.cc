@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
@@ -111,11 +112,12 @@ bool IsValidWebAppUrl(const GURL& app_url) {
   if (app_url.is_empty() || app_url.inner_url())
     return false;
 
-  // TODO(crbug.com/1253234): Remove chrome-extension scheme and use
-  // SchemeIsHTTPOrHTTPS() instead of IsValidWebAppUrl();
+  // TODO(crbug.com/1253234): Remove chrome-extension scheme.
   return app_url.SchemeIs(url::kHttpScheme) ||
          app_url.SchemeIs(url::kHttpsScheme) ||
-         app_url.SchemeIs("chrome-extension");
+         app_url.SchemeIs("chrome-extension") ||
+         (app_url.SchemeIs("chrome") &&
+          (app_url.host() == chrome::kChromeUIPasswordManagerHost));
 }
 
 absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,

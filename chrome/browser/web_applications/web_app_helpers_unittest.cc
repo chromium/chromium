@@ -65,6 +65,7 @@ TEST(WebAppHelpers, IsValidWebAppUrl) {
   EXPECT_FALSE(IsValidWebAppUrl(GURL("chrome://extensions")));
   EXPECT_FALSE(
       IsValidWebAppUrl(GURL("filesystem:http://example.com/path/file.html")));
+  EXPECT_TRUE(IsValidWebAppUrl(GURL("chrome://password-manager")));
 }
 
 TEST(WebAppHelpers, ManifestIdEncoding) {
