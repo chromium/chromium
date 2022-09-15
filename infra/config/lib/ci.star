@@ -172,6 +172,8 @@ def ci_builder(
         if branches.matches(entry.branch_selector):
             console_view = entry.console_view
             if console_view == None:
+                console_view = defaults.console_view.get()
+            if console_view == args.COMPUTE:
                 console_view = defaults.get_value_from_kwargs("builder_group", kwargs)
 
             bucket = defaults.get_value_from_kwargs("bucket", kwargs)
