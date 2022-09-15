@@ -476,8 +476,8 @@ class StorageQueueTest
       // encountered or not).
       EXPECT_CALL(*uploader->mock_upload_,
                   UploadComplete(Eq(uploader->uploader_id_), _))
-          .InSequence(uploader->test_upload_sequence_)
-          .Times(1);
+          .Times(1)
+          .InSequence(uploader->test_upload_sequence_);
       return uploader;
     }
 
