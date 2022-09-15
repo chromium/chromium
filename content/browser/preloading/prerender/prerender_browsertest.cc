@@ -3871,11 +3871,147 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
       PrerenderHost::FinalStatus::kTriggerDestroyed, 2);
 }
 
+// Tests that a cancelled request in the pending queue is skipped and the next
+// prerender starts.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       SkipCancelledPrerenderAndStartNextPrerender) {
+  net::test_server::ControllableHttpResponse response1(
+      embedded_test_server(), "/empty.html?prerender1");
+  net::test_server::ControllableHttpResponse response3(
+      embedded_test_server(), "/empty.html?prerender3");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerender1 =
+      embedded_test_server()->GetURL("/empty.html?prerender1");
+  const GURL kPrerender2 =
+      embedded_test_server()->GetURL("/empty.html?prerender2");
+  const GURL kPrerender3 =
+      embedded_test_server()->GetURL("/empty.html?prerender3");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 3 URLs into the speculation rules at the same time. The first
+  // prerender should start immediately, and the other two requests enqueued.
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                  const sc = document.createElement('script');
+                  sc.type = 'speculationrules';
+                  sc.textContent = JSON.stringify({
+                    prerender: [
+                      {source: "list", urls: [$1, $2, $3]}
+                    ]
+                  });
+                  document.head.appendChild(sc);
+                  )",
+                         kPrerender1, kPrerender2, kPrerender3)));
+
+  registry_observer.WaitForTrigger(kPrerender3);
+  test::PrerenderHostObserver prerender3_observer(*web_contents(),
+                                                  GetHostForUrl(kPrerender3));
+
+  // Stop the first prerendering initial navigation.
+  response1.WaitForRequest();
+
+  // Cancel the second prerender, and this cancellation shouldn't prevent the
+  // incoming third prerender from starting.
+  web_contents_impl()->GetPrerenderHostRegistry()->CancelHost(
+      GetHostForUrl(kPrerender2), PrerenderHost::FinalStatus::kDestroyed);
+
+  // Resume the first prerender and third one. The second one doesn't send
+  // request as the host has been already destroyed.
+  response1.Send(net::HTTP_OK, "");
+  response1.Done();
+  response3.WaitForRequest();
+  response3.Send(net::HTTP_OK, "");
+  response3.Done();
+
+  // Activate the third prerender and it should succeed.
+  NavigatePrimaryPage(kPrerender3);
+  prerender3_observer.WaitForActivation();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerender3);
+  EXPECT_TRUE(prerender3_observer.was_activated());
+
+  // The first prerender is destroyed by SpeculationHostImpl.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
+
+  // The second prerender is destroyed directly.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kDestroyed, 1);
+
+  // The third prerender is successfully activated.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kActivated, 1);
+}
+
 // TODO(crbug.com/1355151): Test to make sure that the completion of iframe
 // navigation in a prerendered page doesn't start a pending prerender request.
 
-// TODO(crbug.com/1355151): Test that activation with the pending
-// PrerenderHost succeeds.
+// Tests that if PrerenderHostRegistry is attempting to activate a pending
+// prerender host, it will be successfully canceled with the final status of
+// `kActivatedBeforeStarted`.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       ActivateBeforePrerenderStarts) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/empty.html?prerender1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerender1 =
+      embedded_test_server()->GetURL("/empty.html?prerender1");
+  const GURL kPrerender2 =
+      embedded_test_server()->GetURL("/empty.html?prerender2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 2 URLs into the speculation rules at the same time.
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                  const sc = document.createElement('script');
+                  sc.type = 'speculationrules';
+                  sc.textContent = JSON.stringify({
+                    prerender: [
+                      {source: "list", urls: [$1, $2]}
+                    ]
+                  });
+                  document.head.appendChild(sc);
+                  )",
+                         kPrerender1, kPrerender2)));
+
+  registry_observer.WaitForTrigger(kPrerender2);
+  test::PrerenderHostObserver prerender2_observer(*web_contents(),
+                                                  GetHostForUrl(kPrerender2));
+
+  // Stop the first prerendering initial navigation.
+  response.WaitForRequest();
+
+  // Activate the page with pending prerender.
+  NavigatePrimaryPage(kPrerender2);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerender2);
+  EXPECT_FALSE(prerender2_observer.was_activated());
+
+  // The first prerender was destroyed by SpeculationHostImpl.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kTriggerDestroyed, 1);
+  // The second prerender is destroyed since activation navigation is requested
+  // while it's still pending.
+  histogram_tester().ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kActivatedBeforeStarted, 1);
+}
+
+// TODO(crbug.com/1355151): Test that when the 4 URLs are specified in the
+// speculation rule while only 3 prerenders are allowed, the 4th prerender
+// should be canceled or enqueued until the forerunner are canceled.
 
 // TODO(crbug.com/1355151): Test that the requests from embedder are
 // handled immediately regardless of the requests from speculation rules after

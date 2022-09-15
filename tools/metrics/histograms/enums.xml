@@ -80001,6 +80001,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="37" label="kFailToGetMemoryUsage"/>
   <int value="38" label="kDataSaverEnabled"/>
   <int value="39" label="kHasEffectiveUrl"/>
+  <int value="40" label="kActivatedBeforeStarted"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

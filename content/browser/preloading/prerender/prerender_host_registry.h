@@ -214,13 +214,16 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // This is valid only when kPrerender2SequentialPrerendering is enabled.
   int running_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Holds the upcoming prerender requests. The requests from embedder trigger
-  // is prioritized and pushed to the front of the queue, while the requests
-  // from the speculation rules are appended to the back. This is valid only
-  // when kPrerender2SequentialPrerendering is enabled.
-  base::circular_deque<std::unique_ptr<PrerenderHost>> pending_prerenders_;
+  // Holds the ids of upcoming prerender requests. The requests from embedder
+  // trigger are prioritized and pushed to the front of the queue, while the
+  // requests from the speculation rules are appended to the back. This may
+  // contain ids of cancelled requests. You can identify cancelled requests by
+  // checking if an id is in `prerender_host_by_frame_tree_node_id_`.
+  // This is valid only when kPrerender2SequentialPrerendering is enabled.
+  base::circular_deque<int> pending_prerenders_;
 
-  // Hosts that are not reserved for activation yet.
+  // Hosts that are not reserved for activation yet. This map also includes the
+  // hosts still waiting for their start.
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
   base::flat_map<int, std::unique_ptr<PrerenderHost>>

@@ -230,13 +230,16 @@ int PrerenderHostRegistry::CreateAndStartHost(
     CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
                           frame_tree_node_id));
 
+    // TODO(crbug.com/1355151): Complete the implementation of
+    // `pending_prerenders_` handling such as removing the pending request from
+    // the queue on cancellation to unwrap this feature flag.
     if (base::FeatureList::IsEnabled(
             blink::features::kPrerender2SequentialPrerendering)) {
       // The prerendering request from embedder should have high-priority
       // because embedder prediction is more likely for the user to visit.
       switch (attributes.trigger_type) {
         case PrerenderTriggerType::kSpeculationRule:
-          pending_prerenders_.push_back(std::move(prerender_host));
+          pending_prerenders_.push_back(frame_tree_node_id);
           break;
 
         // TODO(crbug.com/1355151): More preferably the requests from embedder
@@ -244,20 +247,12 @@ int PrerenderHostRegistry::CreateAndStartHost(
         // not have enough time to wait for the running PrerenderHost created by
         // speculation rules to finish navigation.
         case PrerenderTriggerType::kEmbedder:
-          pending_prerenders_.push_front(std::move(prerender_host));
+          pending_prerenders_.push_front(frame_tree_node_id);
           break;
       }
-    } else {
-      // The code flow in this block is left as it is in order to avoid the side
-      // effect for now. Specifically, some browser tests assume that the host
-      // exists in non-reserved map when `notify_trigger` is destroyed.
-      //
-      // TODO(crbug.com/1355151): To resolve the issue above we'd like to
-      // register the host into the map right after creating hosts, while the
-      // queue only holds the corresponding host id instead of the host itself.
-      prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
-          std::move(prerender_host);
     }
+    prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
+        std::move(prerender_host);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -284,17 +279,23 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
     DCHECK(base::FeatureList::IsEnabled(
         blink::features::kPrerender2SequentialPrerendering));
     DCHECK_EQ(running_prerender_host_id_, RenderFrameHost::kNoFrameTreeNodeId);
-    if (pending_prerenders_.empty()) {
-      return RenderFrameHost::kNoFrameTreeNodeId;
+
+    // Skip cancelled requests.
+    while (!pending_prerenders_.empty()) {
+      int host_id = pending_prerenders_.front();
+      pending_prerenders_.pop_front();
+      if (prerender_host_by_frame_tree_node_id_.contains(host_id)) {
+        frame_tree_node_id = host_id;
+        break;
+      }
     }
 
-    frame_tree_node_id = pending_prerenders_.front()->frame_tree_node_id();
-    DCHECK(!prerender_host_by_frame_tree_node_id_.contains(frame_tree_node_id));
-    prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
-        std::move(pending_prerenders_.front());
-    pending_prerenders_.pop_front();
+    if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
   }
 
+  DCHECK(prerender_host_by_frame_tree_node_id_.contains(frame_tree_node_id));
   if (!prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
            ->StartPrerendering()) {
     // TODO(nhiroki): Pass a more suitable cancellation reason like
@@ -369,7 +370,7 @@ void PrerenderHostRegistry::CancelAllHosts(
     ScheduleToDeleteAbandonedHost(std::move(prerender_host), final_status);
   }
 
-  // TODO(crbug.com/1355151): Clear all the host in the pending queue.
+  pending_prerenders_.clear();
 }
 
 int PrerenderHostRegistry::FindPotentialHostToActivate(
@@ -450,9 +451,8 @@ void PrerenderHostRegistry::OnTriggerDestroyed(int frame_tree_node_id) {
   // Look up the id in the non-reserved host map and remove it from the map if
   // it's found.
   //
-  // TODO(crbug.com/1355151): Delete the corresponding PrerenderHost also from
-  // the pending queue and start another pending prerender if the deleted one is
-  // the running prerender.
+  // TODO(crbug.com/1355151): Start another pending prerender if the deleted one
+  // is the running prerender.
   auto found = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   if (found != prerender_host_by_frame_tree_node_id_.end()) {
     DCHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
@@ -542,10 +542,10 @@ void PrerenderHostRegistry::CancelAllHostsForTesting() {
         std::move(iter.second),
         PrerenderHost::FinalStatus::kCancelAllHostsForTesting);
   }
-  // After we're done scheduling deletion, clear the map.
-  prerender_host_by_frame_tree_node_id_.clear();
 
-  // TODO(crbug.com/1355151): Also clear the pending queue.
+  // After we're done scheduling deletion, clear the map and the pending queue.
+  prerender_host_by_frame_tree_node_id_.clear();
+  pending_prerenders_.clear();
 }
 
 base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {
@@ -606,6 +606,15 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   }
   if (!host)
     return RenderFrameHost::kNoFrameTreeNodeId;
+
+  // Cancel the host if the host is still pending.
+  if (!host->GetInitialNavigationId().has_value()) {
+    DCHECK(base::FeatureList::IsEnabled(
+        blink::features::kPrerender2SequentialPrerendering));
+    CancelHost(host->frame_tree_node_id(),
+               PrerenderHost::FinalStatus::kActivatedBeforeStarted);
+    return false;
+  }
 
   // Compare navigation params from activation with the navigation params
   // from the initial prerender navigation. If they don't match, the navigation

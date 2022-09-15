@@ -8467,6 +8467,7 @@ domain Page
       FailToGetMemoryUsage
       DataSaverEnabled
       HasEffectiveUrl
+      ActivatedBeforeStarted
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

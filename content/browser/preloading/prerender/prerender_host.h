@@ -102,7 +102,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kFailToGetMemoryUsage = 37,
     kDataSaverEnabled = 38,
     kHasEffectiveUrl = 39,
-    kMaxValue = kHasEffectiveUrl,
+    kActivatedBeforeStarted = 40,
+    kMaxValue = kActivatedBeforeStarted,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -218,8 +219,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void RemoveObserver(Observer* observer);
 
   // The initial navigation is set by the PrerenderNavigationThrottle
-  // when the PrerenderHost is first navigated, which happens immediately
-  // after creation.
+  // when the PrerenderHost is first navigated.
   void SetInitialNavigation(NavigationRequest* navigation);
   absl::optional<int64_t> GetInitialNavigationId() const;
 

@@ -1477,6 +1477,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::UaChangeRequiresReload;
     case PrerenderHost::FinalStatus::kHasEffectiveUrl:
       return Page::PrerenderFinalStatusEnum::HasEffectiveUrl;
+    case PrerenderHost::FinalStatus::kActivatedBeforeStarted:
+      return Page::PrerenderFinalStatusEnum::ActivatedBeforeStarted;
   }
 }
 

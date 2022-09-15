@@ -84,6 +84,8 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "DataSaverEnabled";
     case PrerenderHost::FinalStatus::kHasEffectiveUrl:
       return "HasEffectiveUrl";
+    case PrerenderHost::FinalStatus::kActivatedBeforeStarted:
+      return "ActivatedBeforeStarted";
   }
   NOTREACHED();
   return "";
