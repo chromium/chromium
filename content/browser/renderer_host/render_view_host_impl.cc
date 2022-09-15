@@ -113,10 +113,6 @@
 #include "content/browser/host_zoom_map_impl.h"
 #endif
 
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
-
 using blink::WebInputEvent;
 
 namespace content {

@@ -124,10 +124,6 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/window_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/input_method.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
