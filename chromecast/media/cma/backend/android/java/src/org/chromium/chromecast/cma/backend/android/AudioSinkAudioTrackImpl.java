@@ -253,14 +253,14 @@ class AudioSinkAudioTrackImpl {
     @CalledByNative
     private static AudioSinkAudioTrackImpl create(long nativeAudioSinkAudioTrackImpl,
             @AudioContentType int castContentType, int channelCount, int sampleRateInHz,
-            int bytesPerBuffer, int sessionId, boolean useHwAvSync) {
+            int bytesPerBuffer, int sessionId, boolean isApkAudio, boolean useHwAvSync) {
         return new AudioSinkAudioTrackImpl(nativeAudioSinkAudioTrackImpl, castContentType,
-                channelCount, sampleRateInHz, bytesPerBuffer, sessionId, useHwAvSync);
+                channelCount, sampleRateInHz, bytesPerBuffer, sessionId, isApkAudio, useHwAvSync);
     }
 
     private AudioSinkAudioTrackImpl(long nativeAudioSinkAudioTrackImpl,
             @AudioContentType int castContentType, int channelCount, int sampleRateInHz,
-            int bytesPerBuffer, int sessionId, boolean useHwAvSync) {
+            int bytesPerBuffer, int sessionId, boolean isApkAudio, boolean useHwAvSync) {
         mNativeAudioSinkAudioTrackImpl = nativeAudioSinkAudioTrackImpl;
         mLastTimestampUpdateNsec = NO_TIMESTAMP;
         mTriggerTimestampUpdateNow = false;
@@ -269,11 +269,12 @@ class AudioSinkAudioTrackImpl {
         mOriginalFramePosOfLastTimestamp = NO_FRAME_POSITION;
         mLastUnderrunCount = 0;
         mTotalFramesWritten = 0;
-        if (isValidSessionId(sessionId) && !useHwAvSync) {
+        if (isApkAudio) {
             mPendingFramesWithoutTimestamp = new LinkedList<>();
         }
         mTotalPlayedFramesWithoutTimestamp = 0;
-        init(castContentType, channelCount, sampleRateInHz, bytesPerBuffer, sessionId, useHwAvSync);
+        init(castContentType, channelCount, sampleRateInHz, bytesPerBuffer, sessionId, isApkAudio,
+                useHwAvSync);
     }
 
     private boolean haveValidRefPoint() {
@@ -295,7 +296,7 @@ class AudioSinkAudioTrackImpl {
      * the shared memory buffers.
      */
     private void init(@AudioContentType int castContentType, int channelCount, int sampleRateInHz,
-            int bytesPerBuffer, int sessionId, boolean useHwAvSync) {
+            int bytesPerBuffer, int sessionId, boolean isApkAudio, boolean useHwAvSync) {
         mTag = TAG + "(" + castContentType + ":" + (sInstanceCounter++) + ")";
 
         // Setup throttled logs: pass the first 5, then every 1sec, reset after 5.
@@ -344,7 +345,7 @@ class AudioSinkAudioTrackImpl {
                                         .build());
         if (isValidSessionId(sessionId)) builder.setSessionId(sessionId);
         mAudioTrack = builder.build();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isValidSessionId(sessionId)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isApkAudio) {
             // The playback will not be started until Android AudioTrack has more data than
             // the start threshold. Reduce the start threshold to 50ms in order to start
             // playback as soon as possible after starting or resuming. Sometimes other

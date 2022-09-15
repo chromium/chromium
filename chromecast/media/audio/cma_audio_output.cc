@@ -13,7 +13,6 @@
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/base/cast_decoder_buffer_impl.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
-#include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"
 
@@ -57,6 +56,7 @@ CmaAudioOutput::CmaAudioOutput(
     SampleFormat sample_format,
     const std::string& device_id,
     const std::string& application_session_id,
+    MediaPipelineDeviceParams::MediaSyncType sync_type,
     bool use_hw_av_sync,
     int audio_track_session_id,
     chromecast::mojom::MultiroomInfoPtr multiroom_info,
@@ -68,7 +68,7 @@ CmaAudioOutput::CmaAudioOutput(
       delegate_(delegate),
       timestamp_helper_(audio_params_.sample_rate()) {
   DCHECK(delegate_);
-  Initialize(sample_format, device_id, application_session_id,
+  Initialize(sample_format, device_id, application_session_id, sync_type,
              audio_track_session_id, std::move(multiroom_info),
              cma_backend_factory);
 }
@@ -79,6 +79,7 @@ void CmaAudioOutput::Initialize(
     SampleFormat sample_format,
     const std::string& device_id,
     const std::string& application_session_id,
+    MediaPipelineDeviceParams::MediaSyncType sync_type,
     int audio_track_session_id,
     chromecast::mojom::MultiroomInfoPtr multiroom_info,
     CmaBackendFactory* cma_backend_factory) {
@@ -88,22 +89,7 @@ void CmaAudioOutput::Initialize(
 
   auto cma_backend_task_runner = std::make_unique<TaskRunnerImpl>();
   MediaPipelineDeviceParams device_params(
-      // If AUDIO_PREFETCH is enabled, we're able to push audio ahead of
-      // realtime. Set the sync mode to kModeSyncPts to allow cma backend to
-      // buffer the early pushed data, instead of dropping them.
-      // If the output is created with a valid audio track session id, it means
-      // the output stream is owned by other native applications on Android.
-      // In that case, other native applications relay on the reported playback
-      // position to do av sync or use hardware av sync mode. Set the sync mode
-      // to kModeApkSyncPts to avoid setting timestamp of silence buffers pushed
-      // by us to allow the backend decoder distinguishes real audio data vs
-      // silence.
-      audio_params_.effects() & ::media::AudioParameters::AUDIO_PREFETCH
-          ? (audio_track_session_id > 0
-                 ? MediaPipelineDeviceParams::kModeApkSyncPts
-                 : MediaPipelineDeviceParams::kModeSyncPts)
-          : MediaPipelineDeviceParams::kModeIgnorePts,
-      MediaPipelineDeviceParams::kAudioStreamNormal,
+      sync_type, MediaPipelineDeviceParams::kAudioStreamNormal,
       cma_backend_task_runner.get(), GetContentType(device_id), device_id);
   device_params.session_id = application_session_id;
   device_params.multiroom = multiroom_info->multiroom;

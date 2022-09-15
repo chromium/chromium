@@ -90,6 +90,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
                                  int input_samples_per_second,
                                  int audio_track_session_id,
                                  bool primary,
+                                 bool is_apk_audio,
                                  bool use_hw_av_sync,
                                  const std::string& device_id,
                                  AudioContentType content_type);

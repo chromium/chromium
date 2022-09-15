@@ -28,7 +28,8 @@ MediaPipelineBackendAndroid::CreateAudioDecoder() {
   DCHECK_EQ(kStateUninitialized, state_);
   if (audio_decoder_)
     return nullptr;
-  audio_decoder_.reset(new AudioDecoderAndroid(this));
+  audio_decoder_.reset(new AudioDecoderAndroid(
+      this, params_.sync_type == MediaPipelineDeviceParams::kModeApkSyncPts));
   return audio_decoder_.get();
 }
 

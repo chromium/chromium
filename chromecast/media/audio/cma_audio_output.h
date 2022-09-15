@@ -15,6 +15,7 @@
 #include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/public/media/decoder_config.h"
+#include "chromecast/public/media/media_pipeline_device_params.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -33,6 +34,7 @@ class CmaAudioOutput {
                  SampleFormat sample_format,
                  const std::string& device_id,
                  const std::string& application_session_id,
+                 MediaPipelineDeviceParams::MediaSyncType sync_type,
                  bool use_hw_av_sync,
                  int audio_track_session_id,
                  chromecast::mojom::MultiroomInfoPtr multiroom_info,
@@ -60,6 +62,7 @@ class CmaAudioOutput {
   void Initialize(SampleFormat sample_format,
                   const std::string& device_id,
                   const std::string& application_session_id,
+                  MediaPipelineDeviceParams::MediaSyncType sync_type,
                   int audio_track_session_id,
                   chromecast::mojom::MultiroomInfoPtr multiroom_info,
                   CmaBackendFactory* cma_backend_factory);

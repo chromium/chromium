@@ -61,8 +61,14 @@ void CmaAudioOutputStream::Initialize(
     chromecast::mojom::MultiroomInfoPtr multiroom_info) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   DCHECK_EQ(cma_backend_state_, CmaBackendState::kUninitialized);
+  // If AUDIO_PREFETCH is enabled, we're able to push audio ahead of
+  // realtime. Set the sync mode to kModeSyncPts to allow cma backend to
+  // buffer the early pushed data, instead of dropping them.
   output_ = std::make_unique<CmaAudioOutput>(
       audio_params_, kSampleFormatS16, device_id_, application_session_id,
+      audio_params_.effects() & ::media::AudioParameters::AUDIO_PREFETCH
+          ? MediaPipelineDeviceParams::kModeSyncPts
+          : MediaPipelineDeviceParams::kModeIgnorePts,
       false /*use_hw_av_sync*/, 0 /*audio_track_session_id*/,
       std::move(multiroom_info), cma_backend_factory_, this);
   cma_backend_state_ = CmaBackendState::kStopped;
