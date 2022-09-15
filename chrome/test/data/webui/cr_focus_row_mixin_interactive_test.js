@@ -15,7 +15,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var CrFocusRowMixinTest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_focus_row_mixin_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_focus_row_mixin_test.js';
   }
 
   /** @override */

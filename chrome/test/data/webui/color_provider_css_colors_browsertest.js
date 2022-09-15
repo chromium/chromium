@@ -8,7 +8,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var ColorProviderCSSColorsTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=color_provider_css_colors_test.js';
+    return 'chrome://webui-test/test_loader.html?module=color_provider_css_colors_test.js';
   }
 
   /** @override */
@@ -38,7 +38,7 @@ var ColorProviderCSSColorsTestChromeOS =
     class extends ColorProviderCSSColorsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=color_provider_css_colors_test_chromeos.js';
+    return 'chrome://webui-test/test_loader.html?module=color_provider_css_colors_test_chromeos.js';
   }
 };
 

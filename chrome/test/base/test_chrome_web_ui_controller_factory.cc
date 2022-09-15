@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/test_data_source.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -85,8 +86,10 @@ TestChromeWebUIControllerFactory::WebUIProvider*
 
 GURL TestChromeWebUIControllerFactory::TestURLToWebUIURL(
     const GURL& url) const {
-  if (url.host() != "test" || webui_host_.empty())
+  if ((url.host() != "test" && url.host() != chrome::kChromeUIWebUITestHost) ||
+      webui_host_.empty()) {
     return url;
+  }
 
   GURL webui_url(url);
   GURL::Replacements replacements;

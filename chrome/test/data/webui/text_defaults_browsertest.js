@@ -12,7 +12,7 @@ var TextDefaultsTest = class extends testing.Test {
    * @override
    */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=text_defaults_test.js';
+    return 'chrome://webui-test/test_loader.html?module=text_defaults_test.js';
   }
 
   /** @override */

@@ -27,7 +27,7 @@ var WebUIResourcesListPropertyUpdateBehaviorTest =
     class extends WebUIResourcesBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=resources/list_property_update_behavior_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=resources/list_property_update_behavior_tests.js';
   }
 };
 
@@ -40,7 +40,7 @@ var WebUIResourcesListPropertyUpdateMixinTest =
     class extends WebUIResourcesBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=resources/list_property_update_mixin_tests.js';
+    return 'chrome://webui-test/test_loader.html?module=resources/list_property_update_mixin_tests.js';
   }
 };
 

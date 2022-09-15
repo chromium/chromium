@@ -37,7 +37,8 @@ function registerTest(testName, module, caseName) {
   this[className] = class extends GaiaAuthHostBrowserTest {
     /** @override */
     get browsePreload() {
-      return `chrome://test/test_loader.html?module=gaia_auth_host/${module}`;
+      return `chrome://webui-test/test_loader.html?module=gaia_auth_host/${
+          module}`;
     }
   };
 

@@ -30,7 +30,7 @@ var CrComponentsColorChangeListenerTest =
     class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/color_change_listener_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_components/color_change_listener_test.js';
   }
 };
 
@@ -41,7 +41,7 @@ TEST_F('CrComponentsColorChangeListenerTest', 'All', function() {
 var CrComponentsManagedFootnoteTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/managed_footnote_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_components/managed_footnote_test.js';
   }
 };
 
@@ -93,7 +93,7 @@ GEN('#endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS)');
 var CrComponentsManagedDialogTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/managed_dialog_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_components/managed_dialog_test.js';
   }
 };
 
@@ -104,7 +104,7 @@ TEST_F('CrComponentsManagedDialogTest', 'All', function() {
 var CrComponentsLocalizedLinkTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/localized_link_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_components/localized_link_test.js';
   }
 };
 
@@ -116,7 +116,7 @@ var CrComponentsAppManagementPermissionItemTest =
     class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/app_management/permission_item_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_components/app_management/permission_item_test.js';
   }
 };
 
@@ -128,7 +128,7 @@ var CrComponentsAppManagementFileHandlingItemTest =
     class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/app_management/file_handling_item_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_components/app_management/file_handling_item_test.js';
   }
 };
 
@@ -140,7 +140,7 @@ var CrComponentsAppManagementWindowModeTest =
     class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/app_management/window_mode_item_test.js';
+    return 'chrome://webui-test/test_loader.html?module=cr_components/app_management/window_mode_item_test.js';
   }
 };
 
