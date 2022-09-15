@@ -25,11 +25,18 @@ constexpr int64_t kShoppingUserMinSignalCollectionLength = 1;
 constexpr int64_t kModelVersion = 1;
 
 // InputFeatures.
-constexpr std::array<MetadataWriter::UMAFeature, 1> kShoppingUserUMAFeatures = {
-    MetadataWriter::UMAFeature::FromValueHistogram("NewTabPage.Carts.CartCount",
-                                                   7,
-                                                   proto::Aggregation::SUM),
-};
+
+constexpr std::array<int32_t, 1> kProductDetailAvailableEnums{1};
+
+constexpr std::array<MetadataWriter::UMAFeature, 2> kShoppingUserUMAFeatures = {
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "Commerce.PriceDrops.ActiveTabNavigationComplete.IsProductDetailPage",
+        7,
+        kProductDetailAvailableEnums.data(),
+        kProductDetailAvailableEnums.size()),
+    MetadataWriter::UMAFeature::FromUserAction(
+        "Autofill_PolledCreditCardSuggestions",
+        7)};
 }  // namespace
 
 ShoppingUserModel::ShoppingUserModel()
@@ -64,12 +71,11 @@ void ShoppingUserModel::ExecuteModelWithInput(const std::vector<float>& inputs,
     return;
   }
 
-  const int new_tab_page_cart_count = inputs[0];
   float result = 0;
 
-  // A user is considered as a shopping user, if
-  //  1. Cart count in new tab page greater than 0
-  if (new_tab_page_cart_count > 0) {
+  // Determine if the user is a shopping user using  price tracking, price drop,
+  // product detail page info, etc. features count.
+  if (inputs[0] > 1 || inputs[1] > 1) {
     result = 1;  // User classified as shopping user;
   }
 

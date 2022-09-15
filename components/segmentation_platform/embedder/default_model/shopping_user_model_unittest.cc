@@ -74,20 +74,21 @@ TEST_F(ShoppingUserModelTest, InitAndFetchModel) {
 }
 
 TEST_F(ShoppingUserModelTest, ExecuteModelWithInput) {
-  // When new tab page cart count is less than 1,
+  // When shopping related features count is less than or equal to 1,
   // the user shouldn't be considered a shopping user.
+  ExpectExecutionWithInput({0, 0}, false, 0);
+  ExpectExecutionWithInput({1, 0}, false, 0);
+  ExpectExecutionWithInput({1, 1}, false, 0);
 
-  float new_tab_page_cart_count = 0;
-  ExpectExecutionWithInput({new_tab_page_cart_count}, false, 0);
-
-  // When new tab page cart count is greater than or equal to 1,
+  // When shopping related features count is greater than or equal to 1,
   // the user should be considered shopping user.
-  new_tab_page_cart_count += 1;
-  ExpectExecutionWithInput({new_tab_page_cart_count}, false, 1);
+  ExpectExecutionWithInput({1, 2}, false, 1);
+  ExpectExecutionWithInput({2, 2}, false, 1);
 
   // Invalid input
-  ExpectExecutionWithInput({new_tab_page_cart_count, new_tab_page_cart_count},
-                           true, 0);
+  ExpectExecutionWithInput({1, 1, 1, 1, 1}, true, 0);
+  ExpectExecutionWithInput({0}, true, 0);
+  ExpectExecutionWithInput({2, 2, 2, 2, 2, 2, 2, 2}, true, 0);
 }
 
 }  // namespace segmentation_platform
