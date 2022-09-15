@@ -107,6 +107,10 @@ export class AlbumList extends WithPersonalizationStore {
   private getAriaIndex_(index: number): number {
     return index + 1;
   }
+
+  private isGooglePhotos_(topicSource: TopicSource): boolean {
+    return topicSource === TopicSource.kGooglePhotos;
+  }
 }
 
 customElements.define(AlbumList.is, AlbumList);
