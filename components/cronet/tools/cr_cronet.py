@@ -202,7 +202,8 @@ def main():
   else:
     test_target = 'cronet_test_instrumentation_apk'
     unit_target = 'cronet_unittests_android'
-    gn_args = get_android_gn_args(options.release)
+    gn_args = get_android_gn_args(
+        options.release) + " treat_warnings_as_errors=false "
     gn_extra = []
     out_dir_suffix = ''
     if options.x86:

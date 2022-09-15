@@ -388,4 +388,11 @@ public abstract class org.chromium.net.UrlResponseInfo {
   public abstract java.lang.String getProxyServer();
   public abstract long getReceivedByteCount();
 }
-Stamp: d1a9021c3d37c25d7c22d453097e465e
+public final class org.chromium.net.apihelpers.UploadDataProviders {
+  public static org.chromium.net.UploadDataProvider create(java.io.File);
+  public static org.chromium.net.UploadDataProvider create(android.os.ParcelFileDescriptor);
+  public static org.chromium.net.UploadDataProvider create(java.nio.ByteBuffer);
+  public static org.chromium.net.UploadDataProvider create(byte[], int, int);
+  public static org.chromium.net.UploadDataProvider create(byte[]);
+}
+Stamp: 9ca96d8e2cee4df3a62cefff1a431d5a

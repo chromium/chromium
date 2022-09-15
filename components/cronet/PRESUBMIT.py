@@ -45,12 +45,16 @@ def _GetPathsToPrepend(input_api):
 def _PackageChecks(input_api, output_api):
   """Verify API classes are in org.chromium.net package, and implementation
   classes are not in org.chromium.net package."""
+  api_packages = ['org.chromium.net', 'org.chromium.net.apihelpers']
+  api_packages_regex = '(' + '|'.join(api_packages) + ')'
   api_file_pattern = input_api.re.compile(
       r'^components/cronet/android/api/.*\.(java|template)$')
   impl_file_pattern = input_api.re.compile(
       r'^components/cronet/android/java/.*\.(java|template)$')
-  api_package_pattern = input_api.re.compile(r'^package (?!org.chromium.net;)')
-  impl_package_pattern = input_api.re.compile(r'^package org.chromium.net;')
+  invalid_api_package_pattern = input_api.re.compile(
+    r'^package (?!' + api_packages_regex + ';)')
+  invalid_impl_package_pattern = input_api.re.compile(
+    r'^package ' + api_packages_regex + ';')
 
   source_filter = lambda path: input_api.FilterSourceFile(path,
       files_to_check=[r'^components/cronet/android/.*\.(java|template)$'])
@@ -60,11 +64,11 @@ def _PackageChecks(input_api, output_api):
     local_path = f.LocalPath()
     for line_number, line in f.ChangedContents():
       if (api_file_pattern.search(local_path)):
-        if (api_package_pattern.search(line)):
+        if (invalid_api_package_pattern.search(line)):
           problems.append(
             '%s:%d\n    %s' % (local_path, line_number, line.strip()))
       elif (impl_file_pattern.search(local_path)):
-        if (impl_package_pattern.search(line)):
+        if (invalid_impl_package_pattern.search(line)):
           problems.append(
             '%s:%d\n    %s' % (local_path, line_number, line.strip()))
 

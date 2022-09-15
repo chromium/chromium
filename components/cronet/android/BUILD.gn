@@ -248,6 +248,7 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/UploadDataSink.java",
     "api/src/org/chromium/net/UrlRequest.java",
     "api/src/org/chromium/net/UrlResponseInfo.java",
+    "api/src/org/chromium/net/apihelpers/UploadDataProviders.java",
     _generated_interface_api_version_java,
   ]
 
@@ -1021,8 +1022,8 @@ if (!is_component_build) {
       "test/javatests/src/org/chromium/net/TestDrivenDataProvider.java",
       "test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
       "test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
-      "test/javatests/src/org/chromium/net/UploadDataProvidersTest.java",
       "test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+      "test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
       "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
       "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
       "test/javatests/src/org/chromium/net/urlconnection/CronetBufferedOutputStreamTest.java",

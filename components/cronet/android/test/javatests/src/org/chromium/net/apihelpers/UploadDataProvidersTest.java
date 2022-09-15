@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.net;
+package org.chromium.net.apihelpers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,8 +24,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.net.CallbackException;
+import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.NativeTestServer;
+import org.chromium.net.TestUrlRequestCallback;
+import org.chromium.net.UploadDataProvider;
+import org.chromium.net.UploadDataSink;
+import org.chromium.net.UrlRequest;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -149,6 +156,7 @@ public class UploadDataProvidersTest {
         builder.addHeader("Content-Type", "useless/string");
         builder.setUploadDataProvider(new UploadDataProvider() {
             private static final String CONTENT = "hello";
+
             @Override
             public long getLength() throws IOException {
                 return CONTENT.length();
