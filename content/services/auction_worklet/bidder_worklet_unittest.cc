@@ -1496,6 +1496,18 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:2 Uncaught TypeError: returned object must have "
        "numeric bid field."});
+  // Setting a valid bid with setBid(), followed by setting an invalid bid that
+  // throws, should result in no bid being set.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(function generateBid() {
+         setBid({bid:1, render:"https://response.test/"});
+         setBid({ad: ["ad"], bid:"1", render:"https://response.test/"});
+         return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
+       })",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/:3 Uncaught TypeError: returned object must have "
+       "numeric bid field."});
 }
 
 // Make sure Date() is not available when running generateBid().
@@ -3244,10 +3256,9 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerTimeOut) {
 }
 
 // Even though the script timed out, it had set an intermediate result with
-// setBid, so we should use that instead.
+// setBid, so we should use that.
 TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
-  // The bidding script has an endless while loop. It will time out due to
-  // AuctionV8Helper's default script timeout (500 ms).
+  // The bidding script has an endless while loop.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           /*raw_return_value=*/
@@ -3262,14 +3273,86 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
                                    base::TimeDelta()),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+
+  // Test the case where setBid() sets no bid. There should be no bid, and
+  // no error, other than the timeout.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: "not_reached", bid:2, render:"https://response.test/2" })",
+          /*extra_code=*/R"(
+            setBid();
+            while (1)
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+}
+
+// Test that in the case of multiple setBid() calls, the most recent call takes
+// precedence.
+TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
+  interest_group_ads_.emplace_back(GURL("https://response.test/replacement"),
+                                   /*metadata=*/absl::nullopt);
+
+  // The bidding script has an endless while loop.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: "not_reached", bid:2, render:"https://response.test/2" })",
+          /*extra_code=*/R"(
+            setBid({ad: "ad", bid:1, render:"https://response.test/"});
+            setBid({ad: "ad2", bid:2, render:"https://response.test/replacement"});
+            while (1)
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBid::New(
+          "\"ad2\"", 2, GURL("https://response.test/replacement"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+
+  // Test the case where the second setBid() call clears the bid from the first
+  // call without setting a new bid, by passing in no bid. There should be no
+  // bid, and no error, other than the timeout.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: "not_reached", bid:2, render:"https://response.test/2" })",
+          /*extra_code=*/R"(
+            setBid({ad: "ad", bid:1, render:"https://response.test/"});
+            setBid(null);
+            while (1)
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
+
+  // Test the case where the second setBid() call clears the bid from the first
+  // call without setting a new bid, by passing in null. There should be no bid,
+  // and no error, other than the timeout.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          /*raw_return_value=*/
+          R"({ad: "not_reached", bid:2, render:"https://response.test/2" })",
+          /*extra_code=*/R"(
+            setBid({ad: "ad", bid:1, render:"https://response.test/"});
+            setBid(null);
+            while (1)
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
 }
 
 // Even though the script timed out, it had set an intermediate result with
 // setBid, so we should use that instead. The bid value should not change if we
 // mutate the object passed to setBid after it returns.
 TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidMutateAfter) {
-  // The bidding script has an endless while loop. It will time out due to
-  // AuctionV8Helper's default script timeout (50 ms).
+  // The bidding script has an endless while loop.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           /*raw_return_value=*/

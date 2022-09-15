@@ -102,15 +102,16 @@ void SetBidBindings::SetBid(const v8::FunctionCallbackInfo<v8::Value>& args) {
       static_cast<SetBidBindings*>(v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
-  if (args.Length() < 1 || args[0].IsEmpty()) {
-    args.GetIsolate()->ThrowException(
-        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-            "setBid requires 1 object parameter")));
-    return;
+  v8::Local<v8::Value> argument_value;
+  // Treat no arguments as an undefined argument, which should clear the bid.
+  if (args.Length() < 1) {
+    argument_value = v8::Undefined(v8_helper->isolate());
+  } else {
+    argument_value = args[0];
   }
 
   std::vector<std::string> errors;
-  if (!bindings->SetBid(args[0], /*error_prefix=*/"", errors)) {
+  if (!bindings->SetBid(argument_value, /*error_prefix=*/"", errors)) {
     DCHECK_EQ(1u, errors.size());
     // Remove the trailing period from the error message.
     std::string error_msg = errors[0].substr(0, errors[0].length() - 1);
@@ -132,7 +133,7 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
 
   // Undefined and null are interpreted as choosing not to bid.
   if (generate_bid_result->IsNullOrUndefined())
-    return false;
+    return true;
 
   if (!generate_bid_result->IsObject()) {
     errors_out.push_back(base::StrCat({error_prefix, "bid not an object."}));
@@ -156,7 +157,7 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   }
   if (bid <= 0.0) {
     // Not an error, just no bid.
-    return false;
+    return true;
   }
 
   v8::Local<v8::Value> ad_object;
