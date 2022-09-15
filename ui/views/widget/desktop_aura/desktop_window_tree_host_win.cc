@@ -232,8 +232,10 @@ std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
 
 std::unique_ptr<aura::client::DragDropClient>
 DesktopWindowTreeHostWin::CreateDragDropClient() {
-  drag_drop_client_ = new DesktopDragDropClientWin(window(), GetHWND(), this);
-  return base::WrapUnique(drag_drop_client_.get());
+  auto res =
+      std::make_unique<DesktopDragDropClientWin>(window(), GetHWND(), this);
+  drag_drop_client_ = res->GetWeakPtr();
+  return std::move(res);
 }
 
 void DesktopWindowTreeHostWin::Close() {

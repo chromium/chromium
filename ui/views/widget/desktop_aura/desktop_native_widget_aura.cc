@@ -376,6 +376,9 @@ void DesktopNativeWidgetAura::OnHostClosed() {
   host_->window()->RemovePreTargetHandler(root_window_event_filter_.get());
 
   host_->RemoveObserver(this);
+  // |drag_drop_client_| holds a raw_ptr on |desktop_window_tree_host_|, so we
+  // need to destroy it first.
+  drag_drop_client_.reset();
   // WindowEventDispatcher owns |desktop_window_tree_host_|.
   desktop_window_tree_host_ = nullptr;
   // Delete host after resetting `desktop_window_tree_host_` and

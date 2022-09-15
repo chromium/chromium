@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
@@ -293,7 +294,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   // Owned by DesktopNativeWidgetAura.
-  raw_ptr<DesktopDragDropClientWin> drag_drop_client_;
+  base::WeakPtr<DesktopDragDropClientWin> drag_drop_client_;
 
   // When certain windows are being shown, we augment the window size
   // temporarily for animation. The following two members contain the top left
