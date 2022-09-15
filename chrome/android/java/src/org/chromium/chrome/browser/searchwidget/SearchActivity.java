@@ -513,8 +513,8 @@ public class SearchActivity extends AsyncInitializationActivity
                     getResources().getDimensionPixelOffset(R.dimen.toolbar_edge_padding_modern);
             toolbarView.setPaddingRelative(edgePadding, toolbarView.getPaddingTop(), edgePadding,
                     toolbarView.getPaddingBottom());
-            toolbarView.setBackground(new ColorDrawable(
-                    mSearchBoxDataProvider.getSuggestionsStandardBackgroundColor()));
+            toolbarView.setBackground(
+                    new ColorDrawable(mSearchBoxDataProvider.getDropdownStandardBackgroundColor()));
         }
         return contentView;
     }

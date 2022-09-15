@@ -96,8 +96,10 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
     private CallbackController mCallbackController = new CallbackController();
 
     private boolean mNativeInitialized;
-    private final int mSuggestionsStandardBackgroundColor;
-    private final int mSuggestionsIncognitoBackgroundColor;
+    private final int mDropdownStandardBackgroundColor;
+    private final int mDropdownIncognitoBackgroundColor;
+    private final int mSuggestionStandardBackgroundColor;
+    private final int mSuggestionIncognitoBackgroundColor;
 
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
@@ -230,10 +232,14 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider, searchEngineLogoUtils);
 
-        mSuggestionsStandardBackgroundColor =
-                locationBarDataProvider.getSuggestionsStandardBackgroundColor();
-        mSuggestionsIncognitoBackgroundColor =
-                locationBarDataProvider.getSuggestionsIncognitoBackgroundColor();
+        mDropdownStandardBackgroundColor =
+                locationBarDataProvider.getDropdownStandardBackgroundColor();
+        mDropdownIncognitoBackgroundColor =
+                locationBarDataProvider.getDropdownIncognitoBackgroundColor();
+        mSuggestionStandardBackgroundColor =
+                locationBarDataProvider.getSuggestionStandardBackgroundColor();
+        mSuggestionIncognitoBackgroundColor =
+                locationBarDataProvider.getSuggestionIncognitoBackgroundColor();
 
         if (isPhoneLayout()) {
             mSubCoordinator = new LocationBarCoordinatorPhone(
@@ -655,11 +661,20 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
         return mStatusCoordinator;
     }
 
-    public int getSuggestionsStandardBackgroundColor() {
-        return mSuggestionsStandardBackgroundColor;
+    /**
+     * @param isIncognito Whether we are currently in incognito mode.
+     * @return The  background color for the Omnibox suggestion dropdown list.
+     */
+    public int getDropdownBackgroundColor(boolean isIncognito) {
+        return isIncognito ? mDropdownIncognitoBackgroundColor : mDropdownStandardBackgroundColor;
     }
 
-    public int getSuggestionsIncognitoBackgroundColor() {
-        return mSuggestionsIncognitoBackgroundColor;
+    /**
+     * @param isIncognito Whether we are currently in incognito mode.
+     * @return The the background color for each individual suggestion.
+     */
+    public int getSuggestionBackgroundColor(boolean isIncognito) {
+        return isIncognito ? mSuggestionIncognitoBackgroundColor
+                           : mSuggestionStandardBackgroundColor;
     }
 }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
@@ -43,7 +45,13 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
-        setBackground(ToolbarPhone.createModernLocationBarBackground(getContext()));
+        Drawable backgroundDrawable = ToolbarPhone.createModernLocationBarBackground(context);
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            backgroundDrawable.setTint(OmniboxFeatures.shouldShowActiveColorOnOmnibox()
+                            ? mLocationBarDataProvider.getSuggestionStandardBackgroundColor()
+                            : mLocationBarDataProvider.getDropdownStandardBackgroundColor());
+        }
+        setBackground(backgroundDrawable);
     }
 
     @Override

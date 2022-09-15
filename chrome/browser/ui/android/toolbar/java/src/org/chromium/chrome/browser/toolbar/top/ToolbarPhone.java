@@ -392,10 +392,29 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private int getToolbarDefaultColor() {
         if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
-            return isIncognito() ? mLocationBar.getSuggestionsIncognitoBackgroundColor()
-                                 : mLocationBar.getSuggestionsStandardBackgroundColor();
+            return mLocationBar.getDropdownBackgroundColor(isIncognito());
         }
         return ChromeColors.getDefaultThemeColor(getContext(), isIncognito());
+    }
+
+    /**
+     * Get the corresponding default location bar color for a toolbar color.
+     * If location bar has focus, return the Omnibox suggestion background color.
+     * If location bar does not have focus, return {@link getLocationBarColorForToolbarColor(int
+     * toolbarColor)}.
+     * @param toolbarColor The color of the toolbar.
+     * @return The default location bar color.
+     */
+    private int getLocationBarDefaultColorForToolbarColor(int toolbarColor) {
+        if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
+            if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+                // Omnibox has same background as the Omnibox suggestion.
+                return mLocationBar.getSuggestionBackgroundColor(isIncognito());
+            }
+            // Omnibox has same background as the toolbar.
+            return getToolbarDefaultColor();
+        }
+        return getLocationBarColorForToolbarColor(toolbarColor);
     }
 
     private void inflateTabSwitchingResources() {
@@ -558,6 +577,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @VisibleForTesting
     public ColorDrawable getBackgroundDrawable() {
         return mToolbarBackground;
+    }
+
+    @VisibleForTesting
+    void setLocationBarBackgroundDrawableForTesting(Drawable background) {
+        mLocationBarBackground = background;
     }
 
     @SuppressLint("RtlHardcoded")
@@ -1033,7 +1057,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             // this only runs when you focus the omnibox on a web page.
             if (!isLocationBarShownInNTP() && mTabSwitcherState == STATIC_TAB) {
                 int defaultColor = getToolbarDefaultColor();
-                int defaultLocationBarColor = getLocationBarColorForToolbarColor(defaultColor);
+                int defaultLocationBarColor =
+                        getLocationBarDefaultColorForToolbarColor(defaultColor);
                 int primaryColor = getToolbarDataProvider().getPrimaryColor();
                 int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);
 

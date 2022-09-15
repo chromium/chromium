@@ -22,6 +22,8 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private final @ColorInt int mPrimaryColor;
+    private final @ColorInt int mDropdownStandardBgColor;
+    private final @ColorInt int mDropdownIncognitoBgColor;
     private final @ColorInt int mSuggestionStandardBgColor;
     private final @ColorInt int mSuggestionIncognitoBgColor;
     private boolean mIsFromQuickActionSearchWidget;
@@ -34,9 +36,12 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     SearchBoxDataProvider(Context context) {
         mIsFromQuickActionSearchWidget = false;
         mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito());
-        mSuggestionStandardBgColor = ChromeColors.getSurfaceColor(
+        mDropdownStandardBgColor = ChromeColors.getSurfaceColor(
                 context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
-        mSuggestionIncognitoBgColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
+        mDropdownIncognitoBgColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
+        mSuggestionStandardBgColor =
+                ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
+        mSuggestionIncognitoBgColor = context.getColor(R.color.omnibox_suggestion_bg_incognito);
     }
 
     /**
@@ -144,12 +149,22 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public int getSuggestionsStandardBackgroundColor() {
+    public int getDropdownStandardBackgroundColor() {
+        return mDropdownStandardBgColor;
+    }
+
+    @Override
+    public int getDropdownIncognitoBackgroundColor() {
+        return mDropdownIncognitoBgColor;
+    }
+
+    @Override
+    public int getSuggestionStandardBackgroundColor() {
         return mSuggestionStandardBgColor;
     }
 
     @Override
-    public int getSuggestionsIncognitoBackgroundColor() {
+    public int getSuggestionIncognitoBackgroundColor() {
         return mSuggestionIncognitoBgColor;
     }
 

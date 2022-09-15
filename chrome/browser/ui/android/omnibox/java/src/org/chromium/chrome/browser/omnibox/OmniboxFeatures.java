@@ -19,6 +19,11 @@ public class OmniboxFeatures {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "enable_modernize_visual_update_on_tablet", false);
 
+    public static final BooleanCachedFieldTrialParameter
+            MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX = new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
+                    "modernize_visual_update_active_color_on_omnibox", false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
@@ -26,6 +31,14 @@ public class OmniboxFeatures {
     public static boolean shouldShowModernizeVisualUpdate(Context context) {
         return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
                 && (!isTablet(context) || enabledModernizeVisualUpdateOnTablet());
+    }
+
+    /**
+     * @return Whether to show an active color for Omnibox which has a different background color
+     *         than toolbar.
+     */
+    public static boolean shouldShowActiveColorOnOmnibox() {
+        return MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.getValue();
     }
 
     /**

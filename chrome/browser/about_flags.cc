@@ -2350,16 +2350,29 @@ const FeatureEntry::FeatureVariation kOmniboxAssistantVoiceSearchVariations[] =
          std::size(kOmniboxAssistantVoiceSearchNoMultiAccountCheck), nullptr},
 };
 
-const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateExcludeTablets[] =
-    {{"enable_modernize_visual_update_on_tablet", "false"}};
+const FeatureEntry::FeatureParam
+    kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmnibox[] = {
+        {"enable_modernize_visual_update_on_tablet", "false"},
+        {"modernize_visual_update_active_color_on_omnibox", "true"}};
+
+const FeatureEntry::FeatureParam
+    kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmnibox[] = {
+        {"enable_modernize_visual_update_on_tablet", "false"},
+        {"modernize_visual_update_active_color_on_omnibox", "false"}};
 
 const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateIncludeTablets[] =
     {{"enable_modernize_visual_update_on_tablet", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
     {
-        {"(exclude tablet)", kOmniboxModernizeVisualUpdateExcludeTablets,
-         std::size(kOmniboxModernizeVisualUpdateExcludeTablets), nullptr},
+        {"(active color omnibox, exclude tablet)",
+         kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmnibox,
+         std::size(kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmnibox),
+         nullptr},
+        {"(no active color omnibox, exclude tablet)",
+         kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmnibox,
+         std::size(kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmnibox),
+         nullptr},
         {"(include tablet)", kOmniboxModernizeVisualUpdateIncludeTablets,
          std::size(kOmniboxModernizeVisualUpdateIncludeTablets), nullptr},
 };

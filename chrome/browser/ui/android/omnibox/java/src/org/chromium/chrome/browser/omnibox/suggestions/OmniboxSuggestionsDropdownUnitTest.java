@@ -60,10 +60,10 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         doReturn(COLOR_STANDARD)
                 .when(mLocationBarDataProvider)
-                .getSuggestionsStandardBackgroundColor();
+                .getDropdownStandardBackgroundColor();
         doReturn(COLOR_INCOGNITO)
                 .when(mLocationBarDataProvider)
-                .getSuggestionsIncognitoBackgroundColor();
+                .getDropdownIncognitoBackgroundColor();
     }
 
     @Test

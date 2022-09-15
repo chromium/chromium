@@ -207,10 +207,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         ViewCompat.setPaddingRelative(this, paddingSide, 0, paddingSide, paddingBottom);
 
         mStandardBgColor = shouldShowModernizeVisualUpdate
-                ? locationBarDataProvider.getSuggestionsStandardBackgroundColor()
+                ? locationBarDataProvider.getDropdownStandardBackgroundColor()
                 : ChromeColors.getDefaultThemeColor(context, false);
         mIncognitoBgColor = shouldShowModernizeVisualUpdate
-                ? locationBarDataProvider.getSuggestionsIncognitoBackgroundColor()
+                ? locationBarDataProvider.getDropdownIncognitoBackgroundColor()
                 : ChromeColors.getDefaultThemeColor(context, true);
     }
 

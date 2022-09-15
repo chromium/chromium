@@ -132,9 +132,15 @@ public interface LocationBarDataProvider {
     @StringRes
     int getSecurityIconContentDescriptionResourceId();
 
-    /** Returns the standard color to use for the suggestrions background.*/
-    int getSuggestionsStandardBackgroundColor();
+    /** Returns the standard color to use for the suggestrions dropdown background.*/
+    int getDropdownStandardBackgroundColor();
 
-    /** Returns the incognito color to use for the suggestrions background.*/
-    int getSuggestionsIncognitoBackgroundColor();
+    /** Returns the incognito color to use for the suggestrions dropdown background.*/
+    int getDropdownIncognitoBackgroundColor();
+
+    /** Returns the standard color to use for each individual suggestion background.*/
+    int getSuggestionStandardBackgroundColor();
+
+    /** Returns the incognito color to use for each individual suggestion background.*/
+    int getSuggestionIncognitoBackgroundColor();
 }

@@ -571,12 +571,22 @@ public class RecognitionTestHelper {
         }
 
         @Override
-        public int getSuggestionsStandardBackgroundColor() {
+        public int getDropdownStandardBackgroundColor() {
             return 0;
         }
 
         @Override
-        public int getSuggestionsIncognitoBackgroundColor() {
+        public int getDropdownIncognitoBackgroundColor() {
+            return 0;
+        }
+
+        @Override
+        public int getSuggestionStandardBackgroundColor() {
+            return 0;
+        }
+
+        @Override
+        public int getSuggestionIncognitoBackgroundColor() {
             return 0;
         }
     }
