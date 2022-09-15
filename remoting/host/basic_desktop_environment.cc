@@ -197,13 +197,19 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   capture_task_runner = ui_task_runner_;
-#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_LINUX)
   // Each capturer instance should get its own thread so the capturers don't
   // compete with each other in multistream mode.
   capture_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::HIGHEST},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+  // The mouse cursor monitor runs on the |video_capture_task_runner_| so the
+  // desktop capturer also needs to run on that task_runner for certain
+  // platforms. For example, if we run the desktop capturer on a different
+  // thread on Windows, the cursor shape won't be captured when in GDI mode.
+  capture_task_runner = video_capture_task_runner_;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_LINUX)
 
   auto desktop_capturer =
       std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
