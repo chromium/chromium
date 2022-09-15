@@ -56,17 +56,23 @@ const base::Feature kEnableFetchingAccountCapabilities{
     "EnableFetchingAccountCapabilities", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_IOS)
 
+// Decouples signing out from clearing browsing data on Android. Users are
+// no longer signed-out when they clear browsing data. Instead they may
+// choose to sign out separately by pressing another button.
+// Disabled by default in IOS because the launch process is behind android.
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature kEnableCbdSignOut{"EnableCbdSignOut",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
+#elif BUILDFLAG(IS_IOS)
+const base::Feature kEnableCbdSignOut{"EnableCbdSignOut",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // This feature disables all extended sync promos.
 const base::Feature kForceDisableExtendedSyncPromos{
     "ForceDisableExtendedSyncPromos", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// Decouples signing out from clearing browsing data on Android. Users are
-// no longer signed-out when they clear browsing data. Instead they may
-// choose to sign out separately by pressing another button.
-const base::Feature kEnableCbdSignOut{"EnableCbdSignOut",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Features to trigger the startup sign-in promo at boot.
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
