@@ -6,10 +6,10 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("chromeos") {
   sources = [
-    "ash_display_util.cc",
-    "ash_display_util.h",
     "ash_mojom_video_consumer.cc",
     "ash_mojom_video_consumer.h",
+    "ash_proxy.cc",
+    "ash_proxy.h",
     "aura_desktop_capturer.cc",
     "aura_desktop_capturer.h",
     "clipboard_aura.cc",
@@ -121,8 +121,8 @@ source_set("unit_tests") {
     "aura_desktop_capturer_unittest.cc",
     "clipboard_aura_unittest.cc",
     "frame_sink_desktop_capturer_unittest.cc",
-    "scoped_fake_ash_display_util.cc",
-    "scoped_fake_ash_display_util.h",
+    "scoped_fake_ash_proxy.cc",
+    "scoped_fake_ash_proxy.h",
   ]
 
   configs += [ "//remoting/build/config:version" ]

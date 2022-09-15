@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -97,7 +97,7 @@ webrtc::DesktopRect AshMojomVideoConsumer::Frame::GetUpdatedRect() const {
 }
 
 int AshMojomVideoConsumer::Frame::GetDpi() const {
-  return AshDisplayUtil::ScaleFactorToDpi(
+  return AshProxy::ScaleFactorToDpi(
       info_->metadata.device_scale_factor.value_or(1));
 }
 

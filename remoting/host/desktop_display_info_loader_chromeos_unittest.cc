@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/chromeos/features.h"
-#include "remoting/host/chromeos/scoped_fake_ash_display_util.h"
+#include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 #include "remoting/host/desktop_display_info_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +66,7 @@ class DesktopDisplayInfoLoaderChromeOsTest : public ::testing::Test {
       const DesktopDisplayInfoLoaderChromeOsTest&) = delete;
   ~DesktopDisplayInfoLoaderChromeOsTest() override = default;
 
-  test::ScopedFakeAshDisplayUtil& display_util() { return display_util_; }
+  test::ScopedFakeAshProxy& ash_proxy() { return ash_proxy_; }
 
   std::vector<DisplayGeometry> CalculateDisplayInfo() {
     return display_info_loader_->GetCurrentDisplayInfo().displays();
@@ -75,7 +75,7 @@ class DesktopDisplayInfoLoaderChromeOsTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment environment_;
   base::test::ScopedFeatureList features_{features::kEnableMultiMonitorsInCrd};
-  test::ScopedFakeAshDisplayUtil display_util_;
+  test::ScopedFakeAshProxy ash_proxy_;
 
   std::unique_ptr<DesktopDisplayInfoLoader> display_info_loader_ =
       DesktopDisplayInfoLoader::Create();
@@ -86,8 +86,8 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kEnableMultiMonitorsInCrd);
 
-  display_util().AddPrimaryDisplay();
-  display_util().AddDisplayWithId(111);
+  ash_proxy().AddPrimaryDisplay();
+  ash_proxy().AddDisplayWithId(111);
 
   EXPECT_THAT(CalculateDisplayInfo(), ElementsAre());
 }
@@ -96,8 +96,8 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldReturnDisplayId) {
   constexpr int64_t kFirstDisplayId = (0xFFl << 40);
   constexpr int64_t kSecondDisplayId = (0xFFl << 42);
 
-  display_util().AddDisplayWithId(kFirstDisplayId);
-  display_util().AddDisplayWithId(kSecondDisplayId);
+  ash_proxy().AddDisplayWithId(kFirstDisplayId);
+  ash_proxy().AddDisplayWithId(kSecondDisplayId);
 
   EXPECT_THAT(CalculateDisplayInfo(),
               ElementsAre(DisplayWith(Id(kFirstDisplayId)),
@@ -105,15 +105,15 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldReturnDisplayId) {
 }
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldReturnDisplayBounds) {
-  display_util().AddDisplayFromSpecWithId("10+20-1000x500", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("10+20-1000x500", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(),
               IsSingleDisplayWith(Origin(10, 20), Dimensions(1000, 500)));
 }
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldReturnMultipleDisplays) {
-  display_util().AddDisplayFromSpecWithId("10+20-1000x500", 111);
-  display_util().AddDisplayFromSpecWithId("110+220-2000x1000", 222);
+  ash_proxy().AddDisplayFromSpecWithId("10+20-1000x500", 111);
+  ash_proxy().AddDisplayFromSpecWithId("110+220-2000x1000", 222);
 
   EXPECT_THAT(
       CalculateDisplayInfo(),
@@ -124,7 +124,7 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldReturnMultipleDisplays) {
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
        ShouldReturnNativeResolutionEvenWhenDeviceScaleFactorIsSet) {
-  display_util().AddDisplayFromSpecWithId("1000x500*2.25", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("1000x500*2.25", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(),
               IsSingleDisplayWith(Dimensions(1000, 500)));
@@ -132,8 +132,8 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
        ShouldSetIsDefaultForPrimaryDisplay) {
-  display_util().AddDisplayWithId(111);
-  display_util().AddPrimaryDisplay(222);
+  ash_proxy().AddDisplayWithId(111);
+  ash_proxy().AddPrimaryDisplay(222);
 
   EXPECT_THAT(CalculateDisplayInfo(),
               UnorderedElementsAre(DisplayWith(Id(222), IsDefault(true)),
@@ -142,14 +142,14 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
        OriginShouldRespectDeviceScaleFactor) {
-  display_util().AddDisplayFromSpecWithId("10+20-100x100*2", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("10+20-100x100*2", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(), IsSingleDisplayWith(Origin(5, 10)));
 }
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldSetDefaultDpi) {
   constexpr int kDefaultDpi = 96;
-  display_util().AddDisplayFromSpecWithId("1000x500", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("1000x500", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(), IsSingleDisplayWith(Dpi(kDefaultDpi)));
 }
@@ -158,14 +158,14 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest, ShouldSetDpiBasedOnScaleFactor) {
   // scale factor = dpi / default_dpi (which is 96)
   const int scale_factor = 3;
   const int expected_dpi = scale_factor * 96;
-  display_util().AddDisplayFromSpecWithId("1000x500*3", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("1000x500*3", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(), IsSingleDisplayWith(Dpi(expected_dpi)));
 }
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
        ShouldRotateBoundsWhenRotated90Degrees) {
-  display_util().AddDisplayFromSpecWithId("1000x500/r", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("1000x500/r", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(),
               IsSingleDisplayWith(Dimensions(500, 1000)));
@@ -173,7 +173,7 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
        ShouldKeepBoundsWhenRotated180Degrees) {
-  display_util().AddDisplayFromSpecWithId("1000x500/u", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("1000x500/u", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(),
               IsSingleDisplayWith(Dimensions(1000, 500)));
@@ -181,7 +181,7 @@ TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
 
 TEST_F(DesktopDisplayInfoLoaderChromeOsTest,
        ShouldRotateBoundsWhenRotated270Degrees) {
-  display_util().AddDisplayFromSpecWithId("1000x500/l", kAnyId);
+  ash_proxy().AddDisplayFromSpecWithId("1000x500/l", kAnyId);
 
   EXPECT_THAT(CalculateDisplayInfo(),
               IsSingleDisplayWith(Dimensions(500, 1000)));

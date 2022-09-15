@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_CHROMEOS_ASH_DISPLAY_UTIL_H_
-#define REMOTING_HOST_CHROMEOS_ASH_DISPLAY_UTIL_H_
+#ifndef REMOTING_HOST_CHROMEOS_ASH_PROXY_H_
+#define REMOTING_HOST_CHROMEOS_ASH_PROXY_H_
 
 #include <cstdint>
 #include <vector>
@@ -26,21 +26,22 @@ namespace remoting {
 
 using DisplayId = int64_t;
 
-// Utility class that abstracts away all display related actions on ChromeOs,
-// allowing us to inject a fake instance during unittests.
-class AshDisplayUtil {
+// Utility proxy class that abstracts away all ash related actions on ChromeOs,
+// to prevent our code from directly calling `ash::Shell` so we can mock things
+// during unittests.
+class AshProxy {
  public:
-  static AshDisplayUtil& Get();
+  static AshProxy& Get();
 
   // The caller is responsible to ensure this given instance lives long enough.
   // To unset call this method again with nullptr.
-  static void SetInstanceForTesting(AshDisplayUtil* instance);
+  static void SetInstanceForTesting(AshProxy* instance);
 
   // Convert the scale factor to DPI.
   static int ScaleFactorToDpi(float scale_factor);
   static int GetDpi(const display::Display& display);
 
-  virtual ~AshDisplayUtil();
+  virtual ~AshProxy();
 
   virtual DisplayId GetPrimaryDisplayId() const = 0;
 
@@ -62,4 +63,4 @@ class AshDisplayUtil {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_CHROMEOS_ASH_DISPLAY_UTIL_H_
+#endif  // REMOTING_HOST_CHROMEOS_ASH_PROXY_H_

@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
 
@@ -39,9 +39,10 @@ ToDesktopFrame(int dpi, gfx::Point origin, absl::optional<SkBitmap> bitmap) {
 }  // namespace
 
 AuraDesktopCapturer::AuraDesktopCapturer()
-    : AuraDesktopCapturer(AshDisplayUtil::Get()) {}
+    : AuraDesktopCapturer(AshProxy::Get()) {}
 
-AuraDesktopCapturer::AuraDesktopCapturer(AshDisplayUtil& util) : util_(util) {}
+AuraDesktopCapturer::AuraDesktopCapturer(AshProxy& ash_proxy)
+    : ash_(ash_proxy) {}
 
 AuraDesktopCapturer::~AuraDesktopCapturer() = default;
 
@@ -50,7 +51,7 @@ void AuraDesktopCapturer::Start(webrtc::DesktopCapturer::Callback* callback) {
   callback_ = callback;
   DCHECK(callback_);
 
-  source_display_id_ = util_.GetPrimaryDisplayId();
+  source_display_id_ = ash_.GetPrimaryDisplayId();
 }
 
 void AuraDesktopCapturer::CaptureFrame() {
@@ -63,9 +64,9 @@ void AuraDesktopCapturer::CaptureFrame() {
     return;
   }
 
-  util_.TakeScreenshotOfDisplay(
+  ash_.TakeScreenshotOfDisplay(
       source_display_id_,
-      base::BindOnce(ToDesktopFrame, util_.GetDpi(*source),
+      base::BindOnce(ToDesktopFrame, ash_.GetDpi(*source),
                      source->bounds().origin())
           .Then(base::BindOnce(&AuraDesktopCapturer::OnFrameCaptured,
                                weak_factory_.GetWeakPtr())));
@@ -93,7 +94,7 @@ bool AuraDesktopCapturer::SelectSource(SourceId id) {
   if (!base::FeatureList::IsEnabled(features::kEnableMultiMonitorsInCrd))
     return false;
 
-  if (!util_.GetDisplayForId(id))
+  if (!ash_.GetDisplayForId(id))
     return false;
 
   source_display_id_ = id;
@@ -101,7 +102,7 @@ bool AuraDesktopCapturer::SelectSource(SourceId id) {
 }
 
 const display::Display* AuraDesktopCapturer::GetSourceDisplay() const {
-  return util_.GetDisplayForId(source_display_id_);
+  return ash_.GetDisplayForId(source_display_id_);
 }
 
 }  // namespace remoting

@@ -8,20 +8,20 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace remoting {
 
 // A webrtc::DesktopCapturer that captures pixels from the primary display.
 // The resulting screen capture will use the display's native resolution.
-// This is implemented through the abstractions provided by |AshDisplayUtil|,
+// This is implemented through the abstractions provided by |AshProxy|,
 // allowing us to mock display interactions during unittests.
 // Start() and CaptureFrame() must be called on the Browser UI thread.
 class AuraDesktopCapturer : public webrtc::DesktopCapturer {
  public:
   AuraDesktopCapturer();
-  explicit AuraDesktopCapturer(AshDisplayUtil& display_util);
+  explicit AuraDesktopCapturer(AshProxy& ash_proxy);
 
   AuraDesktopCapturer(const AuraDesktopCapturer&) = delete;
   AuraDesktopCapturer& operator=(const AuraDesktopCapturer&) = delete;
@@ -40,7 +40,7 @@ class AuraDesktopCapturer : public webrtc::DesktopCapturer {
 
   const display::Display* GetSourceDisplay() const;
 
-  AshDisplayUtil& util_;
+  AshProxy& ash_;
 
   // Points to the callback passed to webrtc::DesktopCapturer::Start().
   webrtc::DesktopCapturer::Callback* callback_ = nullptr;

@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
-#include "remoting/host/chromeos/ash_display_util.h"
 #include "remoting/host/chromeos/ash_mojom_video_consumer.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "ui/display/display.h"
@@ -23,7 +23,7 @@ using viz::mojom::FrameSinkVideoCapturer;
 class FrameSinkDesktopCapturer : public webrtc::DesktopCapturer {
  public:
   FrameSinkDesktopCapturer();
-  explicit FrameSinkDesktopCapturer(AshDisplayUtil& display_util);
+  explicit FrameSinkDesktopCapturer(AshProxy& ash_proxy);
 
   FrameSinkDesktopCapturer(const FrameSinkDesktopCapturer&) = delete;
   FrameSinkDesktopCapturer& operator=(const FrameSinkDesktopCapturer&) = delete;
@@ -42,7 +42,7 @@ class FrameSinkDesktopCapturer : public webrtc::DesktopCapturer {
 
  private:
   absl::optional<viz::ClientFrameSinkVideoCapturer> video_capturer_;
-  AshDisplayUtil& util_;
+  AshProxy& ash_;
   AshMojomVideoConsumer video_consumer_;
   raw_ptr<DesktopCapturer::Callback> callback_ = nullptr;
   DisplayId source_display_id_ = display::kInvalidDisplayId;

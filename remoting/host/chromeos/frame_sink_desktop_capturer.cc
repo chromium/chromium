@@ -9,7 +9,7 @@
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/display/display.h"
@@ -29,10 +29,10 @@ constexpr auto kMaxResolution = gfx::Size(3840, 2160);
 }  // namespace
 
 FrameSinkDesktopCapturer::FrameSinkDesktopCapturer()
-    : FrameSinkDesktopCapturer(AshDisplayUtil::Get()) {}
+    : FrameSinkDesktopCapturer(AshProxy::Get()) {}
 
-FrameSinkDesktopCapturer::FrameSinkDesktopCapturer(AshDisplayUtil& util)
-    : util_(util) {}
+FrameSinkDesktopCapturer::FrameSinkDesktopCapturer(AshProxy& ash_proxy)
+    : ash_(ash_proxy) {}
 
 FrameSinkDesktopCapturer::~FrameSinkDesktopCapturer() {
   video_capturer_->Stop();
@@ -46,8 +46,8 @@ void FrameSinkDesktopCapturer::Start(DesktopCapturer::Callback* callback) {
   video_capturer_.emplace(base::BindRepeating(
       &FrameSinkDesktopCapturer::BindRemote, base::Unretained(this)));
 
-  source_display_id_ = util_.GetPrimaryDisplayId();
-  const auto frame_sink_id = util_.GetFrameSinkId(source_display_id_);
+  source_display_id_ = ash_.GetPrimaryDisplayId();
+  const auto frame_sink_id = ash_.GetFrameSinkId(source_display_id_);
 
   video_capturer_->SetResolutionConstraints(kMinResolution, kMaxResolution,
                                             /*use_fixed_aspect_ratio=*/false);
@@ -70,7 +70,7 @@ void FrameSinkDesktopCapturer::BindRemote(
     mojo::PendingReceiver<FrameSinkVideoCapturer> pending_receiver) {
   DCHECK(callback_) << "BindRemote must be called after Start()";
 
-  util_.CreateVideoCapturer(std::move(pending_receiver));
+  ash_.CreateVideoCapturer(std::move(pending_receiver));
 }
 
 void FrameSinkDesktopCapturer::CaptureFrame() {
@@ -95,7 +95,7 @@ bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
 }
 
 const display::Display* FrameSinkDesktopCapturer::GetSourceDisplay() {
-  return util_.GetDisplayForId(source_display_id_);
+  return ash_.GetDisplayForId(source_display_id_);
 }
 
 }  // namespace remoting

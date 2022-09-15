@@ -5,7 +5,7 @@
 #include "remoting/host/desktop_display_info_loader.h"
 
 #include "base/feature_list.h"
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "remoting/host/chromeos/features.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -41,7 +41,7 @@ DisplayGeometry ToDisplayGeometry(const display::Display& display,
       .width = static_cast<uint32_t>(dimensions.width()),
       .height = static_cast<uint32_t>(dimensions.height()),
       .dpi = static_cast<uint32_t>(
-          AshDisplayUtil::ScaleFactorToDpi(display.device_scale_factor())),
+          AshProxy::ScaleFactorToDpi(display.device_scale_factor())),
       .is_default = (display.id() == primary_display_id),
   };
 }
@@ -58,11 +58,10 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderChromeOs::GetCurrentDisplayInfo() {
   if (!base::FeatureList::IsEnabled(features::kEnableMultiMonitorsInCrd))
     return DesktopDisplayInfo();
 
-  const DisplayId primary_display_id =
-      AshDisplayUtil::Get().GetPrimaryDisplayId();
+  const DisplayId primary_display_id = AshProxy::Get().GetPrimaryDisplayId();
 
   auto result = DesktopDisplayInfo();
-  for (auto& display : AshDisplayUtil::Get().GetActiveDisplays())
+  for (auto& display : AshProxy::Get().GetActiveDisplays())
     result.AddDisplay(ToDisplayGeometry(display, primary_display_id));
 
   return result;

@@ -22,9 +22,9 @@
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
-#include "remoting/host/chromeos/scoped_fake_ash_display_util.h"
+#include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -247,13 +247,13 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
  public:
   FrameSinkDesktopCapturerTest() = default;
 
-  test::ScopedFakeAshDisplayUtil& display_util() { return display_util_; }
+  test::ScopedFakeAshProxy& ash_proxy() { return ash_proxy_; }
 
   DesktopCapturerCallback& desktop_capturer_callback() { return callback_; }
 
   void SetUp() override {
-    display_util().SetVideoCapturerReceiver(&video_capturer_.receiver_);
-    display_util().AddPrimaryDisplay();
+    ash_proxy().SetVideoCapturerReceiver(&video_capturer_.receiver_);
+    ash_proxy().AddPrimaryDisplay();
   }
 
   void StartCapturerForTesting() {
@@ -276,15 +276,15 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
   FrameParameters params() { return FrameParameters(); }
 
   void AddMultipleDisplays() {
-    display_util_.AddDisplayWithId(111);
-    display_util_.AddDisplayWithId(222);
+    ash_proxy_.AddDisplayWithId(111);
+    ash_proxy_.AddDisplayWithId(222);
   }
 
  protected:
   base::test::SingleThreadTaskEnvironment environment_;
   DesktopCapturerCallback callback_;
-  test::ScopedFakeAshDisplayUtil display_util_;
-  FrameSinkDesktopCapturer capturer_{display_util_};
+  test::ScopedFakeAshProxy ash_proxy_;
+  FrameSinkDesktopCapturer capturer_{ash_proxy_};
 
   mojo::Remote<viz::mojom::FrameSinkVideoConsumer> video_consumer_remote_;
 
@@ -324,9 +324,9 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldSetParamsInStart) {
 TEST_F(FrameSinkDesktopCapturerTest, ShouldStartByCapturingThePrimaryDisplay) {
   AddMultipleDisplays();
 
-  DisplayId primary_display_id = display_util().GetPrimaryDisplayId();
+  DisplayId primary_display_id = ash_proxy().GetPrimaryDisplayId();
   const auto expected_target = absl::optional<viz::VideoCaptureTarget>(
-      display_util().GetFrameSinkId(primary_display_id));
+      ash_proxy().GetFrameSinkId(primary_display_id));
 
   EXPECT_CALL(video_capturer_, ChangeTarget(expected_target, 0));
 
@@ -370,7 +370,7 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldReleaseMemoryOfUnusedFrames) {
 TEST_F(FrameSinkDesktopCapturerTest, ShouldSetDpiOfFrame) {
   StartCapturerForTesting();
   int scale_factor = 2.0;
-  int dpi = display_util().ScaleFactorToDpi(scale_factor);
+  int dpi = ash_proxy().ScaleFactorToDpi(scale_factor);
 
   video_capturer_.SendFrame(params().WithScaleFactor(scale_factor));
   CaptureResult result = CaptureFrame();

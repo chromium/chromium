@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/chromeos/scoped_fake_ash_display_util.h"
+#include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 
 #include "base/check.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -10,38 +10,36 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/manager/managed_display_info.h"
 
-namespace remoting {
-namespace test {
+namespace remoting::test {
 
-ScreenshotRequest::ScreenshotRequest(
-    DisplayId display,
-    AshDisplayUtil::ScreenshotCallback callback)
+ScreenshotRequest::ScreenshotRequest(DisplayId display,
+                                     AshProxy::ScreenshotCallback callback)
     : display(display), callback(std::move(callback)) {}
 
 ScreenshotRequest::ScreenshotRequest(ScreenshotRequest&&) = default;
 ScreenshotRequest& ScreenshotRequest::operator=(ScreenshotRequest&&) = default;
 ScreenshotRequest::~ScreenshotRequest() = default;
 
-ScopedFakeAshDisplayUtil::ScopedFakeAshDisplayUtil() {
-  AshDisplayUtil::SetInstanceForTesting(this);
+ScopedFakeAshProxy::ScopedFakeAshProxy() {
+  AshProxy::SetInstanceForTesting(this);
 }
 
-ScopedFakeAshDisplayUtil::~ScopedFakeAshDisplayUtil() {
-  AshDisplayUtil::SetInstanceForTesting(nullptr);
+ScopedFakeAshProxy::~ScopedFakeAshProxy() {
+  AshProxy::SetInstanceForTesting(nullptr);
 }
 
-display::Display& ScopedFakeAshDisplayUtil::AddPrimaryDisplay(DisplayId id) {
+display::Display& ScopedFakeAshProxy::AddPrimaryDisplay(DisplayId id) {
   primary_display_id_ = id;
   // Give the display a valid size.
   return AddDisplayFromSpecWithId("800x600", id);
 }
 
-display::Display& ScopedFakeAshDisplayUtil::AddDisplayWithId(DisplayId id) {
+display::Display& ScopedFakeAshProxy::AddDisplayWithId(DisplayId id) {
   // Give the display a valid size.
   return AddDisplayFromSpecWithId("800x600", id);
 }
 
-display::Display& ScopedFakeAshDisplayUtil::AddDisplayFromSpecWithId(
+display::Display& ScopedFakeAshProxy::AddDisplayFromSpecWithId(
     const std::string& spec,
     DisplayId id) {
   auto display_info =
@@ -62,13 +60,12 @@ display::Display& ScopedFakeAshDisplayUtil::AddDisplayFromSpecWithId(
   return AddDisplay(new_display);
 }
 
-display::Display& ScopedFakeAshDisplayUtil::AddDisplay(
-    display::Display new_display) {
+display::Display& ScopedFakeAshProxy::AddDisplay(display::Display new_display) {
   displays_.push_back(new_display);
   return displays_.back();
 }
 
-void ScopedFakeAshDisplayUtil::RemoveDisplay(DisplayId id) {
+void ScopedFakeAshProxy::RemoveDisplay(DisplayId id) {
   for (auto it = displays_.begin(); it != displays_.end(); it++) {
     if (it->id() == id) {
       displays_.erase(it);
@@ -78,26 +75,26 @@ void ScopedFakeAshDisplayUtil::RemoveDisplay(DisplayId id) {
   }
 }
 
-ScreenshotRequest ScopedFakeAshDisplayUtil::WaitForScreenshotRequest() {
+ScreenshotRequest ScopedFakeAshProxy::WaitForScreenshotRequest() {
   return screenshot_request_.Take();
 }
 
-void ScopedFakeAshDisplayUtil::ReplyWithScreenshot(
+void ScopedFakeAshProxy::ReplyWithScreenshot(
     const absl::optional<SkBitmap>& screenshot) {
   ScreenshotRequest request = WaitForScreenshotRequest();
   std::move(request.callback).Run(screenshot);
 }
 
-DisplayId ScopedFakeAshDisplayUtil::GetPrimaryDisplayId() const {
+DisplayId ScopedFakeAshProxy::GetPrimaryDisplayId() const {
   return primary_display_id_;
 }
 
-const std::vector<display::Display>&
-ScopedFakeAshDisplayUtil::GetActiveDisplays() const {
+const std::vector<display::Display>& ScopedFakeAshProxy::GetActiveDisplays()
+    const {
   return displays_;
 }
 
-const display::Display* ScopedFakeAshDisplayUtil::GetDisplayForId(
+const display::Display* ScopedFakeAshProxy::GetDisplayForId(
     DisplayId display_id) const {
   for (const auto& display : displays_) {
     if (display_id == display.id())
@@ -106,29 +103,27 @@ const display::Display* ScopedFakeAshDisplayUtil::GetDisplayForId(
   return nullptr;
 }
 
-void ScopedFakeAshDisplayUtil::TakeScreenshotOfDisplay(
-    DisplayId display_id,
-    ScreenshotCallback callback) {
+void ScopedFakeAshProxy::TakeScreenshotOfDisplay(DisplayId display_id,
+                                                 ScreenshotCallback callback) {
   screenshot_request_.SetValue(
       ScreenshotRequest{display_id, std::move(callback)});
 }
 
-void ScopedFakeAshDisplayUtil::CreateVideoCapturer(
+void ScopedFakeAshProxy::CreateVideoCapturer(
     mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> video_capturer) {
   DCHECK(receiver_) << "Your test must call SetVideoCapturerReceiver() first";
 
   receiver_->Bind(std::move(video_capturer));
 }
 
-viz::FrameSinkId ScopedFakeAshDisplayUtil::GetFrameSinkId(
+viz::FrameSinkId ScopedFakeAshProxy::GetFrameSinkId(
     DisplayId source_display_id) {
   return viz::FrameSinkId(source_display_id, source_display_id);
 }
 
-void ScopedFakeAshDisplayUtil::SetVideoCapturerReceiver(
+void ScopedFakeAshProxy::SetVideoCapturerReceiver(
     mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver) {
   receiver_ = receiver;
 }
 
-}  // namespace test
-}  // namespace remoting
+}  // namespace remoting::test

@@ -2,42 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_DISPLAY_UTIL_H_
-#define REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_DISPLAY_UTIL_H_
+#ifndef REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_PROXY_H_
+#define REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_PROXY_H_
 
 #include <string>
 #include <vector>
 
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 
 #include "base/test/test_future.h"
 
-namespace remoting {
-namespace test {
+namespace remoting::test {
 
 struct ScreenshotRequest {
-  ScreenshotRequest(DisplayId display,
-                    AshDisplayUtil::ScreenshotCallback callback);
+  ScreenshotRequest(DisplayId display, AshProxy::ScreenshotCallback callback);
   ScreenshotRequest(ScreenshotRequest&&);
   ScreenshotRequest& operator=(ScreenshotRequest&&);
   ~ScreenshotRequest();
 
   DisplayId display;
-  AshDisplayUtil::ScreenshotCallback callback;
+  AshProxy::ScreenshotCallback callback;
 };
 
-// Simple basic implementation of |AshDisplayUtil|.
+// Simple basic implementation of |AshProxy|.
 // Will automatically register itself as the global version in the constructor,
 // and deregister in the destructor.
-class ScopedFakeAshDisplayUtil : public AshDisplayUtil {
+class ScopedFakeAshProxy : public AshProxy {
  public:
   static constexpr DisplayId kDefaultPrimaryDisplayId = 12345678901;
 
-  ScopedFakeAshDisplayUtil();
-  ScopedFakeAshDisplayUtil(const ScopedFakeAshDisplayUtil&) = delete;
-  ScopedFakeAshDisplayUtil& operator=(const ScopedFakeAshDisplayUtil&) = delete;
-  ~ScopedFakeAshDisplayUtil() override;
+  ScopedFakeAshProxy();
+  ScopedFakeAshProxy(const ScopedFakeAshProxy&) = delete;
+  ScopedFakeAshProxy& operator=(const ScopedFakeAshProxy&) = delete;
+  ~ScopedFakeAshProxy() override;
 
   display::Display& AddPrimaryDisplay(DisplayId id = kDefaultPrimaryDisplayId);
 
@@ -55,7 +53,7 @@ class ScopedFakeAshDisplayUtil : public AshDisplayUtil {
 
   void ReplyWithScreenshot(const absl::optional<SkBitmap>& screenshot);
 
-  // AshDisplayUtil implementation:
+  // AshProxy implementation:
   DisplayId GetPrimaryDisplayId() const override;
   const std::vector<display::Display>& GetActiveDisplays() const override;
   const display::Display* GetDisplayForId(DisplayId display_id) const override;
@@ -81,7 +79,6 @@ class ScopedFakeAshDisplayUtil : public AshDisplayUtil {
   base::test::TestFuture<ScreenshotRequest> screenshot_request_;
 };
 
-}  // namespace test
-}  // namespace remoting
+}  // namespace remoting::test
 
-#endif  // REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_DISPLAY_UTIL_H_
+#endif  // REMOTING_HOST_CHROMEOS_SCOPED_FAKE_ASH_PROXY_H_

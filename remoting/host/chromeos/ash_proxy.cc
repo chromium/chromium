@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/chromeos/ash_display_util.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 
 #include "ash/shell.h"
 #include "base/no_destructor.h"
@@ -29,14 +29,14 @@ absl::optional<SkBitmap> ToSkBitmap(
   return scoped_bitmap.GetOutScopedBitmap();
 }
 
-class DefaultAshDisplayUtil : public AshDisplayUtil {
+class DefaultAshProxy : public AshProxy {
  public:
-  DefaultAshDisplayUtil() = default;
-  DefaultAshDisplayUtil(const DefaultAshDisplayUtil&) = delete;
-  DefaultAshDisplayUtil& operator=(const DefaultAshDisplayUtil&) = delete;
-  ~DefaultAshDisplayUtil() override = default;
+  DefaultAshProxy() = default;
+  DefaultAshProxy(const DefaultAshProxy&) = delete;
+  DefaultAshProxy& operator=(const DefaultAshProxy&) = delete;
+  ~DefaultAshProxy() override = default;
 
-  // AshDisplayUtil implementation:
+  // AshProxy implementation:
   DisplayId GetPrimaryDisplayId() const override {
     if (!screen())
       return display::kDefaultDisplayId;
@@ -109,13 +109,13 @@ class DefaultAshDisplayUtil : public AshDisplayUtil {
   }
 };
 
-AshDisplayUtil* g_instance_for_testing_ = nullptr;
+AshProxy* g_instance_for_testing_ = nullptr;
 
 }  // namespace
 
 // static
-AshDisplayUtil& AshDisplayUtil::Get() {
-  static base::NoDestructor<DefaultAshDisplayUtil> instance_;
+AshProxy& AshProxy::Get() {
+  static base::NoDestructor<DefaultAshProxy> instance_;
 
   if (g_instance_for_testing_)
     return *g_instance_for_testing_;
@@ -124,22 +124,22 @@ AshDisplayUtil& AshDisplayUtil::Get() {
 }
 
 // static
-void AshDisplayUtil::SetInstanceForTesting(AshDisplayUtil* instance) {
+void AshProxy::SetInstanceForTesting(AshProxy* instance) {
   if (instance)
     DCHECK(!g_instance_for_testing_);
   g_instance_for_testing_ = instance;
 }
 
 // static
-int AshDisplayUtil::ScaleFactorToDpi(float scale_factor) {
+int AshProxy::ScaleFactorToDpi(float scale_factor) {
   return static_cast<int>(scale_factor * kDefaultDpi);
 }
 
 // static
-int AshDisplayUtil::GetDpi(const display::Display& display) {
+int AshProxy::GetDpi(const display::Display& display) {
   return ScaleFactorToDpi(display.device_scale_factor());
 }
 
-AshDisplayUtil::~AshDisplayUtil() = default;
+AshProxy::~AshProxy() = default;
 
 }  // namespace remoting
