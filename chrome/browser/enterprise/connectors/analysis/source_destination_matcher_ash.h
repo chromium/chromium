@@ -83,6 +83,11 @@ class SourceDestinationMatcherAsh {
                      const storage::FileSystemURL& source_url,
                      const storage::FileSystemURL& destination_url) const;
 
+  // Returns a descriptive string of the volume associated with `path`.
+  static std::string GetVolumeDescriptionFromPath(
+      content::BrowserContext* context,
+      const base::FilePath& path);
+
  private:
   // This enum mostly corresponds to the values in file_manager::VolumeType.
   // For file_manager::VOLUME_TYPE_GUEST_OS, the guest_os::VmType is

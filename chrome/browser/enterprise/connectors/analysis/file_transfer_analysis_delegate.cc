@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
+#include "chrome/browser/enterprise/connectors/analysis/source_destination_matcher_ash.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/profiles/profile.h"
@@ -279,8 +280,12 @@ void FileTransferAnalysisDelegate::OnGotFileSourceURLs(
 
   request_handler_ = FilesRequestHandler::Create(
       safe_browsing::BinaryUploadService::GetForProfile(profile_, settings_),
-      profile_, settings_, GURL{}, source_url_.path().AsUTF8Unsafe(),
-      destination_url_.path().AsUTF8Unsafe(), access_point_, std::move(paths),
+      profile_, settings_, GURL{},
+      SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
+          profile_, source_url_.path()),
+      SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
+          profile_, destination_url_.path()),
+      access_point_, std::move(paths),
       base::BindOnce(&FileTransferAnalysisDelegate::ContentAnalysisCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   request_handler_->UploadData();

@@ -755,12 +755,13 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
             &FileTransferAnalysisDelegateAuditOnlyTest::FakeFileUploadCallback,
             base::Unretained(this))));
 
-    source_directory_url_ = PathToFileSystemURL(
-        source_destination_testing_helper_->GetTempDirPath().Append("source"));
+    source_directory_url_ =
+        source_destination_testing_helper_->GetTestFileSystemURLForVolume(
+            /*VolumeInfo*/ kSourceVolumeInfo, "source");
     ASSERT_TRUE(base::CreateDirectory(source_directory_url_.path()));
-    destination_directory_url_ = PathToFileSystemURL(
-        source_destination_testing_helper_->GetTempDirPath().Append(
-            "destination"));
+    destination_directory_url_ =
+        source_destination_testing_helper_->GetTestFileSystemURLForVolume(
+            /*VolumeInfo*/ kDestinationVolumeInfo, "destination");
     ASSERT_TRUE(base::CreateDirectory(destination_directory_url_.path()));
   }
 
@@ -824,9 +825,9 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     EXPECT_EQ(request->device_token(), kDmToken);
 
     EXPECT_EQ(request->content_analysis_request().request_data().source(),
-              source_url_.path().AsUTF8Unsafe());
+              kSourceVolumeInfo.fs_config_string);
     EXPECT_EQ(request->content_analysis_request().request_data().destination(),
-              destination_url_.path().AsUTF8Unsafe());
+              kDestinationVolumeInfo.fs_config_string);
 
     // Simulate a response.
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -888,6 +889,11 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
 
   storage::FileSystemURL source_directory_url_;
   storage::FileSystemURL destination_directory_url_;
+  VolumeInfo kSourceVolumeInfo{file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY,
+                               absl::nullopt, "MY_FILES"};
+  VolumeInfo kDestinationVolumeInfo{
+      file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION, absl::nullopt,
+      "REMOVABLE"};
 
  private:
   // Used to test reporting.
@@ -1000,8 +1006,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
   safe_browsing::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
-      /*source*/ paths[0].AsUTF8Unsafe(),
-      /*destination*/ destination_directory_url_.path().AsUTF8Unsafe(),
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "foo.doc",
       // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1054,8 +1060,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
   safe_browsing::EventReportValidator validator(cloud_policy_client());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "",
-      /*source*/ source_url.path().AsUTF8Unsafe(),
-      /*destination*/ destination_directory_url_.path().AsUTF8Unsafe(),
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "foo.doc",
       // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1109,8 +1115,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncrypted) {
   safe_browsing::EventReportValidator validator(cloud_policy_client());
   validator.ExpectUnscannedFileEvent(
       /*url*/ "",
-      /*source*/ path.AsUTF8Unsafe(),
-      /*destination*/ destination_directory_url_.path().AsUTF8Unsafe(),
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "encrypted.zip",
       // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1176,8 +1182,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   safe_browsing::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
-      /*source*/ source_directory_url_.path().AsUTF8Unsafe(),
-      /*destination*/ destination_directory_url_.path().AsUTF8Unsafe(),
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filename*/ "foo.doc",
       // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha*/
@@ -1249,8 +1255,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   safe_browsing::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
-      /*source*/ source_directory_url_.path().AsUTF8Unsafe(),
-      /*destination*/ destination_directory_url_.path().AsUTF8Unsafe(),
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filenames*/ {"foo.doc", "baa.doc", "blub.doc"},
       // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha256s*/
@@ -1313,8 +1319,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   safe_browsing::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
-      /*source*/ source_directory_url_.path().AsUTF8Unsafe(),
-      /*destination*/ destination_directory_url_.path().AsUTF8Unsafe(),
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filenames*/ {"bad1.doc", "bad2.doc"},
       // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha256s*/
@@ -1401,8 +1407,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
   safe_browsing::EventReportValidator validator(cloud_policy_client());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
-      /*source*/ source_directory_url_.path().AsUTF8Unsafe(),
-      /*destination*/ destination_directory_url_.path().AsUTF8Unsafe(),
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
       /*filenames*/ expected_filenames,
       // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
       /*sha256s*/

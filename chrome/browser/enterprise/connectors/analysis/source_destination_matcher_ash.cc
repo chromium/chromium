@@ -85,7 +85,8 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::VolumeToFsType(
     case file_manager::VOLUME_TYPE_MTP:
       return SourceDestinationMatcherAsh::FsType::kDeviceMediaStorage;
     case file_manager::VOLUME_TYPE_MEDIA_VIEW:
-      // The media view directories are the directories under play files.
+      // The media view file system is a read-only file system that allows to
+      // display recent ARC files in the Files App.
       return SourceDestinationMatcherAsh::FsType::kArc;
     case file_manager::VOLUME_TYPE_CROSTINI:
       return SourceDestinationMatcherAsh::FsType::kCrostini;
@@ -126,6 +127,12 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::PathToFsType(
   }
 
   return VolumeToFsType(volume);
+}
+
+std::string SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
+    content::BrowserContext* context,
+    const base::FilePath& path) {
+  return FsTypeToString(PathToFsType(context, path));
 }
 
 // static
