@@ -78,7 +78,7 @@ DevToolsFrontendImpl::~DevToolsFrontendImpl() = default;
 
 void DevToolsFrontendImpl::DidClearWindowObject() {
   if (host_.is_bound()) {
-    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    v8::Isolate* isolate = GetSupplementable()->DomWindow()->GetIsolate();
     // Use higher limit for DevTools isolate so that it does not OOM when
     // profiling large heaps.
     isolate->IncreaseHeapLimitForDebugging();

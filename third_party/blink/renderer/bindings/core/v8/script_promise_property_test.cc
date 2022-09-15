@@ -429,6 +429,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Resolve_DeadContext) {
               NotReached(CurrentScriptState()));
   }
 
+  v8::Isolate* isolate = GetIsolate();
   DestroyContext();
   EXPECT_TRUE(!GetProperty()->GetExecutionContext() ||
               GetProperty()->GetExecutionContext()->IsContextDestroyed());
@@ -437,7 +438,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Resolve_DeadContext) {
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("value"));
   EXPECT_EQ(Property::kPending, GetProperty()->GetState());
 
-  v8::MicrotasksScope::PerformCheckpoint(v8::Isolate::GetCurrent());
+  v8::MicrotasksScope::PerformCheckpoint(isolate);
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {

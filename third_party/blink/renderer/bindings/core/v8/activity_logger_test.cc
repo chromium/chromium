@@ -97,7 +97,7 @@ class ActivityLoggerTest : public testing::Test {
   }
 
   void ExecuteScriptInIsolatedWorld(const String& script) const {
-    v8::HandleScope scope(v8::Isolate::GetCurrent());
+    v8::HandleScope scope(local_frame_->DomWindow()->GetIsolate());
     ClassicScript::CreateUnspecifiedScript(script)
         ->RunScriptInIsolatedWorldAndReturnValue(local_frame_->DomWindow(),
                                                  kIsolatedWorldId);

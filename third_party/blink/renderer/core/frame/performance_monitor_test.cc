@@ -79,7 +79,7 @@ void PerformanceMonitorTest::SetUp() {
   page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   page_holder_->GetDocument().SetURL(KURL("https://example.com/foo"));
   monitor_ = MakeGarbageCollected<PerformanceMonitor>(
-      GetFrame(), v8::Isolate::GetCurrent());
+      GetFrame(), GetExecutionContext()->GetIsolate());
 
   // Create another dummy page holder and pretend this is the iframe.
   another_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(400, 300));

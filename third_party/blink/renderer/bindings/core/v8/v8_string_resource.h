@@ -80,11 +80,6 @@ class V8StringResource {
     return PrepareFast() || PrepareSlow(isolate, exception_state);
   }
 
-  bool Prepare(ExceptionState& exception_state) {  // DEPRECATED
-    return PrepareFast() ||
-           PrepareSlow(v8::Isolate::GetCurrent(), exception_state);
-  }
-
   // Implicit conversions needed to make Blink bindings easier to use.
 
   // NOLINTNEXTLINE(google-explicit-constructor)

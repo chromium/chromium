@@ -790,7 +790,7 @@ bool Frame::SwapImpl(
     provisional_frame_ = nullptr;
   }
 
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(page->GetAgentGroupScheduler().Isolate());
   WindowProxyManager::GlobalProxyVector global_proxies;
   GetWindowProxyManager()->ReleaseGlobalProxies(global_proxies);
 

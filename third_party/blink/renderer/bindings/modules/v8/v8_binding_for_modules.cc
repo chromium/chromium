@@ -828,7 +828,7 @@ SQLValue NativeValueTraits<SQLValue>::NativeValue(
   if (value->IsNumber())
     return SQLValue(value.As<v8::Number>()->Value());
   V8StringResource<> string_value(value);
-  if (!string_value.Prepare(exception_state))
+  if (!string_value.Prepare(isolate, exception_state))
     return SQLValue();
   return SQLValue(string_value);
 }
