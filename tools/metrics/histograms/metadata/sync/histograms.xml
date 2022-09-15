@@ -1400,7 +1400,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of verifying the state of the local device registration,
     which is achieved by simulating a key-download procedure. Recorded only for
-    already-registered devices that have a primary account set, 10 seconds after
+    already-registered devices (V0 or V1) that have a primary account set, 10
+    seconds after metric Sync.TrustedVaultDeviceRegistrationState is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Sync.TrustedVaultVerifyDeviceRegistrationStateV1"
+    enum="TrustedVaultDownloadKeysStatus" expires_after="2023-01-15">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the result of verifying the state of the local device registration,
+    which is achieved by simulating a key-download procedure. Recorded only for
+    V1-registered devices that have a primary account set, 10 seconds after
     metric Sync.TrustedVaultDeviceRegistrationState is recorded.
   </summary>
 </histogram>

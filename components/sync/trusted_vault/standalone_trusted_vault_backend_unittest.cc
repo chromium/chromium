@@ -1613,6 +1613,10 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
       "Sync.TrustedVaultVerifyDeviceRegistrationState",
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultVerifyDeviceRegistrationStateV1",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

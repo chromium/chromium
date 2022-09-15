@@ -159,9 +159,15 @@ void UpgradeToVersion2(sync_pb::LocalTrustedVault* local_trusted_vault) {
 }
 
 void RecordVerifyRegistrationStatus(
+    int device_registered_version,
     TrustedVaultDownloadKeysStatusForUMA status) {
   base::UmaHistogramEnumeration(
       "Sync.TrustedVaultVerifyDeviceRegistrationState", status);
+
+  if (device_registered_version == 1) {
+    base::UmaHistogramEnumeration(
+        "Sync.TrustedVaultVerifyDeviceRegistrationStateV1", status);
+  }
 }
 
 }  // namespace
@@ -1029,6 +1035,8 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
   if (AreConnectionRequestsThrottled()) {
     // Keys download attempt is not possible.
     RecordVerifyRegistrationStatus(
+        per_user_vault->local_device_registration_info()
+            .device_registered_version(),
         TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide);
     return;
   }
@@ -1038,13 +1046,20 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
           ProtoStringToBytes(per_user_vault->local_device_registration_info()
                                  .private_key_material()));
   if (!key_pair) {
-    RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA::
-                                       kCorruptedLocalDeviceRegistration);
+    RecordVerifyRegistrationStatus(
+        per_user_vault->local_device_registration_info()
+            .device_registered_version(),
+        TrustedVaultDownloadKeysStatusForUMA::
+            kCorruptedLocalDeviceRegistration);
     return;
   }
 
   // Guaranteed by |device_registered| check above.
   DCHECK(!per_user_vault->vault_key().empty());
+
+  const int device_registered_version =
+      per_user_vault->local_device_registration_info()
+          .device_registered_version();
 
   ongoing_verify_registration_request_ = connection_->DownloadNewKeys(
       *primary_account_,
@@ -1053,12 +1068,16 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
               per_user_vault->vault_key().rbegin()->key_material()),
           per_user_vault->last_vault_key_version()),
       std::move(key_pair),
-      base::BindOnce([](TrustedVaultDownloadKeysStatus status,
-                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
-                        int last_vault_key_version) {
-        RecordVerifyRegistrationStatus(
-            GetDownloadKeysStatusForUMAFromResponse(status));
-      }));
+      base::BindOnce(
+          [](int device_registered_version,
+             TrustedVaultDownloadKeysStatus status,
+             const std::vector<std::vector<uint8_t>>& new_vault_keys,
+             int last_vault_key_version) {
+            RecordVerifyRegistrationStatus(
+                device_registered_version,
+                GetDownloadKeysStatusForUMAFromResponse(status));
+          },
+          device_registered_version));
 }
 
 }  // namespace syncer
