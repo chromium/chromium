@@ -11,15 +11,14 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_stopped_bubble_coordinator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
@@ -41,23 +40,17 @@ class AssistantStoppedBubbleCoordinatorDelegate
   ~AssistantStoppedBubbleCoordinatorDelegate() override = default;
 
   void RestartScript() {
-    NavigateParams params(
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()), url_,
-        ui::PageTransition::PAGE_TRANSITION_LINK);
+    // TODO(crbug.com/1329179): Possibly update this to restart the flow
+    // in a new foreground tab.
+    content::OpenURLParams params(
+        url_, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+        ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+    web_contents_->OpenURL(params);
 
-    // TODO(crbug.com/1329179): Pssibly update this to restart the flow
-    // in the same tab it was initially started.
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    base::WeakPtr<content::NavigationHandle> navigation_handle =
-        Navigate(&params);
-
-    if (navigation_handle) {
-      ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(
-          navigation_handle.get()->GetWebContents());
-      apc_client->Start(url_, username_,
-                        /*skip_login=*/false,
-                        /*callback=*/base::DoNothing());
-    }
+    ApcClient* apc_client = ApcClient::GetOrCreateForWebContents(web_contents_);
+    apc_client->Start(url_, username_,
+                      /*skip_login=*/false,
+                      /*callback=*/base::DoNothing());
   }
 
  private:
@@ -164,7 +157,6 @@ void AssistantStoppedBubbleCoordinatorImpl::Close() {
 void AssistantStoppedBubbleCoordinatorImpl::RestartLinkClicked(
     AssistantStoppedBubbleCoordinatorDelegate* bubble_delegate) {
   bubble_delegate->RestartScript();
-  Close();
 }
 
 void AssistantStoppedBubbleCoordinatorImpl::OnTabStripModelChanged(
