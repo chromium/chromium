@@ -13,6 +13,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
@@ -625,6 +626,26 @@ TEST_F(DownloadDisplayControllerTest,
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
+}
+
+TEST_F(DownloadDisplayControllerTest,
+       UpdateToolbarButtonState_DownloadWasActionedOn) {
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
+
+  DownloadItemModel(&item(0)).SetActionedOn(true);
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
 }
 
 TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {

@@ -85,6 +85,16 @@ int PausedDownloadCount(
   }
   return paused_count;
 }
+
+bool HasUnactionedDownload(
+    std::vector<std::unique_ptr<DownloadUIModel>>& all_models) {
+  for (const auto& model : all_models) {
+    if (!model->WasActionedOn()) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace
 
 DownloadDisplayController::DownloadDisplayController(
@@ -255,7 +265,8 @@ void DownloadDisplayController::UpdateToolbarButtonState(
   } else {
     icon_info_.icon_state = DownloadIconState::kComplete;
     if (HasRecentCompleteDownload(kToolbarIconActiveTimeInterval,
-                                  last_complete_time)) {
+                                  last_complete_time) &&
+        HasUnactionedDownload(all_models)) {
       icon_info_.is_active = true;
       ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);
     } else if (!display_->IsFullscreenWithParentViewHidden() &&
