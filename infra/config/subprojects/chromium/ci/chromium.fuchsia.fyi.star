@@ -33,11 +33,10 @@ consoles.console_view(
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
-    ("fuchsia-arm64", "fuchsia|arm64", "chrome"),
-    ("fuchsia-builder-perf-fyi", "fuchsia|arm64", "perf-bld"),
-    ("fuchsia-builder-perf-x64", "fuchsia|x64", "perf-bld"),
-    ("fuchsia-fyi-arm64-size", "fuchsia|arm64", "size"),
-    ("fuchsia-x64", "fuchsia|x64", "chrome"),
+    ("fuchsia-builder-perf-fyi", "p/chrome|arm64", "perf-bld"),
+    ("fuchsia-builder-perf-x64", "p/chrome|x64", "perf-bld"),
+    ("fuchsia-fyi-arm64-size", "p/chrome|arm64", "size"),
+    ("fuchsia-x64", "p/chrome|x64", "rel"),
 )]
 
 ci.builder(
