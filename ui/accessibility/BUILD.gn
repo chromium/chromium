@@ -172,8 +172,6 @@ component("accessibility") {
     "ax_tree_source_observer.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
-    "test_ax_tree_manager.cc",
-    "test_ax_tree_manager.h",
   ]
 
   deps = [
@@ -238,6 +236,8 @@ static_library("test_support") {
     "platform/test_ax_tree_update.h",
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
+    "test_ax_tree_manager.cc",
+    "test_ax_tree_manager.h",
     "test_ax_tree_update_json_reader.cc",
     "test_ax_tree_update_json_reader.h",
     "tree_generator.cc",
@@ -384,7 +384,11 @@ fuzzer_test("ax_node_position_fuzzer") {
     "ax_tree_fuzzer_util.h",
   ]
 
-  deps = [ ":accessibility" ]
+  deps = [
+    ":accessibility",
+    ":test_support",
+    "//base/test:test_support",
+  ]
 }
 
 if (is_win) {

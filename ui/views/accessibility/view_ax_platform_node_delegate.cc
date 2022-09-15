@@ -445,25 +445,21 @@ ViewAXPlatformNodeDelegate::CreateTextPositionAt(
   if (!IsDescendantOfAtomicTextField())
     return ui::AXNodePosition::CreateNullPosition();
 
-  if (!dummy_tree_manager_) {
+  if (!dummy_tree_) {
     ui::AXTreeUpdate initial_state;
     initial_state.root_id = GetData().id;
     initial_state.nodes = {GetData()};
     initial_state.has_tree_data = true;
     initial_state.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
-    auto dummy_tree = std::make_unique<ui::AXTree>(initial_state);
-    dummy_tree_manager_ =
-        std::make_unique<ui::TestAXTreeManager>(std::move(dummy_tree));
+    dummy_tree_ = std::make_unique<ui::AXTree>(initial_state);
   } else {
-    DCHECK(dummy_tree_manager_->GetTree());
     ui::AXTreeUpdate update;
     update.nodes = {GetData()};
-    const_cast<ui::AXTree*>(dummy_tree_manager_->GetTree())
-        ->Unserialize(update);
+    dummy_tree_->Unserialize(update);
   }
 
-  return ui::AXNodePosition::CreatePosition(*dummy_tree_manager_->GetRoot(),
-                                            offset, affinity);
+  return ui::AXNodePosition::CreatePosition(*dummy_tree_->root(), offset,
+                                            affinity);
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNSWindow() {
