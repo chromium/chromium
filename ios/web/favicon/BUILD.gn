@@ -18,7 +18,6 @@ source_set("favicon") {
   sources = [
     "favicon_java_script_feature.h",
     "favicon_java_script_feature.mm",
-    "favicon_status.cc",
     "favicon_url.cc",
     "favicon_util.h",
     "favicon_util.mm",
