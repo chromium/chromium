@@ -19,7 +19,7 @@ namespace {
 // Array of features exposed through the Java ExternalIntentsFeatures API.
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAutofillAssistantGoogleInitiatorOriginCheck,
-    &kExternalNavigationDebugLogs, &kScaryExternalNavigationRefactoring};
+    &kBlockExternalFormSubmitWithoutGesture, &kExternalNavigationDebugLogs};
 
 }  // namespace
 
@@ -31,11 +31,13 @@ const base::Feature kAutofillAssistantGoogleInitiatorOriginCheck{
     "AutofillAssistantGoogleInitiatorOriginCheck",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Kill switch for blocking form submissions redirecting to apps without an
+// associated user gesture.
+const base::Feature kBlockExternalFormSubmitWithoutGesture{
+    "BlockExternalFormSubmitWithoutGesture", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kExternalNavigationDebugLogs{
     "ExternalNavigationDebugLogs", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kScaryExternalNavigationRefactoring{
-    "ScaryExternalNavigationRefactoring", base::FEATURE_ENABLED_BY_DEFAULT};
 
 static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);

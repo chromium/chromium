@@ -4,12 +4,9 @@
 
 package org.chromium.components.external_intents;
 
-import android.os.Build;
-
 import org.chromium.base.Features;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.BuildConfig;
 
 /**
  * Java accessor for base/feature_list.h state.
@@ -22,35 +19,24 @@ import org.chromium.build.BuildConfig;
 public class ExternalIntentsFeatures extends Features {
     public static final String AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK_NAME =
             "AutofillAssistantGoogleInitiatorOriginCheck";
+    public static final String BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME =
+            "BlockExternalFormSubmitWithoutGesture";
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
-    public static final String SCARY_EXTERNAL_NAVIGATION_REFACTORING_NAME =
-            "ScaryExternalNavigationRefactoring";
 
     public static final ExternalIntentsFeatures AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK =
             new ExternalIntentsFeatures(0, AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK_NAME);
 
-    public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
-            new ExternalIntentsFeatures(1, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
+    public static final ExternalIntentsFeatures BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE =
+            new ExternalIntentsFeatures(1, BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME);
 
-    public static final ExternalIntentsFeatures SCARY_EXTERNAL_NAVIGATION_REFACTORING =
-            new ExternalIntentsFeatures(2, SCARY_EXTERNAL_NAVIGATION_REFACTORING_NAME);
+    public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
+            new ExternalIntentsFeatures(2, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
 
     private final int mOrdinal;
 
     private ExternalIntentsFeatures(int ordinal, String name) {
         super(name);
         mOrdinal = ordinal;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        // Test-only hack to make sure we get coverage of the feature both enabled and disabled
-        // across all test suites. CQ will run with the feature enabled on M, waterfall will run
-        // with the feature disabled on various API levels.
-        if (BuildConfig.IS_FOR_TEST && mOrdinal == SCARY_EXTERNAL_NAVIGATION_REFACTORING.mOrdinal) {
-            return Build.VERSION.SDK_INT <= Build.VERSION_CODES.N;
-        }
-        return super.isEnabled();
     }
 
     @Override

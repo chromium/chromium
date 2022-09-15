@@ -506,37 +506,6 @@ public class ExternalNavigationHandlerTest {
     @Test
     @SmallTest
     public void testTypedRedirectToExternalProtocol() {
-        if (RedirectHandler.isRefactoringEnabled()) return;
-
-        // http://crbug.com/169549
-        checkUrl("market://1234")
-                .withPageTransition(PageTransition.TYPED)
-                .withIsRendererInitiated(false)
-                .withIsRedirect(true)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
-
-        // http://crbug.com/709217
-        checkUrl("market://1234")
-                .withPageTransition(PageTransition.FROM_ADDRESS_BAR)
-                .withIsRendererInitiated(false)
-                .withIsRedirect(true)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
-
-        // http://crbug.com/143118
-        mUrlHandler.mExpectingMessage = true;
-        checkUrl("market://1234")
-                .withPageTransition(PageTransition.TYPED)
-                .withIsRendererInitiated(false)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
-                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, IGNORE);
-    }
-
-    @Test
-    @SmallTest
-    public void testTypedRedirectToExternalProtocolWithRefactor() {
-        if (!RedirectHandler.isRefactoringEnabled()) return;
         mUrlHandler.mExpectingMessage = true;
 
         RedirectHandler redirectHandler = RedirectHandler.create();
@@ -1618,16 +1587,10 @@ public class ExternalNavigationHandlerTest {
 
         // Now the user opens a link.
         redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 1, false, true);
-        if (RedirectHandler.isRefactoringEnabled()) {
-            checkUrl(YOUTUBE_MOBILE_URL)
-                    .withRedirectHandler(redirectHandler)
-                    .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                            START_OTHER_ACTIVITY);
-        } else {
-            checkUrl(YOUTUBE_MOBILE_URL)
-                    .withRedirectHandler(redirectHandler)
-                    .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-        }
+        checkUrl(YOUTUBE_MOBILE_URL)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
     }
 
     @Test

@@ -35,12 +35,6 @@ public class RedirectHandler {
     private static final int INVALID_ENTRY_INDEX = -2;
     public static final long INVALID_TIME = -1;
 
-    private static final int NAVIGATION_TYPE_FROM_INTENT = 1;
-    private static final int NAVIGATION_TYPE_FROM_USER_TYPING = 2;
-    private static final int NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE = 3;
-    private static final int NAVIGATION_TYPE_FROM_RELOAD = 4;
-    private static final int NAVIGATION_TYPE_OTHER = 5;
-
     // Analogous to Transient User Activation in blink (See
     // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation). We don't
     // want an "unattended" page to redirect to an app as the user is likely not expecting that.
@@ -91,7 +85,6 @@ public class RedirectHandler {
     }
 
     private class NavigationChainState {
-        private final int mInitialNavigationType;
         final boolean mHasUserStartedNonInitialNavigation;
         boolean mIsOnFirstLoadInChain = true;
         boolean mShouldNotOverrideUrlLoadingOnCurrentNavigationChain;
@@ -99,32 +92,12 @@ public class RedirectHandler {
         // TODO(https://crbug.com/1286053): Plumb through the user activation time from blink.
         final long mNavigationChainStartTime = currentRealtime();
         boolean mUsedBackOrForward;
-        private final InitialNavigationState mInitialNavigationState;
-
-        NavigationChainState(
-                int initialNavigationType, boolean hasUserStartedNonInitialNavigation) {
-            assert !isRefactoringEnabled();
-            mInitialNavigationType = initialNavigationType;
-            mHasUserStartedNonInitialNavigation = hasUserStartedNonInitialNavigation;
-            mInitialNavigationState = null;
-        }
+        final InitialNavigationState mInitialNavigationState;
 
         NavigationChainState(boolean hasUserStartedNonInitialNavigation,
                 InitialNavigationState initialNavigationChainState) {
-            assert isRefactoringEnabled();
             mHasUserStartedNonInitialNavigation = hasUserStartedNonInitialNavigation;
             mInitialNavigationState = initialNavigationChainState;
-            mInitialNavigationType = 0;
-        }
-
-        int getInitialNavigationType() {
-            assert !isRefactoringEnabled();
-            return mInitialNavigationType;
-        }
-
-        InitialNavigationState getInitialNavigationState() {
-            assert isRefactoringEnabled();
-            return mInitialNavigationState;
         }
     }
 
@@ -143,14 +116,6 @@ public class RedirectHandler {
     }
 
     protected RedirectHandler() {}
-
-    /**
-     * Temporarily gate ExternalNavigationHandler/RedirectHandler behind a finch kill switch in case
-     * things unexpectedly break.
-     */
-    public static boolean isRefactoringEnabled() {
-        return ExternalIntentsFeatures.SCARY_EXTERNAL_NAVIGATION_REFACTORING.isEnabled();
-    }
 
     /**
      * Resets |mIntentState| for the newly received Intent.
@@ -241,72 +206,18 @@ public class RedirectHandler {
             boolean isRendererInitiated) {
         mLastUserInteractionTimeMillis = lastUserInteractionTime;
 
-        if (isRefactoringEnabled()) {
-            // Treat anything renderer-initiated without a gesture as part of the same navigation
-            // chain. Server redirects are also part of the same navigation chain.
-            boolean isSameNavigationChain = isRedirect || (isRendererInitiated && !hasUserGesture);
+        // Treat anything renderer-initiated without a gesture as part of the same navigation
+        // chain. Server redirects are also part of the same navigation chain.
+        boolean isSameNavigationChain = isRedirect || (isRendererInitiated && !hasUserGesture);
 
-            if (mNavigationChainState != null && isSameNavigationChain) {
-                updateNavigationChainState(pageTransType);
-            } else {
-                resetNavigationChainState(pageTransType, hasUserGesture, lastCommittedEntryIndex,
-                        isInitialNavigation, isRendererInitiated);
-            }
-            boolean isBackOrForward = (pageTransType & PageTransition.FORWARD_BACK) != 0;
-            if (isBackOrForward) mNavigationChainState.mUsedBackOrForward = true;
+        if (mNavigationChainState != null && isSameNavigationChain) {
+            updateNavigationChainState(pageTransType);
         } else {
-            updateNewUrlLoadingOldVersion(pageTransType, isRedirect, hasUserGesture,
-                    lastUserInteractionTime, lastCommittedEntryIndex, isInitialNavigation,
-                    isRendererInitiated);
+            resetNavigationChainState(pageTransType, hasUserGesture, lastCommittedEntryIndex,
+                    isInitialNavigation, isRendererInitiated);
         }
-    }
-
-    private void updateNewUrlLoadingOldVersion(int pageTransType, boolean isRedirect,
-            boolean hasUserGesture, long lastUserInteractionTime, int lastCommittedEntryIndex,
-            boolean isInitialNavigation, boolean isRendererInitiated) {
-        long prevNewUrlLoadingTime = mLastNewUrlLoadingTime;
-        mLastNewUrlLoadingTime = SystemClock.elapsedRealtime();
-
-        int pageTransitionCore = pageTransType & PageTransition.CORE_MASK;
-
-        boolean isNewLoadingStartedByUser = mNavigationChainState == null;
-        boolean isFromIntent = (pageTransType & PageTransition.FROM_API) != 0;
-        if (!isRedirect) {
-            if ((pageTransType & PageTransition.FORWARD_BACK) != 0) {
-                isNewLoadingStartedByUser = true;
-            } else if (pageTransitionCore != PageTransition.LINK
-                    && pageTransitionCore != PageTransition.FORM_SUBMIT) {
-                isNewLoadingStartedByUser = true;
-            } else if (prevNewUrlLoadingTime == INVALID_TIME || isFromIntent
-                    || lastUserInteractionTime > prevNewUrlLoadingTime) {
-                isNewLoadingStartedByUser = true;
-            }
-        }
-        if (!isNewLoadingStartedByUser) {
-            mNavigationChainState.mIsOnFirstLoadInChain = false;
-            return;
-        }
-
-        // Create the NavigationChainState for a new Navigation chain.
-        int initialNavigationType;
-        if (isFromIntent && mIntentState != null) {
-            initialNavigationType = NAVIGATION_TYPE_FROM_INTENT;
-        } else {
-            mIntentState = null;
-            if (pageTransitionCore == PageTransition.TYPED) {
-                initialNavigationType = NAVIGATION_TYPE_FROM_USER_TYPING;
-            } else if (pageTransitionCore == PageTransition.RELOAD
-                    || (pageTransType & PageTransition.FORWARD_BACK) != 0) {
-                initialNavigationType = NAVIGATION_TYPE_FROM_RELOAD;
-            } else if (pageTransitionCore == PageTransition.LINK && !hasUserGesture) {
-                initialNavigationType = NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
-            } else {
-                initialNavigationType = NAVIGATION_TYPE_OTHER;
-            }
-        }
-        mNavigationChainState =
-                new NavigationChainState(initialNavigationType, !isInitialNavigation);
-        mLastCommittedEntryIndexBeforeStartingNavigation = lastCommittedEntryIndex;
+        boolean isBackOrForward = (pageTransType & PageTransition.FORWARD_BACK) != 0;
+        if (isBackOrForward) mNavigationChainState.mUsedBackOrForward = true;
     }
 
     private void updateNavigationChainState(int pageTransType) {
@@ -338,14 +249,8 @@ public class RedirectHandler {
      *         navigation (eg. has followed a client or server redirect).
      */
     public boolean isOnNoninitialLoadForIntentNavigationChain() {
-        if (isRefactoringEnabled()) {
-            return mNavigationChainState.getInitialNavigationState().isFromIntent
-                    && !mNavigationChainState.mIsOnFirstLoadInChain;
-
-        } else {
-            return mNavigationChainState.getInitialNavigationType() == NAVIGATION_TYPE_FROM_INTENT
-                    && !mNavigationChainState.mIsOnFirstLoadInChain;
-        }
+        return mNavigationChainState.mInitialNavigationState.isFromIntent
+                && !mNavigationChainState.mIsOnFirstLoadInChain;
     }
 
     /**
@@ -353,36 +258,6 @@ public class RedirectHandler {
      */
     public boolean isOnFirstLoadInNavigationChain() {
         return mNavigationChainState.mIsOnFirstLoadInChain;
-    }
-
-    /**
-     * @param hasExternalProtocol whether the destination URI has an external protocol or not.
-     * @param isForTrustedCallingApp whether the app we would launch to is trusted and what launched
-     *                               Chrome.
-     * @return whether we should stay in Chrome or not.
-     */
-    /* package */ boolean shouldStayInApp(
-            boolean hasExternalProtocol, boolean isForTrustedCallingApp) {
-        assert !isRefactoringEnabled();
-        // http://crbug/424029 : Need to stay in Chrome for an intent heading explicitly to Chrome.
-        // http://crbug/881740 : Relax stay in Chrome restriction for Custom Tabs.
-        return (mIntentState != null && mIntentState.mPreferToStayInChrome && !hasExternalProtocol)
-                || shouldNavigationTypeStayInApp(isForTrustedCallingApp);
-    }
-
-    private boolean shouldNavigationTypeStayInApp(boolean isForTrustedCallingApp) {
-        // http://crbug.com/162106: Never leave Chrome from a refresh.
-        if (mNavigationChainState.getInitialNavigationType() == NAVIGATION_TYPE_FROM_RELOAD) {
-            return true;
-        }
-
-        // If the app we would navigate to is trusted and what launched Chrome, allow the
-        // navigation.
-        if (isForTrustedCallingApp) return false;
-
-        // Otherwise allow navigation out of the app only with a user gesture.
-        return mNavigationChainState.getInitialNavigationType()
-                == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
     }
 
     /**
@@ -396,13 +271,7 @@ public class RedirectHandler {
      * @return whether navigation is from a user's typing or not.
      */
     public boolean isNavigationFromUserTyping() {
-        if (isRefactoringEnabled()) {
-            return mNavigationChainState.getInitialNavigationState().isFromTyping;
-
-        } else {
-            return mNavigationChainState.getInitialNavigationType()
-                    == NAVIGATION_TYPE_FROM_USER_TYPING;
-        }
+        return mNavigationChainState.mInitialNavigationState.isFromTyping;
     }
 
     /**
@@ -491,7 +360,7 @@ public class RedirectHandler {
     }
 
     public InitialNavigationState getInitialNavigationState() {
-        return mNavigationChainState.getInitialNavigationState();
+        return mNavigationChainState.mInitialNavigationState;
     }
 
     public boolean intentPrefersToStayInChrome() {
@@ -499,16 +368,11 @@ public class RedirectHandler {
     }
 
     public void maybeLogExternalRedirectBlockedWithMissingGesture() {
-        boolean shouldLog = false;
-        if (isRefactoringEnabled()) {
-            shouldLog = mNavigationChainState.getInitialNavigationState().isRendererInitiated
-                    && !mNavigationChainState.getInitialNavigationState().hasUserGesture;
-
-        } else {
-            shouldLog = mNavigationChainState.getInitialNavigationType()
-                    == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
+        if (!mNavigationChainState.mInitialNavigationState.isRendererInitiated
+                || mNavigationChainState.mInitialNavigationState.hasUserGesture) {
+            return;
         }
-        if (!shouldLog) return;
+
         long millisSinceLastGesture =
                 SystemClock.elapsedRealtime() - mLastUserInteractionTimeMillis;
         Log.w(TAG,

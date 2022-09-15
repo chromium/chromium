@@ -809,12 +809,10 @@ public class ExternalNavigationHandler {
             Referrer referrer = new Referrer(referrerUrl.getSpec(), ReferrerPolicy.ALWAYS);
             loadUrlParams.setReferrer(referrer);
         }
-        if (RedirectHandler.isRefactoringEnabled()) {
-            // This URL came from the renderer, so it should be seen as part of the current redirect
-            // chain.
-            loadUrlParams.setIsRendererInitiated(isRendererInitiated);
-            loadUrlParams.setInitiatorOrigin(initiatorOrigin);
-        }
+        // This URL came from the renderer, so it should be seen as part of the current redirect
+        // chain.
+        loadUrlParams.setIsRendererInitiated(isRendererInitiated);
+        loadUrlParams.setInitiatorOrigin(initiatorOrigin);
 
         assert mDelegate.hasValidTab() : "clobberCurrentTab was called with an empty tab.";
         // Loading URL will start a new navigation which cancels the current one
@@ -846,23 +844,6 @@ public class ExternalNavigationHandler {
         return isTyped && params.isRedirect() && isExternalProtocol;
     }
 
-    private boolean redirectShouldStayInApp(ExternalNavigationParams params,
-            boolean isExternalProtocol, Intent targetIntent,
-            QueryIntentActivitiesSupplier resolvingInfos) {
-        if (RedirectHandler.isRefactoringEnabled()) return false;
-
-        RedirectHandler handler = params.getRedirectHandler();
-        if (handler == null) return false;
-        boolean shouldStayInApp = handler.shouldStayInApp(isExternalProtocol,
-                mDelegate.isIntentForTrustedCallingApp(targetIntent, resolvingInfos));
-        if (shouldStayInApp || handler.shouldNotOverrideUrlLoading()) {
-            if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
-            if (debug()) Log.i(TAG, "RedirectHandler decision");
-            return true;
-        }
-        return false;
-    }
-
     // https://crbug.com/1232514: On Android S, since WebAPKs aren't verified apps they are
     // never launched as the result of a suitable Intent, the user's default browser will be
     // opened instead. As a temporary solution, have Chrome launch the WebAPK.
@@ -879,56 +860,6 @@ public class ExternalNavigationHandler {
             }
         }
         return false;
-    }
-
-    /**
-     * http://crbug.com/149218: We want to show the intent picker for ordinary links, providing
-     * the link is not an incoming intent from another application, unless it's a redirect.
-     */
-    private boolean preferToShowIntentPicker(ExternalNavigationParams params,
-            boolean isExternalProtocol, boolean incomingIntentRedirect,
-            boolean intentMatchesNonDefaultWebApk) {
-        if (RedirectHandler.isRefactoringEnabled()) return true;
-
-        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
-        boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
-
-        // Allow initial Intent to leave Chrome if it matched a non-Default WebApk.
-        if (intentMatchesNonDefaultWebApk) return true;
-
-        // http://crbug.com/169549 : If you type in a URL that then redirects in server side to a
-        // link that cannot be rendered by the browser, we want to show the intent picker.
-        if (isTypedRedirectToExternalProtocol(params, pageTransitionCore, isExternalProtocol)) {
-            return true;
-        }
-        // http://crbug.com/181186: We need to show the intent picker when we receive a redirect
-        // following a form submit.
-        boolean isRedirectFromFormSubmit = isFormSubmit && params.isRedirect();
-
-        // TODO(https://crbug.com/1300539): Historically this was intended to prevent
-        // browser-initiated navigations like bookmarks from leaving Chrome. However, this is not a
-        // security boundary as it can be trivially (and unintentionally) subverted, including by a
-        // simple client (meta) redirect. We should decide whether or not external navigations
-        // should be blocked from browser-initiated navigations and either enforce it consistently
-        // or not enforce it at all.
-        if (!params.isRendererInitiated() && !incomingIntentRedirect && !isRedirectFromFormSubmit
-                && mDelegate.shouldEmbedderInitiatedNavigationsStayInBrowser()) {
-            if (debug()) Log.i(TAG, "Browser or Intent initiated and not a redirect");
-            return false;
-        }
-
-        if (isFormSubmit && !incomingIntentRedirect && !isRedirectFromFormSubmit) {
-            if (debug()) Log.i(TAG, "Direct form submission, not a redirect");
-            return false;
-        }
-
-        // http://crbug/331571 : Do not override a navigation started from user typing.
-        if (params.getRedirectHandler() != null
-                && params.getRedirectHandler().isNavigationFromUserTyping()) {
-            if (debug()) Log.i(TAG, "Navigation from user typing");
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -1063,35 +994,12 @@ public class ExternalNavigationHandler {
     }
 
     /**
-     * See RedirectHandler#NAVIGATION_CHAIN_TIMEOUT_MILLIS for details. We don't want an unattended
-     * page to redirect to an app.
-     */
-    private boolean isNavigationChainExpired(ExternalNavigationParams params, Intent targetIntent,
-            QueryIntentActivitiesSupplier resolvingInfos) {
-        if (RedirectHandler.isRefactoringEnabled()) return false;
-        if (mDelegate.isIntentForTrustedCallingApp(targetIntent, resolvingInfos)) return false;
-        if (params.getRedirectHandler() != null
-                && params.getRedirectHandler().isNavigationChainExpired()) {
-            if (debug()) {
-                Log.i(TAG,
-                        "Navigation chain expired "
-                                + "(a page waited more than %d seconds to redirect).",
-                        RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * @return whether something along the navigation chain prevents the current navigation from
      * leaving Chrome.
      */
     private boolean navigationChainBlocksExternalNavigation(ExternalNavigationParams params,
             Intent targetIntent, QueryIntentActivitiesSupplier resolvingInfos,
             boolean isExternalProtocol) {
-        if (!RedirectHandler.isRefactoringEnabled()) return false;
-
         RedirectHandler handler = params.getRedirectHandler();
         if (handler == null) return false;
         RedirectHandler.InitialNavigationState initialState = handler.getInitialNavigationState();
@@ -1191,8 +1099,6 @@ public class ExternalNavigationHandler {
      */
     private boolean isDirectIntentNavigation(ExternalNavigationParams params,
             boolean intentMatchesNonDefaultWebApk, boolean incomingIntentRedirect) {
-        if (!RedirectHandler.isRefactoringEnabled()) return false;
-
         // S+ workaround for WebAPKs not being able to handle Intents.
         if (intentMatchesNonDefaultWebApk) return false;
 
@@ -1725,10 +1631,8 @@ public class ExternalNavigationHandler {
 
         if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.forNoOverride();
 
-        if (RedirectHandler.isRefactoringEnabled()) {
-            if (isDirectFormSubmit(params, isExternalProtocol)) {
-                return OverrideUrlLoadingResult.forNoOverride();
-            }
+        if (isDirectFormSubmit(params, isExternalProtocol)) {
+            return OverrideUrlLoadingResult.forNoOverride();
         }
 
         if (hasInternalScheme(params.getUrl(), targetIntent)
@@ -1763,13 +1667,8 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        boolean requiresPromptForExternalIntent =
-                isNavigationChainExpired(params, targetIntent, resolvingInfos)
-                || redirectShouldStayInApp(params, isExternalProtocol, targetIntent, resolvingInfos)
-                || navigationChainBlocksExternalNavigation(
-                        params, targetIntent, resolvingInfos, isExternalProtocol)
-                || !preferToShowIntentPicker(params, isExternalProtocol, incomingIntentRedirect,
-                        intentMatchesNonDefaultWebApk);
+        boolean requiresPromptForExternalIntent = navigationChainBlocksExternalNavigation(
+                params, targetIntent, resolvingInfos, isExternalProtocol);
 
         // Short-circuit expensive quertyIntentActivities calls below since we won't prompt anyways
         // for protocols the browser can handle.

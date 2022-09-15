@@ -410,9 +410,6 @@ public class UrlOverridingTest {
             params.setIsRendererInitiated(true);
             params.setInitiatorOrigin(createExampleOrigin());
         }
-        if (!RedirectHandler.isRefactoringEnabled()) {
-            mActivityTestRule.getActivity().onUserInteraction();
-        }
         TestThreadUtils.runOnUiThreadBlocking(() -> { tab.loadUrl(params); });
 
         if (finishCallback.getCallCount() == 0) {
@@ -605,24 +602,14 @@ public class UrlOverridingTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> RedirectHandlerTabHelper.swapHandlerFor(tab, mSpyRedirectHandler));
         // This is a little fragile to code changes, but better than waiting 15 real seconds.
-        if (RedirectHandler.isRefactoringEnabled()) {
-            Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
-                    .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
-                    .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
-                    .doReturn(SystemClock.elapsedRealtime()) // XHR callback navigation create
-                    .doReturn(SystemClock.elapsedRealtime()
-                            + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
-                    .when(mSpyRedirectHandler)
-                    .currentRealtime();
-        } else {
-            Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
-                    .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
-                    .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
-                    .doReturn(SystemClock.elapsedRealtime()
-                            + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
-                    .when(mSpyRedirectHandler)
-                    .currentRealtime();
-        }
+        Mockito.doReturn(SystemClock.elapsedRealtime()) // Initial Navigation create
+                .doReturn(SystemClock.elapsedRealtime()) // Initial Navigation shouldOverride
+                .doReturn(SystemClock.elapsedRealtime()) // XHR Navigation create
+                .doReturn(SystemClock.elapsedRealtime()) // XHR callback navigation create
+                .doReturn(SystemClock.elapsedRealtime()
+                        + RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS + 1) // xhr callback
+                .when(mSpyRedirectHandler)
+                .currentRealtime();
 
         @OverrideUrlLoadingResultType
         int result = loadUrlAndWaitForIntentUrl(
@@ -1166,31 +1153,25 @@ public class UrlOverridingTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String url = mTestServer.getURL(NAVIGATION_FROM_TIMEOUT_PAGE);
-        if (RedirectHandler.isRefactoringEnabled()) {
-            @OverrideUrlLoadingResultType
-            int result = loadUrlAndWaitForIntentUrl(url, false, null, PageTransition.AUTO_BOOKMARK);
-            Assert.assertEquals(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result);
-            assertMessagePresent();
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                TextView button = mActivityTestRule.getActivity().findViewById(
-                        org.chromium.components.messages.R.id.message_primary_button);
-                button.performClick();
-            });
-            CriteriaHelper.pollUiThread(() -> {
-                Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
-                Criteria.checkThat(
-                        mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec(),
-                        Matchers.is("about:blank"));
-            });
-        } else {
-            loadUrlAndWaitForIntentUrl(url, true, null, PageTransition.AUTO_BOOKMARK);
-        }
+        @OverrideUrlLoadingResultType
+        int result = loadUrlAndWaitForIntentUrl(url, false, null, PageTransition.AUTO_BOOKMARK);
+        Assert.assertEquals(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result);
+        assertMessagePresent();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TextView button = mActivityTestRule.getActivity().findViewById(
+                    org.chromium.components.messages.R.id.message_primary_button);
+            button.performClick();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+            Criteria.checkThat(mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec(),
+                    Matchers.is("about:blank"));
+        });
     }
 
     @Test
     @LargeTest
     public void testRedirectFromBookmarkWithFallback() throws Exception {
-        if (!RedirectHandler.isRefactoringEnabled()) return;
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
