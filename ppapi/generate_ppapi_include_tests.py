@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -95,7 +95,7 @@ def WriteLines(filename, lines):
 
 
 COPYRIGHT_STRING_C = \
-"""/* Copyright (c) 2010 The Chromium Authors. All rights reserved.
+"""/* Copyright 2010 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  *
@@ -105,7 +105,7 @@ COPYRIGHT_STRING_C = \
 """
 
 COPYRIGHT_STRING_CC = \
-"""// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+"""// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
