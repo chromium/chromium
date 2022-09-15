@@ -43,8 +43,9 @@ if (is_android) {
 } else if (is_fuchsia) {
   import("//build/config/chromecast_build.gni")
   import("//build/config/fuchsia/generate_runner_scripts.gni")
-  import("//build/config/fuchsia/package.gni")
   import("//third_party/fuchsia-sdk/sdk/build/cmc.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 } else if (is_chromeos && is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
