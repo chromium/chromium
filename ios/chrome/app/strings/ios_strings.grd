@@ -1838,6 +1838,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_POPUPS_BLOCKED_MOBILE" desc="Message shown in the infobar when a popup is blocked [length: 20em]">
         Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS">$1<ex>1</ex></ph>)
       </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE" desc="The title text of the fullscreen, post restore sign-in promo. [iOS only]">
+        Welcome back, <ph name="USER_NAME">$1<ex>Ben</ex></ph>
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION" desc="The primary action text of the fullscreen, post restore sign-in promo. [iOS only]">
+        Continue as <ph name="USER_NAME">$1<ex>Ben</ex></ph>
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_SECONDARY_ACTION" desc="The secondary action text of the fullscreen, post restore sign-in promo. [iOS only]">
+        Don't Sign In
+      </message>
       <message name="IDS_IOS_PRINT_PDF_ERROR_SUBTITLE" desc="Message of a popup window indicating that the printing operation did not succeed. [Length: 100em] [iOS only]">
         Make sure you have a network connection, and try again.
       </message>

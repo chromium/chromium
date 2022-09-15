@@ -5,13 +5,17 @@
 source_set("promos") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "bannered_promo_view_provider.h",
     "promo_protocol.h",
     "standard_promo_action_handler.h",
     "standard_promo_display_handler.h",
     "standard_promo_view_provider.h",
   ]
   frameworks = [ "UIKit.framework" ]
-  public_deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
+  public_deps = [
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style:promo_style",
+  ]
   deps = [
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:types",
@@ -57,5 +61,6 @@ source_set("promos_manager") {
     "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style:promo_style",
   ]
 }

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,8 +50,16 @@
 
 #pragma mark - StandardPromoViewProvider
 
-- (ConfirmationAlertViewController*)viewController {
-  return [[PostRestoreSignInViewController alloc] init];
+- (PromoStyleViewController*)viewController {
+  // TODO(crbug.com/1363906): Fetch user details (name, email, photo) and pass
+  // it to PostRestoreSignInViewController's initializer.
+
+  // TODO(crbug.com/1363906): Remove mock user data, `userShortName`, below, and
+  // instead pass `userGivenName` off ChromeIdentity.
+  NSString* userGivenName = @"Elisa";
+
+  return [[PostRestoreSignInViewController alloc]
+      initWithUserGivenName:userGivenName];
 }
 
 #pragma mark - StandardPromoActionHandler

@@ -7,9 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
-@interface PostRestoreSignInViewController : ConfirmationAlertViewController
+@interface PostRestoreSignInViewController : PromoStyleViewController
+
+// Initializes the Post Restore Sign-in promo and displays the passed-in user
+// given name.
+- (instancetype)initWithUserGivenName:(NSString*)userGivenName;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POST_RESTORE_SIGNIN_POST_RESTORE_SIGNIN_VIEW_CONTROLLER_H_
