@@ -9650,6 +9650,25 @@
             ]
         }
     ],
+    "SyncTrustedVaultVerifyDeviceRegistration": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_10",
+                    "enable_features": [
+                        "SyncTrustedVaultVerifyDeviceRegistration"
+                    ]
+                }
+            ]
+        }
+    ],
     "SynthesizePageLoadOnlyOnInitialMainDocumentAccess": [
         {
             "platforms": [
