@@ -8,6 +8,7 @@ import("//build/config/ozone.gni")
 import("//chromeos/ash/components/hibernate/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//printing/buildflags/buildflags.gni")
 
 assert(enable_extensions, "Ash Chrome has to be built with extensions")
 assert(is_chromeos_ash)
@@ -3169,15 +3170,76 @@ source_set("ash") {
 
   data_deps = [ ":mojo_service_manager_policy" ]
 
+  if (enable_hibernate) {
+    deps += [ "//chromeos/ash/components/dbus/hiberman" ]
+  }
+
   if (is_cfm) {
+    sources += [
+      "chromebox_for_meetings/browser/cfm_browser_service.cc",
+      "chromebox_for_meetings/browser/cfm_browser_service.h",
+      "chromebox_for_meetings/browser/cfm_memory_details.cc",
+      "chromebox_for_meetings/browser/cfm_memory_details.h",
+      "chromebox_for_meetings/cfm_chrome_services.cc",
+      "chromebox_for_meetings/cfm_chrome_services.h",
+      "chromebox_for_meetings/device_info/device_info_service.cc",
+      "chromebox_for_meetings/device_info/device_info_service.h",
+      "chromebox_for_meetings/diagnostics/diagnostics_service.cc",
+      "chromebox_for_meetings/diagnostics/diagnostics_service.h",
+      "chromebox_for_meetings/external_display_brightness/external_display_brightness_service.cc",
+      "chromebox_for_meetings/external_display_brightness/external_display_brightness_service.h",
+      "chromebox_for_meetings/logger/cfm_logger_service.cc",
+      "chromebox_for_meetings/logger/cfm_logger_service.h",
+      "chromebox_for_meetings/logger/reporting_pipeline.cc",
+      "chromebox_for_meetings/logger/reporting_pipeline.h",
+      "chromebox_for_meetings/network_settings/network_settings_service.cc",
+      "chromebox_for_meetings/network_settings/network_settings_service.h",
+      "chromebox_for_meetings/service_adaptor.cc",
+      "chromebox_for_meetings/service_adaptor.h",
+    ]
+    public_deps += [
+      "//chromeos/ash/components/dbus/chromebox_for_meetings",
+      "//chromeos/ash/services/chromebox_for_meetings/public/cpp",
+      "//chromeos/ash/services/chromebox_for_meetings/public/mojom",
+    ]
     deps += [
       "//chromeos/ash/components/chromebox_for_meetings",
-      "//chromeos/ash/components/dbus/chromebox_for_meetings",
+      "//components/variations/field_trial_config",
+      "//extensions/buildflags",
     ]
   }
 
-  if (enable_hibernate) {
-    deps += [ "//chromeos/ash/components/dbus/hiberman" ]
+  if (!is_official_build) {
+    sources += [
+      "web_applications/sample_system_web_app_info.cc",
+      "web_applications/sample_system_web_app_info.h",
+    ]
+    deps += [
+      "//ash/webui/resources:sample_system_web_app_resources",
+      "//ash/webui/sample_system_web_app_ui",
+    ]
+  }
+
+  if (use_cups) {
+    sources += [
+      "printing/cups_print_job_manager_impl.cc",
+      "printing/cups_print_job_manager_utils.cc",
+      "printing/cups_print_job_manager_utils.h",
+      "printing/cups_proxy_service_delegate_impl.cc",
+      "printing/cups_proxy_service_delegate_impl.h",
+      "printing/cups_proxy_service_manager.cc",
+      "printing/cups_proxy_service_manager.h",
+      "printing/cups_proxy_service_manager_factory.cc",
+      "printing/cups_proxy_service_manager_factory.h",
+      "printing/printer_info_cups.cc",
+    ]
+    public_deps += [ "//chrome/services/cups_proxy" ]
+  } else {
+    sources += [
+      "printing/fake_cups_print_job_manager.cc",
+      "printing/fake_cups_print_job_manager.h",
+      "printing/printer_info_stub.cc",
+    ]
   }
 }
 
