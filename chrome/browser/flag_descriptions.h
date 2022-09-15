@@ -1875,6 +1875,9 @@ extern const char kAndroidForceAppLanguagePromptDescription[];
 extern const char kAndroidMediaPickerSupportName[];
 extern const char kAndroidMediaPickerSupportDescription[];
 
+extern const char kAndroidPermissionsCacheName[];
+extern const char kAndroidPermissionsCacheDescription[];
+
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 

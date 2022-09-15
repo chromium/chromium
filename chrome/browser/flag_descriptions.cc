@@ -3308,6 +3308,11 @@ const char kAndroidMediaPickerSupportName[] = "Android Media Picker";
 const char kAndroidMediaPickerSupportDescription[] =
     "When enabled the Android Media picker is used instead of the Chrome one.";
 
+const char kAndroidPermissionsCacheName[] = "Android Permissions Cache";
+const char kAndroidPermissionsCacheDescription[] =
+    "When enabled, android "
+    "permissions (such as camera and microphone permissions) will be cached";
+
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

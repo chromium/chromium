@@ -58890,6 +58890,7 @@ from previous Chrome versions.
   <int value="-563600258" label="PhotoPickerVideoSupport:disabled"/>
   <int value="-562771426" label="InstantStart:disabled"/>
   <int value="-562274241" label="enable-extension-action-redesign"/>
+  <int value="-562243524" label="AndroidPermissionsCache:disabled"/>
   <int value="-561194974" label="AutofillExpandedPopupViews:enabled"/>
   <int value="-560719609" label="AccessibilityOSSettingsVisibility:disabled"/>
   <int value="-560551550" label="use-memory-pressure-chromeos"/>
@@ -60569,6 +60570,7 @@ from previous Chrome versions.
       label="OmniboxClobberIsZeroSuggestEntrypoint:disabled"/>
   <int value="482577697" label="PdfOcr:enabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
+  <int value="483797580" label="AndroidPermissionsCache:enabled"/>
   <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>

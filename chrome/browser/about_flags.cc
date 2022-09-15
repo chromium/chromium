@@ -9483,6 +9483,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShareFuseBox)}
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-permissions-cache",
+     flag_descriptions::kAndroidPermissionsCacheName,
+     flag_descriptions::kAndroidPermissionsCacheDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(::features::kAndroidPermissionsCache)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
