@@ -129,7 +129,7 @@ try_.builder(
         ),
     ),
     try_settings = builder_config.try_settings(
-        retry_failed_shards = False,
+        retry_failed_shards = True,
     ),
     goma_backend = goma.backend.RBE_PROD,
     os = os.WINDOWS_ANY,
@@ -274,6 +274,6 @@ blink_mac_builder(
         ),
     ),
     try_settings = builder_config.try_settings(
-        retry_failed_shards = False,
+        retry_failed_shards = True,
     ),
 )

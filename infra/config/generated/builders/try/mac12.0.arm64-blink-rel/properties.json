@@ -34,7 +34,7 @@
           "project": "chromium"
         }
       ],
-      "retry_failed_shards": false
+      "retry_failed_shards": true
     }
   },
   "$build/goma": {
