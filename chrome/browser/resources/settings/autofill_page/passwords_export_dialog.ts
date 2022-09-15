@@ -16,6 +16,7 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '../controls/password_prompt_dialog.js';
 // </if>
 import '../settings_shared.css.js';
+import './passwords_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
