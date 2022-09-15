@@ -20,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -722,7 +721,6 @@ class NetworkContextConfigurationBrowserTest
   }
 
   raw_ptr<Browser> incognito_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 
   net::EmbeddedTestServer https_server_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
