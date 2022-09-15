@@ -2036,6 +2036,9 @@ fyi_ios_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     notifies = ["cronet"],
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 fyi_ios_builder(
