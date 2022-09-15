@@ -7137,6 +7137,12 @@ crbug.com/1363259 [ Mac10.15 ] http/tests/devtools/network/network-initiator.js 
 crbug.com/1349180 [ Linux ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Timeout Pass ]
 crbug.com/1349180 [ Debug Mac12 ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Timeout Pass ]
 
+# Disable flakes on mac builders
+crbug.com/1363708 [ Mac12 ] http/tests/media/gc-while-network-loading.html [ Timeout Pass ]
+crbug.com/1363683 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
+crbug.com/1364129 [ Mac10.15 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
+crbug.com/1364129 [ Mac11 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
+
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]
 
