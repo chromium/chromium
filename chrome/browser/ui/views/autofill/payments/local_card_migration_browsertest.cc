@@ -51,7 +51,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
@@ -59,6 +61,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -160,6 +163,24 @@ class LocalCardMigrationBrowserTest
       const LocalCardMigrationBrowserTest&) = delete;
 
  protected:
+  class TestAutofillManager : public BrowserAutofillManager {
+   public:
+    TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
+        : BrowserAutofillManager(driver,
+                                 client,
+                                 "en-US",
+                                 EnableDownloadManager(false)) {}
+
+    testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
+      return forms_seen_waiter_.Wait(min_num_awaited_calls);
+    }
+
+   private:
+    TestAutofillManagerWaiter forms_seen_waiter_{
+        *this,
+        {&AutofillManager::Observer::OnAfterFormsSeen}};
+  };
+
   // Various events that can be waited on by the DialogEventWaiter.
   enum class DialogEvent : int {
     REQUESTED_LOCAL_CARD_MIGRATION,
@@ -183,6 +204,9 @@ class LocalCardMigrationBrowserTest
 
     ASSERT_TRUE(SetupClients());
     chrome::NewTab(GetBrowser(0));
+    autofill_manager_injector_ =
+        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+            GetActiveWebContents());
 
     // Set up the URL loader factory for the payments client so we can intercept
     // those network requests too.
@@ -264,11 +288,17 @@ class LocalCardMigrationBrowserTest
     personal_data_->RemoveObserver(&personal_data_observer_);
   }
 
-  void NavigateTo(const std::string& file_path) {
+  TestAutofillManager* GetAutofillManager() {
+    DCHECK(autofill_manager_injector_);
+    return autofill_manager_injector_->GetForPrimaryMainFrame();
+  }
+
+  void NavigateToAndWaitForForm(const std::string& file_path) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         GetBrowser(0), file_path.find("data:") == 0U
                            ? GURL(file_path)
                            : embedded_test_server()->GetURL(file_path)));
+    ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
   }
 
   void OnDecideToRequestLocalCardMigration() override {
@@ -338,7 +368,7 @@ class LocalCardMigrationBrowserTest
   }
 
   void FillAndSubmitFormWithCard(std::string card_number) {
-    NavigateTo(kCreditCardFormURL);
+    NavigateToAndWaitForForm(kCreditCardFormURL);
     content::WebContents* web_contents = GetActiveWebContents();
 
     const std::string click_fill_button_js =
@@ -504,6 +534,8 @@ class LocalCardMigrationBrowserTest
   PersonalDataLoadedObserverMock personal_data_observer_;
 
  private:
+  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
+      autofill_manager_injector_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;

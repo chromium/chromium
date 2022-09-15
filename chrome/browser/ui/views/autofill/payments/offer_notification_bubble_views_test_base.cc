@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -58,6 +59,10 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
           OfferNotificationBubbleController::GetOrCreate(
               GetActiveWebContents()));
   AddEventObserverToController(controller);
+
+  autofill_manager_injector_ =
+      std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+          GetActiveWebContents());
 
   personal_data_ =
       PersonalDataManagerFactory::GetForProfile(browser()->profile());
@@ -200,9 +205,21 @@ void OfferNotificationBubbleViewsTestBase::
   coupon_service_->UpdateFreeListingCoupons(coupon_map);
 }
 
+OfferNotificationBubbleViewsTestBase::TestAutofillManager*
+OfferNotificationBubbleViewsTestBase::GetAutofillManager() {
+  DCHECK(autofill_manager_injector_);
+  return autofill_manager_injector_->GetForPrimaryMainFrame();
+}
+
 void OfferNotificationBubbleViewsTestBase::NavigateTo(
     const std::string& file_path) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
+}
+
+void OfferNotificationBubbleViewsTestBase::NavigateToAndWaitForForm(
+    const std::string& file_path) {
+  NavigateTo(file_path);
+  ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
 }
 
 OfferNotificationBubbleViews*

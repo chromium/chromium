@@ -203,6 +203,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
     // HTML pages in tests. Since ContentAutofillDriver is per RFH, the driver
     // that this method starts observing will also be the one to notify later.
     AddBlankTabAndShow(GetBrowser(0));
+    autofill_manager_injector_ =
+        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+            GetActiveWebContents());
 
     // Set up the URL loader factory for the payments client so we can intercept
     // those network requests too.
@@ -230,10 +233,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
             ->credit_card_save_manager_.get();
     credit_card_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
-
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
-            GetActiveWebContents());
 
     // Set up the fake geolocation data.
     geolocation_overrider_ =

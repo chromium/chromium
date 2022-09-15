@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   personal_data()->NotifyPersonalDataObserver();
 
   // Neither icon nor bubble should be visible.
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm("https://www.example.com/first/");
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   personal_data()->NotifyPersonalDataObserver();
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm("https://www.example.com/first/");
   WaitForObservedEvent();
 
   EXPECT_TRUE(IsIconVisible());
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm("https://www.example.com/first/");
   WaitForObservedEvent();
 
   EXPECT_TRUE(IsIconVisible());
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   UpdateFreeListingCouponDisplayTime(
       CreateFreeListingCouponDataWithDomains({orgin}));
 
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm("https://www.example.com/first/");
 
   EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
@@ -102,16 +102,16 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 
   TestAutofillClock test_clock;
   test_clock.SetNow(base::Time::Now());
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm("https://www.example.com/first/");
   test_clock.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
-  NavigateTo("https://www.example.com/second/");
+  NavigateToAndWaitForForm("https://www.example.com/second/");
   // Ensure the bubble is still there if
   // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 
   test_clock.Advance(base::Seconds(2));
-  NavigateTo("https://www.example.com/second/");
+  NavigateToAndWaitForForm("https://www.example.com/second/");
   // As kAutofillBubbleSurviveNavigationTime has been reached, the bubble should
   // no longer be showing.
   EXPECT_TRUE(IsIconVisible());
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateTo("https://www.example.com/first/");
+  NavigateToAndWaitForForm("https://www.example.com/first/");
   WaitForObservedEvent();
 
   EXPECT_TRUE(IsIconVisible());
