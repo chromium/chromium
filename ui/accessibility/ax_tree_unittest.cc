@@ -4429,7 +4429,7 @@ TEST(AXTreeTest, SetSizePosInSetIgnoredItem) {
 
 // Tests that kPopUpButtons are assigned the SetSize of the wrapped
 // kMenuListPopup, if one is present.
-TEST(AXTreeTest, SetSizePosInSetPopUpButton) {
+TEST(AXTreeTest, SetSizePosInSetPopUpButtonAndSelect) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
   initial_state.nodes.resize(6);
@@ -4438,7 +4438,7 @@ TEST(AXTreeTest, SetSizePosInSetPopUpButton) {
   initial_state.nodes[1].id = 2;
   initial_state.nodes[1].role = ax::mojom::Role::kPopUpButton;
   initial_state.nodes[2].id = 3;
-  initial_state.nodes[2].role = ax::mojom::Role::kPopUpButton;
+  initial_state.nodes[2].role = ax::mojom::Role::kComboBoxSelect;
   initial_state.nodes[2].child_ids = {4};
   initial_state.nodes[3].id = 4;
   initial_state.nodes[3].role = ax::mojom::Role::kMenuListPopup;
@@ -4452,7 +4452,7 @@ TEST(AXTreeTest, SetSizePosInSetPopUpButton) {
   // The first popupbutton should have SetSize of 0.
   AXNode* popup_button_1 = tree.GetFromId(2);
   EXPECT_OPTIONAL_EQ(0, popup_button_1->GetSetSize());
-  // The second popupbutton should have SetSize of 2, since the menulistpopup
+  // The select should have SetSize of 2, since the menulistpopup
   // that it wraps has a SetSize of 2.
   AXNode* popup_button_2 = tree.GetFromId(3);
   EXPECT_OPTIONAL_EQ(2, popup_button_2->GetSetSize());

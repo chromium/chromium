@@ -578,14 +578,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // of a list marker node. Returns false otherwise.
   bool IsInListMarker() const;
 
-  // Returns true if this node is a collapsed popup button that is parent to a
-  // menu list popup.
-  bool IsCollapsedMenuListPopUpButton() const;
-
   // Returns the popup button ancestor of this current node if any. The popup
   // button needs to be the parent of a menu list popup and needs to be
   // collapsed.
-  BrowserAccessibility* GetCollapsedMenuListPopUpButtonAncestor() const;
+  BrowserAccessibility* GetCollapsedMenuListSelectAncestor() const;
 
   // Returns true if:
   // 1. This node is a list, AND

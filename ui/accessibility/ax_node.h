@@ -684,13 +684,9 @@ class AX_EXPORT AXNode final {
   // of a list marker node. Returns false otherwise.
   bool IsInListMarker() const;
 
-  // Returns true if this node is a popup button that is a parent to a menu list
-  // popup.
-  bool IsMenuListPopUpButton() const;
-
-  // Returns true if this node is a collapsed popup button that is parent to a
-  // menu list popup.
-  bool IsCollapsedMenuListPopUpButton() const;
+  // Returns true if this node is a collapsed combobox select that is parent to
+  // a menu list popup.
+  bool IsCollapsedMenuListSelect() const;
 
   // Returns true if this node is at the root of an accessibility tree that is
   // hosted by a presentational iframe.
@@ -699,7 +695,7 @@ class AX_EXPORT AXNode final {
   // Returns the popup button ancestor of this current node if any. The popup
   // button needs to be the parent of a menu list popup and needs to be
   // collapsed.
-  AXNode* GetCollapsedMenuListPopUpButtonAncestor() const;
+  AXNode* GetCollapsedMenuListSelectAncestor() const;
 
   // If this node is exposed to the platform's accessibility layer, returns this
   // node. Otherwise, returns the lowest ancestor that is exposed to the

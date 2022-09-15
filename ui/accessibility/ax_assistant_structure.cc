@@ -123,8 +123,9 @@ std::u16string GetText(const AXNode* node) {
 
     switch (node->GetRole()) {
       case ax::mojom::Role::kComboBoxMenuButton:
-      case ax::mojom::Role::kTextFieldWithComboBox:
+      case ax::mojom::Role::kComboBoxSelect:
       case ax::mojom::Role::kPopUpButton:
+      case ax::mojom::Role::kTextFieldWithComboBox:
       case ax::mojom::Role::kTextField:
         return value;
       default:

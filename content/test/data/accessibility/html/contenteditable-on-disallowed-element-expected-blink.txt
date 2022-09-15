@@ -9,7 +9,7 @@ rootWebArea focusable
 ++++++++genericContainer editable
 ++++++++++staticText editable
 ++++++++++++inlineTextBox editable
-++++++popUpButton collapsed editable focusable multiline nonAtomicTextFieldRoot=true
+++++++comboBoxSelect collapsed editable focusable multiline nonAtomicTextFieldRoot=true
 ++++++++menuListPopup invisible
 ++++++++++menuListOption editable focusable multiline nonAtomicTextFieldRoot=true selected=true
 ++++++lineBreak editable focusable multiline nonAtomicTextFieldRoot=true

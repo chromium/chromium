@@ -48,7 +48,7 @@ void BrowserAccessibilityWin::UpdatePlatformAttributes() {
 bool BrowserAccessibilityWin::CanFireEvents() const {
   // On Windows, we want to hide the subtree of a collapsed <select> element but
   // we still need to fire events on those hidden nodes.
-  if (!IsIgnored() && GetCollapsedMenuListPopUpButtonAncestor())
+  if (!IsIgnored() && GetCollapsedMenuListSelectAncestor())
     return true;
 
   // If the node changed its ignored state this frame then some events should be

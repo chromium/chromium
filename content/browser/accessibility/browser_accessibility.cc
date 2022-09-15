@@ -2000,6 +2000,11 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return content_client->GetLocalizedString(IDS_AX_ROLE_COLOR_WELL);
     case ax::mojom::Role::kColumnHeader:
       return content_client->GetLocalizedString(IDS_AX_ROLE_COLUMN_HEADER);
+    case ax::mojom::Role::kComboBoxSelect:
+      // TODO(crbug.com/1362834): This is used for Mac AXRoleDescription. This
+      // should be changed at the same time we map this role to
+      // NSAccessibilityComboBoxRole.
+      return content_client->GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
     case ax::mojom::Role::kComment:
       return content_client->GetLocalizedString(IDS_AX_ROLE_COMMENT);
     case ax::mojom::Role::kComplementary:
@@ -2252,13 +2257,9 @@ bool BrowserAccessibility::IsInListMarker() const {
   return node()->IsInListMarker();
 }
 
-bool BrowserAccessibility::IsCollapsedMenuListPopUpButton() const {
-  return node()->IsCollapsedMenuListPopUpButton();
-}
-
-BrowserAccessibility*
-BrowserAccessibility::GetCollapsedMenuListPopUpButtonAncestor() const {
-  ui::AXNode* popup_button = node()->GetCollapsedMenuListPopUpButtonAncestor();
+BrowserAccessibility* BrowserAccessibility::GetCollapsedMenuListSelectAncestor()
+    const {
+  ui::AXNode* popup_button = node()->GetCollapsedMenuListSelectAncestor();
   return manager()->GetFromAXNode(popup_button);
 }
 

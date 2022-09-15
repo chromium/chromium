@@ -232,7 +232,7 @@ TEST(AXEventGeneratorTest, ExpandedAndRowCount) {
   initial_state.nodes[2].id = 3;
   initial_state.nodes[2].role = ax::mojom::Role::kRow;
   initial_state.nodes[3].id = 4;
-  initial_state.nodes[3].role = ax::mojom::Role::kPopUpButton;
+  initial_state.nodes[3].role = ax::mojom::Role::kComboBoxSelect;
   initial_state.nodes[3].AddState(ax::mojom::State::kExpanded);
   AXTree tree(initial_state);
 
@@ -313,7 +313,7 @@ TEST(AXEventGeneratorTest, SelectedAndSelectedValueChanged) {
   // </select>
   //
   // kRootWebArea
-  // ++kPopUpButton value="Item 1"
+  // ++kComboBoxSelect value="Item 1"
   // ++++kMenuListPopup invisible
   // ++++++kMenuListOption name="Item 1" selected=true
   // ++++++kMenuListOption name="Item 2" selected=false
@@ -327,7 +327,7 @@ TEST(AXEventGeneratorTest, SelectedAndSelectedValueChanged) {
 
   AXNodeData popup_button;
   popup_button.id = 2;
-  popup_button.role = ax::mojom::Role::kPopUpButton;
+  popup_button.role = ax::mojom::Role::kComboBoxSelect;
   popup_button.SetValue("Item 1");
 
   AXNodeData menu_list_popup;

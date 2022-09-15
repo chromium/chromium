@@ -1224,7 +1224,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       </body>
       )HTML");
 
-  BrowserAccessibility* target = FindNode(ax::mojom::Role::kPopUpButton, "One");
+  BrowserAccessibility* target =
+      FindNode(ax::mojom::Role::kComboBoxSelect, "One");
   ASSERT_NE(nullptr, target);
 
   EXPECT_EQ(0U, target->PlatformChildCount());

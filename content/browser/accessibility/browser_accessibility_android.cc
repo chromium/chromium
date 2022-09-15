@@ -832,8 +832,12 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
 
   // For multiselectable state, generate a state description. We do not set a
   // state description for pop up/<select> to prevent double utterances.
-  if (IsMultiselectable() && GetRole() != ax::mojom::Role::kPopUpButton)
+  // TODO(crbug.com/1362834): Consider whether other combobox roles should be
+  // accounted for.
+  if (IsMultiselectable() && GetRole() != ax::mojom::Role::kPopUpButton &&
+      GetRole() != ax::mojom::Role::kComboBoxSelect) {
     state_descs.push_back(GetMultiselectableStateDescription());
+  }
 
   // For Checkboxes, if we are in a kMixed state, we will communicate
   // "partially checked" through the state description. This is mutually
@@ -1137,8 +1141,10 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     }
   }
 
-  // For pop up buttons, we want to return property value specific roles.
-  if (GetRole() == ax::mojom::Role::kPopUpButton) {
+  // For pop up buttons, we want to return more specific roles based on various
+  // values of the kHasPopup attribute.
+  if (GetRole() == ax::mojom::Role::kPopUpButton ||
+      GetRole() == ax::mojom::Role::kComboBoxSelect) {
     switch (static_cast<ax::mojom::HasPopup>(
         GetIntAttribute(ax::mojom::IntAttribute::kHasPopup))) {
       case ax::mojom::HasPopup::kTrue:

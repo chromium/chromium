@@ -164,6 +164,7 @@ chrome.automation.RoleType = {
   COLUMN_HEADER: 'columnHeader',
   COMBO_BOX_GROUPING: 'comboBoxGrouping',
   COMBO_BOX_MENU_BUTTON: 'comboBoxMenuButton',
+  COMBO_BOX_SELECT: 'comboBoxSelect',
   COMMENT: 'comment',
   COMPLEMENTARY: 'complementary',
   CONTENT_DELETION: 'contentDeletion',

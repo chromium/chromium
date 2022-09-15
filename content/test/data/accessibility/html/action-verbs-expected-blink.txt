@@ -35,7 +35,7 @@ rootWebArea name='Action verbs'
 ++++++++++++++inlineTextBox name='Summary'
 ++++++++genericContainer ignored
 ++++++++++staticText ignored invisible name='Details'
-++++++popUpButton collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
+++++++comboBoxSelect collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
 ++++++++menuListPopup invisible
 ++++++++++menuListOption name='Pop-up button' defaultActionVerb=select selected=true
 ++++++genericContainer defaultActionVerb=click

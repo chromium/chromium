@@ -4,7 +4,7 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='How often?'
 ++++++++++inlineTextBox name='How often?'
-++++++popUpButton collapsed required name='How often?' invalidState=true
+++++++comboBoxSelect collapsed required name='How often?' invalidState=true
 ++++++++menuListPopup invisible
 ++++++++++menuListOption selected=true
 ++++++++++menuListOption invisible selected=false

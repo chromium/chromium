@@ -459,6 +459,7 @@ std::string GetScreen2xRoleFromChromeRole(ax::mojom::Role role) {
       roles_with_different_name = {
           // Aria Roles
           {ax::mojom::Role::kComboBoxGrouping, "combobox"},
+          {ax::mojom::Role::kComboBoxSelect, "combobox"},
           {ax::mojom::Role::kContentDeletion, "deletion"},
           {ax::mojom::Role::kDocAbstract, "doc-abstract"},
           {ax::mojom::Role::kDocAcknowledgments, "doc-acknowledgments"},

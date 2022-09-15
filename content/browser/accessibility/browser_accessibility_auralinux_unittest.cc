@@ -616,7 +616,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
 
   ui::AXNodeData combo_box;
   combo_box.id = 6;
-  combo_box.role = ax::mojom::Role::kPopUpButton;
+  combo_box.role = ax::mojom::Role::kComboBoxSelect;
   combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "select");
   combo_box.AddState(ax::mojom::State::kCollapsed);
   combo_box.SetValue("1");

@@ -1002,3 +1002,15 @@ AutomationPredicate.selectableText = AutomationPredicate.roles([
   Role.LINE_BREAK,
   Role.LIST_MARKER,
 ]);
+
+/**
+ * Matches against pop-up button like nodes.
+ * Historically, single value <select> controls were represented as a
+ * popup button, but they are distinct from <button aria-haspopup='menu'>.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.popUpButton = AutomationPredicate.roles([
+  Role.COMBO_BOX_SELECT,
+  Role.POP_UP_BUTTON,
+]);

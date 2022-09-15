@@ -433,7 +433,7 @@ RootWebArea
     childIds : <object>
     chromeRole : {
         type : internalRole
-        value : 137
+        value : 209
     }
     domNode : select
     ignored : false

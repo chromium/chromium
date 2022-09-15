@@ -864,6 +864,10 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kSupply, UIA_ComboBoxControlTypeId,
               L"combobox"};
 
+    case ax::mojom::Role::kComboBoxSelect:
+      return {UIALocalizationStrategy::kDeferToControlType,
+              UIA_ComboBoxControlTypeId, L"combobox"};
+
     case ax::mojom::Role::kComplementary:
       return {UIALocalizationStrategy::kDeferToAriaRole, UIA_GroupControlTypeId,
               L"complementary"};
@@ -1227,16 +1231,9 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
               L"document"};
 
-    case ax::mojom::Role::kPopUpButton: {
-      const std::string& html_tag =
-          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-      if (html_tag == "select") {
-        return {UIALocalizationStrategy::kDeferToControlType,
-                UIA_ComboBoxControlTypeId, L"combobox"};
-      }
+    case ax::mojom::Role::kPopUpButton:
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_ButtonControlTypeId, L"button"};
-    }
 
     case ax::mojom::Role::kPortal:
       return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
@@ -6196,6 +6193,7 @@ int AXPlatformNodeWin::MSAARole() {
 
     case ax::mojom::Role::kComboBoxGrouping:
     case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxSelect:
       return ROLE_SYSTEM_COMBOBOX;
 
     case ax::mojom::Role::kComplementary:
@@ -6483,13 +6481,8 @@ int AXPlatformNodeWin::MSAARole() {
         return ROLE_SYSTEM_CLIENT;
       }
 
-    case ax::mojom::Role::kPopUpButton: {
-      std::string html_tag =
-          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-      if (html_tag == "select")
-        return ROLE_SYSTEM_COMBOBOX;
+    case ax::mojom::Role::kPopUpButton:
       return ROLE_SYSTEM_BUTTONMENU;
-    }
 
     case ax::mojom::Role::kPortal:
       return ROLE_SYSTEM_PUSHBUTTON;

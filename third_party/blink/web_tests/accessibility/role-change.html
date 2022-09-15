@@ -95,7 +95,7 @@ test(function(t) {
 
     // Change @size to "1"
     document.getElementById('select1').setAttribute('size', '1');
-    assert_equals(axElementById('select1').role, 'AXRole: AXPopUpButton');
+    assert_equals(axElementById('select1').role, 'AXRole: AXComboBoxSelect');
     assert_equals(axElementById('opt1').role, 'AXRole: AXMenuListOption');
 
     // Change @size back to "2"

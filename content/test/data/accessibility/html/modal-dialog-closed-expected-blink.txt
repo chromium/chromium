@@ -6,7 +6,7 @@ rootWebArea
 ++++++section
 ++++++++dialog ignored invisible
 ++++++++++staticText ignored name='This dialog is closed and should not be in the tree'
-++++++++popUpButton collapsed value='This should be in the tree.' haspopup=menu
+++++++++comboBoxSelect collapsed value='This should be in the tree.' haspopup=menu
 ++++++++++menuListPopup invisible
 ++++++++++++menuListOption name='This should be in the tree.' selected=true
 ++++++colorWell value='#000000'

@@ -155,6 +155,7 @@
     columnHeader,
     comboBoxGrouping,
     comboBoxMenuButton,
+    comboBoxSelect,
     comment,
     complementary,
     contentDeletion,

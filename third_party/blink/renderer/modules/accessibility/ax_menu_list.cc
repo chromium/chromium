@@ -40,7 +40,7 @@ AXMenuList::AXMenuList(LayoutObject* layout_object,
 }
 
 ax::mojom::blink::Role AXMenuList::NativeRoleIgnoringAria() const {
-  return ax::mojom::blink::Role::kPopUpButton;
+  return ax::mojom::blink::Role::kComboBoxSelect;
 }
 
 bool AXMenuList::OnNativeClickAction() {

@@ -448,7 +448,7 @@ class AXPosition {
     // subtree representation we get from a collapsed <select> element on
     // Windows) should not expose its descendants even though they are not
     // ignored.
-    if (node.IsCollapsedMenuListPopUpButton())
+    if (node.IsCollapsedMenuListSelect())
       return true;
 
     // All anchor nodes that are empty leaf nodes should be treated as empty
@@ -3982,7 +3982,7 @@ class AXPosition {
       // the parent of a menu list popup, or on all platforms inside a generic
       // container that is the child of an empty text field.
       if (AXNode* popup_button =
-              GetAnchor()->GetCollapsedMenuListPopUpButtonAncestor()) {
+              GetAnchor()->GetCollapsedMenuListSelectAncestor()) {
         return popup_button;
       }
 

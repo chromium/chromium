@@ -108,8 +108,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 4
-// Next value: 209
+// Next version: 5
+// Next value: 210
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   [Default]kUnknown = 181, // The role has not been set.
@@ -132,8 +132,16 @@ enum Role {
   kColorWell = 17,
   kColumn = 18,
   kColumnHeader = 19,
+  // kComboBoxGrouping represents a combobox container that groups
+  // subcomponents. It always contains a button and a listbox. It may also
+  // contain a listbox as in case of an editable combobox (e.g. Views'
+  // EditableCombobox).
   kComboBoxGrouping = 20,
+  // kComboBoxMenuButton represents the arrow button part of a combobox, or a
+  // <button> with and explicit combobox role set.
   kComboBoxMenuButton = 21,
+  // kComboBoxSelect represents an HTML single-value <select> element.
+  [MinVersion=4] kComboBoxSelect = 209,
   kComplementary = 22,
   kComment = 23,
   kContentDeletion = 24,
@@ -287,6 +295,8 @@ enum Role {
   kPdfActionableHighlight = 134,
   kPdfRoot = 135,
   kPluginObject = 136,
+  // kPopUpButton is used for a button role that has a popup. It is not a
+  // combobox which can contain a value and associated list of values.
   kPopUpButton = 137,
   kPortal = 138,
   kPre = 139,
@@ -323,6 +333,8 @@ enum Role {
   kTableHeaderContainer = 168,
   kTerm = 169,
   kTextField = 170,
+  // kTextFieldWithComboBox represents an HTML <input> element with a datalist.
+  // <input type=text role=combobox> is one such example.
   kTextFieldWithComboBox = 171,
   kTime = 172,
   kTimer = 173,

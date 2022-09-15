@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation events on the currently focused node.
  */
+import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
@@ -76,7 +77,7 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
 
     let skipFocusCheck = false;
     chrome.automation.getFocus(focus => {
-      if (focus.role === RoleType.POP_UP_BUTTON) {
+      if (AutomationPredicate.popUpButton(focus)) {
         skipFocusCheck = true;
       }
     });
@@ -139,7 +140,7 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onSelectedValueChanged_(evt) {
-    if (evt.target.role !== RoleType.POP_UP_BUTTON ||
+    if (!AutomationPredicate.popUpButton(evt.target) ||
         evt.target.state.editable) {
       return;
     }

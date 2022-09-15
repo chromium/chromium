@@ -1067,7 +1067,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     if (select_element->IsMultiple())
       return ax::mojom::blink::Role::kListBox;
     else
-      return ax::mojom::blink::Role::kPopUpButton;
+      return ax::mojom::blink::Role::kComboBoxSelect;
   }
 
   if (auto* option = DynamicTo<HTMLOptionElement>(*GetNode())) {
@@ -1853,7 +1853,7 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     }
   }
 
-  if (RoleValue() == ax::mojom::blink::Role::kPopUpButton &&
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect &&
       IsA<HTMLSelectElement>(*element)) {
     return To<HTMLSelectElement>(element)->PopupIsVisible()
                ? kExpandedExpanded
@@ -2704,7 +2704,7 @@ bool AXNodeObject::IsValidFormControl(ListedElement* form_control) const {
 }
 
 int AXNodeObject::PosInSet() const {
-  if (RoleValue() == ax::mojom::blink::Role::kPopUpButton && GetNode() &&
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect && GetNode() &&
       !AXObjectCache().UseAXMenuList()) {
     if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode()))
       return 1 + select_element->selectedIndex();
@@ -2719,7 +2719,7 @@ int AXNodeObject::PosInSet() const {
 }
 
 int AXNodeObject::SetSize() const {
-  if (RoleValue() == ax::mojom::blink::Role::kPopUpButton && GetNode() &&
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect && GetNode() &&
       !AXObjectCache().UseAXMenuList()) {
     if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode()))
       return static_cast<int>(select_element->length());
@@ -4426,6 +4426,7 @@ bool AXNodeObject::CanHaveChildren() const {
     case ax::mojom::blink::Role::kSwitch:
     case ax::mojom::blink::Role::kTab:
       return false;
+    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kPopUpButton:
     case ax::mojom::blink::Role::kLineBreak:
     case ax::mojom::blink::Role::kStaticText:
@@ -5863,12 +5864,9 @@ bool AXNodeObject::UseNameFromSelectedOption() const {
     // Step 2E from: http://www.w3.org/TR/accname-aam-1.1
     case ax::mojom::blink::Role::kComboBoxGrouping:
     case ax::mojom::blink::Role::kComboBoxMenuButton:
+    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kListBox:
       return true;
-    // This can be either a button widget with a non-false value of
-    // aria-haspopup or a select element with size of 1.
-    case ax::mojom::blink::Role::kPopUpButton:
-      return DynamicTo<HTMLSelectElement>(*GetNode());
     default:
       return false;
   }

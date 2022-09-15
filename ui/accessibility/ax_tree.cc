@@ -2419,11 +2419,11 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
   OrderedSetItemsMap items_map_to_be_populated;
   PopulateOrderedSetItemsMap(node, ordered_set, &items_map_to_be_populated);
 
-  // If ordered_set role is kPopUpButton and it wraps a kMenuListPopUp, then we
-  // would like it to inherit the SetSize from the kMenuListPopUp it wraps. To
-  // do this, we treat the kMenuListPopUp as the ordered_set and eventually
-  // assign its SetSize value to the kPopUpButton.
-  if (node.GetRole() == ax::mojom::Role::kPopUpButton &&
+  // If ordered_set role is kComboBoxSelect and it wraps a kMenuListPopUp, then
+  // we would like it to inherit the SetSize from the kMenuListPopUp it wraps.
+  // To do this, we treat the kMenuListPopUp as the ordered_set and eventually
+  // assign its SetSize value to the kComboBoxSelect.
+  if (node.GetRole() == ax::mojom::Role::kComboBoxSelect &&
       node.GetUnignoredChildCount() > 0) {
     // kPopUpButtons are only allowed to contain one kMenuListPopUp.
     // The single element is guaranteed to be a kMenuListPopUp because that is
@@ -2540,7 +2540,8 @@ void AXTree::ComputeSetSizePosInSetAndCacheHelper(
 }
 
 absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
-  if (node.GetRole() == ax::mojom::Role::kPopUpButton &&
+  if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
+       node.GetRole() == ax::mojom::Role::kPopUpButton) &&
       node.GetUnignoredChildCount() == 0 &&
       node.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet)) {
     return node.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet);
@@ -2574,7 +2575,8 @@ absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
 }
 
 absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
-  if (node.GetRole() == ax::mojom::Role::kPopUpButton &&
+  if ((node.GetRole() == ax::mojom::Role::kComboBoxSelect ||
+       node.GetRole() == ax::mojom::Role::kPopUpButton) &&
       node.GetUnignoredChildCount() == 0 &&
       node.HasIntAttribute(ax::mojom::IntAttribute::kSetSize)) {
     return node.GetIntAttribute(ax::mojom::IntAttribute::kSetSize);
@@ -2608,7 +2610,8 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
 
   // For popup buttons that control a single element, inherit the controlled
   // item's SetSize. Skip this block if the popup button controls itself.
-  if (node.GetRole() == ax::mojom::Role::kPopUpButton) {
+  if (node.GetRole() == ax::mojom::Role::kPopUpButton ||
+      node.GetRole() == ax::mojom::Role::kComboBoxSelect) {
     const auto& controls_ids =
         node.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
     if (controls_ids.size() == 1 && GetFromId(controls_ids[0]) &&

@@ -5205,7 +5205,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndOnEmbeddedObject) {
 
   AXNodeData popup_button_5;
   popup_button_5.id = 5;
-  popup_button_5.role = ax::mojom::Role::kPopUpButton;
+  popup_button_5.role = ax::mojom::Role::kComboBoxSelect;
   popup_button_5.AddState(ax::mojom::State::kCollapsed);
   popup_button_5.SetName("option 1");
 
@@ -5236,7 +5236,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndOnEmbeddedObject) {
 
   AXNodeData popup_button_11;
   popup_button_11.id = 11;
-  popup_button_11.role = ax::mojom::Role::kPopUpButton;
+  popup_button_11.role = ax::mojom::Role::kComboBoxSelect;
   popup_button_11.AddState(ax::mojom::State::kCollapsed);
   popup_button_11.SetName("option 2");
 
@@ -5253,7 +5253,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndOnEmbeddedObject) {
 
   AXNodeData popup_button_14;
   popup_button_14.id = 14;
-  popup_button_14.role = ax::mojom::Role::kPopUpButton;
+  popup_button_14.role = ax::mojom::Role::kComboBoxSelect;
   popup_button_14.AddState(ax::mojom::State::kCollapsed);
   popup_button_14.SetName("option 3");
 
@@ -12159,7 +12159,7 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
   // ++1 kRootWebArea
   // ++++2 kStaticText "Hi"
   // ++++++3 kInlineTextBox "Hi"
-  // ++++4 kPopUpButton
+  // ++++4 kComboBoxSelect
   // ++++++5 kMenuListPopup
   // ++++++++6 kMenuListOption "Option"
   // ++++7 kStaticText "3.14"
@@ -12199,7 +12199,7 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
                                    {0});
   inline_box_3.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, {2});
 
-  popup_button_4.role = ax::mojom::Role::kPopUpButton;
+  popup_button_4.role = ax::mojom::Role::kComboBoxSelect;
   popup_button_4.child_ids = {menu_list_popup_5.id};
   popup_button_4.AddState(ax::mojom::State::kCollapsed);
 

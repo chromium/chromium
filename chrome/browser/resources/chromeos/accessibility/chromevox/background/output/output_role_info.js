@@ -41,6 +41,11 @@ export const OutputRoleInfo = {
   comboBoxMenuButton: {msgId: 'role_combobox', earconId: 'LISTBOX'},
   comboBoxGrouping:
       {msgId: 'role_combobox', inherits: 'abstractFormFieldContainer'},
+  comboBoxSelect: {
+    msgId: 'role_button',
+    earconId: 'POP_UP_BUTTON',
+    inherits: 'comboBoxMenuButton',
+  },
   complementary: {msgId: 'role_complementary', inherits: 'abstractContainer'},
   comment: {
     msgId: 'role_comment',

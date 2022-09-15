@@ -450,10 +450,11 @@ const RoleEntry kAriaRoles[] = {
 const RoleEntry kReverseRoles[] = {
     {"banner", ax::mojom::blink::Role::kHeader},
     {"button", ax::mojom::blink::Role::kToggleButton},
-    {"combobox", ax::mojom::blink::Role::kPopUpButton},
+    {"button", ax::mojom::blink::Role::kPopUpButton},
     {"contentinfo", ax::mojom::blink::Role::kFooter},
     {"menuitem", ax::mojom::blink::Role::kMenuListOption},
     {"combobox", ax::mojom::blink::Role::kComboBoxMenuButton},
+    {"combobox", ax::mojom::blink::Role::kComboBoxSelect},
     {"combobox", ax::mojom::blink::Role::kTextFieldWithComboBox}};
 
 static ARIARoleMap* CreateARIARoleMap() {
@@ -2064,12 +2065,15 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       node_data->AddState(ax::mojom::blink::State::kExpanded);
   }
 
-  if (HasPopup() != ax::mojom::blink::HasPopup::kFalse)
+  ax::mojom::blink::Role role = RoleValue();
+  if (HasPopup() != ax::mojom::blink::HasPopup::kFalse) {
     node_data->SetHasPopup(HasPopup());
-  else if (RoleValue() == ax::mojom::blink::Role::kPopUpButton)
+  } else if (role == ax::mojom::blink::Role::kPopUpButton ||
+             role == ax::mojom::blink::Role::kComboBoxSelect) {
     node_data->SetHasPopup(ax::mojom::blink::HasPopup::kMenu);
-  else if (ui::IsComboBox(RoleValue()))
+  } else if (ui::IsComboBox(role)) {
     node_data->SetHasPopup(ax::mojom::blink::HasPopup::kListbox);
+  }
 
   if (IsAutofillAvailable())
     node_data->AddState(ax::mojom::blink::State::kAutofillAvailable);
@@ -2144,7 +2148,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     }
 
     // Heading level.
-    if (ui::IsHeading(RoleValue()) && HeadingLevel()) {
+    if (ui::IsHeading(role) && HeadingLevel()) {
       node_data->AddIntAttribute(
           ax::mojom::blink::IntAttribute::kHierarchicalLevel, HeadingLevel());
     }
@@ -4233,6 +4237,7 @@ ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
     case ax::mojom::blink::Role::kLink:
       return ax::mojom::blink::DefaultActionVerb::kJump;
     case ax::mojom::blink::Role::kComboBoxMenuButton:
+    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kPopUpButton:
       return ax::mojom::blink::DefaultActionVerb::kOpen;
     default:
@@ -4260,6 +4265,7 @@ bool AXObject::SupportsARIAExpanded() const {
     case ax::mojom::blink::Role::kColumnHeader:
     case ax::mojom::blink::Role::kComboBoxGrouping:
     case ax::mojom::blink::Role::kComboBoxMenuButton:
+    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kDisclosureTriangle:
     case ax::mojom::blink::Role::kListBox:
     case ax::mojom::blink::Role::kLink:
@@ -6265,6 +6271,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kCell:
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kColumnHeader:
+    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kDocBackLink:
     case ax::mojom::blink::Role::kDocBiblioRef:
     case ax::mojom::blink::Role::kDocNoteRef:

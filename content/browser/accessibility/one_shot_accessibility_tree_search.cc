@@ -267,7 +267,7 @@ bool AccessibilityComboboxPredicate(BrowserAccessibility* start,
   return (node->GetRole() == ax::mojom::Role::kComboBoxGrouping ||
           node->GetRole() == ax::mojom::Role::kComboBoxMenuButton ||
           node->GetRole() == ax::mojom::Role::kTextFieldWithComboBox ||
-          node->GetRole() == ax::mojom::Role::kPopUpButton);
+          node->GetRole() == ax::mojom::Role::kComboBoxSelect);
 }
 
 bool AccessibilityControlPredicate(BrowserAccessibility* start,

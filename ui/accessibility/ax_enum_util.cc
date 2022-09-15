@@ -180,6 +180,8 @@ const char* ToString(ax::mojom::Role role) {
       return "comboBoxGrouping";
     case ax::mojom::Role::kComboBoxMenuButton:
       return "comboBoxMenuButton";
+    case ax::mojom::Role::kComboBoxSelect:
+      return "comboBoxSelect";
     case ax::mojom::Role::kComment:
       return "comment";
     case ax::mojom::Role::kComplementary:

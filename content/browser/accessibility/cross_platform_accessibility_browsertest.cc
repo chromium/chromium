@@ -830,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_NE(body, nullptr);
   BrowserAccessibility* select = body->PlatformGetChild(0);
   ASSERT_NE(select, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kPopUpButton, select->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kComboBoxSelect, select->GetRole());
 
   {
     // Get popup via InternalGetChild so that hidden nodes are included.

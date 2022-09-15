@@ -85,6 +85,10 @@ bool IsButton(const ax::mojom::Role role) {
   // Role::kToggleButton.
   // https://www.w3.org/TR/wai-aria-1.1/#button
   return role == ax::mojom::Role::kButton ||
+         // TODO(crbug.com/1362834): Treat kComboBoxSelect like a combobox.
+         // When removing this, update ChromeVox's AutomationPredicate wherever
+         // it's looking at isButton.
+         role == ax::mojom::Role::kComboBoxSelect ||
          role == ax::mojom::Role::kPopUpButton ||
          role == ax::mojom::Role::kToggleButton;
 }
@@ -122,6 +126,7 @@ bool IsClickable(const ax::mojom::Role role) {
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kColorWell:
     case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDisclosureTriangle:
@@ -169,6 +174,7 @@ bool IsCheckBox(const ax::mojom::Role role) {
 }
 
 bool IsComboBox(const ax::mojom::Role role) {
+  // TODO(crbug.com/1362834): Treat kComboBoxSelect like a combobox.
   switch (role) {
     case ax::mojom::Role::kComboBoxMenuButton:
     case ax::mojom::Role::kComboBoxGrouping:
@@ -218,6 +224,7 @@ bool IsControl(const ax::mojom::Role role) {
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kColorWell:
     case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDisclosureTriangle:
@@ -520,6 +527,7 @@ bool IsReadOnlySupported(const ax::mojom::Role role) {
     case ax::mojom::Role::kColorWell:
     case ax::mojom::Role::kComboBoxGrouping:
     case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kGrid:
@@ -528,7 +536,6 @@ bool IsReadOnlySupported(const ax::mojom::Role role) {
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
     case ax::mojom::Role::kMenuListPopup:
-    case ax::mojom::Role::kPopUpButton:
     case ax::mojom::Role::kRadioButton:
     case ax::mojom::Role::kRadioGroup:
     case ax::mojom::Role::kSearchBox:
@@ -659,10 +666,10 @@ bool IsSelect(const ax::mojom::Role role) {
 
 bool IsSelectElement(const ax::mojom::Role role) {
   // Depending on their "size" attribute, <select> elements come in two flavors:
-  // the first appears like a list box and the second like a popup menu.
+  // the first appears like a list box and the second a specific combobox type.
   switch (role) {
     case ax::mojom::Role::kListBox:
-    case ax::mojom::Role::kPopUpButton:
+    case ax::mojom::Role::kComboBoxSelect:
       return true;
     default:
       return false;
@@ -700,6 +707,7 @@ bool IsSelectSupported(const ax::mojom::Role role) {
 
 bool IsSetLike(const ax::mojom::Role role) {
   switch (role) {
+    case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDescriptionList:
     case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDocBibliography:
@@ -889,6 +897,7 @@ bool IsUIAEmbeddedObject(ax::mojom::Role role) {
     case ax::mojom::Role::kColumnHeader:
     case ax::mojom::Role::kComboBoxGrouping:
     case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDescriptionList:
@@ -1015,6 +1024,7 @@ bool SupportsExpandCollapse(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kComboBoxGrouping:
     case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kTextFieldWithComboBox:
     case ax::mojom::Role::kTreeItem:

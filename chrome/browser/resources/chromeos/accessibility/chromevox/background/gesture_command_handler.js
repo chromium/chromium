@@ -97,7 +97,7 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
     let node = range.start.node;
     while (node) {
       if (AutomationPredicate.menuItem(node) ||
-          (node.role === RoleType.POP_UP_BUTTON && node.state.expanded)) {
+          (AutomationPredicate.popUpButton(node) && node.state.expanded)) {
         inMenu = true;
         break;
       }

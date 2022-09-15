@@ -1719,8 +1719,8 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
       // and setsize.
       return item_role == ax::mojom::Role::kDescriptionListTerm ||
              item_role == ax::mojom::Role::kTerm;
-    case ax::mojom::Role::kPopUpButton:
-      // kPopUpButtons can wrap a kMenuListPopUp.
+    case ax::mojom::Role::kComboBoxSelect:
+      // kComboBoxSelect wraps a kMenuListPopUp.
       return item_role == ax::mojom::Role::kMenuListPopup;
     default:
       return false;
@@ -1797,14 +1797,6 @@ bool AXNode::IsReadOnlySupported() const {
   // the ancestor chain) so check this first.
   if (IsCellOrHeaderOfAriaGrid())
     return true;
-
-  // kPopUpButton is special in that it is the role Blink assigns for both
-  // role=button with aria-haspopup set, along with <select> elements.
-  // HTML AAM (https://w3c.github.io/html-aam/) maps <select> to the combobox
-  // role, which supports readonly, but readonly is not supported for button
-  // roles.
-  if (GetRole() == ax::mojom::Role::kPopUpButton && !IsMenuListPopUpButton())
-    return false;
 
   return ui::IsReadOnlySupported(GetRole());
 }
@@ -1963,9 +1955,9 @@ bool AXNode::IsLeaf() const {
   // On Windows, we want to hide the subtree of a collapsed <select> element.
   // Otherwise, ATs are always going to announce its options whether it's
   // collapsed or expanded. In the AXTree, this element corresponds to a node
-  // with role ax::mojom::Role::kPopUpButton that is the parent of a node with
-  // role ax::mojom::Role::kMenuListPopup.
-  if (IsCollapsedMenuListPopUpButton())
+  // with role ax::mojom::Role::kComboBoxSelect that is the parent of a node
+  // with // role ax::mojom::Role::kMenuListPopup.
+  if (IsCollapsedMenuListSelect())
     return true;
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -2076,24 +2068,9 @@ bool AXNode::IsInListMarker() const {
          grandparent_node->GetRole() == ax::mojom::Role::kListMarker;
 }
 
-bool AXNode::IsMenuListPopUpButton() const {
-  if (GetRole() != ax::mojom::Role::kPopUpButton)
-    return false;
-
-  // When a popup button contains a menu list popup, its only child is unignored
-  // and is a menu list popup.
-  AXNode* node = GetFirstUnignoredChild();
-  if (!node)
-    return false;
-
-  return node->GetRole() == ax::mojom::Role::kMenuListPopup;
-}
-
-bool AXNode::IsCollapsedMenuListPopUpButton() const {
-  if (!HasState(ax::mojom::State::kCollapsed))
-    return false;
-
-  return IsMenuListPopUpButton();
+bool AXNode::IsCollapsedMenuListSelect() const {
+  return HasState(ax::mojom::State::kCollapsed) &&
+         GetRole() == ax::mojom::Role::kComboBoxSelect;
 }
 
 bool AXNode::IsRootWebAreaForPresentationalIframe() const {
@@ -2105,22 +2082,22 @@ bool AXNode::IsRootWebAreaForPresentationalIframe() const {
   return parent->GetRole() == ax::mojom::Role::kIframePresentational;
 }
 
-AXNode* AXNode::GetCollapsedMenuListPopUpButtonAncestor() const {
+AXNode* AXNode::GetCollapsedMenuListSelectAncestor() const {
   AXNode* node = GetOrderedSet();
 
   if (!node)
     return nullptr;
 
-  // The ordered set returned is either the popup element child of the popup
-  // button (e.g., the AXMenuListPopup) or the popup button itself. We need
-  // |node| to point to the popup button itself.
-  if (node->GetRole() != ax::mojom::Role::kPopUpButton) {
+  // The ordered set returned is either the popup element child of the select
+  // combobox or the select combobox itself. We need |node| to point to the
+  // select combobox.
+  if (node->GetRole() != ax::mojom::Role::kComboBoxSelect) {
     node = node->GetParent();
     if (!node)
       return nullptr;
   }
 
-  return node->IsCollapsedMenuListPopUpButton() ? node : nullptr;
+  return node->IsCollapsedMenuListSelect() ? node : nullptr;
 }
 
 bool AXNode::IsEmbeddedGroup() const {

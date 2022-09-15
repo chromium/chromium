@@ -1708,7 +1708,7 @@ void BrowserAccessibilityComWin::FireNativeEvent(LONG win_event_type) const {
   // list popup is not part of the tree when its parent is collapsed but events
   // should be fired anyway.
   if (owner()->IsChildOfLeaf() &&
-      !owner()->GetCollapsedMenuListPopUpButtonAncestor()) {
+      !owner()->GetCollapsedMenuListSelectAncestor()) {
     return;
   }
 

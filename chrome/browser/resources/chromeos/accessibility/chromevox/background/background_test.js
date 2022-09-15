@@ -791,7 +791,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', async function() {
     </select>
   `;
   const root = await this.runWithLoadedTree(site);
-  const select = root.find({role: RoleType.POP_UP_BUTTON});
+  const select = root.find({role: RoleType.COMBO_BOX_SELECT});
   const selectLastOption = () => {
     const options = select.findAll({role: RoleType.LIST_BOX_OPTION});
     options[options.length - 1].doDefault();
@@ -1655,7 +1655,7 @@ AX_TEST_F(
     </select>
   `;
       const root = await this.runWithLoadedTree(site);
-      const select = root.find({role: RoleType.POP_UP_BUTTON});
+      const select = root.find({role: RoleType.COMBO_BOX_SELECT});
       mockFeedback.expectSpeech('Button', 'has pop up', 'Collapsed')
           .call(doDefault(select))
           .expectSpeech('Expanded')
@@ -2899,7 +2899,7 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'PopupButtonCollapsed', async function() {
+AX_TEST_F('ChromeVoxBackgroundTest', 'SelectCollapsed', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <select id="button">
@@ -3263,7 +3263,7 @@ AX_TEST_F(
   `;
       const root = await this.runWithLoadedTree(site);
       const application = root.find({role: RoleType.APPLICATION});
-      const popUpButton = root.find({role: RoleType.POP_UP_BUTTON});
+      const popUpButton = root.find({role: RoleType.COMBO_BOX_SELECT});
       const p = root.find({role: RoleType.PARAGRAPH});
 
       // Move focus to the select, which honors value changes through
@@ -3275,7 +3275,7 @@ AX_TEST_F(
       p.doDefault();
       await TestUtils.waitForSpeech('grape');
       assertEquals(
-          RoleType.POP_UP_BUTTON,
+          RoleType.COMBO_BOX_SELECT,
           ChromeVoxState.instance.currentRange.start.node.role);
 
       // Now, move focus to the application which is a parent of the select.
