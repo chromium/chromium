@@ -50,7 +50,7 @@ class NssService : public KeyedService {
   // thread and then invoked.  While the returned getter must be invoked on
   // the IO thread, this method itself may only be invoked on the UI thread,
   // where the NssService lives.
-  NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread();
+  virtual NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread();
 
   // Unsafely returns the `NssCertDatabase` directly to the caller (on the UI
   // thread). This is unsafe, because if the `content::BrowserContext` / this
