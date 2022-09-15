@@ -335,7 +335,7 @@ void BackendIO::ExecuteBackendOperation() {
     case OP_CLOSE_ENTRY:
       // Collect the reference to |entry_| to balance with the AddRef() in
       // LeakEntryImpl.
-      entry_->Release();
+      entry_.ExtractAsDangling()->Release();
       result_ = net::OK;
       break;
     case OP_DOOM_ENTRY:
