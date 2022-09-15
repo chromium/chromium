@@ -74,6 +74,15 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
 
 PageInfoCookiesContentView::~PageInfoCookiesContentView() = default;
 
+void PageInfoCookiesContentView::SetInitializedCallbackForTesting(
+    base::OnceClosure initialized_callback) {
+  if (cookies_dialog_button_) {
+    std::move(initialized_callback).Run();
+  } else {
+    initialized_callback_ = std::move(initialized_callback);
+  }
+}
+
 void PageInfoCookiesContentView::InitCookiesDialogButton() {
   if (cookies_dialog_button_)
     return;
@@ -132,6 +141,8 @@ void PageInfoCookiesContentView::SetCookieInfo(
   SetFpsCookiesInfo(cookie_info.fps_info, is_fps_allowed);
 
   PreferredSizeChanged();
+  if (!initialized_callback_.is_null())
+    std::move(initialized_callback_).Run();
 }
 
 void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
@@ -249,6 +260,9 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
     blocking_third_party_cookies_toggle_->SetPreferredSize(gfx::Size(
         blocking_third_party_cookies_toggle_->GetPreferredSize().width(),
         blocking_third_party_cookies_row_->GetFirstLineHeight()));
+    blocking_third_party_cookies_toggle_->SetID(
+        PageInfoViewFactory::
+            VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE);
   }
 }
 

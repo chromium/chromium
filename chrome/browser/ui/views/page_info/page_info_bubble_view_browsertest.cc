@@ -8,10 +8,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -24,15 +30,18 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/about_this_site_validation.h"
@@ -40,6 +49,7 @@
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -66,6 +76,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 
@@ -995,4 +1006,219 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSiteSettingsBrowserTest,
   views::View* view = page_info_bubble->GetRootView()->GetViewByID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
   EXPECT_FALSE(view);
+}
+
+class PageInfoBubbleViewBrowserTestCookiesSubpage
+    : public PageInfoBubbleViewBrowserTest {
+ public:
+  PageInfoBubbleViewBrowserTestCookiesSubpage() {
+    feature_list_.InitWithFeatures(
+        {page_info::kPageInfoCookiesSubpage,
+         privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
+        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(),
+            base::BindRepeating(&BuildMockPrivacySandboxService)));
+    prefs_ = browser()->profile()->GetPrefs();
+    PageInfoBubbleViewBrowserTest::SetUpOnMainThread();
+  }
+
+  MockPrivacySandboxService* mock_service() {
+    return mock_privacy_sandbox_service_.get();
+  }
+
+  void SetCookieControlsMode(content_settings::CookieControlsMode mode) {
+    prefs_->SetInteger(prefs::kCookieControlsMode, static_cast<int>(mode));
+  }
+
+  void OpenPageInfoAndGoToCookiesSubpage(
+      absl::optional<std::u16string> fps_owner) {
+    EXPECT_CALL(*mock_service(), GetFirstPartySetOwnerForDisplay(testing::_))
+        .WillRepeatedly(testing::Return(fps_owner));
+    base::RunLoop run_loop;
+    GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();
+    OpenPageInfoBubble(browser());
+    run_loop.Run();
+
+    views::View* cookies_button = GetView(
+        browser(),
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
+
+    base::RunLoop run_loop2;
+    base::UserActionTester user_actions_stats;
+    PerformMouseClickOnView(cookies_button);
+    auto* cookies_subpage_content = static_cast<PageInfoCookiesContentView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting()
+            ->GetViewByID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW)
+            ->children()[1]);
+    cookies_subpage_content->SetInitializedCallbackForTesting(
+        run_loop2.QuitClosure());
+    run_loop2.Run();
+    EXPECT_EQ(
+        user_actions_stats.GetActionCount("PageInfo.CookiesSubpage.Opened"), 1);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  PrefService* prefs_;
+  raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
+};
+
+// Checks if there is correct number of buttons in cookies subpage when fps are
+// blocked and third party cookies are allowed(in settings) and checks if the
+// metrics for opening cookies dialog work properly.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
+                       ClickingCookieDialogButton) {
+  SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
+  OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
+
+  // FPS blocked and 3pc allowed -> only button for opening cookie dialog.
+  size_t kExpectedChildren = 1;
+  auto* cookies_buttons_container =
+      GetView(browser(),
+              PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
+  auto* cookie_dialog_button = GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
+  EXPECT_TRUE(cookie_dialog_button);
+
+  // Checking if clicking cookie dialog button records correctly user actions.
+  base::UserActionTester user_actions_stats;
+  PerformMouseClickOnView(cookie_dialog_button);
+  EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Opened"), 1);
+}
+
+// Checks if there is a correct number of buttons in cookies subpage when fps
+// are allowed and third party cookies are blocked and tests the
+// click on the fps button (result and user action).
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
+                       ClickingFpsButton) {
+  GURL url_example = GURL("http://example/other/stuff.htm");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+
+  const std::u16string fps_owner = u"example";
+  SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
+
+  OpenPageInfoAndGoToCookiesSubpage({fps_owner});
+
+  // FPS allowed and 3pc blocked -> buttons for cookie dialog and 3pc and fps.
+  size_t kExpectedChildren = 3;
+  auto* cookies_buttons_container =
+      GetView(browser(),
+              PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
+  EXPECT_TRUE(GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
+  auto* fps_button = GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
+
+  // Checking if fps button opens correct page and records correctly user
+  // actions.
+  base::UserActionTester user_actions_stats;
+  content::WebContentsAddedObserver new_tab_observer;
+  GURL url = chrome::GetSettingsUrl(chrome::kAllSitesSettingsSubpage);
+  GURL::Replacements replacements;
+  std::string query("searchSubpage=");
+  query += base::EscapeQueryParamValue(
+      base::StrCat({"related:", base::UTF16ToUTF8(fps_owner)}),
+      /*use_plus=*/false);
+  replacements.SetQueryStr(query);
+  url = url.ReplaceComponents(replacements);
+
+  PerformMouseClickOnView(fps_button);
+
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.CookiesSubpage.AllSitesFilteredOpened"),
+            1);
+  EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
+}
+
+// Checks if there is a correct number of buttons in cookies subpage when fps
+// are blocked and third party cookies are blocked(in settings) and testing the
+// toggle on blocking third party button.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
+                       ToggleForBlockingThirdPartyCookies) {
+  GURL url_example = GURL("http://example/other/stuff.htm");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+
+  SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
+
+  OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
+
+  // FPS blocked and 3pc blocked -> buttons for cookie dialog and third party
+  // cookies.
+  size_t kExpectedChildren = 2;
+  auto* cookies_buttons_container =
+      GetView(browser(),
+              PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
+  EXPECT_TRUE(GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
+  EXPECT_TRUE(GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_ROW));
+  auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE));
+  EXPECT_TRUE(third_party_cookies_toggle->GetIsOn());
+
+  base::UserActionTester user_actions_stats;
+
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_FALSE(third_party_cookies_toggle->GetIsOn());
+  EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Allowed"), 1);
+
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_TRUE(third_party_cookies_toggle->GetIsOn());
+  EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
+}
+
+// Checks if there is a correct number of buttons in cookies subpage when fps
+// are allowed and third party cookies are allowed(in settings) and click on
+// link in description of cookies subapge.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
+                       LinkInDescriptionForCookiesSettings) {
+  GURL url_example = GURL("http://example/other/stuff.htm");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+
+  std::u16string fps_owner = u"example";
+  SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
+
+  OpenPageInfoAndGoToCookiesSubpage({fps_owner});
+
+  // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button.
+  size_t kExpectedChildren = 2;
+  auto* cookies_buttons_container =
+      GetView(browser(),
+              PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
+  EXPECT_TRUE(GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
+  EXPECT_TRUE(GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS));
+
+  auto* label_with_link = static_cast<views::StyledLabel*>(GetView(
+      browser(),
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL));
+  base::UserActionTester user_actions_stats;
+  content::WebContentsAddedObserver new_tab_observer;
+  GURL url = chrome::GetSettingsUrl(chrome::kCookieSettingsSubPage);
+
+  label_with_link->ClickFirstLinkForTesting();
+
+  EXPECT_EQ(user_actions_stats.GetActionCount(
+                "PageInfo.CookiesSubpage.SettingsLinkClicked"),
+            1);
+
+  EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
 }

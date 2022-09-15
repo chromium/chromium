@@ -35,6 +35,10 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               GetFirstPartySetOwnerForDisplay,
               (const GURL& site_url),
               (override, const));
+  MOCK_METHOD(PrivacySandboxService::PromptType,
+              GetRequiredPromptType,
+              (),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

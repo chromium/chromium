@@ -30,6 +30,10 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void OnToggleButtonPressed();
 
+  // Sets the callback for when the cookies subpage is fully initialized. If it
+  // is already calls the callback
+  void SetInitializedCallbackForTesting(base::OnceClosure initialized_callback);
+
  private:
   // Ensures the allowed sites information UI is present, with placeholder
   // information if necessary.
@@ -60,6 +64,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Ensures the first-party sets information UI is present, with
   // placeholder information if necessary.
   void InitFpsButton();
+
+  base::OnceClosure initialized_callback_ = base::NullCallback();
 
   raw_ptr<PageInfo> presenter_;
 
