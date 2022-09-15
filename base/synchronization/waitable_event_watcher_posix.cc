@@ -109,7 +109,7 @@ void AsyncCallbackHelper(Flag* flag,
 }
 
 WaitableEventWatcher::WaitableEventWatcher() {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 WaitableEventWatcher::~WaitableEventWatcher() {
@@ -128,7 +128,7 @@ bool WaitableEventWatcher::StartWatching(
     WaitableEvent* event,
     EventCallback callback,
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // A user may call StartWatching from within the callback function. In this
   // case, we won't know that we have finished watching, expect that the Flag
@@ -165,7 +165,7 @@ bool WaitableEventWatcher::StartWatching(
 }
 
 void WaitableEventWatcher::StopWatching() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!cancel_flag_.get())  // if not currently watching...
     return;

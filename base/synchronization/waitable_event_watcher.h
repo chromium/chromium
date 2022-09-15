@@ -156,7 +156,7 @@ class BASE_EXPORT WaitableEventWatcher
 
   // Ensures that StartWatching() and StopWatching() are called on the same
   // sequence.
-  SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 #endif
 };
 

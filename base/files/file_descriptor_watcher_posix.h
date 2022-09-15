@@ -85,7 +85,7 @@ class BASE_EXPORT FileDescriptorWatcher {
 
     // Validates that the Controller is used on the sequence on which it was
     // instantiated.
-    SequenceChecker sequence_checker_;
+    SEQUENCE_CHECKER(sequence_checker_);
 
     WeakPtrFactory<Controller> weak_factory_{this};
   };
