@@ -20,7 +20,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -67,7 +66,6 @@ public class StartSurfaceToolbarCoordinator {
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
             boolean isTabToGtsAnimationEnabled, boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
-            ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled) {
         mStub = startSurfaceToolbarStub;
 
@@ -97,8 +95,8 @@ public class StartSurfaceToolbarCoordinator {
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
-                isIncognitoModeEnabledSupplier, profileSupplier, logoClickedCallback,
-                isRefactorEnabled, StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue());
+                isIncognitoModeEnabledSupplier, logoClickedCallback, isRefactorEnabled,
+                StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue());
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -210,11 +208,8 @@ public class StartSurfaceToolbarCoordinator {
                 newLayoutType == null ? LayoutType.NONE : newLayoutType);
     }
 
-    /**
-     * Called when default search engine changes.
-     */
-    void onDefaultSearchEngineChanged() {
-        mToolbarMediator.onDefaultSearchEngineChanged();
+    void initLogoWithNative() {
+        mToolbarMediator.initLogoWithNative();
     }
 
     /**

@@ -20,7 +20,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_NEW_TAB_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
@@ -60,8 +59,6 @@ class StartSurfaceToolbarViewBinder {
             view.updateIncognito(model.get(IS_INCOGNITO));
         } else if (propertyKey == IS_VISIBLE) {
             view.setToolbarVisibility(model.get(IS_VISIBLE));
-        } else if (propertyKey == LOGO_IS_VISIBLE) {
-            view.setLogoVisibility(model.get(LOGO_IS_VISIBLE));
         } else if (propertyKey == MENU_IS_VISIBLE) {
             view.setMenuButtonVisibility(model.get(MENU_IS_VISIBLE));
         } else if (propertyKey == NEW_TAB_CLICK_HANDLER) {

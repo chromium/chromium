@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBar;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -153,7 +152,6 @@ public class TopToolbarCoordinator implements Toolbar {
             boolean isStartSurfaceEnabled, boolean isTabGroupsAndroidContinuationEnabled,
             HistoryDelegate historyDelegate, BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader, boolean initializeWithIncognitoColors,
-            ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> startSurfaceLogoClickedCallback,
             boolean isStartSurfaceRefactorEnabled,
             ObservableSupplier<Integer> constraintsSupplier) {
@@ -172,8 +170,7 @@ public class TopToolbarCoordinator implements Toolbar {
                     overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
                     isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
                     isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
-                    profileSupplier, startSurfaceLogoClickedCallback,
-                    mIsStartSurfaceRefactorEnabled);
+                    startSurfaceLogoClickedCallback, mIsStartSurfaceRefactorEnabled);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
             mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
                     fullscreenToolbarStub, overviewModeMenuButtonCoordinator,
@@ -251,7 +248,7 @@ public class TopToolbarCoordinator implements Toolbar {
             mStartSurfaceToolbarCoordinator.setOnTabSwitcherLongClickHandler(
                     StartSurfaceTabSwitcherActionMenuCoordinator.createOnLongClickListener(
                             tabSwitcherLongClickCallback));
-            mStartSurfaceToolbarCoordinator.onDefaultSearchEngineChanged();
+            mStartSurfaceToolbarCoordinator.initLogoWithNative();
         }
 
         mToolbarLayout.setTabModelSelector(mTabModelSelectorSupplier.get());
@@ -592,9 +589,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void onDefaultSearchEngineChanged() {
         mToolbarLayout.onDefaultSearchEngineChanged();
-        if (mStartSurfaceToolbarCoordinator != null) {
-            mStartSurfaceToolbarCoordinator.onDefaultSearchEngineChanged();
-        }
     }
 
     @Override

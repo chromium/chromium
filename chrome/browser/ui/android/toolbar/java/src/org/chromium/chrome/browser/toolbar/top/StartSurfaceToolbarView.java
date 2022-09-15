@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
@@ -35,7 +34,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private LinearLayout mNewTabViewWithText;
     private NewTabButton mNewTabButton;
     private boolean mShouldShowNewTabViewText;
-    private LogoView mLogo;
     private View mTabSwitcherButtonView;
 
     @Nullable
@@ -60,7 +58,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         mNewTabButton = findViewById(R.id.new_tab_button);
         ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
         mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
-        mLogo = findViewById(R.id.logo);
         mIdentityDiscButton = findViewById(R.id.identity_disc_button);
         mTabSwitcherButtonView = findViewById(R.id.start_tab_switcher_button);
         updatePrimaryColorAndTint(false);
@@ -91,14 +88,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
     void setOnNewTabClickHandler(View.OnClickListener listener) {
         mNewTabViewWithText.setOnClickListener(listener);
         mNewTabButton.setOnClickListener(listener);
-    }
-
-    /**
-     * Logo will not show if screen is not wide enough.
-     * @param isVisible Whether the Logo should be visible.
-     */
-    void setLogoVisibility(boolean isVisible) {
-        mLogo.setVisibility(getVisibility(isVisible));
     }
 
     /**

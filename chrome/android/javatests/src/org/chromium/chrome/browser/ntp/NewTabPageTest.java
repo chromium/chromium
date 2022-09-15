@@ -449,15 +449,25 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testSetSearchProviderInfo() throws Throwable {
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         mActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
                 View logoView = ntpLayout.findViewById(R.id.search_provider_logo);
                 Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
+
                 ntpLayout.setSearchProviderInfo(/* hasLogo = */ false, /* isGoogle */ true);
+                // Mock to notify the template URL service observer.
+                when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+                when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+                ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
                 Assert.assertEquals(View.GONE, logoView.getVisibility());
+
                 ntpLayout.setSearchProviderInfo(/* hasLogo = */ true, /* isGoogle */ true);
+                // Mock to notify the template URL service observer.
+                when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+                ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
                 Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
             }
         });
@@ -489,13 +499,16 @@ public class NewTabPageTest {
         // When the search provider has no logo and there are no tile suggestions, the placeholder
         // is shown.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+            when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
             ntpLayout.setSearchProviderInfo(/* hasLogo = */ false, /* isGoogle */ true);
+            // Mock to notify the template URL service observer.
+            ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+
             Assert.assertEquals(View.GONE, logoView.getVisibility());
             Assert.assertEquals(View.GONE, searchBoxView.getVisibility());
 
             mMostVisitedSites.setTileSuggestions(new String[] {});
-            when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
-
             ntpLayout.onSwitchToForeground(); // Force tile refresh.
             // Mock to notify the template URL service observer.
             ntpLayout.getMostVisitedTilesCoordinatorForTesting()
@@ -512,11 +525,14 @@ public class NewTabPageTest {
         // Once the search provider has a logo again, the logo and search box are shown again and
         // the placeholder is hidden.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+            when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
             ntpLayout.setSearchProviderInfo(/* hasLogo = */ true, /* isGoogle */ true);
+            // Mock to notify the template URL service observer.
+            ntpLayout.getLogoCoordinatorForTesting().onTemplateURLServiceChanged();
+
             Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
             Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
-
-            when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
             // Mock to notify the template URL service observer.
             ntpLayout.getMostVisitedTilesCoordinatorForTesting()

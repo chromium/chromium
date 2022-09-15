@@ -42,9 +42,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
-import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
-import org.chromium.chrome.browser.logo.LogoDelegateImpl;
-import org.chromium.chrome.browser.logo.LogoView;
+import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -92,7 +90,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
 
     private View mMiddleSpacer; // Spacer between toolbar and Most Likely.
 
-    private LogoView mSearchProviderLogoView;
+    private LogoCoordinator mLogoCoordinator;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private QueryTileSection mQueryTileSection;
     private NewTabPageVideoIPHManager mVideoIPHManager;
@@ -109,7 +107,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
 
     private NewTabPageManager mManager;
     private Activity mActivity;
-    private LogoDelegateImpl mLogoDelegate;
     private UiConfig mUiConfig;
     private CallbackController mCallbackController = new CallbackController();
 
@@ -165,7 +162,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
-        mSearchProviderLogoView = findViewById(R.id.search_provider_logo);
         mVideoIPHManager = new NewTabPageVideoIPHManager(
                 findViewById(R.id.video_iph_stub), Profile.getLastUsedRegularProfile());
         insertSiteSectionView();
@@ -212,12 +208,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         mWindowAndroid = windowAndroid;
         Profile profile = Profile.getLastUsedRegularProfile();
 
-        mSearchProviderLogoView = findViewById(R.id.search_provider_logo);
-        Callback<LoadUrlParams> logoClickedCallback = mCallbackController.makeCancelable(
-                (urlParams)
-                        -> mManager.getNativePageHost().loadUrl(urlParams, /*isIncognito=*/false));
-        mLogoDelegate = new LogoDelegateImpl(logoClickedCallback, mSearchProviderLogoView, profile);
-
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
@@ -225,6 +215,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                     R.dimen.ntp_search_box_bounds_vertical_inset_modern);
         }
 
+        initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(profile, lifecycleDispatcher, tileGroupDelegate,
                 touchEnabledDelegate, isScrollableMvtEnabled(), searchProviderIsGoogle);
         initializeSearchBoxBackground();
@@ -232,8 +223,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         initializeVoiceSearchButton();
         initializeLensButton();
         initializeLayoutChangeListener();
-        setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
-        mSearchProviderLogoView.showSearchProviderInitialView();
 
         if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
             mQueryTileSection = new QueryTileSection(
@@ -329,6 +318,29 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                     mScrollDelegate.snapScroll();
                 });
         TraceEvent.end(TAG + ".initializeLayoutChangeListener()");
+    }
+
+    private void initializeLogoCoordinator(
+            boolean searchProviderHasLogo, boolean searchProviderIsGoogle) {
+        Callback<LoadUrlParams> logoClickedCallback = mCallbackController.makeCancelable(
+                (urlParams)
+                        -> mManager.getNativePageHost().loadUrl(urlParams, /*isIncognito=*/false));
+        Callback<Logo> onLogoAvailableCallback = mCallbackController.makeCancelable((logo) -> {
+            mSnapshotTileGridChanged = true;
+            mShowingNonStandardLogo = logo != null;
+            maybeKickOffCryptidRendering();
+        });
+        Runnable onCachedLogoRevalidatedRunnable =
+                mCallbackController.makeCancelable(this::maybeKickOffCryptidRendering);
+
+        // If pull up Feed position is enabled, doodle is not supported since there is not enough
+        // room, we don't need to fetch logo image.
+        boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
+        mLogoCoordinator = new LogoCoordinator(logoClickedCallback,
+                findViewById(R.id.search_provider_logo), shouldFetchDoodle, onLogoAvailableCallback,
+                onCachedLogoRevalidatedRunnable, /*isParentSurfaceShown=*/true);
+        mLogoCoordinator.initWithNative();
+        setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
     }
 
     private void initializeMostVisitedTilesCoordinator(Profile profile,
@@ -463,7 +475,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         mManager.onLoadingComplete();
 
         // Load the logo after everything else is finished, since it's lower priority.
-        loadSearchProviderLogo();
+        mLogoCoordinator.loadSearchProviderLogoWithAnimation();
     }
 
     /**
@@ -475,44 +487,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         mTilesLoaded = true;
 
         onInitializationProgressChanged();
-    }
-
-    /**
-     * Loads the search provider logo (e.g. Google doodle), if any.
-     */
-    public void loadSearchProviderLogo() {
-        if (!mSearchProviderHasLogo) return;
-
-        mSearchProviderLogoView.showSearchProviderInitialView();
-
-        // If pull up Feed position is enabled and search provider is Google, we should show
-        // standard Google logo, which is already done in showSearchProviderInitialView() above.
-        // Since standard Google logo should be shown and doodle is not supported, we don't need to
-        // fetch logo image.
-        if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderIsGoogle) return;
-
-        mLogoDelegate.getSearchProviderLogo(new LogoObserver() {
-            @Override
-            public void onLogoAvailable(Logo logo, boolean fromCache) {
-                if (logo == null && fromCache) {
-                    // There is no cached logo. Wait until we know whether there's a fresh
-                    // one before making any further decisions.
-                    return;
-                }
-
-                mSearchProviderLogoView.setDelegate(mLogoDelegate);
-                mSearchProviderLogoView.updateLogo(logo);
-                mSnapshotTileGridChanged = true;
-
-                mShowingNonStandardLogo = logo != null;
-                maybeKickOffCryptidRendering();
-            }
-
-            @Override
-            public void onCachedLogoRevalidated() {
-                maybeKickOffCryptidRendering();
-            }
-        });
     }
 
     /**
@@ -531,9 +505,8 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
 
         updateTilesLayoutMargins();
 
-        // Hide or show the views above the tile grid as needed, including logo, search box, and
-        // spacers.
-        mSearchProviderLogoView.setVisibility(shouldShowLogo() ? View.VISIBLE : View.GONE);
+        // Hide or show the views above the tile grid as needed, including search box, and
+        // spacers. The visibility of Logo is handled by LogoCoordinator.
         mSearchBoxCoordinator.setVisibility(mSearchProviderHasLogo);
 
         onUrlFocusAnimationChanged();
@@ -648,7 +621,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * @param alpha opacity (alpha) value to use.
      */
     public void setSearchProviderLogoAlpha(float alpha) {
-        mSearchProviderLogoView.setAlpha(alpha);
+        mLogoCoordinator.setAlpha(alpha);
     }
 
     /**
@@ -702,12 +675,11 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
     }
 
     void setSearchProviderTopMargin(int topMargin) {
-        ((MarginLayoutParams) mSearchProviderLogoView.getLayoutParams()).topMargin = topMargin;
+        mLogoCoordinator.setTopMargin(topMargin);
     }
 
     void setSearchProviderBottomMargin(int bottomMargin) {
-        ((MarginLayoutParams) mSearchProviderLogoView.getLayoutParams()).bottomMargin =
-                bottomMargin;
+        mLogoCoordinator.setBottomMargin(bottomMargin);
     }
 
     /**
@@ -778,7 +750,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * @see InvalidationAwareThumbnailProvider#captureThumbnail(Canvas)
      */
     public void onPreCaptureThumbnail() {
-        mSearchProviderLogoView.endFadeAnimation();
+        mLogoCoordinator.endFadeAnimation();
         mSnapshotTileGridChanged = false;
     }
 
@@ -829,12 +801,9 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
 
         VrModuleProvider.unregisterVrModeObserver(this);
 
-        if (mSearchProviderLogoView != null) {
-            mSearchProviderLogoView.destroy();
-        }
-
-        if (mLogoDelegate != null) {
-            mLogoDelegate.destroy();
+        if (mLogoCoordinator != null) {
+            mLogoCoordinator.destroy();
+            mLogoCoordinator = null;
         }
 
         mSearchBoxCoordinator.destroy();
@@ -909,12 +878,13 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * Makes the Search Box and Logo as wide as Most Visited.
      */
     private void unifyElementWidths() {
+        View logoView = mLogoCoordinator.getView();
+        View searchBoxView = getSearchBoxView();
         if (mMvTilesContainerLayout.getVisibility() != GONE) {
             if (!isScrollableMvtEnabled()) {
                 final int width = mMvTilesContainerLayout.getMeasuredWidth() - mTileGridLayoutBleed;
-                measureExactly(getSearchBoxView(), width, getSearchBoxView().getMeasuredHeight());
-                measureExactly(mSearchProviderLogoView, width,
-                        mSearchProviderLogoView.getMeasuredHeight());
+                measureExactly(searchBoxView, width, searchBoxView.getMeasuredHeight());
+                measureExactly(logoView, width, logoView.getMeasuredHeight());
 
                 if (mExploreSectionView != null) {
                     measureExactly(mExploreSectionView, mMvTilesContainerLayout.getMeasuredWidth(),
@@ -922,17 +892,13 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                 }
             } else {
                 final int exploreWidth = getMeasuredWidth() - mTileGridLayoutBleed;
-                measureExactly(
-                        getSearchBoxView(), exploreWidth, getSearchBoxView().getMeasuredHeight());
-                measureExactly(mSearchProviderLogoView, exploreWidth,
-                        mSearchProviderLogoView.getMeasuredHeight());
+                measureExactly(searchBoxView, exploreWidth, searchBoxView.getMeasuredHeight());
+                measureExactly(logoView, exploreWidth, logoView.getMeasuredHeight());
             }
         } else if (mExploreSectionView != null) {
             final int exploreWidth = mExploreSectionView.getMeasuredWidth() - mTileGridLayoutBleed;
-            measureExactly(
-                    getSearchBoxView(), exploreWidth, getSearchBoxView().getMeasuredHeight());
-            measureExactly(mSearchProviderLogoView, exploreWidth,
-                    mSearchProviderLogoView.getMeasuredHeight());
+            measureExactly(searchBoxView, exploreWidth, searchBoxView.getMeasuredHeight());
+            measureExactly(logoView, exploreWidth, logoView.getMeasuredHeight());
         }
     }
 
@@ -985,5 +951,10 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
     private static void measureExactly(View view, int widthPx, int heightPx) {
         view.measure(MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(heightPx, MeasureSpec.EXACTLY));
+    }
+
+    @VisibleForTesting
+    LogoCoordinator getLogoCoordinatorForTesting() {
+        return mLogoCoordinator;
     }
 }

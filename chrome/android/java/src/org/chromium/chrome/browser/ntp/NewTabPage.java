@@ -633,7 +633,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         updateSearchProviderHasLogo();
         setSearchProviderInfoOnView(mSearchProviderHasLogo,
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle());
-        mNewTabPageLayout.loadSearchProviderLogo();
         // TODO(https://crbug.com/1329288): Remove this call when the Feed position experiment is
         // cleaned up.
         updateMargins();

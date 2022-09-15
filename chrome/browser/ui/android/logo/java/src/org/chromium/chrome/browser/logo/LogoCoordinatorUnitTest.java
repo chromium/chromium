@@ -25,12 +25,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
@@ -48,10 +48,7 @@ public class LogoCoordinatorUnitTest {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    Profile mMockProfile1;
-
-    @Mock
-    Profile mMockProfile2;
+    private Profile mProfile;
 
     @Mock
     LogoBridge.Natives mLogoBridge;
@@ -71,25 +68,23 @@ public class LogoCoordinatorUnitTest {
     @Mock
     Callback<LoadUrlParams> mLogoClickedCallback;
 
+    @Mock
+    Callback<Logo> mOnLogoAvailableCallback;
+
+    @Mock
+    Runnable mOnCachedLogoRevalidatedRunnable;
+
     private Context mContext;
     private LogoCoordinator mLogoCoordinator;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        Profile.setLastUsedProfileForTesting(mProfile);
 
-        mProfileSupplier = new ObservableSupplierImpl<>();
         mContext = ApplicationProvider.getApplicationContext();
-        mLogoCoordinator = new LogoCoordinator(
-                mProfileSupplier, mLogoClickedCallback, mLogoView, /*shouldFetchDoodle=*/false);
-        mLogoCoordinator.setLogoDelegateForTesting(mLogoDelegate);
-
-        doReturn(false).when(mMockProfile1).isOffTheRecord();
-        doReturn(true).when(mMockProfile2).isOffTheRecord();
 
         mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlServiceFactory);
-
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
@@ -99,7 +94,6 @@ public class LogoCoordinatorUnitTest {
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
-        mProfileSupplier.set(mMockProfile1);
     }
 
     @After
@@ -108,63 +102,164 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    public void testDSEChangedOnRegularProfileAndGoogleIsDSE() {
+    public void testDSEChangedAndGoogleIsDSE() {
+        createCoordinator();
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mLogoCoordinator.setShouldFetchDoodleForTesting(true);
 
-        mLogoCoordinator.onDefaultSearchEngineChanged();
+        mLogoCoordinator.onTemplateURLServiceChanged();
+
+        Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext));
+        verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
+
+        // If doodle isn't supported, getSearchProviderLogo() shouldn't be called by
+        // onTemplateURLServiceChanged().
+        mLogoCoordinator.setShouldFetchDoodleForTesting(false);
+
+        mLogoCoordinator.onTemplateURLServiceChanged();
 
         Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
     @Test
-    public void testDSEChangedOnRegularProfileAndGoogleIsNotDSE() {
+    public void testDSEChangedAndGoogleIsNotDSE() {
+        createCoordinator();
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoCoordinator.onDefaultSearchEngineChanged();
+        mLogoCoordinator.onTemplateURLServiceChanged();
 
         Assert.assertNull(LogoView.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
     @Test
-    public void testDSEChangedOnRegularProfileAndDoesNotHaveLogo() {
+    public void testDSEChangedAndDoesNotHaveLogo() {
+        createCoordinator();
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
-        mLogoCoordinator.onDefaultSearchEngineChanged();
+        mLogoCoordinator.onTemplateURLServiceChanged();
 
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }
 
     @Test
-    public void testDSEChangedWithIncognitoProfile() {
-        mProfileSupplier.set(mMockProfile2);
-
-        mLogoCoordinator.onDefaultSearchEngineChanged();
-
-        verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
-    }
-
-    @Test
-    public void testLoadLogoOnStartSurfaceHomepageWhenLogoNotLoaded() {
+    public void testLoadLogoWhenLogoNotLoaded() {
+        createCoordinator();
         mLogoCoordinator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoCoordinator.maybeLoadSearchProviderLogoOnHomepage(
-                /*isStartSurfaceShown*/ true, /*isStartSurfaceHidden*/ false);
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ true, /*shouldDestroyDelegate*/ false,
+                /*animationEnabled*/ false);
 
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
     @Test
-    public void testLoadLogoOnStartSurfaceHomepageWhenLogoHasLoaded() {
+    public void testLoadLogoWhenLogoHasLoaded() {
+        createCoordinator();
         mLogoCoordinator.setHasLogoLoadedForCurrentSearchEngineForTesting(true);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoCoordinator.maybeLoadSearchProviderLogoOnHomepage(
-                /*isStartSurfaceShown*/ true, /*isStartSurfaceHidden*/ false);
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ true, /*shouldDestroyDelegate*/ false,
+                /*animationEnabled*/ false);
 
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
+    }
+
+    @Test
+    public void testInitWithNativeWhenParentSurfaceIsNotVisible() {
+        createCoordinatorWithoutNative(/*isParentSurfaceShown=*/false);
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ false, /*shouldDestroyDelegate*/ false,
+                /*animationEnabled*/ false);
+
+        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        // When parent surface isn't showing, calling maybeLoadSearchProviderLogo() shouldn't
+        // trigger getSearchProviderLogo() nor add any pending load task.
+        Assert.assertFalse(mLogoCoordinator.getIsLoadPendingForTesting());
+        mLogoCoordinator.initWithNative();
+
+        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
+        verify(mTemplateUrlService).addObserver(mLogoCoordinator);
+    }
+
+    @Test
+    public void testInitWithNativeWhenParentSurfaceIsVisible() {
+        createCoordinatorWithoutNative(true);
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ true, /*shouldDestroyDelegate*/ false,
+                /*animationEnabled*/ false);
+
+        Assert.assertTrue(mLogoCoordinator.isLogoVisibleForTesting());
+        // When parent surface is shown while native library isn't loaded, calling
+        // maybeLoadSearchProviderLogo() will add a pending load task.
+        Assert.assertTrue(mLogoCoordinator.getIsLoadPendingForTesting());
+        mLogoCoordinator.initWithNative();
+
+        Assert.assertTrue(mLogoCoordinator.isLogoVisibleForTesting());
+        verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
+        verify(mTemplateUrlService).addObserver(mLogoCoordinator);
+    }
+
+    @Test
+    public void testMaybeLoadSearchProviderLogo() {
+        createCoordinator();
+
+        // If parent surface is not shown nor delegate shouldn't be destroyed, logo shouldn't be
+        // loaded and delegate isn't destroyed.
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ false, /*shouldDestroyDelegate*/ false,
+                /*animationEnabled*/ false);
+        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
+        verify(mLogoDelegate, times(0)).destroy();
+
+        // If parent surface is not shown and delegate should be destroyed, logo should be
+        // loaded and delegate is destroyed.
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ false, /*shouldDestroyDelegate*/ true,
+                /*animationEnabled*/ false);
+        Assert.assertFalse(mLogoCoordinator.isLogoVisibleForTesting());
+        verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
+        verify(mLogoDelegate, times(1)).destroy();
+        Assert.assertNull(mLogoCoordinator.getLogoDelegateForTesting());
+
+        // If parent surface is shown, logo should be loaded and delegate shouldn't be
+        // destroyed.
+        mLogoCoordinator.setLogoDelegateForTesting(mLogoDelegate);
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ true, /*shouldDestroyDelegate*/ false,
+                /*animationEnabled*/ false);
+        Assert.assertTrue(mLogoCoordinator.isLogoVisibleForTesting());
+        verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
+        verify(mLogoDelegate, times(1)).destroy();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testMaybeLoadSearchProviderLogoAssertionError() {
+        createCoordinator();
+        verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
+
+        // If parent surface is shown and delegate should be destroyed, an assertion error
+        // should be thrown.
+        mLogoCoordinator.maybeLoadSearchProviderLogo(
+                /*isParentSurfaceShown*/ true, /*shouldDestroyDelegate*/ true,
+                /*animationEnabled*/ false); // should throw an exception
+    }
+
+    private void createCoordinator() {
+        createCoordinatorWithoutNative(/*isParentSurfaceShown=*/true);
+        mLogoCoordinator.initWithNative();
+    }
+
+    private void createCoordinatorWithoutNative(boolean isParentSurfaceShown) {
+        mLogoCoordinator = new LogoCoordinator(mLogoClickedCallback, mLogoView,
+                /*shouldFetchDoodle=*/true, mOnLogoAvailableCallback,
+                mOnCachedLogoRevalidatedRunnable, isParentSurfaceShown);
+        mLogoCoordinator.setLogoDelegateForTesting(mLogoDelegate);
     }
 }
