@@ -213,6 +213,27 @@ void FillSegmentationParams(struct v4l2_av1_segmentation& v4l2_seg,
   v4l2_seg.last_active_seg_id = seg.last_active_segment_id;
 }
 
+// Section 5.9.17. Quantizer index delta parameters syntax
+void FillQuantizerIndexDeltaParams(struct v4l2_av1_quantization& v4l2_quant,
+                                   const libgav1::ObuSequenceHeader& seq_header,
+                                   const libgav1::ObuFrameHeader& frm_header) {
+  // |diff_uv_delta| in the spec doesn't exist in libgav1,
+  // because libgav1 infers it using the following logic.
+  const bool diff_uv_delta = (frm_header.quantizer.base_index != 0) &&
+                             (!seq_header.color_config.is_monochrome) &&
+                             (seq_header.color_config.separate_uv_delta_q);
+  if (diff_uv_delta)
+    v4l2_quant.flags |= V4L2_AV1_QUANTIZATION_FLAG_DIFF_UV_DELTA;
+
+  if (frm_header.delta_q.present)
+    v4l2_quant.flags |= V4L2_AV1_QUANTIZATION_FLAG_DELTA_Q_PRESENT;
+
+  // |scale| is used to store |delta_q_res| value. This is because libgav1 uses
+  // the same struct |Delta| both for quantizer index delta parameters and loop
+  // filter delta parameters.
+  v4l2_quant.delta_q_res = frm_header.delta_q.scale;
+}
+
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
@@ -250,6 +271,8 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
 
   struct v4l2_av1_quantization v4l2_quant = {};
   FillQuantizationParams(v4l2_quant, frame_header.quantizer);
+
+  FillQuantizerIndexDeltaParams(v4l2_quant, sequence_header, frame_header);
 
   struct v4l2_av1_segmentation v4l2_seg = {};
   FillSegmentationParams(v4l2_seg, frame_header.segmentation);
