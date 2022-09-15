@@ -116,9 +116,6 @@ extern const char kTangibleSyncDescription[];
 extern const char kLauncherAppSortName[];
 extern const char kLauncherAppSortDescription[];
 
-extern const char kLeakDetectionUnauthenticated[];
-extern const char kLeakDetectionUnauthenticatedDescription[];
-
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 

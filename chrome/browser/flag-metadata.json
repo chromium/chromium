@@ -4272,11 +4272,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "leak-detection-unauthenticated",
-    "owners": ["rgod@google.com", "vasilii"],
-    "expiry_milestone": 102
-  },
-  {
     "name": "legacy-tls-interstitial",
     "owners": [ "cthomp" ],
     "expiry_milestone": 92

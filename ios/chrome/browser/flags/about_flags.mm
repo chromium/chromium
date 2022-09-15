@@ -984,12 +984,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableWebPageAnnotationsName,
      flag_descriptions::kEnableWebPageAnnotationsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableWebPageAnnotations)},
-    {"leak-detection-unauthenticated",
-     flag_descriptions::kLeakDetectionUnauthenticatedName,
-     flag_descriptions::kLeakDetectionUnauthenticatedDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kLeakDetectionUnauthenticated)},
     {"enable-favicon-passwords",
      flag_descriptions::kEnableFaviconForPasswordsName,
      flag_descriptions::kEnableFaviconForPasswordsDescription, flags_ui::kOsIos,
