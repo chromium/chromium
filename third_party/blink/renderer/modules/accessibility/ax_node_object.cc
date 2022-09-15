@@ -354,36 +354,46 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
   if (!ValueForRange(&value))
     return;
 
-  // If no step was provided on the element, use a default value.
-  float step;
-  if (!StepValueForRange(&step)) {
-    if (IsNativeSlider() || IsNativeSpinButton()) {
-      step = StepRange().Step().ToString().ToFloat();
-    } else {
+  if (!RuntimeEnabledFeatures::
+          SynthesizedKeyboardEventsForAccessibilityActionsEnabled()) {
+    // If synthesized keyboard events are disabled, we need to set the value
+    // directly here.
+
+    // If no step was provided on the element, use a default value.
+    float step;
+    if (!StepValueForRange(&step)) {
+      if (IsNativeSlider() || IsNativeSpinButton()) {
+        step = StepRange().Step().ToString().ToFloat();
+      } else {
+        return;
+      }
+    }
+
+    value += increase ? step : -step;
+
+    if (native_role_ == ax::mojom::blink::Role::kSlider ||
+        native_role_ == ax::mojom::blink::Role::kSpinButton) {
+      OnNativeSetValueAction(String::Number(value));
+      // Dispatching an event could result in changes to the document, like
+      // this AXObject becoming detached.
+      if (IsDetached())
+        return;
+
+      AXObjectCache().HandleValueChanged(GetNode());
       return;
     }
   }
 
-  value += increase ? step : -step;
+  // If we have synthesized keyboard events enabled, we generate a keydown
+  // event:
+  // * For a native slider, the dispatch of the event will reach
+  // RangeInputType::HandleKeydownEvent(), where the value will be set and the
+  // AXObjectCache notified. The corresponding keydown/up JS events will be
+  // fired so the website doesn't know it was produced by an AT action.
+  // * For an ARIA slider, the corresponding keydown/up JS events will be
+  // fired. It is expected that the handlers for those events manage the
+  // update of the slider value.
 
-  // If this is a native element, set the value directly.
-  if (native_role_ == ax::mojom::blink::Role::kSlider ||
-      native_role_ == ax::mojom::blink::Role::kSpinButton) {
-    OnNativeSetValueAction(String::Number(value));
-    // Dispatching an event could result in changes to the document, like
-    // this AXObject becoming detached.
-    if (IsDetached())
-      return;
-
-    AXObjectCache().HandleValueChanged(GetNode());
-    return;
-  }
-
-  if (!RuntimeEnabledFeatures::
-          SynthesizedKeyboardEventsForAccessibilityActionsEnabled())
-    return;
-
-  // Otherwise, fire a keyboard event instead.
   AXAction action =
       increase ? AXAction::kActionIncrement : AXAction::kActionDecrement;
   LocalDOMWindow* local_dom_window = GetDocument()->domWindow();
