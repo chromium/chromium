@@ -7,6 +7,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
 #import "ios/web/annotations/annotations_text_manager.h"
 #import "ios/web/annotations/annotations_utils.h"
 #import "ios/web/common/url_scheme_util.h"
@@ -36,6 +38,52 @@ NSString* TypeForNSTextCheckingResultData(NSTextCheckingResult* match) {
     return kDecorationPhoneNumber;
   }
   return nullptr;
+}
+
+// Applies text classifier to extract intents in the given text. Returns
+// a `base::Value::List` of annotations (see i/w/a/annotations_utils.h).
+// This runs in the thread pool.
+absl::optional<base::Value> ApplyDataExtractor(const std::string& text) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  // TODO(crbug.com/1350974): move to provider
+  if (text.empty()) {
+    return absl::nullopt;
+  }
+
+  NSString* source = base::SysUTF8ToNSString(text);
+  NSError* error = nil;
+  NSDataDetector* detector = [NSDataDetector
+      dataDetectorWithTypes:NSTextCheckingTypeDate | NSTextCheckingTypeAddress |
+                            NSTextCheckingTypePhoneNumber
+                      error:&error];
+  if (error) {
+    return absl::nullopt;
+  }
+
+  __block base::Value::List parsed;
+  auto match_handler = ^(NSTextCheckingResult* match, NSMatchingFlags flags,
+                         BOOL* stop) {
+    NSString* type = TypeForNSTextCheckingResultData(match);
+    NSString* data = web::annotations::EncodeNSTextCheckingResultData(match);
+    if (data && type) {
+      parsed.Append(web::annotations::ConvertMatchToAnnotation(
+          source, match.range, data, type));
+    }
+  };
+
+  NSRange range = NSMakeRange(0, source.length);
+  [detector enumerateMatchesInString:source
+                             options:NSMatchingWithTransparentBounds
+                               range:range
+                          usingBlock:match_handler];
+
+  if (parsed.empty()) {
+    return absl::nullopt;
+  }
+
+  return base::Value(std::move(parsed));
 }
 
 }  //  namespace
@@ -71,51 +119,31 @@ void AnnotationsTabHelper::SetBaseViewController(
 
 #pragma mark - WebStateObserver methods.
 
-// TODO(crbug.com/1350974): Is this needed: when OnTextExtracted is called,
-// the main frame is available, since text has already been extracted?
-void AnnotationsTabHelper::WebFrameDidBecomeAvailable(
-    web::WebState* web_state,
-    web::WebFrame* web_frame) {
-  if (web_frame->IsMainFrame() && deferred_processing_params_) {
-    DecorateAnnotations();
-  }
-}
-
 void AnnotationsTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_->RemoveObserver(this);
   auto* manager = web::AnnotationsTextManager::FromWebState(web_state);
   manager->RemoveObserver(this);
   web_state_ = nullptr;
-  deferred_processing_params_ = {};
 }
 
 #pragma mark - AnnotationsTextObserver methods.
 
 void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
                                            const std::string& text) {
-  __block std::string block_text = text;
-  __block base::WeakPtr<AnnotationsTabHelper> weak_this =
-      weak_factory_.GetWeakPtr();
-  // TODO(crbug.com/1350974): run in bg thread?
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (!weak_this.get())
-      return;
-    weak_this->deferred_processing_params_ =
-        weak_this->ApplyDataExtractor(block_text);
-    if (GetMainFrame(weak_this->web_state_) &&
-        weak_this->deferred_processing_params_) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (weak_this.get() && weak_this->deferred_processing_params_) {
-          weak_this->DecorateAnnotations();
-        }
-      });
-    }
-  });
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&ApplyDataExtractor, text),
+      base::BindOnce(&AnnotationsTabHelper::ApplyDeferredProcessing,
+                     weak_factory_.GetWeakPtr(), web_state_));
 }
 
 void AnnotationsTabHelper::OnDecorated(web::WebState* web_state,
                                        int successes,
                                        int annotations) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/1350974): Add metrics
 }
 
@@ -123,6 +151,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
                                    const std::string& text,
                                    CGRect rect,
                                    const std::string& data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSTextCheckingResult* match =
       web::annotations::DecodeNSTextCheckingResultData(
           base::SysUTF8ToNSString(data));
@@ -166,55 +195,19 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
 
 #pragma mark - Private Methods
 
-absl::optional<base::Value> AnnotationsTabHelper::ApplyDataExtractor(
-    const std::string& text) {
-  // TODO(crbug.com/1350974): move to provider
-  if (text.empty()) {
-    return {};
+void AnnotationsTabHelper::ApplyDeferredProcessing(
+    web::WebState* web_state,
+    absl::optional<base::Value> deferred) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(web_state_, web_state);
+
+  if (GetMainFrame(web_state_) && deferred) {
+    auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
+    DCHECK(manager);
+
+    base::Value annotations(std::move(deferred.value()));
+    manager->DecorateAnnotations(web_state_, annotations);
   }
-
-  NSString* source = base::SysUTF8ToNSString(text);
-  NSError* error = nil;
-  NSDataDetector* detector = [NSDataDetector
-      dataDetectorWithTypes:NSTextCheckingTypeDate | NSTextCheckingTypeAddress |
-                            NSTextCheckingTypePhoneNumber
-                      error:&error];
-  if (error) {
-    return {};
-  }
-
-  __block base::Value::List parsed;
-  auto matchHandler = ^(NSTextCheckingResult* match, NSMatchingFlags flags,
-                        BOOL* stop) {
-    NSString* type = TypeForNSTextCheckingResultData(match);
-    NSString* data = web::annotations::EncodeNSTextCheckingResultData(match);
-    if (data && type) {
-      parsed.Append(web::annotations::ConvertMatchToAnnotation(
-          source, match.range, data, type));
-    }
-  };
-
-  NSRange range = NSMakeRange(0, source.length);
-  [detector enumerateMatchesInString:source
-                             options:NSMatchingWithTransparentBounds
-                               range:range
-                          usingBlock:matchHandler];
-
-  if (parsed.empty()) {
-    return {};
-  }
-
-  return absl::optional<base::Value>(
-      static_cast<base::Value>(std::move(parsed)));
-}
-
-void AnnotationsTabHelper::DecorateAnnotations() {
-  auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
-  DCHECK(manager);
-
-  base::Value annotations(std::move(deferred_processing_params_.value()));
-  manager->DecorateAnnotations(web_state_, annotations);
-  deferred_processing_params_ = {};
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTabHelper)
