@@ -234,7 +234,7 @@ export function searchPageTestSuite() {
   test('DescriptionEmptyError', async () => {
     await initializePage();
 
-    const errorMsg = getElement('#descriptionEmptyError');
+    const errorMsg = getElement('#emptyErrorContainer');
     // Verify that the error message is hidden in the beginning.
     assertTrue(errorMsg.hidden);
 

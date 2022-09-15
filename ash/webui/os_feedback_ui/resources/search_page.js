@@ -248,7 +248,7 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   getErrorElement_() {
     return /** @type {!HTMLElement} */ (
-        this.shadowRoot.querySelector('#descriptionEmptyError'));
+        this.shadowRoot.querySelector('#emptyErrorContainer'));
   }
 
   /**
