@@ -44,8 +44,7 @@
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 namespace {
 
@@ -529,5 +528,4 @@ ScopedRestoreForTesting::~ScopedRestoreForTesting() {
   g_restore_for_testing = true;
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

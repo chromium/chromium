@@ -15,8 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // static
 bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
@@ -67,5 +66,4 @@ KeyedService* FullRestoreServiceFactory::BuildServiceInstanceFor(
   return new FullRestoreService(Profile::FromBrowserContext(context));
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

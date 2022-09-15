@@ -10,8 +10,7 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 NewUserRestorePrefHandler::NewUserRestorePrefHandler(Profile* profile)
     : profile_(profile) {
@@ -76,5 +75,4 @@ void NewUserRestorePrefHandler::OnPreferenceChanged(
   local_restore_pref_.reset();
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

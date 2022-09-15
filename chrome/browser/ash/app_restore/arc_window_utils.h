@@ -8,8 +8,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 absl::optional<double> GetDisplayScaleFactor(int64_t display_id);
 
@@ -32,7 +31,6 @@ bool IsValidThemeColor(uint32_t theme_color);
 
 const std::string WindowIdToAppId(int window_id);
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_UTILS_H_

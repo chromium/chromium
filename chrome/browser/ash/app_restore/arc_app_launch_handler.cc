@@ -93,8 +93,7 @@ constexpr char kNoGhostWindowReasonHistogram[] =
 
 }  // namespace
 
-namespace ash {
-namespace app_restore {
+namespace ash::app_restore {
 
 ArcAppLaunchHandler::ArcAppLaunchHandler() {
   if (aura::Env::HasInstance())
@@ -906,5 +905,4 @@ ArcAppLaunchHandler::GetSchedulerConfigurationManager() {
   return g_browser_process->platform_part()->scheduler_configuration_manager();
 }
 
-}  // namespace app_restore
-}  // namespace ash
+}  // namespace ash::app_restore

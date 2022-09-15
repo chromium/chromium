@@ -38,8 +38,7 @@
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 namespace {
 
@@ -515,5 +514,4 @@ ScopedLaunchBrowserForTesting::~ScopedLaunchBrowserForTesting() {
   g_launch_browser_for_testing = false;
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

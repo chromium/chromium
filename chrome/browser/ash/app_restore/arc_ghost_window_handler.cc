@@ -15,8 +15,7 @@
 #include "components/exo/wm_helper.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 namespace {
 
@@ -179,5 +178,4 @@ void ArcGhostWindowHandler::OnWindowInfoUpdated(int window_id,
       std::move(window_info);
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

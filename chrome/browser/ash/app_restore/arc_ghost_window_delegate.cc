@@ -12,8 +12,7 @@ namespace {
 const int kNullWindowState = -1;
 }  // namespace
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 ArcGhostWindowDelegate::ArcGhostWindowDelegate(
     exo::ClientControlledShellSurface* shell_surface,
@@ -164,5 +163,4 @@ void ArcGhostWindowDelegate::UpdateWindowInfoToArc() {
       display_id_, gfx::ScaleToRoundedRect(bounds_, scale_factor_));
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

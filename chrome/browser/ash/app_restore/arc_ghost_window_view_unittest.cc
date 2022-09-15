@@ -27,8 +27,7 @@
 #include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 namespace {
 
@@ -127,5 +126,4 @@ TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
   EXPECT_EQ(count, 1);
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

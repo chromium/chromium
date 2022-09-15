@@ -10,8 +10,7 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // The ArcGhostWindowDelegate class is a self controlled shell surface delegate
 // to handle ARC ghost windows, e.g. when window bounds or window state is
@@ -68,7 +67,6 @@ class ArcGhostWindowDelegate
       observation_{this};
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_DELEGATE_H_

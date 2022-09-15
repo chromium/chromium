@@ -36,8 +36,7 @@ bool IsMinimizedState(
 
 }  // namespace
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // Explicitly identifies ARC ghost surface.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kArcGhostSurface, false)
@@ -206,5 +205,4 @@ void ArcGhostWindowShellSurface::SetShellAppId(
     property_handler->ClearProperty(app_restore::kAppIdKey);
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

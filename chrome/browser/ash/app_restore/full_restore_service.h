@@ -23,9 +23,7 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
-namespace ash {
-
-namespace full_restore {
+namespace ash::full_restore {
 
 class FullRestoreAppLaunchHandler;
 class FullRestoreDataHandler;
@@ -193,7 +191,6 @@ class ScopedRestoreForTesting {
   ~ScopedRestoreForTesting();
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_SERVICE_H_

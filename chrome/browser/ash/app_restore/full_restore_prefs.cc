@@ -10,8 +10,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // Prefs to define whether the features are enabled by policy.
 const char kRestoreAppsEnabled[] = "settings.restore_apps_enabled";
@@ -84,5 +83,4 @@ void UpdateRestorePrefIfNecessary(PrefService* prefs) {
   }
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

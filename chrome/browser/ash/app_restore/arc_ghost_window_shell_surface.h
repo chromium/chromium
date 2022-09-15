@@ -14,8 +14,7 @@ namespace app_restore {
 struct AppRestoreData;
 }  // namespace app_restore
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // Explicitly identifies ARC ghost surface.
 extern const aura::WindowProperty<bool>* const kArcGhostSurface;
@@ -57,7 +56,6 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   std::unique_ptr<exo::Buffer> buffer_;
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_SHELL_SURFACE_H_

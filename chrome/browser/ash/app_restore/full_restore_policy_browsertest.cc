@@ -22,8 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 class FullRestorePolicyBrowserTest
     : public policy::PolicyTest,
@@ -90,5 +89,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          FullRestorePolicyBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

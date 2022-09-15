@@ -58,8 +58,7 @@ class Throbber : public views::View {
 
 }  // namespace
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 ArcGhostWindowView::ArcGhostWindowView(int throbber_diameter,
                                        uint32_t theme_color) {
@@ -120,5 +119,4 @@ void ArcGhostWindowView::OnIconLoaded(apps::IconValuePtr icon_value) {
 BEGIN_METADATA(ArcGhostWindowView, views::View)
 END_METADATA
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore

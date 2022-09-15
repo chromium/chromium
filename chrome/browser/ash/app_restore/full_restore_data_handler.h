@@ -9,8 +9,7 @@
 
 class Profile;
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // The FullRestoreDataHandler class observes AppRegistryCache to remove the app
 // launching and app windows when the app is removed.
@@ -33,7 +32,6 @@ class FullRestoreDataHandler : public apps::AppRegistryCache::Observer {
   base::WeakPtrFactory<FullRestoreDataHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_DATA_HANDLER_H_

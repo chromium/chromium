@@ -16,8 +16,7 @@ namespace app_restore {
 struct AppRestoreData;
 }  // namespace app_restore
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 // The ArcGhostWindowHandler class provides control for ARC ghost window.
 class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
@@ -109,7 +108,6 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   base::WeakPtrFactory<ArcGhostWindowHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_GHOST_WINDOW_HANDLER_H_

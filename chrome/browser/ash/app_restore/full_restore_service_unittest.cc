@@ -53,8 +53,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace ash {
-namespace full_restore {
+namespace ash::full_restore {
 
 namespace {
 
@@ -1030,5 +1029,4 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 }
 
-}  // namespace full_restore
-}  // namespace ash
+}  // namespace ash::full_restore
