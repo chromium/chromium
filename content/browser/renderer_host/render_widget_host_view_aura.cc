@@ -1902,10 +1902,9 @@ void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
   // RenderWidgetHostViewAura instance goes away etc. To avoid that we
   // destroy the LegacyRenderWidgetHostHWND instance here.
   if (legacy_render_widget_host_HWND_) {
-    legacy_render_widget_host_HWND_->Destroy();
-    // The Destroy call above will delete the LegacyRenderWidgetHostHWND
+    // The Destroy call below will delete the LegacyRenderWidgetHostHWND
     // instance.
-    legacy_render_widget_host_HWND_ = nullptr;
+    legacy_render_widget_host_HWND_.ExtractAsDangling()->Destroy();
   }
 #endif
 
