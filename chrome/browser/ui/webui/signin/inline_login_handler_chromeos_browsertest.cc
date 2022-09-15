@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -316,8 +317,10 @@ class InlineLoginHandlerChromeOSTest
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
                        NewAccountAdditionSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->AddObserver(&observer);
+  base::ScopedObservation<account_manager::AccountManagerFacade,
+                          account_manager::AccountManagerFacade::Observer>
+      observation{&observer};
+  observation.Observe(::GetAccountManagerFacade(profile()->GetPath().value()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -336,16 +339,15 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
               OnAccountUpserted(AccountEmailEq(kSecondaryAccount1Email)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   run_loop.Run();
-
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->RemoveObserver(&observer);
 }
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
                        PrimaryReauthenticationSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->AddObserver(&observer);
+  base::ScopedObservation<account_manager::AccountManagerFacade,
+                          account_manager::AccountManagerFacade::Observer>
+      observation{&observer};
+  observation.Observe(::GetAccountManagerFacade(profile()->GetPath().value()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -358,9 +360,6 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTest,
               OnAccountUpserted(AccountEmailEq(GetDeviceAccountInfo().email)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   run_loop.Run();
-
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->RemoveObserver(&observer);
 }
 
 INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerChromeOSTestSuite,
@@ -387,8 +386,11 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
 
   void AddAccount(const std::string& email, bool is_available_in_arc) {
     account_manager::MockAccountManagerFacadeObserver observer;
-    ::GetAccountManagerFacade(profile()->GetPath().value())
-        ->AddObserver(&observer);
+    base::ScopedObservation<account_manager::AccountManagerFacade,
+                            account_manager::AccountManagerFacade::Observer>
+        observation{&observer};
+    observation.Observe(
+        ::GetAccountManagerFacade(profile()->GetPath().value()));
     auto* account_apps_availability =
         ash::AccountAppsAvailabilityFactory::GetForProfile(profile());
 
@@ -402,9 +404,6 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
           run_loop.Quit();
         });
     identity_test_env()->MakeAccountAvailable(email);
-
-    ::GetAccountManagerFacade(profile()->GetPath().value())
-        ->RemoveObserver(&observer);
   }
 
   bool ValuesListContainAccount(const base::span<const base::Value> values,
@@ -448,12 +447,18 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
                        NewAccountAdditionSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->AddObserver(&observer);
+  base::ScopedObservation<account_manager::AccountManagerFacade,
+                          account_manager::AccountManagerFacade::Observer>
+      account_manager_facade_observation{&observer};
+  account_manager_facade_observation.Observe(
+      ::GetAccountManagerFacade(profile()->GetPath().value()));
 
   MockAccountAppsAvailabilityObserver apps_availability_observer;
-  ash::AccountAppsAvailabilityFactory::GetForProfile(profile())->AddObserver(
-      &apps_availability_observer);
+  base::ScopedObservation<ash::AccountAppsAvailability,
+                          ash::AccountAppsAvailability::Observer>
+      apps_availability_observation{&apps_availability_observer};
+  apps_availability_observation.Observe(
+      ash::AccountAppsAvailabilityFactory::GetForProfile(profile()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -479,22 +484,23 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
               OnAccountAvailableInArc(AccountEmailEq(kSecondaryAccount1Email)))
       .WillOnce(base::test::RunClosure(run_loop_1.QuitClosure()));
   run_loop_1.Run();
-
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->RemoveObserver(&observer);
-  ash::AccountAppsAvailabilityFactory::GetForProfile(profile())->RemoveObserver(
-      &apps_availability_observer);
 }
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
                        PrimaryReauthenticationSuccess) {
   account_manager::MockAccountManagerFacadeObserver observer;
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->AddObserver(&observer);
+  base::ScopedObservation<account_manager::AccountManagerFacade,
+                          account_manager::AccountManagerFacade::Observer>
+      account_manager_facade_observation{&observer};
+  account_manager_facade_observation.Observe(
+      ::GetAccountManagerFacade(profile()->GetPath().value()));
 
   MockAccountAppsAvailabilityObserver apps_availability_observer;
-  ash::AccountAppsAvailabilityFactory::GetForProfile(profile())->AddObserver(
-      &apps_availability_observer);
+  base::ScopedObservation<ash::AccountAppsAvailability,
+                          ash::AccountAppsAvailability::Observer>
+      apps_availability_observation{&apps_availability_observer};
+  apps_availability_observation.Observe(
+      ash::AccountAppsAvailabilityFactory::GetForProfile(profile()));
 
   // Call "completeLogin".
   base::Value::List args;
@@ -511,11 +517,6 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   // Make sure that ARC availability didn't change for account.
   EXPECT_CALL(apps_availability_observer, OnAccountAvailableInArc).Times(0);
   EXPECT_CALL(apps_availability_observer, OnAccountUnavailableInArc).Times(0);
-
-  ::GetAccountManagerFacade(profile()->GetPath().value())
-      ->RemoveObserver(&observer);
-  ash::AccountAppsAvailabilityFactory::GetForProfile(profile())->RemoveObserver(
-      &apps_availability_observer);
 }
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
