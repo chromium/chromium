@@ -591,9 +591,7 @@ template <bool UseArena>
 StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
                                             AllowedRulesType allowed_rules) {
   DCHECK_EQ(stream.Peek().GetType(), kAtKeywordToken);
-  CSSParserToken name_token =
-      stream.ConsumeIncludingWhitespace();  // Must live until CssAtRuleID().
-  const StringView name = name_token.Value();
+  const StringView name = stream.ConsumeIncludingWhitespace().Value();
   const CSSAtRuleID id = CssAtRuleID(name);
 
   // @import rules have a URI component that is not technically part of the
