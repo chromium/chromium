@@ -62,6 +62,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void SetSidePanelUIEmbedder(
       base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
           side_panel_embedder);
+  // Used to set the in-page query from the browser.
+  void SetQuery(const std::string& query);
 
   // mojom::PageHandler:
   void OpenHistoryCluster(

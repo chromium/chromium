@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
@@ -28,9 +29,18 @@ class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController {
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
 
+  // Gets a weak pointer to this object.
+  base::WeakPtr<HistoryClustersSidePanelUI> GetWeakPtr();
+
+  // Sets the side panel UI to show `query`.
+  void SetQuery(const std::string& query);
+
  private:
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
+
+  // Used for `GetWeakPtr()`.
+  base::WeakPtrFactory<HistoryClustersSidePanelUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

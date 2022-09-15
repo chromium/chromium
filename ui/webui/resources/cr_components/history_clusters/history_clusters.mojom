@@ -231,4 +231,7 @@ interface Page {
 
   // Called when History is deleted from a different tab.
   OnHistoryDeleted();
+
+  // Called when the user needs to set `query` for the existing WebUI surface.
+  OnQueryChangedByUser(string query);
 };

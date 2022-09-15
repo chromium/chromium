@@ -81,9 +81,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #endif
 
@@ -466,16 +464,13 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
   if (!browser)
     return false;
 
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
-    return false;
-
-  if (browser_view->side_panel_coordinator()) {
-    browser_view->side_panel_coordinator()->Show(
-        SidePanelEntry::Id::kHistoryClusters);
+  if (auto* history_clusters_side_panel_coordinator =
+          HistoryClustersSidePanelCoordinator::BrowserUserData::FromBrowser(
+              browser)) {
+    history_clusters_side_panel_coordinator->Show(query);
     return true;
   }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   return false;

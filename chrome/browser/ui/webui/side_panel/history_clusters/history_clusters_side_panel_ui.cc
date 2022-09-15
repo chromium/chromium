@@ -61,3 +61,18 @@ void HistoryClustersSidePanelUI::BindInterface(
           web_ui()->GetWebContents());
   history_clusters_handler_->SetSidePanelUIEmbedder(this->embedder());
 }
+
+base::WeakPtr<HistoryClustersSidePanelUI>
+HistoryClustersSidePanelUI::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void HistoryClustersSidePanelUI::SetQuery(const std::string& query) {
+  // If the handler has already been created, pass to the existing WebUI.
+  // Otherwise, we don't need to do anything, because
+  // HistoryClustersSidePanelCoordinator will pass it to the newly created WebUI
+  // via a URL parameter.
+  if (history_clusters_handler_) {
+    history_clusters_handler_->SetQuery(query);
+  }
+}

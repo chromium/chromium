@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_user_data.h"
 
 class Browser;
+class HistoryClustersSidePanelUI;
 class SidePanelRegistry;
 
 namespace views {
@@ -30,10 +31,20 @@ class HistoryClustersSidePanelCoordinator
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
+  // Shows the Journeys side panel with `query` pre-populated. Returns true if
+  // this was successful.
+  bool Show(const std::string& query);
+
  private:
   friend class BrowserUserData<HistoryClustersSidePanelCoordinator>;
 
   std::unique_ptr<views::View> CreateHistoryClustersWebView();
+
+  // A weak reference to the last-created UI object for this browser.
+  base::WeakPtr<HistoryClustersSidePanelUI> history_clusters_ui_;
+
+  // Used to store the initial query for the next-created WebUI instance.
+  std::string initial_query_;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

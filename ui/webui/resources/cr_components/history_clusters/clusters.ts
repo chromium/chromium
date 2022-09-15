@@ -129,6 +129,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   private onClustersQueryResultListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private onHistoryDeletedListenerId_: number|null = null;
+  private onQueryChangedByUserListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
   private placeholderText_: string;
   private result_: QueryResult;
@@ -165,6 +166,9 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     this.onHistoryDeletedListenerId_ =
         this.callbackRouter_.onHistoryDeleted.addListener(
             this.onHistoryDeleted_.bind(this));
+    this.onQueryChangedByUserListenerId_ =
+        this.callbackRouter_.onQueryChangedByUser.addListener(
+            this.onQueryChangedByUser_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -175,6 +179,12 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     assert(this.onVisitsRemovedListenerId_);
     this.callbackRouter_.removeListener(this.onVisitsRemovedListenerId_);
     this.onVisitsRemovedListenerId_ = null;
+    assert(this.onHistoryDeletedListenerId_);
+    this.callbackRouter_.removeListener(this.onHistoryDeletedListenerId_);
+    this.onHistoryDeletedListenerId_ = null;
+    assert(this.onQueryChangedByUserListenerId_);
+    this.callbackRouter_.removeListener(this.onQueryChangedByUserListenerId_);
+    this.onQueryChangedByUserListenerId_ = null;
   }
 
   //============================================================================
@@ -368,6 +378,20 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // the externally deleted History. It would be nice if we could save the
     // user's scroll position, but History doesn't do that either.
     this.onQueryChanged_();
+  }
+
+  /**
+   * Called when the query is changed by the user externally.
+   */
+  private onQueryChangedByUser_(query: string) {
+    // Don't directly change the query, but instead let the containing element
+    // update the searchbox UI. That in turn will cause this object to issue
+    // a new query to the backend.
+    this.dispatchEvent(new CustomEvent('query-changed-by-user', {
+      bubbles: true,
+      composed: true,
+      detail: query,
+    }));
   }
 }
 
