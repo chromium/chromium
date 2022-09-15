@@ -34,6 +34,9 @@ constexpr char kWebrtcIceSdpRestartAction[] = "webrtcIceSdpRestartAction";
 // implemented and working on the host side.
 constexpr char kMultiStreamCapability[] = "multiStream_inProgress";
 
+// Host supports display layouts controlled by the client.
+constexpr char kClientControlledLayoutCapability[] = "clientControlledLayout";
+
 }  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CAPABILITY_NAMES_H_
