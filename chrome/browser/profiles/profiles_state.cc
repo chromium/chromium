@@ -287,15 +287,6 @@ bool IsPublicSession() {
 #endif
 }
 
-bool ArePublicSessionRestrictionsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized()) {
-    return chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
-  }
-#endif
-  return false;
-}
-
 bool IsKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::LoginState::IsInitialized() &&

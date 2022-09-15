@@ -746,8 +746,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
                        PolicyCredentialsUsed) {
   SetManagedProxy();
   LoginState::Get()->SetLoggedInState(
-      LoginState::LOGGED_IN_ACTIVE,
-      LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+      LoginState::LOGGED_IN_ACTIVE, LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
   SetPolicyCredentials(kProxyUsername, kProxyPassword);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html")));
@@ -760,8 +759,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
                        BadPolicyCredentials) {
   SetManagedProxy();
   LoginState::Get()->SetLoggedInState(
-      LoginState::LOGGED_IN_ACTIVE,
-      LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+      LoginState::LOGGED_IN_ACTIVE, LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
   SetPolicyCredentials(kBadUsername, kBadPassword);
   LoginWithDialog(kProxyUsername16, kProxyPassword16);
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
@@ -773,8 +771,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
                        RestrictedPolicyCredentials) {
   SetManagedProxy();
   LoginState::Get()->SetLoggedInState(
-      LoginState::LOGGED_IN_ACTIVE,
-      LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
+      LoginState::LOGGED_IN_ACTIVE, LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
   SetPolicyCredentials(kProxyUsername, kProxyPassword, R"("ntlm","digest")");
   LoginWithDialog(kProxyUsername16, kProxyPassword16);
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);

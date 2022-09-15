@@ -72,6 +72,7 @@
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_policy_provider.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -241,9 +242,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
     // or the normal one should be displayed. The next time on the login screen
     // of the managed-guest sessions the warning will be decided according to
     // the value saved from the last session.
-    if (chromeos::LoginState::IsInitialized() &&
-        chromeos::LoginState::Get()->IsPublicSessionUser() &&
-        !chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled()) {
+    if (profiles::IsPublicSession()) {
       extensions_permissions_tracker_ =
           std::make_unique<ExtensionsPermissionsTracker>(
               ExtensionRegistry::Get(profile_), profile_);

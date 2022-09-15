@@ -98,11 +98,6 @@ bool LoginState::IsGuestSessionUser() const {
 }
 
 bool LoginState::IsPublicSessionUser() const {
-  return logged_in_user_type_ == LOGGED_IN_USER_PUBLIC_ACCOUNT ||
-         logged_in_user_type_ == LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED;
-}
-
-bool LoginState::ArePublicSessionRestrictionsEnabled() const {
   return logged_in_user_type_ == LOGGED_IN_USER_PUBLIC_ACCOUNT;
 }
 

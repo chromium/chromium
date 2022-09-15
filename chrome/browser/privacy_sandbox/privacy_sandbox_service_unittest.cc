@@ -50,7 +50,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/login/login_state/login_state.h"
+#include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1372,10 +1372,7 @@ TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
                         /*confirmation_not_shown=*/false});
   // No prompt should be shown for a public session account.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::LoginState::Initialize();
-  ash::LoginState::Get()->SetLoggedInState(
-      ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_PUBLIC_ACCOUNT);
+  chromeos::ScopedTestPublicSessionLoginState login_state;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();

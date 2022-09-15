@@ -167,10 +167,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
 
-  void AddUserRecordForTesting(User* user) {
-    return AddUserRecord(user);
-  }
-
   // Returns true if device is enterprise managed.
   virtual bool IsEnterpriseManaged() const = 0;
 
