@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -74,10 +75,12 @@
 
 @end
 
-@interface PasswordSettingsCoordinator () <ExportActivityViewControllerDelegate,
-                                           PasswordExportHandler,
-                                           PasswordSettingsPresentationDelegate,
-                                           PopoverLabelViewControllerDelegate> {
+@interface PasswordSettingsCoordinator () <
+    ExportActivityViewControllerDelegate,
+    PasswordExportHandler,
+    PasswordSettingsPresentationDelegate,
+    PopoverLabelViewControllerDelegate,
+    SettingsNavigationControllerDelegate> {
   // Service which gives us a view on users' saved passwords.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       _savedPasswordsPresenter;
@@ -90,6 +93,11 @@
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
     PasswordSettingsViewController* passwordSettingsViewController;
+
+// The presented SettingsNavigationController containing
+// `passwordSettingsViewController`.
+@property(nonatomic, strong)
+    SettingsNavigationController* settingsNavigationController;
 
 // The coupled mediator.
 @property(nonatomic, strong) PasswordSettingsMediator* mediator;
@@ -137,24 +145,34 @@
 
   self.passwordSettingsViewController.presentationDelegate = self;
 
+  self.settingsNavigationController = [[SettingsNavigationController alloc]
+      initWithRootViewController:self.passwordSettingsViewController
+                         browser:self.browser
+                        delegate:self];
+
   self.mediator.consumer = self.passwordSettingsViewController;
 
   [self.baseViewController
-      presentViewController:self.passwordSettingsViewController
+      presentViewController:self.settingsNavigationController
                    animated:YES
                  completion:nil];
 }
 
 - (void)stop {
+  // If the parent coordinator is stopping `self` while the UI is still being
+  // presented, dismiss without animation. Dismissals due to user actions(e.g,
+  // swipe or tap on Done) are animated.
+  if (self.baseViewController.presentedViewController ==
+      self.settingsNavigationController) {
+    [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+  }
+
   self.passwordSettingsViewController = nil;
+  self.settingsNavigationController = nil;
   _preparingPasswordsAlert = nil;
 }
 
 #pragma mark - PasswordSettingsPresentationDelegate
-
-- (void)passwordSettingsViewControllerDidDismiss {
-  [self.delegate passwordSettingsCoordinatorDidRemove:self];
-}
 
 - (void)startExportFlow {
   UIAlertController* exportConfirmation = [UIAlertController
@@ -333,6 +351,37 @@
 
 - (void)resetExport {
   [self.mediator userDidCompleteExportFlow];
+}
+
+#pragma mark - SettingsNavigationControllerDelegate
+
+- (void)closeSettings {
+  // Dismiss UI and notify parent coordinator.
+  auto* __weak weakSelf = self;
+  [self.baseViewController dismissViewControllerAnimated:YES
+                                              completion:^{
+                                                [weakSelf settingsWasDismissed];
+                                              }];
+}
+
+- (void)settingsWasDismissed {
+  [self.delegate passwordSettingsCoordinatorDidRemove:self];
+}
+
+- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
+    handlerForSettings {
+  NOTREACHED();
+  return nil;
+}
+
+- (id<ApplicationCommands>)handlerForApplicationCommands {
+  NOTREACHED();
+  return nil;
+}
+
+- (id<SnackbarCommands>)handlerForSnackbarCommands {
+  NOTREACHED();
+  return nil;
 }
 
 #pragma mark - Private

@@ -2201,6 +2201,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_MANAGER" desc="Title for the view in Settings for managing saved passwords. [Length: 15em] [iOS only]">
         Password Manager
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS" desc="Title for the view in Settings for managing the settings related to saved passwords. [Length: 15em] [iOS only]">
+        Password Settings
+      </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION" desc="Text displayed to inform the user that the browser is managed by Enterprise policies (without link). [iOS only]">
         Managed by your organization
       </message>

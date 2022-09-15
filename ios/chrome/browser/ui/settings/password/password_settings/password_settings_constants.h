@@ -17,4 +17,7 @@ extern NSString* const kPasswordSettingsExportConfirmViewId;
 extern NSString* const kPasswordSettingsSavePasswordSwitchTableViewId;
 extern NSString* const kPasswordSettingsManagedSavePasswordSwitchTableViewId;
 
+// Accessibility ID for the UITableView in Password Settings.
+extern NSString* const kPasswordsSettingsTableViewId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSTANTS_H_

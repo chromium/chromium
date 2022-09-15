@@ -2162,23 +2162,14 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 - (void)testOpenPasswordSettingsSubmenu {
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/1335156): On small phones this test fails because the
-    // original menu peeks out underneath the submenu that covers it. This will
-    // be fixed when this test is updated to check for content on the submenu.
-    EARL_GREY_TEST_DISABLED(@"Disabled for phones.");
-  }
-
   OpenPasswordManager();
 
   [[EarlGrey selectElementWithMatcher:ToolbarSettingsSubmenuButton()]
       performAction:grey_tap()];
 
-  // The submenu doesn't currently have any content, so just ensure that the
-  // underlying window isn't visible anymore.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
-      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordsSettingsTableViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

@@ -53,6 +53,7 @@ source_set("password_settings_ui") {
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
+  public_deps = [ "//ios/chrome/browser/ui/settings:settings_root" ]
   frameworks = [ "UIKit.framework" ]
 }
 

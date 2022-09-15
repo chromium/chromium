@@ -99,11 +99,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  [self loadModel];
-}
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [self.presentationDelegate passwordSettingsViewControllerDidDismiss];
+  self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS);
+  self.tableView.accessibilityIdentifier = kPasswordsSettingsTableViewId;
+
+  [self loadModel];
 }
 
 #pragma mark - ChromeTableViewController

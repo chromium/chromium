@@ -10,13 +10,10 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_delegate.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 // Delegate for the PasswordSettingsViewController to talk to its coordinator.
 @protocol PasswordSettingsPresentationDelegate
-
-// Method invoked when the page is dismissed.
-- (void)passwordSettingsViewControllerDidDismiss;
 
 // Method invoked when the user requests an export of their saved passwords.
 - (void)startExportFlow;
@@ -32,7 +29,7 @@
 // relating to passwords. These are displayed in a submenu, separate from the
 // Password Manager itself.
 @interface PasswordSettingsViewController
-    : ChromeTableViewController <PasswordSettingsConsumer>
+    : SettingsRootTableViewController <PasswordSettingsConsumer>
 
 // Delegate for communicating with the mediator.
 @property(nonatomic, weak) id<PasswordSettingsDelegate> delegate;
