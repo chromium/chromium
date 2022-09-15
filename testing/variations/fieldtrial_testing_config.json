@@ -6910,6 +6910,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OmniboxReportSearchboxStats"
+                    ],
+                    "disable_features": [
+                        "OmniboxReportAssistedQueryStats"
                     ]
                 }
             ]
