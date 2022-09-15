@@ -15,6 +15,7 @@
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/display/screen.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -121,6 +122,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   multitask_menu_widget_->SetBounds(widget_bounds);
 
   widget_observation_.Observe(multitask_menu_widget_.get());
+  display_observer_.emplace(this);
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
@@ -142,6 +144,22 @@ void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
   if (!active) {
     CloseMultitaskMenu();
   }
+}
+
+void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  // Ignore changes to displays that aren't showing the menu.
+  if (display.id() !=
+      display::Screen::GetScreen()
+          ->GetDisplayNearestView(multitask_menu_widget_->GetNativeWindow())
+          .id()) {
+    return;
+  }
+  // TODO(shidi): Will do the rotate transition on a separate cl. Close the
+  // menu at rotation for now.
+  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
+    CloseMultitaskMenu();
 }
 
 void TabletModeMultitaskMenu::Show() {

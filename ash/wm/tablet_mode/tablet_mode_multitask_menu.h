@@ -9,6 +9,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -23,7 +24,8 @@ class TabletModeMultitaskMenuEventHandler;
 // The container of the multitask menu. Creates and owns the multitask menu
 // widget.
 class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
-                                           public views::WidgetObserver {
+                                           public views::WidgetObserver,
+                                           public display::DisplayObserver {
  public:
   TabletModeMultitaskMenu(TabletModeMultitaskMenuEventHandler* event_handler,
                           aura::Window* window,
@@ -39,6 +41,10 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   void Show();
   void CloseMultitaskMenu();
@@ -65,6 +71,8 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   views::UniqueWidgetPtr multitask_menu_widget_ =
       std::make_unique<views::Widget>();
