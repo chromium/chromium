@@ -14,7 +14,7 @@ MockInputMethodEngine::MockInputMethodEngine() = default;
 MockInputMethodEngine::~MockInputMethodEngine() = default;
 
 void MockInputMethodEngine::FocusIn(
-    const IMEEngineHandlerInterface::InputContext& input_context) {}
+    const TextInputMethod::InputContext& input_context) {}
 
 void MockInputMethodEngine::OnTouch(ui::EventPointerType pointerType) {}
 

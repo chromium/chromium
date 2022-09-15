@@ -24,13 +24,13 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/character_composer.h"
 
 namespace ash {
 namespace input_method {
 
-using ui::IMEEngineHandlerInterface;
+using ui::TextInputMethod;
 
 bool CanRouteToNativeMojoEngine(const std::string& engine_id);
 
@@ -59,13 +59,12 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void OnActivate(const std::string& engine_id) override;
   void OnFocus(const std::string& engine_id,
                int context_id,
-               const IMEEngineHandlerInterface::InputContext& context) override;
+               const TextInputMethod::InputContext& context) override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur(const std::string& engine_id, int context_id) override;
-  void OnKeyEvent(
-      const std::string& engine_id,
-      const ui::KeyEvent& event,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override;
+  void OnKeyEvent(const std::string& engine_id,
+                  const ui::KeyEvent& event,
+                  ui::TextInputMethod::KeyEventDoneCallback callback) override;
   void OnReset(const std::string& engine_id) override;
   void OnDeactivated(const std::string& engine_id) override;
   void OnCompositionBoundsChanged(
@@ -161,7 +160,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void HandleOnFocusAsyncForNativeMojoEngine(
       const std::string& engine_id,
       int context_id,
-      const IMEEngineHandlerInterface::InputContext& context,
+      const TextInputMethod::InputContext& context,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   bool IsInputMethodBound();

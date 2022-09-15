@@ -11,25 +11,24 @@
 #include <string>
 #include <vector>
 
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
+#include "ui/base/ime/ash/text_input_method.h"
 
 namespace ui {
-class IMEEngineHandlerInterface;
+class TextInputMethod;
 class KeyEvent;
 }  // namespace ui
 
 namespace ash {
 namespace input_method {
 
-class MockInputMethodEngine : public ui::IMEEngineHandlerInterface {
+class MockInputMethodEngine : public ui::TextInputMethod {
  public:
   MockInputMethodEngine();
   ~MockInputMethodEngine() override;
 
-  // IMEEngineHandlerInterface overrides.
-  void FocusIn(
-      const IMEEngineHandlerInterface::InputContext& input_context) override;
+  // TextInputMethod overrides.
+  void FocusIn(const TextInputMethod::InputContext& input_context) override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void FocusOut() override;
   void Enable(const std::string& component_id) override;

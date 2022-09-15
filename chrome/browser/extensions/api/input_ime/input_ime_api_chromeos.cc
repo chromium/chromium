@@ -28,9 +28,9 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/ime_keymap.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ui_base_features.h"
 
@@ -64,7 +64,7 @@ namespace FinishComposingText =
     extensions::api::input_method_private::FinishComposingText;
 
 using ::ash::input_method::InputMethodEngine;
-using ::ui::IMEEngineHandlerInterface;
+using ::ui::TextInputMethod;
 
 const char kErrorEngineNotAvailable[] = "The engine is not available.";
 const char kErrorSetMenuItemsFail[] = "Could not create menu items.";
@@ -323,10 +323,9 @@ class ImeObserverChromeOS
                              input_ime::OnBlur::kEventName, std::move(args));
   }
 
-  void OnKeyEvent(
-      const std::string& component_id,
-      const ui::KeyEvent& event,
-      IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
+  void OnKeyEvent(const std::string& component_id,
+                  const ui::KeyEvent& event,
+                  TextInputMethod::KeyEventDoneCallback callback) override {
     if (extension_id_.empty())
       return;
 
@@ -453,10 +452,9 @@ class ImeObserverChromeOS
         input_method_private::OnCaretBoundsChanged::Create(caret_bounds_arg));
   }
 
-  void OnFocus(
-      const std::string& engine_id,
-      int context_id,
-      const IMEEngineHandlerInterface::InputContext& context) override {
+  void OnFocus(const std::string& engine_id,
+               int context_id,
+               const TextInputMethod::InputContext& context) override {
     if (extension_id_.empty()) {
       return;
     }
@@ -700,7 +698,7 @@ class ImeObserverChromeOS
   }
 
   std::string ConvertInputContextFocusReason(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
+      ui::TextInputMethod::InputContext input_context) {
     switch (input_context.focus_reason) {
       case ui::TextInputClient::FOCUS_REASON_NONE:
         return "";
@@ -753,13 +751,12 @@ class ImeObserverChromeOS
            !(flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
   }
 
-  bool ConvertHasBeenPassword(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
+  bool ConvertHasBeenPassword(ui::TextInputMethod::InputContext input_context) {
     return input_context.flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD;
   }
 
   std::string ConvertInputContextMode(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
+      ui::TextInputMethod::InputContext input_context) {
     std::string input_mode_type = "none";  // default to nothing
     switch (input_context.mode) {
       case ui::TEXT_INPUT_MODE_SEARCH:
@@ -794,7 +791,7 @@ class ImeObserverChromeOS
   }
 
   std::string ConvertInputContextType(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
+      ui::TextInputMethod::InputContext input_context) {
     std::string input_context_type = "text";
     switch (input_context.type) {
       case ui::TEXT_INPUT_TYPE_SEARCH:

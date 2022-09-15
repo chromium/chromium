@@ -19,8 +19,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -121,7 +121,7 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
                                            const std::u16string& current_text) {
   // TODO(crbug/1111135): call setAutocorrectTime() (for metrics)
   // TODO(crbug/1111135): record metric (coverage)
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     AcceptOrClearPendingAutocorrect();
@@ -241,7 +241,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   }
 
   std::string error;
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
 
   // Null input context invalidates the range so consider the pending
@@ -336,8 +336,8 @@ void AutocorrectManager::OnBlur() {
 }
 
 void AutocorrectManager::ProcessTextFieldChange() {
-  ui::IMEInputContextHandlerInterface* input_context =
-    ui::IMEBridge::Get()->GetInputContextHandler();
+  ui::TextInputTarget* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
 
   // Clear autocorrect range if any.
   if (input_context) {
@@ -360,7 +360,7 @@ void AutocorrectManager::UndoAutocorrect() {
 
   HideUndoWindow();
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   const gfx::Range autocorrect_range = input_context->GetAutocorrectRange();
 
@@ -500,7 +500,7 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
   }
 
   // TODO(b/161490813): Record delay metric.
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
 
   if (!pending_autocorrect_->is_validated) {

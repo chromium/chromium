@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IME_ASH_IME_ENGINE_HANDLER_INTERFACE_H_
-#define UI_BASE_IME_ASH_IME_ENGINE_HANDLER_INTERFACE_H_
+#ifndef UI_BASE_IME_ASH_TEXT_INPUT_METHOD_H_
+#define UI_BASE_IME_ASH_TEXT_INPUT_METHOD_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -37,8 +37,10 @@ enum class KeyEventHandledState {
 };
 }  // namespace ime
 
-// A interface to handle the engine handler method call.
-class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
+// An interface representing an input method that can read and manipulate text
+// in a TextInputTarget. For example, this can represent a Japanese input method
+// that can compose and insert Japanese characters into a TextInputTarget.
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
  public:
   using KeyEventDoneCallback =
       base::OnceCallback<void(ui::ime::KeyEventHandledState)>;
@@ -68,7 +70,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
     bool should_do_learning;
   };
 
-  virtual ~IMEEngineHandlerInterface() = default;
+  virtual ~TextInputMethod() = default;
 
   // Called when an input field gains focus.
   virtual void FocusIn(const InputContext& input_context) = 0;
@@ -132,9 +134,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEEngineHandlerInterface {
   virtual bool IsReadyForTesting() = 0;
 
  protected:
-  IMEEngineHandlerInterface() = default;
+  TextInputMethod() = default;
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_ASH_IME_ENGINE_HANDLER_INTERFACE_H_
+#endif  // UI_BASE_IME_ASH_TEXT_INPUT_METHOD_H_

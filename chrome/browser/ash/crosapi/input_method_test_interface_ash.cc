@@ -18,8 +18,7 @@ ui::InputMethodAsh* GetInputMethod() {
   if (!bridge)
     return nullptr;
 
-  ui::IMEInputContextHandlerInterface* handler =
-      bridge->GetInputContextHandler();
+  ui::TextInputTarget* handler = bridge->GetInputContextHandler();
   if (!handler)
     return nullptr;
 

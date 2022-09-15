@@ -24,9 +24,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -93,19 +93,17 @@ class TestObserver : public StubInputMethodEngineObserver {
     calls_bitmap_ |= DEACTIVATED;
     engine_id_ = engine_id;
   }
-  void OnFocus(
-      const std::string& engine_id,
-      int context_id,
-      const ui::IMEEngineHandlerInterface::InputContext& context) override {
+  void OnFocus(const std::string& engine_id,
+               int context_id,
+               const ui::TextInputMethod::InputContext& context) override {
     calls_bitmap_ |= ONFOCUS;
   }
   void OnBlur(const std::string& engine_id, int context_id) override {
     calls_bitmap_ |= ONBLUR;
   }
-  void OnKeyEvent(
-      const std::string& engine_id,
-      const ui::KeyEvent& event,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
+  void OnKeyEvent(const std::string& engine_id,
+                  const ui::KeyEvent& event,
+                  ui::TextInputMethod::KeyEventDoneCallback callback) override {
     std::move(callback).Run(ui::ime::KeyEventHandledState::kHandledByIME);
   }
   void OnCompositionBoundsChanged(
@@ -171,7 +169,7 @@ class InputMethodEngineTest : public testing::Test {
   }
 
   void FocusIn(ui::TextInputType input_type) {
-    ui::IMEEngineHandlerInterface::InputContext input_context(
+    ui::TextInputMethod::InputContext input_context(
         input_type, ui::TEXT_INPUT_MODE_DEFAULT, ui::TEXT_INPUT_FLAG_NONE,
         ui::TextInputClient::FOCUS_REASON_OTHER,
         false /* should_do_learning */);

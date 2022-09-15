@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -167,7 +167,7 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
   }
 
   if (text_updated) {
-    ui::IMEInputContextHandlerInterface* input_context =
+    ui::TextInputTarget* input_context =
         ui::IMEBridge::Get()->GetInputContextHandler();
     if (!input_context)
       return false;
@@ -195,7 +195,7 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
   if (cursor_pos != anchor_pos)
     return false;
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
@@ -274,7 +274,7 @@ void GrammarManager::OnGrammarCheckDone(
     }
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
@@ -312,7 +312,7 @@ void GrammarManager::AcceptSuggestion() {
 
   DismissSuggestion();
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     LOG(ERROR) << "Failed to commit grammar suggestion.";
@@ -357,7 +357,7 @@ void GrammarManager::IgnoreSuggestion() {
 
   DismissSuggestion();
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;

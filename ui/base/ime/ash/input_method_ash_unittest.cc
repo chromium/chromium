@@ -20,10 +20,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/fake_text_input_client.h"
@@ -43,7 +43,7 @@ namespace {
 
 const std::u16string kSampleText = u"あいうえお";
 
-using KeyEventCallback = IMEEngineHandlerInterface::KeyEventDoneCallback;
+using KeyEventCallback = TextInputMethod::KeyEventDoneCallback;
 
 uint32_t GetOffsetInUTF16(const std::u16string& utf16_string,
                           uint32_t utf8_offset) {
@@ -1065,7 +1065,7 @@ TEST_F(InputMethodAshKeyEventTest, KeyEventDelayResponseTest) {
   EXPECT_EQ(kFlags, key_event->flags());
   EXPECT_EQ(0, input_method_ash_->process_key_event_post_ime_call_count());
 
-  static_cast<IMEInputContextHandlerInterface*>(input_method_ash_.get())
+  static_cast<TextInputTarget*>(input_method_ash_.get())
       ->CommitText(
           u"A",
           TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -1123,7 +1123,7 @@ TEST_F(InputMethodAshKeyEventTest, MultiKeyEventDelayResponseTest) {
 
   CompositionText comp;
   comp.text = u"B";
-  (static_cast<IMEInputContextHandlerInterface*>(input_method_ash_.get()))
+  (static_cast<TextInputTarget*>(input_method_ash_.get()))
       ->UpdateCompositionText(comp, comp.text.length(), true);
 
   EXPECT_EQ(0, composition_text_.text[0]);
@@ -1217,7 +1217,7 @@ TEST_F(InputMethodAshKeyEventTest,
 
   input_method_ash_->OnTextInputTypeChanged(this);
   input_method_ash_->DispatchKeyEvent(&event);
-  static_cast<IMEInputContextHandlerInterface*>(input_method_ash_.get())
+  static_cast<TextInputTarget*>(input_method_ash_.get())
       ->CommitText(
           u"b",
           TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);

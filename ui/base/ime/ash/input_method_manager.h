@@ -22,7 +22,7 @@
 class Profile;
 
 namespace ui {
-class IMEEngineHandlerInterface;
+class TextInputMethod;
 class VirtualKeyboardController;
 }  // namespace ui
 
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void AddInputMethodExtension(
         const std::string& extension_id,
         const InputMethodDescriptors& descriptors,
-        ui::IMEEngineHandlerInterface* instance) = 0;
+        ui::TextInputMethod* instance) = 0;
 
     // Removes an input method extension.
     virtual void RemoveInputMethodExtension(

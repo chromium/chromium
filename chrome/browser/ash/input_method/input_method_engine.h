@@ -22,9 +22,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/candidate_window.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/event.h"
@@ -33,7 +33,7 @@ static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ui {
 struct CompositionText;
-class IMEEngineHandlerInterface;
+class TextInputMethod;
 class KeyEvent;
 
 namespace ime {
@@ -48,7 +48,7 @@ namespace input_method {
 
 struct AssistiveWindowProperties;
 
-class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
+class InputMethodEngine : virtual public ui::TextInputMethod,
                           public ProfileObserver,
                           public SuggestionHandlerInterface {
  public:
@@ -208,7 +208,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
   // Returns the request ID for this key event.
   std::string AddPendingKeyEvent(
       const std::string& component_id,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback);
+      ui::TextInputMethod::KeyEventDoneCallback callback);
 
   // Resolves all the pending key event callbacks as not handled.
   void CancelPendingKeyEvents();
@@ -224,9 +224,8 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
     return pref_change_registrar_.get();
   }
 
-  // ui::IMEEngineHandlerInterface overrides.
-  void FocusIn(const ui::IMEEngineHandlerInterface::InputContext& input_context)
-      override;
+  // ui::TextInputMethod overrides.
+  void FocusIn(const ui::TextInputMethod::InputContext& input_context) override;
   void FocusOut() override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void Enable(const std::string& component_id) override;
@@ -323,9 +322,8 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
 
  private:
   struct PendingKeyEvent {
-    PendingKeyEvent(
-        const std::string& component_id,
-        ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback);
+    PendingKeyEvent(const std::string& component_id,
+                    ui::TextInputMethod::KeyEventDoneCallback callback);
     PendingKeyEvent(PendingKeyEvent&& other);
 
     PendingKeyEvent(const PendingKeyEvent&) = delete;
@@ -334,7 +332,7 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
     ~PendingKeyEvent();
 
     std::string component_id;
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback;
+    ui::TextInputMethod::KeyEventDoneCallback callback;
   };
 
   // Notifies InputContextHandler that the composition is changed.

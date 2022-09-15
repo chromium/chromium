@@ -100,10 +100,9 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
       *result = *input_method_extensions_;
     }
 
-    void AddInputMethodExtension(
-        const std::string& id,
-        const InputMethodDescriptors& descriptors,
-        ui::IMEEngineHandlerInterface* instance) override {
+    void AddInputMethodExtension(const std::string& id,
+                                 const InputMethodDescriptors& descriptors,
+                                 ui::TextInputMethod* instance) override {
       InputMethodDescriptor descriptor(
           id, std::string(), std::string(), std::string(),
           std::vector<std::string>(), false, GURL(), GURL());

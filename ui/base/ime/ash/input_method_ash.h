@@ -14,7 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/ash/typing_session_manager.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/composition_text.h"
@@ -30,7 +30,7 @@ enum class KeyEventHandledState;
 // A `ui::InputMethod` implementation for Ash.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
     : public InputMethodBase,
-      public IMEInputContextHandlerInterface {
+      public TextInputTarget {
  public:
   explicit InputMethodAsh(ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   void OnDidChangeFocusedClient(TextInputClient* focused_before,
                                 TextInputClient* focused) override;
 
-  // ui::IMEInputContextHandlerInterface overrides:
+  // ui::TextInputTarget overrides:
   void CommitText(
       const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override;

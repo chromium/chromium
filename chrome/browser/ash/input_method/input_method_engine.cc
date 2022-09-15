@@ -166,7 +166,7 @@ bool InputMethodEngine::CommitText(int context_id,
 
 void InputMethodEngine::ConfirmCompositionText(bool reset_engine,
                                                bool keep_selection) {
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (input_context)
     input_context->ConfirmCompositionText(reset_engine, keep_selection);
@@ -189,7 +189,7 @@ bool InputMethodEngine::DeleteSurroundingText(int context_id,
 
   // TODO(nona): Return false if there is ongoing composition.
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (input_context) {
     input_context->DeleteSurroundingText(offset, number_of_chars);
@@ -237,7 +237,7 @@ bool InputMethodEngine::SendKeyEvents(int context_id,
         (uint8_t)is_mirroring_;
     event_copy.SetProperties(properties);
 
-    ui::IMEInputContextHandlerInterface* input_context =
+    ui::TextInputTarget* input_context =
         ui::IMEBridge::Get()->GetInputContextHandler();
     if (input_context) {
       input_context->SendKeyEvent(&event_copy);
@@ -374,7 +374,7 @@ bool InputMethodEngine::SetCompositionRange(
     return false;
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return false;
@@ -436,7 +436,7 @@ bool InputMethodEngine::SetComposingRange(
     return false;
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return false;
@@ -474,7 +474,7 @@ gfx::Rect InputMethodEngine::GetAutocorrectCharacterBounds(int context_id,
     return gfx::Rect();
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return gfx::Rect();
@@ -496,7 +496,7 @@ gfx::Rect InputMethodEngine::GetTextFieldBounds(int context_id,
     return gfx::Rect();
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return gfx::Rect();
@@ -544,7 +544,7 @@ bool InputMethodEngine::SetSelectionRange(int context_id,
     return false;
   }
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
     return false;
@@ -585,7 +585,7 @@ void InputMethodEngine::KeyEventHandled(const std::string& extension_id,
 
 std::string InputMethodEngine::AddPendingKeyEvent(
     const std::string& component_id,
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) {
+    ui::TextInputMethod::KeyEventDoneCallback callback) {
   std::string request_id = base::NumberToString(next_request_id_);
   ++next_request_id_;
 
@@ -604,7 +604,7 @@ void InputMethodEngine::CancelPendingKeyEvents() {
 }
 
 void InputMethodEngine::FocusIn(
-    const ui::IMEEngineHandlerInterface::InputContext& input_context) {
+    const ui::TextInputMethod::InputContext& input_context) {
   current_input_type_ = input_context.type;
 
   if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
@@ -637,7 +637,7 @@ void InputMethodEngine::FocusOut() {
 void InputMethodEngine::Enable(const std::string& component_id) {
   active_component_id_ = component_id;
   observer_->OnActivate(component_id);
-  const ui::IMEEngineHandlerInterface::InputContext& input_context =
+  const ui::TextInputMethod::InputContext& input_context =
       ui::IMEBridge::Get()->GetCurrentInputContext();
   current_input_type_ = input_context.type;
   FocusIn(input_context);
@@ -1119,7 +1119,7 @@ void InputMethodEngine::UpdateComposition(
     const ui::CompositionText& composition_text,
     uint32_t cursor_pos,
     bool is_visible) {
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (input_context) {
     input_context->UpdateCompositionText(composition_text, cursor_pos,
@@ -1128,7 +1128,7 @@ void InputMethodEngine::UpdateComposition(
 }
 
 gfx::Range InputMethodEngine::GetAutocorrectRange() {
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return gfx::Range();
@@ -1136,7 +1136,7 @@ gfx::Range InputMethodEngine::GetAutocorrectRange() {
 }
 
 bool InputMethodEngine::SetAutocorrectRange(const gfx::Range& range) {
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
@@ -1151,7 +1151,7 @@ bool InputMethodEngine::SetAutocorrectRange(const gfx::Range& range) {
 
 void InputMethodEngine::CommitTextToInputContext(int context_id,
                                                  const std::u16string& text) {
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
@@ -1186,7 +1186,7 @@ void InputMethodEngine::MenuItemToProperty(
 
 InputMethodEngine::PendingKeyEvent::PendingKeyEvent(
     const std::string& component_id,
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback)
+    ui::TextInputMethod::KeyEventDoneCallback callback)
     : component_id(component_id), callback(std::move(callback)) {}
 
 InputMethodEngine::PendingKeyEvent::PendingKeyEvent(PendingKeyEvent&& other) =

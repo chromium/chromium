@@ -27,8 +27,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
 #include "ui/base/ime/ash/input_method_ukm.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -55,7 +55,7 @@ constexpr auto kDefaultLongpressEnabledKeys = base::MakeFixedFlatSet<char>(
 void RecordAssistiveMatch(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Match", type);
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return;
@@ -555,7 +555,7 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(
 }
 
 bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;

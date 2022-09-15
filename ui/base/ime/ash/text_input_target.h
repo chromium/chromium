@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IME_ASH_IME_INPUT_CONTEXT_HANDLER_INTERFACE_H_
-#define UI_BASE_IME_ASH_IME_INPUT_CONTEXT_HANDLER_INTERFACE_H_
+#ifndef UI_BASE_IME_ASH_TEXT_INPUT_TARGET_H_
+#define UI_BASE_IME_ASH_TEXT_INPUT_TARGET_H_
 
 #include <stdint.h>
 
@@ -23,9 +23,12 @@ struct SurroundingTextInfo {
   gfx::Range selection_range;
 };
 
+// An interface representing an input target that supports text editing via a
+// TextInputMethod. Applications like Chrome browser, Android apps, Linux apps
+// should all implement this interface in order to support TextInputMethods.
 // All strings related to IME operations should be UTF-16 encoded and all
 // indices/ranges relative to those strings should be UTF-16 code units.
-class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEInputContextHandlerInterface {
+class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
  public:
   using SetAutocorrectRangeDoneCallback = base::OnceCallback<void(bool)>;
 
@@ -102,4 +105,4 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEInputContextHandlerInterface {
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_ASH_IME_INPUT_CONTEXT_HANDLER_INTERFACE_H_
+#endif  // UI_BASE_IME_ASH_TEXT_INPUT_TARGET_H_

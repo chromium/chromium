@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/event.h"
 #include "ui/gfx/range/range.h"
@@ -19,7 +19,7 @@ namespace ui {
 class InputMethod;
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
-    : public IMEInputContextHandlerInterface {
+    : public TextInputTarget {
  public:
   struct UpdateCompositionTextArg {
     CompositionText composition_text;

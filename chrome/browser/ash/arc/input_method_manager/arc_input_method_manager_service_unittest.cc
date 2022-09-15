@@ -147,10 +147,9 @@ class TestInputMethodManager : public im::MockInputMethodManager {
       return descriptor;
     }
 
-    void AddInputMethodExtension(
-        const std::string& extension_id,
-        const im::InputMethodDescriptors& descriptors,
-        ui::IMEEngineHandlerInterface* instance) override {
+    void AddInputMethodExtension(const std::string& extension_id,
+                                 const im::InputMethodDescriptors& descriptors,
+                                 ui::TextInputMethod* instance) override {
       added_input_method_extensions_.push_back(
           std::make_tuple(extension_id, descriptors, instance));
     }
@@ -197,7 +196,7 @@ class TestInputMethodManager : public im::MockInputMethodManager {
 
     std::vector<std::tuple<std::string,
                            im::InputMethodDescriptors,
-                           ui::IMEEngineHandlerInterface*>>
+                           ui::TextInputMethod*>>
         added_input_method_extensions_;
     std::vector<std::string> removed_input_method_extensions_;
     std::vector<std::string> enabled_input_methods_;
@@ -575,7 +574,7 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeInfoChanged) {
                                             settings_url2, true, false);
 
   std::vector<std::tuple<std::string, im::InputMethodDescriptors,
-                         ui::IMEEngineHandlerInterface*>>& added_extensions =
+                         ui::TextInputMethod*>>& added_extensions =
       imm()->state()->added_input_method_extensions_;
   ASSERT_EQ(0u, added_extensions.size());
 
@@ -938,16 +937,13 @@ TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
   }
   // The proxy IME engine should be added.
   ASSERT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  const ui::IMEEngineHandlerInterface::InputContext test_context{
-      ui::TEXT_INPUT_TYPE_TEXT,
-      ui::TEXT_INPUT_MODE_DEFAULT,
-      0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE,
-      true /* should_do_learning */};
+  const ui::TextInputMethod::InputContext test_context{
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
+      ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -1037,16 +1033,13 @@ TEST_F(ArcInputMethodManagerServiceTest, ShowVirtualKeyboard) {
   }
   // The proxy IME engine should be added.
   ASSERT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  const ui::IMEEngineHandlerInterface::InputContext test_context{
-      ui::TEXT_INPUT_TYPE_TEXT,
-      ui::TEXT_INPUT_MODE_DEFAULT,
-      0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE,
-      true /* should_do_learning */};
+  const ui::TextInputMethod::InputContext test_context{
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
+      ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -1105,16 +1098,13 @@ TEST_F(ArcInputMethodManagerServiceTest, VisibilityObserver) {
   }
   // The proxy IME engine should be added.
   ASSERT_EQ(1u, imm()->state()->added_input_method_extensions_.size());
-  ui::IMEEngineHandlerInterface* engine_handler =
+  ui::TextInputMethod* engine_handler =
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  const ui::IMEEngineHandlerInterface::InputContext test_context{
-      ui::TEXT_INPUT_TYPE_TEXT,
-      ui::TEXT_INPUT_MODE_DEFAULT,
-      0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE,
-      true /* should_do_learning */};
+  const ui::TextInputMethod::InputContext test_context{
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
+      ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);

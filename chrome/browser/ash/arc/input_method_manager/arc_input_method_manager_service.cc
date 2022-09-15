@@ -226,20 +226,18 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
     // TODO(yhanada): Remove this line after we migrate to SPM completely.
     owner_->OnInputContextHandlerChanged();
   }
-  void OnFocus(
-      const std::string& engine_id,
-      int context_id,
-      const ui::IMEEngineHandlerInterface::InputContext& context) override {
+  void OnFocus(const std::string& engine_id,
+               int context_id,
+               const ui::TextInputMethod::InputContext& context) override {
     owner_->Focus(context_id);
   }
   void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {
     owner_->Blur();
   }
-  void OnKeyEvent(
-      const std::string& engine_id,
-      const ui::KeyEvent& event,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback key_data) override {
+  void OnKeyEvent(const std::string& engine_id,
+                  const ui::KeyEvent& event,
+                  ui::TextInputMethod::KeyEventDoneCallback key_data) override {
     if (event.key_code() == ui::VKEY_BROWSER_BACK &&
         event.type() == ui::ET_KEY_PRESSED &&
         owner_->IsVirtualKeyboardShown()) {

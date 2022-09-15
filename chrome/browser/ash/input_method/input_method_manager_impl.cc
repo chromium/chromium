@@ -549,7 +549,7 @@ void InputMethodManagerImpl::StateImpl::ToggleInputMethodForJpIme() {
 void InputMethodManagerImpl::StateImpl::AddInputMethodExtension(
     const std::string& extension_id,
     const InputMethodDescriptors& descriptors,
-    ui::IMEEngineHandlerInterface* engine) {
+    ui::TextInputMethod* engine) {
   if (IsShuttingDown())
     return;
 
@@ -1079,7 +1079,7 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
 
   if (notify_menu) {
     // Clear property list.  Property list would be updated by
-    // extension IMEs via IMEEngineHandlerInterface::(Set|Update)MenuItems.
+    // extension IMEs via TextInputMethod::(Set|Update)MenuItems.
     // If the current input method is a keyboard layout, empty
     // properties are sufficient.
     const ui::ime::InputMethodMenuItemList empty_menu_item_list;
@@ -1090,8 +1090,7 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
   }
 
   // Disable the current engine handler.
-  ui::IMEEngineHandlerInterface* engine =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (engine)
     engine->Disable();
 
@@ -1142,7 +1141,7 @@ void InputMethodManagerImpl::ActivateInputMethodMenuItem(
 
   if (ui::ime::InputMethodMenuManager::GetInstance()->
       HasInputMethodMenuItemForKey(key)) {
-    ui::IMEEngineHandlerInterface* engine =
+    ui::TextInputMethod* engine =
         ui::IMEBridge::Get()->GetCurrentEngineHandler();
     if (engine)
       engine->PropertyActivate(key);
@@ -1244,8 +1243,7 @@ void InputMethodManagerImpl::OnAppTerminating() {
 }
 
 void InputMethodManagerImpl::CandidateClicked(int index) {
-  ui::IMEEngineHandlerInterface* engine =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (engine)
     engine->CandidateClicked(index);
 }
@@ -1262,8 +1260,7 @@ void InputMethodManagerImpl::CandidateWindowClosed() {
 
 void InputMethodManagerImpl::AssistiveWindowButtonClicked(
     const ui::ime::AssistiveWindowButton& button) const {
-  ui::IMEEngineHandlerInterface* engine =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (engine)
     engine->AssistiveWindowButtonClicked(button);
 }
@@ -1425,8 +1422,7 @@ void InputMethodManagerImpl::NotifyObserversImeExtraInputStateChange() {
 
 ui::VirtualKeyboardController*
 InputMethodManagerImpl::GetVirtualKeyboardController() {
-  ui::IMEEngineHandlerInterface* engine =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
+  ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
   if (!engine)
     return nullptr;
   return engine->GetVirtualKeyboardController();

@@ -13,11 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/events/event.h"
 
 namespace ui {
-class IMEEngineHandlerInterface;
+class TextInputMethod;
 class KeyEvent;
 
 namespace ime {
@@ -43,10 +43,9 @@ class InputMethodEngineObserver {
 
   // Called when a text field gains focus, and will be sending key events.
   // `context_id` is a unique ID given to this focus session.
-  virtual void OnFocus(
-      const std::string& engine_id,
-      int context_id,
-      const ui::IMEEngineHandlerInterface::InputContext& context) = 0;
+  virtual void OnFocus(const std::string& engine_id,
+                       int context_id,
+                       const ui::TextInputMethod::InputContext& context) = 0;
 
   // Called on a touch within a text field. Allows for features like changing
   // virtual keyboard layout based on touch type after onfocus (since
@@ -60,7 +59,7 @@ class InputMethodEngineObserver {
   virtual void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback key_data) = 0;
+      ui::TextInputMethod::KeyEventDoneCallback key_data) = 0;
 
   // Called when Chrome terminates on-going text input session.
   virtual void OnReset(const std::string& engine_id) = 0;

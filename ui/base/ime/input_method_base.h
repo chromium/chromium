@@ -23,7 +23,6 @@ class Rect;
 
 namespace ui {
 
-class IMEEngineHandlerInterface;
 class InputMethodObserver;
 class KeyEvent;
 class TextInputClient;

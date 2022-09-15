@@ -326,7 +326,7 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetSurroundingTextFunction::Run() {
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return RespondNow(Error(InformativeError(

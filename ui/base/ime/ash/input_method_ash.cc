@@ -22,9 +22,9 @@
 #include "base/time/default_clock.h"
 #include "chromeos/system/devicemode.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/ash/typing_session_manager.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
@@ -35,7 +35,7 @@
 
 namespace ui {
 
-ui::IMEEngineHandlerInterface* GetEngine() {
+ui::TextInputMethod* GetEngine() {
   auto* bridge = ui::IMEBridge::Get();
   return bridge ? bridge->GetCurrentEngineHandler() : nullptr;
 }
@@ -72,7 +72,7 @@ InputMethodAsh::PendingSetCompositionRange::~PendingSetCompositionRange() =
 
 InputMethodAsh::PendingAutocorrectRange::PendingAutocorrectRange(
     const gfx::Range& range,
-    IMEInputContextHandlerInterface::SetAutocorrectRangeDoneCallback callback)
+    TextInputTarget::SetAutocorrectRangeDoneCallback callback)
     : range(range), callback(std::move(callback)) {}
 
 InputMethodAsh::PendingAutocorrectRange::~PendingAutocorrectRange() = default;
@@ -201,9 +201,9 @@ void InputMethodAsh::OnTextInputTypeChanged(TextInputClient* client) {
 
   UpdateContextFocusState();
 
-  ui::IMEEngineHandlerInterface* engine = GetEngine();
+  ui::TextInputMethod* engine = GetEngine();
   if (engine) {
-    ui::IMEEngineHandlerInterface::InputContext context(
+    ui::TextInputMethod::InputContext context(
         GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
         GetClientFocusReason(), GetClientShouldDoLearning());
     // When focused input client is not changed, a text input type change
@@ -231,7 +231,7 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   DCHECK(client == GetTextInputClient());
   DCHECK(!IsTextInputTypeNone());
 
-  ui::IMEEngineHandlerInterface* engine = GetEngine();
+  ui::TextInputMethod* engine = GetEngine();
   if (engine) {
     engine->SetCompositionBounds(GetCompositionBounds(client));
     engine->SetCaretBounds(client->GetCaretBounds());
@@ -330,7 +330,7 @@ void InputMethodAsh::OnTouch(ui::EventPointerType pointerType) {
   if (!client || !IsTextInputClientFocused(client)) {
     return;
   }
-  ui::IMEEngineHandlerInterface* engine = GetEngine();
+  ui::TextInputMethod* engine = GetEngine();
   if (engine) {
     engine->OnTouch(pointerType);
   }
@@ -364,7 +364,7 @@ void InputMethodAsh::OnDidChangeFocusedClient(TextInputClient* focused_before,
   UpdateContextFocusState();
 
   if (GetEngine()) {
-    ui::IMEEngineHandlerInterface::InputContext context(
+    ui::TextInputMethod::InputContext context(
         GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
         GetClientFocusReason(), GetClientShouldDoLearning());
     GetEngine()->FocusIn(context);
@@ -570,7 +570,7 @@ void InputMethodAsh::UpdateContextFocusState() {
   if (assistive_window)
     assistive_window->FocusStateChanged();
 
-  ui::IMEEngineHandlerInterface::InputContext context(
+  ui::TextInputMethod::InputContext context(
       GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
       GetClientFocusReason(), GetClientShouldDoLearning());
   ui::IMEBridge::Get()->SetCurrentInputContext(context);

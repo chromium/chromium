@@ -11,8 +11,8 @@
 #include "content/public/test/browser_test.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/ash/input_method_ash.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 
@@ -27,17 +27,16 @@ class TestObserver : public StubInputMethodEngineObserver {
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
-  void OnKeyEvent(
-      const std::string& engine_id,
-      const ui::KeyEvent& event,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
+  void OnKeyEvent(const std::string& engine_id,
+                  const ui::KeyEvent& event,
+                  ui::TextInputMethod::KeyEventDoneCallback callback) override {
     std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
   }
 };
 
 class KeyProcessingWaiter {
  public:
-  ui::IMEEngineHandlerInterface::KeyEventDoneCallback CreateCallback() {
+  ui::TextInputMethod::KeyEventDoneCallback CreateCallback() {
     return base::BindOnce(&KeyProcessingWaiter::OnKeyEventDone,
                           base::Unretained(this));
   }

@@ -10,18 +10,18 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/events/event.h"
 
 namespace ash {
 
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
-    : public ui::IMEEngineHandlerInterface {
+    : public ui::TextInputMethod {
  public:
   MockIMEEngineHandler();
   ~MockIMEEngineHandler() override;
 
-  // ui::IMEEngineHandlerInterface:
+  // ui::TextInputMethod:
   void FocusIn(const InputContext& input_context) override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void FocusOut() override;

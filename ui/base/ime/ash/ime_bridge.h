@@ -10,8 +10,8 @@
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/base/ime/ash/ime_bridge_observer.h"
 #include "ui/base/ime/ash/ime_candidate_window_handler_interface.h"
-#include "ui/base/ime/ash/ime_engine_handler_interface.h"
-#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/text_input_method.h"
+#include "ui/base/ime/ash/text_input_target.h"
 
 class IMECandidateWindowHandlerInterface;
 class IMEAssistiveWindowHandlerInterface;
@@ -30,30 +30,34 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   // TODO(crbug/1279743): Use dependency injection instead of global singleton.
   static IMEBridge* Get();
 
-  // Returns current InputContextHandler. This function returns nullptr if input
+  // Returns current TextInputTarget. This function returns nullptr if input
   // context is not ready to use.
-  IMEInputContextHandlerInterface* GetInputContextHandler() const;
+  // TODO(b/245020074): Rename this method.
+  TextInputTarget* GetInputContextHandler() const;
 
-  // Updates current InputContextHandler. If there is no active input context,
+  // Updates current TextInputTarget. If there is no active input context,
   // pass nullptr for |handler|. Caller must release |handler|.
-  void SetInputContextHandler(IMEInputContextHandlerInterface* handler);
+  // TODO(b/245020074): Rename this method.
+  void SetInputContextHandler(TextInputTarget* handler);
 
-  // Updates current EngineHandler. If there is no active engine service, pass
+  // Updates current TextInputMethod. If there is no active engine service, pass
   // nullptr for |handler|. Caller must release |handler|.
-  void SetCurrentEngineHandler(IMEEngineHandlerInterface* handler);
+  // TODO(b/245020074): Rename this method.
+  void SetCurrentEngineHandler(TextInputMethod* handler);
 
-  // Returns current EngineHandler. This function returns nullptr if current
+  // Returns current TextInputMethod. This function returns nullptr if current
   // engine is not ready to use.
-  IMEEngineHandlerInterface* GetCurrentEngineHandler() const;
+  // TODO(b/245020074): Rename this method.
+  TextInputMethod* GetCurrentEngineHandler() const;
 
   // Updates the current input context.
   // This is called from `InputMethodAsh`.
   void SetCurrentInputContext(
-      const IMEEngineHandlerInterface::InputContext& input_context);
+      const TextInputMethod::InputContext& input_context);
 
   // Returns the current input context.
   // This is called from InputMethodEngine.
-  const IMEEngineHandlerInterface::InputContext& GetCurrentInputContext() const;
+  const TextInputMethod::InputContext& GetCurrentInputContext() const;
 
   // Add or remove observers of events such as switching engines, etc.
   void AddObserver(ui::IMEBridgeObserver* observer);
@@ -75,10 +79,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
  private:
   IMEBridge();
 
-  IMEInputContextHandlerInterface* input_context_handler_ = nullptr;
-  IMEEngineHandlerInterface* engine_handler_ = nullptr;
+  // TODO(b/245020074): Rename this member.
+  TextInputTarget* input_context_handler_ = nullptr;
+  // TODO(b/245020074): Rename this member.
+  TextInputMethod* engine_handler_ = nullptr;
   base::ObserverList<IMEBridgeObserver> observers_;
-  IMEEngineHandlerInterface::InputContext current_input_context_;
+  TextInputMethod::InputContext current_input_context_;
 
   ash::IMECandidateWindowHandlerInterface* candidate_window_handler_ = nullptr;
   ash::IMEAssistiveWindowHandlerInterface* assistive_window_handler_ = nullptr;

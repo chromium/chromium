@@ -470,7 +470,7 @@ std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
 
 mojom::InputFieldInfoPtr CreateInputFieldInfo(
     const std::string& engine_id,
-    const ui::IMEEngineHandlerInterface::InputContext& context,
+    const ui::TextInputMethod::InputContext& context,
     const InputFieldContext& input_field_context,
     const PrefService& prefs,
     bool is_normal_screen) {
@@ -678,7 +678,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
 void NativeInputMethodEngineObserver::OnFocus(
     const std::string& engine_id,
     int context_id,
-    const IMEEngineHandlerInterface::InputContext& context) {
+    const TextInputMethod::InputContext& context) {
   text_client_ =
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
 
@@ -716,7 +716,7 @@ void NativeInputMethodEngineObserver::OnFocus(
 void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
     const std::string& engine_id,
     int context_id,
-    const IMEEngineHandlerInterface::InputContext& context,
+    const TextInputMethod::InputContext& context,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   // It is possible the text client got unfocused/or changed before this async
   // function is run, if the new focus/blur event occurred fast enough. In that
@@ -783,7 +783,7 @@ void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
 void NativeInputMethodEngineObserver::OnKeyEvent(
     const std::string& engine_id,
     const ui::KeyEvent& event,
-    ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) {
+    ui::TextInputMethod::KeyEventDoneCallback callback) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     if (assistive_suggester_->OnKeyEvent(event)) {
       std::move(callback).Run(
@@ -836,8 +836,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
       }
 
       auto process_key_event_callback = base::BindOnce(
-          [](ui::IMEEngineHandlerInterface::KeyEventDoneCallback
-                 original_callback,
+          [](ui::TextInputMethod::KeyEventDoneCallback original_callback,
              mojom::KeyEventResult result) {
             std::move(original_callback)
                 .Run((result == mojom::KeyEventResult::kConsumedByIme)
@@ -1083,7 +1082,7 @@ void NativeInputMethodEngineObserver::FinishComposition() {
   if (!IsTextClientActive())
     return;
 
-  ui::IMEInputContextHandlerInterface* input_context =
+  ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
 
   input_context->ConfirmCompositionText(/*reset_engine=*/false,

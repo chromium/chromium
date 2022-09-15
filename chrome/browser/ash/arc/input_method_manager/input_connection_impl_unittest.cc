@@ -33,16 +33,15 @@ class DummyInputMethodEngineObserver
   ~DummyInputMethodEngineObserver() override = default;
 
   void OnActivate(const std::string& engine_id) override {}
-  void OnFocus(
-      const std::string& engine_id,
-      int context_id,
-      const ui::IMEEngineHandlerInterface::InputContext& context) override {}
+  void OnFocus(const std::string& engine_id,
+               int context_id,
+               const ui::TextInputMethod::InputContext& context) override {}
   void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {}
-  void OnKeyEvent(
-      const std::string& engine_id,
-      const ui::KeyEvent& event,
-      ui::IMEEngineHandlerInterface::KeyEventDoneCallback key_data) override {}
+  void OnKeyEvent(const std::string& engine_id,
+                  const ui::KeyEvent& event,
+                  ui::TextInputMethod::KeyEventDoneCallback key_data) override {
+  }
   void OnReset(const std::string& engine_id) override {}
   void OnDeactivated(const std::string& engine_id) override {}
   void OnCompositionBoundsChanged(
@@ -186,13 +185,10 @@ class InputConnectionImplTest : public testing::Test {
 
   MockTextInputClient* client() { return &text_input_client_; }
 
-  ui::IMEEngineHandlerInterface::InputContext context() {
-    return ui::IMEEngineHandlerInterface::InputContext{
-        ui::TEXT_INPUT_TYPE_TEXT,
-        ui::TEXT_INPUT_MODE_DEFAULT,
-        0 /* flags */,
-        ui::TextInputClient::FOCUS_REASON_MOUSE,
-        true /* should_do_learning */};
+  ui::TextInputMethod::InputContext context() {
+    return ui::TextInputMethod::InputContext{
+        ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
+        ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
   }
 
   void SetUp() override {
