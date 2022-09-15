@@ -72,6 +72,10 @@ static_library("browser") {
     "//third_party/icu",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//components/account_manager_core" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "active_directory_account_reconcilor_delegate.cc",
@@ -138,6 +142,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//components/account_manager_core:test_support" ]
+  }
 
   if (is_chromeos_ash) {
     deps += [

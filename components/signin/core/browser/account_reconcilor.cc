@@ -128,6 +128,25 @@ AccountReconcilor::ScopedSyncedDataDeletion::~ScopedSyncedDataDeletion() {
   --reconcilor_->synced_data_deletion_in_progress_count_;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+AccountReconcilor::AccountReconcilor(
+    signin::IdentityManager* identity_manager,
+    SigninClient* client,
+    account_manager::AccountManagerFacade* account_manager_facade,
+    std::unique_ptr<signin::AccountReconcilorDelegate> delegate)
+    : delegate_(std::move(delegate)),
+      identity_manager_(identity_manager),
+      client_(client),
+      account_manager_facade_(account_manager_facade) {
+  VLOG(1) << "AccountReconcilor::AccountReconcilor";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  consistency_cookie_manager_ =
+      std::make_unique<signin::ConsistencyCookieManager>(client_, this);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Reconcilor is constructed but not initialized. Call `Initialize()` before
+  // using this object.
+}
+#else
 AccountReconcilor::AccountReconcilor(
     signin::IdentityManager* identity_manager,
     SigninClient* client,
@@ -136,15 +155,10 @@ AccountReconcilor::AccountReconcilor(
       identity_manager_(identity_manager),
       client_(client) {
   VLOG(1) << "AccountReconcilor::AccountReconcilor";
-  DCHECK(delegate_);
-  delegate_->set_reconcilor(this);
-  timeout_ = delegate_->GetReconcileTimeout();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  consistency_cookie_manager_ =
-      std::make_unique<signin::ConsistencyCookieManager>(client_, this);
-#endif
+  // Reconcilor is constructed but not initialized. Call `Initialize()` before
+  // using this object.
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 AccountReconcilor::~AccountReconcilor() {
   VLOG(1) << "AccountReconcilor::~AccountReconcilor";
@@ -156,15 +170,25 @@ AccountReconcilor::~AccountReconcilor() {
 void AccountReconcilor::RegisterWithAllDependencies() {
   RegisterWithContentSettings();
   RegisterWithIdentityManager();
+#if BUILDFLAG(IS_CHROMEOS)
+  RegisterWithAccountManagerFacade();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AccountReconcilor::UnregisterWithAllDependencies() {
   UnregisterWithIdentityManager();
   UnregisterWithContentSettings();
+#if BUILDFLAG(IS_CHROMEOS)
+  UnregisterWithAccountManagerFacade();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
   VLOG(1) << "AccountReconcilor::Initialize";
+  DCHECK(delegate_);
+  delegate_->set_reconcilor(this);
+  timeout_ = delegate_->GetReconcileTimeout();
+
   if (delegate_->IsReconcileEnabled()) {
     SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_SCHEDULED);
     RegisterWithAllDependencies();
@@ -244,6 +268,24 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
   identity_manager_->RemoveObserver(this);
   registered_with_identity_manager_ = false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void AccountReconcilor::RegisterWithAccountManagerFacade() {
+  if (registered_with_account_manager_facade_)
+    return;
+
+  account_manager_facade_->AddObserver(this);
+  registered_with_account_manager_facade_ = true;
+}
+
+void AccountReconcilor::UnregisterWithAccountManagerFacade() {
+  if (!registered_with_account_manager_facade_)
+    return;
+
+  account_manager_facade_->RemoveObserver(this);
+  registered_with_account_manager_facade_ = false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 AccountReconcilorState AccountReconcilor::GetState() const {
   return state_;
@@ -746,6 +788,22 @@ void AccountReconcilor::OnLogOutFromCookieCompleted(
     ScheduleStartReconcileIfChromeAccountsChanged();
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void AccountReconcilor::OnAccountUpserted(
+    const account_manager::Account& account) {}
+
+void AccountReconcilor::OnAccountRemoved(
+    const account_manager::Account& account) {}
+
+void AccountReconcilor::OnAuthErrorChanged(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {}
+
+void AccountReconcilor::OnSigninDialogClosed() {
+  ForceReconcile();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void AccountReconcilor::IncrementLockCount() {
   DCHECK_GE(account_reconcilor_lock_count_, 0);

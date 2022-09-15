@@ -20,6 +20,7 @@
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
@@ -46,6 +47,10 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/account_manager_core/mock_account_manager_facade.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -118,9 +123,15 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
   DummyAccountReconcilorWithDelegate(
       signin::IdentityManager* identity_manager,
       SigninClient* client,
+#if BUILDFLAG(IS_CHROMEOS)
+      account_manager::AccountManagerFacade* account_manager_facade,
+#endif
       signin::AccountConsistencyMethod account_consistency)
       : AccountReconcilor(identity_manager,
                           client,
+#if BUILDFLAG(IS_CHROMEOS)
+                          account_manager_facade,
+#endif
                           CreateAccountReconcilorDelegate(identity_manager,
                                                           account_consistency,
                                                           client)) {
@@ -132,10 +143,16 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
   DummyAccountReconcilorWithDelegate(
       signin::IdentityManager* identity_manager,
       SigninClient* client,
+#if BUILDFLAG(IS_CHROMEOS)
+      account_manager::AccountManagerFacade* account_manager_facade,
+#endif
       signin::AccountReconcilorDelegate* delegate)
       : AccountReconcilor(
             identity_manager,
             client,
+#if BUILDFLAG(IS_CHROMEOS)
+            account_manager_facade,
+#endif
             std::unique_ptr<signin::AccountReconcilorDelegate>(delegate)) {
     Initialize(false /* start_reconcile_if_tokens_available */);
   }
@@ -173,13 +190,20 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
 class MockAccountReconcilor
     : public testing::StrictMock<DummyAccountReconcilorWithDelegate> {
  public:
-  MockAccountReconcilor(signin::IdentityManager* identity_manager,
-                        SigninClient* client,
-                        signin::AccountConsistencyMethod account_consistency);
+  MockAccountReconcilor(
+      signin::IdentityManager* identity_manager,
+      SigninClient* client,
+#if BUILDFLAG(IS_CHROMEOS)
+      account_manager::AccountManagerFacade* account_manager_facade,
+#endif
+      signin::AccountConsistencyMethod account_consistency);
 
   MockAccountReconcilor(
       signin::IdentityManager* identity_manager,
       SigninClient* client,
+#if BUILDFLAG(IS_CHROMEOS)
+      account_manager::AccountManagerFacade* account_manager_facade,
+#endif
       std::unique_ptr<signin::AccountReconcilorDelegate> delegate);
 
   MOCK_METHOD0(PerformLogoutAllAccountsAction, void());
@@ -190,20 +214,34 @@ class MockAccountReconcilor
 MockAccountReconcilor::MockAccountReconcilor(
     signin::IdentityManager* identity_manager,
     SigninClient* client,
+#if BUILDFLAG(IS_CHROMEOS)
+    account_manager::AccountManagerFacade* account_manager_facade,
+#endif
     signin::AccountConsistencyMethod account_consistency)
     : testing::StrictMock<DummyAccountReconcilorWithDelegate>(
           identity_manager,
           client,
-          account_consistency) {}
+#if BUILDFLAG(IS_CHROMEOS)
+          account_manager_facade,
+#endif
+          account_consistency) {
+}
 
 MockAccountReconcilor::MockAccountReconcilor(
     signin::IdentityManager* identity_manager,
     SigninClient* client,
+#if BUILDFLAG(IS_CHROMEOS)
+    account_manager::AccountManagerFacade* account_manager_facade,
+#endif
     std::unique_ptr<signin::AccountReconcilorDelegate> delegate)
     : testing::StrictMock<DummyAccountReconcilorWithDelegate>(
           identity_manager,
           client,
-          delegate.release()) {}
+#if BUILDFLAG(IS_CHROMEOS)
+          account_manager_facade,
+#endif
+          delegate.release()) {
+}
 
 struct Cookie {
   std::string gaia_id;
@@ -289,6 +327,9 @@ class AccountReconcilorTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestSigninClient test_signin_client_;
   signin::IdentityTestEnvironment identity_test_env_;
+#if BUILDFLAG(IS_CHROMEOS)
+  account_manager::MockAccountManagerFacade mock_facade_;
+#endif
   std::unique_ptr<MockAccountReconcilor> mock_reconcilor_;
   base::HistogramTester histogram_tester_;
 };
@@ -345,6 +386,9 @@ MockAccountReconcilor* AccountReconcilorTest::GetMockReconcilor() {
   if (!mock_reconcilor_) {
     mock_reconcilor_ = std::make_unique<MockAccountReconcilor>(
         identity_test_env_.identity_manager(), &test_signin_client_,
+#if BUILDFLAG(IS_CHROMEOS)
+        &mock_facade_,
+#endif
         account_consistency_);
   }
 
@@ -356,6 +400,9 @@ MockAccountReconcilor* AccountReconcilorTest::CreateMockReconcilor(
   DCHECK(!mock_reconcilor_);
   mock_reconcilor_ = std::make_unique<MockAccountReconcilor>(
       identity_test_env_.identity_manager(), &test_signin_client_,
+#if BUILDFLAG(IS_CHROMEOS)
+      &mock_facade_,
+#endif
       std::move(delegate));
   return mock_reconcilor_.get();
 }
@@ -2259,6 +2306,33 @@ TEST_F(AccountReconcilorMirrorTest,
   histogram_tester()->ExpectTotalCount(
       AccountReconcilor::kTriggerMultiloginHistogramName, 1);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// This feature is only available on ChromeOS for now. Extend this to other
+// Mirror platforms after implementing `AccountManagerFacade` for them.
+TEST_F(AccountReconcilorMirrorTest,
+       OnSigninDialogClosedNotificationTriggersForcedReconciliation) {
+  // Get the reconcilor to an OK (signin_metrics::ACCOUNT_RECONCILOR_OK) state.
+  AccountInfo account_info = ConnectProfileToAccount(kFakeEmail);
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+  signin::SetListAccountsResponseOneAccount(
+      account_info.email, account_info.gaia, &test_url_loader_factory_);
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  const signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      accounts_to_send);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  reconcilor->SetState(signin_metrics::ACCOUNT_RECONCILOR_OK);
+  ASSERT_FALSE(reconcilor->is_reconcile_started_);
+
+  // Now try to force a reconcile.
+  reconcilor->OnSigninDialogClosed();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
+  EXPECT_TRUE(reconcilor->is_reconcile_started_);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_MIRROR)
 
 // Checks that an "invalid" Gaia account can be refreshed in place, without

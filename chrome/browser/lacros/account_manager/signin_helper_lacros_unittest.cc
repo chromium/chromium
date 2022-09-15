@@ -57,11 +57,14 @@ class MockCookieManager
 
 class TestAccountReconcilor : public AccountReconcilor {
  public:
-  TestAccountReconcilor(signin::IdentityManager* identity_manager,
-                        SigninClient* client)
+  TestAccountReconcilor(
+      signin::IdentityManager* identity_manager,
+      SigninClient* client,
+      account_manager::AccountManagerFacade* account_manager_facade)
       : AccountReconcilor(
             identity_manager,
             client,
+            account_manager_facade,
             std::make_unique<signin::MirrorLandingAccountReconcilorDelegate>(
                 identity_manager,
                 client->GetInitialPrimaryAccount().has_value())) {}
@@ -203,7 +206,7 @@ class SigninHelperLacrosTest : public testing::Test {
       signin::AccountConsistencyMethod::kDisabled, &signin_client_};
 
   TestAccountReconcilor reconcilor_{identity_test_env_.identity_manager(),
-                                    &signin_client_};
+                                    &signin_client_, &mock_facade_};
 
   raw_ptr<MockCookieManager> cookie_manager_ =
       nullptr;  // Owned by `signin_client_`.

@@ -21,6 +21,10 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -138,9 +142,16 @@ KeyedService* AccountReconcilorFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile);
   SigninClient* signin_client =
       ChromeSigninClientFactory::GetForProfile(profile);
+#if BUILDFLAG(IS_CHROMEOS)
+  AccountReconcilor* reconcilor = new AccountReconcilor(
+      identity_manager, signin_client,
+      ::GetAccountManagerFacade(profile->GetPath().value()),
+      CreateAccountReconcilorDelegate(profile));
+#else
   AccountReconcilor* reconcilor =
       new AccountReconcilor(identity_manager, signin_client,
                             CreateAccountReconcilorDelegate(profile));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   reconcilor->Initialize(true /* start_reconcile_if_tokens_available */);
   return reconcilor;
 }
