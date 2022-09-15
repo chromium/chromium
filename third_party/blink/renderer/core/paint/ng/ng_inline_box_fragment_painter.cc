@@ -302,7 +302,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   if (paint_info.phase == PaintPhase::kForeground &&
       paint_info.ShouldAddUrlMetadata()) {
     // URLRects for descendants are normally added via NGBoxFragmentPainter::
-    // PaintLineBoxChildren(), but relatively positioned (self-painting) inlines
+    // PaintLineBoxes(), but relatively positioned (self-painting) inlines
     // are omitted. Do it now.
     AddURLRectsForInlineChildrenRecursively(layout_inline, paint_info,
                                             paint_offset);

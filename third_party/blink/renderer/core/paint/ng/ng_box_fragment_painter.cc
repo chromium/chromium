@@ -646,9 +646,8 @@ void NGBoxFragmentPainter::PaintObject(
   }
 
   if (paint_phase == PaintPhase::kForeground) {
-    // NGBoxFragmentPainter::PaintLineBoxChildren() calls
-    // AddURLRectsForInlineChildrenRecursively(). So we don't need to call
-    // AddURLRectIfNeeded() for LayoutInline.
+    // PaintLineBoxes() calls AddURLRectsForInlineChildrenRecursively(). So we
+    // don't need to call AddURLRectIfNeeded() for LayoutInline.
     if (paint_info.ShouldAddUrlMetadata()) {
       const auto* layout_object = fragment.GetLayoutObject();
       if (layout_object && !layout_object->IsLayoutInline()) {
@@ -684,7 +683,7 @@ void NGBoxFragmentPainter::PaintObject(
                          box_item_->OffsetInContainerFragment(), &descendants);
       } else if (items_) {
         DCHECK(fragment.IsBlockFlow());
-        PaintBlockFlowContents(paint_info, paint_offset);
+        PaintLineBoxes(paint_info, paint_offset);
       } else if (!fragment.IsInlineFormattingContext()) {
         PaintBlockChildren(paint_info, paint_offset);
       }
@@ -748,27 +747,27 @@ void NGBoxFragmentPainter::PaintCaretsIfNeeded(
   }
 }
 
-void NGBoxFragmentPainter::PaintBlockFlowContents(
-    const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) {
-  const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-  const LayoutObject* layout_object = fragment.GetLayoutObject();
-  DCHECK(fragment.IsInlineFormattingContext());
+void NGBoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
+                                          const PhysicalOffset& paint_offset) {
+  const LayoutObject* layout_object = box_fragment_.GetLayoutObject();
+  DCHECK(layout_object);
+  DCHECK(layout_object->IsLayoutBlock());
+  DCHECK(box_fragment_.IsInlineFormattingContext());
 
-  if (layout_object && layout_object->IsShapingDeferred())
+  if (layout_object->IsShapingDeferred())
     return;
 
   // When the layout-tree gets into a bad state, we can end up trying to paint
   // a fragment with inline children, without a paint fragment. See:
   // http://crbug.com/1022545
-  if (!items_ || (layout_object && layout_object->NeedsLayout())) {
+  if (!items_ || layout_object->NeedsLayout()) {
     NOTREACHED();
     return;
   }
 
   // MathML operators paint text (for example enlarged/stretched) content
   // themselves using NGMathMLPainter.
-  if (UNLIKELY(fragment.IsMathMLOperator()))
+  if (UNLIKELY(box_fragment_.IsMathMLOperator()))
     return;
 
   // Trying to rule out a null GraphicsContext, see: https://crbug.com/1040298
@@ -786,22 +785,57 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
   // TODO(crbug.com/829028): Column boxes do not have |ContentsInkOverflow| atm,
   // hence skip the optimization. If we were to have it, this should be enabled.
   // Otherwise, if we're ok with the perf, we can remove this TODO.
-  if (fragment.IsCSSBox()) {
-    PhysicalRect content_ink_rect = fragment.LocalRect();
-    content_ink_rect.Unite(fragment.ContentsInkOverflow());
+  if (box_fragment_.IsCSSBox()) {
+    PhysicalRect content_ink_rect = box_fragment_.LocalRect();
+    content_ink_rect.Unite(box_fragment_.ContentsInkOverflow());
     if (!paint_info.IntersectsCullRect(content_ink_rect, paint_offset))
       return;
   }
 
   DCHECK(items_);
   EnsureInlineContext();
-  NGInlineCursor children(fragment, *items_);
-  if (fragment.IsSvgText()) {
-    ScopedSVGPaintState paint_state(*fragment.GetLayoutObject(), paint_info);
-    PaintLineBoxChildren(&children, paint_info.ForDescendants(), paint_offset);
+  NGInlineCursor children(box_fragment_, *items_);
+  absl::optional<ScopedSVGPaintState> paint_state;
+  if (box_fragment_.IsSvgText())
+    paint_state.emplace(*box_fragment_.GetLayoutObject(), paint_info);
+
+  PaintInfo child_paint_info(paint_info.ForDescendants());
+
+  // Only paint during the foreground/selection phases.
+  if (child_paint_info.phase != PaintPhase::kForeground &&
+      child_paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
+      child_paint_info.phase != PaintPhase::kSelectionDragImage &&
+      child_paint_info.phase != PaintPhase::kTextClip &&
+      child_paint_info.phase != PaintPhase::kMask &&
+      child_paint_info.phase != PaintPhase::kDescendantOutlinesOnly &&
+      child_paint_info.phase != PaintPhase::kOutline) {
+    if (UNLIKELY(
+            ShouldPaintDescendantBlockBackgrounds(child_paint_info.phase))) {
+      // When block-in-inline, block backgrounds need to be painted.
+      PaintBoxDecorationBackgroundForBlockInInline(&children, child_paint_info,
+                                                   paint_offset);
+    }
     return;
   }
-  PaintLineBoxChildren(&children, paint_info.ForDescendants(), paint_offset);
+
+  if (child_paint_info.phase == PaintPhase::kForeground &&
+      child_paint_info.ShouldAddUrlMetadata()) {
+    AddURLRectsForInlineChildrenRecursively(*layout_object, child_paint_info,
+                                            paint_offset);
+  }
+
+  // If we have no lines then we have no work to do.
+  if (!children)
+    return;
+
+  if (child_paint_info.phase == PaintPhase::kForcedColorsModeBackplate &&
+      box_fragment_.GetDocument().InForcedColorsMode()) {
+    PaintBackplate(&children, child_paint_info, paint_offset);
+    return;
+  }
+
+  DCHECK(children.HasRoot());
+  PaintLineBoxChildItems(&children, child_paint_info, paint_offset);
 }
 
 void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
@@ -1482,49 +1516,6 @@ inline void NGBoxFragmentPainter::PaintLineBox(
                                               PhysicalFragment());
     line_box_painter.PaintBackgroundBorderShadow(paint_info, child_offset);
   }
-}
-
-void NGBoxFragmentPainter::PaintLineBoxChildren(
-    NGInlineCursor* children,
-    const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) {
-  // Only paint during the foreground/selection phases.
-  if (paint_info.phase != PaintPhase::kForeground &&
-      paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
-      paint_info.phase != PaintPhase::kSelectionDragImage &&
-      paint_info.phase != PaintPhase::kTextClip &&
-      paint_info.phase != PaintPhase::kMask &&
-      paint_info.phase != PaintPhase::kDescendantOutlinesOnly &&
-      paint_info.phase != PaintPhase::kOutline) {
-    if (UNLIKELY(ShouldPaintDescendantBlockBackgrounds(paint_info.phase))) {
-      // When block-in-inline, block backgrounds need to be painted.
-      PaintBoxDecorationBackgroundForBlockInInline(children, paint_info,
-                                                   paint_offset);
-    }
-    return;
-  }
-
-  const auto* layout_object = box_fragment_.GetLayoutObject();
-  DCHECK(!layout_object || layout_object->IsLayoutBlock());
-
-  if (paint_info.phase == PaintPhase::kForeground &&
-      paint_info.ShouldAddUrlMetadata()) {
-    AddURLRectsForInlineChildrenRecursively(*layout_object, paint_info,
-                                            paint_offset);
-  }
-
-  // If we have no lines then we have no work to do.
-  if (!*children)
-    return;
-
-  if (paint_info.phase == PaintPhase::kForcedColorsModeBackplate &&
-      box_fragment_.GetDocument().InForcedColorsMode()) {
-    PaintBackplate(children, paint_info, paint_offset);
-    return;
-  }
-
-  DCHECK(children->HasRoot());
-  PaintLineBoxChildItems(children, paint_info, paint_offset);
 }
 
 void NGBoxFragmentPainter::PaintLineBoxChildItems(
