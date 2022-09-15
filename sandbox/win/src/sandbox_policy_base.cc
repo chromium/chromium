@@ -228,7 +228,10 @@ AppContainerBase* ConfigBase::app_container() {
 }
 
 ConfigBase::~ConfigBase() {
-  delete policy_;  // Allocated by MakeBrokerPolicyMemory.
+  // `policy_maker_` holds a raw_ptr on `policy_`, so we need to make sure it
+  // gets destroyed first.
+  policy_maker_.reset();
+  policy_.ClearAndDelete();  // Allocated by MakeBrokerPolicyMemory.
 }
 
 ResultCode ConfigBase::AddRule(SubSystem subsystem,
