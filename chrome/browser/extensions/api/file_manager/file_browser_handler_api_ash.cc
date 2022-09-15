@@ -110,7 +110,7 @@ void FileBrowserHandlerInternalSelectFileFunctionAsh::RespondEntryDefinition(
   // If the file was selected, add "entry" object which will be later used to
   // create a FileEntry instance for the selected file.
   // The value will be consumed by GetExternalFileEntry() (JS).
-  result.entry = std::make_unique<FileEntryInfo>();
+  result.entry.emplace();
   // TODO(mtomasz): Make the response fields consistent with other files.
   result.entry->file_system_name = entry_definition.file_system_name;
   result.entry->file_system_root = entry_definition.file_system_root_url;

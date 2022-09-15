@@ -117,7 +117,7 @@ ExtensionFunction::ResponseAction AudioGetDevicesFunction::Run() {
   DCHECK(service);
 
   service->GetDevices(
-      params->filter.get(),
+      base::OptionalToPtr(params->filter),
       base::BindOnce(&AudioGetDevicesFunction::OnResponse, this));
   return RespondLater();
 }

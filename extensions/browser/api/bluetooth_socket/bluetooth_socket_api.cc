@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -183,7 +184,8 @@ ExtensionFunction::ResponseAction BluetoothSocketCreateFunction::Run() {
 
   BluetoothApiSocket* socket = new BluetoothApiSocket(extension_id());
 
-  bluetooth_socket::SocketProperties* properties = params->properties.get();
+  bluetooth_socket::SocketProperties* properties =
+      base::OptionalToPtr(params->properties);
   if (properties)
     SetSocketProperties(socket, properties);
 
@@ -343,7 +345,7 @@ void BluetoothSocketListenUsingRfcommFunction::CreateService(
   device::BluetoothAdapter::ServiceOptions service_options;
   service_options.name = std::move(name);
 
-  ListenOptions* options = params_->options.get();
+  const absl::optional<ListenOptions>& options = params_->options;
   if (options && options->channel)
     service_options.channel = *options->channel;
 
@@ -383,7 +385,7 @@ void BluetoothSocketListenUsingL2capFunction::CreateService(
   device::BluetoothAdapter::ServiceOptions service_options;
   service_options.name = std::move(name);
 
-  ListenOptions* options = params_->options.get();
+  const absl::optional<ListenOptions>& options = params_->options;
   if (options && options->psm) {
     int psm = *options->psm;
     if (!IsValidPsm(psm)) {

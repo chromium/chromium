@@ -90,7 +90,7 @@ ImageWriterPrivateWriteFromUrlFunction::Run() {
     return RespondNow(Error(image_writer::error::kUrlInvalid));
 
   std::string hash;
-  if (params->options.get() && params->options->image_hash) {
+  if (params->options && params->options->image_hash) {
     hash = *params->options->image_hash;
   }
 

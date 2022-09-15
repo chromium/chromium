@@ -62,11 +62,11 @@ int64_t GetRefreshTypesForProcessOptionalData() {
       task_manager::REFRESH_TYPE_WEBCACHE_STATS;
 }
 
-std::unique_ptr<api::processes::Cache> CreateCacheData(
+api::processes::Cache CreateCacheData(
     const blink::WebCacheResourceTypeStat& stat) {
-  std::unique_ptr<api::processes::Cache> cache(new api::processes::Cache());
-  cache->size = static_cast<double>(stat.size);
-  cache->live_size = static_cast<double>(stat.size);
+  api::processes::Cache cache;
+  cache.size = static_cast<double>(stat.size);
+  cache.live_size = static_cast<double>(stat.size);
   return cache;
 }
 

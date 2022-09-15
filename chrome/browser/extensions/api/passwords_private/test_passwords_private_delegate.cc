@@ -224,8 +224,7 @@ TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
   credential.urls.signon_realm = "https://example.com";
   credential.is_android_credential = false;
   credential.change_password_url = "https://example.com/change-password";
-  credential.compromised_info =
-      std::make_unique<api::passwords_private::CompromisedInfo>();
+  credential.compromised_info.emplace();
   // Mar 03 2020 12:00:00 UTC
   credential.compromised_info->compromise_time = 1583236800000;
   credential.compromised_info->elapsed_time_since_compromise =

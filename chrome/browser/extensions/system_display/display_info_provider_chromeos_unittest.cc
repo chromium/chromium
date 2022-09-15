@@ -1303,7 +1303,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetNegativeOverscan) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   info.overscan->left = -10;
 
   EXPECT_FALSE(
@@ -1351,7 +1351,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanLargerThanHorizontalBounds) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   // Horizontal overscan is 151, which would make the bounds width 149.
   info.overscan->left = 50;
   info.overscan->top = 10;
@@ -1369,7 +1369,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanLargerThanVerticalBounds) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   // Vertical overscan is 501, which would make the bounds height 499.
   info.overscan->left = 20;
   info.overscan->top = 250;
@@ -1387,7 +1387,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscan) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   info.overscan->left = 20;
   info.overscan->top = 199;
   info.overscan->right = 130;
@@ -1413,7 +1413,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetOverscanForInternal) {
           .SetFirstDisplayAsInternalDisplay();
 
   api::system_display::DisplayProperties info;
-  info.overscan = std::make_unique<api::system_display::Insets>();
+  info.overscan.emplace();
   // Vertical overscan is 501, which would make the bounds height 499.
   info.overscan->left = 20;
   info.overscan->top = 20;
@@ -1463,8 +1463,9 @@ TEST_F(DisplayInfoProviderChromeosTest, DisplayMode) {
 
   // Switch modes.
   api::system_display::DisplayProperties info;
-  info.display_mode = api::system_display::DisplayMode::FromValue(
-      base::Value(other_mode->ToValue()));
+  info.display_mode = std::move(*api::system_display::DisplayMode::FromValue(
+                                     base::Value(other_mode->ToValue()))
+                                     .get());
 
   EXPECT_TRUE(CallSetDisplayUnitInfo(base::NumberToString(id), info));
 

@@ -98,14 +98,14 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
       api::identity::GetAuthToken::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   interactive_ =
-      params->details.get() && params->details->interactive.value_or(false);
+      params->details && params->details->interactive.value_or(false);
 
   should_prompt_for_scopes_ = interactive_;
   should_prompt_for_signin_ =
       interactive_ && IsBrowserSigninAllowed(GetProfile());
 
   enable_granular_permissions_ =
-      params->details.get() &&
+      params->details &&
       params->details->enable_granular_permissions.value_or(false);
 
   DCHECK(extension());
@@ -124,8 +124,8 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
                                oauth2_info.scopes.end());
   std::string gaia_id;
 
-  if (params->details.get()) {
-    if (params->details->account.get())
+  if (params->details) {
+    if (params->details->account)
       gaia_id = params->details->account->id;
 
     if (params->details->scopes) {

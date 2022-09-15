@@ -4493,8 +4493,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     if (overview_info.has_value()) {
       auto it = overview_info->find(window);
       if (it != overview_info->end()) {
-        window_info.overview_info =
-            std::make_unique<api::autotest_private::OverviewInfo>();
+        window_info.overview_info.emplace();
         window_info.overview_info->bounds =
             ToBoundsDictionary(it->second.bounds_in_screen);
         window_info.overview_info->is_dragged = it->second.is_dragged;

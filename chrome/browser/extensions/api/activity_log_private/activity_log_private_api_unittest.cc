@@ -66,7 +66,7 @@ TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
   ASSERT_EQ("Title", *result.page_title);
   ASSERT_EQ(kApiCall, *result.api_call);
   ASSERT_EQ(kArgs, *result.args);
-  std::unique_ptr<ExtensionActivity::Other> other(std::move(result.other));
+  auto other = std::move(result.other);
   ASSERT_EQ(api::activity_log_private::EXTENSION_ACTIVITY_DOM_VERB_INSERTED,
             other->dom_verb);
   ASSERT_TRUE(other->prerender);

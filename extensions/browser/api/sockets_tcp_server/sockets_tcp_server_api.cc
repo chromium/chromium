@@ -51,12 +51,12 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPServerSocket* socket) {
 }
 
 void SetSocketProperties(ResumableTCPServerSocket* socket,
-                         SocketProperties* properties) {
-  if (properties->name) {
-    socket->set_name(*properties->name);
+                         const SocketProperties& properties) {
+  if (properties.name) {
+    socket->set_name(*properties.name);
   }
-  if (properties->persistent) {
-    socket->set_persistent(*properties->persistent);
+  if (properties.persistent) {
+    socket->set_persistent(*properties.persistent);
   }
 }
 
@@ -89,9 +89,8 @@ ExtensionFunction::ResponseAction SocketsTcpServerCreateFunction::Work() {
 
   auto* socket = new ResumableTCPServerSocket(browser_context(), GetOriginId());
 
-  sockets_tcp_server::SocketProperties* properties = params->properties.get();
-  if (properties) {
-    SetSocketProperties(socket, properties);
+  if (params->properties) {
+    SetSocketProperties(socket, *params->properties);
   }
 
   sockets_tcp_server::CreateInfo create_info;
@@ -113,7 +112,7 @@ ExtensionFunction::ResponseAction SocketsTcpServerUpdateFunction::Work() {
     return RespondNow(Error(kSocketNotFoundError));
   }
 
-  SetSocketProperties(socket, &params->properties);
+  SetSocketProperties(socket, params->properties);
   return RespondNow(NoArguments());
 }
 

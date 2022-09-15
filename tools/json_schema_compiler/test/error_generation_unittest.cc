@@ -162,7 +162,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
     EXPECT_FALSE(errors::ObjectType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'otherType': expected dictionary, got double",
         error));
-    EXPECT_EQ(NULL, out.other_type.get());
+    EXPECT_FALSE(out.other_type.has_value());
   }
 }
 

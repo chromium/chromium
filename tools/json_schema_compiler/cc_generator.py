@@ -974,14 +974,11 @@ class _Generator(object):
         )
         (c.Eblock('}')
           .Sblock('else {')
-          .Append('auto temp = std::make_unique<%(cpp_type)s>();')
-          .Append('if (!%%(cpp_type)s::Populate(%s)) {' % self._GenerateArgs(
-            ('%(src_var)s', 'temp.get()')))
+          .Append('%(cpp_type)s temp;')
+          .Append('if (!%%(cpp_type)s::Populate(%s))' % self._GenerateArgs(
+              ('%(src_var)s', '&temp')))
           .Append('  return %(failure_value)s;')
-        )
-        (c.Append('}')
-          .Append('else')
-         .Append('  %(dst_var)s = std::move(temp);')
+          .Append('%(dst_var)s = std::move(temp);')
           .Eblock('}')
         )
       else:

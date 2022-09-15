@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -128,7 +129,8 @@ ExtensionFunction::ResponseAction SocketsTcpCreateFunction::Work() {
   ResumableTCPSocket* socket =
       new ResumableTCPSocket(browser_context(), GetOriginId());
 
-  sockets_tcp::SocketProperties* properties = params->properties.get();
+  sockets_tcp::SocketProperties* properties =
+      base::OptionalToPtr(params->properties);
   if (properties) {
     SetSocketProperties(socket, properties);
   }
@@ -487,9 +489,8 @@ ExtensionFunction::ResponseAction SocketsTcpSecureFunction::Work() {
   // UpgradeSocketToTLS() uses the older API's SecureOptions. Copy over the
   // only values inside -- TLSVersionConstraints's |min| and |max|,
   api::socket::SecureOptions legacy_params;
-  if (params_->options.get() && params_->options->tls_version.get()) {
-    legacy_params.tls_version =
-        std::make_unique<api::socket::TLSVersionConstraints>();
+  if (params_->options && params_->options->tls_version) {
+    legacy_params.tls_version.emplace();
     legacy_params.tls_version->min = params_->options->tls_version->min;
     legacy_params.tls_version->max = params_->options->tls_version->max;
   }

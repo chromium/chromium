@@ -114,22 +114,22 @@ ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
 
   // Fill in any omitted options to ensure a known initial configuration.
   if (!params->options)
-    params->options = std::make_unique<serial::ConnectionOptions>();
-  serial::ConnectionOptions* options = params->options.get();
+    params->options.emplace();
+  serial::ConnectionOptions& options = *params->options;
 
-  SetDefaultOptionalValue(options->persistent, false);
-  SetDefaultOptionalValue(options->buffer_size, kDefaultBufferSize);
-  SetDefaultOptionalValue(options->bitrate, kDefaultBitrate);
-  SetDefaultOptionalValue(options->cts_flow_control, false);
-  SetDefaultOptionalValue(options->receive_timeout, kDefaultReceiveTimeout);
-  SetDefaultOptionalValue(options->send_timeout, kDefaultSendTimeout);
+  SetDefaultOptionalValue(options.persistent, false);
+  SetDefaultOptionalValue(options.buffer_size, kDefaultBufferSize);
+  SetDefaultOptionalValue(options.bitrate, kDefaultBitrate);
+  SetDefaultOptionalValue(options.cts_flow_control, false);
+  SetDefaultOptionalValue(options.receive_timeout, kDefaultReceiveTimeout);
+  SetDefaultOptionalValue(options.send_timeout, kDefaultSendTimeout);
 
-  if (options->data_bits == serial::DATA_BITS_NONE)
-    options->data_bits = kDefaultDataBits;
-  if (options->parity_bit == serial::PARITY_BIT_NONE)
-    options->parity_bit = kDefaultParityBit;
-  if (options->stop_bits == serial::STOP_BITS_NONE)
-    options->stop_bits = kDefaultStopBits;
+  if (options.data_bits == serial::DATA_BITS_NONE)
+    options.data_bits = kDefaultDataBits;
+  if (options.parity_bit == serial::PARITY_BIT_NONE)
+    options.parity_bit = kDefaultParityBit;
+  if (options.stop_bits == serial::STOP_BITS_NONE)
+    options.stop_bits = kDefaultStopBits;
 
   auto* manager = SerialPortManager::Get(browser_context());
   DCHECK(manager);

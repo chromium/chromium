@@ -20,7 +20,7 @@ namespace extensions {
 
 namespace {
 signin::ConsentLevel GetConsentLevelFromProfileDetails(
-    const api::identity::ProfileDetails* details) {
+    const absl::optional<api::identity::ProfileDetails>& details) {
   api::identity::AccountStatus account_status =
       details ? details->account_status : api::identity::ACCOUNT_STATUS_NONE;
 
@@ -57,7 +57,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
   if (extension()->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kIdentityEmail)) {
     signin::ConsentLevel consent_level =
-        GetConsentLevelFromProfileDetails(params->details.get());
+        GetConsentLevelFromProfileDetails(params->details);
     auto account_info = IdentityManagerFactory::GetForProfile(
                             Profile::FromBrowserContext(browser_context()))
                             ->GetPrimaryAccountInfo(consent_level);

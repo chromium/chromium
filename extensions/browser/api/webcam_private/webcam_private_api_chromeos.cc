@@ -489,22 +489,22 @@ void WebcamPrivateGetFunction::OnGetWebcamParameters(InquiryType type,
 
     webcam_private::WebcamCurrentConfiguration result;
     if (min_pan_ != max_pan_) {
-      result.pan_range = std::make_unique<webcam_private::Range>();
+      result.pan_range.emplace();
       result.pan_range->min = min_pan_;
       result.pan_range->max = max_pan_;
     }
     if (min_tilt_ != max_tilt_) {
-      result.tilt_range = std::make_unique<webcam_private::Range>();
+      result.tilt_range.emplace();
       result.tilt_range->min = min_tilt_;
       result.tilt_range->max = max_tilt_;
     }
     if (min_zoom_ != max_zoom_) {
-      result.zoom_range = std::make_unique<webcam_private::Range>();
+      result.zoom_range.emplace();
       result.zoom_range->min = min_zoom_;
       result.zoom_range->max = max_zoom_;
     }
     if (min_focus_ != max_focus_) {
-      result.focus_range = std::make_unique<webcam_private::Range>();
+      result.focus_range.emplace();
       result.focus_range->min = min_focus_;
       result.focus_range->max = max_focus_;
     }

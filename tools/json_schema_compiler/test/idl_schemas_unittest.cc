@@ -106,7 +106,7 @@ TEST(IdlCompiler, OptionalArguments) {
   list.clear();
   std::unique_ptr<Function9::Params> f9_params =
       Function9::Params::Create(list);
-  EXPECT_EQ(nullptr, f9_params->arg.get());
+  EXPECT_FALSE(f9_params->arg.has_value());
   list.clear();
   base::Value::Dict tmp;
   tmp.Set("x", 17);
@@ -117,10 +117,10 @@ TEST(IdlCompiler, OptionalArguments) {
   tmp.Set("c", "cstring");
   list.Append(base::Value(std::move(tmp)));
   f9_params = Function9::Params::Create(list);
-  ASSERT_TRUE(f9_params->arg.get() != nullptr);
-  MyType1* t1 = f9_params->arg.get();
-  EXPECT_EQ(17, t1->x);
-  EXPECT_EQ("hello", t1->y);
+  ASSERT_TRUE(f9_params->arg);
+  const MyType1& t1 = *f9_params->arg;
+  EXPECT_EQ(17, t1.x);
+  EXPECT_EQ("hello", t1.y);
 }
 
 TEST(IdlCompiler, ArrayTypes) {

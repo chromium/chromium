@@ -230,9 +230,9 @@ bool NotificationsApiFunction::CreateNotification(
   const std::u16string message(base::UTF8ToUTF16(*options->message));
   gfx::Image icon;
 
-  if (!options->icon_bitmap.get() ||
-      !NotificationBitmapToGfxImage(
-          image_scale, bitmap_sizes.icon_size, *options->icon_bitmap, &icon)) {
+  if (!options->icon_bitmap ||
+      !NotificationBitmapToGfxImage(image_scale, bitmap_sizes.icon_size,
+                                    *options->icon_bitmap, &icon)) {
     *error = kUnableToDecodeIconError;
     return false;
   }
@@ -269,12 +269,10 @@ bool NotificationsApiFunction::CreateNotification(
     for (size_t i = 0; i < number_of_buttons; i++) {
       message_center::ButtonInfo info(
           base::UTF8ToUTF16((*options->buttons)[i].title));
-      extensions::api::notifications::NotificationBitmap* icon_bitmap_ptr =
-          (*options->buttons)[i].icon_bitmap.get();
-      if (icon_bitmap_ptr) {
-        NotificationBitmapToGfxImage(
-            image_scale, bitmap_sizes.button_icon_size, *icon_bitmap_ptr,
-            &info.icon);
+      const auto& icon_bitmap = (*options->buttons)[i].icon_bitmap;
+      if (icon_bitmap) {
+        NotificationBitmapToGfxImage(image_scale, bitmap_sizes.button_icon_size,
+                                     *icon_bitmap, &info.icon);
       }
       optional_fields.buttons.push_back(info);
     }
@@ -285,7 +283,7 @@ bool NotificationsApiFunction::CreateNotification(
         base::UTF8ToUTF16(*options->context_message);
   }
 
-  bool has_image = options->image_bitmap.get() &&
+  bool has_image = options->image_bitmap &&
                    NotificationBitmapToGfxImage(
                        image_scale, bitmap_sizes.image_size,
                        *options->image_bitmap, &optional_fields.image);
@@ -383,7 +381,7 @@ bool NotificationsApiFunction::UpdateNotification(
   if (options->message)
     notification->set_message(base::UTF8ToUTF16(*options->message));
 
-  if (options->icon_bitmap.get()) {
+  if (options->icon_bitmap) {
     gfx::Image icon;
     if (!NotificationBitmapToGfxImage(
             image_scale, bitmap_sizes.icon_size, *options->icon_bitmap,
@@ -394,7 +392,7 @@ bool NotificationsApiFunction::UpdateNotification(
     notification->set_icon(ui::ImageModel::FromImage(icon));
   }
 
-  if (options->app_icon_mask_bitmap.get()) {
+  if (options->app_icon_mask_bitmap) {
     gfx::Image app_icon_mask;
     if (!NotificationBitmapToGfxImage(
             image_scale, bitmap_sizes.app_icon_mask_size,
@@ -424,12 +422,10 @@ bool NotificationsApiFunction::UpdateNotification(
     for (size_t i = 0; i < number_of_buttons; i++) {
       message_center::ButtonInfo button(
           base::UTF8ToUTF16((*options->buttons)[i].title));
-      extensions::api::notifications::NotificationBitmap* icon_bitmap_ptr =
-          (*options->buttons)[i].icon_bitmap.get();
-      if (icon_bitmap_ptr) {
-        NotificationBitmapToGfxImage(
-            image_scale, bitmap_sizes.button_icon_size, *icon_bitmap_ptr,
-            &button.icon);
+      const auto& icon_bitmap = (*options->buttons)[i].icon_bitmap;
+      if (icon_bitmap) {
+        NotificationBitmapToGfxImage(image_scale, bitmap_sizes.button_icon_size,
+                                     *icon_bitmap, &button.icon);
       }
       buttons.push_back(button);
     }
@@ -443,9 +439,9 @@ bool NotificationsApiFunction::UpdateNotification(
 
   gfx::Image image;
   bool has_image =
-      options->image_bitmap.get() &&
-      NotificationBitmapToGfxImage(
-          image_scale, bitmap_sizes.image_size, *options->image_bitmap, &image);
+      options->image_bitmap &&
+      NotificationBitmapToGfxImage(image_scale, bitmap_sizes.image_size,
+                                   *options->image_bitmap, &image);
 
   if (has_image) {
     // We should have an image if and only if the type is an image type.

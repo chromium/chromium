@@ -212,7 +212,7 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptions) {
 
   auto socket = CreateTCPSocket();
   api::socket::SecureOptions options;
-  options.tls_version = std::make_unique<api::socket::TLSVersionConstraints>();
+  options.tls_version.emplace();
   options.tls_version->min = "tls1.1";
   options.tls_version->max = "tls1.2";
   int net_error = net::ERR_FAILED;
@@ -253,7 +253,7 @@ TEST_F(TLSSocketTest, UpgradeToTLSWithCustomOptionsTLS13) {
 
   auto socket = CreateTCPSocket();
   api::socket::SecureOptions options;
-  options.tls_version = std::make_unique<api::socket::TLSVersionConstraints>();
+  options.tls_version.emplace();
   options.tls_version->min = "tls1.3";
   options.tls_version->max = "tls1.3";
   int net_error = net::ERR_FAILED;

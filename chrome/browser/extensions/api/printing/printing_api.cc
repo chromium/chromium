@@ -118,8 +118,7 @@ void PrintingGetPrinterInfoFunction::OnPrinterInfoRetrieved(
   }
   api::printing::GetPrinterInfoResponse response;
   if (capabilities.has_value()) {
-    response.capabilities =
-        std::make_unique<api::printing::GetPrinterInfoResponse::Capabilities>();
+    response.capabilities.emplace();
     base::Value capabilities_value = std::move(capabilities.value());
     CHECK(capabilities_value.is_dict());
     // It's safe just to swap values here as |capabilities_value| stores exactly

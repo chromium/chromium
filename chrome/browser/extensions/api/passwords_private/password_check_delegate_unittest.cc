@@ -113,6 +113,7 @@ using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Mock;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Return;
@@ -281,7 +282,7 @@ auto ExpectCompromisedCredential(
                Field(&PasswordUiEntry::urls,
                      ExpectUrls(formatted_origin, detailed_origin)),
                Field(&PasswordUiEntry::compromised_info,
-                     Pointee(ExpectCompromisedInfo(
+                     Optional(ExpectCompromisedInfo(
                          elapsed_time_since_compromise,
                          elapsed_time_since_compromise_str, compromise_type))));
 }

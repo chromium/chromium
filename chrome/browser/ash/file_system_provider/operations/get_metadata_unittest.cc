@@ -134,7 +134,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   {
     EntryMetadata metadata;
     metadata.name = kValidFileName;
-    metadata.modification_time = std::make_unique<ModificationTime>();
+    metadata.modification_time.emplace();
     metadata.modification_time->additional_properties.Set(
         "value", "invalid-date-time");  // Invalid modification time is OK.
     metadata.thumbnail = kValidThumbnailUrl;
@@ -150,7 +150,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   {
     EntryMetadata metadata;
     metadata.name = kValidFileName;
-    metadata.modification_time = std::make_unique<ModificationTime>();
+    metadata.modification_time.emplace();
     metadata.modification_time->additional_properties.Set(
         "value", "invalid-date-time");  // Invalid modification time is OK.
     EXPECT_TRUE(ValidateIDLEntryMetadata(
@@ -165,7 +165,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   {
     EntryMetadata metadata;
     metadata.name.emplace();
-    metadata.modification_time = std::make_unique<ModificationTime>();
+    metadata.modification_time.emplace();
     metadata.modification_time->additional_properties.Set(
         "value", "invalid-date-time");  // Invalid modification time is OK.
     EXPECT_TRUE(ValidateIDLEntryMetadata(

@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -166,7 +167,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   // AppWindow::Create so we can set the opener at create time rather than
   // with a hack in AppWindowCustomBindings::GetView().
   AppWindow::CreateParams create_params;
-  app_window::CreateWindowOptions* options = params->options.get();
+  absl::optional<app_window::CreateWindowOptions>& options = params->options;
   if (options) {
     if (options->id) {
       // TODO(mek): use URL if no id specified?
@@ -460,15 +461,15 @@ bool AppWindowCreateFunction::GetBoundsSpec(
   DCHECK(params);
   DCHECK(error);
 
-  if (options.inner_bounds.get() || options.outer_bounds.get()) {
+  if (options.inner_bounds || options.outer_bounds) {
     // Parse the inner and outer bounds specifications. If developers use the
     // new API, the deprecated fields will be ignored - do not attempt to merge
     // them.
 
-    const app_window::BoundsSpecification* inner_bounds =
-        options.inner_bounds.get();
-    const app_window::BoundsSpecification* outer_bounds =
-        options.outer_bounds.get();
+    const absl::optional<app_window::BoundsSpecification>& inner_bounds =
+        options.inner_bounds;
+    const absl::optional<app_window::BoundsSpecification>& outer_bounds =
+        options.outer_bounds;
     if (inner_bounds && outer_bounds) {
       if (!CheckBoundsConflict(inner_bounds->left, outer_bounds->left, "left",
                                error)) {
@@ -504,8 +505,8 @@ bool AppWindowCreateFunction::GetBoundsSpec(
       }
     }
 
-    CopyBoundsSpec(inner_bounds, &(params->content_spec));
-    CopyBoundsSpec(outer_bounds, &(params->window_spec));
+    CopyBoundsSpec(base::OptionalToPtr(inner_bounds), &(params->content_spec));
+    CopyBoundsSpec(base::OptionalToPtr(outer_bounds), &(params->window_spec));
   } else {
     // Parse deprecated fields.
     // Due to a bug in NativeAppWindow::GetFrameInsets() on Windows and ChromeOS
@@ -530,16 +531,16 @@ bool AppWindowCreateFunction::GetBoundsSpec(
     if (options.top)
       params->window_spec.bounds.set_y(*options.top);
 
-    if (options.bounds.get()) {
-      app_window::ContentBounds* bounds = options.bounds.get();
-      if (bounds->width)
-        params->content_spec.bounds.set_width(*bounds->width);
-      if (bounds->height)
-        params->content_spec.bounds.set_height(*bounds->height);
-      if (bounds->left)
-        params->window_spec.bounds.set_x(*bounds->left);
-      if (bounds->top)
-        params->window_spec.bounds.set_y(*bounds->top);
+    if (options.bounds) {
+      const app_window::ContentBounds& bounds = *options.bounds;
+      if (bounds.width)
+        params->content_spec.bounds.set_width(*bounds.width);
+      if (bounds.height)
+        params->content_spec.bounds.set_height(*bounds.height);
+      if (bounds.left)
+        params->window_spec.bounds.set_x(*bounds.left);
+      if (bounds.top)
+        params->window_spec.bounds.set_y(*bounds.top);
     }
 
     gfx::Size& minimum_size = params->content_spec.minimum_size;

@@ -219,8 +219,7 @@ class PlatformAppPathLauncher
     // temporarily, and should be removed once the underlying type of
     // |launch_data.action_data| is wrapped with absl::optional<T>.
     if (action_data_) {
-      launch_data.action_data =
-          std::make_unique<app_runtime::ActionData>(std::move(*action_data_));
+      launch_data.action_data = std::move(*action_data_);
       action_data_.reset();
     }
     if (!handler_id_.empty())

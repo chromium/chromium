@@ -258,14 +258,14 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     ASSERT_TRUE(obj->as_choice2->as_choice_type);
     EXPECT_FALSE(obj->as_choice2->as_choice_types);
     {
-      choices::ChoiceType* choice_type = obj->as_choice2->as_choice_type.get();
-      ASSERT_TRUE(choice_type->integers.as_integers);
-      EXPECT_FALSE(choice_type->integers.as_integer);
-      EXPECT_EQ(Vector(1, 2), *choice_type->integers.as_integers);
-      ASSERT_TRUE(choice_type->strings);
-      EXPECT_FALSE(choice_type->strings->as_strings);
-      ASSERT_TRUE(choice_type->strings->as_string);
-      EXPECT_EQ("foo", *choice_type->strings->as_string);
+      const choices::ChoiceType& choice_type = *obj->as_choice2->as_choice_type;
+      ASSERT_TRUE(choice_type.integers.as_integers);
+      EXPECT_FALSE(choice_type.integers.as_integer);
+      EXPECT_EQ(Vector(1, 2), *choice_type.integers.as_integers);
+      ASSERT_TRUE(choice_type.strings);
+      EXPECT_FALSE(choice_type.strings->as_strings);
+      ASSERT_TRUE(choice_type.strings->as_string);
+      EXPECT_EQ("foo", *choice_type.strings->as_string);
     }
 
     EXPECT_EQ(value, obj->ToValue());

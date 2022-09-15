@@ -122,29 +122,28 @@ void SetPolicyValue(em::ChromeDeviceSettingsProto* proto,
       "{" + base::JoinString(json_entries, ",") + "}");
 }
 
-std::unique_ptr<extensions::api::system_display::DisplayMode> CreateDisplayMode(
+extensions::api::system_display::DisplayMode CreateDisplayMode(
     int64_t display_id,
     int width,
     int height,
     const display::DisplayManager* display_manager) {
-  auto result =
-      std::make_unique<extensions::api::system_display::DisplayMode>();
+  extensions::api::system_display::DisplayMode result;
   const display::ManagedDisplayInfo& info =
       display_manager->GetDisplayInfo(display_id);
   for (const display::ManagedDisplayMode& mode : info.display_modes()) {
     if (mode.size().width() == width && mode.size().height() == height) {
-      result->width = mode.size().width();
-      result->height = mode.size().height();
-      result->width_in_native_pixels = mode.size().width();
-      result->height_in_native_pixels = mode.size().height();
-      result->refresh_rate = mode.refresh_rate();
-      result->is_native = mode.native();
-      result->device_scale_factor = mode.device_scale_factor();
+      result.width = mode.size().width();
+      result.height = mode.size().height();
+      result.width_in_native_pixels = mode.size().width();
+      result.height_in_native_pixels = mode.size().height();
+      result.refresh_rate = mode.refresh_rate();
+      result.is_native = mode.native();
+      result.device_scale_factor = mode.device_scale_factor();
       return result;
     }
   }
-  result->width = width;
-  result->height = height;
+  result.width = width;
+  result.height = height;
   return result;
 }
 

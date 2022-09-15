@@ -1617,7 +1617,8 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
   std::unique_ptr<downloads::GetFileIcon::Params> params(
       downloads::GetFileIcon::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  const downloads::GetFileIconOptions* options = params->options.get();
+  const absl::optional<downloads::GetFileIconOptions>& options =
+      params->options;
   int icon_size = kDefaultIconSize;
   if (options && options->size)
     icon_size = *options->size;

@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -732,8 +733,8 @@ ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
   if (!InitClientHost(&error))
     return RespondNow(Error(std::move(error)));
 
-  client_host_->SendMessageToBackend(this, params->method,
-      params->command_params.get());
+  client_host_->SendMessageToBackend(
+      this, params->method, base::OptionalToPtr(params->command_params));
   if (did_respond())
     return AlreadyResponded();
   return RespondLater();

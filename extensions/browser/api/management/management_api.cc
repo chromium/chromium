@@ -688,8 +688,7 @@ ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   bool show_confirm_dialog =
-      params->options.get() &&
-      params->options->show_confirm_dialog.value_or(false);
+      params->options && params->options->show_confirm_dialog.value_or(false);
   return Uninstall(params->id, show_confirm_dialog);
 }
 
@@ -706,8 +705,7 @@ ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension_.get());
 
   bool show_confirm_dialog =
-      params->options.get() &&
-      params->options->show_confirm_dialog.value_or(false);
+      params->options && params->options->show_confirm_dialog.value_or(false);
   return Uninstall(extension_->id(), show_confirm_dialog);
 }
 

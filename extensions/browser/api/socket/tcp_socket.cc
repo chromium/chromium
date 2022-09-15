@@ -452,18 +452,18 @@ void TCPSocket::UpgradeToTLS(api::socket::SecureOptions* options,
 
   mojo_socket_options->version_max = network::mojom::SSLVersion::kTLS13;
 
-  if (options && options->tls_version.get()) {
+  if (options && options->tls_version) {
     network::mojom::SSLVersion version_min, version_max;
     bool has_version_min = false;
     bool has_version_max = false;
-    api::socket::TLSVersionConstraints* versions = options->tls_version.get();
-    if (versions->min) {
+    api::socket::TLSVersionConstraints& versions = *options->tls_version;
+    if (versions.min) {
       has_version_min =
-          SSLProtocolVersionFromString(*versions->min, &version_min);
+          SSLProtocolVersionFromString(*versions.min, &version_min);
     }
-    if (versions->max) {
+    if (versions.max) {
       has_version_max =
-          SSLProtocolVersionFromString(*versions->max, &version_max);
+          SSLProtocolVersionFromString(*versions.max, &version_max);
     }
     if (has_version_min)
       mojo_socket_options->version_min = version_min;

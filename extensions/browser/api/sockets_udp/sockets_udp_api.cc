@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/socket_permission_request.h"
@@ -114,7 +115,8 @@ ExtensionFunction::ResponseAction SocketsUdpCreateFunction::Work() {
       std::move(udp_socket), std::move(socket_listener_receiver),
       GetOriginId());
 
-  sockets_udp::SocketProperties* properties = params->properties.get();
+  sockets_udp::SocketProperties* properties =
+      base::OptionalToPtr(params->properties);
   if (properties) {
     SetSocketProperties(socket, properties);
   }

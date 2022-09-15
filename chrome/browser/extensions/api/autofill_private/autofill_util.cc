@@ -100,12 +100,10 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       label, separator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // Create address metadata and add it to |address|.
-  std::unique_ptr<autofill_private::AutofillMetadata> metadata(
-      new autofill_private::AutofillMetadata);
-  metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
-  metadata->summary_sublabel =
+  address.metadata.emplace();
+  address.metadata->summary_label = base::UTF16ToUTF8(label_pieces[0]);
+  address.metadata->summary_sublabel =
       base::UTF16ToUTF8(label.substr(label_pieces[0].size()));
-  address.metadata = std::move(metadata);
 
   return address;
 }
@@ -173,32 +171,29 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   card.image_src = CardNetworkToIconResourceIdString(credit_card.network());
 
   // Create card metadata and add it to |card|.
-  std::unique_ptr<autofill_private::AutofillMetadata> metadata(
-      new autofill_private::AutofillMetadata);
+  card.metadata.emplace();
   std::pair<std::u16string, std::u16string> label_pieces =
       credit_card.LabelPieces();
-  metadata->summary_label = base::UTF16ToUTF8(label_pieces.first);
-  metadata->summary_sublabel = base::UTF16ToUTF8(label_pieces.second);
-  metadata->is_local =
+  card.metadata->summary_label = base::UTF16ToUTF8(label_pieces.first);
+  card.metadata->summary_sublabel = base::UTF16ToUTF8(label_pieces.second);
+  card.metadata->is_local =
       credit_card.record_type() == autofill::CreditCard::LOCAL_CARD;
-  metadata->is_cached =
+  card.metadata->is_cached =
       credit_card.record_type() == autofill::CreditCard::FULL_SERVER_CARD;
   // IsValid() checks if both card number and expiration date are valid.
   // IsServerCard() checks whether there is a duplicated server card in
   // |personal_data|.
-  metadata->is_migratable =
+  card.metadata->is_migratable =
       credit_card.IsValid() && !personal_data.IsServerCard(&credit_card);
-  metadata->is_virtual_card_enrollment_eligible =
+  card.metadata->is_virtual_card_enrollment_eligible =
       credit_card.virtual_card_enrollment_state() ==
           autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED ||
       credit_card.virtual_card_enrollment_state() ==
           autofill::CreditCard::VirtualCardEnrollmentState::
               UNENROLLED_AND_ELIGIBLE;
-  metadata->is_virtual_card_enrolled =
+  card.metadata->is_virtual_card_enrolled =
       credit_card.virtual_card_enrollment_state() ==
       autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED;
-
-  card.metadata = std::move(metadata);
 
   return card;
 }

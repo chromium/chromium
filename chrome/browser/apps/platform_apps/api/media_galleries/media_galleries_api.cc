@@ -405,7 +405,7 @@ MediaGalleriesGetMediaFileSystemsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   MediaGalleries::GetMediaFileSystemsInteractivity interactive =
       MediaGalleries::GET_MEDIA_FILE_SYSTEMS_INTERACTIVITY_NO;
-  if (params->details.get() &&
+  if (params->details &&
       params->details->interactive !=
           MediaGalleries::GET_MEDIA_FILE_SYSTEMS_INTERACTIVITY_NONE) {
     interactive = params->details->interactive;

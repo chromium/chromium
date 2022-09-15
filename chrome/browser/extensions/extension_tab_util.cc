@@ -432,8 +432,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
       !tab_lifecycle_unit_external ||
       tab_lifecycle_unit_external->IsAutoDiscardable();
 
-  tab_object.muted_info =
-      std::make_unique<api::tabs::MutedInfo>(CreateMutedInfo(contents));
+  tab_object.muted_info = CreateMutedInfo(contents);
   tab_object.incognito = contents->GetBrowserContext()->IsOffTheRecord();
   gfx::Size contents_size = contents->GetContainerBounds().size();
   tab_object.width = contents_size.width();

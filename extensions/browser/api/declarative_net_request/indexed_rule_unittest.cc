@@ -33,9 +33,9 @@ GURL GetBaseURL() {
   return Extension::GetBaseURLFromExtensionId(kTestExtensionId);
 }
 
-std::unique_ptr<dnr_api::Redirect> MakeRedirectUrl(const char* redirect_url) {
-  auto redirect = std::make_unique<dnr_api::Redirect>();
-  redirect->url = redirect_url;
+dnr_api::Redirect MakeRedirectUrl(const char* redirect_url) {
+  dnr_api::Redirect redirect;
+  redirect.url = redirect_url;
   return redirect;
 }
 
@@ -626,7 +626,8 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
     ASSERT_TRUE(redirect_val);
 
     std::u16string error;
-    rule.action.redirect = dnr_api::Redirect::FromValue(*redirect_val, &error);
+    rule.action.redirect =
+        std::move(*dnr_api::Redirect::FromValue(*redirect_val, &error));
     ASSERT_TRUE(rule.action.redirect);
     ASSERT_TRUE(error.empty());
 
@@ -726,7 +727,7 @@ TEST_F(IndexedRuleTest, RegexSubstitutionParsing) {
 
     rule.priority = kMinValidPriority;
     rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
-    rule.action.redirect = std::make_unique<dnr_api::Redirect>();
+    rule.action.redirect.emplace();
     rule.action.redirect->regex_substitution = test_case.regex_substitution;
 
     IndexedRule indexed_rule;
@@ -751,12 +752,12 @@ TEST_F(IndexedRuleTest, MultipleRedirectKeys) {
   rule.condition.url_filter.reset();
   rule.condition.regex_filter = "\\.*";
   rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
-  rule.action.redirect = std::make_unique<dnr_api::Redirect>();
+  rule.action.redirect.emplace();
 
   dnr_api::Redirect& redirect = *rule.action.redirect;
   redirect.url = "http://google.com";
   redirect.regex_substitution = "http://example.com";
-  redirect.transform = std::make_unique<dnr_api::URLTransform>();
+  redirect.transform.emplace();
   redirect.transform->scheme = "https";
 
   IndexedRule indexed_rule;

@@ -93,14 +93,14 @@ void AddMediaStreamSourceConstraints(content::WebContents* target_contents,
 
   if (options->audio && *options->audio) {
     if (!options->audio_constraints)
-      options->audio_constraints = std::make_unique<MediaStreamConstraint>();
-    constraints_to_modify[0] = options->audio_constraints.get();
+      options->audio_constraints.emplace();
+    constraints_to_modify[0] = &*options->audio_constraints;
   }
 
   if (options->video && *options->video) {
     if (!options->video_constraints)
-      options->video_constraints = std::make_unique<MediaStreamConstraint>();
-    constraints_to_modify[1] = options->video_constraints.get();
+      options->video_constraints.emplace();
+    constraints_to_modify[1] = &*options->video_constraints;
   }
 
   // Append chrome specific tab constraints.

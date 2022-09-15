@@ -299,12 +299,12 @@ std::unique_ptr<Automation> AutomationInfo::AsManifestType(
     return automation;
   }
 
-  Automation::Object* as_object = new Automation::Object;
-  as_object->desktop = info.desktop;
-  as_object->interact = info.interact;
+  automation->as_object.emplace();
+  automation->as_object->desktop = info.desktop;
+  automation->as_object->interact = info.interact;
   if (info.matches.size() > 0)
-    as_object->matches = info.matches.ToStringVector();
-  automation->as_object.reset(as_object);
+    automation->as_object->matches = info.matches.ToStringVector();
+
   return automation;
 }
 

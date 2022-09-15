@@ -115,6 +115,7 @@ def ShouldUseAbslOptional(type_):
                              PropertyType.BOOLEAN,
                              PropertyType.DOUBLE,
                              PropertyType.INTEGER,
+                             PropertyType.OBJECT,
                              PropertyType.STRING):
     return True
 

@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
@@ -1046,7 +1047,7 @@ ExtensionFunction::ResponseAction SocketSecureFunction::Work() {
 
   TCPSocket* tcp_socket = static_cast<TCPSocket*>(socket);
   tcp_socket->UpgradeToTLS(
-      params_->options.get(),
+      base::OptionalToPtr(params_->options),
       base::BindOnce(&SocketSecureFunction::TlsConnectDone, this));
   return RespondLater();
 }

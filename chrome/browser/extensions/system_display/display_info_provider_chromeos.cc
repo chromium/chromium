@@ -173,7 +173,7 @@ system_display::DisplayUnitInfo GetDisplayUnitInfoFromMojo(
   info.id = mojo_info.id;
   info.name = mojo_info.name;
   if (mojo_info.edid) {
-    info.edid = std::make_unique<system_display::Edid>();
+    info.edid.emplace();
     info.edid->manufacturer_id = mojo_info.edid->manufacturer_id;
     info.edid->product_id = mojo_info.edid->product_id;
     info.edid->year_of_manufacture = mojo_info.edid->year_of_manufacture;

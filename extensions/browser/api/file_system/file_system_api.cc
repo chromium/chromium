@@ -783,17 +783,17 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   ui::SelectFileDialog::Type picker_type =
       ui::SelectFileDialog::SELECT_OPEN_FILE;
 
-  file_system::ChooseEntryOptions* options = params->options.get();
-  if (options) {
-    multiple_ = options->accepts_multiple && *options->accepts_multiple;
+  if (params->options) {
+    const file_system::ChooseEntryOptions& options = *params->options;
+    multiple_ = options.accepts_multiple && *options.accepts_multiple;
     if (multiple_)
       picker_type = ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE;
 
-    if (options->type == file_system::CHOOSE_ENTRY_TYPE_OPENWRITABLEFILE &&
+    if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENWRITABLEFILE &&
         !app_file_handler_util::HasFileSystemWritePermission(
             extension_.get())) {
       return RespondNow(Error(kRequiresFileSystemWriteError));
-    } else if (options->type == file_system::CHOOSE_ENTRY_TYPE_SAVEFILE) {
+    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_SAVEFILE) {
       if (!app_file_handler_util::HasFileSystemWritePermission(
               extension_.get())) {
         return RespondNow(Error(kRequiresFileSystemWriteError));
@@ -802,7 +802,7 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
         return RespondNow(Error(kMultipleUnsupportedError));
       }
       picker_type = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
-    } else if (options->type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
+    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
       is_directory_ = true;
       if (!extension_->permissions_data()->HasAPIPermission(
               mojom::APIPermissionID::kFileSystemDirectory)) {
@@ -815,11 +815,11 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
     }
 
     base::FilePath::StringType suggested_extension;
-    BuildSuggestion(options->suggested_name, &suggested_name,
+    BuildSuggestion(options.suggested_name, &suggested_name,
                     &suggested_extension);
 
-    BuildFileTypeInfo(&file_type_info, suggested_extension, options->accepts,
-                      options->accepts_all_types);
+    BuildFileTypeInfo(&file_type_info, suggested_extension, options.accepts,
+                      options.accepts_all_types);
   }
 
   file_type_info.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;

@@ -103,8 +103,7 @@ apibtle::Characteristic PopulateCharacteristic(
   apibtle::Characteristic result;
   result.uuid = characteristic->GetUUID().canonical_value();
   result.instance_id = characteristic->GetIdentifier();
-  result.service = std::make_unique<apibtle::Service>(
-      PopulateService(characteristic->GetService()));
+  result.service = PopulateService(characteristic->GetService());
   result.properties =
       PopulateCharacteristicProperties(characteristic->GetProperties());
 
@@ -120,8 +119,8 @@ apibtle::Descriptor PopulateDescriptor(
   apibtle::Descriptor result;
   result.uuid = descriptor->GetUUID().canonical_value();
   result.instance_id = descriptor->GetIdentifier();
-  result.characteristic = std::make_unique<apibtle::Characteristic>(
-      PopulateCharacteristic(descriptor->GetCharacteristic()));
+  result.characteristic =
+      PopulateCharacteristic(descriptor->GetCharacteristic());
 
   const std::vector<uint8_t>& value = descriptor->GetValue();
   if (!value.empty())

@@ -11,10 +11,10 @@ namespace media_perception_private {
 
 namespace {
 
-std::unique_ptr<Metadata> MetadataProtoToIdl(const mri::Metadata& metadata) {
-  std::unique_ptr<Metadata> metadata_result = std::make_unique<Metadata>();
+Metadata MetadataProtoToIdl(const mri::Metadata& metadata) {
+  Metadata metadata_result;
   if (metadata.has_visual_experience_controller_version()) {
-    metadata_result->visual_experience_controller_version =
+    metadata_result.visual_experience_controller_version =
         metadata.visual_experience_controller_version();
   }
 
@@ -60,65 +60,60 @@ Hotword HotwordProtoToIdl(const mri::HotwordDetection::Hotword& hotword) {
   return hotword_result;
 }
 
-std::unique_ptr<HotwordDetection> HotwordDetectionProtoToIdl(
+HotwordDetection HotwordDetectionProtoToIdl(
     const mri::HotwordDetection& detection) {
-  std::unique_ptr<HotwordDetection> detection_result =
-      std::make_unique<HotwordDetection>();
+  HotwordDetection detection_result;
 
   if (detection.hotwords_size() > 0) {
-    detection_result->hotwords.emplace();
+    detection_result.hotwords.emplace();
     for (const auto& hotword : detection.hotwords()) {
-      detection_result->hotwords->emplace_back(HotwordProtoToIdl(hotword));
+      detection_result.hotwords->emplace_back(HotwordProtoToIdl(hotword));
     }
   }
 
   return detection_result;
 }
 
-std::unique_ptr<AudioSpectrogram> AudioSpectrogramProtoToIdl(
+AudioSpectrogram AudioSpectrogramProtoToIdl(
     const mri::AudioSpectrogram& spectrogram) {
-  std::unique_ptr<AudioSpectrogram> spectrogram_result =
-      std::make_unique<AudioSpectrogram>();
+  AudioSpectrogram spectrogram_result;
   if (spectrogram.values_size() > 0) {
-    spectrogram_result->values.emplace();
+    spectrogram_result.values.emplace();
     for (const auto& value : spectrogram.values()) {
-      spectrogram_result->values->emplace_back(value);
+      spectrogram_result.values->emplace_back(value);
     }
   }
   return spectrogram_result;
 }
 
-std::unique_ptr<AudioHumanPresenceDetection>
-AudioHumanPresenceDetectionProtoToIdl(
+AudioHumanPresenceDetection AudioHumanPresenceDetectionProtoToIdl(
     const mri::AudioHumanPresenceDetection& detection) {
-  std::unique_ptr<AudioHumanPresenceDetection> detection_result =
-      std::make_unique<AudioHumanPresenceDetection>();
+  AudioHumanPresenceDetection detection_result;
   if (detection.has_human_presence_likelihood()) {
-    detection_result->human_presence_likelihood =
+    detection_result.human_presence_likelihood =
         detection.human_presence_likelihood();
   }
   if (detection.has_noise_spectrogram()) {
-    detection_result->noise_spectrogram =
+    detection_result.noise_spectrogram =
         AudioSpectrogramProtoToIdl(detection.noise_spectrogram());
   }
   if (detection.has_frame_spectrogram()) {
-    detection_result->frame_spectrogram =
+    detection_result.frame_spectrogram =
         AudioSpectrogramProtoToIdl(detection.frame_spectrogram());
   }
   return detection_result;
 }
 
-std::unique_ptr<AudioLocalization> AudioLocalizationProtoToIdl(
+AudioLocalization AudioLocalizationProtoToIdl(
     const mri::AudioLocalization& localization) {
-  std::unique_ptr<AudioLocalization> localization_result =
-      std::make_unique<AudioLocalization>();
+  AudioLocalization localization_result;
   if (localization.has_azimuth_radians()) {
-    localization_result->azimuth_radians = localization.azimuth_radians();
+    localization_result.azimuth_radians = localization.azimuth_radians();
   }
   if (localization.azimuth_scores_size() > 0) {
-    localization_result->azimuth_scores.emplace();
+    localization_result.azimuth_scores.emplace();
     for (const auto& score : localization.azimuth_scores()) {
-      localization_result->azimuth_scores->emplace_back(score);
+      localization_result.azimuth_scores->emplace_back(score);
     }
   }
   return localization_result;
@@ -169,42 +164,38 @@ LightCondition LightConditionProtoToIdl(
   }
 }
 
-std::unique_ptr<VideoHumanPresenceDetection>
-VideoHumanPresenceDetectionProtoToIdl(
+VideoHumanPresenceDetection VideoHumanPresenceDetectionProtoToIdl(
     const mri::VideoHumanPresenceDetection& detection) {
-  std::unique_ptr<VideoHumanPresenceDetection> detection_result =
-      std::make_unique<VideoHumanPresenceDetection>();
+  VideoHumanPresenceDetection detection_result;
   if (detection.has_human_presence_likelihood()) {
-    detection_result->human_presence_likelihood =
+    detection_result.human_presence_likelihood =
         detection.human_presence_likelihood();
   }
 
   if (detection.has_motion_detected_likelihood()) {
-    detection_result->motion_detected_likelihood =
+    detection_result.motion_detected_likelihood =
         detection.motion_detected_likelihood();
   }
 
   if (detection.has_light_condition()) {
-    detection_result->light_condition =
+    detection_result.light_condition =
         LightConditionProtoToIdl(detection.light_condition());
   }
 
   if (detection.has_light_condition_likelihood()) {
-    detection_result->light_condition_likelihood =
+    detection_result.light_condition_likelihood =
         detection.light_condition_likelihood();
   }
 
   return detection_result;
 }
 
-std::unique_ptr<AudioVisualHumanPresenceDetection>
-AudioVisualHumanPresenceDetectionProtoToIdl(
+AudioVisualHumanPresenceDetection AudioVisualHumanPresenceDetectionProtoToIdl(
     const mri::AudioVisualHumanPresenceDetection& detection) {
-  std::unique_ptr<AudioVisualHumanPresenceDetection> detection_result =
-      std::make_unique<AudioVisualHumanPresenceDetection>();
+  AudioVisualHumanPresenceDetection detection_result;
 
   if (detection.has_human_presence_likelihood()) {
-    detection_result->human_presence_likelihood =
+    detection_result.human_presence_likelihood =
         detection.human_presence_likelihood();
   }
 
@@ -225,13 +216,13 @@ AudioVisualPerception AudioVisualPerceptionProtoToIdl(
   return perception_result;
 }
 
-std::unique_ptr<Point> PointProtoToIdl(const mri::Point& point) {
-  std::unique_ptr<Point> point_result = std::make_unique<Point>();
+Point PointProtoToIdl(const mri::Point& point) {
+  Point point_result;
   if (point.has_x())
-    point_result->x = point.x();
+    point_result.x = point.x();
 
   if (point.has_y())
-    point_result->y = point.y();
+    point_result.y = point.y();
 
   return point_result;
 }
@@ -244,19 +235,17 @@ void PointIdlToProto(const Point& point, mri::Point* point_result) {
     point_result->set_y(*point.y);
 }
 
-std::unique_ptr<BoundingBox> BoundingBoxProtoToIdl(
-    const mri::BoundingBox& bounding_box) {
-  std::unique_ptr<BoundingBox> bounding_box_result =
-      std::make_unique<BoundingBox>();
+BoundingBox BoundingBoxProtoToIdl(const mri::BoundingBox& bounding_box) {
+  BoundingBox bounding_box_result;
   if (bounding_box.has_normalized()) {
-    bounding_box_result->normalized = bounding_box.normalized();
+    bounding_box_result.normalized = bounding_box.normalized();
   }
 
   if (bounding_box.has_top_left())
-    bounding_box_result->top_left = PointProtoToIdl(bounding_box.top_left());
+    bounding_box_result.top_left = PointProtoToIdl(bounding_box.top_left());
 
   if (bounding_box.has_bottom_right()) {
-    bounding_box_result->bottom_right =
+    bounding_box_result.bottom_right =
         PointProtoToIdl(bounding_box.bottom_right());
   }
 
@@ -278,12 +267,12 @@ DistanceUnits DistanceUnitsProtoToIdl(const mri::Distance& distance) {
   return DISTANCE_UNITS_UNSPECIFIED;
 }
 
-std::unique_ptr<Distance> DistanceProtoToIdl(const mri::Distance& distance) {
-  std::unique_ptr<Distance> distance_result = std::make_unique<Distance>();
-  distance_result->units = DistanceUnitsProtoToIdl(distance);
+Distance DistanceProtoToIdl(const mri::Distance& distance) {
+  Distance distance_result;
+  distance_result.units = DistanceUnitsProtoToIdl(distance);
 
   if (distance.has_magnitude())
-    distance_result->magnitude = distance.magnitude();
+    distance_result.magnitude = distance.magnitude();
 
   return distance_result;
 }
@@ -445,22 +434,20 @@ PerceptionSample PerceptionSampleProtoToIdl(
   PerceptionSample perception_sample_result;
   if (perception_sample.has_frame_perception()) {
     perception_sample_result.frame_perception =
-        std::make_unique<FramePerception>(
-            FramePerceptionProtoToIdl(perception_sample.frame_perception()));
+        FramePerceptionProtoToIdl(perception_sample.frame_perception());
   }
   if (perception_sample.has_image_frame()) {
-    perception_sample_result.image_frame = std::make_unique<ImageFrame>(
-        ImageFrameProtoToIdl(perception_sample.image_frame()));
+    perception_sample_result.image_frame =
+        ImageFrameProtoToIdl(perception_sample.image_frame());
   }
   if (perception_sample.has_audio_perception()) {
     perception_sample_result.audio_perception =
-        std::make_unique<AudioPerception>(
-            AudioPerceptionProtoToIdl(perception_sample.audio_perception()));
+        AudioPerceptionProtoToIdl(perception_sample.audio_perception());
   }
   if (perception_sample.has_audio_visual_perception()) {
     perception_sample_result.audio_visual_perception =
-        std::make_unique<AudioVisualPerception>(AudioVisualPerceptionProtoToIdl(
-            perception_sample.audio_visual_perception()));
+        AudioVisualPerceptionProtoToIdl(
+            perception_sample.audio_visual_perception());
   }
   if (perception_sample.has_metadata()) {
     perception_sample_result.metadata =
@@ -626,26 +613,23 @@ void VideoStreamParamIdlToProto(mri::VideoStreamParam* param_result,
 
 }  //  namespace
 
-std::unique_ptr<Whiteboard> WhiteboardProtoToIdl(
-    const mri::Whiteboard& whiteboard) {
-  std::unique_ptr<Whiteboard> whiteboard_result =
-      std::make_unique<Whiteboard>();
+Whiteboard WhiteboardProtoToIdl(const mri::Whiteboard& whiteboard) {
+  Whiteboard whiteboard_result;
   if (whiteboard.has_top_left())
-    whiteboard_result->top_left = PointProtoToIdl(whiteboard.top_left());
+    whiteboard_result.top_left = PointProtoToIdl(whiteboard.top_left());
 
   if (whiteboard.has_top_right())
-    whiteboard_result->top_right = PointProtoToIdl(whiteboard.top_right());
+    whiteboard_result.top_right = PointProtoToIdl(whiteboard.top_right());
 
   if (whiteboard.has_bottom_left())
-    whiteboard_result->bottom_left = PointProtoToIdl(whiteboard.bottom_left());
+    whiteboard_result.bottom_left = PointProtoToIdl(whiteboard.bottom_left());
 
   if (whiteboard.has_bottom_right()) {
-    whiteboard_result->bottom_right =
-        PointProtoToIdl(whiteboard.bottom_right());
+    whiteboard_result.bottom_right = PointProtoToIdl(whiteboard.bottom_right());
   }
 
   if (whiteboard.has_aspect_ratio()) {
-    whiteboard_result->aspect_ratio = whiteboard.aspect_ratio();
+    whiteboard_result.aspect_ratio = whiteboard.aspect_ratio();
   }
 
   return whiteboard_result;

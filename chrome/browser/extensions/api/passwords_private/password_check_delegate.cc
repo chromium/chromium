@@ -299,9 +299,7 @@ PasswordCheckDelegate::GetCompromisedCredentials() {
   for (const auto& credential : ordered_credentials) {
     api::passwords_private::PasswordUiEntry api_credential =
         ConstructInsecureCredential(credential);
-    api_credential.compromised_info =
-        std::make_unique<api::passwords_private::CompromisedInfo>(
-            CreateCompromiseInfo(credential));
+    api_credential.compromised_info = CreateCompromiseInfo(credential);
     compromised_credentials.push_back(std::move(api_credential));
   }
 

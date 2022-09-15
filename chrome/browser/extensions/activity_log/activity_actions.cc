@@ -183,58 +183,57 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
     result.arg_url = SerializeArgUrl();
 
   if (other()) {
-    std::unique_ptr<ExtensionActivity::Other> other_field(
-        new ExtensionActivity::Other);
+    result.other.emplace();
     if (absl::optional<bool> prerender =
             other()->FindBool(constants::kActionPrerender)) {
-      other_field->prerender = *prerender;
+      result.other->prerender = *prerender;
     }
     if (const base::Value::Dict* web_request =
             other()->FindDict(constants::kActionWebRequest)) {
-      other_field->web_request =
+      result.other->web_request =
           ActivityLogPolicy::Util::Serialize(*web_request);
     }
     const std::string* extra = other()->FindString(constants::kActionExtra);
     if (extra)
-      other_field->extra = *extra;
+      result.other->extra = *extra;
     if (absl::optional<int> dom_verb =
             other()->FindInt(constants::kActionDomVerb)) {
       switch (static_cast<DomActionType::Type>(dom_verb.value())) {
         case DomActionType::GETTER:
-          other_field->dom_verb =
+          result.other->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_GETTER;
           break;
         case DomActionType::SETTER:
-          other_field->dom_verb =
+          result.other->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_SETTER;
           break;
         case DomActionType::METHOD:
-          other_field->dom_verb =
+          result.other->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_METHOD;
           break;
         case DomActionType::INSERTED:
-          other_field->dom_verb =
+          result.other->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_INSERTED;
           break;
         case DomActionType::XHR:
-          other_field->dom_verb = activity_log::EXTENSION_ACTIVITY_DOM_VERB_XHR;
+          result.other->dom_verb =
+              activity_log::EXTENSION_ACTIVITY_DOM_VERB_XHR;
           break;
         case DomActionType::WEBREQUEST:
-          other_field->dom_verb =
+          result.other->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_WEBREQUEST;
           break;
         case DomActionType::MODIFIED:
-          other_field->dom_verb =
+          result.other->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_MODIFIED;
           break;
         default:
-          other_field->dom_verb =
+          result.other->dom_verb =
               activity_log::EXTENSION_ACTIVITY_DOM_VERB_NONE;
       }
     } else {
-      other_field->dom_verb = activity_log::EXTENSION_ACTIVITY_DOM_VERB_NONE;
+      result.other->dom_verb = activity_log::EXTENSION_ACTIVITY_DOM_VERB_NONE;
     }
-    result.other = std::move(other_field);
   }
 
   return result;

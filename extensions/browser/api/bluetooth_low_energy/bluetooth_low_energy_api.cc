@@ -431,9 +431,8 @@ void BluetoothLowEnergyConnectFunction::DoWork() {
   }
 
   bool persistent = false;  // Not persistent by default.
-  apibtle::ConnectProperties* properties = params_->properties.get();
-  if (properties)
-    persistent = properties->persistent;
+  if (params_->properties)
+    persistent = params_->properties->persistent;
 
   event_router->Connect(
       persistent, extension(), params_->device_address,
@@ -846,9 +845,8 @@ void BluetoothLowEnergyStartCharacteristicNotificationsFunction::DoWork() {
   }
 
   bool persistent = false;  // Not persistent by default.
-  apibtle::NotificationProperties* properties = params_->properties.get();
-  if (properties)
-    persistent = properties->persistent;
+  if (params_->properties)
+    persistent = params_->properties->persistent;
 
   event_router->StartCharacteristicNotifications(
       persistent, extension(), params_->characteristic_id,

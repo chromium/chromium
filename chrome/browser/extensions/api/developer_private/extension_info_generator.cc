@@ -359,8 +359,7 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
   permissions->simple_permissions = get_permission_messages(api_messages);
 
   permissions->runtime_host_permissions =
-      std::make_unique<developer::RuntimeHostPermissions>(
-          CreateRuntimeHostPermissionsInfo(browser_context, extension));
+      CreateRuntimeHostPermissionsInfo(browser_context, extension);
 }
 
 }  // namespace
@@ -536,7 +535,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   // ControlledInfo.
   bool is_policy_location = Manifest::IsPolicyLocation(extension.location());
   if (is_policy_location) {
-    info->controlled_info = std::make_unique<developer::ControlledInfo>();
+    info->controlled_info.emplace();
     info->controlled_info->text =
         l10n_util::GetStringUTF8(IDS_EXTENSIONS_INSTALL_LOCATION_ENTERPRISE);
   }
@@ -706,7 +705,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   // Options page.
   if (OptionsPageInfo::HasOptionsPage(&extension)) {
-    info->options_page = std::make_unique<developer::OptionsPage>();
+    info->options_page.emplace();
     info->options_page->open_in_tab =
         OptionsPageInfo::ShouldOpenInTab(&extension);
     info->options_page->url =

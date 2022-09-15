@@ -134,10 +134,9 @@ api::sessions::Session CreateSessionModelHelper(
   api::sessions::Session session_struct;
   session_struct.last_modified = last_modified;
   if (tab) {
-    session_struct.tab = std::make_unique<api::tabs::Tab>(std::move(*tab));
+    session_struct.tab = std::move(*tab);
   } else if (window) {
-    session_struct.window =
-        std::make_unique<api::windows::Window>(std::move(*window));
+    session_struct.window = std::move(*window);
   } else if (group) {
     NOTREACHED();  // TODO(crbug.com/1192309): Implement group support.
   } else {

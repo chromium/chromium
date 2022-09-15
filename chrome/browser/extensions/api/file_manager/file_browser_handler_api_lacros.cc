@@ -58,7 +58,7 @@ void FileBrowserHandlerInternalSelectFileFunctionLacros::OnFilePathSelected(
   result.success = true;
 
   // The value will be consumed by DirectoryEntry.getFile() (JS).
-  result.entry_for_get_file = std::make_unique<FileEntryInfoForGetFile>();
+  result.entry_for_get_file.emplace();
   result.entry_for_get_file->file_system_id = granted_file_entry.filesystem_id;
   result.entry_for_get_file->base_name = granted_file_entry.registered_name;
   result.entry_for_get_file->entry_id = granted_file_entry.id;

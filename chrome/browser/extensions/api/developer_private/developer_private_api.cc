@@ -243,7 +243,7 @@ developer::LoadError CreateLoadError(
   response.path = base::UTF16ToUTF8(prettified_path.LossyDisplayName());
   response.retry_guid = retry_guid;
 
-  response.source = std::make_unique<developer::ErrorFileSource>();
+  response.source.emplace();
   response.source->before_highlight = highlighter.GetBeforeFeature();
   response.source->highlight = highlighter.GetFeature();
   response.source->after_highlight = highlighter.GetAfterFeature();
@@ -739,8 +739,7 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
   event_data.event_type = event_type;
   event_data.item_id = extension_id;
   if (!infos.empty()) {
-    event_data.extension_info =
-        std::make_unique<developer::ExtensionInfo>(std::move(infos[0]));
+    event_data.extension_info = std::move(infos[0]);
   }
 
   base::Value::List args;

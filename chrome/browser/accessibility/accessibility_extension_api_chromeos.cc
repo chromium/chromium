@@ -321,7 +321,7 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
   accessibility_private::SyntheticKeyboardEvent* key_data = &params->key_event;
 
   int modifiers = 0;
-  if (key_data->modifiers.get()) {
+  if (key_data->modifiers) {
     if (key_data->modifiers->ctrl && *key_data->modifiers->ctrl)
       modifiers |= ui::EF_CONTROL_DOWN;
     if (key_data->modifiers->alt && *key_data->modifiers->alt)

@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/public/browser/blob_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -240,8 +241,9 @@ PrinterProviderInternalReportUsbPrinterInfoFunction::Run() {
 
   PrinterProviderInternalAPI::GetFactoryInstance()
       ->Get(browser_context())
-      ->NotifyGetUsbPrinterInfoResult(extension(), params->request_id,
-                                      params->printer_info.get());
+      ->NotifyGetUsbPrinterInfoResult(
+          extension(), params->request_id,
+          base::OptionalToPtr(params->printer_info));
   return RespondNow(NoArguments());
 }
 
