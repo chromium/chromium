@@ -552,6 +552,10 @@ void VolumeToVolumeMetadata(
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNSUPPORTED;
       break;
+    case ash::disks::MountCondition::kInProgress:
+      volume_metadata->mount_condition =
+          file_manager_private::MOUNT_CONDITION_IN_PROGRESS;
+      break;
   }
 
   // If the context is known, then pass it.

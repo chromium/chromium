@@ -56,6 +56,7 @@ chrome.fileManagerPrivate.DriveOfflineReason = {
 chrome.fileManagerPrivate.MountCondition = {
   UNKNOWN: 'unknown',
   UNSUPPORTED: 'unsupported',
+  IN_PROGRESS: 'in_progress',
 };
 
 /** @enum {string} */

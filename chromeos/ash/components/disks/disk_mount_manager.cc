@@ -1072,6 +1072,7 @@ std::ostream& operator<<(std::ostream& out, MountCondition condition) {
     PRINT(kNone)
     PRINT(kUnknownFilesystem)
     PRINT(kUnsupportedFilesystem)
+    PRINT(kInProgress)
 #undef PRINT
   }
 

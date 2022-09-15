@@ -28,6 +28,7 @@ enum class MountCondition {
   kNone,
   kUnknownFilesystem,
   kUnsupportedFilesystem,
+  kInProgress,
 };
 
 // Output operator for logging.

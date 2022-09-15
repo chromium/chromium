@@ -62,7 +62,7 @@ enum DriveOfflineReason {NOT_READY, NO_NETWORK, NO_SERVICE};
 
 // Additional data about mount, for example, that the filesystem is not
 // supported.
-enum MountCondition { unknown, unsupported };
+enum MountCondition { unknown, unsupported, in_progress };
 
 // Additional information of the context the volume was mounted.
 enum MountContext { user, auto };
