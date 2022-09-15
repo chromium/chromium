@@ -1695,13 +1695,7 @@ TEST_F(TraceEventTestFixture, TraceWithDefaultCategoryFilters) {
   trace_log->SetDisabled();
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_TraceWithDisabledByDefaultCategoryFilters DISABLED_TraceWithDisabledByDefaultCategoryFilters
-#else
-#define MAYBE_TraceWithDisabledByDefaultCategoryFilters TraceWithDisabledByDefaultCategoryFilters
-#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_TraceWithDisabledByDefaultCategoryFilters) {
+TEST_F(TraceEventTestFixture, TraceWithDisabledByDefaultCategoryFilters) {
   TraceLog* trace_log = TraceLog::GetInstance();
 
   trace_log->SetEnabled(TraceConfig("foo,disabled-by-default-foo", ""),
@@ -2374,13 +2368,7 @@ bool MockLogMessageHandler(int, const char*, int, size_t,
   return false;
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_EchoToConsole DISABLED_EchoToConsole
-#else
-#define MAYBE_EchoToConsole EchoToConsole
-#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_EchoToConsole) {
+TEST_F(TraceEventTestFixture, EchoToConsole) {
   logging::LogMessageHandlerFunction old_log_message_handler =
       logging::GetLogMessageHandler();
   logging::SetLogMessageHandler(MockLogMessageHandler);
@@ -2474,13 +2462,7 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
 
 // Runtime filtering isn't supported with Perfetto.
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-// Flaky on iOS device, see crbug.com/908002
-#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_TraceFilteringMode DISABLED_TraceFilteringMode
-#else
-#define MAYBE_TraceFilteringMode TraceFilteringMode
-#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_TraceFilteringMode) {
+TEST_F(TraceEventTestFixture, TraceFilteringMode) {
   const char config_json[] =
       "{"
       "  \"event_filters\": ["
@@ -2571,13 +2553,7 @@ TEST_F(TraceEventTestFixture, MAYBE_TraceFilteringMode) {
   Clear();
 }
 
-// Flaky on iOS device, see crbug.com/908002, crbug.com/1363545
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_EventFiltering DISABLED_EventFiltering
-#else
-#define MAYBE_EventFiltering EventFiltering
-#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_EventFiltering) {
+TEST_F(TraceEventTestFixture, EventFiltering) {
   const char config_json[] =
       "{"
       "  \"included_categories\": ["
@@ -2621,13 +2597,7 @@ TEST_F(TraceEventTestFixture, MAYBE_EventFiltering) {
   EXPECT_EQ(1u, filter_hits_counter.end_event_hit_count);
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-#define MAYBE_EventAllowlistFiltering DISABLED_EventAllowlistFiltering
-#else
-#define MAYBE_EventAllowlistFiltering EventAllowlistFiltering
-#endif  // BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
-TEST_F(TraceEventTestFixture, MAYBE_EventAllowlistFiltering) {
+TEST_F(TraceEventTestFixture, EventAllowlistFiltering) {
   std::string config_json = StringPrintf(
       "{"
       "  \"included_categories\": ["
