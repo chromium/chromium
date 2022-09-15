@@ -4,6 +4,7 @@
 
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 
+#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace screen_ai {
@@ -38,6 +39,12 @@ void ScreenAIServiceRouter::BindMainContentExtractor(
 void ScreenAIServiceRouter::LaunchIfNotRunning() {
   if (screen_ai_service_.is_bound())
     return;
+
+  if (!ScreenAIInstallState::GetInstance()->is_component_ready()) {
+    VLOG(0)
+        << "ScreenAI service launch triggered before the component is ready.";
+    return;
+  }
 
   content::ServiceProcessHost::Launch(
       screen_ai_service_.BindNewPipeAndPassReceiver(),

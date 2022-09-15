@@ -2471,6 +2471,7 @@ static_library("browser") {
     ]
     deps += [
       "//components/services/screen_ai",
+      "//components/services/screen_ai/public/cpp:screen_ai_install_state",
       "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
       "//components/services/screen_ai/public/cpp:utilities",
       "//components/services/screen_ai/public/mojom",

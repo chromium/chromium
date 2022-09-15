@@ -13,6 +13,7 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/screen_ai/public/cpp/pref_names.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
@@ -69,6 +70,7 @@ void ScreenAIComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value manifest) {
+  screen_ai::ScreenAIInstallState::GetInstance()->SetComponentReady();
   VLOG(1) << "Screen AI Component ready, version " << version.GetString()
           << " in " << install_dir.value();
 }
@@ -100,8 +102,8 @@ ScreenAIComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 // static
-void ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
-    PrefService* global_prefs) {
+void ScreenAIComponentInstallerPolicy::
+    DeleteComponentOrScheduleDeletionIfNeeded(PrefService* global_prefs) {
   base::FilePath component_binary_path =
       screen_ai::GetLatestComponentBinaryPath();
   if (component_binary_path.empty())
@@ -119,7 +121,8 @@ void ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
   }
 
   if (deletion_time <= base::Time::Now()) {
-    // If there are more than one instance of the library, delete them as well.
+    // If there are more than one instance of the component, delete them as
+    // well.
     do {
       base::DeletePathRecursively(component_binary_path.DirName());
       component_binary_path = screen_ai::GetLatestComponentBinaryPath();
@@ -134,7 +137,7 @@ void RegisterScreenAIComponent(ComponentUpdateService* cus,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!features::IsScreenAIServiceNeeded()) {
-    ScreenAIComponentInstallerPolicy::DeleteLibraryOrScheduleDeletionIfNeeded(
+    ScreenAIComponentInstallerPolicy::DeleteComponentOrScheduleDeletionIfNeeded(
         global_prefs);
     return;
   }

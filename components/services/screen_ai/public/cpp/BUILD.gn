@@ -2,6 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("screen_ai_install_state") {
+  sources = [
+    "screen_ai_install_state.cc",
+    "screen_ai_install_state.h",
+  ]
+
+  deps = [ "//base/" ]
+}
+
 source_set("screen_ai_service_router_factory") {
   sources = [
     "screen_ai_service_router.cc",
@@ -11,6 +20,7 @@ source_set("screen_ai_service_router_factory") {
   ]
 
   deps = [
+    ":screen_ai_install_state",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/services/screen_ai/public/mojom",

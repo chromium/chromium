@@ -19,11 +19,16 @@ namespace screen_ai {
 
 AXScreenAIAnnotator::AXScreenAIAnnotator(
     content::BrowserContext* browser_context)
-    : screen_ai_service_client_(this) {
-  BindToScreenAIService(browser_context);
+    : browser_context_(browser_context), screen_ai_service_client_(this) {
+  component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
 }
 
 AXScreenAIAnnotator::~AXScreenAIAnnotator() = default;
+
+void AXScreenAIAnnotator::ComponentReady() {
+  DCHECK(!screen_ai_service_client_.is_bound());
+  BindToScreenAIService(browser_context_);
+}
 
 void AXScreenAIAnnotator::BindToScreenAIService(
     content::BrowserContext* browser_context) {

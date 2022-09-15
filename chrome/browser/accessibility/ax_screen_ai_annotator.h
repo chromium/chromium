@@ -7,7 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,7 +28,8 @@ class Image;
 namespace screen_ai {
 
 class AXScreenAIAnnotator : public KeyedService,
-                            mojom::ScreenAIAnnotatorClient {
+                            mojom::ScreenAIAnnotatorClient,
+                            ScreenAIInstallState::Observer {
  public:
   explicit AXScreenAIAnnotator(content::BrowserContext* browser_context);
   AXScreenAIAnnotator(const AXScreenAIAnnotator&) = delete;
@@ -40,6 +43,9 @@ class AXScreenAIAnnotator : public KeyedService,
   // TODO(https://crbug.com/1278249): Add
   // mojom::ScreenAIServiceClient::HandleAXTreeUpdate after service side data is
   // ready.
+
+  // ScreenAIInstallState::Observer:
+  void ComponentReady() override;
 
  private:
   // Binds `screen_ai_annotator_` to the Screen AI service.
@@ -58,6 +64,13 @@ class AXScreenAIAnnotator : public KeyedService,
   // created by the Service, containing the visual annotations.
   void OnAnnotationPerformed(const ui::AXTreeID& parent_tree_id,
                              const ui::AXTreeID& screen_ai_tree_id);
+
+  base::ScopedObservation<ScreenAIInstallState, ScreenAIInstallState::Observer>
+      component_ready_observer_{this};
+
+  // AXScreenAIAnnotator is created by a factory on this browser context and
+  // will be destroyed before browser context gets destroyed.
+  content::BrowserContext* browser_context_;
 
   mojo::Remote<mojom::ScreenAIAnnotator> screen_ai_annotator_;
   mojo::Receiver<mojom::ScreenAIAnnotatorClient> screen_ai_service_client_;

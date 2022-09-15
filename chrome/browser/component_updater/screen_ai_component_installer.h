@@ -22,7 +22,7 @@ class ScreenAIComponentInstallerPolicy : public ComponentInstallerPolicy {
       const ScreenAIComponentInstallerPolicy&) = delete;
   ~ScreenAIComponentInstallerPolicy() override;
 
-  static void DeleteLibraryOrScheduleDeletionIfNeeded(
+  static void DeleteComponentOrScheduleDeletionIfNeeded(
       PrefService* global_prefs);
 
  private:
