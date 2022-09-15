@@ -58,6 +58,9 @@ bool IsAllowedAdUrl(const GURL& url,
 
 mojom::BidderWorkletBidPtr SetBidBindings::TakeBid() {
   DCHECK(has_bid());
+  // Set `bid_duration` here instead of in SetBid(), so it can include the
+  // entire script execution time.
+  bid_->bid_duration = base::TimeTicks::Now() - start_;
   return std::move(bid_);
 }
 
@@ -249,10 +252,14 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
     }
   }
 
-  bid_ = mojom::BidderWorkletBid::New(
-      std::move(ad_json), bid, std::move(render_url),
-      std::move(ad_component_urls),
-      /*bid_duration=*/base::TimeTicks::Now() - start_);
+  // `bid_duration` needs to include the entire time the bid script took to run,
+  // including the time from the last setBid() call to when the bidder worklet
+  // timed out, if the worklet did time out. So `bid_duration` is calculated
+  // when ownership of the bid is taken by the caller, instead of here.
+  bid_ = mojom::BidderWorkletBid::New(std::move(ad_json), bid,
+                                      std::move(render_url),
+                                      std::move(ad_component_urls),
+                                      /*bid_duration=*/base::TimeDelta());
   return true;
 }
 

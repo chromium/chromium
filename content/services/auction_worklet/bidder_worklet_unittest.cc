@@ -356,6 +356,10 @@ class BidderWorkletTest : public testing::Test {
   }
 
   // Loads and runs a generateBid() script, expecting the provided result.
+  //
+  // `bid_duration` of `expected_bid` is ignored unless it's non-zero, in which
+  // case the duration is expected to be at least `bid_duration` - useful for
+  // testing that `bid_duration` at least seems to reflect timeouts.
   void RunGenerateBidExpectingResult(
       mojom::BidderWorkletBidPtr expected_bid,
       const absl::optional<uint32_t>& expected_data_version = absl::nullopt,
@@ -378,6 +382,8 @@ class BidderWorkletTest : public testing::Test {
         EXPECT_THAT(*bid_->ad_components,
                     ::testing::ElementsAreArray(*expected_bid->ad_components));
       }
+      if (!expected_bid->bid_duration.is_zero())
+        EXPECT_GE(bid_->bid_duration, expected_bid->bid_duration);
     }
     EXPECT_EQ(expected_data_version, data_version_);
     EXPECT_EQ(expected_debug_loss_report_url, bid_debug_loss_report_url_);
@@ -3256,7 +3262,9 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerTimeOut) {
 }
 
 // Even though the script timed out, it had set an intermediate result with
-// setBid, so we should use that.
+// setBid, so we should use that. Note that this test sets `bid_duration` to
+// `AuctionV8Helper::kScriptTimeout`, to make sure the full timeout time is
+// included in the duration.
 TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
   // The bidding script has an endless while loop.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -3270,7 +3278,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
       /*expected_bid=*/
       mojom::BidderWorkletBid::New("\"ad\"", 1, GURL("https://response.test/"),
                                    /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()),
+                                   AuctionV8Helper::kScriptTimeout),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -3291,7 +3299,9 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
 }
 
 // Test that in the case of multiple setBid() calls, the most recent call takes
-// precedence.
+// precedence. Note that this test sets `bid_duration` to
+// `AuctionV8Helper::kScriptTimeout`, to make sure the full timeout time is
+// included in the duration.
 TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
   interest_group_ads_.emplace_back(GURL("https://response.test/replacement"),
                                    /*metadata=*/absl::nullopt);
@@ -3309,7 +3319,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
       /*expected_bid=*/
       mojom::BidderWorkletBid::New(
           "\"ad2\"", 2, GURL("https://response.test/replacement"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()),
+          /*ad_components=*/absl::nullopt, AuctionV8Helper::kScriptTimeout),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
