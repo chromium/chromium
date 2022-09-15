@@ -59,6 +59,15 @@
     <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_BUTTON" desc="The action button text for the dialog that is shown when a user initiates price tracking for the product displayed on the current page from the dialog but the request fails. User can click this button to re-try tracking the product.">
       Try again
     </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE_FIRST_RUN" desc="The title text for the dialog that is shown at the first time a user tracks the product displayed on the current web page.">
+      Track prices with Chrome
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION_FIRST_RUN" desc="The description text for the dialog that is shown at the first time a user tracks the product displayed on the current web page. It describes what will happen when price tracking is initiated, and tells users which bookmarks folder this page will be saved.">
+      You’ll get email alerts if the price drops on any site. This page will be saved to <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_CANCEL_BUTTON" desc="The button text for the dialog that is shown at the first time a user tracks the product displayed on the current web page. User can click this button to dismiss this dialog.">
+      Cancel
+    </message>
 
     <message name="IDS_OMNIBOX_TRACKING_PRICE" desc="Text shown for a button in the omnibox when the user is on a product page and the product's price is currently being tracked. User can click this button to open a dialog and view the tracking details or untrack this product from the dialog.">
       Tracking price
@@ -67,7 +76,7 @@
       Tracking price
     </message>
     <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION" desc="The description text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved.">
-      You’re now tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other bookmarks</ex></ph>
+      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
     </message>
     <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_ACTION_BUTTON" desc="The action button text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked and the user can click this button to acknowledge this tracking.">
       Done
@@ -86,6 +95,10 @@
     </message>
     <message name="IDS_OMNIBOX_PRICE_TRACKING_OFF_DIALOG_ACTION_BUTTON" desc="The action button text for the dialog that is shown when a user untracks the product displayed on the current web page.. User can click this button to acknowledge that this product is no longer being tracked.">
       Done
+    </message>
+
+    <message name="IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION" desc="The description text for the dialog that is shown when a user clicks the bookmark star icon on a product web page. It describes what will happen when price tracking is initiated.">
+      Get email alerts if the price drops on any site
     </message>
 
     <message name="IDS_BOOKMARKS_MENU_TRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is not currently being tracked. User can click this button to track this product.">
