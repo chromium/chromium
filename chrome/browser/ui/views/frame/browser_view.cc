@@ -2387,7 +2387,7 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
   if (pref_service &&
       pref_service->GetBoolean(
           reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
-    feature_promo_controller_->MaybeShowPromo(
+    MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
   }
 }
