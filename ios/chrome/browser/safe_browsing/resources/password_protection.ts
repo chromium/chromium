@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWebKitMessage} from "//ios/web/public/js_messaging/resources/utils.js";
+
 /*
 * @fileoverview Adds listeners that forward keypress and paste events to the
 * browser. The browser uses this information to detect and warn the user about
@@ -12,11 +14,12 @@
 /**
  * Listens for keypress events and forwards the entered key to the browser.
  */
-function onKeypressEvent(event) {
+function onKeypressEvent(event : KeyboardEvent) : void {
   // Only forward events where the entered key has length 1, to avoid forwarding
   // special keys like "Enter".
   if (event.isTrusted && event.key.length == 1) {
-    window.webkit.messageHandlers['PasswordProtectionTextEntered'].postMessage(
+    sendWebKitMessage(
+        'PasswordProtectionTextEntered',
         {eventType: 'KeyPressed', text: event.key});
   }
 }
@@ -24,12 +27,21 @@ function onKeypressEvent(event) {
 /**
  * Listens for paste events and forwards the pasted text to the browser.
  */
-function onPasteEvent(event) {
-  if (event.isTrusted) {
-    var text = event.clipboardData.getData('text');
-    window.webkit.messageHandlers['PasswordProtectionTextEntered'].postMessage(
-        {eventType: 'TextPasted', text: text});
-  }
+function onPasteEvent(event : Event) : void {
+  if (!(event instanceof ClipboardEvent))
+    return;
+
+  if (!event.isTrusted)
+    return;
+
+  const clipboardData = event.clipboardData;
+  if (!clipboardData)
+    return;
+
+  const text = clipboardData.getData('text');
+  sendWebKitMessage(
+      'PasswordProtectionTextEntered',
+      {eventType: 'TextPasted', text: text});
 }
 
 // Events are first dispatched to the window object, in the capture phase of

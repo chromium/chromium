@@ -4,7 +4,7 @@
 
 import("//ios/build/config.gni")
 import("//ios/features.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("safe_browsing") {
   sources = [
@@ -32,7 +32,7 @@ source_set("safe_browsing") {
   ]
 
   deps = [
-    ":password_protection_js",
+    ":password_protection_ts",
     "//base",
     "//build:branding_buildflags",
     "//components/keyed_service/core",
@@ -82,11 +82,11 @@ source_set("safe_browsing") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-optimize_js("password_protection_js") {
+optimize_ts("password_protection_ts") {
   visibility = [ ":safe_browsing" ]
 
-  primary_script = "resources/password_protection.js"
-  sources = [ "resources/password_protection.js" ]
+  sources = [ "resources/password_protection.ts" ]
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
 source_set("features") {
