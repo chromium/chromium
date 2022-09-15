@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -425,7 +425,7 @@ def main(argv):
   parse_tree = Parser(Lexer(Input(args.inputs))).Parse()
 
   with (sys.stdout if args.output == '-' else open(args.output, 'w')) as out:
-    out.write('// Copyright 2015 The Chromium Authors. All rights reserved.\n')
+    out.write('// Copyright 2015 The Chromium Authors\n')
     out.write('// Use of this source code is governed by a BSD-style license')
     out.write(' that can be\n// found in the LICENSE file.\n\n')
     out.write('// DO NOT EDIT.\n')
