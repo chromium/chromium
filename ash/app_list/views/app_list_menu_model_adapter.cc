@@ -87,30 +87,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
             user_journey_time);
       }
       break;
-    case PEEKING_SUGGESTED:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking", source_type(),
-          ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-      UMA_HISTOGRAM_TIMES(
-          "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking",
-          user_journey_time);
-      if (is_tablet_mode()) {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking.TabletMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-        UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking.TabletMode",
-            user_journey_time);
-      } else {
-        UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking.ClamshellMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-        UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking."
-            "ClamshellMode",
-            user_journey_time);
-      }
-      break;
     case PRODUCTIVITY_LAUNCHER_RECENT_APP:
       DCHECK(features::IsProductivityLauncherEnabled());
       if (is_tablet_mode()) {
@@ -155,7 +131,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
             user_journey_time);
       }
       break;
-    case HALF_SEARCH_RESULT:
     case FULLSCREEN_SEARCH_RESULT:
       UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.SearchResult",
                                 source_type(),

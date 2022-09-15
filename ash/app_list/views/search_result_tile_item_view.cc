@@ -453,20 +453,14 @@ void SearchResultTileItemView::SetPrice(const std::u16string& price) {
 
 AppListMenuModelAdapter::AppListViewAppType
 SearchResultTileItemView::GetAppType() const {
-  if (IsSuggestedAppTile()) {
-    if (view_delegate_->GetAppListViewState() == AppListViewState::kPeeking) {
-      return AppListMenuModelAdapter::PEEKING_SUGGESTED;
-    } else {
-      return AppListMenuModelAdapter::FULLSCREEN_SUGGESTED;
-    }
-  } else {
-    if (view_delegate_->GetAppListViewState() == AppListViewState::kHalf) {
-      return AppListMenuModelAdapter::HALF_SEARCH_RESULT;
-    } else if (view_delegate_->GetAppListViewState() ==
-               AppListViewState::kFullscreenSearch) {
-      return AppListMenuModelAdapter::FULLSCREEN_SEARCH_RESULT;
-    }
+  if (IsSuggestedAppTile())
+    return AppListMenuModelAdapter::FULLSCREEN_SUGGESTED;
+
+  if (view_delegate_->GetAppListViewState() ==
+      AppListViewState::kFullscreenSearch) {
+    return AppListMenuModelAdapter::FULLSCREEN_SEARCH_RESULT;
   }
+
   NOTREACHED();
   return AppListMenuModelAdapter::APP_LIST_APP_TYPE_LAST;
 }

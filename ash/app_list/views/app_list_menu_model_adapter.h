@@ -29,10 +29,10 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
     FULLSCREEN_SEARCH_RESULT = 0,
     FULLSCREEN_SUGGESTED = 1,
     FULLSCREEN_APP_GRID = 2,
-    PEEKING_SUGGESTED = 3,
-    HALF_SEARCH_RESULT = 4,
 
     // Usage removed.
+    // PEEKING_SUGGESTED = 3,
+    // HALF_SEARCH_RESULT = 4,
     // SEARCH_RESULT = 5,
 
     PRODUCTIVITY_LAUNCHER_RECENT_APP = 6,

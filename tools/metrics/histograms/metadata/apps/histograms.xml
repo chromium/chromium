@@ -86,8 +86,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".ShelfButton" summary="ShelfButton"/>
   <variant name=".SuggestedAppFullscreen"
       summary="Suggested App, Fullscreen Launcher"/>
-  <variant name=".SuggestedAppPeeking"
-      summary="Suggested App, Peeking Launcher"/>
 </variants>
 
 <variants name="HomeLauncherVisibility">
