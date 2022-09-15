@@ -26,6 +26,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/tree/tree_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
 using base::ASCIIToUTF16;
@@ -593,7 +594,7 @@ TEST_F(BookmarkEditorViewTest, EditorFullyShown) {
   do {
     tree->Expand(parent_node);
     parent_node = AddNewFolder(parent_node);
-    editor()->Layout();
+    views::test::RunScheduledLayout(editor());
   } while (tree->bounds().height() <= tree->parent()->bounds().height());
 
   // Edit the last node which also has the focus.

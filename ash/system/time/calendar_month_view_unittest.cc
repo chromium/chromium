@@ -335,7 +335,7 @@ class CalendarMonthViewFetchTest : public AshTestBase {
         controller_->GetOnScreenMonthFirstDayUTC(), controller_.get());
     calendar_month_view_ =
         widget_->SetContentsView(std::move(calendar_month_view));
-    calendar_month_view_->Layout();
+    views::test::RunScheduledLayout(calendar_month_view_);
   }
 
   void DestroyCalendarMonthViewWidget() { widget_.reset(); }
