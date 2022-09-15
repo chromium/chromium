@@ -185,7 +185,6 @@ Installer::Result Installer::InstallHelper(
 
 void Installer::InstallWithSyncPrimitives(
     const base::FilePath& unpack_path,
-    const std::string& public_key,
     std::unique_ptr<InstallParams> install_params,
     ProgressCallback progress_callback,
     Callback callback) {
@@ -203,15 +202,15 @@ void Installer::OnUpdateError(int error) {
 }
 
 void Installer::Install(const base::FilePath& unpack_path,
-                        const std::string& public_key,
+                        const std::string& /*public_key*/,
                         std::unique_ptr<InstallParams> install_params,
                         ProgressCallback progress_callback,
                         Callback callback) {
   base::ThreadPool::PostTask(
       FROM_HERE, kTaskTraitsBlockWithSyncPrimitives,
       base::BindOnce(&Installer::InstallWithSyncPrimitives, this, unpack_path,
-                     public_key, std::move(install_params),
-                     std::move(progress_callback), std::move(callback)));
+                     std::move(install_params), std::move(progress_callback),
+                     std::move(callback)));
 }
 
 bool Installer::GetInstalledFile(const std::string& file,
