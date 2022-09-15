@@ -446,10 +446,10 @@ enum AuthenticationButtonType {
       [self.embeddedViewController.view.widthAnchor
           constraintEqualToConstant:kUserConsentMaxSize],
     ];
-    for (NSLayoutConstraint* constraints in lowerPriorityConstraints) {
+    for (NSLayoutConstraint* layout_constraints in lowerPriorityConstraints) {
       // We do not use `UILayoutPriorityDefaultHigh` because it makes some
       // multiline labels on one line and truncated on iPad.
-      constraints.priority = UILayoutPriorityRequired - 1;
+      layout_constraints.priority = UILayoutPriorityRequired - 1;
     }
     [constraints addObjectsFromArray:lowerPriorityConstraints];
     _regularSizeClassConstraints = constraints;

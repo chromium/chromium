@@ -457,7 +457,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
       actionWithTitle:@""
                 image:nil
            identifier:kContextMenuActionIdentifier
-              handler:^(UIAction* action) {
+              handler:^(UIAction* uiAction) {
                 base::RecordAction(
                     base::UserMetricsAction("MobileMenuToolbarMenuTriggered"));
                 weakButton.menu =

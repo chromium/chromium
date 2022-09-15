@@ -8,24 +8,24 @@
 #import <UIKit/UIKit.h>
 
 // All available icons for autocomplete suggestions in the popup.
-enum OmniboxSuggestionIconType {
-  BOOKMARK = 0,
-  CALCULATOR,
-  DEFAULT_FAVICON,
-  HISTORY,
-  SEARCH,
-  SEARCH_HISTORY,
-  CONVERSION,
-  DICTIONARY,
-  STOCK,
-  SUNRISE,
-  LOCAL_TIME,
-  WHEN_IS,
-  TRANSLATION,
+enum class OmniboxSuggestionIconType {
+  kBookmark = 0,
+  kCalculator,
+  kDefaultFavicon,
+  kHistory,
+  kSearch,
+  kSearchHistory,
+  kConversation,
+  kDictionary,
+  kStock,
+  kSunrise,
+  kLocalTime,
+  kWhenIs,
+  kTranslation,
   // The FALLBACK_ANSWER icon is used for all answers that don't have special
   // icons above.
-  FALLBACK_ANSWER,
-  OMNIBOX_SUGGESTION_ICON_TYPE_COUNT,
+  kFallbackAnswer,
+  kCount,
 };
 
 // Returns the asset name (to be used in -[UIImage imageNamed:]).

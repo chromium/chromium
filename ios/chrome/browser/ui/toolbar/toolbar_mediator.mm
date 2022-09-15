@@ -359,7 +359,7 @@
         [UIAction actionWithTitle:title
                             image:image
                        identifier:nil
-                          handler:^(UIAction* action) {
+                          handler:^(UIAction* uiAction) {
                             [weakSelf navigateToPageForItem:navigationItem];
                           }];
     [actions addObject:action];

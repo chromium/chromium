@@ -133,8 +133,8 @@ void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
       base::BindOnce(&ClearOutdatedIcons, most_visited_data,
                      favicons_directory),
       base::BindOnce(
-          ^(const ntp_tiles::NTPTilesVector& most_visited_data) {
-            GetFaviconsAndSave(most_visited_data, favicon_provider,
+          ^(const ntp_tiles::NTPTilesVector& inner_most_visited_data) {
+            GetFaviconsAndSave(inner_most_visited_data, favicon_provider,
                                favicons_directory);
           },
           most_visited_data));

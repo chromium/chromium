@@ -871,7 +871,6 @@ bool IsSigninForcedByPolicy() {
   // id was backed up successfully.
   if (self.sceneState.appState.sessionRestorationRequired &&
       !self.sceneState.appState.startupInformation.isFirstRun) {
-    Browser* mainBrowser = self.mainInterface.browser;
     if ([CrashRestoreHelper
             isBackedUpSessionID:self.sceneState.sceneSessionID
                    browserState:mainBrowser->GetBrowserState()]) {
@@ -1000,9 +999,9 @@ bool IsSigninForcedByPolicy() {
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithIncognito:self.currentInterface.incognito];
     command.userInitiated = NO;
-    Browser* browser = self.currentInterface.browser;
+    Browser* currentBrowser = self.currentInterface.browser;
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        browser->GetCommandDispatcher(), ApplicationCommands);
+        currentBrowser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
   }
   [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];

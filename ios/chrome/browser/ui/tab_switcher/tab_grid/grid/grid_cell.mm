@@ -737,8 +737,9 @@ const base::Feature kPreviousTabViewWidthCrash{
   self.topBarHeightConstraint.constant = [self topBarHeight];
   [self setNeedsUpdateConstraints];
   [self layoutIfNeeded];
-  CGFloat yOffset = kGridCellHeaderHeight - self.topTabView.frame.size.height;
-  PositionView(self.topTabView, CGPointMake(0, yOffset));
+  CGFloat topYOffset =
+      kGridCellHeaderHeight - self.topTabView.frame.size.height;
+  PositionView(self.topTabView, CGPointMake(0, topYOffset));
   // Position the main view so it's top-aligned with the main cell view.
   PositionView(self.mainTabView, self.mainCellView.frame.origin);
   if (!self.bottomTabView)
@@ -751,8 +752,8 @@ const base::Feature kPreviousTabViewWidthCrash{
                  CGPointMake(0, self.bottomTabView.frame.origin.y * scale));
   } else {
     // Position the bottom tab view below the main content view.
-    CGFloat yOffset = CGRectGetMaxY(self.mainCellView.frame);
-    PositionView(self.bottomTabView, CGPointMake(0, yOffset));
+    CGFloat bottomYOffset = CGRectGetMaxY(self.mainCellView.frame);
+    PositionView(self.bottomTabView, CGPointMake(0, bottomYOffset));
   }
 }
 

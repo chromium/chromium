@@ -95,7 +95,7 @@
       [[OmniboxViewController alloc] initWithIncognito:isIncognito];
 
   self.viewController.defaultLeadingImage =
-      GetOmniboxSuggestionIcon(DEFAULT_FAVICON);
+      GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
   self.viewController.textInputDelegate = self;
   self.mediator = [[OmniboxMediator alloc] initWithIncognito:isIncognito];
   self.mediator.templateURLService =

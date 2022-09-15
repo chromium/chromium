@@ -114,9 +114,8 @@
 
   [printInteractionController
         presentAnimated:YES
-      completionHandler:^(
-          UIPrintInteractionController* printInteractionController,
-          BOOL completed, NSError* error) {
+      completionHandler:^(UIPrintInteractionController* controller,
+                          BOOL completed, NSError* error) {
         if (error)
           DLOG(ERROR) << "Air printing error: "
                       << base::SysNSStringToUTF8(error.description);

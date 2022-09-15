@@ -2204,8 +2204,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     WebStateList* webStateList = self.browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
-      web::WebState* webState = webStateList->GetWebStateAt(index);
-      PagePlaceholderTabHelper::FromWebState(webState)
+      web::WebState* webStateAtIndex = webStateList->GetWebStateAt(index);
+      PagePlaceholderTabHelper::FromWebState(webStateAtIndex)
           ->CancelPlaceholderForNextNavigation();
     }
   }

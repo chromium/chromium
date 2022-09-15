@@ -155,8 +155,8 @@ using base::UserMetricsAction;
 
   __weak OmniboxMediator* weakSelf = self;
   // Show Default Search Engine favicon.
-  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
-    [weakSelf.consumer updateAutocompleteIcon:image];
+  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* icon) {
+    [weakSelf.consumer updateAutocompleteIcon:icon];
   }];
 }
 

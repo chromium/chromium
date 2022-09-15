@@ -753,8 +753,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
-  NSString* itemID = self.items[index].identifier;
-  if (![self isItemWithIDSelectedForEditing:itemID]) {
+  NSString* pressedItemID = self.items[index].identifier;
+  if (![self isItemWithIDSelectedForEditing:pressedItemID]) {
     [self tappedItemAtIndexPath:indexPath];
   }
 

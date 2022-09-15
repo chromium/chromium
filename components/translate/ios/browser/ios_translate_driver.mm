@@ -257,7 +257,6 @@ void IOSTranslateDriver::OnTranslateScriptReady(TranslateErrors error_type,
 
   ReportTimeToLoad(load_time);
   ReportTimeToBeReady(ready_time);
-  const char kAutoDetectionLanguage[] = "auto";
   std::string source = (source_language_ != kUnknownLanguageCode)
                            ? source_language_
                            : kAutoDetectionLanguage;

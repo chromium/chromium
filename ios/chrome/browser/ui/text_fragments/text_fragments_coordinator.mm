@@ -109,7 +109,7 @@
                       weakSelf.browser->GetCommandDispatcher(),
                       ActivityServiceCommands);
 
-                  auto* webState =
+                  auto* activeWebState =
                       weakSelf.browser->GetWebStateList()->GetActiveWebState();
 
                   // Take the fragments from the vector and put them into the
@@ -118,15 +118,15 @@
                   // has cleared the fragments from the URL.
                   GURL sharingURL =
                       shared_highlighting::AppendFragmentDirectives(
-                          webState->GetLastCommittedURL(), fragments);
+                          activeWebState->GetLastCommittedURL(), fragments);
 
                   ShareHighlightCommand* command =
                       [[ShareHighlightCommand alloc]
                            initWithURL:sharingURL
                                  title:base::SysUTF16ToNSString(
-                                           webState->GetTitle())
+                                           activeWebState->GetTitle())
                           selectedText:text
-                            sourceView:webState->GetView()
+                            sourceView:activeWebState->GetView()
                             sourceRect:rect];
 
                   [handler shareHighlight:command];

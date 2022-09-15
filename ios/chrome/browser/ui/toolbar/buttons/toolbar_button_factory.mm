@@ -243,11 +243,11 @@ NSString* const kToolbarArrowForwardSymbol = @"arrow.forward";
   button.exclusiveTouch = YES;
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider =
-      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+      ^UIPointerStyle*(UIButton* uiButton, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {
     // This gets rid of a thin border on a spotlighted bookmarks button.
     // This is applied to all toolbar buttons for consistency.
-    CGRect rect = CGRectInset(button.frame, 1, 1);
+    CGRect rect = CGRectInset(uiButton.frame, 1, 1);
     UIPointerShape* shape = [UIPointerShape shapeWithRoundedRect:rect];
     return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
   };

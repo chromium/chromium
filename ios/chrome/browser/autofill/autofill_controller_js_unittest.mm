@@ -805,12 +805,12 @@ NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
        ++indexOfTestData) {
     NSArray* expectedData = [expected objectAtIndex:indexOfTestData];
     for (NSUInteger i = 1; i < [expectedData count]; ++i, ++controlCount) {
-      NSDictionary* expected = [expectedData objectAtIndex:i];
+      NSDictionary* expectedDict = [expectedData objectAtIndex:i];
       NSString* itemVerifyingJavaScripts =
           GenerateElementItemVerifyingJavaScripts(
               [NSString stringWithFormat:@"%@['fields'][%" PRIuNS "]", results,
                                          controlCount],
-              extract_mask, expected, attributed_to_check, controlCount);
+              extract_mask, expectedDict, attributed_to_check, controlCount);
       [verifying_javascripts addObject:itemVerifyingJavaScripts];
     }
   }
@@ -1436,13 +1436,13 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
     NSArray* attributes_to_check =
         GetFormFieldAttributeListsToCheck(extract_mask);
 
-    for (NSUInteger i = 1; i < [test_data count]; ++i) {
+    for (NSUInteger j = 1; j < [test_data count]; ++j) {
       NSString* get_element_to_test =
           [NSString stringWithFormat:@"var element = "
                                       "window.document.getElementsByTagName('%"
                                       "@')[%" PRIuNS "]",
-                                     tag_name, i - 1];
-      NSDictionary* expected = [test_data objectAtIndex:i];
+                                     tag_name, j - 1];
+      NSDictionary* expected = [test_data objectAtIndex:j];
       // Generates JavaScripts to verify the results. Parameter `results` is
       // @"field" as in the evaluation JavaScripts the results are returned in
       // `field`.

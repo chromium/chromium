@@ -161,14 +161,15 @@
           web::features::kClearOldNavigationRecordsWorkaround)) {
     NSUInteger finishedIndex = record.index;
     NSMutableSet* navigationsToRemove = [NSMutableSet set];
-    for (id key in _records) {
-      CRWWKNavigationsStateRecord* recordObject = [_records objectForKey:key];
+    for (id recordKey in _records) {
+      CRWWKNavigationsStateRecord* recordObject =
+          [_records objectForKey:recordKey];
       if (recordObject.index < finishedIndex) {
-        [navigationsToRemove addObject:key];
+        [navigationsToRemove addObject:recordKey];
       }
     }
-    for (id key in navigationsToRemove) {
-      [_records removeObjectForKey:key];
+    for (id recordKey in navigationsToRemove) {
+      [_records removeObjectForKey:recordKey];
     }
 
     UMA_HISTOGRAM_BOOLEAN("IOS.CRWWKNavigationStatesRemoveOldPending",

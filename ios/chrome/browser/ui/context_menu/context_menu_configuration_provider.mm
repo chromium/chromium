@@ -292,7 +292,6 @@ NSString* const kContextMenuEllipsis = @"…";
     TemplateURLService* service =
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
-    __weak ContextMenuConfigurationProvider* weakSelf = self;
 
     const BOOL lensEnabled =
         ios::provider::IsLensSupported() &&

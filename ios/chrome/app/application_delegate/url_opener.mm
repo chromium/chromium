@@ -87,18 +87,18 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       // +[UserAcrtivityHandler
       // handleStartupParametersWithTabOpener:startupInformation:browserState:]
 
-      GURL URL;
+      GURL gurl;
       GURL virtualURL;
       if ([params completeURL].SchemeIsFile()) {
         // External URL will be loaded by WebState, which expects `completeURL`.
         // Omnibox however suppose to display `externalURL`, which is used as
         // virtual URL.
-        URL = [params completeURL];
+        gurl = [params completeURL];
         virtualURL = [params externalURL];
       } else {
-        URL = [params externalURL];
+        gurl = [params externalURL];
       }
-      UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(URL, virtualURL);
+      UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(gurl, virtualURL);
 
       ApplicationModeForTabOpening targetMode = params.applicationMode;
       // If the call is coming from the app, it should be opened in the current

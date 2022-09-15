@@ -341,8 +341,6 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
 
   if (loadOfflineVersion) {
     DCHECK(!newTab);
-    web::WebState* activeWebState =
-        self.browser->GetWebStateList()->GetActiveWebState();
     OfflinePageTabHelper* offlinePageTabHelper =
         OfflinePageTabHelper::FromWebState(activeWebState);
     if (offlinePageTabHelper &&

@@ -496,8 +496,9 @@ bool SessionCrashedInfoBarDelegate::ShouldExpire(
     tabRestoreService->LoadTabsFromLastSession();
 
     web::WebState::CreateParams params(browserState);
-    for (CRWSessionStorage* session in sessions) {
-      auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(session);
+    for (CRWSessionStorage* session_storage in sessions) {
+      auto live_tab =
+          std::make_unique<sessions::RestoreIOSLiveTab>(session_storage);
       // Add all tabs at the 0 position as the position is relative to an old
       // webStateList.
       tabRestoreService->CreateHistoricalTab(live_tab.get(), 0);

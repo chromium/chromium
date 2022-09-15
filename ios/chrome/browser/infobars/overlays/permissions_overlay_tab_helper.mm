@@ -52,8 +52,8 @@ void PermissionsOverlayTabHelper::PermissionStateChanged(
   if (new_state == web::PermissionStateNotAccessible) {
     permissions_to_state_[@(permission)] = @(new_state);
     BOOL shouldRemoveInfobar = YES;
-    for (NSNumber* permission in permissions_to_state_) {
-      if (permissions_to_state_[permission].unsignedIntegerValue >
+    for (NSNumber* permission_number in permissions_to_state_) {
+      if (permissions_to_state_[permission_number].unsignedIntegerValue >
           web::PermissionStateNotAccessible) {
         shouldRemoveInfobar = NO;
         break;

@@ -27,7 +27,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     AutocompleteMatchType::Type type,
     bool is_starred) {
   if (is_starred)
-    return BOOKMARK;
+    return OmniboxSuggestionIconType::kBookmark;
 
   // TODO(crbug.com/1122669): Handle trending zero-prefix suggestions by
   // checking the match subtype similar to AutocompleteMatch::GetVectorIcon().
@@ -51,7 +51,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::HISTORY_CLUSTER:
     case AutocompleteMatchType::STARTER_PACK:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
-      return DEFAULT_FAVICON;
+      return OmniboxSuggestionIconType::kDefaultFavicon;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
     case AutocompleteMatchType::SEARCH_SUGGEST:
@@ -63,17 +63,17 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      return SEARCH;
+      return OmniboxSuggestionIconType::kSearch;
     case AutocompleteMatchType::SEARCH_HISTORY:
-      return SEARCH_HISTORY;
+      return OmniboxSuggestionIconType::kSearchHistory;
     case AutocompleteMatchType::CALCULATOR:
-      return CALCULATOR;
+      return OmniboxSuggestionIconType::kCalculator;
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
-      return DEFAULT_FAVICON;
+      return OmniboxSuggestionIconType::kDefaultFavicon;
   }
 }
 

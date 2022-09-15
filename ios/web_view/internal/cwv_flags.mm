@@ -123,26 +123,26 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
   for (const base::Value& supportedFeature : supportedFeatures) {
     DCHECK(supportedFeature.is_dict());
 
-    const std::string* internalName =
+    const std::string* featureName =
         supportedFeature.FindStringKey("internal_name");
-    DCHECK(internalName);
+    DCHECK(featureName);
 
-    if (*internalName == ios_web_view::kUseSyncSandboxFlagName) {
+    if (*featureName == ios_web_view::kUseSyncSandboxFlagName) {
       absl::optional<bool> maybeEnabled =
           supportedFeature.FindBoolKey("enabled");
       DCHECK(maybeEnabled.has_value());
       usesSyncSandbox = *maybeEnabled;
-    } else if (*internalName == ios_web_view::kUseWalletSandboxFlagName) {
+    } else if (*featureName == ios_web_view::kUseWalletSandboxFlagName) {
       const base::Value* options = supportedFeature.FindListKey("options");
       DCHECK(options);
 
       for (const base::Value& option : options->GetListDeprecated()) {
         DCHECK(option.is_dict());
 
-        const std::string* internalName = option.FindStringKey("internal_name");
-        DCHECK(internalName);
+        const std::string* optionName = option.FindStringKey("internal_name");
+        DCHECK(optionName);
 
-        if (*internalName == ios_web_view::kUseWalletSandboxFlagNameEnabled) {
+        if (*optionName == ios_web_view::kUseWalletSandboxFlagNameEnabled) {
           absl::optional<bool> maybeSelected = option.FindBoolKey("selected");
           DCHECK(maybeSelected.has_value());
           usesWalletSandbox = *maybeSelected;

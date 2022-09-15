@@ -182,10 +182,10 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
   __block BOOL fetch_completion_was_called = NO;
   id fetch_completion = ^(NSArray<CWVAutofillSuggestion*>* suggestions) {
     ASSERT_EQ(1U, suggestions.count);
-    CWVAutofillSuggestion* suggestion = suggestions.firstObject;
-    EXPECT_NSEQ(kTestFieldValue, suggestion.value);
-    EXPECT_NSEQ(kTestDisplayDescription, suggestion.displayDescription);
-    EXPECT_NSEQ(kTestFormName, suggestion.formName);
+    CWVAutofillSuggestion* autofillSuggestion = suggestions.firstObject;
+    EXPECT_NSEQ(kTestFieldValue, autofillSuggestion.value);
+    EXPECT_NSEQ(kTestDisplayDescription, autofillSuggestion.displayDescription);
+    EXPECT_NSEQ(kTestFormName, autofillSuggestion.formName);
     fetch_completion_was_called = YES;
   };
   [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName
@@ -231,10 +231,10 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
   __block BOOL fetch_completion_was_called = NO;
   id fetch_completion = ^(NSArray<CWVAutofillSuggestion*>* suggestions) {
     ASSERT_EQ(1U, suggestions.count);
-    CWVAutofillSuggestion* suggestion = suggestions.firstObject;
-    EXPECT_TRUE([suggestion isPasswordSuggestion]);
-    EXPECT_NSEQ(kTestFieldValue, suggestion.value);
-    EXPECT_NSEQ(kTestFormName, suggestion.formName);
+    CWVAutofillSuggestion* autofillSuggestion = suggestions.firstObject;
+    EXPECT_TRUE([autofillSuggestion isPasswordSuggestion]);
+    EXPECT_NSEQ(kTestFieldValue, autofillSuggestion.value);
+    EXPECT_NSEQ(kTestFormName, autofillSuggestion.formName);
     fetch_completion_was_called = YES;
   };
   [autofill_controller_ fetchSuggestionsForFormWithName:kTestFormName

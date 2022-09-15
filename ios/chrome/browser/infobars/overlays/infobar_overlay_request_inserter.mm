@@ -95,15 +95,15 @@ void InfobarOverlayRequestInserter::InsertOverlayRequest(
           request.get(), queue, params.infobar);
       OverlayRequestQueue* banner_queue =
           queues_.at(InfobarOverlayType::kBanner);
-      std::unique_ptr<OverlayRequest> request =
+      std::unique_ptr<OverlayRequest> placeholder_request =
           OverlayRequest::CreateWithConfig<
               InfobarBannerPlaceholderRequestConfig>(params.infobar);
       std::unique_ptr<InfobarModalOverlayRequestCancelHandler>
           modal_cancel_handler =
               std::make_unique<InfobarModalOverlayRequestCancelHandler>(
-                  request.get(), banner_queue, params.infobar,
+                  placeholder_request.get(), banner_queue, params.infobar,
                   modal_completion_notifier_.get());
-      banner_queue->InsertRequest(0, std::move(request),
+      banner_queue->InsertRequest(0, std::move(placeholder_request),
                                   std::move(modal_cancel_handler));
       break;
   }

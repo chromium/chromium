@@ -43,13 +43,13 @@
 
 - (instancetype)init {
   return [self initWithIconType:OmniboxIconTypeSuggestionIcon
-             suggestionIconType:DEFAULT_FAVICON
+             suggestionIconType:OmniboxSuggestionIconType::kDefaultFavicon
                        isAnswer:NO
                        imageURL:[[CrURL alloc] initWithGURL:GURL()]];
 }
 
 - (UIImage*)iconImage {
-  if (self.suggestionIconType == FALLBACK_ANSWER &&
+  if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
       self.defaultSearchEngineIsGoogle && [self fallbackAnswerBrandedIcon]) {
     return [[self fallbackAnswerBrandedIcon]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -59,30 +59,30 @@
 
 - (BOOL)hasCustomAnswerIcon {
   switch (self.suggestionIconType) {
-    case BOOKMARK:
-    case DEFAULT_FAVICON:
-    case HISTORY:
-    case SEARCH:
-    case SEARCH_HISTORY:
+    case OmniboxSuggestionIconType::kBookmark:
+    case OmniboxSuggestionIconType::kDefaultFavicon:
+    case OmniboxSuggestionIconType::kHistory:
+    case OmniboxSuggestionIconType::kSearch:
+    case OmniboxSuggestionIconType::kSearchHistory:
       return NO;
-    case CALCULATOR:
-    case CONVERSION:
-    case DICTIONARY:
-    case STOCK:
-    case SUNRISE:
-    case LOCAL_TIME:
-    case WHEN_IS:
-    case TRANSLATION:
+    case OmniboxSuggestionIconType::kCalculator:
+    case OmniboxSuggestionIconType::kConversation:
+    case OmniboxSuggestionIconType::kDictionary:
+    case OmniboxSuggestionIconType::kStock:
+    case OmniboxSuggestionIconType::kSunrise:
+    case OmniboxSuggestionIconType::kLocalTime:
+    case OmniboxSuggestionIconType::kWhenIs:
+    case OmniboxSuggestionIconType::kTranslation:
       return YES;
     // For the fallback answer, this depends on whether the branded icon exists
     // and whether the default search engine is Google (the icon only exists for
     // Google branding).
     // The default fallback answer icon uses the grey background styling, like
     // the non-answer icons.
-    case FALLBACK_ANSWER:
+    case OmniboxSuggestionIconType::kFallbackAnswer:
       return self.defaultSearchEngineIsGoogle &&
              [self fallbackAnswerBrandedIcon];
-    case OMNIBOX_SUGGESTION_ICON_TYPE_COUNT:
+    case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
       return NO;
   }

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/autofill_address_profile/save_address_profile_infobar_banner_overlay_mediator.h"
 
 #import "base/bind.h"
+#import "base/callback_helpers.h"
 #import "base/feature_list.h"
 #import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
@@ -49,11 +50,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
-          base::BindOnce(
-              ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision
-                    user_decision,
-                autofill::AutofillProfile profile){
-              }));
+          base::DoNothing());
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       passed_delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
@@ -89,11 +86,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
-          base::BindOnce(
-              ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision
-                    user_decision,
-                autofill::AutofillProfile profile){
-              }));
+          base::DoNothing());
   InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
                      std::move(passed_delegate));
 

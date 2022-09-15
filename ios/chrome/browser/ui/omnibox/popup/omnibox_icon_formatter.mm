@@ -25,24 +25,24 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
   if (answerType) {
     switch (answerType.value()) {
       case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-        return DICTIONARY;
+        return OmniboxSuggestionIconType::kDictionary;
       case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-        return STOCK;
+        return OmniboxSuggestionIconType::kStock;
       case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-        return TRANSLATION;
+        return OmniboxSuggestionIconType::kTranslation;
       case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-        return WHEN_IS;
+        return OmniboxSuggestionIconType::kWhenIs;
       case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-        return CONVERSION;
+        return OmniboxSuggestionIconType::kConversation;
       case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-        return SUNRISE;
+        return OmniboxSuggestionIconType::kSunrise;
       case SuggestionAnswer::ANSWER_TYPE_KNOWLEDGE_GRAPH:
       case SuggestionAnswer::ANSWER_TYPE_LOCAL:
       case SuggestionAnswer::ANSWER_TYPE_SPORTS:
       case SuggestionAnswer::ANSWER_TYPE_LOCAL_TIME:
       case SuggestionAnswer::ANSWER_TYPE_PLAY_INSTALL:
       case SuggestionAnswer::ANSWER_TYPE_WEATHER:
-        return FALLBACK_ANSWER;
+        return OmniboxSuggestionIconType::kFallbackAnswer;
       case SuggestionAnswer::ANSWER_TYPE_INVALID:
       case SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT:
         NOTREACHED();
@@ -68,7 +68,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::OPEN_TAB:
     case AutocompleteMatchType::HISTORY_CLUSTER:
     case AutocompleteMatchType::TILE_NAVSUGGEST:
-      return DEFAULT_FAVICON;
+      return OmniboxSuggestionIconType::kDefaultFavicon;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
     case AutocompleteMatchType::SEARCH_SUGGEST:
@@ -79,18 +79,18 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      return SEARCH;
+      return OmniboxSuggestionIconType::kSearch;
     case AutocompleteMatchType::SEARCH_HISTORY:
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
-      return SEARCH_HISTORY;
+      return OmniboxSuggestionIconType::kSearchHistory;
     case AutocompleteMatchType::CALCULATOR:
-      return CALCULATOR;
+      return OmniboxSuggestionIconType::kCalculator;
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();
-      return DEFAULT_FAVICON;
+      return OmniboxSuggestionIconType::kDefaultFavicon;
   }
 }
 

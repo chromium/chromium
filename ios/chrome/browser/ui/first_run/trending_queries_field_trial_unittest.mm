@@ -22,7 +22,7 @@
 class TrendingQueriesFieldTrialTest : public PlatformTest {
  protected:
   void SetUp() override {
-    std::map<variations::VariationID, int> weight_by_id_ = {
+    weight_by_id_ = {
         {kTrendingQueriesEnabledModuleEnabledID, 0},
         {kTrendingQueriesEnabledMinimalSpacingModuleEnabledID, 0},
         {kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledID, 0},

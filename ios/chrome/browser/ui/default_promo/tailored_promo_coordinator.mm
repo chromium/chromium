@@ -128,7 +128,7 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
                           DefaultPromoTypeForUMA(_promoType));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::CANCEL];
+            IOSDefaultBrowserFullscreenPromoAction::kCancel];
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithTailoredFullscreenPromo();
 }
@@ -141,7 +141,7 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted",
                           DefaultPromoTypeForUMA(_promoType));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::ACTION_BUTTON];
+            IOSDefaultBrowserFullscreenPromoAction::kActionButton];
   LogUserInteractionWithTailoredFullscreenPromo();
 
   [[UIApplication sharedApplication]
@@ -158,7 +158,7 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
                           DefaultPromoTypeForUMA(_promoType));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
-            IOSDefaultBrowserFullscreenPromoAction::CANCEL];
+            IOSDefaultBrowserFullscreenPromoAction::kCancel];
   LogUserInteractionWithTailoredFullscreenPromo();
 
   [self.handler hidePromo];
