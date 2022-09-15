@@ -582,6 +582,30 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_SECTION_TITLE" desc="The label for the section in input method options page section title.">
     Section
   </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH" desc="The label for the setting to toggle if the Japanese input method should automatically switch to using halfwidth.">
+    Automatically switch to halfwidth
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE" desc="The label for the setting to set the shift key mode style.">
+    Shift Key Mode Style
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_OFF" desc="The label for the option to disable the shift key mode style.">
+    Off
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_ALPHANUMERIC" desc="The label for the option to set the Shift key mode style to Alphanumeric.">
+    Alphanumeric
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE_KATAKANA" desc="The label for the option to set the Shift key mode style to Katakana.">
+    Katakana
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_USE_INPUT_HISTORY" desc="The label for the toggled settings to determine if the input history should be used or not.">
+    Use Input History
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_USE_SYSTEM_DICTIONARY" desc="The label for the toggled settings to determine if the system dictionary should be used or not.">
+    Use system dictionary
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_NUMBER_OF_SUGGESTIONS" desc="The label for the setting to set the number of suggestions the Japanese input method should show.">
+    Number of suggestions
+  </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_DOUBLE_SPACE_PERIOD" desc="The label for the input method option to enable double-space to type period (when an user types two consecutive space, it outputs a period).">
     Double-space to type period
   </message>

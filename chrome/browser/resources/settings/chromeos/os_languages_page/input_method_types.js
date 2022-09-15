@@ -63,3 +63,9 @@ export const JAPANESE_KEYMAP_STYLE = {
   MOBILE: 'Mobile',
   CHROME_OS: 'ChromeOs',
 };
+
+export const JAPANESE_SHIFT_KEY_MODE_STYLE = {
+  OFF: 'Off',
+  ALPHANUMERIC: 'Alphanumeric',
+  KATAKANA: 'Katakana',
+};
