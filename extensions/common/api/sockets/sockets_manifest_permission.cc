@@ -51,7 +51,7 @@ static bool ParseHostPattern(
 static bool ParseHostPatterns(
     SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type,
-    const std::unique_ptr<SocketHostPatterns>& host_patterns,
+    const absl::optional<SocketHostPatterns>& host_patterns,
     std::u16string* error) {
   if (!host_patterns)
     return true;
@@ -74,10 +74,10 @@ static bool ParseHostPatterns(
 }
 
 static void SetHostPatterns(
-    std::unique_ptr<SocketHostPatterns>& host_patterns,
+    absl::optional<SocketHostPatterns>& host_patterns,
     const SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type) {
-  host_patterns = std::make_unique<SocketHostPatterns>();
+  host_patterns.emplace();
   host_patterns->as_strings.emplace();
   for (auto it = permission->entries().cbegin();
        it != permission->entries().cend(); ++it) {

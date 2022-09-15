@@ -560,10 +560,9 @@ bool NamedTemplateArgumentProtoToIdl(
   base::Value value =
       NamedTemplateArgumentValueProtoToValue(named_template_argument_proto);
 
-  named_template_argument->value =
-      std::make_unique<NamedTemplateArgument::Value>();
+  named_template_argument->value.emplace();
   if (!NamedTemplateArgument::Value::Populate(
-          value, named_template_argument->value.get())) {
+          value, &*named_template_argument->value)) {
     return false;
   }
 

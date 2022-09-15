@@ -1039,9 +1039,9 @@ class _Generator(object):
       c.Eblock('}')
     elif underlying_type.property_type == PropertyType.CHOICES:
       if is_ptr:
-        (c.Append('auto temp = std::make_unique<%(cpp_type)s>();')
+        (c.Append('%(cpp_type)s temp;')
           .Append('if (!%%(cpp_type)s::Populate(%s))' % self._GenerateArgs(
-            ('%(src_var)s', 'temp.get()')))
+              ('%(src_var)s', '&temp')))
           .Append('  return %(failure_value)s;')
           .Append('%(dst_var)s = std::move(temp);')
         )

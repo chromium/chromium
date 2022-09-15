@@ -572,17 +572,18 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
   DCHECK(extension() || source_context_type() == Feature::WEBUI_CONTEXT ||
          source_context_type() == Feature::WEBUI_UNTRUSTED_CONTEXT);
-  const absl::optional<windows::Create::Params::CreateData>& create_data =
+  absl::optional<windows::Create::Params::CreateData>& create_data =
       params->create_data;
 
   // Look for optional url.
   if (create_data && create_data->url) {
     std::vector<std::string> url_strings;
     // First, get all the URLs the client wants to open.
-    if (create_data->url->as_string)
-      url_strings.push_back(*create_data->url->as_string);
-    else if (create_data->url->as_strings)
-      url_strings.swap(*create_data->url->as_strings);
+    if (create_data->url->as_string) {
+      url_strings.push_back(std::move(*create_data->url->as_string));
+    } else if (create_data->url->as_strings) {
+      url_strings = std::move(*create_data->url->as_strings);
+    }
 
     // Second, resolve, validate and convert them to GURLs.
     for (auto i = url_strings.begin(); i != url_strings.end(); ++i) {
@@ -1064,7 +1065,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
   bool loading_status_set = params->query_info.status != tabs::TAB_STATUS_NONE;
 
   URLPatternSet url_patterns;
-  if (params->query_info.url.get()) {
+  if (params->query_info.url) {
     std::vector<std::string> url_pattern_strings;
     if (params->query_info.url->as_string)
       url_pattern_strings.push_back(*params->query_info.url->as_string);

@@ -656,18 +656,16 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
 
   state.named_template_arguments->at(0).name = kNumericalTemplateArgumentName;
 
-  state.named_template_arguments->at(0).value =
-      std::make_unique<media_perception::NamedTemplateArgument::Value>();
+  state.named_template_arguments->at(0).value.emplace();
   media_perception::NamedTemplateArgument::Value::Populate(
       base::Value(kNumericalTemplateArgumentValue),
-      state.named_template_arguments->at(0).value.get());
+      &*state.named_template_arguments->at(0).value);
 
   state.named_template_arguments->at(2).name = kStringTemplateArgumentName;
-  state.named_template_arguments->at(2).value =
-      std::make_unique<media_perception::NamedTemplateArgument::Value>();
+  state.named_template_arguments->at(2).value.emplace();
   media_perception::NamedTemplateArgument::Value::Populate(
       base::Value(kStringTemplateArgumentValue),
-      state.named_template_arguments->at(2).value.get());
+      &*state.named_template_arguments->at(2).value);
 
   state_proto = StateIdlToProto(state);
   EXPECT_EQ(state_proto.status(), mri::State::RUNNING);

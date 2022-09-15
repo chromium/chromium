@@ -500,7 +500,7 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
 
   // If all filter fields are empty, we are clearing filter. If any field is
   // set, then create proper filter.
-  if (df_param.uuids.get() || df_param.rssi || df_param.pathloss ||
+  if (df_param.uuids || df_param.rssi || df_param.pathloss ||
       df_param.transport != bt_private::TransportType::TRANSPORT_TYPE_NONE) {
     device::BluetoothTransport transport;
 
@@ -519,7 +519,7 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
     discovery_filter =
         std::make_unique<device::BluetoothDiscoveryFilter>(transport);
 
-    if (df_param.uuids.get()) {
+    if (df_param.uuids) {
       if (df_param.uuids->as_string) {
         device::BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
         device_filter.uuids.insert(
