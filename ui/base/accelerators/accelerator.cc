@@ -449,7 +449,7 @@ std::u16string Accelerator::ApplyLongFormModifiers(
     result = ApplyModifierToAcceleratorString(result, IDS_APP_SHIFT_KEY);
 
   // Note that we use 'else-if' in order to avoid using Ctrl+Alt as a shortcut.
-  // See http://blogs.msdn.com/oldnewthing/archive/2004/03/29/101121.aspx for
+  // See https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003 for
   // more information.
   if (IsCtrlDown())
     result = ApplyModifierToAcceleratorString(result, IDS_APP_CTRL_KEY);
