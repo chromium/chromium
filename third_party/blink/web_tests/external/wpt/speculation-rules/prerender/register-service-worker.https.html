@@ -8,6 +8,9 @@
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
+
 const uid = token();
 
 const PAGE_URL = `resources/register-service-worker.html?uid=${uid}`;
