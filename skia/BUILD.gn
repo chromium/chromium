@@ -739,7 +739,6 @@ skia_source_set("skia_opts") {
   deps = [ "//base" ]
 
   if (current_cpu == "x86" || current_cpu == "x64") {
-    sources = []
     deps += [
       ":skia_opts_avx",
       ":skia_opts_hsw",
@@ -755,7 +754,6 @@ skia_source_set("skia_opts") {
     }
 
     if (arm_version >= 7) {
-      sources = []
       if (arm_use_neon || arm_optionally_use_neon) {
         # Root build config sets -mfpu=$arm_fpu, which we expect to be neon
         # when running this.
@@ -764,24 +762,19 @@ skia_source_set("skia_opts") {
           cflags += [ "-mfpu=neon" ]
         }
       }
-    } else {
-      sources = []
     }
   } else if (current_cpu == "arm64") {
-    sources = []
     deps += [ ":skia_opts_crc32" ]
   } else if (current_cpu == "mipsel") {
     cflags += [ "-fomit-frame-pointer" ]
-    sources = []
   } else if (current_cpu == "mips64el") {
     cflags += [ "-fomit-frame-pointer" ]
-    sources = []
   } else if (current_cpu == "ppc64") {
-    sources = []
+    # Conditional and empty body needed to avoid assert() below.
   } else if (current_cpu == "s390x") {
-    sources = []
+    # Conditional and empty body needed to avoid assert() below.
   } else if (current_cpu == "riscv64") {
-    sources = []
+    # Conditional and empty body needed to avoid assert() below.
   } else {
     assert(false, "Unknown cpu target")
   }
