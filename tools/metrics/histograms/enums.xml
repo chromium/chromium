@@ -50334,6 +50334,33 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="USER_EXITED_TEXT_FIELD_WITH_UNDERLINE_PRESENT"/>
 </enum>
 
+<enum name="IMEAutocorrectInternalStates">
+  <int value="0" label="HANDLE_EMPTY_RANGE"/>
+  <int value="1" label="HANDLE_UNCLEARED_RANGE"/>
+  <int value="2" label="HANDLE_NO_INPUT_CONTEXT"/>
+  <int value="3" label="HANDLE_INVALID_ARGS"/>
+  <int value="4" label="HANDLE_SET_RANGE"/>
+  <int value="5" label="UNDERLINE_SHOWN"/>
+  <int value="6" label="SUGGESTION_RESOLVED"/>
+  <int value="7" label="SUGGESTION_ACCEPTED"/>
+  <int value="8" label="NO_INPUT_CONTEXT"/>
+  <int value="9" label="ERROR_SET_RANGE"/>
+  <int value="10" label="ERROR_RANGE_NOT_VALIDATED"/>
+  <int value="11" label="ERROR_SHOW_UNDO_WINDOW"/>
+  <int value="12" label="ERROR_HIDE_UNDO_WINDOW"/>
+  <int value="13" label="SHOW_UNDO_WINDOW"/>
+  <int value="14" label="HIDE_UNDO_WINDOW"/>
+  <int value="15" label="HIGHLIGHT_UNDO_WINDOW"/>
+  <int value="16" label="ON_FOCUS_EVENT"/>
+  <int value="17" label="ON_FOCUS_EVENT_WITH_PENDING_SUGGESTION"/>
+  <int value="18" label="ON_BLUR_EVENT"/>
+  <int value="19" label="ON_BLUR_EVENT_WITH_PENDING_SUGGESTION"/>
+  <int value="20" label="TEXT_FIELD_EDITS_WITH_AT_LEAST_ONE_SUGGESTION"/>
+  <int value="21" label="COULD_TRIGGER_AUTOCORRECT"/>
+  <int value="22" label="APP_IS_IN_DENYLIST"/>
+  <int value="23" label="HANDLE_SUGGESTION_IN_DENYLISTED_APP"/>
+</enum>
+
 <enum name="IMECommitType">
   <obsolete>
     Deprecated 03/2015, and replaced by IMECommitType2.

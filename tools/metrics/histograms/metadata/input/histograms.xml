@@ -100,6 +100,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.AutocorrectV2.Internal.PkState"
+    enum="IMEAutocorrectActions" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records different internal states that autocorrect encounters
+    while physical keyboard is used. These states include errors such as bad
+    arguments, null input context, problems preventing from showing or hiding
+    undo window. Also, events such as accepting suggestion, rejecting
+    suggestion, showing/hiding/highlighting undo window, underlining suggestions
+    and handling autocorrect suggestions, focusing on a text field, bluring a
+    text field and having a suggestion in a text field. It recoreds the states
+    everytime that HandleAutocorrect, OnBlur, OnFocus, and
+    OnSurroundingTextChanged events are triggered while physical keyboard is
+    visible.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Internal.VkState"
+    enum="IMEAutocorrectActions" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records different internal states that autocorrect encounters
+    while virtual keyboard is used. These states include errors such as bad
+    arguments, null input context, problems preventing from showing or hiding
+    undo window. Also, events such as accepting suggestion, rejecting
+    suggestion, showing/hiding/highlighting undo window, underlining suggestion
+    and handling autocorrect suggestion, focusing on a text field, bluring a
+    text field and having a suggestion in a text field. It records the states
+    everytime that HandleAutocorrect, OnBlur, OnFocus, and
+    OnSurroundingTextChanged events are called while virtual keyboard is
+    visible.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.Accept" units="ms"
     expires_after="2022-12-15">
   <owner>mehrab@google.com</owner>

@@ -32,6 +32,70 @@ enum class AutocorrectActions {
   kMaxValue = kUserExitedTextFieldWithUnderline,
 };
 
+// Must match with IMEAutocorrectInternalStates in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutocorrectInternalStates {
+  // Autocorrect handles an empty range.
+  kHandleEmptyRange = 0,
+  // Autocorrect handles a new suggestion while the previous one is still
+  // pending.
+  kHandleUnclearedRange = 1,
+  // Autocorrect handles a new suggestion while input context is not available.
+  kHandleNoInputContext = 2,
+  // Autocorrect is called with a range, text, and suggestion that do not
+  // match.
+  kHandleInvalidArgs = 3,
+  // Autocorrect handler sets a range to TextInputClient.
+  kHandleSetRange = 4,
+  // Autocorrect suggestion is underlined.
+  kUnderlineShown = 5,
+  // Autocorrect suggestion is resolved by user interactions and not
+  // error, exit field or undone.
+  kSuggestionResolved = 6,
+  // Autocorrect suggestion is accepted by user interaction.
+  kSuggestionAccepted = 7,
+  // Autocorrect is cleared because Input context is lost while having a
+  // pending autocorrect.
+  kNoInputContext = 8,
+  // Autocorrect cannot set a range because TextInputClient does not support
+  // setting a range.
+  kErrorSetRange = 9,
+  // Autocorrect fails to validate a suggestion because of potentially async
+  // problems prevent it from finding the suggested text within the autocorrect
+  // range in surrounding text.
+  kErrorRangeNotValidated = 10,
+  // Autocorrect got an error when trying to show undo window.
+  kErrorShowUndoWindow = 11,
+  // Autocorrect got an error when trying to hide undo window.
+  kErrorHideUndoWindow = 12,
+  // Autocorrect shows an undo window.
+  kShowUndoWindow = 13,
+  // Autocorrect hides an undo window.
+  kHideUndoWindow = 14,
+  // Autocorrect highlights undo button of undo window.
+  kHighlightUndoWindow = 15,
+  // OnFocus event was called.
+  kOnFocusEvent = 16,
+  // OnFocus event was called with pending suggestion.
+  kOnFocusEventWithPendingSuggestion = 17,
+  // OnBlur event was called.
+  kOnBlurEvent = 18,
+  // OnBlue event was called with pending suggestion.
+  kOnBlurEventWithPendingSuggestion = 19,
+  // User did some typing and had at least one suggestion.
+  kTextFieldEditsWithAtLeastOneSuggestion = 20,
+  // Autocorrect could be triggered if the last word typed had an error.
+  kCouldTriggerAutocorrect = 21,
+  // The focused text field is in a denylisted domain.
+  kAppIsInDenylist = 22,
+  // The focused text field is in a denylisted domain but autocorrect is still
+  // executed.
+  kHandleSuggestionInDenylistedApp = 23,
+  kMaxValue = kHandleSuggestionInDenylistedApp,
+};
+
 // Implements functionality for chrome.input.ime.autocorrect() extension API.
 // This function shows UI to indicate that autocorrect has happened and allows
 // it to be undone easily.
@@ -175,6 +239,10 @@ class AutocorrectManager {
   // Specifies if the last try for hiding undo window failed. This means
   // undo window is possibly visible while it must not be.
   bool error_on_hiding_undo_window_ = false;
+
+  // The number of autocorrect suggestions that have been handled since
+  // focusing on the text field.
+  int num_handled_autocorrect_in_text_field_ = 0;
 
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;

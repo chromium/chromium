@@ -29,6 +29,11 @@ namespace input_method {
 
 namespace {
 
+bool IsVkAutocorrect() {
+  return ChromeKeyboardControllerClient::HasInstance() &&
+         ChromeKeyboardControllerClient::Get()->is_keyboard_visible();
+}
+
 bool IsCurrentInputMethodExperimentalMultilingual() {
   auto* input_method_manager = InputMethodManager::Get();
   if (!input_method_manager) {
@@ -83,12 +88,36 @@ void LogAssistiveAutocorrectActionLatency(AutocorrectActions action,
   }
 }
 
+void LogAssistiveAutocorrectInternalState(
+    AutocorrectInternalStates internal_state) {
+  if (IsVkAutocorrect()) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.AutocorrectV2.Internal.VkState", internal_state);
+  } else {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.AutocorrectV2.Internal.PkState", internal_state);
+  }
+}
+
 void RecordAssistiveCoverage(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Coverage", type);
 }
 
 void RecordAssistiveSuccess(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
+}
+
+bool CouldTriggerAutocorrectWithSurroundingText(const std::u16string& text,
+                                                size_t cursor_pos,
+                                                size_t anchor_pos) {
+  // TODO(b/161490813): Do not count cases that autocorrect is disabled.
+  //    Currently, there are different logics in different places that disable
+  //    autocorrect based on settings, domain and text field attributes.
+  //    Ideally, all the cases that autocorrect is disabled on a text field
+  //    must not be counted here.
+  return cursor_pos == anchor_pos && cursor_pos == text.size() &&
+         text.size() >= 2 && base::IsAsciiWhitespace(text.back()) &&
+         !base::IsAsciiWhitespace(text[text.size() - 2]);
 }
 
 bool IsAutocorrectSuggestionInSurroundingText(
@@ -119,27 +148,46 @@ AutocorrectManager::~AutocorrectManager() = default;
 void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
                                            const std::u16string& original_text,
                                            const std::u16string& current_text) {
+  ++num_handled_autocorrect_in_text_field_;
+
+  if (DisabledByRule()) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kHandleSuggestionInDenylistedApp);
+  }
+
   // TODO(crbug/1111135): call setAutocorrectTime() (for metrics)
   // TODO(crbug/1111135): record metric (coverage)
   ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kHandleNoInputContext);
     AcceptOrClearPendingAutocorrect();
     return;
   }
 
   if (pending_autocorrect_.has_value()) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kHandleUnclearedRange);
     AcceptOrClearPendingAutocorrect();
   }
 
   if (autocorrect_range.is_empty() ||
       autocorrect_range.length() != current_text.length() ||
       original_text.empty()) {
-    // TODO(b/161490813): record metrics for invalid arguments.
+    if (autocorrect_range.is_empty()) {
+      LogAssistiveAutocorrectInternalState(
+          AutocorrectInternalStates::kHandleEmptyRange);
+    } else {
+      LogAssistiveAutocorrectInternalState(
+          AutocorrectInternalStates::kHandleInvalidArgs);
+    }
     input_context->SetAutocorrectRange(gfx::Range(), base::DoNothing());
     return;
   }
 
+  LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates::kHandleSetRange);
   input_context->SetAutocorrectRange(
       autocorrect_range,
       base::BindOnce(&AutocorrectManager::ProcessSetAutocorrectRangeDone,
@@ -153,7 +201,8 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
     const std::u16string& current_text,
     bool set_range_success) {
   if (!set_range_success) {
-    // TODO(b/161490813): record metrics for failed set range calls.
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kErrorSetRange);
     return;
   }
 
@@ -162,14 +211,13 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
       diacritics_insensitive_string_comparator_.Equal(original_text,
                                                       current_text);
 
-  bool virtual_keyboard_visible =
-      ChromeKeyboardControllerClient::HasInstance() &&
-      ChromeKeyboardControllerClient::Get()->is_keyboard_visible();
-
   pending_autocorrect_ = AutocorrectManager::PendingAutocorrectState(
       /*original_text=*/original_text, /*suggested_text=*/current_text,
       /*start_time=*/base::TimeTicks::Now(),
-      /*virtual_keyboard_visible=*/virtual_keyboard_visible);
+      /*virtual_keyboard_visible=*/IsVkAutocorrect());
+
+  LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates::kUnderlineShown);
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
@@ -236,6 +284,13 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   if (error_on_hiding_undo_window_) {
     HideUndoWindow();
   }
+
+  if (CouldTriggerAutocorrectWithSurroundingText(text, cursor_pos,
+                                                 anchor_pos)) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kCouldTriggerAutocorrect);
+  }
+
   if (!pending_autocorrect_.has_value()) {
     return;
   }
@@ -327,11 +382,32 @@ void AutocorrectManager::OnFocus(int context_id) {
                        base::Unretained(this)));
   }
 
+  num_handled_autocorrect_in_text_field_ = 0;
+
+  LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates::kOnFocusEvent);
+  if (pending_autocorrect_.has_value()) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kOnFocusEventWithPendingSuggestion);
+  }
+
   context_id_ = context_id;
   ProcessTextFieldChange();
 }
 
 void AutocorrectManager::OnBlur() {
+  LogAssistiveAutocorrectInternalState(AutocorrectInternalStates::kOnBlurEvent);
+
+  if (pending_autocorrect_.has_value()) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kOnBlurEventWithPendingSuggestion);
+  }
+
+  if (num_handled_autocorrect_in_text_field_ > 0) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kTextFieldEditsWithAtLeastOneSuggestion);
+  }
+
   ProcessTextFieldChange();
 }
 
@@ -422,7 +498,12 @@ void AutocorrectManager::ShowUndoWindow(
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                     &error);
 
+  LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates::kShowUndoWindow);
+
   if (!error.empty()) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kErrorShowUndoWindow);
     LOG(ERROR) << "Failed to show autocorrect undo window.";
     return;
   }
@@ -455,7 +536,12 @@ void AutocorrectManager::HideUndoWindow() {
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                     &error);
 
+  LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates::kHideUndoWindow);
+
   if (!error.empty()) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kErrorHideUndoWindow);
     LOG(ERROR) << "Failed to hide autocorrect undo window.";
     error_on_hiding_undo_window_ = true;
     return;
@@ -486,6 +572,9 @@ void AutocorrectManager::HighlightUndoButton() {
   suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
                                             &error);
 
+  LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates::kHighlightUndoWindow);
+
   if (!error.empty()) {
     LOG(ERROR) << "Failed to highlight undo button.";
     return;
@@ -499,22 +588,31 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
     return;
   }
 
-  // TODO(b/161490813): Record delay metric.
   ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
 
+  LogAssistiveAutocorrectInternalState(
+      AutocorrectInternalStates::kSuggestionResolved);
+
   if (!pending_autocorrect_->is_validated) {
-    // TODO(b/161490813): Record metric for invalid range.
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kErrorRangeNotValidated);
     LogAssistiveAutocorrectAction(
         AutocorrectActions::kUserActionClearedUnderline);
   } else if (input_context &&
              !input_context->GetAutocorrectRange().is_empty()) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kSuggestionAccepted);
     // Non-empty autocorrect range means that the user has not modified
     // autocorrect suggestion to invalidate it. So, it is considered as
     // accepted.
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserAcceptedAutocorrect);
   } else {
+    if (!input_context) {
+      LogAssistiveAutocorrectInternalState(
+          AutocorrectInternalStates::kNoInputContext);
+    }
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserActionClearedUnderline);
   }
@@ -532,6 +630,10 @@ void AutocorrectManager::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
   disabled_by_rule_ =
       ImeRulesConfig::GetInstance()->IsAutoCorrectDisabled(info);
+  if (disabled_by_rule_) {
+    LogAssistiveAutocorrectInternalState(
+        AutocorrectInternalStates::kAppIsInDenylist);
+  }
 }
 
 bool AutocorrectManager::DisabledByRule() {
