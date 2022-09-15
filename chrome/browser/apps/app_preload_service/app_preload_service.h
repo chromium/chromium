@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -43,10 +44,16 @@ class AppPreloadService : public KeyedService {
   friend class AppPreloadServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AppPreloadServiceTest, FirstLoginPrefSet);
 
+  // Processes the list of apps retrieved by the server connector.
+  void OnGetAppsForFirstLoginCompleted();
+
   const base::Value::Dict& GetStateManager() const;
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<AppPreloadServerConnector> server_connector_;
+
+  // |weak_ptr_factory_| must be the last member of this class.
+  base::WeakPtrFactory<AppPreloadService> weak_ptr_factory_{this};
 };
 
 }  // namespace apps

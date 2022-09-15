@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
+#include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -62,6 +64,13 @@ void AppPreloadService::RegisterProfilePrefs(
 }
 
 void AppPreloadService::StartAppInstallationForFirstLogin() {
+  server_connector_->GetAppsForFirstLogin(
+      DeviceInfoManager(profile_),
+      base::BindOnce(&AppPreloadService::OnGetAppsForFirstLoginCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AppPreloadService::OnGetAppsForFirstLoginCompleted() {
   DictionaryPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
       ->GetDict()
       .Set(kFirstLoginFlowCompletedKey, true);
