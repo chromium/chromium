@@ -46,7 +46,6 @@
         <include name="IDR_ARC_SUPPORT_BUBBLE_BUTTON_CSS" file="chromeos/arc_support/bubble_button.css" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_CONTROLLED_INDICATOR_JS" file="chromeos/arc_support/controlled_indicator.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_CONTROLLED_INDICATOR_CSS" file="chromeos/arc_support/controlled_indicator.css" flattenhtml="true" type="chrome_html" />
-        <include name="IDR_ARC_SUPPORT_CR_JS" file="chromeos/arc_support/cr.js" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_I18N_TEMPLATE_NO_PROCESS_JS" file="chromeos/arc_support/i18n_template_no_process.js" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_EVENT_TRACKER_JS" file="chromeos/arc_support/event_tracker.js" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_MAIN_CSS" file="chromeos/arc_support/main.css" type="BINDATA" />
