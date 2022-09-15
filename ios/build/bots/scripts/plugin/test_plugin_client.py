@@ -6,7 +6,7 @@ import grpc
 import logging
 import sys
 
-from utils import PLUGIN_PROTOS_PATH, PLUGIN_SERVICE_ADDRESS
+from plugin_constants import PLUGIN_PROTOS_PATH, PLUGIN_SERVICE_ADDRESS
 
 sys.path.append(PLUGIN_PROTOS_PATH)
 import test_plugin_service_pb2

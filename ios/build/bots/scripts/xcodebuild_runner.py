@@ -8,6 +8,7 @@ import collections
 import logging
 import os
 import subprocess
+import sys
 import time
 
 import file_util
@@ -16,6 +17,14 @@ import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
 import xcode_log_parser
+
+# if the current directory is in scripts, then we need to add plugin
+# path in order to import from that directory
+if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
+  sys.path.append(
+      os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
+from plugin_utils import init_plugins_from_args
+from test_plugin_service import TestPluginServicerWrapper, TestPluginServicer
 
 LOGGER = logging.getLogger(__name__)
 MAXIMUM_TESTS_PER_SHARD_FOR_RERUN = 20
@@ -102,7 +111,8 @@ class LaunchCommand(object):
                readline_timeout,
                out_dir=os.path.basename(os.getcwd()),
                use_clang_coverage=False,
-               env=None):
+               env=None,
+               test_plugin_service=None):
     """Initialize launch command.
 
     Args:
@@ -131,6 +141,7 @@ class LaunchCommand(object):
     self.use_clang_coverage = use_clang_coverage
     self.env = env
     self._log_parser = xcode_log_parser.get_parser()
+    self.test_plugin_service = test_plugin_service
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -156,6 +167,9 @@ class LaunchCommand(object):
     running_tests = set(self.egtests_app.get_all_tests())
     # total number of attempts is self.retries+1
     for attempt in range(self.retries + 1):
+      # Cleanup any running plugin process before each attempt
+      if self.test_plugin_service:
+        self.test_plugin_service.reset()
       # Erase all simulators per each attempt
       if iossim_util.is_device_with_udid_simulator(self.udid):
         # kill all running simulators to prevent possible memory leaks
@@ -271,6 +285,18 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     if hasattr(self, 'use_clang_coverage') and self.use_clang_coverage:
       self.shards = 1
 
+    # initializing test plugin service
+    self.test_plugin_service = None
+    enabled_plugins = init_plugins_from_args(self.udid, self.out_dir, **kwargs)
+    if (len(enabled_plugins) > 0):
+      LOGGER.info('Number of enabled plugins are greater than 0, initiating' +
+                  'test plugin service... Enabled plugins are %s' %
+                  enabled_plugins)
+      self.test_plugin_service = TestPluginServicerWrapper(
+          TestPluginServicer(enabled_plugins))
+    else:
+      LOGGER.info('No plugins are enabled, test plugin service will not start.')
+
   def get_launch_env(self):
     """Returns a dict of environment variables to use to launch the test app.
 
@@ -298,6 +324,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
 
   def launch(self):
     """Launches tests using xcodebuild."""
+    if self.test_plugin_service:
+      self.test_plugin_service.start_server()
     test_app = self.get_launch_test_app()
     launch_command = LaunchCommand(
         test_app,
@@ -308,54 +336,67 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         out_dir=os.path.join(self.out_dir, self.udid),
         use_clang_coverage=(hasattr(self, 'use_clang_coverage') and
                             self.use_clang_coverage),
-        env=self.get_launch_env())
+        env=self.get_launch_env(),
+        test_plugin_service=self.test_plugin_service)
 
-    overall_result = launch_command.launch()
+    try:
+      overall_result = launch_command.launch()
 
-    # Deletes simulator used in the tests after tests end.
-    if iossim_util.is_device_with_udid_simulator(self.udid):
-      iossim_util.delete_simulator_by_udid(self.udid)
+      # Deletes simulator used in the tests after tests end.
+      if iossim_util.is_device_with_udid_simulator(self.udid):
+        iossim_util.delete_simulator_by_udid(self.udid)
 
-    # Adds disabled tests to result.
-    overall_result.add_and_report_test_names_status(
-        launch_command.egtests_app.disabled_tests,
-        TestStatus.SKIP,
-        expected_status=TestStatus.SKIP,
-        test_log='Test disabled.')
-
-    # Adds unexpectedly skipped tests to result if applicable.
-    tests_selected_at_runtime = _tests_decided_at_runtime(self.app_path)
-    unexpectedly_skipped = []
-    # TODO(crbug.com/1048758): For the multitasking or any flaky test suites,
-    # |all_tests_to_run| contains more tests than what actually runs.
-    if not tests_selected_at_runtime:
-      # |all_tests_to_run| takes into consideration that only a subset of tests
-      # may have run due to the test sharding logic in run.py.
-      all_tests_to_run = set(launch_command.egtests_app.get_all_tests())
-      unexpectedly_skipped = list(all_tests_to_run -
-                                  overall_result.all_test_names())
+      # Adds disabled tests to result.
       overall_result.add_and_report_test_names_status(
-          unexpectedly_skipped,
+          launch_command.egtests_app.disabled_tests,
           TestStatus.SKIP,
-          test_log=('The test is compiled in test target but was unexpectedly '
-                    'not run or not finished.'))
+          expected_status=TestStatus.SKIP,
+          test_log='Test disabled.')
 
-    # Add a final crash status to result collection. It will be reported as
-    # part of step log in LUCI build.
-    if unexpectedly_skipped or overall_result.crashed:
-      overall_result.set_crashed_with_prefix(
-          crash_message_prefix_line=('Test application crash happened and may '
-                                     'result in missing tests:'))
+      # Adds unexpectedly skipped tests to result if applicable.
+      tests_selected_at_runtime = _tests_decided_at_runtime(self.app_path)
+      unexpectedly_skipped = []
+      # TODO(crbug.com/1048758): For the multitasking or any flaky test suites,
+      # |all_tests_to_run| contains more tests than what actually runs.
+      if not tests_selected_at_runtime:
+        # |all_tests_to_run| takes into consideration that only a subset of
+        # tests may have run due to the test sharding logic in run.py.
+        all_tests_to_run = set(launch_command.egtests_app.get_all_tests())
+        unexpectedly_skipped = list(all_tests_to_run -
+                                    overall_result.all_test_names())
+        overall_result.add_and_report_test_names_status(
+            unexpectedly_skipped,
+            TestStatus.SKIP,
+            test_log=(
+                'The test is compiled in test target but was unexpectedly '
+                'not run or not finished.'))
 
-    self.test_results = overall_result.standard_json_output(path_delimiter='/')
-    self.logs.update(overall_result.test_runner_logs())
+      # Add a final crash status to result collection. It will be reported as
+      # part of step log in LUCI build.
+      if unexpectedly_skipped or overall_result.crashed:
+        overall_result.set_crashed_with_prefix(
+            crash_message_prefix_line=(
+                'Test application crash happened and may '
+                'result in missing tests:'))
 
-    # Return False when:
-    # - There are unexpected tests (all results of the tests are unexpected), or
-    # - The overall status is crashed and tests are selected at runtime. (i.e.
-    # runner is unable to know if all scheduled tests appear in result.)
-    return (not overall_result.never_expected_tests() and
-            not (tests_selected_at_runtime and overall_result.crashed))
+      self.test_results = overall_result.standard_json_output(
+          path_delimiter='/')
+      self.logs.update(overall_result.test_runner_logs())
+
+      # Return False when:
+      # - There are unexpected tests (all results of the tests are unexpected),
+      # or
+      # - The overall status is crashed and tests are selected at runtime. (i.e.
+      # runner is unable to know if all scheduled tests appear in result.)
+      return (not overall_result.never_expected_tests() and
+              not (tests_selected_at_runtime and overall_result.crashed))
+    finally:
+      self.tear_down()
+
+  def tear_down(self):
+    if self.test_plugin_service:
+      LOGGER.info('Shutting down test plugin service')
+      self.test_plugin_service.tear_down()
 
 
 class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
@@ -397,6 +438,7 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     self.set_up()
     self.start_time = time.strftime('%Y-%m-%d-%H%M%S', time.localtime())
     self.test_results['path_delimiter'] = '/'
+    self.test_plugin_service = None
 
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""

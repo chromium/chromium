@@ -33,6 +33,13 @@ import wpr_runner
 import xcodebuild_runner
 import xcode_util as xcode
 
+# if the current directory is in scripts, then we need to add plugin
+# path in order to import from that directory
+if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
+  sys.path.append(
+      os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
+from plugin_constants import VIDEO_RECORDER_PLUGIN_OPTIONS
+
 
 class Runner():
   """
@@ -192,7 +199,8 @@ class Runner():
             test_cases=self.args.test_cases,
             test_args=self.test_args,
             use_clang_coverage=self.args.use_clang_coverage,
-            env_vars=env_vars)
+            env_vars=env_vars,
+            video_plugin_option=self.args.record_video)
       elif self.args.variations_seed_path != 'NO_PATH':
         tr = variations_runner.VariationsSimulatorParallelTestRunner(
             self.args.app,
@@ -554,6 +562,16 @@ class Runner():
         default=None,
         help='Full path to output.json file. output.json is consumed by both '
         'collect_task.py and merge scripts.')
+    parser.add_argument(
+        '--record-video',
+        choices=[o.name for o in VIDEO_RECORDER_PLUGIN_OPTIONS],
+        help=(
+            'Option to record video on EG tests. Currently this feature only '
+            'works on tests running on simulators, and can only record failed '
+            'test cases by specifying failed_only. More options coming soon...'
+        ),
+        metavar='record-video',
+    )
 
     def load_from_json(args):
       """Loads and sets arguments from args_json.
@@ -589,6 +607,10 @@ class Runner():
       if args.xcode_parallelization and not (args.platform and args.version):
         parser.error('--xcode-parallelization also requires '
                      'both -p/--platform and -v/--version')
+
+      if (not args.xcode_parallelization) and args.record_video:
+        parser.error('--record-video is only supported on EG tests '
+                     'running on simulators')
 
       # Do not retry when repeat
       if args.repeat and args.repeat > 1:

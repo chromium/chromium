@@ -42,6 +42,7 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(runner.args.runtime_cache_prefix == 'some/dir')
     self.assertTrue(runner.args.xcode_path == 'some/Xcode.app')
     self.assertTrue(runner.args.repeat == 2)
+    self.assertTrue(runner.args.record_video == None)
 
   def test_isolated_repeat_ok(self):
     cmd = [
@@ -208,6 +209,37 @@ class UnitTest(unittest.TestCase):
     self.assertTrue(runner.args.xcode_parallelization)
     self.assertTrue(runner.args.restart)
     self.assertEquals(runner.args.shards, 2)
+
+  def test_parse_args_record_video_without_xcode_parallelization(self):
+    """
+    enabling video plugin requires xcode parallelization (eg test on simulator)
+    """
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--host-app',
+        './bar.app',
+        '--runtime-cache-prefix',
+        'some/dir',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--gtest_repeat',
+        '2',
+        '--record-video',
+        'failed_only',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+
+    runner = run.Runner()
+    with self.assertRaises(SystemExit) as ctx:
+      runner.parse_args(cmd)
+      self.assertTrue(re.match('is only supported on EG tests', ctx.message))
+      self.assertEqual(ctx.exception.code, 2)
 
   def test_merge_test_cases(self):
     """Tests test cases are merges in --test-cases and --args-json."""

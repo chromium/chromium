@@ -8,14 +8,23 @@ import shutil
 import stat
 import sys
 
+from enum import Enum
+
 # Path constants
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
-# we are currently at src/ios/build/bots/scripts/plugin/
+# we are currently at src/ios/build/bots/scripts/plugin/, unless we are in pwd
 CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../../..'))
-# TODO(crbug.com/1349392): add the below generated protobuf's path to build/config/io/ios_test_runner_wrapper.gni, so the resources are included when building ios test runner script
+if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
+  CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+
 PLUGIN_PROTOS_PATH = os.path.abspath(
     os.path.join(CHROMIUM_SRC_DIR, 'ios/testing/plugin'))
 
 PLUGIN_SERVICE_WORKER_COUNT = 10
 # just picking a random port
 PLUGIN_SERVICE_ADDRESS = 'localhost:32279'
+# Max number of times a test case can be video recorded and saved to disk
+MAX_RECORDED_COUNT = 3
+# Options for enabling video recording on EG tests
+VIDEO_RECORDER_PLUGIN_OPTIONS = Enum('video_recorder_plugin_options',
+                                     {'failed_only': 1})
