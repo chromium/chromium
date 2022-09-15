@@ -5,7 +5,6 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TAG_BITMAP_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TAG_BITMAP_H_
 
-#include "base/allocator/partition_allocator/freeslot_bitmap_constants.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
@@ -86,8 +85,7 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 NumSystemPagesPerTagBitmap() {
   return tag_bitmap::CeilCountOfUnits(
       kSuperPageSize / SystemPageSize() -
-          2 * PartitionPageSize() / SystemPageSize() -
-          ReservedFreeSlotBitmapSize() / SystemPageSize(),
+          2 * PartitionPageSize() / SystemPageSize(),
       tag_bitmap::kBytesPerPartitionTagRatio + 1);
 }
 
@@ -116,8 +114,7 @@ static_assert(ReservedTagBitmapSize() - ActualTagBitmapSize() <
 // and partition pages reserved for the freeslot bitmap and the tag bitmap.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 SlotSpansSize() {
-  return kSuperPageSize - 2 * PartitionPageSize() - ReservedTagBitmapSize() -
-         ReservedFreeSlotBitmapSize();
+  return kSuperPageSize - 2 * PartitionPageSize() - ReservedTagBitmapSize();
 }
 
 static_assert(ActualTagBitmapSize() * tag_bitmap::kBytesPerPartitionTagRatio >=
