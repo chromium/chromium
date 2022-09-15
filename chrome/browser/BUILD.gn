@@ -7823,8 +7823,8 @@ static_library("browser") {
 
   if (build_with_tflite_lib) {
     sources += [
-      "permissions/prediction_model_handler_factory.cc",
-      "permissions/prediction_model_handler_factory.h",
+      "permissions/prediction_model_handler_provider_factory.cc",
+      "permissions/prediction_model_handler_provider_factory.h",
     ]
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }

@@ -12,7 +12,7 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/permissions/prediction_model_handler_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,7 +28,8 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
-#include "components/permissions/prediction_service/prediction_model_handler.h"
+#include "components/permissions/prediction_service/prediction_model_handler_provider.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "content/public/test/browser_test.h"
@@ -87,8 +88,9 @@ class PredictionServiceBrowserTest : public InProcessBrowserTest {
   }
 
   PredictionModelHandler* prediction_model_handler() {
-    return PredictionModelHandlerFactory::GetForBrowserContext(
-        browser()->profile());
+    return PredictionModelHandlerProviderFactory::GetForBrowserContext(
+               browser()->profile())
+        ->GetPredictionModelHandler(RequestType::kNotifications);
   }
 
   void TriggerPromptAndVerifyUI(

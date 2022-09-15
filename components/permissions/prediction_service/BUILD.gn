@@ -38,6 +38,8 @@ source_set("prediction_service") {
       "prediction_model_executor.h",
       "prediction_model_handler.cc",
       "prediction_model_handler.h",
+      "prediction_model_handler_provider.cc",
+      "prediction_model_handler_provider.h",
     ]
 
     deps += [

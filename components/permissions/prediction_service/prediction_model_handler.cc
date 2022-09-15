@@ -6,31 +6,21 @@
 
 #include <memory>
 
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
-#include "components/optimization_guide/proto/models.pb.h"
-#include "components/permissions/prediction_service/prediction_model_executor.h"
-#include "components/permissions/prediction_service/prediction_request_features.h"
-#include "content/public/browser/browser_context.h"
 
 namespace permissions {
 
 PredictionModelHandler::PredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+    optimization_guide::proto::OptimizationTarget optimization_target)
     : ModelHandler<GeneratePredictionsResponse,
                    const GeneratePredictionsRequest&>(
           model_provider,
-          background_task_runner,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
           std::make_unique<PredictionModelExecutor>(),
           /*model_inference_timeout=*/absl::nullopt,
-          optimization_guide::proto::OptimizationTarget::
-              OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS,
+          optimization_target,
           absl::nullopt) {}
 
 void PredictionModelHandler::OnModelUpdated(

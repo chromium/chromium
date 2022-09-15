@@ -73,6 +73,10 @@ const base::Feature kPermissionOnDeviceNotificationPredictions{
     "PermissionOnDeviceNotificationPredictions",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kPermissionOnDeviceGeolocationPredictions{
+    "PermissionOnDeviceGeolocationPredictions",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_ANDROID)
 
 // When enabled, blocks notifications permission prompt when Chrome doesn't
@@ -112,6 +116,12 @@ const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways(
 const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
     "service_url", ""};
+
+const base::FeatureParam<double>
+    kPermissionOnDeviceGeolocationPredictionsHoldbackChance(
+        &features::kPermissionOnDeviceGeolocationPredictions,
+        "holdback_chance",
+        0.3);
 
 const base::FeatureParam<double>
     kPermissionOnDeviceNotificationPredictionsHoldbackChance(

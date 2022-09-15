@@ -249,7 +249,7 @@
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "chrome/browser/permissions/prediction_model_handler_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -497,8 +497,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDeviceNotificationPredictions)) {
-    PredictionModelHandlerFactory::GetInstance();
+          permissions::features::kPermissionOnDeviceNotificationPredictions) ||
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionOnDeviceGeolocationPredictions)) {
+    PredictionModelHandlerProviderFactory::GetInstance();
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   predictors::AutocompleteActionPredictorFactory::GetInstance();

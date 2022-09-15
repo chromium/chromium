@@ -240,8 +240,6 @@ message ModelInfo {
 
 // The scenarios for which the optimization guide has models for.
 enum OptimizationTarget {
-  reserved 20;
-
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
@@ -284,6 +282,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING = 18;
   // Target for smart text selection and entity extraction.
   OPTIMIZATION_TARGET_TEXT_CLASSIFIER = 19;
+  // Target for Chrome Permissions Suggestions Service: Geolocation permission.
+  OPTIMIZATION_TARGET_GEOLOCATION_PERMISSION_PREDICTIONS = 20;
   // Target for segmentation: Determine users who are interested in shopping.
   OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER = 21;
 }

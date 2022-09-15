@@ -52,6 +52,9 @@ extern const base::Feature kPermissionPredictionServiceUseUrlOverride;
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionOnDeviceNotificationPredictions;
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kPermissionOnDeviceGeolocationPredictions;
+
 #if BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -76,6 +79,10 @@ extern const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways;
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kPermissionPredictionServiceUrlOverride;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<double>
+    kPermissionOnDeviceGeolocationPredictionsHoldbackChance;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<double>

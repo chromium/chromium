@@ -28,8 +28,9 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "chrome/browser/permissions/prediction_model_handler_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
+#include "components/permissions/prediction_service/prediction_model_handler_provider.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
@@ -90,13 +91,6 @@ PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
     if (mock_likelihood.has_value())
       set_likelihood_override(mock_likelihood.value());
   }
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDeviceNotificationPredictions)) {
-    PredictionModelHandlerFactory::GetForBrowserContext(profile);
-  }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
@@ -147,8 +141,16 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (prediction_source == PredictionSource::USE_ANY ||
       prediction_source == PredictionSource::USE_ONDEVICE) {
-    permissions::PredictionModelHandler* prediction_model_handler =
-        PredictionModelHandlerFactory::GetForBrowserContext(profile_);
+    permissions::PredictionModelHandlerProvider*
+        prediction_model_handler_provider =
+            PredictionModelHandlerProviderFactory::GetForBrowserContext(
+                profile_);
+    permissions::PredictionModelHandler* prediction_model_handler = nullptr;
+    if (prediction_model_handler_provider) {
+      prediction_model_handler =
+          prediction_model_handler_provider->GetPredictionModelHandler(
+              request->request_type());
+    }
     if (prediction_model_handler &&
         prediction_model_handler->ModelAvailable()) {
       VLOG(1) << "[CPSS] Using locally available model";
@@ -288,6 +290,9 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
     bool is_on_device,
     permissions::RequestType request_type) {
   // Different holdback threshold for the different experiments.
+  const double on_device_geolocation_holdback_threshold =
+      permissions::feature_params::
+          kPermissionOnDeviceGeolocationPredictionsHoldbackChance.Get();
   const double on_device_notification_holdback_threshold =
       permissions::feature_params::
           kPermissionOnDeviceNotificationPredictionsHoldbackChance.Get();
@@ -300,9 +305,15 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
   const double holdback_chance = base::RandDouble();
   bool should_holdback = false;
   if (is_on_device) {
-    DCHECK_EQ(permissions::RequestType::kNotifications, request_type);
-    should_holdback =
-        holdback_chance < on_device_notification_holdback_threshold;
+    if (request_type == permissions::RequestType::kNotifications) {
+      should_holdback =
+          holdback_chance < on_device_notification_holdback_threshold;
+    } else if (request_type == permissions::RequestType::kGeolocation) {
+      should_holdback =
+          holdback_chance < on_device_geolocation_holdback_threshold;
+    } else {
+      NOTREACHED();
+    }
   } else {
     if (request_type == permissions::RequestType::kNotifications) {
       should_holdback =
@@ -353,6 +364,11 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
           permissions::features::kPermissionQuietChip)) {
     is_server_side_prediction_enabled = base::FeatureList::IsEnabled(
         features::kPermissionGeolocationPredictions);
+
+    is_ondevice_prediction_enabled =
+        is_tflite_available &&
+        base::FeatureList::IsEnabled(
+            permissions::features::kPermissionOnDeviceGeolocationPredictions);
   }
 
   if (is_server_side_prediction_enabled && is_ondevice_prediction_enabled) {
