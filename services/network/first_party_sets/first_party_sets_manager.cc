@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
@@ -201,16 +200,7 @@ FirstPartySetsManager::EntriesResult FirstPartySetsManager::FindEntriesInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
-      sites_to_entries;
-  for (const net::SchemefulSite& site : sites) {
-    const absl::optional<net::FirstPartySetEntry> entry =
-        FindEntry(site, fps_context_config);
-    if (entry.has_value()) {
-      sites_to_entries.emplace_back(site, entry.value());
-    }
-  }
-  return sites_to_entries;
+  return sets_->FindEntries(sites, &fps_context_config);
 }
 
 void FirstPartySetsManager::InvokePendingQueries() {

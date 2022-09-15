@@ -76,24 +76,36 @@ absl::optional<FirstPartySetEntry> PublicSets::FindEntry(
   return absl::nullopt;
 }
 
-base::flat_set<net::SchemefulSite> PublicSets::FindIntersection(
+base::flat_map<SchemefulSite, FirstPartySetEntry> PublicSets::FindEntries(
+    const base::flat_set<SchemefulSite>& sites,
+    const FirstPartySetsContextConfig* config) const {
+  std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> sites_to_entries;
+  for (const SchemefulSite& site : sites) {
+    const absl::optional<FirstPartySetEntry> entry = FindEntry(site, config);
+    if (entry.has_value()) {
+      sites_to_entries.emplace_back(site, entry.value());
+    }
+  }
+  return sites_to_entries;
+}
+
+base::flat_set<SchemefulSite> PublicSets::FindIntersection(
     const SchemefulSite& manual_primary,
     const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries)
     const {
-  std::vector<net::SchemefulSite> intersection;
-  for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+  std::vector<SchemefulSite> intersection;
+  for (const std::pair<SchemefulSite, FirstPartySetEntry>&
            public_site_and_entry : entries_) {
-    const net::SchemefulSite& public_site = public_site_and_entry.first;
-    const net::SchemefulSite& public_primary =
+    const SchemefulSite& public_site = public_site_and_entry.first;
+    const SchemefulSite& public_primary =
         public_site_and_entry.second.primary();
     bool is_affected_by_local_set =
         public_site == manual_primary || public_primary == manual_primary ||
         base::ranges::any_of(
             manual_entries,
-            [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+            [&](const std::pair<SchemefulSite, FirstPartySetEntry>&
                     manual_site_and_entry) {
-              const net::SchemefulSite& manual_site =
-                  manual_site_and_entry.first;
+              const SchemefulSite& manual_site = manual_site_and_entry.first;
               return manual_site == public_site ||
                      manual_site == public_primary;
             });
@@ -105,13 +117,13 @@ base::flat_set<net::SchemefulSite> PublicSets::FindIntersection(
   return intersection;
 }
 
-base::flat_set<net::SchemefulSite> PublicSets::FindSingletons() const {
-  std::vector<net::SchemefulSite> primaries_with_members;
+base::flat_set<SchemefulSite> PublicSets::FindSingletons() const {
+  std::vector<SchemefulSite> primaries_with_members;
   for (const auto& [site, entry] : entries_) {
     if (site != entry.primary())
       primaries_with_members.push_back(entry.primary());
   }
-  std::vector<net::SchemefulSite> singletons;
+  std::vector<SchemefulSite> singletons;
   for (const auto& [site, entry] : entries_) {
     if (site == entry.primary() &&
         !base::Contains(primaries_with_members, site)) {
@@ -126,13 +138,13 @@ void PublicSets::ApplyManuallySpecifiedSet(
     const SchemefulSite& manual_primary,
     const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries,
     const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases) {
-  base::flat_set<net::SchemefulSite> intersection =
+  base::flat_set<SchemefulSite> intersection =
       FindIntersection(manual_primary, manual_entries);
   for (const auto& site : intersection) {
     entries_.erase(site);
   }
 
-  base::flat_set<net::SchemefulSite> singletons = FindSingletons();
+  base::flat_set<SchemefulSite> singletons = FindSingletons();
   for (const auto& singleton : singletons) {
     entries_.erase(singleton);
   }
@@ -142,8 +154,7 @@ void PublicSets::ApplyManuallySpecifiedSet(
   // Finally, remove any aliases for public sites that were affected (deleted),
   // and add any aliases defined in the local set.
   base::EraseIf(
-      aliases_,
-      [&](const std::pair<net::SchemefulSite, net::SchemefulSite>& alias) {
+      aliases_, [&](const std::pair<SchemefulSite, SchemefulSite>& alias) {
         return intersection.contains(alias.second) ||
                singletons.contains(alias.second);
       });

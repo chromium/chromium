@@ -43,20 +43,6 @@ void SetComponentSets(FirstPartySetsLoader& loader, base::StringPiece content) {
       base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
 }
 
-base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
-    const net::PublicSets& public_sets,
-    const base::flat_set<net::SchemefulSite>& sites) {
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> results;
-  for (const net::SchemefulSite& site : sites) {
-    if (absl::optional<net::FirstPartySetEntry> entry =
-            public_sets.FindEntry(site, /*config=*/nullptr);
-        entry.has_value()) {
-      results.emplace_back(site, *entry);
-    }
-  }
-  return results;
-}
-
 }  // namespace
 
 class FirstPartySetsLoaderTest : public ::testing::Test {
@@ -98,7 +84,8 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(
-      FindEntries(WaitAndGetResult(), {example, associated1, foo, associated2}),
+      WaitAndGetResult().FindEntries({example, associated1, foo, associated2},
+                                     /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -133,7 +120,8 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
 
   // The second call to SetComponentSets should have had no effect.
   EXPECT_THAT(
-      FindEntries(WaitAndGetResult(), {example, foo, example2, foo2}),
+      WaitAndGetResult().FindEntries({example, foo, example2, foo2},
+                                     /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),

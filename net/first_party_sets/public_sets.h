@@ -51,6 +51,12 @@ class NET_EXPORT PublicSets {
       const SchemefulSite& site,
       const FirstPartySetsContextConfig* config) const;
 
+  // Batched version of `FindEntry`. Where `FindEntry` would have returned
+  // nullopt, this just omits from the result map.
+  base::flat_map<SchemefulSite, FirstPartySetEntry> FindEntries(
+      const base::flat_set<SchemefulSite>& sites,
+      const FirstPartySetsContextConfig* config) const;
+
   // Modifies this instance such that it will respect the given
   // manually-specified set.
   void ApplyManuallySpecifiedSet(
@@ -64,14 +70,14 @@ class NET_EXPORT PublicSets {
   //
   // The returned collection also includes any sites in the underlying entries
   // whose primary was in the intersection.
-  base::flat_set<net::SchemefulSite> FindIntersection(
+  base::flat_set<SchemefulSite> FindIntersection(
       const SchemefulSite& manual_primary,
       const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries)
       const;
 
   // Finds singleton sets in the underlying entries, which are sets that consist
   // of only a single site.
-  base::flat_set<net::SchemefulSite> FindSingletons() const;
+  base::flat_set<SchemefulSite> FindSingletons() const;
 
   // Represents the mapping of site -> entry, where keys are sites within sets,
   // and values are entries of the sets.

@@ -132,20 +132,6 @@ GetPersistedPublicSetsAndWait() {
   return future.Get();
 }
 
-base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
-    const net::PublicSets& public_sets,
-    const base::flat_set<net::SchemefulSite>& sites) {
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> results;
-  for (const net::SchemefulSite& site : sites) {
-    if (absl::optional<net::FirstPartySetEntry> entry =
-            public_sets.FindEntry(site, /*config=*/nullptr);
-        entry.has_value()) {
-      results.emplace_back(site, *entry);
-    }
-  }
-  return results;
-}
-
 }  // namespace
 
 TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
@@ -289,7 +275,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
           R"("associatedSites": ["https://associatedsite1.test"]})"));
 
   EXPECT_THAT(
-      FindEntries(GetSetsAndWait(), {example, associated}),
+      GetSetsAndWait().FindEntries({example, associated}, /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -313,12 +299,13 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
-  ASSERT_THAT(FindEntries(GetSetsAndWait(), {foo, associated}),
-              UnorderedElementsAre(
-                  Pair(foo, net::FirstPartySetEntry(
-                                foo, net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(associated, net::FirstPartySetEntry(
-                                       foo, net::SiteType::kAssociated, 0))));
+  ASSERT_THAT(
+      GetSetsAndWait().FindEntries({foo, associated}, /*config=*/nullptr),
+      UnorderedElementsAre(
+          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+          Pair(associated,
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0))));
 
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
@@ -352,12 +339,13 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{}, LocalSetDeclaration());
-  ASSERT_THAT(FindEntries(GetSetsAndWait(), {foo, associated}),
-              UnorderedElementsAre(
-                  Pair(foo, net::FirstPartySetEntry(
-                                foo, net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(associated, net::FirstPartySetEntry(
-                                       foo, net::SiteType::kAssociated, 0))));
+  ASSERT_THAT(
+      GetSetsAndWait().FindEntries({foo, associated}, /*config=*/nullptr),
+      UnorderedElementsAre(
+          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+          Pair(associated,
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0))));
 
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
@@ -387,7 +375,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
   EXPECT_THAT(
-      FindEntries(GetSetsAndWait(), {example, associated}),
+      GetSetsAndWait().FindEntries({example, associated}, /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -397,10 +385,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   env().RunUntilIdle();
 
   EXPECT_THAT(
-      FindEntries(FirstPartySetsHandlerImpl::GetInstance()
-                      ->GetSets(base::NullCallback())
-                      .value(),
-                  {example, associated}),
+      FirstPartySetsHandlerImpl::GetInstance()
+          ->GetSets(base::NullCallback())
+          .value()
+          .FindEntries({example, associated}, /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -433,7 +421,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       base::Version(), WritePublicSetsFile(input));
 
   EXPECT_THAT(
-      FindEntries(future.Get(), {example, associated}),
+      future.Get().FindEntries({example, associated}, /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -441,10 +429,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                example, net::SiteType::kAssociated, 0))));
 
   EXPECT_THAT(
-      FindEntries(FirstPartySetsHandlerImpl::GetInstance()
-                      ->GetSets(base::NullCallback())
-                      .value(),
-                  {example, associated}),
+      FirstPartySetsHandlerImpl::GetInstance()
+          ->GetSets(base::NullCallback())
+          .value()
+          .FindEntries({example, associated}, /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -486,9 +474,9 @@ class FirstPartySetsHandlerGetCustomizationForPolicyTest
     FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
         base::Version(), WritePublicSetsFile(input));
 
-    ASSERT_THAT(
-        FindEntries(GetSetsAndWait(), {primary1, associated1, associated2}),
-        SizeIs(3));
+    ASSERT_THAT(GetSetsAndWait().FindEntries(
+                    {primary1, associated1, associated2}, /*config=*/nullptr),
+                SizeIs(3));
   }
 
  protected:

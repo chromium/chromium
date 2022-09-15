@@ -41,22 +41,6 @@ class PublicSetsTest : public ::testing::Test {
 
   FirstPartySetsContextConfig* config() { return &fps_context_config_; }
 
-  // A helper to repeatedly call `PublicSets::FindEntry` and accumulate the
-  // non-nullopt results.
-  base::flat_map<SchemefulSite, FirstPartySetEntry> FindEntries(
-      const PublicSets& public_sets,
-      const base::flat_set<SchemefulSite>& sites) {
-    std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> results;
-    for (const SchemefulSite& site : sites) {
-      if (absl::optional<FirstPartySetEntry> entry =
-              public_sets.FindEntry(site, config());
-          entry.has_value()) {
-        results.emplace_back(site, *entry);
-      }
-    }
-    return results;
-  }
-
  private:
   FirstPartySetsContextConfig fps_context_config_;
 };
@@ -219,11 +203,6 @@ class PopulatedPublicSetsTest : public PublicSetsTest {
                 {kAssociated1Cctld, kAssociated1},
             }) {}
 
-  base::flat_map<SchemefulSite, FirstPartySetEntry> FindEntries(
-      const base::flat_set<SchemefulSite>& sites) {
-    return PublicSetsTest::FindEntries(public_sets(), sites);
-  }
-
   PublicSets& public_sets() { return public_sets_; }
 
  private:
@@ -245,14 +224,16 @@ TEST_F(PopulatedPublicSetsTest,
       {});
 
   EXPECT_THAT(
-      FindEntries({
-          kPrimary,
-          kAssociated1,
-          kAssociated2,
-          kAssociated4,
-          kService,
-          kAssociated1Cctld,
-      }),
+      public_sets().FindEntries(
+          {
+              kPrimary,
+              kAssociated1,
+              kAssociated2,
+              kAssociated4,
+              kService,
+              kAssociated1Cctld,
+          },
+          config()),
       UnorderedElementsAre(
           Pair(kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
@@ -274,15 +255,17 @@ TEST_F(PopulatedPublicSetsTest,
       {});
 
   EXPECT_THAT(
-      FindEntries({
-          kPrimary,
-          kAssociated1,
-          kAssociated2,
-          kAssociated4,
-          kService,
-          kPrimary3,
-          kAssociated1Cctld,
-      }),
+      public_sets().FindEntries(
+          {
+              kPrimary,
+              kAssociated1,
+              kAssociated2,
+              kAssociated4,
+              kService,
+              kPrimary3,
+              kAssociated1Cctld,
+          },
+          config()),
       UnorderedElementsAre(
           Pair(kPrimary3, FirstPartySetEntry(kPrimary3, SiteType::kPrimary,
                                              absl::nullopt)),
@@ -306,15 +289,17 @@ TEST_F(PopulatedPublicSetsTest,
       {});
 
   EXPECT_THAT(
-      FindEntries({
-          kPrimary,
-          kAssociated1,
-          kAssociated2,
-          kAssociated4,
-          kService,
-          kPrimary3,
-          kAssociated1Cctld,
-      }),
+      public_sets().FindEntries(
+          {
+              kPrimary,
+              kAssociated1,
+              kAssociated2,
+              kAssociated4,
+              kService,
+              kPrimary3,
+              kAssociated1Cctld,
+          },
+          config()),
       UnorderedElementsAre(
           Pair(kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
@@ -344,15 +329,17 @@ TEST_F(PopulatedPublicSetsTest,
       {});
 
   EXPECT_THAT(
-      FindEntries({
-          kPrimary,
-          kAssociated1,
-          kAssociated2,
-          kAssociated4,
-          kService,
-          kPrimary3,
-          kAssociated1Cctld,
-      }),
+      public_sets().FindEntries(
+          {
+              kPrimary,
+              kAssociated1,
+              kAssociated2,
+              kAssociated4,
+              kService,
+              kPrimary3,
+              kAssociated1Cctld,
+          },
+          config()),
       UnorderedElementsAre(
           Pair(kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
@@ -380,7 +367,7 @@ TEST_F(PopulatedPublicSetsTest,
       },
       {});
 
-  EXPECT_THAT(FindEntries({kPrimary2}), IsEmpty());
+  EXPECT_THAT(public_sets().FindEntries({kPrimary2}, config()), IsEmpty());
 }
 
 TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
@@ -398,11 +385,13 @@ TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
       {{kAssociated1Cctld2, kAssociated1}});
 
   EXPECT_THAT(
-      FindEntries({
-          kAssociated1,
-          kAssociated1Cctld,
-          kAssociated1Cctld2,
-      }),
+      public_sets().FindEntries(
+          {
+              kAssociated1,
+              kAssociated1Cctld,
+              kAssociated1Cctld2,
+          },
+          config()),
       UnorderedElementsAre(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)),
