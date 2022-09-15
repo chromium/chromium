@@ -78,6 +78,14 @@ const base::Feature kDisplayOpenLinkAsProfile{
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Controls whether we use a different UX for simple extensions overriding
+// settings.
+const base::Feature kLightweightExtensionOverrideConfirmations{
+    "LightweightExtensionOverrideConfirmations",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 // Enables the reauth flow for authenticated profiles with invalid credentials
 // when the force sign-in policy is enabled.
 const base::Feature kForceSignInReauth{"ForceSignInReauth",

@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
@@ -203,7 +205,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
                "prepopulated_id": %d,
                "is_default": true
              }
-           }
+           },
+           "permissions": ["storage"]
          })";
   extensions::TestExtensionDir test_dir;
 
@@ -251,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
                "favicon_url": "https://example.com/favicon.ico",
                "is_default": true
              }
-           }
+           },
+           "permissions": ["storage"]
          })";
 
   extensions::TestExtensionDir test_dir;
@@ -270,6 +274,107 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetSearchOverriddenParams(profile());
   EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
+}
+
+class LightweightSettingsOverriddenParamsProvidersBrowserTest
+    : public SettingsOverriddenParamsProvidersBrowserTest {
+ public:
+  LightweightSettingsOverriddenParamsProvidersBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kLightweightExtensionOverrideConfirmations);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that, with the lightweight settings overrides feature enabled, the
+// settings overridden dialog isn't shown for a simple override extension, but
+// would be if the extension is then updated to have more capabilities.
+IN_PROC_BROWSER_TEST_F(LightweightSettingsOverriddenParamsProvidersBrowserTest,
+                       DialogNotShownForSimpleOverridesAndIsAfterUpdate) {
+  extensions::TestExtensionDir dir_v1;
+  static constexpr char kManifestV1[] =
+      R"({
+           "name": "Search Override",
+           "version": "0.1",
+           "manifest_version": 3,
+           "chrome_settings_overrides": {
+             "search_provider": {
+               "search_url": "https://example.com/?q={searchTerms}",
+               "name": "New Search",
+               "keyword": "word",
+               "encoding": "UTF-8",
+               "favicon_url": "https://example.com/favicon.ico",
+               "is_default": true
+             }
+           }
+         })";
+  dir_v1.WriteManifest(kManifestV1);
+  dir_v1.WriteFile(FILE_PATH_LITERAL("page.html"), "hello world!");
+
+  extensions::TestExtensionDir dir_v2;
+  static constexpr char kManifestV2[] =
+      R"({
+           "name": "Search Override",
+           "version": "0.2",
+           "manifest_version": 3,
+           "chrome_settings_overrides": {
+             "search_provider": {
+               "search_url": "https://example.com/?q={searchTerms}",
+               "name": "New Search",
+               "keyword": "word",
+               "encoding": "UTF-8",
+               "favicon_url": "https://example.com/favicon.ico",
+               "is_default": true
+             }
+           },
+           "permissions": ["storage"]
+         })";
+  dir_v2.WriteManifest(kManifestV2);
+  dir_v2.WriteFile(FILE_PATH_LITERAL("page.html"), "hello world!");
+
+  // Borrow a .pem file to have consistent IDs in the .crx files.
+  base::FilePath pem_path =
+      test_data_dir_.AppendASCII("permissions/update.pem");
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir scoped_temp_dir;
+  EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  base::FilePath v1_crx_path = PackExtensionWithOptions(
+      dir_v1.UnpackedPath(), scoped_temp_dir.GetPath().AppendASCII("v1.crx"),
+      pem_path, base::FilePath());
+  base::FilePath v2_crx_path = PackExtensionWithOptions(
+      dir_v2.UnpackedPath(), scoped_temp_dir.GetPath().AppendASCII("v2.crx"),
+      pem_path, base::FilePath());
+
+  // Install v1 of the extension. Since this is a simple override, the dialog
+  // should not display.
+  const extensions::Extension* extension =
+      InstallExtensionWithPermissionsGranted(v1_crx_path, 1);
+  ASSERT_TRUE(extension);
+
+  {
+    absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+        settings_overridden_params::GetSearchOverriddenParams(profile());
+    ASSERT_TRUE(params);
+    ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
+    EXPECT_FALSE(controller.ShouldShow());
+  }
+
+  // Update the extension to v2. Now, the dialog *should* show, since the
+  // extension is no longer considered a simple override.
+  extension = UpdateExtension(extension->id(), v2_crx_path, 0);
+  EXPECT_TRUE(extension);
+
+  {
+    absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
+        settings_overridden_params::GetSearchOverriddenParams(profile());
+    ASSERT_TRUE(params);
+    ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
+    EXPECT_TRUE(controller.ShouldShow());
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

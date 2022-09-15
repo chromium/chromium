@@ -40,7 +40,6 @@ namespace {
 // extensions.
 const char* kDisallowedFeatures[] = {
     // Manifest constants.
-    extensions::manifest_keys::kAboutPage,
     extensions::manifest_keys::kAction,
     extensions::manifest_keys::kApp,
     extensions::manifest_keys::kPlatformAppBackground,
@@ -67,7 +66,6 @@ const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kFileHandlers,
     extensions::manifest_keys::kHostPermissions,
     extensions::manifest_keys::kInputComponents,
-    extensions::manifest_keys::kKey,
     extensions::manifest_keys::kKiosk,
     extensions::manifest_keys::kKioskAlwaysUpdate,
     extensions::manifest_keys::kKioskRequiredPlatformVersion,
@@ -90,7 +88,6 @@ const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kTtsEngine,
     extensions::manifest_keys::kUrlHandlers,
     extensions::manifest_keys::kUsbPrinters,
-    extensions::manifest_keys::kVersionName,
     extensions::manifest_keys::kWebview,
 
     // Compiled manifest keys.

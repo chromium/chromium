@@ -28,22 +28,25 @@ namespace {
 // this file's corresponding unittest.cc.
 const char* kAllowlistedManifestKeys[] = {
     "author",  // "author" is a recognized key, but never used as a constant.
-    extensions::manifest_keys::kSettingsOverride,
+    extensions::manifest_keys::kAboutPage,
     extensions::manifest_keys::kCurrentLocale,
     extensions::manifest_keys::kDefaultLocale,
     extensions::manifest_keys::kDescription,
     extensions::manifest_keys::kDifferentialFingerprint,
     extensions::manifest_keys::kHomepageURL,
     extensions::manifest_keys::kIcons,
+    extensions::manifest_keys::kKey,
     extensions::manifest_keys::kManifestVersion,
     extensions::manifest_keys::kMinimumChromeVersion,
     extensions::manifest_keys::kName,
     extensions::manifest_keys::kOfflineEnabled,
     extensions::manifest_keys::kOptionsPage,
     extensions::manifest_keys::kOptionsUI,
+    extensions::manifest_keys::kSettingsOverride,
     extensions::manifest_keys::kShortName,
     extensions::manifest_keys::kUpdateURL,
     extensions::manifest_keys::kVersion,
+    extensions::manifest_keys::kVersionName,
     extensions::api::incognito::ManifestKeys::kIncognito,
 };
 

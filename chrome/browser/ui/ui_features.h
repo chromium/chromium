@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace features {
 
@@ -51,6 +52,10 @@ extern const base::Feature kAccessCodeCastUI;
 extern const base::Feature kDisplayOpenLinkAsProfile;
 
 extern const base::Feature kEvDetailsInPageInfo;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+extern const base::Feature kLightweightExtensionOverrideConfirmations;
+#endif
 
 extern const base::Feature kForceSignInReauth;
 
