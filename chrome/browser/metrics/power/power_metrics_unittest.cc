@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -83,8 +84,13 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
 
   ReportAggregatedProcessMetricsHistograms(process_metrics, suffixes);
 
+
   ExpectHistogramSamples(&histogram_tester, suffixes, {
+// Windows ARM64 does not support Constant Rate TSC so
+// PerformanceMonitor.AverageCPU6.Total is not recorded there.
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
     {"PerformanceMonitor.AverageCPU6.Total", 20},
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)

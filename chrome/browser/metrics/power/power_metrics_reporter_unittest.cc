@@ -60,7 +60,8 @@ struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
   base::Histogram::Sample sample;
 };
-
+  
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
 // For each histogram named after the combination of prefixes from
 // `expectations` and suffixes from `suffixes`, verifies that there is a unique
 // sample `expectation.sample`.
@@ -78,6 +79,7 @@ void ExpectHistogramSamples(
     }
   }
 }
+#endif  // !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
 
 using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
@@ -247,10 +249,14 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
 
   task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
+// Windows ARM64 does not support Constant Rate TSC so
+// PerformanceMonitor.AverageCPU6.Total is not recorded there.
+#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
   ExpectHistogramSamples(&histogram_tester_, suffixes,
                          {{"PerformanceMonitor.AverageCPU6.Total", 500}});
+#endif
 }
 
 #if BUILDFLAG(IS_MAC)
