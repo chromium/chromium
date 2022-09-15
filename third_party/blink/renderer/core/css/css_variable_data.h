@@ -51,9 +51,12 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
         charset));
   }
 
-  CSSParserTokenRange TokenRange() const { return tokens_; }
+  CSSParserTokenRange TokenRange() const {
+    return CSSParserTokenRange{
+        base::span<CSSParserToken>(tokens_, num_tokens_)};
+  }
 
-  const Vector<CSSParserToken>& Tokens() const { return tokens_; }
+  base::span<CSSParserToken> Tokens() const { return {tokens_, num_tokens_}; }
   const Vector<String>& BackingStrings() const { return backing_strings_; }
   String Serialize() const;
 
@@ -78,6 +81,13 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   const CSSValue* ParseForSyntax(const CSSSyntaxDefinition&,
                                  SecureContextMode) const;
 
+  ~CSSVariableData() { WTF::Partitions::FastFree(tokens_); }
+
+  CSSVariableData(const CSSVariableData&) = delete;
+  CSSVariableData& operator=(const CSSVariableData&) = delete;
+  CSSVariableData(CSSVariableData&&) = delete;
+  CSSVariableData& operator=(const CSSVariableData&&) = delete;
+
  private:
   CSSVariableData() = default;
 
@@ -95,18 +105,25 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
                   const String& base_url,
                   const WTF::TextEncoding& charset)
       : backing_strings_(std::move(backing_strings)),
-        tokens_(std::move(resolved_tokens)),
+        num_tokens_(resolved_tokens.size()),
         is_animation_tainted_(is_animation_tainted),
         has_font_units_(has_font_units),
         has_root_font_units_(has_root_font_units),
         base_url_(base_url),
         charset_(charset) {
+    AllocateSpaceForCSSParserTokens();
+    std::uninitialized_move(resolved_tokens.begin(), resolved_tokens.end(),
+                            tokens_);
 #if EXPENSIVE_DCHECKS_ARE_ON()
     VerifyStringBacking();
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
-  CSSVariableData(const CSSVariableData&) = delete;
-  CSSVariableData& operator=(const CSSVariableData&) = delete;
+
+  void AllocateSpaceForCSSParserTokens() {
+    tokens_ = reinterpret_cast<CSSParserToken*>(WTF::Partitions::FastMalloc(
+        sizeof(CSSParserToken) * num_tokens_,
+        WTF::GetStringWithTypeName<CSSParserToken>()));
+  }
 
   void ConsumeAndUpdateTokens(const CSSParserTokenRange&);
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -117,8 +134,9 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   // owning that data in backing_strings_ to keep it alive alongside the
   // tokens_.
   Vector<String> backing_strings_;
-  Vector<CSSParserToken> tokens_;
   String original_text_;
+  CSSParserToken* tokens_ = nullptr;  // Owned, allocated with FastMalloc.
+  wtf_size_t num_tokens_ = 0;
   const bool is_animation_tainted_ = false;
   const bool needs_variable_resolution_ = false;
   bool has_font_units_ = false;

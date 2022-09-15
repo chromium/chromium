@@ -1362,16 +1362,16 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
 
 namespace {
 
-void ConsumeWhitespace(Vector<CSSParserToken>::const_iterator& iterator,
-                       const Vector<CSSParserToken>::const_iterator& end) {
+void ConsumeWhitespace(base::span<CSSParserToken>::const_iterator& iterator,
+                       const base::span<CSSParserToken>::const_iterator& end) {
   while (iterator != end && (*iterator).GetType() == kWhitespaceToken) {
     iterator++;
   }
 }
 
 void ConsumeWhitespaceReverse(
-    Vector<CSSParserToken>::const_iterator& iterator,
-    const Vector<CSSParserToken>::const_iterator& start) {
+    base::span<CSSParserToken>::const_iterator& iterator,
+    const base::span<CSSParserToken>::const_iterator& start) {
   while (iterator != start && (*(iterator - 1)).GetType() == kWhitespaceToken) {
     iterator--;
   }
@@ -1387,13 +1387,13 @@ bool TokensEqualIgnoringLeadingAndTrailingSpaces(
     return false;
   }
 
-  const Vector<CSSParserToken>& tokens1 = value1->Tokens();
-  const Vector<CSSParserToken>& tokens2 = value2->Tokens();
+  const base::span<CSSParserToken> tokens1 = value1->Tokens();
+  const base::span<CSSParserToken> tokens2 = value2->Tokens();
 
-  Vector<CSSParserToken>::const_iterator tokens1_start = tokens1.begin();
-  Vector<CSSParserToken>::const_iterator tokens1_end = tokens1.end();
-  Vector<CSSParserToken>::const_iterator tokens2_start = tokens2.begin();
-  Vector<CSSParserToken>::const_iterator tokens2_end = tokens2.end();
+  base::span<CSSParserToken>::const_iterator tokens1_start = tokens1.begin();
+  base::span<CSSParserToken>::const_iterator tokens1_end = tokens1.end();
+  base::span<CSSParserToken>::const_iterator tokens2_start = tokens2.begin();
+  base::span<CSSParserToken>::const_iterator tokens2_end = tokens2.end();
 
   ConsumeWhitespace(tokens1_start, tokens1_end);
   ConsumeWhitespaceReverse(tokens1_end, tokens1_start);

@@ -16,17 +16,17 @@ namespace blink {
 template <typename CharacterType>
 static void UpdateTokens(const CSSParserTokenRange& range,
                          const String& backing_string,
-                         Vector<CSSParserToken>& result) {
+                         CSSParserToken* result) {
   const CharacterType* current_offset =
       backing_string.GetCharacters<CharacterType>();
   for (const CSSParserToken& token : range) {
     if (token.HasStringBacking()) {
       unsigned length = token.Value().length();
       StringView string(current_offset, length);
-      result.push_back(token.CopyWithUpdatedString(string));
+      new (result++) CSSParserToken(token.CopyWithUpdatedString(string));
       current_offset += length;
     } else {
-      result.push_back(token);
+      new (result++) CSSParserToken(token);
     }
   }
   DCHECK(current_offset == backing_string.GetCharacters<CharacterType>() +
@@ -66,8 +66,8 @@ String CSSVariableData::Serialize() const {
       StringBuilder serialized_text;
       serialized_text.Append(original_text_);
       serialized_text.Resize(serialized_text.length() - 1);
-      DCHECK(!tokens_.IsEmpty());
-      const CSSParserToken& last = tokens_.back();
+      DCHECK_NE(0u, num_tokens_);
+      const CSSParserToken& last = tokens_[num_tokens_ - 1];
       if (last.GetType() != kStringToken)
         serialized_text.Append(kReplacementCharacter);
 
@@ -87,11 +87,12 @@ String CSSVariableData::Serialize() const {
 }
 
 bool CSSVariableData::operator==(const CSSVariableData& other) const {
-  return Tokens() == other.Tokens();
+  return std::equal(Tokens().begin(), Tokens().end(), other.Tokens().begin(),
+                    other.Tokens().end());
 }
 
 void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
-  DCHECK_EQ(tokens_.size(), 0u);
+  DCHECK_EQ(num_tokens_, 0u);
   DCHECK_EQ(backing_strings_.size(), 0u);
   StringBuilder string_builder;
   CSSParserTokenRange local_range = range;
@@ -102,9 +103,11 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
       string_builder.Append(token.Value());
     has_font_units_ |= IsFontUnitToken(token);
     has_root_font_units_ |= IsRootFontUnitToken(token);
+    ++num_tokens_;
   }
   String backing_string = string_builder.ReleaseString();
   backing_strings_.push_back(backing_string);
+  AllocateSpaceForCSSParserTokens();
   if (backing_string.Is8Bit())
     UpdateTokens<LChar>(range, backing_string, tokens_);
   else
@@ -147,7 +150,7 @@ bool TokenValueIsBacked(const CSSParserToken& token,
 }  // namespace
 
 void CSSVariableData::VerifyStringBacking() const {
-  for (const CSSParserToken& token : tokens_) {
+  for (const CSSParserToken& token : Tokens()) {
     DCHECK(!token.HasStringBacking() ||
            TokenValueIsBacked(token, backing_strings_))
         << "Token value is not backed: " << token.Value().ToString();
