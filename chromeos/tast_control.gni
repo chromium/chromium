@@ -182,20 +182,11 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.RemoveOk.bullseye_stable",
   "crostini.RemoveOk.buster_stable",
 
-  # http://crbug.com/1363663
-  "crostini.AppGeditFilesharing.clamshell_stable",
-  "crostini.DragDrop.bullseye_stable",
-  "crostini.FilesAppWatch.bullseye_stable",
-  "crostini.HomeDirectoryCreateFile.bullseye_stable",
-  "crostini.Restart.buster_stable",
-  "crostini.RestartIcon.buster_stable",
-  "crostini.RunWithARC.buster_stable",
-
   # b/241122961
   "policy.BlockThirdPartyCookies",
 
   # https://crbug.com/1350180
-  # also see http://crbug.com/13501e1
+  # also see http://crbug.com/1350191
   "printer.Print",
 
   # https://crbug.com/1350191
