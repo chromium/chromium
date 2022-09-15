@@ -79,6 +79,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget_observer.h"
@@ -752,16 +753,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AppsGridViewClamshellAndTabletTest,
                          testing::Bool());
 
-// Tests suite parameterized by RTL locale.
-// TODO(crbug.com/1360501): Some of these tests rely on ProductivityLauncher
-// being disabled. Fix or delete them.
-class AppsGridViewRTLTest : public AppsGridViewTest,
-                            public testing::WithParamInterface<bool> {
- public:
-  AppsGridViewRTLTest() { is_rtl_ = GetParam(); }
-};
-INSTANTIATE_TEST_SUITE_P(All, AppsGridViewRTLTest, testing::Bool());
-
 // Tests suite for app list items drag and drop tests. These tests are
 // parameterized by RTL locale.
 class AppsGridViewDragTest : public AppsGridViewTest,
@@ -1074,7 +1065,7 @@ TEST_F(AppsGridViewClamshellTest, ItemTooltip) {
   EXPECT_EQ(base::ASCIIToUTF16(title), title_label->GetText());
 }
 
-TEST_P(AppsGridViewRTLTest,
+TEST_P(AppsGridViewTabletTest,
        OnGestureEventScrollSequenceHandleByPaginationController) {
   base::HistogramTester histogram_tester;
 
@@ -1101,23 +1092,23 @@ TEST_P(AppsGridViewRTLTest,
   apps_grid_view_->OnGestureEvent(&scroll_begin);
   EXPECT_TRUE(scroll_begin.handled());
   histogram_tester.ExpectTotalCount(
-      "Apps.PaginationTransition.DragScroll.PresentationTime.ClamshellMode", 0);
+      "Apps.PaginationTransition.DragScroll.PresentationTime.TabletMode", 0);
 
   apps_grid_view_->OnGestureEvent(&scroll_update);
   EXPECT_TRUE(scroll_update.handled());
   ASSERT_NE(0, GetPaginationModel()->transition().progress);
   histogram_tester.ExpectTotalCount(
-      "Apps.PaginationTransition.DragScroll.PresentationTime.ClamshellMode", 1);
+      "Apps.PaginationTransition.DragScroll.PresentationTime.TabletMode", 1);
   histogram_tester.ExpectTotalCount(
       "Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency."
-      "ClamshellMode",
+      "TabletMode",
       0);
 
   apps_grid_view_->OnGestureEvent(&scroll_end);
 
   histogram_tester.ExpectTotalCount(
       "Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency."
-      "ClamshellMode",
+      "TabletMode",
       1);
 }
 
@@ -1300,7 +1291,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, AddItemsToFolderShouldUpdateBounds) {
   app_list_folder_view()->CloseFolderPage();
 }
 
-TEST_P(AppsGridViewRTLTest, ScrollDownShouldNotExitFolder) {
+TEST_P(AppsGridViewTabletTest, ScrollDownShouldNotExitFolder) {
   const size_t kTotalItems = kMaxItemsPerFolderPage;
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
@@ -1311,22 +1302,12 @@ TEST_P(AppsGridViewRTLTest, ScrollDownShouldNotExitFolder) {
   test_api_->PressItemAt(0);
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
-  AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
-  gfx::Point apps_grid_view_origin =
-      items_grid_view->GetBoundsInScreen().origin();
-  ui::GestureEvent scroll_begin(
-      apps_grid_view_origin.x(), apps_grid_view_origin.y(), 0,
-      base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 1));
-  ui::GestureEvent scroll_update(
-      apps_grid_view_origin.x(), apps_grid_view_origin.y(), 0,
-      base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, 0, 10));
+  // Vertically scroll the folder's scroll view.
+  views::ScrollView* scroll_view =
+      app_list_folder_view()->scroll_view_for_test();
+  scroll_view->vertical_scroll_bar()->ScrollByContentsOffset(10);
 
-  // Drag down on the items grid, this should be handled by items grid view and
-  // the folder should not be closed.
-  items_grid_view->OnGestureEvent(&scroll_begin);
-  EXPECT_TRUE(scroll_begin.handled());
+  // Folder is still open.
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
 }
 
@@ -1354,7 +1335,7 @@ TEST_F(AppsGridViewTest, AppIconSelectedWhenMenuIsShown) {
 }
 
 // Tests that the context menu for app item appears at the right position.
-TEST_P(AppsGridViewRTLTest, MenuAtRightPosition) {
+TEST_P(AppsGridViewTabletTest, MenuAtRightPosition) {
   const size_t kItemsInPage = GetTilesPerPage(0);
   const size_t kPages = 2;
   model_->PopulateApps(kItemsInPage * kPages);
