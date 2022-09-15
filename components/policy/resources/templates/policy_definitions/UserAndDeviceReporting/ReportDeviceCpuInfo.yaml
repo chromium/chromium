@@ -1,0 +1,28 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Report CPU info
+desc: |-
+  This policy is set to Enabled by default. It controls the enrolled devices to report the CPU model name, architecture, and maximum clock speed (and CPU utilization and temperature for M96 and above).
+
+        Setting the policy to Disabled means enrolled devices don’t report any CPU information.
+        Exception CPU utilization and temperature reporting is controlled by <ph name="REPORT_DEVICE_HARDWARE_STATUS">ReportDeviceHardwareStatus</ph> for M95 and below.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+items:
+- caption: Enable device CPU info reporting
+  value: true
+- caption: Disable device CPU info reporting
+  value: false
+owners:
+- cros-reporting-team@google.com
+- lbaraz@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+supported_on:
+- chrome_os:81-
+tags:
+- admin-sharing
+type: main

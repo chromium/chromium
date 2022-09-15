@@ -1,0 +1,31 @@
+caption: Enable connection-related UI on the host desktop when a connection is active
+default: true
+desc: |-
+  If this policy is disabled, connection related UI (e.g. the disconnect window) will not be shown for non-curtained remote access connections. Curtained remote access sessions and remote support sessions are not affected by this policy.
+
+            This policy has no effect if it is set to true, left empty, or is not set.
+example_value: false
+features:
+  dynamic_refresh: true
+  internal_only: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+items:
+- caption: Enable connection-related UI on the remote host desktop when a connection
+    is active
+  value: true
+- caption: Disable connection-related UI on the remote host desktop when a connection
+    is active
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- joedow@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:88-
+tags: []
+type: main

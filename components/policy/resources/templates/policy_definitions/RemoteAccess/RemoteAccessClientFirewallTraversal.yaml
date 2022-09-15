@@ -1,0 +1,24 @@
+caption: Enable firewall traversal from remote access client
+deprecated: true
+desc: |-
+  This policy is no longer supported.
+            Enables usage of STUN and relay servers when connecting to a remote client.
+
+            If this setting is enabled, then this machine can discover and connect to remote host machines even if they are separated by a firewall.
+
+            If this setting is disabled and outgoing UDP connections are filtered by the firewall, then this machine can only connect to host machines within the local network.
+example_value: false
+features:
+  dynamic_refresh: true
+  platform_only: true
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- garykac@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:14-16
+- chrome_os:14-16
+tags: []
+type: main

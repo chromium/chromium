@@ -1,0 +1,30 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Report print jobs
+default: false
+desc: |-
+  Report a device's print jobs.
+
+        If the policy is set to false or left unset, the information will not be reported.
+        If set to true, the device's print jobs will be reported.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+future_on:
+- chrome_os
+items:
+- caption: Report print jobs
+  value: true
+- caption: Do not report print jobs
+  value: false
+owners:
+- cros-reporting-team@google.com
+- lbaraz@chromium.org
+- mattme@google.com
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+tags:
+- admin-sharing
+type: main

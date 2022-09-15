@@ -1,0 +1,30 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Report OS update status
+desc: |-
+  Report OS update information such as update status, platform version,
+        last update check and last reboot.
+
+        If the policy is set to false or left unset, the OS update information will not be
+        reported. If set to true, OS update information will be reported.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+items:
+- caption: Enable device OS update status reporting
+  value: true
+- caption: Disable device OS update status reporting
+  value: false
+owners:
+- cros-reporting-team@google.com
+- lbaraz@chromium.org
+- anqing@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+supported_on:
+- chrome_os:79-
+tags:
+- admin-sharing
+type: main

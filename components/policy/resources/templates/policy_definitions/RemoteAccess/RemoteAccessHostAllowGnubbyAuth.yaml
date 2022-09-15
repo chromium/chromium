@@ -1,0 +1,30 @@
+caption: Allow gnubby authentication for remote access hosts
+desc: |-
+  Setting the policy to Enabled means gnubby authentication requests will be proxied across a remote host connection.
+
+        Setting the policy to Disabled or leaving it unset means gnubby authentication requests won't be proxied.
+
+        Note that this feature requires additional components which are not available outside of the Google network environment in order to work properly.
+example_value: true
+features:
+  dynamic_refresh: true
+  internal_only: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+items:
+- caption: Enable gnubby authentication for the remote access host
+  value: true
+- caption: Disable gnubby authentication for the remote access host
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- lambroslambrou@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:35-
+tags: []
+type: main

@@ -1,0 +1,9 @@
+LoginScreenOrigins:
+  caption: Login and screen origins
+  policies:
+  - DeviceLoginScreenIsolateOrigins
+  - DeviceLoginScreenSitePerProcess
+SAML:
+  caption: SAML
+  policies:
+  - DeviceTransferSAMLCookies

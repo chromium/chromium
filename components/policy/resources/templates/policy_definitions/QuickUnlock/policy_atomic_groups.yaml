@@ -1,0 +1,13 @@
+PinUnlock:
+  caption: Pin unlock
+  policies:
+  - PinUnlockMinimumLength
+  - PinUnlockMaximumLength
+  - PinUnlockWeakPinsAllowed
+  - PinUnlockAutosubmitEnabled
+QuickUnlock:
+  caption: Quick unlock
+  policies:
+  - QuickUnlockModeAllowlist
+  - QuickUnlockModeWhitelist
+  - QuickUnlockTimeout
