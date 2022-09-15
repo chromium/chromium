@@ -122,12 +122,14 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/lo
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src-not-in-document.html [ Failure Pass ]
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src.html [ Failure Pass ]
 
-# Some issue with tampered nodes in a list
+# Very slow (~2 minutes) when DCHECKs are enabled, due to huge number of loop iterations.
+# The -3 variant additionally exposes a bug, but even once that's fixed the test is too slow.
+crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-1.html [ Skip Timeout ]
+crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-2.html [ Skip Timeout ]
+crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Skip Failure Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
-crbug.com/1357443 [ Mac ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
-crbug.com/1357443 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
