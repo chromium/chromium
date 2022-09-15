@@ -12,20 +12,31 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
+#include "components/language/core/browser/language_prefs.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 
+namespace {
+
+PrefService* GetPrefService() {
+  return ProfileManager::GetActiveUserProfile()
+      ->GetOriginalProfile()
+      ->GetPrefs();
+}
+
+}  // namespace
+
 namespace language {
-std::vector<std::string> LanguageBridge::GetULPLanguages(
+std::vector<std::string> LanguageBridge::GetULPLanguagesFromDevice(
     std::string account_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> account_name_java =
       ConvertUTF8ToJavaString(env, account_name);
   ScopedJavaLocalRef<jobjectArray> languages_java =
-      Java_LanguageBridge_getULPLanguages(env, account_name_java);
+      Java_LanguageBridge_getULPLanguagesFromDevice(env, account_name_java);
 
   const int num_langs = (*env).GetArrayLength(languages_java.obj());
   std::vector<std::string> languages;
@@ -39,20 +50,9 @@ std::vector<std::string> LanguageBridge::GetULPLanguages(
 }
 }  // namespace language
 
-static ScopedJavaLocalRef<jobjectArray> JNI_LanguageBridge_GetULPModelLanguages(
+// Gets the ULP languages from the Android only preference.
+static ScopedJavaLocalRef<jobjectArray> JNI_LanguageBridge_GetULPFromPreference(
     JNIEnv* env) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  language::LanguageModel* language_model =
-      LanguageModelManagerFactory::GetForBrowserContext(profile)
-          ->GetLanguageModel(language::LanguageModelManager::ModelType::ULP);
-
-  std::vector<std::string> languages;
-  if (language_model) {
-    std::vector<language::LanguageModel::LanguageDetails> languageDetails =
-        language_model->GetLanguages();
-    for (const auto& details : languageDetails) {
-      languages.push_back(details.lang_code);
-    }
-  }
-  return ToJavaArrayOfStrings(env, languages);
+  return ToJavaArrayOfStrings(
+      env, language::LanguagePrefs(GetPrefService()).GetULPLanguages());
 }

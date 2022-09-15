@@ -29,7 +29,7 @@ public class LanguageBridge {
      */
     public static @AppLanguagePromoDialog.TopULPMatchType int isTopULPBaseLanguage(
             String language) {
-        LinkedHashSet<String> ulpLanguages = getULPModelLanguages();
+        LinkedHashSet<String> ulpLanguages = getULPFromPreference();
 
         Iterator<String> ulpIterator = ulpLanguages.iterator();
         if (!ulpIterator.hasNext()) return AppLanguagePromoDialog.TopULPMatchType.EMPTY;
@@ -39,17 +39,17 @@ public class LanguageBridge {
     }
 
     /**
-     * @return The ordered set of ULP languages saved in the ULP Language Model
+     * @return The ordered set of ULP languages as saved in the Chrome preference.
      */
-    public static LinkedHashSet<String> getULPModelLanguages() {
-        return new LinkedHashSet<>(Arrays.asList(LanguageBridgeJni.get().getULPModelLanguages()));
+    public static LinkedHashSet<String> getULPFromPreference() {
+        return new LinkedHashSet<>(Arrays.asList(LanguageBridgeJni.get().getULPFromPreference()));
     }
 
     /**
      * Blocking call used by native ULPLanguageModel to get device ULP languages.
      */
     @CalledByNative
-    public static String[] getULPLanguages(String accountName) {
+    public static String[] getULPLanguagesFromDevice(String accountName) {
         LanguageProfileDelegateImpl delegate = new LanguageProfileDelegateImpl();
         LanguageProfileController controller = new LanguageProfileController(delegate);
 
@@ -62,6 +62,6 @@ public class LanguageBridge {
 
     @NativeMethods
     interface Natives {
-        String[] getULPModelLanguages();
+        String[] getULPFromPreference();
     }
 }

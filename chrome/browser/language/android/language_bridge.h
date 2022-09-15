@@ -11,8 +11,9 @@
 namespace language {
 class LanguageBridge {
  public:
-  // Makes a blocking call to get ULP languages for |account_name|
-  static std::vector<std::string> GetULPLanguages(std::string account_name);
+  // Makes a blocking call to get ULP languages for |account_name| from device.
+  static std::vector<std::string> GetULPLanguagesFromDevice(
+      std::string account_name);
 };
 
 }  // namespace language

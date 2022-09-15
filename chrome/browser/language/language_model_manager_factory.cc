@@ -127,7 +127,7 @@ void PrepareLanguageModels(Profile* const profile,
 #if BUILDFLAG(IS_ANDROID)
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&language::LanguageBridge::GetULPLanguages,
+      base::BindOnce(&language::LanguageBridge::GetULPLanguagesFromDevice,
                      profile->GetProfileUserName()),
       base::BindOnce(&CreateAndAddULPLanguageModel, profile));
 #endif

@@ -22,7 +22,7 @@ public class FakeLanguageBridgeJni implements LanguageBridge.Natives {
     }
 
     @Override
-    public String[] getULPModelLanguages() {
+    public String[] getULPFromPreference() {
         return mULPLanguages.toArray(new String[mULPLanguages.size()]);
     }
 }
