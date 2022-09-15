@@ -98,8 +98,10 @@ export class HoldingSpaceUtil {
     // If the welcome banner was not shown prior to the first pin, record zero.
     const timeOfFirstWelcomeBannerShow =
         await HoldingSpaceUtil.getTimeOfFirstWelcomeBannerShow_() || now;
+    // We trim the max value to be 2^31 - 1, which is the maximum integer value
+    // that histograms can record.
     const timeFromFirstWelcomeBannerShowToFirstPin =
-        now - timeOfFirstWelcomeBannerShow;
+        Math.min(2 ** 31 - 1, now - timeOfFirstWelcomeBannerShow);
 
     // The histogram will use min values of 1 second and max of 1 day. Note
     // that it's permissible to record values smaller/larger than the min/max
