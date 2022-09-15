@@ -5,6 +5,7 @@
 module gfx.mojom;
 
 import "mojo/public/mojom/base/wstring.mojom";
+import "skia/public/mojom/skcolorspace_primaries.mojom";
 
 // Subset of information collected from DXGI_OUTPUT_DESC1.
 struct DXGIOutputDesc {
@@ -12,6 +13,9 @@ struct DXGIOutputDesc {
 
   // Set to true if the display has HDR currently enabled.
   bool hdr_enabled;
+
+  // The color volume of the display.
+  skia.mojom.SkColorSpacePrimaries primaries;
 
   // The minimum luminance, in nits, that the display attached to this output is
   // capable of rendering.

@@ -395,7 +395,10 @@ mojom("native_handle_types") {
 if (is_win) {
   mojom("dxgi_info") {
     sources = [ "dxgi_info.mojom" ]
-    public_deps = [ "//mojo/public/mojom/base" ]
+    public_deps = [
+      "//mojo/public/mojom/base",
+      "//skia/public/mojom",
+    ]
   }
 }
 

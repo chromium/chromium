@@ -5,6 +5,7 @@
 #ifndef SKIA_PUBLIC_MOJOM_SKCOLORSPACE_PRIMARIES_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_SKCOLORSPACE_PRIMARIES_MOJOM_TRAITS_H_
 
+#include "skia/ext/skcolorspace_primaries.h"
 #include "skia/public/mojom/skcolorspace_primaries.mojom.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 

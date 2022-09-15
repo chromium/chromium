@@ -239,9 +239,21 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
 // HDR spaces and given |sdr_white_level|.
 gfx::DisplayColorSpaces GetDisplayColorSpacesForHdr(
     float sdr_white_level,
-    float hdr_max_luminance_relative) {
+    const gfx::mojom::DXGIOutputDesc* dxgi_output_desc) {
   auto color_spaces =
       CreateDisplayColorSpaces(gfx::ColorSpace::CreateSRGB(), sdr_white_level);
+
+  // Set the primaries and the HDR max luminance from the DXGIOutputDesc.
+  float hdr_max_luminance_relative = 0.f;
+  if (dxgi_output_desc) {
+    if (dxgi_output_desc->hdr_enabled) {
+      hdr_max_luminance_relative =
+          dxgi_output_desc->max_luminance / sdr_white_level;
+    }
+    color_spaces.SetPrimaries(dxgi_output_desc->primaries);
+  }
+  hdr_max_luminance_relative =
+      std::max(hdr_max_luminance_relative, kMinHDRCapableMaxLuminanceRelative);
   color_spaces.SetHDRMaxLuminanceRelative(hdr_max_luminance_relative);
 
   // This will map to DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709. In that space,
@@ -315,18 +327,10 @@ Display CreateDisplayFromDisplayInfo(
   if (HasForceDisplayColorProfile()) {
     color_spaces = GetForcedDisplayColorSpaces();
   } else if (hdr_enabled_on_any_display) {
-    float sdr_white_level = display_info.sdr_white_level();
-    float hdr_max_luminance_relative = 0.f;
-    if (dxgi_output_desc && dxgi_output_desc->hdr_enabled) {
-      hdr_max_luminance_relative =
-          dxgi_output_desc->max_luminance / sdr_white_level;
-    }
-    hdr_max_luminance_relative = std::max(hdr_max_luminance_relative,
-                                          kMinHDRCapableMaxLuminanceRelative);
     // TODO(https://crbug.com/1339352): Do not allow non-HDR-enabled displays
     // to use HDR color spaces.
-    color_spaces = GetDisplayColorSpacesForHdr(sdr_white_level,
-                                               hdr_max_luminance_relative);
+    color_spaces = GetDisplayColorSpacesForHdr(display_info.sdr_white_level(),
+                                               dxgi_output_desc);
   } else {
     color_spaces = CreateDisplayColorSpaces(
         color_profile_reader->GetDisplayColorSpace(display.id()),

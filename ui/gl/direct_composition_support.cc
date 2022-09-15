@@ -645,6 +645,14 @@ gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo() {
       result_output->device_name = desc.DeviceName;
       result_output->hdr_enabled =
           desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+      result_output->primaries.fRX = desc.RedPrimary[0];
+      result_output->primaries.fRY = desc.RedPrimary[1];
+      result_output->primaries.fGX = desc.GreenPrimary[0];
+      result_output->primaries.fGY = desc.GreenPrimary[1];
+      result_output->primaries.fBX = desc.BluePrimary[0];
+      result_output->primaries.fBY = desc.BluePrimary[1];
+      result_output->primaries.fWX = desc.WhitePoint[0];
+      result_output->primaries.fWY = desc.WhitePoint[1];
       result_output->min_luminance = desc.MinLuminance;
       result_output->max_luminance = desc.MaxLuminance;
       result_output->max_full_frame_luminance = desc.MaxFullFrameLuminance;
