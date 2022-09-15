@@ -21,6 +21,7 @@ class RegisterAdBeaconBindings;
 class ReportBindings;
 class SetBidBindings;
 class SetPriorityBindings;
+class SetPrioritySignalsOverrideBindings;
 
 // Base class for bindings used with contexts used with ContextRecycler.
 // The expected lifecycle is:
@@ -73,6 +74,11 @@ class CONTENT_EXPORT ContextRecycler {
     return set_priority_bindings_.get();
   }
 
+  void AddSetPrioritySignalsOverrideBindings();
+  SetPrioritySignalsOverrideBindings* set_priority_signals_override_bindings() {
+    return set_priority_signals_override_bindings_.get();
+  }
+
  private:
   friend class ContextRecyclerScope;
 
@@ -95,6 +101,8 @@ class CONTENT_EXPORT ContextRecycler {
   std::unique_ptr<ReportBindings> report_bindings_;
   std::unique_ptr<SetBidBindings> set_bid_bindings_;
   std::unique_ptr<SetPriorityBindings> set_priority_bindings_;
+  std::unique_ptr<SetPrioritySignalsOverrideBindings>
+      set_priority_signals_override_bindings_;
 
   // everything here is owned by one of the unique_ptr's above.
   std::vector<Bindings*> bindings_list_;

@@ -14,6 +14,7 @@
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
+#include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "v8/include/v8-template.h"
 
 namespace auction_worklet {
@@ -63,6 +64,13 @@ void ContextRecycler::AddSetPriorityBindings() {
   DCHECK(!set_priority_bindings_);
   set_priority_bindings_ = std::make_unique<SetPriorityBindings>(v8_helper_);
   AddBindings(set_priority_bindings_.get());
+}
+
+void ContextRecycler::AddSetPrioritySignalsOverrideBindings() {
+  DCHECK(!set_priority_signals_override_bindings_);
+  set_priority_signals_override_bindings_ =
+      std::make_unique<SetPrioritySignalsOverrideBindings>(v8_helper_);
+  AddBindings(set_priority_signals_override_bindings_.get());
 }
 
 void ContextRecycler::AddBindings(Bindings* bindings) {

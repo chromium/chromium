@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -17,6 +18,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
@@ -122,6 +124,17 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Update the interest group priority.
   void SetInterestGroupPriority(const blink::InterestGroupKey& group_key,
                                 double priority);
+
+  // Merges `update_priority_signals_overrides` with the currently stored
+  // priority signals of `group`. Doesn't take the cached overrides from the
+  // caller, which may already have them, in favor of reading them from the
+  // database, as the values may have been updated on disk since they were read
+  // by the caller.
+  void UpdateInterestGroupPriorityOverrides(
+      const blink::InterestGroupKey& group_key,
+      base::flat_map<std::string,
+                     auction_worklet::mojom::PrioritySignalsDoublePtr>
+          update_priority_signals_overrides);
 
   std::vector<StorageInterestGroup> GetAllInterestGroupsUnfilteredForTesting();
 

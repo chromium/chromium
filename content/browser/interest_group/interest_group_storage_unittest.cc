@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -1654,6 +1655,102 @@ TEST_F(InterestGroupStorageTest, SetGetLastKAnonReported) {
 
   last_report = storage->GetLastKAnonymityReported(group_name_key);
   EXPECT_EQ(last_report, expected_last_report);
+}
+
+TEST_F(InterestGroupStorageTest, UpdatePrioritySignalsOverrides) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.test"));
+  const char kName[] = "Name";
+  const blink::InterestGroupKey kInterestGroupKey(kOrigin, kName);
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  // Join a group without any priority signals overrides.
+  InterestGroup original_group = NewInterestGroup(kOrigin, kName);
+  // Set priority vector, so can make sure it's never modified.
+  original_group.priority_vector = {{"key1", 0}};
+  storage->JoinInterestGroup(original_group,
+                             /*main_frame_joining_url=*/kOrigin.GetURL());
+  std::vector<StorageInterestGroup> storage_interest_groups =
+      storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_TRUE(original_group.IsEqualForTesting(
+      storage_interest_groups[0].interest_group));
+
+  // Updating a group that has no overrides should add an overrides maps and set
+  // the corresponding keys.
+  base::flat_map<std::string, auction_worklet::mojom::PrioritySignalsDoublePtr>
+      update1;
+  // Can't put these in an inlined initializer list, since those must use
+  // copyable types.
+  update1.emplace("key1",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(0));
+  update1.emplace("key2", auction_worklet::mojom::PrioritySignalsDoublePtr());
+  update1.emplace("key3",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(-4));
+  update1.emplace("key4",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(5));
+  storage->UpdateInterestGroupPriorityOverrides(kInterestGroupKey,
+                                                std::move(update1));
+  storage_interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_EQ(kOrigin, storage_interest_groups[0].interest_group.owner);
+  EXPECT_EQ(kName, storage_interest_groups[0].interest_group.name);
+  EXPECT_EQ(original_group.priority_vector,
+            storage_interest_groups[0].interest_group.priority_vector);
+  EXPECT_EQ(
+      (base::flat_map<std::string, double>{
+          {"key1", 0}, {"key3", -4}, {"key4", 5}}),
+      storage_interest_groups[0].interest_group.priority_signals_overrides);
+
+  // Updating a group that has overrides should modify the existing overrides.
+  base::flat_map<std::string, auction_worklet::mojom::PrioritySignalsDoublePtr>
+      update2;
+  // Can't put these in an inlined initializer list, since those must use
+  // copyable types.
+  update2.emplace("key1", auction_worklet::mojom::PrioritySignalsDoublePtr());
+  update2.emplace("key2",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(6));
+  update2.emplace("key3",
+                  auction_worklet::mojom::PrioritySignalsDouble::New(0));
+  storage->UpdateInterestGroupPriorityOverrides(kInterestGroupKey,
+                                                std::move(update2));
+  storage_interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_EQ(kOrigin, storage_interest_groups[0].interest_group.owner);
+  EXPECT_EQ(kName, storage_interest_groups[0].interest_group.name);
+  EXPECT_EQ(original_group.priority_vector,
+            storage_interest_groups[0].interest_group.priority_vector);
+  EXPECT_EQ(
+      (base::flat_map<std::string, double>{
+          {"key2", 6}, {"key3", 0}, {"key4", 5}}),
+      storage_interest_groups[0].interest_group.priority_signals_overrides);
+
+  // Try and set overrides to make an InterestGroup that is too big. Update
+  // should fail, and the InterestGroup should be unmodified.
+  std::vector<
+      std::pair<std::string, auction_worklet::mojom::PrioritySignalsDoublePtr>>
+      overrides_too_big_vector;
+  for (size_t i = 0; i < blink::mojom::kMaxInterestGroupSize / sizeof(double);
+       ++i) {
+    overrides_too_big_vector.emplace_back(
+        base::NumberToString(i),
+        auction_worklet::mojom::PrioritySignalsDouble::New(i));
+  }
+  storage->UpdateInterestGroupPriorityOverrides(
+      kInterestGroupKey,
+      base::flat_map<std::string,
+                     auction_worklet::mojom::PrioritySignalsDoublePtr>(
+          std::move(overrides_too_big_vector)));
+  storage_interest_groups = storage->GetInterestGroupsForOwner(kOrigin);
+  ASSERT_EQ(1u, storage_interest_groups.size());
+  EXPECT_EQ(kOrigin, storage_interest_groups[0].interest_group.owner);
+  EXPECT_EQ(kName, storage_interest_groups[0].interest_group.name);
+  EXPECT_EQ(original_group.priority_vector,
+            storage_interest_groups[0].interest_group.priority_vector);
+  EXPECT_EQ(
+      (base::flat_map<std::string, double>{
+          {"key2", 6}, {"key3", 0}, {"key4", 5}}),
+      storage_interest_groups[0].interest_group.priority_signals_overrides);
 }
 
 }  // namespace content

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -202,6 +203,14 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Update the interest group priority.
   void SetInterestGroupPriority(const blink::InterestGroupKey& group,
                                 double priority);
+
+  // Merges `update_priority_signals_overrides` with the previous priority
+  // signals of `group`.
+  void UpdateInterestGroupPriorityOverrides(
+      const blink::InterestGroupKey& group_key,
+      base::flat_map<std::string,
+                     auction_worklet::mojom::PrioritySignalsDoublePtr>
+          update_priority_signals_overrides);
 
   // Clears the InterestGroupPermissionsChecker's cache of the results of
   // .well-known fetches.

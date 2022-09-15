@@ -94,6 +94,14 @@ struct BidderWorkletBid {
   mojo_base.mojom.TimeDelta bid_duration;
 };
 
+// An optional double value. GenerateBid() returns them as values its
+// `update_priority_signals_overrides` map. Since Mojo doesn't support optional
+// primitive types, this struct is needed to handle passing them. Don't need to
+// have a `has_value` field, since this struct itself can be made optional.
+struct PrioritySignalsDouble {
+  double value;
+};
+
 // Single use client for each GenerateBid() call. Allows deferring generating
 // bids until after a bidder's interest groups have all received priority
 // vectors, which allows for cancelling generate bid calls from lower priority
@@ -155,10 +163,16 @@ interface GenerateBidClient {
   //
   // `set_priority` The value of the updated priority for this interest group.
   //  This priority should be applied to the interest group after the auction.
+  //  The priority is not changed if null.
+  //  TODO(https://crbug.com/657632): Update to use `double?` type if/when
+  //  optional integer support is added to Mojo.
   //
-  // `has_set_priority` True to indicate the worklet has requested the an
-  //  update to the interest group priority.
-  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  // `update_priority_signals_overrides` A map of new values to be written to
+  //  the interest group's priorityOverrides map. Null values mean to delete the
+  //  corresponding value, if present. Values with keys not in the map are
+  //  preserved.
+  //  TODO(https://crbug.com/657632): Update to use `double?` type if/when
+  //  optional integer support is added to Mojo.
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
@@ -174,6 +188,7 @@ interface GenerateBidClient {
       url.mojom.Url? debug_win_report_url,
       double set_priority,
       bool has_set_priority,
+      map<string, PrioritySignalsDouble?> update_priority_signals_overrides,
       array<PrivateAggregationRequest> pa_requests,
       array<string> errors);
 };

@@ -1023,6 +1023,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
           /*debug_win_report_url=*/absl::nullopt,
           /*set_priority=*/0,
           /*has_set_priority=*/false,
+          /*update_priority_signals_overrides=*/
+          base::flat_map<std::string,
+                         auction_worklet::mojom::PrioritySignalsDoublePtr>(),
           /*pa_requests=*/std::move(pa_requests),
           /*errors=*/std::vector<std::string>());
       return;
@@ -1036,6 +1039,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
         debug_win_report_url,
         /*set_priority=*/0,
         /*has_set_priority=*/false,
+        /*update_priority_signals_overrides=*/
+        base::flat_map<std::string,
+                       auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
         /*errors=*/std::vector<std::string>());
   }
@@ -1793,6 +1799,23 @@ class AuctionRunnerTest : public testing::Test,
     }
 
     auction_run_loop_->Quit();
+  }
+
+  // Returns the specified interest group.
+  absl::optional<StorageInterestGroup> GetInterestGroup(
+      const url::Origin& owner,
+      const std::string& name) {
+    base::RunLoop run_loop;
+    absl::optional<StorageInterestGroup> out;
+    interest_group_manager_->GetInterestGroup(
+        {owner, name},
+        base::BindLambdaForTesting(
+            [&](absl::optional<StorageInterestGroup> interest_group) {
+              out = std::move(interest_group);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return out;
   }
 
   StorageInterestGroup MakeInterestGroup(
@@ -8707,6 +8730,83 @@ TEST_F(AuctionRunnerTest,
                   /*expected_interest_groups=*/2,
                   /*expected_owners=*/1,
                   /*expected_sellers=*/1);
+}
+
+TEST_F(AuctionRunnerTest, SetPrioritySignalsOverride) {
+  const char kBidderScript[] = R"(
+    function generateBid() {
+      setPrioritySignalsOverride("key", 3);
+      return {bid:1, render:"https://ad1.com/"};
+    }
+    function reportWin() {}
+  )";
+
+  const char kSellerScript[] = R"(
+    function scoreAd() {
+      return {desirability: 1};
+    }
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidderScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  ASSERT_TRUE(result_.winning_group_id);
+  EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+
+  auto storage_interest_group = GetInterestGroup(kBidder1, kBidder1Name);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ((base::flat_map<std::string, double>{{"key", 3}}),
+            storage_interest_group->interest_group.priority_signals_overrides);
+}
+
+// If there's no valid bid, setPrioritySignalsOverride() should still be
+// respected.
+TEST_F(AuctionRunnerTest, SetPrioritySignalsOverrideNoBid) {
+  const char kBidderScript[] = R"(
+    function generateBid() {
+      setPrioritySignalsOverride("key", 3);
+      return {bid:0, render:"https://ad1.com/"};
+    }
+    function reportWin() {}
+  )";
+
+  const char kSellerScript[] = R"(
+    function scoreAd() {
+      return {desirability: 1};
+    }
+    function reportResult() {}
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         kBidderScript);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_url);
+
+  auto storage_interest_group = GetInterestGroup(kBidder1, kBidder1Name);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ((base::flat_map<std::string, double>{{"key", 3}}),
+            storage_interest_group->interest_group.priority_signals_overrides);
 }
 
 TEST_F(AuctionRunnerTest, Abort) {

@@ -230,6 +230,28 @@ void MergePrioritySignalsOverrides(
   }
 }
 
+// Same as above, but takes a map with PrioritySignalsDoublePtrs instead of
+// absl::optional<double>s. This isn't much more code than it takes to convert
+// the flat_map of PrioritySignalsDoublePtr to one of optionals, so just
+// duplicate the logic.
+void MergePrioritySignalsOverrides(
+    const base::flat_map<std::string,
+                         auction_worklet::mojom::PrioritySignalsDoublePtr>&
+        update_data,
+    absl::optional<base::flat_map<std::string, double>>&
+        priority_signals_overrides) {
+  if (!priority_signals_overrides)
+    priority_signals_overrides.emplace();
+  for (const auto& pair : update_data) {
+    if (!pair.second) {
+      priority_signals_overrides->erase(pair.first);
+      continue;
+    }
+    priority_signals_overrides->insert_or_assign(pair.first,
+                                                 pair.second->value);
+  }
+}
+
 // Adds indices to the `interest_group` table. Called after the table has been
 // created.
 bool CreateInterestGroupIndices(sql::Database& db) {
@@ -850,9 +872,9 @@ bool DoClearClusteredBiddingGroups(sql::Database& db,
 bool DoLoadInterestGroup(sql::Database& db,
                          const blink::InterestGroupKey& group_key,
                          blink::InterestGroup& group,
-                         url::Origin* joining_origin,
-                         base::Time* exact_join_time,
-                         base::Time* last_updated) {
+                         url::Origin* joining_origin = nullptr,
+                         base::Time* exact_join_time = nullptr,
+                         base::Time* last_updated = nullptr) {
   // clang-format off
   sql::Statement load(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -1796,6 +1818,31 @@ bool DoSetInterestGroupPriority(sql::Database& db,
   return set_priority_sql.Run();
 }
 
+bool DoSetInterestGroupPrioritySignalsOverrides(
+    sql::Database& db,
+    const blink::InterestGroupKey& group_key,
+    const absl::optional<base::flat_map<std::string, double>>&
+        priority_signals_overrides) {
+  // clang-format off
+  sql::Statement update_priority_signals_overrides_sql(
+      db.GetCachedStatement(SQL_FROM_HERE,
+          "UPDATE interest_groups "
+          "SET priority_signals_overrides=? "
+          "WHERE owner=? AND name=?"));
+  // clang-format on
+  if (!update_priority_signals_overrides_sql.is_valid()) {
+    DLOG(ERROR) << "SetPrioritySignalsOverrides SQL statement did not compile.";
+    return false;
+  }
+  update_priority_signals_overrides_sql.Reset(true);
+  update_priority_signals_overrides_sql.BindString(
+      0, Serialize(priority_signals_overrides));
+  update_priority_signals_overrides_sql.BindString(1,
+                                                   Serialize(group_key.owner));
+  update_priority_signals_overrides_sql.BindString(2, group_key.name);
+  return update_priority_signals_overrides_sql.Run();
+}
+
 bool DeleteOldJoins(sql::Database& db, base::Time cutoff) {
   sql::Statement del_join_history(db.GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM join_history WHERE join_time <= ?"));
@@ -2329,6 +2376,33 @@ void InterestGroupStorage::SetInterestGroupPriority(
 
   if (!DoSetInterestGroupPriority(*db_, group_key, priority)) {
     DLOG(ERROR) << "Could not set interest group priority: "
+                << db_->GetErrorMessage();
+  }
+}
+
+void InterestGroupStorage::UpdateInterestGroupPriorityOverrides(
+    const blink::InterestGroupKey& group_key,
+    base::flat_map<std::string,
+                   auction_worklet::mojom::PrioritySignalsDoublePtr>
+        update_priority_signals_overrides) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized())
+    return;
+
+  blink::InterestGroup group;
+  if (!DoLoadInterestGroup(*db_, group_key, group))
+    return;
+
+  MergePrioritySignalsOverrides(update_priority_signals_overrides,
+                                group.priority_signals_overrides);
+  if (!group.IsValid()) {
+    // TODO(mmenke): Report errors to devtools.
+    return;
+  }
+
+  if (!DoSetInterestGroupPrioritySignalsOverrides(
+          *db_, group_key, group.priority_signals_overrides)) {
+    DLOG(ERROR) << "Could not set interest group priority signals overrides: "
                 << db_->GetErrorMessage();
   }
 }

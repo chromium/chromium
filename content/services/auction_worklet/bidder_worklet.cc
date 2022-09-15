@@ -30,6 +30,7 @@
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
+#include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
@@ -512,6 +513,7 @@ void BidderWorklet::V8State::GenerateBid(
     fresh_context_recycler->AddPrivateAggregationBindings();
     fresh_context_recycler->AddSetBidBindings();
     fresh_context_recycler->AddSetPriorityBindings();
+    fresh_context_recycler->AddSetPrioritySignalsOverrideBindings();
     context_recycler = fresh_context_recycler.get();
   }
 
@@ -721,8 +723,9 @@ void BidderWorklet::V8State::GenerateBid(
     // the method timed out and no intermediate result was given through
     // `setBid()`, return an error. Keep debug loss reports and Private
     // Aggregation API requests since `generateBid()` might use them to detect
-    // script timeout or failures. Keep any set priority because an interest
-    // group may want to update them even when not bidding.
+    // script timeout or failures. Keep any set priority and set priority
+    // overrides because an interest group may want to update them even when not
+    // bidding.
     user_thread_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -732,6 +735,8 @@ void BidderWorklet::V8State::GenerateBid(
                 ->TakeLossReportUrl(),
             /*debug_win_report_url=*/absl::nullopt,
             context_recycler->set_priority_bindings()->set_priority(),
+            context_recycler->set_priority_signals_override_bindings()
+                ->TakeSetPrioritySignalsOverrides(),
             context_recycler->private_aggregation_bindings()
                 ->TakePrivateAggregationRequests(),
             std::move(errors_out)));
@@ -746,6 +751,8 @@ void BidderWorklet::V8State::GenerateBid(
           context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
           context_recycler->for_debugging_only_bindings()->TakeWinReportUrl(),
           context_recycler->set_priority_bindings()->set_priority(),
+          context_recycler->set_priority_signals_override_bindings()
+              ->TakeSetPrioritySignalsOverrides(),
           context_recycler->private_aggregation_bindings()
               ->TakePrivateAggregationRequests(),
           std::move(errors_out)));
@@ -797,13 +804,16 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), mojom::BidderWorkletBidPtr(),
-                     /*bidding_signals_data_version=*/absl::nullopt,
-                     /*debug_loss_report_url=*/absl::nullopt,
-                     /*debug_win_report_url=*/absl::nullopt,
-                     /*set_priority=*/absl::nullopt,
-                     /*update_priority_signals_overrides=*/
-                     PrivateAggregationRequests(), std::move(error_msgs)));
+      base::BindOnce(
+          std::move(callback), mojom::BidderWorkletBidPtr(),
+          /*bidding_signals_data_version=*/absl::nullopt,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt,
+          /*set_priority=*/absl::nullopt,
+          /*update_priority_signals_overrides=*/
+          base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>(),
+          /*update_priority_signals_overrides=*/
+          PrivateAggregationRequests(), std::move(error_msgs)));
 }
 
 void BidderWorklet::ResumeIfPaused() {
@@ -1064,6 +1074,8 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     absl::optional<GURL> debug_loss_report_url,
     absl::optional<GURL> debug_win_report_url,
     absl::optional<double> set_priority,
+    base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
+        update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -1078,7 +1090,8 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       std::move(bid), bidding_signals_data_version.value_or(0),
       bidding_signals_data_version.has_value(), debug_loss_report_url,
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
-      std::move(pa_requests), error_msgs);
+      std::move(update_priority_signals_overrides), std::move(pa_requests),
+      error_msgs);
   generate_bid_tasks_.erase(task);
 }
 

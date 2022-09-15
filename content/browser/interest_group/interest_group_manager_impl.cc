@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -492,6 +493,15 @@ void InterestGroupManagerImpl::SetInterestGroupPriority(
     double priority) {
   impl_.AsyncCall(&InterestGroupStorage::SetInterestGroupPriority)
       .WithArgs(group_key, priority);
+}
+
+void InterestGroupManagerImpl::UpdateInterestGroupPriorityOverrides(
+    const blink::InterestGroupKey& group_key,
+    base::flat_map<std::string,
+                   auction_worklet::mojom::PrioritySignalsDoublePtr>
+        update_priority_signals_overrides) {
+  impl_.AsyncCall(&InterestGroupStorage::UpdateInterestGroupPriorityOverrides)
+      .WithArgs(group_key, std::move(update_priority_signals_overrides));
 }
 
 void InterestGroupManagerImpl::QueueKAnonymityUpdateForInterestGroup(

@@ -64,6 +64,8 @@ source_set("auction_worklet") {
     "set_bid_bindings.h",
     "set_priority_bindings.cc",
     "set_priority_bindings.h",
+    "set_priority_signals_override_bindings.cc",
+    "set_priority_signals_override_bindings.h",
     "trusted_signals.cc",
     "trusted_signals.h",
     "trusted_signals_request_manager.cc",

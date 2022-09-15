@@ -223,6 +223,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
         absl::optional<GURL> debug_loss_report_url,
         absl::optional<GURL> debug_win_report_url,
         absl::optional<double> set_priority,
+        base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
+            update_priority_signals_overrides,
         PrivateAggregationRequests pa_requests,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
@@ -352,6 +354,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
       absl::optional<GURL> debug_loss_report_url,
       absl::optional<GURL> debug_win_report_url,
       absl::optional<double> set_priority,
+      base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
+          update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       std::vector<std::string> error_msgs);
 

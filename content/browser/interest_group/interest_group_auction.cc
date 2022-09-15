@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <string>
 #include <utility>
@@ -324,6 +325,9 @@ class InterestGroupAuction::BuyerHelper
       const absl::optional<GURL>& debug_win_report_url,
       double set_priority,
       bool has_set_priority,
+      base::flat_map<std::string,
+                     auction_worklet::mojom::PrioritySignalsDoublePtr>
+          update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       const std::vector<std::string>& errors) override {
     OnGenerateBidCompleteInternal(
@@ -331,7 +335,8 @@ class InterestGroupAuction::BuyerHelper
         std::move(mojo_bid), bidding_signals_data_version,
         has_bidding_signals_data_version, debug_loss_report_url,
         debug_win_report_url, set_priority, has_set_priority,
-        std::move(pa_requests), errors);
+        std::move(update_priority_signals_overrides), std::move(pa_requests),
+        errors);
   }
 
   // Closes all Mojo pipes and release all weak pointers.
@@ -508,6 +513,7 @@ class InterestGroupAuction::BuyerHelper
                                   /*debug_win_report_url=*/absl::nullopt,
                                   /*set_priority=*/0,
                                   /*has_set_priority=*/false,
+                                  /*update_priority_signals_overrides=*/{},
                                   /*pa_requests=*/{},
                                   /*errors=*/{});
   }
@@ -598,6 +604,7 @@ class InterestGroupAuction::BuyerHelper
           /*debug_win_report_url=*/absl::nullopt,
           /*set_priority=*/0,
           /*has_set_priority=*/false,
+          /*update_priority_signals_overrides=*/{},
           /*pa_requests=*/{},
           /*errors=*/{});
       // If this was the last bidder, and it was filtered out, there's nothing
@@ -684,6 +691,9 @@ class InterestGroupAuction::BuyerHelper
       const absl::optional<GURL>& debug_win_report_url,
       double set_priority,
       bool has_set_priority,
+      base::flat_map<std::string,
+                     auction_worklet::mojom::PrioritySignalsDoublePtr>
+          update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
       const std::vector<std::string>& errors) {
     DCHECK(!state->made_bid);
@@ -701,6 +711,29 @@ class InterestGroupAuction::BuyerHelper
           blink::InterestGroupKey(state->bidder.interest_group.owner,
                                   state->bidder.interest_group.name),
           set_priority);
+    }
+
+    if (!update_priority_signals_overrides.empty()) {
+      // Reject infinite values. The worklet code should prevent this, but the
+      // process may be compromised. This is largely preventing the owner from
+      // messing up its own prioritization function, but there could be issues
+      // around serializing infinite values to persist to disk as well.
+      //
+      // Note that the data received here has no effect on the result of the
+      // auction, so just reject the data and continue with the auction to keep
+      // the code simple.
+      if (base::ranges::any_of(
+              update_priority_signals_overrides, [](const auto& pair) {
+                return pair.second && !std::isfinite(pair.second->value);
+              })) {
+        generate_bid_client_receiver_set_.ReportBadMessage(
+            "Invalid priority signals overrides");
+      } else {
+        auction_->interest_group_manager_->UpdateInterestGroupPriorityOverrides(
+            blink::InterestGroupKey(state->bidder.interest_group.owner,
+                                    state->bidder.interest_group.name),
+            std::move(update_priority_signals_overrides));
+      }
     }
 
     DCHECK(base::ranges::none_of(
