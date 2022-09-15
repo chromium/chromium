@@ -29,9 +29,18 @@ source_set("price_notifications_ui") {
   sources = [
     "price_notifications_consumer.h",
     "price_notifications_navigation_commands.h",
+    "price_notifications_view_controller.h",
+    "price_notifications_view_controller.mm",
     "price_notifications_view_controller_delegate.h",
   ]
-  deps = [ "//ios/chrome/browser/ui/table_view" ]
+  deps = [
+    ":constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ui/base",
+  ]
 }
 
 source_set("constants") {

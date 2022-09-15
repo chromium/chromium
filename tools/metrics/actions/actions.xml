@@ -18939,6 +18939,23 @@ should be able to be added at any place in this file.
   <description>User closes the tab while preview page is loaded.</description>
 </action>
 
+<action name="MobilePriceNotificationsSettingsBack">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when user goes back from Price Notifications Settings UI to root
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobilePriceNotificationsSettingsClose">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>
+    Reported when Price Notifications Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobilePrivacySettingsBack">
   <owner>msramek@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
