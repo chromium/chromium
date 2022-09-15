@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/ui/main/scene_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,6 +63,23 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  switch (level) {
+    case SceneActivationLevelUnattached:
+      // no-op.
+      break;
+    case SceneActivationLevelBackground:
+      // no-op.
+      break;
+    case SceneActivationLevelForegroundInactive:
+      // no-op.
+      break;
+    case SceneActivationLevelForegroundActive:
+      [self updateUserDefaults];
+      if ([self isUserEngaged]) {
+        [self requestPromoDisplay];
+      }
+      break;
+  }
 }
 
 #pragma mark - Getters
