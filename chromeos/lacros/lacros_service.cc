@@ -701,6 +701,14 @@ void LacrosService::BindRemoteAppsLacrosBridge(
       std::move(receiver));
 }
 
+void LacrosService::BindScreenManagerReceiver(
+    mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
+  DCHECK(IsAvailable<crosapi::mojom::ScreenManager>());
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::ScreenManager>,
+      &crosapi::mojom::Crosapi::BindScreenManager>(std::move(pending_receiver));
+}
+
 void LacrosService::BindSensorHalClient(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
   DCHECK(IsSensorHalClientAvailable());

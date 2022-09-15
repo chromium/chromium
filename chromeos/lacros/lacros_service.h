@@ -160,6 +160,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // available. This method can only be called from the affine sequence (main
   // thread). The returned remote can only be used on the affine sequence (main
   // thread).
+  // Note that the remote will not be owned by the caller, so callers should
+  // avoid calling methods that would mutate the state of the remote such as
+  // set_disconnect_handler, since only one can be set on a Remote.
   template <typename CrosapiInterface>
   mojo::Remote<CrosapiInterface>& GetRemote() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
@@ -221,6 +224,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindRemoteAppsLacrosBridge(
       mojo::PendingReceiver<
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver);
+
+  // This may be called on any thread.
+  void BindScreenManagerReceiver(
+      mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
 
   // This may be called on any thread.
   void BindSensorHalClient(

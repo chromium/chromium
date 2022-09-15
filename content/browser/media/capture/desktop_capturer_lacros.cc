@@ -89,17 +89,26 @@ void DesktopCapturerLacros::Start(Callback* callback) {
   auto* lacros_service = chromeos::LacrosService::Get();
   DCHECK(lacros_service);
 
+  // The remote connection to the screen manager. Because we do not live on the
+  // main thread, we cannot just query for this via |LacrosService::GetRemote|,
+  // which is thread affine. However, since we only need it to get the Screen
+  // Capturer, we don't need to keep the remote to it around.
+  mojo::Remote<crosapi::mojom::ScreenManager> screen_manager;
+
+  lacros_service->BindScreenManagerReceiver(
+      screen_manager.BindNewPipeAndPassReceiver());
+
   // Lacros can assume that Ash is at least M88.
   int version =
       lacros_service->GetInterfaceVersion(crosapi::mojom::ScreenManager::Uuid_);
   CHECK_GE(version, 1);
 
   if (capture_type_ == kScreen) {
-    lacros_service->GetRemote<crosapi::mojom::ScreenManager>()
-        ->GetScreenCapturer(snapshot_capturer_.BindNewPipeAndPassReceiver());
+    screen_manager->GetScreenCapturer(
+        snapshot_capturer_.BindNewPipeAndPassReceiver());
   } else {
-    lacros_service->GetRemote<crosapi::mojom::ScreenManager>()
-        ->GetWindowCapturer(snapshot_capturer_.BindNewPipeAndPassReceiver());
+    screen_manager->GetWindowCapturer(
+        snapshot_capturer_.BindNewPipeAndPassReceiver());
   }
 }
 
