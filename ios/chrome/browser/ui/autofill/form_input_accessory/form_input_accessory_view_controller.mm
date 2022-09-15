@@ -145,8 +145,7 @@
       autofill::features::AutofillBrandingType::kDisabled) {
     return NO;
   }
-  return !(self.addressButtonHidden && self.creditCardButtonHidden &&
-           self.passwordButtonHidden &&
+  return !(self.manualFillAccessoryViewController.allButtonsHidden &&
            self.formSuggestionView.suggestions.count == 0);
 }
 
@@ -204,6 +203,7 @@
 - (void)resetAnimated:(BOOL)animated {
   [self.formSuggestionView resetContentInsetAndDelegateAnimated:animated];
   [self.manualFillAccessoryViewController resetAnimated:animated];
+  [self updateBrandingVisibility];
 }
 
 // Create formSuggestionView if not done yet.

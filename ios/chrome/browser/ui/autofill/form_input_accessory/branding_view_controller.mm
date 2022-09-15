@@ -71,6 +71,7 @@ constexpr CGFloat kBrandingLeadingInset = 10;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
   // TODO(crbug.com/1358671): perform animation.
 }
 

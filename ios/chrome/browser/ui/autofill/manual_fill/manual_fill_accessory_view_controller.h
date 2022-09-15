@@ -53,6 +53,9 @@ extern NSString* const AccessoryCreditCardAccessibilityIdentifier;
 @property(nonatomic, assign, getter=isPasswordButtonHidden)
     BOOL passwordButtonHidden;
 
+// Readonly property that returns if all manual fill buttons are hidden.
+@property(nonatomic, readonly) BOOL allButtonsHidden;
+
 // Instances an object with the desired delegate.
 //
 // @param delegate The delegate for this object.

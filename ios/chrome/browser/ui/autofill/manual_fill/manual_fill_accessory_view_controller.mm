@@ -104,7 +104,12 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   }
 }
 
-#pragma mark - Setters
+#pragma mark - Accessors
+
+- (BOOL)allButtonsHidden {
+  return self.keyboardButton.hidden && self.addressButtonHidden &&
+         self.creditCardButtonHidden && self.passwordButtonHidden;
+}
 
 - (void)setAddressButtonHidden:(BOOL)addressButtonHidden {
   if (addressButtonHidden == _addressButtonHidden) {
