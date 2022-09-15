@@ -8305,7 +8305,6 @@ void WebContentsImpl::OnDidDownloadImage(
                           original_image_sizes);
 }
 
-// TODO(https://crbug.com/1171203): Needs to be made MPArch proof.
 void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      int render_frame_id,
                                      JavaScriptDialogCallback response_callback,
@@ -8315,6 +8314,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      const std::u16string& user_input) {
   RenderFrameHostImpl* rfh =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+  DCHECK((!rfh || rfh->GetPage().IsPrimary()) && !IsPortal());
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDialogClosed",
                         "render_frame_host", rfh);
   last_dialog_suppressed_ = dialog_was_suppressed;
