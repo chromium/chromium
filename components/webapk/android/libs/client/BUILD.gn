@@ -22,6 +22,7 @@ robolectric_library("junit") {
     "src/org/chromium/components/webapk/lib/client/WebApkValidatorTest.java",
     "src/org/chromium/components/webapk/lib/client/WebApkVerifySignatureTest.java",
   ]
+  data = [ "//chrome/test/data/webapks/" ]
   deps = [
     ":java",
     "//base:base_java_test_support",

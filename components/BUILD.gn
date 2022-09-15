@@ -1070,6 +1070,7 @@ if (!is_ios) {
 }
 if (is_android) {
   robolectric_binary("components_junit_tests") {
+    data = [ "//chrome/test/data/webapks/" ]
     deps = [
       "//components/android_autofill/browser/junit:components_autofill_junit_tests",
       "//components/background_task_scheduler:components_background_task_scheduler_junit_tests",
