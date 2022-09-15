@@ -142,8 +142,8 @@ class ChromePasswordManagerClient
 
   bool IsAutofillAssistantUIVisible() const override;
   // Returns a pointer to the BiometricAuthenticator which is created on demand.
-  // This is currently only implemented for Android and Mac, on all other
-  // platforms this will always be null.
+  // This is currently only implemented for Android, Mac and Windows. On all
+  // other platforms this will always be null.
   scoped_refptr<device_reauth::BiometricAuthenticator>
   GetBiometricAuthenticator() override;
   void GeneratePassword(

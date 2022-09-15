@@ -202,7 +202,7 @@ LikelyFormFilling SendFillInformationToRenderer(
       WaitForUsernameReason::kDontWait;
   if (client->IsIncognito()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (password_manager_util::IsBiometricAuthenticationForFillingEnabled(
                  client)) {
     wait_for_username_reason = WaitForUsernameReason::kBiometricAuthentication;

@@ -332,7 +332,7 @@ class PasswordManagerUtilTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
     pref_service_.registry()->RegisterBooleanPref(
@@ -343,7 +343,7 @@ class PasswordManagerUtilTest : public testing::Test {
     ON_CALL(*authenticator_, CanAuthenticate).WillByDefault(Return(true));
 #endif
   }
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void SetHadBiometricsAvailable(bool available) {
     pref_service_.SetBoolean(password_manager::prefs::kHadBiometricsAvailable,
                              available);
@@ -879,7 +879,7 @@ TEST(PasswordManagerUtil, CheckGpmBrandedNamingNotSyncing) {
 #endif
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -919,6 +919,6 @@ TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
       device_reauth::BiometricAuthRequester::kAutofillSuggestion,
       &mock_client_));
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 }  // namespace password_manager_util

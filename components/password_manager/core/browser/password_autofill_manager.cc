@@ -504,8 +504,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 
     scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
         password_client_->GetBiometricAuthenticator();
-    // Note: this is currently only implemented on Android and Mac. For other
-    // platforms, the `authenticator` will be null.
+    // Note: this is currently only implemented on Android, Mac and Windows. For
+    // other platforms, the `authenticator` will be null.
     if (!password_manager_util::CanUseBiometricAuth(
             authenticator.get(),
             device_reauth::BiometricAuthRequester::kAutofillSuggestion,
@@ -523,7 +523,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
                          base::Unretained(this), value, frontend_id),
           /*use_last_valid_auth=*/true);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       const std::u16string origin =
           base::UTF8ToUTF16(GetShownOrigin(url::Origin::Create(
               password_manager_driver_->GetLastCommittedURL())));

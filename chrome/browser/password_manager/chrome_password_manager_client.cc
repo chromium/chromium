@@ -494,7 +494,7 @@ bool ChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
 
 scoped_refptr<device_reauth::BiometricAuthenticator>
 ChromePasswordManagerClient::GetBiometricAuthenticator() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return ChromeBiometricAuthenticatorFactory::GetBiometricAuthenticator();
 #else
   return nullptr;

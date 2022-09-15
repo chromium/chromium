@@ -389,7 +389,7 @@ PasswordForm MakeNormalizedBlocklistedForm(
   return result;
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 bool IsBiometricAuthenticationForFillingEnabled(
     password_manager::PasswordManagerClient* client) {
   // This checking order is important to ensure balanced experiment groups.
@@ -413,7 +413,7 @@ bool IsBiometricAuthenticationForFillingEnabled(
 bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
                          device_reauth::BiometricAuthRequester requester,
                          password_manager::PasswordManagerClient* client) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (!client || !client->GetLocalStatePrefs() || !client->GetPrefs() ||
       !authenticator) {
     return false;

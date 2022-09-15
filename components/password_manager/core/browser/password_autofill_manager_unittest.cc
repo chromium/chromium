@@ -55,7 +55,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -325,7 +325,7 @@ class PasswordAutofillManagerTest : public testing::Test {
     webauthn_credentials_delegate_ =
         std::make_unique<MockWebAuthnCredentialsDelegate>();
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     test_pref_service_->registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
@@ -385,7 +385,7 @@ class PasswordAutofillManagerTest : public testing::Test {
   // The TestAutofillDriver uses a SequencedWorkerPool which expects the
   // existence of a MessageLoop.
   base::test::SingleThreadTaskEnvironment task_environment_;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
 #endif
 };
@@ -1673,11 +1673,11 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
   }
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       password_manager::features::kBiometricAuthenticationForFilling);
 #else
       password_manager::features::kBiometricTouchToFill);
@@ -1727,7 +1727,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
         .WillOnce(Return(true));
     EXPECT_CALL(
         *authenticator_.get(),
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _))
         .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/true));
@@ -1748,7 +1748,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
 TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       password_manager::features::kBiometricAuthenticationForFilling);
 #else
       password_manager::features::kBiometricTouchToFill);
@@ -1798,7 +1798,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
         .WillOnce(Return(true));
     EXPECT_CALL(
         *authenticator_.get(),
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _))
         .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/false));
@@ -1819,7 +1819,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       password_manager::features::kBiometricAuthenticationForFilling);
 #else
       password_manager::features::kBiometricTouchToFill);
@@ -1856,7 +1856,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
       .WillOnce(Return(true));
   EXPECT_CALL(
       *authenticator_.get(),
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                               /*message=*/_, _));
 #else
@@ -1878,7 +1878,7 @@ TEST_F(PasswordAutofillManagerTest,
        CancelsOngoingBiometricAuthOnDeleteFillData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       password_manager::features::kBiometricAuthenticationForFilling);
 #else
       password_manager::features::kBiometricTouchToFill);
@@ -1915,7 +1915,7 @@ TEST_F(PasswordAutofillManagerTest,
       .WillOnce(Return(true));
   EXPECT_CALL(
       *authenticator_.get(),
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                               /*message=*/_, _));
 #else
@@ -1938,7 +1938,7 @@ TEST_F(PasswordAutofillManagerTest,
        CancelsOngoingBiometricAuthOnFillDataChange) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       password_manager::features::kBiometricAuthenticationForFilling);
 #else
       password_manager::features::kBiometricTouchToFill);
@@ -1975,7 +1975,7 @@ TEST_F(PasswordAutofillManagerTest,
       .WillOnce(Return(true));
   EXPECT_CALL(
       *authenticator_.get(),
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                               /*message=*/_, _));
 #else
@@ -1993,7 +1993,7 @@ TEST_F(PasswordAutofillManagerTest,
               Cancel(BiometricAuthRequester::kAutofillSuggestion));
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   TestPasswordManagerClient client;
