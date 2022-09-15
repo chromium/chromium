@@ -137,10 +137,9 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   // success, |private_key| is non-null, but if the private key doesn't exist,
   // |private_key->key()| may be null.
   void ReloadKeypairImpl(
-      base::OnceCallback<void(
-          const scoped_refptr<ownership::PublicKey>& public_key,
-          const scoped_refptr<ownership::PrivateKey>& private_key)> callback)
-      override;
+      base::OnceCallback<void(scoped_refptr<ownership::PublicKey> public_key,
+                              scoped_refptr<ownership::PrivateKey> private_key)>
+          callback) override;
 
   // Possibly notifies DeviceSettingsService that owner's keypair is loaded.
   void OnPostKeypairLoadedActions() override;

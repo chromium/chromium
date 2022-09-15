@@ -61,8 +61,8 @@ namespace ash {
 namespace {
 
 using ReloadKeyCallback =
-    base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
-                            const scoped_refptr<PrivateKey>& private_key)>;
+    base::OnceCallback<void(scoped_refptr<PublicKey> public_key,
+                            scoped_refptr<PrivateKey> private_key)>;
 
 bool IsOwnerInTests(const std::string& user_id) {
   if (user_id.empty() ||
@@ -720,9 +720,8 @@ void OwnerSettingsServiceAsh::OnPostKeypairLoadedActions() {
 }
 
 void OwnerSettingsServiceAsh::ReloadKeypairImpl(
-    base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
-                            const scoped_refptr<PrivateKey>& private_key)>
-        callback) {
+    base::OnceCallback<void(scoped_refptr<PublicKey> public_key,
+                            scoped_refptr<PrivateKey> private_key)> callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // The profile may not be fully created yet: abort, and wait till it is. The
