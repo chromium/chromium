@@ -146,9 +146,6 @@ class MockDeskModelObserver : public DeskModelObserver {
   MOCK_METHOD1(EntriesAddedOrUpdatedRemotely,
                void(const std::vector<const ash::DeskTemplate*>&));
   MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::GUID>&));
-  MOCK_METHOD1(EntriesAddedOrUpdatedLocally,
-               void(const std::vector<const ash::DeskTemplate*>&));
-  MOCK_METHOD1(EntriesRemovedLocally, void(const std::vector<base::GUID>&));
 };
 
 // This test class only tests the overall wrapper desk model class. The

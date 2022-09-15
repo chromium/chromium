@@ -39,11 +39,6 @@ class DeskModelObserver {
       const std::vector<const ash::DeskTemplate*>& new_entries) = 0;
   virtual void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) = 0;
 
-  // Invoked when desk templates are added/updated, removed locally.
-  virtual void EntriesAddedOrUpdatedLocally(
-      const std::vector<const ash::DeskTemplate*>& new_entries) = 0;
-  virtual void EntriesRemovedLocally(const std::vector<base::GUID>& uuids) = 0;
-
  protected:
   virtual ~DeskModelObserver() = default;
 };
