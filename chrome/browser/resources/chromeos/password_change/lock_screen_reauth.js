@@ -41,10 +41,9 @@ Polymer({
 
 
     /**
-     * SAML notice which changes when the authDomain property is changed on the
-     * authenticator.
+     * Auth Domain property of the authenticator. Updated via events.
      */
-    authDomainNotice_: {
+    authDomain_: {
       type: String,
       value: '',
     },
@@ -133,8 +132,9 @@ Polymer({
   ready() {
     this.signinFrame_ = this.getSigninFrame_();
     this.authenticator_ = new Authenticator(this.signinFrame_);
-    this.authenticator_.addEventListener(
-        'authDomainChange', () => void this.onAuthDomainChange_());
+    this.authenticator_.addEventListener('authDomainChange', (e) => {
+      this.authDomain_ = e.newValue;
+    });
     this.authenticator_.addEventListener(
         'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
     this.authenticator_.addEventListener(
@@ -151,7 +151,7 @@ Polymer({
     this.isManualInput_ = false;
     this.isPasswordChanged_ = false;
     this.showSamlNoticeMessage_ = false;
-    this.authDomainNotice_ = '';
+    this.authDomain_ = '';
   },
 
   /**
@@ -174,15 +174,6 @@ Polymer({
   setWidth(width) {
     document.documentElement.style.setProperty(
       '--lock-screen-reauth-dialog-width', width + 'px');
-  },
-
-  /**
-   * Invoked when the authDomain property is changed on the authenticator.
-   * @private
-   */
-  onAuthDomainChange_() {
-    this.authDomainNotice_ =
-        this.i18n('samlNotice', this.authenticator_.authDomain);
   },
 
   /**

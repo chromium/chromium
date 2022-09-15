@@ -386,24 +386,34 @@ cr.define('cr.login', function() {
     constructor(webview) {
       super();
 
+      // --------------------  SPECIAL PROPERTIES ---------------------
+      // Whenever these properties change, an event is fired to notify
+      // observers of the change. Event name: [propertyNameChange]
+      // Refer to the bottom of the class definition for more details.
+      //
+      /** @type {AuthFlow} The current auth flow of the hosted page.*/
+      this.authFlow = AuthFlow.DEFAULT;
+      /** @type {string} The domain name of the current auth page. */
+      this.authDomain = '';
+      /** @type {boolean}  Whether media access was requested. */
+      this.videoEnabled = false;
+      // --------------------  SPECIAL PROPERTIES ---------------------
+
       this.isLoaded_ = false;
       this.email_ = null;
       this.password_ = null;
       this.gaiaId_ = null, this.sessionIndex_ = null;
       this.chooseWhatToSync_ = false;
       this.skipForNow_ = false;
-      this.authFlow = AuthFlow.DEFAULT;
       /** @type {AuthMode} */
       this.authMode = AuthMode.DEFAULT;
       this.dontResizeNonEmbeddedPages = false;
 
-      this.authDomain = '';
       /**
        * @type {!cr.login.SamlHandler|undefined}
        * @private
        */
       this.samlHandler_ = undefined;
-      this.videoEnabled = false;
       this.idpOrigin_ = null;
       this.initialFrameUrl_ = null;
       this.reloadUrl_ = null;
@@ -521,7 +531,7 @@ cr.define('cr.login', function() {
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'authPageLoaded', e => this.onAuthPageLoaded_(e));
       this.webviewEventManager_.addEventListener(
-          this.samlHandler_, 'videoEnabled', e => this.onVideoEnabled_(e));
+          this.samlHandler_, 'videoEnabled', () => this.videoEnabled = true);
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'apiPasswordAdded',
           e => this.onSamlApiPasswordAdded_(e));
@@ -1228,14 +1238,6 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Invoked when |samlHandler_| fires 'videoEnabled' event.
-     * @private
-     */
-    onVideoEnabled_(e) {
-      this.videoEnabled = true;
-    }
-
-    /**
      * Invoked when |samlHandler_| fires 'apiPasswordAdded' event. Could be from
      * 3rd-party SAML IdP or Gaia which also uses the API.
      * @private
@@ -1447,36 +1449,17 @@ cr.define('cr.login', function() {
     }
   }
 
-  /**
-   * The current auth flow of the hosted auth page.
-   * @type {AuthFlow}
-   */
-  Authenticator.prototype.authFlow;
-  Object.defineProperty(
-      Authenticator.prototype, 'authFlow',
-      cr.getPropertyDescriptor('authFlow'));
-
-  /**
-   * The domain name of the current auth page.
-   * @type {string}
-   */
-  Authenticator.prototype.authDomain;
-  Object.defineProperty(
-      Authenticator.prototype, 'authDomain',
-      cr.getPropertyDescriptor('authDomain'));
-
-  /**
-   * True if the page has requested media access.
-   * @type {boolean}
-   */
-  Authenticator.prototype.videoEnabled;
-  Object.defineProperty(
-      Authenticator.prototype, 'videoEnabled',
-      cr.getPropertyDescriptor('videoEnabled'));
-
-  Authenticator.AuthFlow = AuthFlow;
-  Authenticator.AuthMode = AuthMode;
-  Authenticator.SUPPORTED_PARAMS = SUPPORTED_PARAMS;
+  // ---------------------  SPECIAL PROPERTIES ----------------------
+  // These properties are special since they fire an event whenever
+  // they change. The event name is 'propertyNameChange' and it is
+  // used by the Custom Elements that use the Authenticator to listen
+  // for changes.
+  Object.defineProperties(Authenticator.prototype, {
+    'authFlow': cr.getPropertyDescriptor('authFlow'),
+    'authDomain': cr.getPropertyDescriptor('authDomain'),
+    'videoEnabled': cr.getPropertyDescriptor('videoEnabled'),
+  });
+  // ---------------------  SPECIAL PROPERTIES ----------------------
 
   // #cr_define_end
   return {Authenticator: Authenticator};
