@@ -20,10 +20,12 @@ enum class QsButtonCatalogName {
   kSettingsButton = 4,
   kDateViewButton = 5,
   kBatteryButton = 6,
-  kManageButton = 7,
+  kManagedButton = 7,
   kAvatarButton = 8,    // To be deprecated
   kCollapseButton = 9,  // To be deprecated
-  kMaxValue = kCollapseButton
+  kFeedBackButton = 10,
+  kVersionButton = 11,
+  kMaxValue = kVersionButton
 };
 
 }  // namespace ash

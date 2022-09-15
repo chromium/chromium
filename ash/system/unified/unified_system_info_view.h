@@ -33,9 +33,7 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   void ChildVisibilityChanged(views::View* child) override;
 
   // Introspection methods needed for unit tests.
-  bool IsEnterpriseManagedVisibleForTesting();
   bool IsSupervisedVisibleForTesting();
-  bool IsChannelIndicatorQuickSettingsVisibleForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest, EnterpriseManagedVisible);

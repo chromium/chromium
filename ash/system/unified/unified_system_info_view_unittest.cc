@@ -5,7 +5,9 @@
 #include "ash/system/unified/unified_system_info_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -103,6 +105,26 @@ class UnifiedSystemInfoViewTest
     return (GetParam() & TestFlags::kReleaseTrackNotStable) != TestFlags::kNone;
   }
 
+  views::View* GetDateButton() {
+    return info_view_->GetViewByID(VIEW_ID_QS_DATE_VIEW_BUTTON);
+  }
+
+  views::View* GetBatteryButton() {
+    return info_view_->GetViewByID(VIEW_ID_QS_BATTERY_BUTTON);
+  }
+
+  views::View* GetManagedButton() {
+    return info_view_->GetViewByID(VIEW_ID_QS_MANAGED_BUTTON);
+  }
+
+  views::View* GetVersionButton() {
+    return info_view_->GetViewByID(VIEW_ID_QS_VERSION_BUTTON);
+  }
+
+  views::View* GetFeedbackButton() {
+    return info_view_->GetViewByID(VIEW_ID_QS_FEEDBACK_BUTTON);
+  }
+
   void TearDown() override {
     info_view_.reset();
     controller_.reset();
@@ -140,9 +162,9 @@ INSTANTIATE_TEST_SUITE_P(
                     TestFlags::kManagedDeviceUi | TestFlags::kReleaseTrackUi |
                         TestFlags::kReleaseTrackNotStable));
 
-TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
+TEST_P(UnifiedSystemInfoViewTest, ButtonNameAndVisibility) {
   // By default, EnterpriseManagedView is not shown.
-  EXPECT_FALSE(info_view()->IsEnterpriseManagedVisibleForTesting());
+  EXPECT_FALSE(GetManagedButton()->GetVisible());
 
   // Simulate enterprise information becoming available.
   enterprise_domain()->SetDeviceEnterpriseInfo(
@@ -150,12 +172,25 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
                            ManagementDeviceMode::kChromeEnterprise});
 
   // EnterpriseManagedView should be shown.
-  EXPECT_TRUE(info_view()->IsEnterpriseManagedVisibleForTesting());
+  EXPECT_TRUE(GetManagedButton()->GetVisible());
+
+  // `DateView` should be shown.
+  EXPECT_TRUE(GetDateButton()->GetVisible());
+
+  // Battery button should be shown.
+  EXPECT_TRUE(GetBatteryButton()->GetVisible());
 
   // If the release track UI is enabled AND the release track is non-stable, the
-  // ChannelIndicatorQuickSettingsView is shown.
+  // version button is shown.
   EXPECT_EQ(IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable(),
-            info_view()->IsChannelIndicatorQuickSettingsVisibleForTesting());
+            GetVersionButton() && GetVersionButton()->GetVisible());
+
+  // If the release track UI is enabled AND the release track is non-stable AND
+  // the user feedback is enabled, the feedback button is shown.
+  EXPECT_EQ(
+      IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable() &&
+          Shell::Get()->system_tray_model()->client()->IsUserFeedbackEnabled(),
+      GetFeedbackButton() && GetFeedbackButton()->GetVisible());
 }
 
 TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
@@ -166,29 +201,43 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
                            ManagementDeviceMode::kChromeEnterprise});
 
   // EnterpriseManagedView should be shown.
-  EXPECT_TRUE(info_view()->IsEnterpriseManagedVisibleForTesting());
+  EXPECT_TRUE(GetManagedButton()->GetVisible());
 
   // If the release track UI is enabled AND the release track is non-stable, the
-  // ChannelIndicatorQuickSettingsView is shown.
+  // version button is shown.
   EXPECT_EQ(IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable(),
-            info_view()->IsChannelIndicatorQuickSettingsVisibleForTesting());
+            GetVersionButton() && GetVersionButton()->GetVisible());
+
+  // If the release track UI is enabled AND the release track is non-stable AND
+  // the user feedback is enabled, the feedback button is shown.
+  EXPECT_EQ(
+      IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable() &&
+          Shell::Get()->system_tray_model()->client()->IsUserFeedbackEnabled(),
+      GetFeedbackButton() && GetFeedbackButton()->GetVisible());
 }
 
 TEST_P(UnifiedSystemInfoViewTest, EnterpriseUserManagedVisible) {
   // By default, EnterpriseManagedView is not shown.
-  EXPECT_FALSE(info_view()->IsEnterpriseManagedVisibleForTesting());
+  EXPECT_FALSE(GetManagedButton()->GetVisible());
 
   // Simulate enterprise information becoming available.
   enterprise_domain()->SetEnterpriseAccountDomainInfo("example.com");
 
   // EnterpriseManagedView should be shown if the feature is enabled.
   EXPECT_EQ(IsManagedDeviceUIRedesignEnabled(),
-            info_view()->IsEnterpriseManagedVisibleForTesting());
+            GetManagedButton()->GetVisible());
 
   // If the release track UI is enabled AND the release track is non-stable, the
-  // ChannelIndicatorQuickSettingsView is shown.
+  // version button is shown.
   EXPECT_EQ(IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable(),
-            info_view()->IsChannelIndicatorQuickSettingsVisibleForTesting());
+            GetVersionButton() && GetVersionButton()->GetVisible());
+
+  // If the release track UI is enabled AND the release track is non-stable AND
+  // the user feedback is enabled, the feedback button is shown.
+  EXPECT_EQ(
+      IsReleaseTrackUiEnabled() && IsReleaseTrackNotStable() &&
+          Shell::Get()->system_tray_model()->client()->IsUserFeedbackEnabled(),
+      GetFeedbackButton() && GetFeedbackButton()->GetVisible());
 }
 
 using UnifiedSystemInfoViewNoSessionTest = NoSessionAshTestBase;

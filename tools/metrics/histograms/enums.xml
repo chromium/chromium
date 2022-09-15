@@ -82448,9 +82448,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="SettingsButton"/>
   <int value="5" label="DateViewButton"/>
   <int value="6" label="BatteryButton"/>
-  <int value="7" label="ManageButton"/>
+  <int value="7" label="ManagedButton"/>
   <int value="8" label="AvatarButton"/>
   <int value="9" label="CollapseButton"/>
+  <int value="10" label="FeedBackButton"/>
+  <int value="11" label="VersionButton"/>
 </enum>
 
 <enum name="QueryTilesGroupPruneReason">

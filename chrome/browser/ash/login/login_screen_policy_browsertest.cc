@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy, UnifiedTrayLabelsText) {
   // Check that tray is open.
   // The tray must be open before trying to retrieve its elements.
   EXPECT_TRUE(unified_tray_test_api->IsBubbleViewVisible(
-      VIEW_ID_TRAY_ENTERPRISE, true /* open_tray */));
+      VIEW_ID_QS_MANAGED_BUTTON, true /* open_tray */));
 
   // Text on EnterpriseManagedView tooltip in current locale.
   std::u16string expected_text =
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy, UnifiedTrayLabelsText) {
           : l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
                                        ui::GetChromeOSDeviceName(), kDomain16);
   EXPECT_EQ(expected_text, unified_tray_test_api->GetBubbleViewTooltip(
-                               VIEW_ID_TRAY_ENTERPRISE));
+                               VIEW_ID_QS_MANAGED_BUTTON));
 }
 
 }  // namespace ash

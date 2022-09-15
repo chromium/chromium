@@ -5,6 +5,7 @@
 #include "ash/system/unified/unified_system_info_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -27,6 +28,7 @@
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -132,6 +134,7 @@ DateView::DateView(UnifiedSystemTrayController* controller)
                                  base::Unretained(this))),
       label_(AddChildView(std::make_unique<views::Label>())),
       controller_(controller) {
+  SetID(VIEW_ID_QS_DATE_VIEW_BUTTON);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
@@ -158,6 +161,9 @@ void DateView::OnThemeChanged() {
 }
 
 void DateView::OnButtonPressed(const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kDateViewButton, event);
+
   if (features::IsCalendarViewEnabled() && controller_->IsExpanded()) {
     controller_->ShowCalendarView(
         calendar_metrics::CalendarViewShowSource::kDateView,
@@ -240,6 +246,8 @@ class BatteryInfoViewBase : public views::Button, public PowerStatus::Observer {
  private:
   // Callback called when this is pressed.
   void OnButtonPressed(const ui::Event& event) {
+    quick_settings_metrics_util::RecordQsButtonActivated(
+        QsButtonCatalogName::kBatteryButton, event);
     controller_->HandleOpenPowerSettingsAction();
   }
 
@@ -260,6 +268,7 @@ class BatteryLabelView : public BatteryInfoViewBase {
                    bool use_smart_charging_ui)
       : BatteryInfoViewBase(controller),
         use_smart_charging_ui_(use_smart_charging_ui) {
+    SetID(VIEW_ID_QS_BATTERY_BUTTON);
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
 
@@ -323,6 +332,7 @@ class BatteryIconView : public BatteryInfoViewBase {
   METADATA_HEADER(BatteryIconView);
   explicit BatteryIconView(UnifiedSystemTrayController* controller)
       : BatteryInfoViewBase(controller) {
+    SetID(VIEW_ID_QS_BATTERY_BUTTON);
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal);
     layout->set_inside_border_insets(kUnifiedSystemInfoBatteryIconPadding);
@@ -485,16 +495,21 @@ class EnterpriseManagedView : public ManagedStateView,
   void Update();
 };
 
+auto managed_button_lambda = [](UnifiedSystemTrayController* controller,
+                                const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kManagedButton, event);
+  controller->HandleEnterpriseInfoAction();
+};
+
 EnterpriseManagedView::EnterpriseManagedView(
     UnifiedSystemTrayController* controller)
-    : ManagedStateView(
-          base::BindRepeating(
-              &UnifiedSystemTrayController::HandleEnterpriseInfoAction,
-              base::Unretained(controller)),
-          IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
-          kUnifiedMenuManagedIcon) {
+    : ManagedStateView(base::BindRepeating(managed_button_lambda,
+                                           base::Unretained(controller)),
+                       IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
+                       kUnifiedMenuManagedIcon) {
   DCHECK(Shell::Get());
-  SetID(VIEW_ID_TRAY_ENTERPRISE);
+  SetID(VIEW_ID_QS_MANAGED_BUTTON);
   Shell::Get()->system_tray_model()->enterprise_domain()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
   Update();
@@ -640,11 +655,6 @@ class ManagementPowerDateComboView : public views::View {
       delete;
   ~ManagementPowerDateComboView() override = default;
 
-  // Introspection methods for unit tests, that call into individual views.
-  bool IsEnterpriseManagedVisibleForTesting() {
-    return enterprise_managed_view_->GetVisible();
-  }
-
   bool IsSupervisedVisibleForTesting() {
     return supervised_view_->GetVisible();
   }
@@ -706,16 +716,8 @@ void UnifiedSystemInfoView::ChildPreferredSizeChanged(views::View* child) {
   Layout();
 }
 
-bool UnifiedSystemInfoView::IsEnterpriseManagedVisibleForTesting() {
-  return combo_view_->IsEnterpriseManagedVisibleForTesting();  // IN-TEST
-}
-
 bool UnifiedSystemInfoView::IsSupervisedVisibleForTesting() {
   return combo_view_->IsSupervisedVisibleForTesting();  // IN-TEST
-}
-
-bool UnifiedSystemInfoView::IsChannelIndicatorQuickSettingsVisibleForTesting() {
-  return channel_view_ && channel_view_->GetVisible();  // IN-TEST
 }
 
 BEGIN_METADATA(UnifiedSystemInfoView, views::View)

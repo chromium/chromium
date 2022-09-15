@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -14,6 +16,7 @@
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "base/i18n/rtl.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/canvas.h"
@@ -161,7 +164,9 @@ class VersionButton : public views::LabelButton {
                 const SkScalar (&content_corners)[kNumVersionButtonCornerRadii],
                 const gfx::RoundedCornersF& highlight_corners)
       : LabelButton(
-            base::BindRepeating([] {
+            base::BindRepeating([](const ui::Event& event) {
+              quick_settings_metrics_util::RecordQsButtonActivated(
+                  QsButtonCatalogName::kVersionButton, event);
               Shell::Get()
                   ->system_tray_model()
                   ->client()
@@ -169,6 +174,7 @@ class VersionButton : public views::LabelButton {
             }),
             channel_indicator_utils::GetFullReleaseTrackString(channel)),
         channel_(channel) {
+    SetID(VIEW_ID_QS_VERSION_BUTTON);
     SetFlipCanvasOnPaintForRTLUI(true);
     std::copy(content_corners, content_corners + kNumVersionButtonCornerRadii,
               content_corners_);
@@ -228,7 +234,9 @@ class SubmitFeedbackButton : public IconButton {
       version_info::Channel channel,
       const SkScalar (&content_corners)[kNumVersionButtonCornerRadii],
       const gfx::RoundedCornersF& highlight_corners)
-      : IconButton(base::BindRepeating([] {
+      : IconButton(base::BindRepeating([](const ui::Event& event) {
+                     quick_settings_metrics_util::RecordQsButtonActivated(
+                         QsButtonCatalogName::kFeedBackButton, event);
                      Shell::Get()
                          ->system_tray_model()
                          ->client()
@@ -238,6 +246,7 @@ class SubmitFeedbackButton : public IconButton {
                    &kRequestFeedbackIcon,
                    IDS_ASH_STATUS_TRAY_REPORT_FEEDBACK),
         channel_(channel) {
+    SetID(VIEW_ID_QS_FEEDBACK_BUTTON);
     std::copy(content_corners, content_corners + kNumVersionButtonCornerRadii,
               content_corners_);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
