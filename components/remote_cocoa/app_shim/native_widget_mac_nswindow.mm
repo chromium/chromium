@@ -185,6 +185,7 @@ void OrderChildWindow(NSWindow* child_window,
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
 @synthesize isTooltip = _isTooltip;
+@synthesize childWindowAddedHandler = _childWindowAddedHandler;
 
 - (instancetype)initWithContentRect:(NSRect)contentRect
                           styleMask:(NSUInteger)windowStyle
@@ -209,6 +210,7 @@ void OrderChildWindow(NSWindow* child_window,
   }
   _willUpdateRestorableState = YES;
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
+  [_childWindowAddedHandler dealloc];
   [super dealloc];
 }
 
@@ -218,6 +220,9 @@ void OrderChildWindow(NSWindow* child_window,
   NSInteger level = childWin.level;
   [super addChildWindow:childWin ordered:place];
   childWin.level = level;
+  if (self.childWindowAddedHandler) {
+    self.childWindowAddedHandler(childWin);
+  }
 }
 
 - (void)enforceNeverMadeVisible {
