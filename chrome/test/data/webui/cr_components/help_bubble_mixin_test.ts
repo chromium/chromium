@@ -126,6 +126,12 @@ class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
   }
 }
 
+interface WaitForSuccessParams {
+  retryIntervalMs: number;
+  totalMs: number;
+  assertionFn: () => void;
+}
+
 suite('CrComponentsHelpBubbleMixinTest', () => {
   let testProxy: TestHelpBubbleProxy;
   let container: HelpBubbleMixinTestElement;
@@ -150,6 +156,44 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     return new Promise((res) => {
       setTimeout(res, milliseconds);
     });
+  }
+
+  /**
+   * Returns the current timestamp in milliseconds since UNIX epoch
+   */
+  function now() {
+    return +new Date();
+  }
+
+  /**
+   * Try/catch a function for some time, retrying after failures
+   *
+   * If the callback function succeeds, return early with the total time
+   * If the callback always fails, throw the error after the last run
+   */
+  async function waitForSuccess(params: WaitForSuccessParams):
+      Promise<number|null> {
+    const startMs = now();
+    let lastAttemptMs = startMs;
+    let lastError: Error|null = null;
+    let attempts = 0;
+    while (now() - startMs < params.totalMs) {
+      await sleep(params.retryIntervalMs);
+      lastAttemptMs = now();
+      try {
+        params.assertionFn();
+        return lastAttemptMs - startMs;
+      } catch (e) {
+        lastError = e as Error;
+      }
+      attempts++;
+    }
+    if (lastError !== null) {
+      lastError.message = `[Attempts: ${attempts}, Total time: ${
+          lastAttemptMs - startMs}ms]: ${lastError.message}`;
+      throw lastError;
+    }
+    return Infinity;
   }
 
   setup(() => {
@@ -568,21 +612,51 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   timeoutParams.position = HelpBubbleArrowPosition.TOP_CENTER;
   timeoutParams.bodyText = 'This is another help bubble.';
   timeoutParams.titleText = 'This is a title';
-  timeoutParams.timeout = {
-    microseconds: BigInt(250 * 1000),  // 250ms
-  };
   timeoutParams.buttons = [];
 
-  test('help bubble mixin sends timeout event', async () => {
-    container.showHelpBubble('p1', timeoutParams);
+  // It is hard to guarantee the correct timing on various test systems,
+  // so the 'before timeout' and 'after timeout' tests are split
+  // into 2 separate fixtures
+
+  // Before timeout
+  // Use a long timeout to test base state that a timeout will
+  // not be accidentally triggered when a timeout is set
+  test('help bubble mixin does not immediately timeout', async () => {
+    const longTimeoutParams = {
+      ...timeoutParams,
+      timeout: {
+        microseconds: BigInt(10 * 1000 * 1000),  // 10s
+      },
+    };
+
+    container.showHelpBubble('p1', longTimeoutParams);
+    await waitAfterNextRender(container);
     assertEquals(
         0, testProxy.getHandler().getCallCount('helpBubbleClosed'),
-        'helpBubbleClosed was not called');
+        'helpBubbleClosed should not be called');
+    assertTrue(container.isHelpBubbleShowing());
+  });
+
+  // After timeout
+  // Use a short timeout and a retry loop to
+  test('help bubble mixin sends timeout event', async () => {
+    const timeoutMs = 100;
+    const shortTimeoutParams = {
+      ...timeoutParams,
+      timeout: {
+        microseconds: BigInt(timeoutMs * 1000),  // 100ms
+      },
+    };
+
+    container.showHelpBubble('p1', shortTimeoutParams);
     await waitAfterNextRender(container);
-    await sleep(500);  // 500ms
-    assertEquals(
-        1, testProxy.getHandler().getCallCount('helpBubbleClosed'),
-        'helpBubbleClosed was called');
+    await waitForSuccess({
+      retryIntervalMs: 50,
+      totalMs: 1500,
+      assertionFn: () => assertEquals(
+          1, testProxy.getHandler().getCallCount('helpBubbleClosed'),
+          'helpBubbleClosed should be called called'),
+    }) as number;
     assertDeepEquals(
         [[PARAGRAPH_NATIVE_ID, HelpBubbleClosedReason.kTimedOut]],
         testProxy.getHandler().getArgs('helpBubbleClosed'));
