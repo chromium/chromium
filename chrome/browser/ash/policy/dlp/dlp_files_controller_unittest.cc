@@ -884,6 +884,8 @@ INSTANTIATE_TEST_SUITE_P(DlpFiles,
 TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   bool choice_result = GetParam();
 
+  const auto histogram_tester = base::HistogramTester();
+
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   ASSERT_TRUE(mount_points);
@@ -917,6 +919,33 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
 
   files_controller_->CheckIfDownloadAllowed(GURL(kExampleUrl1), dst_url.path(),
                                             cb.Get());
+
+  ASSERT_EQ(events.size(), 1 + (choice_result ? 1 : 0));
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             kExampleUrl1, DlpRulesManager::Component::kUsb,
+                             DlpRulesManager::Restriction::kFiles,
+                             DlpRulesManager::Level::kWarn)));
+  if (choice_result) {
+    EXPECT_THAT(events[1],
+                IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                    kExampleUrl1, DlpRulesManager::Component::kUsb,
+                    DlpRulesManager::Restriction::kFiles)));
+  }
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                     std::string(dlp::kFileActionWarnedUMA)),
+      base::BucketsAre(
+          base::Bucket(DlpFilesController::FileAction::kDownload, 1),
+          base::Bucket(DlpFilesController::FileAction::kTransfer, 0)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  GetDlpHistogramPrefix() +
+                  std::string(dlp::kFileActionWarnProceededUMA)),
+              base::BucketsAre(
+                  base::Bucket(DlpFilesController::FileAction::kDownload,
+                               choice_result),
+                  base::Bucket(DlpFilesController::FileAction::kTransfer, 0)));
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }

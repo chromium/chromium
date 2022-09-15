@@ -194,6 +194,7 @@ class DlpFilesController {
   void OnDlpWarnDialogReply(
       std::vector<FileDaemonInfo> restricted_files_sources,
       std::vector<FileDaemonInfo> warned_files_sources,
+      const DlpFileDestination& destination,
       FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
       bool should_proceed);
@@ -214,8 +215,10 @@ class DlpFilesController {
 
   // Reports an event if a `DlpReportingManager` instance exists.
   void MaybeReportEvent(const std::string& src,
-                        absl::optional<DlpFileDestination> dst,
+                        const absl::optional<DlpFileDestination>& dst,
                         DlpRulesManager::Level level);
+  void MaybeReportWarnProceededEvent(const std::string& src,
+                                     const DlpFileDestination& dst);
 
   const DlpRulesManager& rules_manager_;
 

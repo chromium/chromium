@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
@@ -247,7 +248,7 @@ void DlpFilesController::FilterDisallowedUploads(
 
 void DlpFilesController::MaybeReportEvent(
     const std::string& src,
-    absl::optional<DlpFileDestination> dst,
+    const absl::optional<DlpFileDestination>& dst,
     DlpRulesManager::Level level) {
   if (level == DlpRulesManager::Level::kAllow ||
       level == DlpRulesManager::Level::kNotSet)
@@ -269,6 +270,22 @@ void DlpFilesController::MaybeReportEvent(
   } else if (dst->url_or_path.has_value()) {
     reporting_manager->ReportEvent(src, dst->url_or_path.value(),
                                    DlpRulesManager::Restriction::kFiles, level);
+  }
+}
+
+void DlpFilesController::MaybeReportWarnProceededEvent(
+    const std::string& src,
+    const DlpFileDestination& dst) {
+  DlpReportingManager* reporting_manager = rules_manager_.GetReportingManager();
+  if (!reporting_manager)
+    return;
+
+  if (dst.component.has_value()) {
+    reporting_manager->ReportWarningProceededEvent(
+        src, dst.component.value(), DlpRulesManager::Restriction::kFiles);
+  } else if (dst.url_or_path.has_value()) {
+    reporting_manager->ReportWarningProceededEvent(
+        src, dst.url_or_path.value(), DlpRulesManager::Restriction::kFiles);
   }
 }
 
@@ -367,11 +384,16 @@ void DlpFilesController::IsFilesTransferRestricted(
     return;
   }
 
+  DlpFileDestination reporting_dst =
+      dst_component.has_value() ? DlpFileDestination(dst_component.value())
+                                : DlpFileDestination(*destination.url_or_path);
+
   warn_notifier_->ShowDlpFilesWarningDialog(
       base::BindOnce(&DlpFilesController::OnDlpWarnDialogReply,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(restricted_files), std::move(warned_files),
-                     files_action, std::move(result_callback)),
+                     std::move(reporting_dst), files_action,
+                     std::move(result_callback)),
       std::move(dialog_files), dst_component, destination_pattern,
       files_action);
 }
@@ -469,6 +491,7 @@ void DlpFilesController::SetWarnNotifierForTesting(
 void DlpFilesController::OnDlpWarnDialogReply(
     std::vector<FileDaemonInfo> restricted_files,
     std::vector<FileDaemonInfo> warned_files,
+    const DlpFileDestination& destination,
     FileAction files_action,
     IsFilesTransferRestrictedCallback callback,
     bool should_proceed) {
@@ -477,7 +500,10 @@ void DlpFilesController::OnDlpWarnDialogReply(
                             std::make_move_iterator(warned_files.begin()),
                             std::make_move_iterator(warned_files.end()));
   } else {
-    DlpHistogramEnumeration(dlp::kFileActionWarnProceededUMA, files_action);
+    for (const FileDaemonInfo& file : warned_files) {
+      DlpHistogramEnumeration(dlp::kFileActionWarnProceededUMA, files_action);
+      MaybeReportWarnProceededEvent(file.source_url.spec(), destination);
+    }
   }
   std::move(callback).Run(std::move(restricted_files));
 }
