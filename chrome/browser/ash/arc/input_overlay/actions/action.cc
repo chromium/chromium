@@ -38,7 +38,7 @@ constexpr float kHalf = 0.5;
 
 std::vector<Position> ParseLocation(const base::Value& position) {
   std::vector<Position> positions;
-  for (const base::Value& val : position.GetListDeprecated()) {
+  for (const base::Value& val : position.GetList()) {
     auto pos = ParsePosition(val);
     if (!pos) {
       LOG(ERROR) << "Failed to parse location.";
@@ -124,7 +124,7 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
   auto* modifier_list = value.FindListKey(kModifiers);
   int modifiers = 0;
   if (modifier_list) {
-    for (const base::Value& val : modifier_list->GetListDeprecated()) {
+    for (const base::Value& val : modifier_list->GetList()) {
       if (base::ToLowerASCII(val.GetString()) == kCtrl)
         modifiers |= ui::EF_CONTROL_DOWN;
       else if (base::ToLowerASCII(val.GetString()) == kShift)
@@ -163,7 +163,7 @@ bool Action::ParseFromJson(const base::Value& value) {
     LOG(ERROR) << "Must have input source(s) for each action.";
     return false;
   }
-  for (auto& source : sources->GetListDeprecated()) {
+  for (auto& source : sources->GetList()) {
     if (!source.is_string()) {
       LOG(ERROR) << "Must have input source(s) in string.";
       return false;

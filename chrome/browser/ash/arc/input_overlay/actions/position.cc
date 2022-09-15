@@ -34,7 +34,7 @@ absl::optional<gfx::PointF> ParseTwoElementsArray(const base::Value& value,
     LOG(ERROR) << "Require list values for key " << key;
     return absl::nullopt;
   }
-  auto list = list_value->GetListDeprecated();
+  auto& list = list_value->GetList();
   if (list.size() != 2) {
     LOG(ERROR) << "Require two elements for " << key << ". But got "
                << list.size() << " elements.";

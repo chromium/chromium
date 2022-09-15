@@ -69,7 +69,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   // Parse tap actions if they exist.
   const auto* tap_act_list = root.FindListKey(kTapAction);
   if (tap_act_list && tap_act_list->is_list()) {
-    for (const auto& val : tap_act_list->GetListDeprecated()) {
+    for (const auto& val : tap_act_list->GetList()) {
       auto action = std::make_unique<ActionTap>(touch_injector);
       bool succeed = action->ParseFromJson(val);
       if (succeed)
@@ -80,7 +80,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   // Parse move actions if they exist.
   const base::Value* move_act_list = root.FindListKey(kMoveAction);
   if (move_act_list && move_act_list->is_list()) {
-    for (const base::Value& val : move_act_list->GetListDeprecated()) {
+    for (const base::Value& val : move_act_list->GetList()) {
       auto action = std::make_unique<ActionMove>(touch_injector);
       bool succeed = action->ParseFromJson(val);
       if (succeed)

@@ -256,14 +256,14 @@ bool ActionMove::ParseJsonFromKeyboard(const base::Value& value) {
     LOG(ERROR) << "Require key codes for move key action: " << name_ << ".";
     return false;
   }
-  if (keys->GetListDeprecated().size() != kActionMoveKeysSize) {
+  if (keys->GetList().size() != kActionMoveKeysSize) {
     LOG(ERROR) << "Not right amount of keys for action move keys. Require {"
                << kActionMoveKeysSize << "} keys, but got {"
-               << keys->GetListDeprecated().size() << "} keys.";
+               << keys->GetList().size() << "} keys.";
     return false;
   }
   std::vector<ui::DomCode> keycodes;
-  for (const base::Value& val : keys->GetListDeprecated()) {
+  for (const base::Value& val : keys->GetList()) {
     DCHECK(val.is_string());
     auto key = ui::KeycodeConverter::CodeStringToDomCode(val.GetString());
     if (key == ui::DomCode::NONE) {
