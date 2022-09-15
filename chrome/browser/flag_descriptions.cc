@@ -201,6 +201,11 @@ const char kForceGpuMainThreadToNormalPriorityDrDcDescription[] =
     "hence have higher thread priority than GPU main. Note that this flag will "
     "be a no-op when DrDc is disabled.";
 
+const char kTextBasedAudioDescriptionName[] = "Enable audio descriptions.";
+const char kTextBasedAudioDescriptionDescription[] =
+    "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "
+    "will speak the audio descriptions aloud as the video plays.";
+
 const char kU2FPermissionPromptName[] =
     "Enable a permission prompt for the U2F Security Key API";
 const char kU2FPermissionPromptDescription[] =
