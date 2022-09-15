@@ -164,13 +164,11 @@ bool IsPreviewsEnabled() {
   return prefs && holding_space_prefs::IsPreviewsEnabled(prefs);
 }
 
-// Returns whether the holding space model contains any initialized items.
-bool ModelContainsInitializedItems(HoldingSpaceModel* model) {
-  for (const auto& item : model->items()) {
-    if (item->IsInitialized())
-      return true;
-  }
-  return false;
+// Returns whether a preview of `item` should be shown in the shelf. Beyond
+// being initialized, what makes an `item` previewable is having been created by
+// a user action.
+bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
+  return item->IsInitialized() && !HoldingSpaceItem::IsSuggestion(item->type());
 }
 
 // Creates the default tray icon.
@@ -512,14 +510,14 @@ void HoldingSpaceTray::UpdateVisibility() {
     return;
   }
 
-  // The holding space tray should always be shown if the `model` contains
-  // fully initialized items, or if the predictability feature flag is enabled.
+  // The holding space tray should always be shown if the `model` contains items
+  // that are previewable, or if the predictability feature flag is enabled.
   // Otherwise, it should only be visible if the time of first add has been
   // marked, but a file has never been pinned, and the Files app chip has never
   // been pressed.
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
   SetVisiblePreferred(
-      ModelContainsInitializedItems(model) ||
+      base::ranges::any_of(model->items(), IsPreviewable) ||
       (prefs && holding_space_prefs::GetTimeOfFirstAdd(prefs) &&
        !holding_space_prefs::GetTimeOfFirstPin(prefs) &&
        !holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs)));
@@ -723,9 +721,10 @@ void HoldingSpaceTray::UpdatePreviewsState() {
 }
 
 void HoldingSpaceTray::UpdatePreviewsVisibility() {
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   const bool show_previews =
-      IsPreviewsEnabled() && HoldingSpaceController::Get()->model() &&
-      ModelContainsInitializedItems(HoldingSpaceController::Get()->model());
+      IsPreviewsEnabled() && model &&
+      base::ranges::any_of(model->items(), IsPreviewable);
 
   if (PreviewsShown() == show_previews)
     return;
@@ -764,7 +763,7 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
   std::set<base::FilePath> paths_with_previews;
   for (const auto& item :
        base::Reversed(HoldingSpaceController::Get()->model()->items())) {
-    if (!item->IsInitialized())
+    if (!IsPreviewable(item))
       continue;
     if (base::Contains(paths_with_previews, item->file_path()))
       continue;

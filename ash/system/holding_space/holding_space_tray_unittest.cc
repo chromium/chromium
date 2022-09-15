@@ -2774,7 +2774,6 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests how the suggestions section is updated during item addition and
 // removal.
 TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsSection) {
-  MarkTimeOfFirstPin();
   StartSession();
 
   // Add an item to the suggestions section and verify that the pinned files
@@ -2815,15 +2814,12 @@ TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsSection) {
   EXPECT_EQ(item_1->id(),
             HoldingSpaceItemView::Cast(suggestions[0])->item()->id());
 
-  // Remove the other item and verify that the pinned files bubble is hidden.
+  // Remove the other item and verify that the suggestions section is empty.
   model()->RemoveItem(item_1->id());
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetDownloadChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
-
-  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
-  EXPECT_FALSE(test_api()->PinnedFilesBubbleShown());
 }
 
 // Base class for tests of the holding space downloads section parameterized by
@@ -3271,6 +3267,18 @@ class HoldingSpaceTrayPredictableFeatureTest
         IsHoldingSpacePredictabilityEnabled());
   }
 
+  // Convenience function for verifying that when there are no previewable items
+  // in the holding space, the default tray icon is shown if and only if the
+  // feature flag is enabled.
+  void ExpectDefaultTrayVisibility() {
+    EXPECT_EQ(test_api()->IsShowingInShelf(),
+              IsHoldingSpacePredictabilityEnabled());
+    if (test_api()->IsShowingInShelf()) {
+      EXPECT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+      EXPECT_FALSE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+    }
+  }
+
   bool IsHoldingSpacePredictabilityEnabled() const { return GetParam(); }
 
  private:
@@ -3287,9 +3295,7 @@ TEST_P(HoldingSpaceTrayPredictableFeatureTest,
        AlwaysShowHoldingSpaceTrayButtonWhenFeatureFlagIsEnabled) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-
-  EXPECT_EQ(test_api()->IsShowingInShelf(),
-            IsHoldingSpacePredictabilityEnabled());
+  ExpectDefaultTrayVisibility();
 }
 
 // If the predictable feature flag is enabled, then the holding space button
@@ -3298,10 +3304,7 @@ TEST_P(HoldingSpaceTrayPredictableFeatureTest,
        ShowDefaultIconWhenFeatureFlagIsEnabled) {
   StartSession(/*pre_mark_time_of_first_add=*/false);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
-
-  // The tray button should be shown if the feature flag is enabled.
-  EXPECT_EQ(test_api()->IsShowingInShelf(),
-            IsHoldingSpacePredictabilityEnabled());
+  ExpectDefaultTrayVisibility();
 
   // Add a download item.
   AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
@@ -3328,6 +3331,49 @@ TEST_P(
   EXPECT_TRUE(test_api()->IsShowingInShelf());
   EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
   EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+}
+
+TEST_P(HoldingSpaceTrayPredictableFeatureTest,
+       TrayPreviewsNotShownForSuggestions) {
+  MarkTimeOfFirstPin();
+  StartSession();
+  EnableTrayIconPreviews();
+  {
+    SCOPED_TRACE("Initial state.");
+    ExpectDefaultTrayVisibility();
+  }
+
+  // Add suggestions. The tray button should remain hidden.
+  AddItem(HoldingSpaceItem::Type::kDriveSuggestion,
+          base::FilePath("/tmp/fake_1"));
+  {
+    SCOPED_TRACE("Drive suggestion.");
+    ExpectDefaultTrayVisibility();
+  }
+
+  AddItem(HoldingSpaceItem::Type::kLocalSuggestion,
+          base::FilePath("/tmp/fake_2"));
+  {
+    SCOPED_TRACE("Local suggestion.");
+    ExpectDefaultTrayVisibility();
+  }
+
+  // Add a previewable item and verify that the tray shows the preview icon.
+  auto* const item =
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_3"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  EXPECT_FALSE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+  EXPECT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+
+  // Remove the previewable item. The tray button should return to its default
+  // icon and visibility.
+  model()->RemoveItem(item->id());
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  {
+    SCOPED_TRACE("Previewable item removed.");
+    ExpectDefaultTrayVisibility();
+  }
 }
 
 class HoldingSpaceTraySuggestionsFeatureTest
