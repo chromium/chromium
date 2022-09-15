@@ -59,9 +59,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   PartialTranslateBubbleView(views::View* anchor_view,
                              std::unique_ptr<PartialTranslateBubbleModel> model,
-                             translate::TranslateErrors error_type,
                              content::WebContents* web_contents,
-                             const std::u16string& text_selection,
                              base::OnceClosure on_closing);
 
   PartialTranslateBubbleView(const PartialTranslateBubbleView&) = delete;
@@ -108,7 +106,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   friend class PartialTranslateBubbleViewTest;
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
-                           TargetLanguageTabTriggersTranslate);
+                           TargetLanguageTabDoesntTriggerTranslate);
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
                            TabSelectedAfterTranslation);
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
@@ -198,7 +196,7 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   void UpdateAdvancedView();
 
   // Actions for button presses shared with accelerators.
-  void Translate();
+  void ShowTranslated();
   void ShowOriginal();
   void ConfirmAdvancedOptions();
 
@@ -209,6 +207,12 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // Handles the reset button in advanced view under Tab UI.
   void ResetLanguage();
+
+  // Updates the body text for the bubble based on the view state (either the
+  // source text if we're pre-translate or translating, or the target text if
+  // we're done translating).
+  void UpdateTextForViewState(
+      PartialTranslateBubbleModel::ViewState view_state);
 
   // Retrieve the names of the from/to languages and reset the language
   // indices.

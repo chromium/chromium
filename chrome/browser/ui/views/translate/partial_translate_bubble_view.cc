@@ -169,10 +169,15 @@ void PartialTranslateBubbleView::CloseBubble() {
 
 void PartialTranslateBubbleView::TabSelectedAt(int index) {
   // Tabbed pane is indexed from left to right starting at 0.
-  if (!model_->IsCurrentSelectionTranslated() && index == 1) {
-    Translate();
-  } else if (index == 0) {
-    ShowOriginal();
+  switch (index) {
+    case 0:
+      ShowOriginal();
+      break;
+    case 1:
+      ShowTranslated();
+      break;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -191,9 +196,6 @@ void PartialTranslateBubbleView::Init() {
   AddAccelerator(ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE));
 
   UpdateChildVisibilities();
-
-  if (GetViewState() == PartialTranslateBubbleModel::VIEW_STATE_ERROR)
-    model_->ShowError(error_type_);
 }
 
 views::View* PartialTranslateBubbleView::GetInitiallyFocusedView() {
@@ -256,7 +258,7 @@ bool PartialTranslateBubbleView::AcceleratorPressed(
       break;
     case PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE: {
       if (accelerator.key_code() == ui::VKEY_RETURN) {
-        Translate();
+        ShowTranslated();
         return true;
       }
       break;
@@ -362,14 +364,10 @@ void PartialTranslateBubbleView::SetViewState(
 PartialTranslateBubbleView::PartialTranslateBubbleView(
     views::View* anchor_view,
     std::unique_ptr<PartialTranslateBubbleModel> model,
-    translate::TranslateErrors error_type,
     content::WebContents* web_contents,
-    const std::u16string& text_selection,
     base::OnceClosure on_closing)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       model_(std::move(model)),
-      error_type_(error_type),
-      text_selection_(text_selection),
       on_closing_(std::move(on_closing)),
       web_contents_(web_contents) {
   UpdateInsets(PartialTranslateBubbleModel::VIEW_STATE_WAITING);
@@ -403,9 +401,8 @@ views::View* PartialTranslateBubbleView::GetCurrentView() const {
   return nullptr;
 }
 
-void PartialTranslateBubbleView::Translate() {
-  model_->Translate();
-  SwitchView(PartialTranslateBubbleModel::VIEW_STATE_TRANSLATING);
+void PartialTranslateBubbleView::ShowTranslated() {
+  SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
   // Update text direction, if necesssary.
   SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
   translate::ReportPartialTranslateBubbleUiAction(
@@ -413,8 +410,6 @@ void PartialTranslateBubbleView::Translate() {
 }
 
 void PartialTranslateBubbleView::ShowOriginal() {
-  // TODO(crbug/1314825): Update implementation when PartialTranslateManager is
-  // complete.
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
   // Update text direction, if necesssary.
   SetTextAlignmentForLocaleTextDirection(model_->GetSourceLanguageCode());
@@ -428,7 +423,34 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
   // logged.
   bool from_source_language_view =
       GetViewState() == PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE;
-  if (model_->IsCurrentSelectionTranslated()) {
+  if (DidLanguageSelectionChange(
+          PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE) ||
+      DidLanguageSelectionChange(
+          PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)) {
+    std::u16string source_language_name;
+    std::u16string target_language_name;
+    DCHECK(tabbed_pane_);
+    UpdateLanguageNames(&source_language_name, &target_language_name);
+    tabbed_pane_->GetTabAt(0)->SetTitleText(source_language_name);
+    tabbed_pane_->GetTabAt(1)->SetTitleText(target_language_name);
+    model_->Translate(web_contents_);
+
+    // Update max width of text selection label to match width of bubble, which
+    // changes with the lengths of the languages displayed in the tabbed pane.
+    SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
+    partial_text_label_->SizeToFit(
+        tab_view_top_row_->GetPreferredSize().width());
+    SwitchView(PartialTranslateBubbleModel::VIEW_STATE_WAITING);
+    if (from_source_language_view) {
+      translate::ReportPartialTranslateBubbleUiAction(
+          translate::PartialTranslateBubbleUiEvent::
+              SOURCE_LANGUAGE_SELECTION_TRANSLATE_BUTTON_CLICKED);
+    } else {
+      translate::ReportPartialTranslateBubbleUiAction(
+          translate::PartialTranslateBubbleUiEvent::
+              TARGET_LANGUAGE_SELECTION_TRANSLATE_BUTTON_CLICKED);
+    }
+  } else {
     SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
     SizeToContents();
     if (from_source_language_view) {
@@ -439,30 +461,6 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
       translate::ReportPartialTranslateBubbleUiAction(
           translate::PartialTranslateBubbleUiEvent::
               TARGET_LANGUAGE_SELECTION_DONE_BUTTON_CLICKED);
-    }
-  } else {
-    std::u16string source_language_name;
-    std::u16string target_language_name;
-    DCHECK(tabbed_pane_);
-    UpdateLanguageNames(&source_language_name, &target_language_name);
-    tabbed_pane_->GetTabAt(0)->SetTitleText(source_language_name);
-    tabbed_pane_->GetTabAt(1)->SetTitleText(target_language_name);
-    model_->Translate();
-
-    // Update max width of text selection label to match width of bubble, which
-    // changes with the lengths of the languages displayed in the tabbed pane.
-    SetTextAlignmentForLocaleTextDirection(model_->GetTargetLanguageCode());
-    partial_text_label_->SizeToFit(
-        tab_view_top_row_->GetPreferredSize().width());
-    SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
-    if (from_source_language_view) {
-      translate::ReportPartialTranslateBubbleUiAction(
-          translate::PartialTranslateBubbleUiEvent::
-              SOURCE_LANGUAGE_SELECTION_TRANSLATE_BUTTON_CLICKED);
-    } else {
-      translate::ReportPartialTranslateBubbleUiAction(
-          translate::PartialTranslateBubbleUiEvent::
-              TARGET_LANGUAGE_SELECTION_TRANSLATE_BUTTON_CLICKED);
     }
   }
 }
@@ -578,7 +576,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
 
   // Text selection.
   auto partial_text_label = std::make_unique<views::Label>(
-      text_selection_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      model_->GetSourceText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY);
   partial_text_label->SetMultiLine(true);
   partial_text_label->SizeToFit(tab_view_top_row_->GetPreferredSize().width());
@@ -668,13 +666,14 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewErrorNoTitle(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
   auto try_again_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
-          [](PartialTranslateBubbleModel* model) {
+          [](PartialTranslateBubbleModel* model,
+             content::WebContents* web_contents) {
             translate::ReportPartialTranslateBubbleUiAction(
                 translate::PartialTranslateBubbleUiEvent::
                     TRY_AGAIN_BUTTON_CLICKED);
-            model->Translate();
+            model->Translate(web_contents);
           },
-          base::Unretained(model_.get())),
+          model_.get(), web_contents_),
       l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_TRY_AGAIN));
   try_again_button->SetID(BUTTON_ID_TRY_AGAIN);
   button_row->AddChildView(std::move(try_again_button));
@@ -721,7 +720,6 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewWaiting() {
   throbber->SetProperty(views::kMarginsKey,
                         gfx::Insets::TLBR(0, 0, vertical_spacing, 0));
   throbber_ = throbber_container->AddChildView(std::move(throbber));
-  throbber_->Start();
   view->AddChildView(std::move(throbber_container));
 
   return view;
@@ -1004,12 +1002,17 @@ void PartialTranslateBubbleView::SwitchView(
   }
 
   SwitchTabForViewState(view_state);
+  UpdateTextForViewState(view_state);
 
   // In cases where we are switching from the waiting view, the spinner should
   // be stopped.
-  if (view_state != PartialTranslateBubbleModel::VIEW_STATE_WAITING &&
-      throbber_)
-    throbber_->Stop();
+  if (throbber_) {
+    if (view_state == PartialTranslateBubbleModel::VIEW_STATE_WAITING) {
+      throbber_->Start();
+    } else {
+      throbber_->Stop();
+    }
+  }
 
   UpdateViewState(view_state);
   if (view_state == PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
@@ -1026,6 +1029,17 @@ void PartialTranslateBubbleView::SwitchView(
   } else if (view_state == PartialTranslateBubbleModel::VIEW_STATE_ERROR) {
     GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
         IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
+  }
+}
+
+void PartialTranslateBubbleView::UpdateTextForViewState(
+    PartialTranslateBubbleModel::ViewState view_state) {
+  if (view_state == PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE ||
+      view_state == PartialTranslateBubbleModel::VIEW_STATE_TRANSLATING) {
+    partial_text_label_->SetText(model_->GetTargetText());
+  } else if (view_state ==
+             PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE) {
+    partial_text_label_->SetText(model_->GetSourceText());
   }
 }
 
@@ -1051,24 +1065,25 @@ void PartialTranslateBubbleView::SwitchTabForViewState(
 void PartialTranslateBubbleView::SwitchToErrorView(
     translate::TranslateErrors error_type) {
   SwitchView(PartialTranslateBubbleModel::VIEW_STATE_ERROR);
-  error_type_ = error_type;
-  model_->ShowError(error_type);
+  model_->SetError(error_type);
+  // TODO(crbug/1314825): Record the error when Partial Translate-specific
+  // metrics are added.
 }
 
 void PartialTranslateBubbleView::UpdateAdvancedView() {
   if (advanced_done_button_source_) {
+    bool changed = DidLanguageSelectionChange(
+        PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
     advanced_done_button_source_->SetText(l10n_util::GetStringUTF16(
-        model_->IsCurrentSelectionTranslated() ? IDS_DONE
-                                               : IDS_TRANSLATE_BUBBLE_ACCEPT));
-    advanced_reset_button_source_->SetEnabled(DidLanguageSelectionChange(
-        PartialTranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE));
+        changed ? IDS_TRANSLATE_BUBBLE_ACCEPT : IDS_DONE));
+    advanced_reset_button_source_->SetEnabled(changed);
   }
   if (advanced_done_button_target_) {
+    bool changed = DidLanguageSelectionChange(
+        PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
     advanced_done_button_target_->SetText(l10n_util::GetStringUTF16(
-        model_->IsCurrentSelectionTranslated() ? IDS_DONE
-                                               : IDS_TRANSLATE_BUBBLE_ACCEPT));
-    advanced_reset_button_target_->SetEnabled(DidLanguageSelectionChange(
-        PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE));
+        changed ? IDS_TRANSLATE_BUBBLE_ACCEPT : IDS_DONE));
+    advanced_reset_button_target_->SetEnabled(changed);
   }
   Layout();
 }

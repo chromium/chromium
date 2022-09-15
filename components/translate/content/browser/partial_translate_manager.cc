@@ -65,8 +65,8 @@ PartialTranslateResponse PartialTranslateManager::MakeResponse(
     const ResolvedSearchTerm& resolved_search_term) const {
   PartialTranslateResponse response;
 
-  response.translated_text =
-      base::UTF8ToUTF16(resolved_search_term.display_text);
+  // The translated text is returned in the `caption` field.
+  response.translated_text = base::UTF8ToUTF16(resolved_search_term.caption);
   response.source_language = resolved_search_term.context_language;
 
   // context_ may have been disposed of in the meantime.

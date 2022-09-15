@@ -5,12 +5,19 @@
 #ifndef CHROME_BROWSER_UI_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_MODEL_IMPL_H_
 #define CHROME_BROWSER_UI_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_MODEL_IMPL_H_
 
+#include "base/observer_list.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "components/translate/content/browser/partial_translate_manager.h"
+#include "components/translate/core/browser/translate_ui_delegate.h"
 
 class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
  public:
   PartialTranslateBubbleModelImpl(
       ViewState view_state,
+      translate::TranslateErrors error_type,
+      const std::u16string& source_text,
+      const std::u16string& target_text,
+      std::unique_ptr<PartialTranslateManager> partial_translate_manager,
       std::unique_ptr<translate::TranslateUIDelegate> ui_delegate);
 
   PartialTranslateBubbleModelImpl(const PartialTranslateBubbleModelImpl&) =
@@ -21,9 +28,18 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   ~PartialTranslateBubbleModelImpl() override;
 
   // PartialTranslateBubbleModel methods:
+  void AddObserver(PartialTranslateBubbleModel::Observer* obs) override;
+  void RemoveObserver(PartialTranslateBubbleModel::Observer* obs) override;
   ViewState GetViewState() const override;
   void SetViewState(ViewState view_state) override;
-  void ShowError(translate::TranslateErrors error_type) override;
+  void SetSourceLanguage(const std::string& language_code) override;
+  void SetTargetLanguage(const std::string& language_code) override;
+  void SetSourceText(const std::u16string& text) override;
+  std::u16string GetSourceText() const override;
+  void SetTargetText(const std::u16string& text) override;
+  std::u16string GetTargetText() const override;
+  void SetError(translate::TranslateErrors error_type) override;
+  translate::TranslateErrors GetError() const override;
   int GetNumberOfSourceLanguages() const override;
   int GetNumberOfTargetLanguages() const override;
   std::u16string GetSourceLanguageNameAt(int index) const override;
@@ -34,16 +50,35 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   void UpdateTargetLanguageIndex(int index) override;
   std::string GetSourceLanguageCode() const override;
   std::string GetTargetLanguageCode() const override;
-  void Translate() override;
-  void RevertTranslation() override;
-  bool IsCurrentSelectionTranslated() const override;
+  void Translate(content::WebContents* web_contents) override;
   void TranslateFullPage(content::WebContents* web_contents) override;
 
  private:
-  std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;
+  // Updates the partial translate model based on the given response.
+  void OnPartialTranslateResponse(const PartialTranslateRequest& request,
+                                  const PartialTranslateResponse& response);
 
   // The current view type.
   ViewState current_view_state_;
+
+  // The current error, or NONE if there is none.
+  translate::TranslateErrors error_type_;
+
+  // The selected text, which may be truncated.
+  std::u16string source_text_;
+
+  // The translated text, or empty if the translation has not yet been
+  // performed.
+  std::u16string target_text_;
+
+  // A manager instance to handle translation of user selected strings.
+  std::unique_ptr<PartialTranslateManager> partial_translate_manager_;
+
+  // Used to track the source and target languages.
+  std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;
+
+  // A list of clients to notify of partial translate status changes.
+  base::ObserverList<PartialTranslateBubbleModel::Observer> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_MODEL_IMPL_H_

@@ -13,7 +13,8 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 class TranslateBubbleController
-    : public content::WebContentsUserData<TranslateBubbleController> {
+    : public content::WebContentsUserData<TranslateBubbleController>,
+      public PartialTranslateBubbleModel::Observer {
  public:
   ~TranslateBubbleController() override;
   TranslateBubbleController(const TranslateBubbleController&) = delete;
@@ -42,18 +43,6 @@ class TranslateBubbleController
                              const std::string& source_language,
                              const std::string& target_language,
                              const std::u16string& text_selection);
-
-  // Shows the Partial Translate bubble. Returns the newly created bubble's
-  // Widget or nullptr in cases when the bubble already exists or when the
-  // bubble is not created.
-  views::Widget* ShowPartialTranslateBubble(
-      views::View* anchor_view,
-      views::Button* highlighted_button,
-      PartialTranslateBubbleModel::ViewState view_state,
-      const std::string& source_language,
-      const std::string& target_language,
-      const std::u16string& text_selection,
-      translate::TranslateErrors error_type);
 
   // Closes the current Partial or Full Page Translate bubble, if either exists.
   // At most one of these bubbles should be non-null at any given time.
@@ -96,24 +85,31 @@ class TranslateBubbleController
   base::RepeatingCallback<std::unique_ptr<PartialTranslateBubbleModel>()>
       partial_model_factory_callback_;
 
+  // Creates the Partial Translate bubble or updates the bubble if it already
+  // exists.
+  void CreatePartialTranslateBubble(
+      views::View* anchor_view,
+      views::Button* highlighted_button,
+      PartialTranslateBubbleModel::ViewState view_state,
+      const std::string& source_language,
+      const std::string& target_language,
+      const std::u16string& source_text,
+      const std::u16string& target_text,
+      translate::TranslateErrors error_type);
+
   // Handlers for when Translate bubbles are closed.
   void OnTranslateBubbleClosed();
   void OnPartialTranslateBubbleClosed();
 
-  // Callback for handling how the bubble should be shown, depending on the
-  // Partial Translate response.
-  void OnPartialTranslateWaitExpired(views::View* anchor_view,
-                                     views::Button* highlighted_button,
-                                     const std::string& source_language,
-                                     const std::string& target_language,
-                                     const std::u16string& text_selection);
+  // Called when the initial wait for the Partial Translate response expires.
+  // Shows the waitspin view.
+  void OnPartialTranslateWaitExpired();
+
+  // PartialTranslateBubbleModel::Observer impl.
+  void OnPartialTranslateComplete() override;
 
   // Timer used for handling the delay before showing Partial Translate bubble.
   base::OneShotTimer partial_translate_timer_;
-
-  // Timer used for mimicking wait time for Partial Translate response. This
-  // will be removed with the completion of PartialTranslateManager.
-  base::OneShotTimer throbber_timer_;
 
   friend class content::WebContentsUserData<TranslateBubbleController>;
   friend class TranslateBubbleControllerTest;

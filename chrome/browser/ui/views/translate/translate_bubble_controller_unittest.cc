@@ -5,14 +5,15 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include <memory>
 
+#include "base/observer_list.h"
 #include "base/test/bind.h"
-#include "chrome/browser/translate/chrome_translate_client.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/translate/core/browser/mock_translate_metrics_logger.h"
-#include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_step.h"
-#include "components/translate/core/browser/translate_ui_delegate.h"
+#include "components/translate/core/common/translate_util.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 
@@ -61,13 +62,11 @@ class FakeTranslateBubbleModel : public TranslateBubbleModel {
 
   void DeclineTranslation() override {}
 
-  bool ShouldNeverTranslateLanguage() override {
-    return never_translate_language_;
-  }
+  bool ShouldNeverTranslateLanguage() override { return false; }
 
   void SetNeverTranslateLanguage(bool value) override {}
 
-  bool ShouldNeverTranslateSite() override { return never_translate_site_; }
+  bool ShouldNeverTranslateSite() override { return false; }
 
   void SetNeverTranslateSite(bool value) override {}
 
@@ -77,9 +76,7 @@ class FakeTranslateBubbleModel : public TranslateBubbleModel {
 
   bool ShouldShowAlwaysTranslateShortcut() const override { return false; }
 
-  bool ShouldAlwaysTranslate() const override {
-    return should_always_translate_;
-  }
+  bool ShouldAlwaysTranslate() const override { return false; }
 
   void SetAlwaysTranslate(bool value) override {}
 
@@ -98,9 +95,6 @@ class FakeTranslateBubbleModel : public TranslateBubbleModel {
   void ReportUIChange(bool is_ui_shown) override {}
 
   ViewState current_view_state_;
-  bool never_translate_language_ = false;
-  bool never_translate_site_ = false;
-  bool should_always_translate_ = false;
 };
 
 class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
@@ -112,6 +106,14 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
     current_view_state_ = view_state;
   }
 
+  void AddObserver(PartialTranslateBubbleModel::Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(
+      PartialTranslateBubbleModel::Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
   PartialTranslateBubbleModel::ViewState GetViewState() const override {
     return current_view_state_;
   }
@@ -121,7 +123,18 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
     current_view_state_ = view_state;
   }
 
-  void ShowError(translate::TranslateErrors error_type) override {}
+  void SetSourceLanguage(const std::string& language_code) override {}
+  void SetTargetLanguage(const std::string& language_code) override {}
+
+  void SetSourceText(const std::u16string& text) override {}
+  std::u16string GetSourceText() const override { return u"source"; }
+  void SetTargetText(const std::u16string& text) override {}
+  std::u16string GetTargetText() const override { return u"target"; }
+
+  void SetError(translate::TranslateErrors error_type) override {}
+  translate::TranslateErrors GetError() const override {
+    return translate::TranslateErrors::NONE;
+  }
 
   int GetNumberOfSourceLanguages() const override { return 1000; }
 
@@ -147,15 +160,20 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
 
   std::string GetTargetLanguageCode() const override { return "en"; }
 
-  void Translate() override {}
-
-  void RevertTranslation() override {}
-
-  bool IsCurrentSelectionTranslated() const override { return false; }
+  void Translate(content::WebContents* web_contents) override {}
 
   void TranslateFullPage(content::WebContents* web_contents) override {}
 
+  void NotifyTranslated() {
+    for (PartialTranslateBubbleModel::Observer& obs : observers_) {
+      obs.OnPartialTranslateComplete();
+    }
+  }
+
   ViewState current_view_state_;
+
+ private:
+  base::ObserverList<PartialTranslateBubbleModel::Observer> observers_;
 };
 
 }  // namespace
@@ -166,10 +184,15 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
 
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        translate::kDesktopPartialTranslate,
+        {{"DesktopPartialTranslateBubbleShowDelayMs", "50"}});
+
     ChromeViewsTestBase::SetUp();
 
     // Create an anchor for the bubble.
     anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+    anchor_widget_->Show();
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     // Owned by WebContents.
@@ -180,10 +203,10 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
     // Use fake Translate bubble models instead of real implementations for
     // Translate bubble view construction in tests.
     controller_->SetTranslateBubbleModelFactory(base::BindRepeating(
-        &TranslateBubbleControllerTest::GetFakeTranslateBubbleModel,
+        &TranslateBubbleControllerTest::CreateFakeTranslateBubbleModel,
         base::Unretained(this)));
     controller_->SetPartialTranslateBubbleModelFactory(base::BindRepeating(
-        &TranslateBubbleControllerTest::GetFakePartialTranslateBubbleModel,
+        &TranslateBubbleControllerTest::CreateFakePartialTranslateBubbleModel,
         base::Unretained(this)));
   }
 
@@ -192,16 +215,22 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  std::unique_ptr<TranslateBubbleModel> GetFakeTranslateBubbleModel() {
-    return std::make_unique<FakeTranslateBubbleModel>(
+  std::unique_ptr<TranslateBubbleModel> CreateFakeTranslateBubbleModel() {
+    auto model = std::make_unique<FakeTranslateBubbleModel>(
         TranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE);
+    fake_translate_bubble_model_ = model.get();
+    return model;
   }
 
   std::unique_ptr<PartialTranslateBubbleModel>
-  GetFakePartialTranslateBubbleModel() {
-    return std::make_unique<FakePartialTranslateBubbleModel>(
+  CreateFakePartialTranslateBubbleModel() {
+    auto model = std::make_unique<FakePartialTranslateBubbleModel>(
         PartialTranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE);
+    fake_partial_translate_bubble_model_ = model.get();
+    return model;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   TestingProfile profile_;
   content::RenderViewHostTestEnabler test_render_host_factories_;
@@ -209,6 +238,10 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> anchor_widget_;
   std::unique_ptr<translate::testing::MockTranslateMetricsLogger>
       mock_translate_metrics_logger_;
+
+  FakeTranslateBubbleModel* fake_translate_bubble_model_ = nullptr;
+  FakePartialTranslateBubbleModel* fake_partial_translate_bubble_model_ =
+      nullptr;
 
   // Owned by WebContents.
   raw_ptr<TranslateBubbleController> controller_;
@@ -227,12 +260,11 @@ TEST_F(TranslateBubbleControllerTest, ShowFullPageThenPartialTranslateBubble) {
 
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::NotNull());
 
-  // Showing the Partial Translate bubble while the Full Page Translate bubble
-  // is open should close the Full Page Translate bubble.
-  controller_->ShowPartialTranslateBubble(
-      anchor_widget_->GetContentsView(), nullptr,
-      PartialTranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE, "fr",
-      "en", std::u16string(), translate::TranslateErrors::NONE);
+  // Starting a Partial Translate while the Full Page Translate bubble is open
+  // should close the Full Page Translate bubble.
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", std::u16string());
+  fake_partial_translate_bubble_model_->NotifyTranslated();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(controller_->GetPartialTranslateBubble(), testing::NotNull());
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::IsNull());
@@ -248,10 +280,10 @@ TEST_F(TranslateBubbleControllerTest, ShowPartialThenFullPageTranslateBubble) {
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::IsNull());
 
   // Show the Partial Translate bubble first.
-  controller_->ShowPartialTranslateBubble(
-      anchor_widget_->GetContentsView(), nullptr,
-      PartialTranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE, "fr",
-      "en", std::u16string(), translate::TranslateErrors::NONE);
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", std::u16string());
+  fake_partial_translate_bubble_model_->NotifyTranslated();
+  base::RunLoop().RunUntilIdle();
   EXPECT_THAT(controller_->GetPartialTranslateBubble(), testing::NotNull());
 
   // Showing the Full Page Translate bubble while the Partial Translate bubble
@@ -269,4 +301,38 @@ TEST_F(TranslateBubbleControllerTest, ShowPartialThenFullPageTranslateBubble) {
   controller_->CloseBubble();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::IsNull());
+}
+
+TEST_F(TranslateBubbleControllerTest, PartialTranslateTimerExpired) {
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", std::u16string());
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+  ASSERT_TRUE(controller_->GetPartialTranslateBubble());
+  EXPECT_FALSE(
+      controller_->GetPartialTranslateBubble()->GetWidget()->IsVisible());
+
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(
+      controller_->GetPartialTranslateBubble()->GetWidget()->IsVisible());
+  EXPECT_EQ(fake_partial_translate_bubble_model_->GetViewState(),
+            PartialTranslateBubbleModel::ViewState::VIEW_STATE_WAITING);
+
+  fake_partial_translate_bubble_model_->NotifyTranslated();
+  EXPECT_EQ(fake_partial_translate_bubble_model_->GetViewState(),
+            PartialTranslateBubbleModel::ViewState::VIEW_STATE_AFTER_TRANSLATE);
+}
+
+TEST_F(TranslateBubbleControllerTest, PartialTranslateResponseBeforeTimer) {
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", std::u16string());
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+  ASSERT_TRUE(controller_->GetPartialTranslateBubble());
+  EXPECT_FALSE(
+      controller_->GetPartialTranslateBubble()->GetWidget()->IsVisible());
+
+  fake_partial_translate_bubble_model_->NotifyTranslated();
+  EXPECT_TRUE(
+      controller_->GetPartialTranslateBubble()->GetWidget()->IsVisible());
+  EXPECT_EQ(fake_partial_translate_bubble_model_->GetViewState(),
+            PartialTranslateBubbleModel::ViewState::VIEW_STATE_AFTER_TRANSLATE);
 }
