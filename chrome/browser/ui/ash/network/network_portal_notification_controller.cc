@@ -18,30 +18,21 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/mobile/mobile_activator.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "components/captive_portal/core/captive_portal_detector.h"
-#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -128,47 +119,29 @@ void CloseNotification() {
 
 }  // namespace
 
-class NetworkPortalNotificationController::Delegate
-    : public message_center::NotificationDelegate {
+class NotificationDelegateImpl : public message_center::NotificationDelegate {
  public:
-  explicit Delegate(
-      base::WeakPtr<NetworkPortalNotificationController> controller)
-      : controller_(controller) {}
+  explicit NotificationDelegateImpl(
+      base::WeakPtr<NetworkPortalSigninController> signin_controller)
+      : signin_controller_(signin_controller) {}
+  NotificationDelegateImpl(const NotificationDelegateImpl&) = delete;
+  NotificationDelegateImpl& operator=(const NotificationDelegateImpl&) = delete;
 
-  Delegate(const Delegate&) = delete;
-  Delegate& operator=(const Delegate&) = delete;
-
-  // Overridden from message_center::NotificationDelegate:
+  // message_center::NotificationDelegate
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
  private:
-  ~Delegate() override = default;
+  ~NotificationDelegateImpl() override = default;
 
-  base::WeakPtr<NetworkPortalNotificationController> controller_;
+  base::WeakPtr<NetworkPortalSigninController> signin_controller_;
 };
 
-void NetworkPortalNotificationController::Delegate::Click(
+void NotificationDelegateImpl::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-
-  const bool use_incognito_profile =
-      profile && profile->GetPrefs()->GetBoolean(
-                     prefs::kCaptivePortalAuthenticationIgnoresProxy);
-
-  if (use_incognito_profile) {
-    if (controller_)
-      controller_->ShowDialog();
-  } else {
-    if (!profile)
-      return;
-    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    if (!displayer.browser())
-      return;
-    GURL url(captive_portal::CaptivePortalDetector::kDefaultURL);
-    ShowSingletonTab(displayer.browser(), url);
-  }
+  if (signin_controller_)
+    signin_controller_->ShowSignin();
   CloseNotification();
 }
 
@@ -203,9 +176,10 @@ void NetworkPortalNotificationController::PortalStateChanged(
     // In browser tests we initiate fake network portal detection, but network
     // state usually stays connected. This way, after dialog is shown, it is
     // immediately closed. The testing check below prevents dialog from closing.
-    if (dialog_ && (!ignore_no_network_for_testing_ ||
-                    portal_state == NetworkState::PortalState::kOnline)) {
-      dialog_->Close();
+    if (signin_controller_ &&
+        (!ignore_no_network_for_testing_ ||
+         portal_state == NetworkState::PortalState::kOnline)) {
+      signin_controller_->CloseSignin();
     }
 
     CloseNotification();
@@ -230,32 +204,17 @@ void NetworkPortalNotificationController::PortalStateChanged(
 }
 
 void NetworkPortalNotificationController::OnShuttingDown() {
-  CloseDialog();
+  if (signin_controller_)
+    signin_controller_->CloseSignin();
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 }
 
 void NetworkPortalNotificationController::OnSessionStateChanged() {
   session_manager::SessionState state =
       session_manager::SessionManager::Get()->session_state();
-  if (state == session_manager::SessionState::LOCKED)
-    CloseDialog();
-}
-
-void NetworkPortalNotificationController::ShowDialog() {
-  if (dialog_)
-    return;
-
-  Profile* signin_profile = ProfileHelper::GetSigninProfile();
-  dialog_ = new NetworkPortalWebDialog(weak_factory_.GetWeakPtr());
-  dialog_->SetWidget(views::Widget::GetWidgetForNativeWindow(
-      chrome::ShowWebDialog(nullptr, signin_profile, dialog_)));
-}
-
-void NetworkPortalNotificationController::OnDialogDestroyed(
-    const NetworkPortalWebDialog* dialog) {
-  if (dialog == dialog_) {
-    dialog_ = nullptr;
-    SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
+  if (state == session_manager::SessionState::LOCKED) {
+    if (signin_controller_)
+      signin_controller_->CloseSignin();
   }
 }
 
@@ -263,7 +222,9 @@ std::unique_ptr<message_center::Notification>
 NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
     const NetworkState* network,
     NetworkState::PortalState portal_state) {
-  auto delegate = base::MakeRefCounted<Delegate>(weak_factory_.GetWeakPtr());
+  signin_controller_ = std::make_unique<NetworkPortalSigninController>();
+  auto notification_delegate = base::MakeRefCounted<NotificationDelegateImpl>(
+      signin_controller_->GetWeakPtr());
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kNotifierNetworkPortalDetector,
@@ -271,11 +232,11 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
   std::unique_ptr<message_center::Notification> notification;
   if (ash::features::IsCaptivePortalUI2022Enabled()) {
-    notification = CreatePost2022Notification(network, delegate, notifier_id,
-                                              is_wifi, portal_state);
+    notification = CreatePost2022Notification(
+        network, notification_delegate, notifier_id, is_wifi, portal_state);
   } else {
-    notification =
-        CreatePre2022Notification(network, delegate, notifier_id, is_wifi);
+    notification = CreatePre2022Notification(network, notification_delegate,
+                                             notifier_id, is_wifi);
   }
   return notification;
 }
@@ -284,13 +245,8 @@ void NetworkPortalNotificationController::SetIgnoreNoNetworkForTesting() {
   ignore_no_network_for_testing_ = true;
 }
 
-void NetworkPortalNotificationController::CloseDialog() {
-  if (dialog_)
-    dialog_->Close();
-}
-
 bool NetworkPortalNotificationController::IsDialogShownForTesting() const {
-  return !!dialog_;
+  return signin_controller_ && signin_controller_->DialogIsShown();
 }
 
 }  // namespace ash

@@ -2359,6 +2359,8 @@ static_library("ui") {
       "ash/network/network_connect_delegate_chromeos.h",
       "ash/network/network_portal_notification_controller.cc",
       "ash/network/network_portal_notification_controller.h",
+      "ash/network/network_portal_signin_controller.cc",
+      "ash/network/network_portal_signin_controller.h",
       "ash/network/network_state_notifier.cc",
       "ash/network/network_state_notifier.h",
       "ash/network/tether_notification_presenter.cc",
