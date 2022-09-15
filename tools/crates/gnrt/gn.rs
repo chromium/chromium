@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -530,7 +530,7 @@ static TARGET_OS_TO_GN_CONDITION: &'static [(&'static str, &'static str)] = &[
     ("windows", "is_win"),
 ];
 
-static COPYRIGHT_HEADER: &'static str = "# Copyright 2022 The Chromium Authors.
+static COPYRIGHT_HEADER: &'static str = "# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.";
 

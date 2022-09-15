@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -74,7 +74,7 @@ MIN_MILESTONE = 62
 # String that appears at the top of annotations.xml.
 XML_COMMENT = """<?xml version="1.0"?>
 <!--
-Copyright 2017 The Chromium Authors. All rights reserved.
+Copyright 2017 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 
@@ -85,7 +85,7 @@ Refer to README.md for content description and update process.
 
 # String that appears at the top of grouping.xml.
 XML_GROUPING_COMMENT = """<!--
-Copyright 2020 The Chromium Authors. All rights reserved.
+Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 

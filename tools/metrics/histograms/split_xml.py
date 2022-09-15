@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Splits a XML file into smaller XMLs in subfolders.
@@ -19,7 +19,7 @@ import path_util
 # The top level comment templates that will be formatted and added to each split
 # histograms xml.
 FIRST_TOP_LEVEL_COMMENT_TEMPLATE = """
-Copyright 2021 The Chromium Authors. All rights reserved.
+Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 """

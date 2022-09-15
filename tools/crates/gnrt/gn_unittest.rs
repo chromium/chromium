@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ fn test() {
     };
     expect_eq_diff(
         format!("{}", build_file.display()),
-        r#"# Copyright 2022 The Chromium Authors.
+        r#"# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -140,7 +140,7 @@ build_script_outputs = [
     };
     expect_eq_diff(
         format!("{}", build_file.display()),
-        r#"# Copyright 2022 The Chromium Authors.
+        r#"# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -231,7 +231,7 @@ cargo_pkg_name = "foo"
     };
     expect_eq_diff(
         format!("{}", build_file.display()),
-        r#"# Copyright 2022 The Chromium Authors.
+        r#"# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 

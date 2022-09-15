@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''
@@ -44,7 +44,7 @@ import bisect
 # Below sessions are contents for test files
 this_year = str(datetime.datetime.now().year)
 
-_INST_TEST_FILE = '''// Copyright %s The Chromium Authors. All rights reserved.
+_INST_TEST_FILE = '''// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ public class %sInstrumentationTest extends BlankUiTestActivityTestCase {
 }
 '''
 
-_UNIT_TEST_FILE = '''// Copyright %s The Chromium Authors. All rights reserved.
+_UNIT_TEST_FILE = '''// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

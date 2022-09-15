@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,7 @@ import json_parse
 
 # The template for the header file of the generated FeatureProvider.
 HEADER_FILE_TEMPLATE = """
-// Copyright %(year)s The Chromium Authors. All rights reserved.
+// Copyright %(year)s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ void %(method_name)s(FeatureProvider* provider);
 
 # The beginning of the .cc file for the generated FeatureProvider.
 CC_FILE_BEGIN = """
-// Copyright %(year)s The Chromium Authors. All rights reserved.
+// Copyright %(year)s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

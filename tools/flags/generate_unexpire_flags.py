@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generates extra flags needed to allow temporarily reverting flag expiry.
@@ -40,7 +40,7 @@ def recent_mstones(mstone):
 
 def file_header(prog_name):
   """Returns the header to use on generated files."""
-  return """// Copyright 2020 The Chromium Authors. All rights reserved.
+  return """// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
