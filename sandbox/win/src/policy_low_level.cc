@@ -350,8 +350,8 @@ bool PolicyRule::RebindCopy(PolicyOpcode* opcode_start,
 }
 
 PolicyRule::~PolicyRule() {
-  delete[] reinterpret_cast<char*>(buffer_.ExtractAsDangling().get());
   opcode_factory_.ClearAndDelete();
+  delete[] reinterpret_cast<char*>(buffer_.ExtractAsDangling().get());
 }
 
 }  // namespace sandbox
