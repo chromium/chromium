@@ -153,9 +153,9 @@ bool AreUnwinderAssetsAvailable() {
   const version_info::Channel channel = chrome::GetChannel();
   // CFI is currently only embedded into dev, canary, and beta builds of Chrome:
   // https://crsrc.org/c/chrome/android/chrome_public_apk_tmpl.gni;l=30-36;drc=32cca7e9d8c49d42e393c75ffb404a0f8899704d
-  return channel == version_info::Channel::BETA ||
-         channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::DEV;
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV ||
+         channel == version_info::Channel::BETA;
 }
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 
