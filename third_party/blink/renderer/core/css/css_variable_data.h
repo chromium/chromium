@@ -34,9 +34,11 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
       bool needs_variable_resolution,
       const KURL& base_url,
       const WTF::TextEncoding& charset) {
-    return base::AdoptRef(
-        new CSSVariableData(tokenized_value, is_animation_tainted,
-                            needs_variable_resolution, base_url, charset));
+    void* buf =
+        AllocateSpaceIncludingCSSParserTokens(tokenized_value.range.size());
+    return base::AdoptRef(new (buf) CSSVariableData(
+        tokenized_value, is_animation_tainted, needs_variable_resolution,
+        base_url, charset));
   }
 
   static scoped_refptr<CSSVariableData> CreateResolved(
@@ -47,7 +49,8 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
       bool has_root_font_units,
       const String& base_url,
       const WTF::TextEncoding& charset) {
-    return base::AdoptRef(new CSSVariableData(
+    void* buf = AllocateSpaceIncludingCSSParserTokens(resolved_tokens.size());
+    return base::AdoptRef(new (buf) CSSVariableData(
         std::move(resolved_tokens), std::move(backing_strings),
         is_animation_tainted, has_font_units, has_root_font_units, base_url,
         charset));
@@ -55,10 +58,12 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
 
   CSSParserTokenRange TokenRange() const {
     return CSSParserTokenRange{
-        base::span<CSSParserToken>(tokens_, num_tokens_)};
+        base::span<CSSParserToken>(TokenInternalPtr(), num_tokens_)};
   }
 
-  base::span<CSSParserToken> Tokens() const { return {tokens_, num_tokens_}; }
+  base::span<CSSParserToken> Tokens() const {
+    return {TokenInternalPtr(), num_tokens_};
+  }
 
   // Appends all backing strings to the given vector.
   void AppendBackingStrings(Vector<String>& output) const;
@@ -92,7 +97,6 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
     } else {
       backing_strings_.~unique_ptr<String[]>();
     }
-    WTF::Partitions::FastFree(tokens_);
   }
 
   CSSVariableData(const CSSVariableData&) = delete;
@@ -132,24 +136,29 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
     }
     num_backing_strings_ = backing_strings.size();
 
-    AllocateSpaceForCSSParserTokens();
     std::uninitialized_move(resolved_tokens.begin(), resolved_tokens.end(),
-                            tokens_);
+                            TokenInternalPtr());
 #if EXPENSIVE_DCHECKS_ARE_ON()
     VerifyStringBacking();
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
-  }
-
-  void AllocateSpaceForCSSParserTokens() {
-    tokens_ = reinterpret_cast<CSSParserToken*>(WTF::Partitions::FastMalloc(
-        sizeof(CSSParserToken) * num_tokens_,
-        WTF::GetStringWithTypeName<CSSParserToken>()));
   }
 
   void ConsumeAndUpdateTokens(const CSSParserTokenRange&);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   void VerifyStringBacking() const;
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
+
+  static void* AllocateSpaceIncludingCSSParserTokens(size_t num_tokens) {
+    const size_t bytes_needed =
+        sizeof(CSSVariableData) + num_tokens * sizeof(CSSParserToken);
+    return WTF::Partitions::FastMalloc(
+        bytes_needed, WTF::GetStringWithTypeName<CSSVariableData>());
+  }
+
+  CSSParserToken* TokenInternalPtr() const {
+    return const_cast<CSSParserToken*>(
+        reinterpret_cast<const CSSParserToken*>(this + 1));
+  }
 
   // tokens_ may have raw pointers to string data, we store the String objects
   // owning that data in backing_strings_ to keep it alive alongside the
@@ -159,7 +168,6 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
     std::unique_ptr<String[]> backing_strings_{nullptr};  // Otherwise.
   };
   String original_text_;
-  CSSParserToken* tokens_ = nullptr;  // Owned, allocated with FastMalloc.
   wtf_size_t num_tokens_ = 0;
   wtf_size_t num_backing_strings_ = 0;
   const bool is_animation_tainted_ = false;
@@ -168,6 +176,8 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   bool has_root_font_units_ = false;
   String base_url_;
   WTF::TextEncoding charset_;
+
+  // The CSSParserTokens are stored after this.
 };
 
 }  // namespace blink

@@ -77,7 +77,7 @@ String CSSVariableData::Serialize() const {
       serialized_text.Append(original_text_);
       serialized_text.Resize(serialized_text.length() - 1);
       DCHECK_NE(0u, num_tokens_);
-      const CSSParserToken& last = tokens_[num_tokens_ - 1];
+      const CSSParserToken& last = TokenInternalPtr()[num_tokens_ - 1];
       if (last.GetType() != kStringToken)
         serialized_text.Append(kReplacementCharacter);
 
@@ -117,11 +117,10 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
   }
   backing_string_ = string_builder.ReleaseString();
   num_backing_strings_ = 1;
-  AllocateSpaceForCSSParserTokens();
   if (backing_string_.Is8Bit())
-    UpdateTokens<LChar>(range, backing_string_, tokens_);
+    UpdateTokens<LChar>(range, backing_string_, TokenInternalPtr());
   else
-    UpdateTokens<UChar>(range, backing_string_, tokens_);
+    UpdateTokens<UChar>(range, backing_string_, TokenInternalPtr());
 }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
