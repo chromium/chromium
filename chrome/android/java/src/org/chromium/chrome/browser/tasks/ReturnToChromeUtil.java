@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -49,6 +51,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -78,6 +81,7 @@ public final class ReturnToChromeUtil {
             "StartSurface.ShownFromBackNavigation.";
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
+    private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
 
     @VisibleForTesting
     public static final String TAB_SWITCHER_ON_RETURN_MS_PARAM = "tab_switcher_on_return_time_ms";
@@ -143,18 +147,25 @@ public final class ReturnToChromeUtil {
     /**
      * Determine if we should show the tab switcher on returning to Chrome.
      *   Returns true if enough time has elapsed since the app was last backgrounded.
-     *   The threshold time in milliseconds is set by experiment "enable-tab-switcher-on-return"
+     *   The threshold time in milliseconds is set by experiment "enable-tab-switcher-on-return" or
+     *   from segmentation platform result if {@link ChromeFeatureList.START_SURFACE_RETURN_TIME} is
+     *   enabled.
      *
      * @param lastBackgroundedTimeMillis The last time the application was backgrounded. Set in
      *                                   ChromeTabbedActivity::onStopWithNative
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
     public static boolean shouldShowTabSwitcher(final long lastBackgroundedTimeMillis) {
-        int tabSwitcherAfterMillis = TAB_SWITCHER_ON_RETURN_MS.getValue();
+        long tabSwitcherAfterMillis =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_RETURN_TIME)
+                ? getReturnTimeFromSegmentation()
+                : TAB_SWITCHER_ON_RETURN_MS.getValue();
 
         if (lastBackgroundedTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.
-            return tabSwitcherAfterMillis == 0;
+            // Even when {@link ChromeFeatureList.START_SURFACE_RETURN_TIME} is enabled, we still
+            // check the value of "enable-tab-switcher-on-return".
+            return TAB_SWITCHER_ON_RETURN_MS.getValue() == 0 || tabSwitcherAfterMillis == 0;
         }
 
         if (tabSwitcherAfterMillis < 0) {
@@ -163,6 +174,21 @@ public final class ReturnToChromeUtil {
         }
 
         return System.currentTimeMillis() - lastBackgroundedTimeMillis > tabSwitcherAfterMillis;
+    }
+
+    /**
+     * Gets the cached return time obtained from the segmentation platform service.
+     * Note: this function should NOT been called on tablets! The default value for tablets is -1
+     * which means not showing.
+     * @return How long to show the Start surface again on startup. A negative value means not show,
+     *         0 means showing immediately. The return time is in the unit of milliseconds.
+     */
+    @VisibleForTesting
+    public static long getReturnTimeFromSegmentation() {
+        // Sets the default value as 8 hours; 0 means showing immediately.
+        return SharedPreferencesManager.getInstance().readLong(
+                ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS,
+                TAB_SWITCHER_ON_RETURN_MS.getDefaultValue());
     }
 
     /**
@@ -708,6 +734,33 @@ public final class ReturnToChromeUtil {
             SharedPreferencesManager.getInstance().writeInt(
                     ChromePreferenceKeys.SHOW_START_SEGMENTATION_RESULT, resultEnum);
         });
+    }
+
+    /*
+     * Computes a return time from the result of the segmentation platform and stores to prefs.
+     */
+    public static void cacheReturnTimeFromSegmentation() {
+        SegmentationPlatformService segmentationPlatformService =
+                SegmentationPlatformServiceFactory.getForProfile(
+                        Profile.getLastUsedRegularProfile());
+
+        segmentationPlatformService.getSelectedSegment(START_V2_SEGMENTATION_PLATFORM_KEY,
+                result -> { cacheReturnTimeFromSegmentationImpl(result); });
+    }
+
+    @VisibleForTesting
+    public static void cacheReturnTimeFromSegmentationImpl(SegmentSelectionResult result) {
+        long returnTimeMs = TAB_SWITCHER_ON_RETURN_MS.getDefaultValue();
+        if (result.isReady) {
+            // The value of result.rank is in the unit of seconds.
+            returnTimeMs = result.rank.longValue();
+            if (returnTimeMs > 0) {
+                // Converts to milliseconds.
+                returnTimeMs *= DateUtils.SECOND_IN_MILLIS;
+            }
+        }
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS, returnTimeMs);
     }
 
     /**
