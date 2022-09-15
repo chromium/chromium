@@ -23,22 +23,21 @@ class CORE_EXPORT NGFragmentItems final {
   DISALLOW_NEW();
 
  public:
-  NGFragmentItems() = default;
-
   NGFragmentItems(const NGFragmentItems& other);
   explicit NGFragmentItems(NGFragmentItemsBuilder* builder);
+  ~NGFragmentItems();
 
-  wtf_size_t Size() const { return items_.size(); }
+  wtf_size_t Size() const { return size_; }
 
   using Span = base::span<const NGFragmentItem>;
-  Span Items() const { return base::make_span(ItemsData(), items_.size()); }
+  Span Items() const { return base::make_span(ItemsData(), size_); }
   bool Equals(const Span& span) const {
     return ItemsData() == span.data() && Size() == span.size();
   }
   bool IsSubSpan(const Span& span) const;
 
   const NGFragmentItem& front() const {
-    CHECK_GE(items_.size(), 1u);
+    CHECK_GE(size_, 1u);
     return items_[0];
   }
 
@@ -60,9 +59,7 @@ class CORE_EXPORT NGFragmentItems final {
   wtf_size_t SizeOfEarlierFragments() const {
     return size_of_earlier_fragments_;
   }
-  wtf_size_t EndItemIndex() const {
-    return size_of_earlier_fragments_ + items_.size();
-  }
+  wtf_size_t EndItemIndex() const { return size_of_earlier_fragments_ + size_; }
   bool HasItemIndex(wtf_size_t index) const {
     return index >= SizeOfEarlierFragments() && index < EndItemIndex();
   }
@@ -107,6 +104,12 @@ class CORE_EXPORT NGFragmentItems final {
       const NGPhysicalBoxFragment& new_fragment,
       const NGPhysicalBoxFragment& containing_fragment);
 
+  // The byte size of this instance.
+  constexpr static wtf_size_t ByteSizeFor(wtf_size_t count) {
+    return sizeof(NGFragmentItems) + count * sizeof(NGFragmentItem);
+  }
+  wtf_size_t ByteSize() const { return ByteSizeFor(Size()); }
+
 #if DCHECK_IS_ON()
   void CheckAllItemsAreValid() const;
 #endif
@@ -114,7 +117,7 @@ class CORE_EXPORT NGFragmentItems final {
   void Trace(Visitor*) const;
 
  private:
-  const NGFragmentItem* ItemsData() const { return items_.data(); }
+  const NGFragmentItem* ItemsData() const { return items_; }
 
   static bool CanReuseAll(NGInlineCursor* cursor);
   static bool TryDirtyFirstLineFor(const LayoutObject& layout_object,
@@ -126,11 +129,15 @@ class CORE_EXPORT NGFragmentItems final {
   String text_content_;
   String first_line_text_content_;
 
+  // Note: To make |Trace()| handles flexible array |items_| correctly, |size_|
+  // must be an immutable.
+  const wtf_size_t size_;
+
   // Total size of |NGFragmentItem| in earlier fragments when block fragmented.
   // 0 for the first |NGFragmentItems|.
-  mutable wtf_size_t size_of_earlier_fragments_ = 0u;
+  mutable wtf_size_t size_of_earlier_fragments_;
 
-  HeapVector<NGFragmentItem> items_;
+  NGFragmentItem items_[0];
 };
 
 }  // namespace blink

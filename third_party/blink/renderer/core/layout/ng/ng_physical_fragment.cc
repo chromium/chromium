@@ -867,9 +867,6 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
         }
         break;
       }
-      case NGFragmentItem::kInvalid:
-        NOTREACHED();
-        break;
     }
     cursor->MoveToNext();
   }

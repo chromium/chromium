@@ -1470,9 +1470,6 @@ void NGBoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
         NOTREACHED();
         cursor->MoveToNext();
         break;
-      case NGFragmentItem::kInvalid:
-        NOTREACHED();
-        break;
     }
   }
 }

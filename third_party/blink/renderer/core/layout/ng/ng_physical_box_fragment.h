@@ -94,14 +94,14 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
   base::span<const NGLink> Children() const {
     DCHECK(children_valid_);
-    return base::make_span(children_);
+    return base::make_span(children_, const_num_children_);
   }
 
   // Similar to |Children()| but all children are the latest generation of
   // post-layout, and therefore all descendants are safe.
   NGPhysicalFragment::PostLayoutChildLinkList PostLayoutChildren() const {
     DCHECK(children_valid_);
-    return PostLayoutChildLinkList(children_.size(), children_.data());
+    return PostLayoutChildLinkList(const_num_children_, children_);
   }
 
   // This exposes a mutable part of the fragment for |NGOutOfFlowLayoutPart|.
@@ -125,7 +125,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   MutableChildrenForOutOfFlow GetMutableChildrenForOutOfFlow() const {
     DCHECK(children_valid_);
-    return MutableChildrenForOutOfFlow(children_.data(), children_.size());
+    return MutableChildrenForOutOfFlow(children_, const_num_children_);
   }
 
   // Returns |NGFragmentItems| if this fragment has one.
@@ -449,7 +449,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     }
     base::span<NGLink> Children() const {
       DCHECK(fragment_.children_valid_);
-      return base::make_span(fragment_.children_);
+      return base::make_span(fragment_.children_,
+                             fragment_.const_num_children_);
     }
 
    private:
@@ -481,7 +482,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   void Dispose();
 
  private:
-  static size_t AdditionalByteSize(bool has_fragment_items,
+  static size_t AdditionalByteSize(wtf_size_t num_fragment_items,
+                                   wtf_size_t num_children,
                                    bool has_layout_overflow,
                                    bool has_borders,
                                    bool has_padding,
@@ -520,19 +522,22 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   const NGFragmentItems* ComputeItemsAddress() const {
     DCHECK(const_has_fragment_items_ || has_layout_overflow_ || has_borders_ ||
            has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
-    return reinterpret_cast<const NGFragmentItems*>(base::bits::AlignUp(
-        reinterpret_cast<const uint8_t*>(this + 1), alignof(NGFragmentItems)));
+    const NGLink* children_end = children_ + const_num_children_;
+    return reinterpret_cast<const NGFragmentItems*>(
+        base::bits::AlignUp(reinterpret_cast<const uint8_t*>(children_end),
+                            alignof(NGFragmentItems)));
   }
 
   const PhysicalRect* ComputeLayoutOverflowAddress() const {
     DCHECK(has_layout_overflow_ || has_borders_ || has_padding_ ||
            has_inflow_bounds_ || const_has_rare_data_);
     const NGFragmentItems* items = ComputeItemsAddress();
-    const uint8_t* unaligned_layout_overflow =
-        const_has_fragment_items_ ? reinterpret_cast<const uint8_t*>(items + 1)
-                                  : reinterpret_cast<const uint8_t*>(items);
+    const uint8_t* uint8_t_items = reinterpret_cast<const uint8_t*>(items);
+    if (const_has_fragment_items_)
+      uint8_t_items += items->ByteSize();
+
     return reinterpret_cast<const PhysicalRect*>(
-        base::bits::AlignUp(unaligned_layout_overflow, alignof(PhysicalRect)));
+        base::bits::AlignUp(uint8_t_items, alignof(PhysicalRect)));
   }
 
   const NGPhysicalBoxStrut* ComputeBordersAddress() const {
@@ -627,10 +632,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   unsigned has_descendants_for_table_part_ : 1;
   unsigned is_fragmentation_context_root_ : 1;
 
+  const wtf_size_t const_num_children_;
+
   LayoutUnit first_baseline_;
   LayoutUnit last_baseline_;
   NGInkOverflow ink_overflow_;
-  HeapVector<NGLink> children_;
+  NGLink children_[];
   // fragment_items, borders, padding, and rare_data are after |children_| if
   // they are not empty/initial.
 };

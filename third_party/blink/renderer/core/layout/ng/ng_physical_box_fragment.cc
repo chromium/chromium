@@ -43,10 +43,11 @@ namespace {
 
 struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
   unsigned flags;
+  wtf_size_t const_num_children;
   LayoutUnit baseline;
   LayoutUnit last_baseline;
   NGInkOverflow ink_overflow;
-  HeapVector<NGLink> children_;
+  NGLink children[];
 };
 
 ASSERT_SIZE(NGPhysicalBoxFragment, SameSizeAsNGPhysicalBoxFragment);
@@ -201,9 +202,11 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
       builder->table_cell_column_index_ ||
       !builder->table_section_row_offsets_.IsEmpty() || builder->page_name_;
 
-  size_t byte_size =
-      AdditionalByteSize(has_fragment_items, has_layout_overflow, has_borders,
-                         has_padding, inflow_bounds.has_value(), has_rare_data);
+  wtf_size_t num_fragment_items =
+      builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
+  size_t byte_size = AdditionalByteSize(
+      num_fragment_items, builder->children_.size(), has_layout_overflow,
+      has_borders, has_padding, inflow_bounds.has_value(), has_rare_data);
 
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
@@ -220,9 +223,12 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
 // static
 const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Clone(
     const NGPhysicalBoxFragment& other) {
+  // The size of the new fragment shouldn't differ from the old one.
+  wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
   size_t byte_size = AdditionalByteSize(
-      other.HasItems(), other.has_layout_overflow_, other.has_borders_,
-      other.has_padding_, other.has_inflow_bounds_, other.const_has_rare_data_);
+      num_fragment_items, other.const_num_children_, other.has_layout_overflow_,
+      other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
+      other.const_has_rare_data_);
 
   return MakeGarbageCollected<NGPhysicalBoxFragment>(
       AdditionalBytes(byte_size), PassKey(), other, other.HasLayoutOverflow(),
@@ -242,9 +248,12 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     has_layout_overflow = layout_overflow != PhysicalRect({}, other.Size());
   }
 
+  // The size of the new fragment shouldn't differ from the old one.
+  wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
   size_t byte_size = AdditionalByteSize(
-      other.HasItems(), has_layout_overflow, other.has_borders_,
-      other.has_padding_, other.has_inflow_bounds_, other.const_has_rare_data_);
+      num_fragment_items, other.const_num_children_, has_layout_overflow,
+      other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
+      other.const_has_rare_data_);
 
   const auto* cloned_fragment = MakeGarbageCollected<NGPhysicalBoxFragment>(
       AdditionalBytes(byte_size), PassKey(), other, has_layout_overflow,
@@ -300,15 +309,21 @@ constexpr void AccountSizeAndPadding(size_t& current_size) {
 }  // namespace
 
 // static
-size_t NGPhysicalBoxFragment::AdditionalByteSize(bool has_fragment_items,
+size_t NGPhysicalBoxFragment::AdditionalByteSize(wtf_size_t num_fragment_items,
+                                                 wtf_size_t num_children,
                                                  bool has_layout_overflow,
                                                  bool has_borders,
                                                  bool has_padding,
                                                  bool has_inflow_bounds,
                                                  bool has_rare_data) {
-  size_t additional_size = 0;
-  if (has_fragment_items)
-    AccountSizeAndPadding<NGFragmentItems>(additional_size);
+  // Padding must be 0 for flexible array members.
+  static_assert(0 == (sizeof(NGPhysicalBoxFragment) % alignof(NGLink)));
+
+  size_t additional_size = sizeof(NGLink) * num_children;
+  additional_size =
+      base::bits::AlignUp(additional_size, alignof(NGFragmentItems)) +
+      NGFragmentItems::ByteSizeFor(num_fragment_items);
+
   if (has_layout_overflow)
     AccountSizeAndPadding<PhysicalRect>(additional_size);
   if (has_borders)
@@ -343,15 +358,15 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       const_has_fragment_items_(has_fragment_items),
       const_has_rare_data_(has_rare_data),
       has_descendants_for_table_part_(false),
-      is_fragmentation_context_root_(builder->is_fragmentation_context_root_) {
+      is_fragmentation_context_root_(builder->is_fragmentation_context_root_),
+      const_num_children_(builder->children_.size()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
   DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());
 
-  children_.resize(builder->children_.size());
-
+  PhysicalSize size = Size();
   const WritingModeConverter converter(
-      {block_or_line_writing_mode, builder->Direction()}, Size());
+      {block_or_line_writing_mode, builder->Direction()}, size);
   wtf_size_t i = 0;
   for (auto& child : builder->children_) {
     children_[i].offset =
@@ -424,7 +439,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       builder->use_last_baseline_for_inline_baseline_;
 
   has_descendants_for_table_part_ =
-      children_.size() || NeedsOOFPositionedInfoPropagation();
+      const_num_children_ || NeedsOOFPositionedInfoPropagation();
 
 #if DCHECK_IS_ON()
   CheckIntegrity();
@@ -452,10 +467,15 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       is_first_for_node_(other.is_first_for_node_),
       has_descendants_for_table_part_(other.has_descendants_for_table_part_),
       is_fragmentation_context_root_(other.is_fragmentation_context_root_),
+      const_num_children_(other.const_num_children_),
       first_baseline_(other.first_baseline_),
       last_baseline_(other.last_baseline_),
-      ink_overflow_(other.InkOverflowType(), other.ink_overflow_),
-      children_(other.children_) {
+      ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
+  // Shallow-clone the children.
+  for (wtf_size_t i = 0; i < const_num_children_; ++i)
+    children_[i] = other.children_[i];
+
+  ink_overflow_type_ = other.ink_overflow_type_;
   if (const_has_fragment_items_) {
     NGFragmentItems* items =
         const_cast<NGFragmentItems*>(ComputeItemsAddress());
@@ -1866,7 +1886,13 @@ void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
 #endif
 
 void NGPhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
-  visitor->Trace(children_);
+  // Accessing |const_num_children_| inside Trace() here is safe since it is
+  // const. Note we don't check children_valid_ since that is not threadsafe.
+  // Tracing the child links themselves is safe from a background thread.
+  for (const auto& child : base::make_span(children_, const_num_children_))
+    visitor->Trace(child);
+  // These if branches are safe since |const_has_fragment_items_| and
+  // |const_has_rare_data_| are const and set in ctor.
   if (const_has_fragment_items_)
     visitor->Trace(*ComputeItemsAddress());
   if (const_has_rare_data_)

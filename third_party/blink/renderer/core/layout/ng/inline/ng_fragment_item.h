@@ -98,9 +98,7 @@ class CORE_EXPORT NGFragmentItem final {
     wtf_size_t descendants_count;
   };
 
-  // Type of the item. The invalid type is needed to support
-  // kCanClearUnusedSlotsWithMemset.
-  enum ItemType { kInvalid = 0, kText, kSvgText, kGeneratedText, kLine, kBox };
+  enum ItemType { kText, kSvgText, kGeneratedText, kLine, kBox };
   enum TracedType { kNone, kLineItem, kBoxItem };
 
   // Create appropriate type for |line_item|.
@@ -637,7 +635,5 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGFragmentItem*);
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGFragmentItem&);
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFragmentItem)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEM_H_
