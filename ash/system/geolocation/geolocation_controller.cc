@@ -174,37 +174,10 @@ void GeolocationController::NotifyGeopositionChange(
 }
 
 void GeolocationController::RequestGeoposition() {
-  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation(
-          "geolocation_controller", "simple_geolocation_request", R"(
-          semantics {
-            sender: "Geolocation Controller"
-            description:
-              "Periodically requests ip-based geolocation and "
-              "provides it to observers. Should fire once daily or on "
-              "detection of a change in time zone, with exponential backoff "
-              "after failed requests. "
-              "Geolocation controller will use the default geolocation API "
-              "(https://www.googleapis.com/geolocation/v1/geolocate)."
-            trigger: "Geolocation controller will trigger this API "
-              "periodically and when a timezone change is observed."
-            data: "No wifi access point or mobile network information is sent "
-              "with this request."
-            destination: GOOGLE_OWNED_SERVICE
-          }
-          policy {
-            cookies_allowed: NO
-            setting:
-              "This request is not directly affected by any settings, and is "
-              "currently only used by features which reason about sunrise and "
-              "sunset such as night light and dark mode."
-            policy_exception_justification:
-              "No limit on this request has been implemented yet."
-          })");
   VLOG(1) << "Requesting a new geoposition";
   provider_.RequestGeolocation(
       kGeolocationRequestTimeout, /*send_wifi_access_points=*/false,
-      /*send_cell_towers=*/false, partial_traffic_annotation,
+      /*send_cell_towers=*/false,
       base::BindOnce(&GeolocationController::OnGeoposition,
                      base::Unretained(this)));
 }

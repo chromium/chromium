@@ -26,7 +26,6 @@
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -350,8 +349,7 @@ SimpleGeolocationRequest::SimpleGeolocationRequest(
     const GURL& service_url,
     base::TimeDelta timeout,
     std::unique_ptr<WifiAccessPointVector> wifi_data,
-    std::unique_ptr<CellTowerVector> cell_tower_data,
-    const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
+    std::unique_ptr<CellTowerVector> cell_tower_data)
     : shared_url_loader_factory_(std::move(factory)),
       service_url_(service_url),
       retry_sleep_on_server_error_(
@@ -361,8 +359,7 @@ SimpleGeolocationRequest::SimpleGeolocationRequest(
       timeout_(timeout),
       retries_(0),
       wifi_data_(wifi_data.release()),
-      cell_tower_data_(cell_tower_data.release()),
-      partial_traffic_annotation_(partial_traffic_annotation) {}
+      cell_tower_data_(cell_tower_data.release()) {}
 
 SimpleGeolocationRequest::~SimpleGeolocationRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -431,14 +428,6 @@ void SimpleGeolocationRequest::StartRequest() {
   RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_REQUEST_START);
   ++retries_;
 
-  const net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::CompleteNetworkTrafficAnnotation("simple_geolocation_request",
-                                            partial_traffic_annotation_, R"(
-              semantics {
-                sender: "Simple Geolocation"
-                destination: GOOGLE_OWNED_SERVICE
-              })");
-
   const std::string request_body = FormatRequestBody();
   VLOG(1) << "SimpleGeolocationRequest::StartRequest(): request body:\n"
           << request_body;
@@ -449,8 +438,8 @@ void SimpleGeolocationRequest::StartRequest() {
   request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  simple_url_loader_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(request), NO_TRAFFIC_ANNOTATION_YET);
   simple_url_loader_->AttachStringForUpload(request_body, "application/json");
 
   // Call test hook before asynchronous request actually starts.

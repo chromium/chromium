@@ -158,37 +158,10 @@ void NightLightClient::ScheduleNextRequest(base::TimeDelta delay) {
 }
 
 void NightLightClient::RequestGeoposition() {
-  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation(
-          "night_light_client", "simple_geolocation_request", R"(
-          semantics {
-            sender: "Night Light Client"
-            description:
-              "Determine a user's timezone based on their geolocation data. "
-              "Night Light client will use default geolocation API "
-              "(https://www.googleapis.com/geolocation/v1/geolocate)."
-            trigger:
-              "Night Light client will trigger this API periodically or on a "
-              "timezone change."
-            data:
-              "No wifi access point or mobile network information will be sent "
-              "with this request."
-            destination: GOOGLE_OWNED_SERVICE
-          }
-          policy {
-            cookies_allowed: NO
-            setting:
-              "This request will be sent once daily if the night light "
-              "schedule type is set to 'sunset to sunrise' or 'custom'. It can "
-              "be disabled by turning this setting to 'never' under Settings "
-              "-> Displays -> Night Light."
-            policy_exception_justification:
-              "No policy limit on this request has been implemented yet."
-          })");
   VLOG(1) << "Requesting a new geoposition";
   provider_.RequestGeolocation(
       kGeolocationRequestTimeout, false /* send_wifi_access_points */,
-      false /* send_cell_towers */, partial_traffic_annotation,
+      false /* send_cell_towers */,
       base::BindOnce(&NightLightClient::OnGeoposition, base::Unretained(this)));
 }
 

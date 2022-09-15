@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/network/network_util.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -60,9 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
       const GURL& service_url,
       base::TimeDelta timeout,
       std::unique_ptr<WifiAccessPointVector> wifi_data,
-      std::unique_ptr<CellTowerVector> cell_tower_data,
-      const net::PartialNetworkTrafficAnnotationTag&
-          partial_traffic_annotation);
+      std::unique_ptr<CellTowerVector> cell_tower_data);
 
   SimpleGeolocationRequest(const SimpleGeolocationRequest&) = delete;
   SimpleGeolocationRequest& operator=(const SimpleGeolocationRequest&) = delete;
@@ -142,9 +139,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   std::unique_ptr<WifiAccessPointVector> wifi_data_;
   std::unique_ptr<CellTowerVector> cell_tower_data_;
-
-  // Traffic annotation trigger information provided by client.
-  const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
 
   // Creation and destruction should happen on the same thread.
   THREAD_CHECKER(thread_checker_);

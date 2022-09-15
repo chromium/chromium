@@ -254,10 +254,6 @@ after discussions on the right group.
       <annotation id="chrome_commerce_subscriptions_get"/>
       <annotation id="cryptauth_get_my_devices"/>
       <annotation id="chrome_commerce_waa_fetcher"/>
-      <annotation id="timezone_resolver"/>
-      <annotation id="geolocation_controller"/>
-      <annotation id="wizard_controller"/>
-      <annotation id="night_light_client"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

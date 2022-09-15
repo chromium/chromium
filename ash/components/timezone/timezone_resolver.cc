@@ -24,7 +24,6 @@
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
@@ -191,61 +190,11 @@ class TZRequest {
 TZRequest::~TZRequest() = default;
 
 void TZRequest::StartRequestOnNetworkAvailable() {
-  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation(
-          "timezone_resolver", "simple_geolocation_request", R"(
-          semantics {
-            sender: "Timezone Resolver"
-            description:
-              "Determine a user's timezone based on their geolocation data. "
-              "Timezone resolver will use the default geolocation API "
-              "(https://www.googleapis.com/geolocation/v1/geolocate)."
-            trigger:
-              "Timezone resolver will be triggered during the device setup "
-              "wizard, on boot, on user session start, and in regular "
-              "intervals."
-            data:
-              "Depending on policies and preferences the user's wifi and "
-              "mobile networks information can be sent."
-            destination: GOOGLE_OWNED_SERVICE
-          }
-          policy {
-            cookies_allowed: NO
-            setting:
-              "You can enable or disable automatic timezone detection in "
-              "Chrome OS settings under 'Advanced' -> 'Date and time' -> "
-              "'Timezone' by specifying a fixed timezone under 'Choose from "
-              "list'. When you do not specify a fixed timezone, you can "
-              "select whether just the ip address or also Wi-Fi and mobile "
-              "networks are used to determine your geolocation."
-            policy_exception_justification:
-              "You can disable this request by setting the "
-              "SystemTimezoneAutomaticDetection policy to 'Never auto-detect "
-              "timezone'."
-            # TODO(b/210911671): Add the following policies once they are
-            # supported:
-            # chrome_policy {
-            #   SystemTimezone {
-            #     AutomaticTimezoneDetectionType: DISABLED
-            #   }
-            # }
-            # chrome_policy {
-            #   SystemTimezone {
-            #     AutomaticTimezoneDetectionType: IP_ONLY
-            #   }
-            # }
-            # chrome_policy {
-            #   SystemTimezone {
-            #     AutomaticTimezoneDetectionType: SEND_WIFI_ACCESS_POINTS
-            #   }
-            # }
-          })");
   resolver_->RecordAttempt();
   resolver_->geolocation_provider()->RequestGeolocation(
       base::Seconds(kRefreshTimeZoneTimeoutSeconds),
       resolver_->ShouldSendWiFiGeolocationData(),
       resolver_->ShouldSendCellularGeolocationData(),
-      partial_traffic_annotation,
       base::BindOnce(&TZRequest::OnLocationResolved, AsWeakPtr()));
 }
 

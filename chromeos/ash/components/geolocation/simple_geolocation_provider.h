@@ -48,12 +48,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // will be added to the request, similarly for |send_cell_towers| and Cell
   // Tower information. See SimpleGeolocationRequest for the description of
   // the other parameters.
-  void RequestGeolocation(
-      base::TimeDelta timeout,
-      bool send_wifi_access_points,
-      bool send_cell_towers,
-      const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation,
-      SimpleGeolocationRequest::ResponseCallback callback);
+  void RequestGeolocation(base::TimeDelta timeout,
+                          bool send_wifi_access_points,
+                          bool send_cell_towers,
+                          SimpleGeolocationRequest::ResponseCallback callback);
 
   // Returns default geolocation service URL.
   static GURL DefaultGeolocationProviderURL();

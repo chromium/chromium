@@ -37,7 +37,6 @@ void SimpleGeolocationProvider::RequestGeolocation(
     base::TimeDelta timeout,
     bool send_wifi_access_points,
     bool send_cell_towers,
-    const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation,
     SimpleGeolocationRequest::ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -62,7 +61,7 @@ void SimpleGeolocationProvider::RequestGeolocation(
 
   SimpleGeolocationRequest* request(new SimpleGeolocationRequest(
       shared_url_loader_factory_, url_, timeout, std::move(wifi_vector),
-      std::move(cell_vector), partial_traffic_annotation));
+      std::move(cell_vector)));
   requests_.push_back(base::WrapUnique(request));
 
   // SimpleGeolocationProvider owns all requests. It is safe to pass unretained

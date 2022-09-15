@@ -1982,46 +1982,6 @@ void WizardController::StartTimezoneResolve() {
     return;
   }
 
-  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation(
-          "wizard_controller", "simple_geolocation_request", R"(
-          semantics {
-            sender: "Wizard Controller"
-            description:
-              "Determine the user's timezone based on their geolocation. "
-              "Wizard controller will use the default geolocation API "
-              "(https://www.googleapis.com/geolocation/v1/geolocate) "
-              "to determine approximate device location based on source "
-              "IP address which will later be used to query device time zone."
-            trigger:
-              "Wizard controller will trigger this API after login for screens "
-              "with region-specific content."
-            data:
-              "No wifi access point or mobile network information will be sent "
-              "with this request."
-            destination: GOOGLE_OWNED_SERVICE
-          }
-          policy {
-            cookies_allowed: NO
-            setting:
-              "A user can enable or disabled automatic timezone detection in "
-              "Chrome OS settings under 'Advanced' -> 'Date and Time' -> "
-              "'Timezone' by specifying a fixed timezone under 'Choose from "
-              "list' if the timezone resolver is not configured by policy. On "
-              "the signin screen this resolver is controlled by the "
-              "ResolveDeviceTimezoneByGeolocationMethod browser setting."
-            policy_exception_justification:
-              "You can disable this request by setting the "
-              "SystemTimezoneAutomaticDetection policy to 'Never auto-detect "
-              "timezone'."
-          # TODO(b/210911671): Add the following policies once they are
-          # supported.
-          # chrome_policy {
-          #   SystemTimezone {
-          #     AutomaticTimezoneDetectionType: DISABLED
-          #   }
-          # }
-          })");
   auto& testing_factory = GetSharedURLLoaderFactoryForTesting();
   geolocation_provider_ = std::make_unique<SimpleGeolocationProvider>(
       testing_factory ? testing_factory
@@ -2030,7 +1990,7 @@ void WizardController::StartTimezoneResolve() {
   geolocation_provider_->RequestGeolocation(
       base::Seconds(kResolveTimeZoneTimeoutSeconds),
       false /* send_wifi_geolocation_data */,
-      false /* send_cellular_geolocation_data */, partial_traffic_annotation,
+      false /* send_cellular_geolocation_data */,
       base::BindOnce(&WizardController::OnLocationResolved,
                      weak_factory_.GetWeakPtr()));
 }
