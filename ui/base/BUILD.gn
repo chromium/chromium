@@ -1074,6 +1074,7 @@ test("ui_base_unittests") {
       "accelerators/accelerator_map_unittest.cc",
       "accelerators/accelerator_unittest.cc",
       "accelerators/menu_label_accelerator_util_unittest.cc",
+      "models/dialog_model_menu_model_adapter_unittest.cc",
       "models/dialog_model_unittest.cc",
       "models/list_model_unittest.cc",
       "models/list_selection_model_unittest.cc",

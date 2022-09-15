@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuModelAdapter final
   ImageModel GetIconAt(size_t index) const override;
   ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override;
   bool IsEnabledAt(size_t index) const override;
+  ElementIdentifier GetElementIdentifierAt(size_t index) const override;
   MenuModel* GetSubmenuModelAt(size_t index) const override;
   void ActivatedAt(size_t index) override;
   void ActivatedAt(size_t index, int event_flags) override;

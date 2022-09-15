@@ -7,6 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 
@@ -62,6 +66,53 @@ TEST_F(BubbleDialogModelHostTest, CloseIsSynchronousAndCallsWindowClosing) {
   EXPECT_FALSE(weak_delegate);
 
   waiter.Wait();
+}
+
+TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMenuItemId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOkButtonId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kExtraButtonId);
+  constexpr char16_t kMenuItemText[] = u"Menu Item";
+  constexpr char16_t kOkButtonText[] = u"OK";
+  constexpr char16_t kExtraButtonText[] = u"Button";
+
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+  const auto context =
+      views::ElementTrackerViews::GetContextForWidget(anchor_widget.get());
+
+  ui::DialogModelMenuItem::Params menu_item_params;
+  menu_item_params.SetId(kMenuItemId);
+  // TODO(crbug.com/1324298): Remove after addressing this issue.
+  menu_item_params.SetIsEnabled(false);
+  ui::DialogModelButton::Params ok_button_params;
+  ok_button_params.SetId(kOkButtonId);
+  ui::DialogModelButton::Params extra_button_params;
+  extra_button_params.SetId(kExtraButtonId);
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder()
+          .AddMenuItem(ui::ImageModel(), kMenuItemText, base::DoNothing(),
+                       menu_item_params)
+          .AddOkButton(base::DoNothing(), kOkButtonText, ok_button_params)
+          .AddExtraButton(base::DoNothing(), kExtraButtonText,
+                          extra_button_params)
+          .Build(),
+      anchor_widget->GetContentsView(), BubbleBorder::Arrow::TOP_RIGHT);
+
+  Widget* const bubble_widget =
+      BubbleDialogDelegate::CreateBubble(std::move(host));
+  test::WidgetVisibleWaiter waiter(bubble_widget);
+  bubble_widget->Show();
+  waiter.Wait();
+  ASSERT_TRUE(bubble_widget->IsVisible());
+  EXPECT_NE(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kMenuItemId, context));
+  EXPECT_NE(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kOkButtonId, context));
+  EXPECT_NE(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         kExtraButtonId, context));
+  bubble_widget->CloseNow();
 }
 
 }  // namespace views

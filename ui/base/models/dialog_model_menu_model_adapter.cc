@@ -101,6 +101,14 @@ bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
          field->AsMenuItem(GetPassKey())->is_enabled(GetPassKey());
 }
 
+ui::ElementIdentifier DialogModelMenuModelAdapter::GetElementIdentifierAt(
+    size_t index) const {
+  DCHECK_LT(index, GetItemCount());
+
+  const DialogModelField* const field = GetField(index);
+  return field->AsMenuItem(GetPassKey())->id(GetPassKey());
+}
+
 MenuModel* DialogModelMenuModelAdapter::GetSubmenuModelAt(size_t index) const {
   NOTREACHED();
   return nullptr;

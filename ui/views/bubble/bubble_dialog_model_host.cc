@@ -737,6 +737,7 @@ void BubbleDialogModelHost::AddOrUpdateMenuItem(
                                   DISTANCE_BUTTON_HORIZONTAL_PADDING))));
 
   item->SetEnabled(model_field->is_enabled(GetPassKey()));
+  item->SetProperty(kElementIdentifierKey, model_field->id(GetPassKey()));
 
   DialogModelHostField info{model_field, item.get(), nullptr};
   AddDialogModelHostField(std::move(item), info);
@@ -848,6 +849,8 @@ void BubbleDialogModelHost::AddDialogModelHostFieldForExistingView(
 #endif  // DCHECK_IS_ON()
   fields_.push_back(field_view_info);
   View* const target = GetTargetView(field_view_info);
+  target->SetProperty(kElementIdentifierKey,
+                      field_view_info.dialog_model_field->id(GetPassKey()));
   for (const auto& accelerator :
        field_view_info.dialog_model_field->accelerators(GetPassKey())) {
     target->AddAccelerator(accelerator);

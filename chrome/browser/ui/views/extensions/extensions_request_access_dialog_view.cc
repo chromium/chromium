@@ -58,7 +58,7 @@ void ShowExtensionsRequestAccessDialogView(
       dialog_builder.AddMenuItem(
           GetIcon(action, web_contents), action->GetActionName(),
           base::DoNothing(),
-          ui::DialogModelMenuItem::Params().set_is_enabled(false));
+          ui::DialogModelMenuItem::Params().SetIsEnabled(false));
     }
   }
 
