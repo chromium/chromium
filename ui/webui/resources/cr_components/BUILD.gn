@@ -13,16 +13,15 @@ assert(!is_android && !is_ios)
 
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
+
 if (is_chromeos_ash) {
   preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-}
-preprocess_src_manifest = "preprocessed_src_manifest.json"
+  preprocess_src_manifest = "preprocessed_src_manifest.json"
 
-generate_grd("build_grdp") {
-  grd_prefix = "cr_components"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-  public_deps = [ ":preprocess" ]
-  if (is_chromeos_ash) {
+  generate_grd("build_grdp") {
+    grd_prefix = "cr_components"
+    out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+    public_deps = [ ":preprocess" ]
     input_files_base_dir = rebase_path(".", "//")
     input_files = [
       "chromeos/cellular_setup/sim_detect_error.svg",
@@ -57,60 +56,62 @@ generate_grd("build_grdp") {
       "chromeos/network_health/test_passed.png",
       "chromeos/network_health/test_warning.png",
     ]
-  }
-  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
 
-  if (is_chromeos_ash) {
-    manifest_files += [ "$target_gen_dir/$preprocess_gen_manifest" ]
-  }
+    manifest_files = [
+      "$target_gen_dir/$preprocess_gen_manifest",
+      "$target_gen_dir/$preprocess_src_manifest",
+    ]
 
-  resource_path_prefix = "cr_components"
+    resource_path_prefix = "cr_components"
+  }
 }
 
 group("preprocess") {
   public_deps = [
     ":preprocess_generated_ts",
-    ":preprocess_src",
     ":preprocess_src_ts",
   ]
 
   if (is_chromeos_ash) {
-    public_deps += [ ":preprocess_generated" ]
+    public_deps += [
+      ":preprocess_generated",
+      ":preprocess_src",
+    ]
   }
 }
 
-preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [
-    "chromeos/traffic_counters/traffic_counters_adapter.js",
-    "chromeos/bluetooth/bluetooth_utils.js",
-    "chromeos/bluetooth/bluetooth_types.js",
-    "chromeos/bluetooth/bluetooth_metrics_utils.js",
-    "chromeos/bluetooth/cros_bluetooth_config.js",
-    "chromeos/cellular_setup/cellular_types.js",
-    "chromeos/cellular_setup/cellular_setup_delegate.js",
-    "chromeos/cellular_setup/esim_manager_listener_behavior.js",
-    "chromeos/cellular_setup/esim_manager_utils.js",
-    "chromeos/cellular_setup/mojo_interface_provider.js",
-    "chromeos/cellular_setup/subflow_behavior.js",
-    "chromeos/cellular_setup/webview_post_util.js",
-    "chromeos/network/cellular_utils.js",
-    "chromeos/network/cr_policy_network_behavior_mojo.js",
-    "chromeos/network/mojo_interface_provider.js",
-    "chromeos/network/network_config_element_behavior.js",
-    "chromeos/network/network_listener_behavior.js",
-    "chromeos/network/network_list_types.js",
-    "chromeos/network/onc_mojo.js",
-    "chromeos/network_health/mojo_interface_provider.js",
-    "chromeos/network_health/network_diagnostics_types.js",
-    "chromeos/quick_unlock/lock_screen_constants.js",
-    "chromeos/smb_shares/smb_browser_proxy.js",
-  ]
-}
-
 if (is_chromeos_ash) {
+  preprocess_if_expr("preprocess_src") {
+    in_folder = "."
+    out_folder = preprocess_folder
+    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+    in_files = [
+      "chromeos/bluetooth/bluetooth_utils.js",
+      "chromeos/bluetooth/bluetooth_types.js",
+      "chromeos/bluetooth/bluetooth_metrics_utils.js",
+      "chromeos/bluetooth/cros_bluetooth_config.js",
+      "chromeos/cellular_setup/cellular_types.js",
+      "chromeos/cellular_setup/cellular_setup_delegate.js",
+      "chromeos/cellular_setup/esim_manager_listener_behavior.js",
+      "chromeos/cellular_setup/esim_manager_utils.js",
+      "chromeos/cellular_setup/mojo_interface_provider.js",
+      "chromeos/cellular_setup/subflow_behavior.js",
+      "chromeos/cellular_setup/webview_post_util.js",
+      "chromeos/network/cellular_utils.js",
+      "chromeos/network/cr_policy_network_behavior_mojo.js",
+      "chromeos/network/mojo_interface_provider.js",
+      "chromeos/network/network_config_element_behavior.js",
+      "chromeos/network/network_listener_behavior.js",
+      "chromeos/network/network_list_types.js",
+      "chromeos/network/onc_mojo.js",
+      "chromeos/network_health/mojo_interface_provider.js",
+      "chromeos/network_health/network_diagnostics_types.js",
+      "chromeos/quick_unlock/lock_screen_constants.js",
+      "chromeos/smb_shares/smb_browser_proxy.js",
+      "chromeos/traffic_counters/traffic_counters_adapter.js",
+    ]
+  }
+
   preprocess_if_expr("preprocess_generated") {
     deps = [ "chromeos:web_components" ]
     in_folder = target_gen_dir
