@@ -322,7 +322,8 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
   auto& overlay = next_frame_->overlays.back();
   overlay.pixmap = std::move(pixmap);
   overlay.overlay_plane_data = gfx::OverlayPlaneData(
-      overlay_plane_candidate.plane_z_order, overlay_plane_candidate.transform,
+      overlay_plane_candidate.plane_z_order,
+      absl::get<gfx::OverlayTransform>(overlay_plane_candidate.transform),
       overlay_plane_candidate.display_rect, overlay_plane_candidate.uv_rect,
       !overlay_plane_candidate.is_opaque,
       gfx::ToRoundedRect(overlay_plane_candidate.damage_rect),

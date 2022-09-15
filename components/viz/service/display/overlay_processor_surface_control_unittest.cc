@@ -99,7 +99,8 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
   candidates.back().transform = gfx::OVERLAY_TRANSFORM_ROTATE_90;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
-  EXPECT_EQ(candidates.back().transform, gfx::OVERLAY_TRANSFORM_NONE);
+  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
+            gfx::OVERLAY_TRANSFORM_NONE);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
 }
 

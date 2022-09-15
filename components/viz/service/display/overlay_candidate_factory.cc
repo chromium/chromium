@@ -23,6 +23,8 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/video_types.h"
 
 namespace viz {
@@ -174,14 +176,18 @@ OverlayCandidateFactory::OverlayCandidateFactory(
     const SkM44* output_color_matrix,
     const gfx::RectF primary_rect,
     bool is_delegated_context,
-    bool supports_clip_rect)
+    bool supports_clip_rect,
+    bool supports_arbitrary_transform)
     : render_pass_(render_pass),
       resource_provider_(resource_provider),
       surface_damage_rect_list_(surface_damage_rect_list),
       output_color_matrix_(output_color_matrix),
       primary_rect_(primary_rect),
       is_delegated_context_(is_delegated_context),
-      supports_clip_rect_(supports_clip_rect) {
+      supports_clip_rect_(supports_clip_rect),
+      supports_arbitrary_transform_(supports_arbitrary_transform) {
+  DCHECK(supports_clip_rect_ || !supports_arbitrary_transform_);
+
   // TODO(crbug.com/1323002): Replace this set with a simple ordered linear
   // search when this bug is resolved.
   base::flat_set<size_t> indices_with_quad_damage;
@@ -258,6 +264,8 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
     QuadList::ConstIterator quad_list_end,
     const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
         render_pass_backdrop_filters) const {
+  gfx::RectF target_rect = candidate.display_rect;
+  candidate.TransformRectToTargetSpace(target_rect);
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     if (overlap_iter->material == DrawQuad::Material::kAggregatedRenderPass) {
@@ -266,7 +274,7 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
           gfx::RectF(overlap_iter->rect));
       const auto* render_pass_draw_quad =
           AggregatedRenderPassDrawQuad::MaterialCast(*overlap_iter);
-      if (candidate.display_rect.Intersects(overlap_rect) &&
+      if (target_rect.Intersects(overlap_rect) &&
           render_pass_backdrop_filters.count(
               render_pass_draw_quad->render_pass_id)) {
         return true;
@@ -299,18 +307,26 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
 
   const SharedQuadState* sqs = quad->shared_quad_state;
 
-  gfx::OverlayTransform overlay_transform =
-      GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
-  if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID) {
-    return is_delegated_context_ ? GetReasonForTransformNotAxisAligned(
-                                       sqs->quad_to_target_transform)
-                                 : CandidateStatus::kFailNotAxisAligned;
-  }
-  candidate.transform = overlay_transform;
-
-  auto& transform = sqs->quad_to_target_transform;
   candidate.display_rect = gfx::RectF(quad->rect);
-  transform.TransformRect(&candidate.display_rect);
+  if (supports_arbitrary_transform_) {
+    gfx::Transform transform = sqs->quad_to_target_transform;
+    if (y_flipped) {
+      transform.PreconcatTransform(gfx::OverlayTransformToTransform(
+          gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL, candidate.display_rect.size()));
+    }
+    candidate.transform = transform;
+  } else {
+    gfx::OverlayTransform overlay_transform =
+        GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
+    if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID) {
+      return is_delegated_context_ ? GetReasonForTransformNotAxisAligned(
+                                         sqs->quad_to_target_transform)
+                                   : CandidateStatus::kFailNotAxisAligned;
+    }
+    candidate.transform = overlay_transform;
+
+    sqs->quad_to_target_transform.TransformRect(&candidate.display_rect);
+  }
 
   candidate.clip_rect = sqs->clip_rect;
   candidate.is_opaque =
@@ -321,6 +337,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     candidate.resource_size_in_pixels =
         resource_provider_->GetResourceBackedSize(resource_id);
   } else {
+    // The resource size is used to calculate the damage rect, so we set it here
+    // even if there is no resource. For resource-less overlays it's defined in
+    // a target space.
+    // It is unclear how to support arbitrary transforms in this case, since an
+    // e.g. rotation could make the target space bounds non-axis-aligned.
+    DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
     candidate.resource_size_in_pixels =
         gfx::Size(candidate.display_rect.size().width(),
                   candidate.display_rect.size().height());
@@ -345,6 +367,13 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     // The delegate might not support specifying |clip_rect| so if not, apply it
     // to the |display_rect| and |uv_rect| directly.
     if (!supports_clip_rect_) {
+      // A clip rect cannot be applied directly to any rects in content space if
+      // we have a non-axis-aligned transform between content and target space.
+      // There are no platforms that support arbitrary transforms but do not
+      // support clip rects, so we DCHECK here instead of returning an error.
+      DCHECK(
+          absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+
       if (candidate.clip_rect.has_value())
         OverlayCandidate::ApplyClip(candidate,
                                     gfx::RectF(*candidate.clip_rect));
@@ -353,7 +382,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       // when delegating |clip_rect|.
       if (quad->visible_rect != quad->rect) {
         auto visible_rect = gfx::RectF(quad->visible_rect);
-        transform.TransformRect(&visible_rect);
+        sqs->quad_to_target_transform.TransformRect(&visible_rect);
         OverlayCandidate::ApplyClip(candidate, gfx::RectF(visible_rect));
       }
       // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads
@@ -401,15 +430,18 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromSolidColorQuad(
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromVideoHoleQuad(
     const VideoHoleDrawQuad* quad,
     OverlayCandidate& candidate) const {
-  gfx::OverlayTransform overlay_transform = GetOverlayTransform(
-      quad->shared_quad_state->quad_to_target_transform, false);
-  if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID)
-    return CandidateStatus::kFailNotAxisAligned;
-
-  auto& transform = quad->shared_quad_state->quad_to_target_transform;
   candidate.display_rect = gfx::RectF(quad->rect);
-  transform.TransformRect(&candidate.display_rect);
-  candidate.transform = overlay_transform;
+  const SharedQuadState* sqs = quad->shared_quad_state;
+  if (supports_arbitrary_transform_) {
+    candidate.transform = sqs->quad_to_target_transform;
+  } else {
+    gfx::OverlayTransform overlay_transform =
+        GetOverlayTransform(sqs->quad_to_target_transform, false);
+    if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID)
+      return CandidateStatus::kFailNotAxisAligned;
+    candidate.transform = overlay_transform;
+    sqs->quad_to_target_transform.TransformRect(&candidate.display_rect);
+  }
   candidate.is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
   candidate.has_mask_filter =
@@ -518,6 +550,11 @@ void OverlayCandidateFactory::HandleClipAndSubsampling(
   if (!primary_rect_.IsEmpty())
     candidate.clip_rect->Intersect(gfx::ToNearestRect(primary_rect_));
 
+  // Baking |clip_rect| into the |uv_rect| and |display_rect| doesn't make sense
+  // when there is an arbitrary transform between the two because the transform
+  // may not preserve axis alignment.
+  DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+
   // Calculate |uv_rect| of |clip_rect| in |display_rect|
   gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
       candidate.uv_rect, candidate.display_rect,
@@ -615,6 +652,7 @@ gfx::RectF OverlayCandidateFactory::GetDamageRect(
     // unassigned damage and we use it to conservatively estimate the damage for
     // this quad. We limit the damage to the candidates quad rect in question.
     gfx::RectF intersection = candidate.display_rect;
+    candidate.TransformRectToTargetSpace(intersection);
     intersection.Intersect(gfx::RectF(unassigned_surface_damage_));
     return intersection;
   }
