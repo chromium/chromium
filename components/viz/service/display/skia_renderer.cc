@@ -2713,9 +2713,6 @@ void SkiaRenderer::ScheduleOverlays() {
 #elif defined(USE_OZONE)
   // Only Wayland uses this code path.
   for (auto& overlay : current_frame()->overlay_list) {
-    if (overlay.is_root_render_pass) {
-      continue;
-    }
     if (overlay.rpdq) {
       PrepareRenderPassOverlay(&overlay);
       locks.emplace_back(overlay.mailbox);
