@@ -405,6 +405,19 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
     return;
 
   CreateHoverCard(target_tab_);
+
+  // For some reason, |target_tab_| can be rendered invalid before the next
+  // call. There may be an asynchronous operation buried deep within
+  // CreateHoverCard() above. Regardless, the validity needs to be checked
+  // before the next call.
+  // See: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
+  // TODO(crbug.com/1364303): look into this and figure out what is actually
+  // happening.
+  if (!TargetTabIsValid()) {
+    HideHoverCard();
+    return;
+  }
+
   UpdateCardContent(target_tab_);
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
