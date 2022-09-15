@@ -133,11 +133,11 @@ class AutofillMetricsBaseTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   raw_ptr<AutofillExternalDelegate> external_delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   void CreateTestAutofillProfiles();
 
+  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   CreditCard credit_card_ = test::GetMaskedServerCard();
 };
 

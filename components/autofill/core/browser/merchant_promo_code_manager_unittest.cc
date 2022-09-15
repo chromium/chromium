@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/strings/grit/components_strings.h"
@@ -56,6 +57,8 @@ class MockSuggestionsHandler
 class MerchantPromoCodeManagerTest : public testing::Test {
  protected:
   MerchantPromoCodeManagerTest() {
+    scoped_feature_list_async_parse_form_.InitWithFeatureState(
+        features::kAutofillParseAsync, true);
     personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
     merchant_promo_code_manager_ = std::make_unique<MerchantPromoCodeManager>();
     merchant_promo_code_manager_->Init(personal_data_manager_.get(),
@@ -89,6 +92,7 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     out->focused_field = &autofill_field_;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   test::AutofillEnvironment autofill_environment_;
   std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
