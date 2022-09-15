@@ -71,8 +71,9 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
         layout.getMessageLayout().addIconTitle(mHeaderIconDrawableId, mTitleText);
         InfoBarControlLayout control = layout.addControlLayout();
 
-        String offerDetails = getContext().getString(
-                R.string.autofill_offers_reminder_description_text, mCreditCardIdentifierString);
+        String offerDetails =
+                getContext().getString(R.string.autofill_offers_reminder_infobar_description_text,
+                        mCreditCardIdentifierString);
         SpannableStringBuilder text = new SpannableStringBuilder(offerDetails);
         // Highlight the cardIdentifierString as bold.
         int indexForCardIdentifierString = offerDetails.indexOf(mCreditCardIdentifierString);

@@ -54,7 +54,7 @@ void OfferNotificationControllerAndroid::ShowIfNecessary(
     message_->SetTitle(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_MESSAGE_TITLE));
     message_->SetDescription(l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_OFFERS_MESSAGE_DESCRIPTION_TEXT,
+        IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT,
         card->CardIdentifierStringForAutofillDisplay()));
     message_->SetIconResourceId(
         ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_GOOGLE_PAY));
