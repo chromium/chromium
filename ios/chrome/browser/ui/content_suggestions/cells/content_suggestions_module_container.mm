@@ -48,6 +48,9 @@ const float kShadowRadius = 5;
 // The shadow opacity of this container.
 const float kShadowOpacity = 0.06;
 
+// The vertical offset of the shadow.
+const float kShadowOffsetY = 3.0f;
+
 // Vertical space allocated to the Trending Queries module content.
 const float kTrendingQueriesContentHeight = 103;
 
@@ -80,6 +83,7 @@ const float kTrendingQueriesContentHeight = 103;
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shadowRadius = kShadowRadius;
     self.layer.shadowOpacity = kShadowOpacity;
+    self.layer.shadowOffset = CGSizeMake(0, kShadowOffsetY);
     // Render shadow as bitmap to improve snapshot render layout performance.
     self.layer.shouldRasterize = YES;
     self.layer.rasterizationScale = UIScreen.mainScreen.scale;
