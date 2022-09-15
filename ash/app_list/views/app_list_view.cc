@@ -1128,8 +1128,9 @@ AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
           // failed state transition. Not useful for UMA.
           return kMaxAppListStateTransition;
         case AppListViewState::kFullscreenAllApps:
-          // HALF->FULLSCREEN_ALL_APPS is not a valid transition.
-          NOTREACHED();
+          // Half->FullscreenAllApps is available to replace Half->Peeking
+          // transition during peeking state removal. The UMA should not be used
+          // for the legacy launcher.
           return kMaxAppListStateTransition;
       }
 
@@ -1631,7 +1632,7 @@ void AppListView::SetStateFromSearchBoxView(bool search_box_is_empty,
       break;
     case AppListViewState::kHalf:
       if (search_box_is_empty && !triggered_by_contents_change)
-        SetState(AppListViewState::kPeeking);
+        SetState(AppListViewState::kFullscreenAllApps);
       break;
     case AppListViewState::kFullscreenSearch:
       if (search_box_is_empty && !triggered_by_contents_change)
