@@ -4,7 +4,7 @@ $$ script that is part of the Google Test suite of utilities.
 $$ MAX_ARITY controls the number of arguments that dispatch::Invoke() supports.
 $$ It is choosen to match the number of arguments base::BindOnce() supports.
 $var MAX_ARITY = 7
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

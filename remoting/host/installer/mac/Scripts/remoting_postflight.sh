@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -98,7 +98,7 @@ if [[ "$update_pam" == "1" ]]; then
   # if an error occurs. Note that the error will still be logged but the
   # script will continue to execute in this case.
   $(cat > "$PAM_CONFIG" <<EOF
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
