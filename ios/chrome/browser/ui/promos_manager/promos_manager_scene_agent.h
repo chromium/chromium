@@ -7,9 +7,9 @@
 
 #import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
 
-@protocol PromosManagerSceneAvailabilityObserver;
+@class CommandDispatcher;
 
-// A scene agent that monitors the state of the app and informs its observer
+// A scene agent that monitors the state of the app and dispatches a command
 // that it's a valid time to show a promo. Promos are shown when the UI is
 // available (i.e. the app & scene state allow it).
 //
@@ -34,13 +34,10 @@
 // if the presenting scene is dismissed.
 @interface PromosManagerSceneAgent : ObservingSceneAgent
 
-- (instancetype)init;
+- (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher;
 
-// Adds observer that registers promo scene availability updates.
-- (void)addObserver:(id<PromosManagerSceneAvailabilityObserver>)observer;
-
-// Removes observer that registers promo scene availability updates.
-- (void)removeObserver:(id<PromosManagerSceneAvailabilityObserver>)observer;
+// Command Dispatcher.
+@property(nonatomic, weak) CommandDispatcher* dispatcher;
 
 @end
 

@@ -6,7 +6,6 @@ source_set("promos") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "promo_protocol.h",
-    "promos_manager_scene_availability_observer.h",
     "standard_promo_action_handler.h",
     "standard_promo_display_handler.h",
     "standard_promo_view_provider.h",
@@ -26,9 +25,9 @@ source_set("promos_manager_scene_agent") {
     "promos_manager_scene_agent.mm",
   ]
   deps = [
-    ":promos",
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
   ]
@@ -47,18 +46,16 @@ source_set("promos_manager") {
     ":promos",
     "//base",
     "//ios/chrome/browser/promos_manager",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//third_party/abseil-cpp:absl",
   ]
   deps = [
     ":promos_manager_scene_agent",
     "//ios/chrome/browser",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/promos_manager:constants",
-    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/common/ui/confirmation_alert",
-    "//third_party/abseil-cpp:absl",
   ]
 }

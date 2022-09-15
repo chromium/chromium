@@ -10,8 +10,8 @@
 // Commands to show app-wide promos.
 @protocol PromosManagerCommands <NSObject>
 
-// Displays the promo, `promo`.
-- (void)displayPromo:(promos_manager::Promo)promo;
+// Displays an eligible promo (selected by the Promos Manager) if one exists.
+- (void)maybeDisplayPromo;
 
 @end
 

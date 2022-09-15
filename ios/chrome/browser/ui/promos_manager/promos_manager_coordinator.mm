@@ -11,25 +11,20 @@
 #import "base/containers/small_map.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_view_provider.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @interface PromosManagerCoordinator () <
-    PromosManagerCommands,
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate> {
   // Promos that conform to the StandardPromoDisplayHandler protocol.
@@ -58,33 +53,20 @@
 - (void)start {
   [self registerPromos];
 
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(PromosManagerCommands)];
-
-  id<PromosManagerCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PromosManagerCommands);
-
   self.mediator = [[PromosManagerMediator alloc]
       initWithPromosManager:GetApplicationContext()->GetPromosManager()
-      promoImpressionLimits:[self promoImpressionLimits]
-                    handler:handler];
+      promoImpressionLimits:[self promoImpressionLimits]];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  absl::optional<promos_manager::Promo> nextPromoForDisplay =
+      [self.mediator nextPromoForDisplay];
 
-  PromosManagerSceneAgent* sceneAgent =
-      [PromosManagerSceneAgent agentFromScene:sceneState];
-
-  [sceneAgent addObserver:self.mediator];
+  if (nextPromoForDisplay.has_value())
+    [self displayPromo:nextPromoForDisplay.value()];
 }
 
 - (void)stop {
-  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   self.mediator = nil;
 }
-
-#pragma mark - PromosManagerCommands
 
 - (void)displayPromo:(promos_manager::Promo)promo {
   auto handler_it = _displayHandlerPromos.find(promo);
@@ -102,11 +84,13 @@
   } else if (provider_it != _viewProviderPromos.end()) {
     id<StandardPromoViewProvider> provider = provider_it->second;
 
-    provider.viewController.presentationController.delegate = self;
-    provider.viewController.actionHandler = self;
+    ConfirmationAlertViewController* promoViewController =
+        [provider viewController];
+    promoViewController.presentationController.delegate = self;
+    promoViewController.actionHandler = self;
     self.provider = provider;
 
-    [self.baseViewController presentViewController:provider.viewController
+    [self.baseViewController presentViewController:promoViewController
                                           animated:YES
                                         completion:nil];
 
@@ -192,10 +176,12 @@
       result;
 
   for (auto const& [promo, handler] : _displayHandlerPromos)
-    result[promo] = handler.impressionLimits;
+    if ([handler respondsToSelector:@selector(impressionLimits)])
+      result[promo] = handler.impressionLimits;
 
   for (auto const& [promo, provider] : _viewProviderPromos)
-    result[promo] = provider.impressionLimits;
+    if ([provider respondsToSelector:@selector(impressionLimits)])
+      result[promo] = provider.impressionLimits;
 
   return result;
 }

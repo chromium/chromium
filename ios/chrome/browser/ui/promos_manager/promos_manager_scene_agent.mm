@@ -8,8 +8,9 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_availability_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,9 +27,6 @@ constexpr base::TimeDelta kHoursBetweenForegrounding =
 
 @interface PromosManagerSceneAgent () <AppStateObserver>
 
-// Weak reference to observer object.
-@property(nonatomic, weak) id<PromosManagerSceneAvailabilityObserver> observer;
-
 // Indicates whether or not the UI is available for a promo to be displayed.
 @property(nonatomic, assign, readonly, getter=isUIAvailableForPromo)
     BOOL UIAvailableForPromo;
@@ -37,20 +35,11 @@ constexpr base::TimeDelta kHoursBetweenForegrounding =
 
 @implementation PromosManagerSceneAgent
 
-- (instancetype)init {
-  self = [super init];
+- (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
+  if ([super init])
+    _dispatcher = dispatcher;
 
   return self;
-}
-
-#pragma mark - PromosManagerSceneAvailabilityObserver
-
-- (void)addObserver:(id<PromosManagerSceneAvailabilityObserver>)observer {
-  self.observer = observer;
-}
-
-- (void)removeObserver:(id<PromosManagerSceneAvailabilityObserver>)observer {
-  self.observer = nil;
 }
 
 #pragma mark - ObservingSceneAgent
@@ -89,8 +78,12 @@ constexpr base::TimeDelta kHoursBetweenForegrounding =
 
 // Notify observer(s) that the UI is available for a promo.
 - (void)maybeNotifyObserver {
-  if (self.UIAvailableForPromo)
-    [self.observer sceneDidBecomeAvailableForPromo];
+  if (self.UIAvailableForPromo) {
+    id<PromosManagerCommands> promosManagerHandler =
+        HandlerForProtocol(self.dispatcher, PromosManagerCommands);
+
+    [promosManagerHandler maybeDisplayPromo];
+  }
 }
 
 // Returns YES if a promo can be displayed.

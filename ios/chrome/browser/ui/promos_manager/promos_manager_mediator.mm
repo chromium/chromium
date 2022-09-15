@@ -22,14 +22,11 @@
     promoImpressionLimits:
         (base::small_map<
             std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
-            promoImpressionLimits
-                  handler:(id<PromosManagerCommands>)handler {
+            promoImpressionLimits {
   if (self = [super init]) {
     _promosManager = promosManager;
     _promosManager->InitializePromoImpressionLimits(
         std::move(promoImpressionLimits));
-
-    _handler = handler;
   }
 
   return self;
@@ -39,22 +36,10 @@
   _promosManager->RecordImpression(promo);
 }
 
-#pragma mark - PromosManagerSceneAvailabilityObserver
-
-// Queries the PromosManager for the next promo (promos_manager::Promo) to
-// display, if any.
-//
-// If there's an eligible promo to display, dispatches it via `handler` to be
-// handled by the rest of the application.
-- (void)sceneDidBecomeAvailableForPromo {
+- (absl::optional<promos_manager::Promo>)nextPromoForDisplay {
   DCHECK_NE(_promosManager, nullptr);
-  DCHECK(_handler);
 
-  absl::optional<promos_manager::Promo> nextPromoForDisplay =
-      self.promosManager->NextPromoForDisplay();
-
-  if (nextPromoForDisplay.has_value())
-    [self.handler displayPromo:nextPromoForDisplay.value()];
+  return self.promosManager->NextPromoForDisplay();
 }
 
 @end

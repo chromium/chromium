@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
+#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
@@ -197,6 +198,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
                                   PasswordSettingsCoordinatorDelegate,
                                   PasswordSuggestionCommands,
                                   PasswordSuggestionCoordinatorDelegate,
+                                  PromosManagerCommands,
                                   PolicyChangeCommands,
                                   PreloadControllerDelegate,
                                   RepostFormTabHelperDelegate,
@@ -600,6 +602,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
     @protocol(DefaultPromoCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
+    @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
     @protocol(NewTabPageCommands),
     @protocol(PageInfoCommands),
@@ -878,13 +881,6 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   self.printController =
       [[PrintController alloc] initWithBaseViewController:self.viewController];
-
-  if (IsFullscreenPromosManagerEnabled()) {
-    self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    [self.promosManagerCoordinator start];
-  }
 
   // Help should only show in regular, non-incognito.
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
@@ -1525,6 +1521,20 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   auto* helper = FindTabHelper::FromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage() &&
           !helper->IsFindUIActive());
+}
+
+#pragma mark - PromosManagerCommands
+
+- (void)maybeDisplayPromo {
+  if (IsFullscreenPromosManagerEnabled()) {
+    if (!self.promosManagerCoordinator) {
+      self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+    }
+
+    [self.promosManagerCoordinator start];
+  }
 }
 
 #pragma mark - PageInfoCommands

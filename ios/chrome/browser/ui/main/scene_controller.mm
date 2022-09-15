@@ -896,7 +896,9 @@ bool IsSigninForcedByPolicy() {
   [GeolocationLogger sharedInstance];
 
   if (IsFullscreenPromosManagerEnabled())
-    [self.sceneState addAgent:[[PromosManagerSceneAgent alloc] init]];
+    [self.sceneState
+        addAgent:[[PromosManagerSceneAgent alloc]
+                     initWithCommandDispatcher:mainCommandDispatcher]];
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.
