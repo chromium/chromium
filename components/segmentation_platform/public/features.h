@@ -39,6 +39,9 @@ extern const base::Feature kContextualPageActionPriceTracking;
 // Feature flag for enabling shopping user segment feature.
 extern const base::Feature kShoppingUserSegmentFeature;
 
+// Feature flag for enabling `SegmentInfoCache` for `SegmentInfoDatabase`.
+extern const base::Feature kSegmentationPlatformSegmentInfoCache;
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

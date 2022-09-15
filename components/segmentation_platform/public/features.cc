@@ -43,4 +43,7 @@ const base::Feature kContextualPageActions{"ContextualPageActions",
 const base::Feature kContextualPageActionPriceTracking{
     "ContextualPageActionPriceTracking", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSegmentationPlatformSegmentInfoCache{
+    "SegmentationPlatformSegmentInfoCache", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace segmentation_platform::features

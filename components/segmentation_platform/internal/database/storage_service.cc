@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
 #include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "components/segmentation_platform/public/features.h"
 
 namespace segmentation_platform {
 namespace {
@@ -66,7 +67,8 @@ StorageService::StorageService(
                                                 all_segment_ids)),
       segment_info_database_(std::make_unique<SegmentInfoDatabase>(
           std::move(segment_db),
-          std::make_unique<SegmentInfoCache>(false /*cache_enabled*/))),
+          std::make_unique<SegmentInfoCache>(base::FeatureList::IsEnabled(
+              features::kSegmentationPlatformSegmentInfoCache)))),
       signal_database_(
           std::make_unique<SignalDatabaseImpl>(std::move(signal_db), clock)),
       signal_storage_config_(std::make_unique<SignalStorageConfig>(
