@@ -88,9 +88,8 @@
       "description": "Chrome output directory:",
       // Configure this to point to all the output directories you use.
       "options": [
-        "/path/to/chromium/src/out/pc",
-        "/path/to/chromium/src/out/Debug",
-        "/path/to/chromium/src/out/Debug_x86"
+        "out/Debug",
+        "out/Release"
       ]
     },
     {
@@ -119,7 +118,7 @@
 
     {
       "label": "0-set_chrome_output_directory",
-      "command": "rm -f ${workspaceFolder}/out/current_link; ln -s ${input:chromeOutputDir} ${workspaceFolder}/out/current_link",
+      "command": "rm -f ${workspaceFolder}/out/current_link; ln -s ${workspaceFolder}/${input:chromeOutputDir} ${workspaceFolder}/out/current_link",
       "type": "shell",
       // The default problem matcher doesn't make sense here, so remove it.
       "problemMatcher": [],
