@@ -15,11 +15,11 @@ sys.path.append(
 
 from build_rust import (RUST_TOOLCHAIN_OUT_DIR, THIRD_PARTY_DIR,
                         VERSION_STAMP_PATH)
-from update_rust import (GetPackageVersion)
+from update_rust import (GetPackageVersionForBuild)
 from package import (MaybeUpload, TeeCmd)
 from update import (CHROMIUM_DIR)
 
-PACKAGE_VERSION = GetPackageVersion()
+PACKAGE_VERSION = GetPackageVersionForBuild()
 BUILDLOG_NAME = f'rust-buildlog-{PACKAGE_VERSION}.txt'
 RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tgz'
 

@@ -56,7 +56,8 @@ import build
 
 from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
                          RUST_TOOLCHAIN_OUT_DIR, STAGE0_JSON_SHA256,
-                         THIRD_PARTY_DIR, VERSION_STAMP_PATH, GetPackageVersion)
+                         THIRD_PARTY_DIR, VERSION_STAMP_PATH,
+                         GetPackageVersionForBuild)
 
 RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 
@@ -175,7 +176,7 @@ def Configure(llvm_libs_root):
     subs = {}
     subs['INSTALL_DIR'] = RUST_TOOLCHAIN_OUT_DIR
     subs['LLVM_ROOT'] = llvm_libs_root
-    subs['PACKAGE_VERSION'] = GetPackageVersion()
+    subs['PACKAGE_VERSION'] = GetPackageVersionForBuild()
 
     # ...and apply substitutions, writing to config.toml in Rust tree.
     with open(os.path.join(RUST_SRC_DIR, 'config.toml'), 'w') as output:
@@ -358,7 +359,7 @@ def main():
         rust_version = version_file.readline().rstrip()
     with open(VERSION_STAMP_PATH, 'w') as stamp:
         stamp.write('rustc %s-dev (%s chromium)\n' %
-                    (rust_version, GetPackageVersion()))
+                    (rust_version, GetPackageVersionForBuild()))
 
     return 0
 

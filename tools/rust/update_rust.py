@@ -27,7 +27,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = 'e0dc8d78'
+RUST_REVISION = 'abd4d2ef'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-08-26.
@@ -45,13 +45,13 @@ CRUBIT_SUB_REVISION = 1
 # This should almost always be None. When a breakage happens the fallback should
 # be temporary. Once fixed, the applicable revision(s) above should be updated
 # and FALLBACK_CLANG_VERSION should be reset to None.
-FALLBACK_CLANG_VERSION = 'llvmorg-16-init-3375-gfed71b04-1'
+FALLBACK_CLANG_VERSION = None
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    'd1b934c411fd4f94cc73d4ce3c191d2a7f66a13e0a52f30109c2f4e1d6874c45')
+    '7ba877972bd98eed652293c16650006967326d9d86d3adae59054c7ba0c41df5')
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
@@ -60,17 +60,29 @@ RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 
 
-# Get the target version as specified above.
-def GetPackageVersion():
-    if FALLBACK_CLANG_VERSION:
-        clang_version = FALLBACK_CLANG_VERSION
-    else:
-        from update import (CLANG_REVISION, CLANG_SUB_REVISION)
-        clang_version = f'{CLANG_REVISION}-{CLANG_SUB_REVISION}'
+# Get the package version for the RUST_[SUB_]REVISION above with the specified
+# clang_version.
+def GetPackageVersion(clang_version):
     # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
     # include Crubit binaries in the generated package.  See also a TODO comment
     # in BuildCrubit in package_rust.py.
-    return '%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, clang_version)
+    return f'{RUST_REVISION}-{RUST_SUB_REVISION}-{clang_version}'
+
+
+# Package version built in build_rust.py, which is always built against the
+# latest Clang and never uses the FALLBACK_CLANG_VERSION.
+def GetPackageVersionForBuild():
+    from update import (CLANG_REVISION, CLANG_SUB_REVISION)
+    return GetPackageVersion(f'{CLANG_REVISION}-{CLANG_SUB_REVISION}')
+
+
+# Package version for download, which may differ from GetUploadPackageVersion()
+# if FALLBACK_CLANG_VERSION is set.
+def GetDownloadPackageVersion():
+    if FALLBACK_CLANG_VERSION:
+        return GetPackageVersion(FALLBACK_CLANG_VERSION)
+    else:
+        return GetPackageVersionForBuild()
 
 
 # Get the version of the toolchain package we already have.
@@ -102,7 +114,7 @@ def main():
         return 0
 
     if args.print_package_version:
-        print(GetPackageVersion())
+        print(GetDownloadPackageVersion())
         return 0
 
     from update import (DownloadAndUnpack, GetDefaultHostOs,
@@ -114,15 +126,16 @@ def main():
     # versions of the same rustlibs. build/rust/std/find_std_rlibs.py chokes in
     # this case.
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-        if GetPackageVersion() == GetStampVersion():
+        if GetDownloadPackageVersion() == GetStampVersion():
             return 0
 
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
     try:
-        url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
-            GetDefaultHostOs()), GetPackageVersion())
+        platform_prefix = GetPlatformUrlPrefix(GetDefaultHostOs())
+        version = GetDownloadPackageVersion()
+        url = f'{platform_prefix}rust-toolchain-{version}.tgz'
         DownloadAndUnpack(url, THIRD_PARTY_DIR)
     except urllib.error.HTTPError as e:
         # Fail softly for now. This can happen if a Rust package was not
@@ -133,7 +146,7 @@ def main():
         print(f'warning: could not download Rust package')
 
     # Ensure the newly extracted package has the correct version.
-    assert GetPackageVersion() == GetStampVersion()
+    assert GetDownloadPackageVersion() == GetStampVersion()
 
 
 if __name__ == '__main__':
