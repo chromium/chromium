@@ -184,9 +184,9 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     if (use_image_chromium_)
       target = GL_TEXTURE_RECTANGLE_ARB;
 #endif
-    viz::TransferableResource resource = viz::TransferableResource::MakeGL(
+    viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
         taken_front_buffer_, GL_LINEAR, target, sync_token, size,
-        is_overlay_candidate);
+        viz::RGBA_8888, is_overlay_candidate);
     HostGlobals::Get()
         ->GetInstance(pp_instance())
         ->CommitTransferableResource(resource);

@@ -182,12 +182,11 @@ bool ImageLayerBridge::PrepareTransferableResource(
     bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox) &
                                 gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-    *out_resource = viz::TransferableResource::MakeGL(
-        mailbox_holder.mailbox, filter, mailbox_holder.texture_target,
-        mailbox_holder.sync_token, size, is_overlay_candidate);
-
     SkColorType color_type = image_for_compositor->GetSkColorInfo().colorType();
-    out_resource->format = viz::SkColorTypeToResourceFormat(color_type);
+    *out_resource = viz::TransferableResource::MakeGpu(
+        mailbox_holder.mailbox, filter, mailbox_holder.texture_target,
+        mailbox_holder.sync_token, size,
+        viz::SkColorTypeToResourceFormat(color_type), is_overlay_candidate);
 
     // If the transferred ImageBitmap contained in this ImageLayerBridge was
     // originated in a WebGPU context, we need to set the layer to be flipped.

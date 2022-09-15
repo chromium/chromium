@@ -115,10 +115,9 @@ ResourceId CreateGpuResource(scoped_refptr<ContextProvider> context_provider,
       gpu::SHARED_IMAGE_USAGE_DISPLAY, pixels);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-  TransferableResource gl_resource = TransferableResource::MakeGL(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+  TransferableResource gl_resource = TransferableResource::MakeGpu(
+      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, format,
       false /* is_overlay_candidate */);
-  gl_resource.format = format;
   gl_resource.color_space = std::move(color_space);
   auto release_callback =
       base::BindOnce(&DeleteSharedImage, std::move(context_provider), mailbox);

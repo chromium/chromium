@@ -334,9 +334,9 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
       resource->mark_avoid_reuse();
       return false;
     }
-    transferable = viz::TransferableResource::MakeGL(
+    transferable = viz::TransferableResource::MakeGpu(
         gpu_backing->mailbox, GL_LINEAR, gpu_backing->texture_target,
-        gpu_backing->mailbox_sync_token, resource->size(),
+        gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
         gpu_backing->overlay_candidate);
     if (gpu_backing->wait_on_fence_required)
       transferable.synchronization_type =
@@ -346,7 +346,6 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
         resource->software_backing()->shared_bitmap_id, resource->size(),
         resource->format());
   }
-  transferable.format = resource->format();
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(
       std::move(transferable),

@@ -822,11 +822,11 @@ void VideoResourceUpdater::CopyHardwarePlane(
                              gpu::SyncToken());
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
 
-  auto transferable_resource = viz::TransferableResource::MakeGL(
+  auto transferable_resource = viz::TransferableResource::MakeGpu(
       hardware_resource->mailbox(), GL_LINEAR, GL_TEXTURE_2D, sync_token,
-      output_plane_resource_size, false /* is_overlay_candidate */);
+      output_plane_resource_size, copy_resource_format,
+      false /* is_overlay_candidate */);
   transferable_resource.color_space = resource_color_space;
-  transferable_resource.format = copy_resource_format;
   external_resources->resources.push_back(std::move(transferable_resource));
 
   external_resources->release_callbacks.push_back(base::BindOnce(
@@ -880,9 +880,10 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       const size_t width = video_frame->columns(i);
       const size_t height = video_frame->rows(i);
       const gfx::Size plane_size(width, height);
-      auto transfer_resource = viz::TransferableResource::MakeGL(
+      auto transfer_resource = viz::TransferableResource::MakeGpu(
           mailbox_holder.mailbox, GL_LINEAR, mailbox_holder.texture_target,
           mailbox_holder.sync_token, plane_size,
+          viz::GetResourceFormat(buffer_formats[i]),
           video_frame->metadata().allow_overlay);
       transfer_resource.color_space = resource_color_space;
       transfer_resource.hdr_metadata = video_frame->hdr_metadata();
@@ -890,7 +891,6 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
         transfer_resource.synchronization_type = viz::TransferableResource::
             SynchronizationType::kGpuCommandsCompleted;
       }
-      transfer_resource.format = viz::GetResourceFormat(buffer_formats[i]);
       transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1101,15 +1101,14 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       gpu::SyncToken sync_token;
       auto* gl = ContextGL();
       GenerateCompositorSyncToken(gl, &sync_token);
-      transferable_resource = viz::TransferableResource::MakeGL(
+      transferable_resource = viz::TransferableResource::MakeGpu(
           hardware_resource->mailbox(), GL_LINEAR,
           hardware_resource->texture_target(), sync_token,
-          hardware_resource->resource_size(),
+          hardware_resource->resource_size(), output_resource_format,
           hardware_resource->overlay_candidate());
     }
 
     transferable_resource.color_space = output_color_space;
-    transferable_resource.format = output_resource_format;
     external_resources.resources.push_back(std::move(transferable_resource));
     external_resources.release_callbacks.push_back(base::BindOnce(
         &VideoResourceUpdater::RecycleResource, weak_ptr_factory_.GetWeakPtr(),
@@ -1268,12 +1267,11 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
   for (size_t i = 0; i < plane_resources.size(); ++i) {
     HardwarePlaneResource* plane_resource = plane_resources[i]->AsHardware();
-    auto transferable_resource = viz::TransferableResource::MakeGL(
+    auto transferable_resource = viz::TransferableResource::MakeGpu(
         plane_resource->mailbox(), GL_LINEAR, plane_resource->texture_target(),
-        sync_token, plane_resource->resource_size(),
+        sync_token, plane_resource->resource_size(), output_resource_format,
         plane_resource->overlay_candidate());
     transferable_resource.color_space = output_color_space;
-    transferable_resource.format = output_resource_format;
     external_resources.resources.push_back(std::move(transferable_resource));
     external_resources.release_callbacks.push_back(base::BindOnce(
         &VideoResourceUpdater::RecycleResource, weak_ptr_factory_.GetWeakPtr(),

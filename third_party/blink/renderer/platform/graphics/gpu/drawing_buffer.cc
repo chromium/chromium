@@ -580,12 +580,11 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
   // Populate the output mailbox and callback.
   {
     bool is_overlay_candidate = !!color_buffer_for_mailbox->gpu_memory_buffer;
-    *out_resource = viz::TransferableResource::MakeGL(
+    *out_resource = viz::TransferableResource::MakeGpu(
         color_buffer_for_mailbox->mailbox, GL_LINEAR, texture_target_,
         color_buffer_for_mailbox->produce_sync_token, size_,
-        is_overlay_candidate);
+        color_buffer_for_mailbox->format, is_overlay_candidate);
     out_resource->color_space = color_buffer_for_mailbox->color_space;
-    out_resource->format = color_buffer_for_mailbox->format;
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).
     auto func = base::BindOnce(&DrawingBuffer::NotifyMailboxReleasedGpu,

@@ -64,12 +64,13 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     return r;
   }
 
-  static TransferableResource MakeGL(const gpu::Mailbox& mailbox,
-                                     uint32_t filter,
-                                     uint32_t texture_target,
-                                     const gpu::SyncToken& sync_token,
-                                     const gfx::Size& size,
-                                     bool is_overlay_candidate) {
+  static TransferableResource MakeGpu(const gpu::Mailbox& mailbox,
+                                      uint32_t filter,
+                                      uint32_t texture_target,
+                                      const gpu::SyncToken& sync_token,
+                                      const gfx::Size& size,
+                                      ResourceFormat format,
+                                      bool is_overlay_candidate) {
     TransferableResource r;
     r.is_software = false;
     r.filter = filter;
@@ -77,6 +78,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     r.mailbox_holder.texture_target = texture_target;
     r.mailbox_holder.sync_token = sync_token;
     r.size = size;
+    r.format = format;
     r.is_overlay_candidate = is_overlay_candidate;
     return r;
   }

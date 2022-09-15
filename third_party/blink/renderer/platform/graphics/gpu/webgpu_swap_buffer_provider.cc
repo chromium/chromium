@@ -305,12 +305,11 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   ReleaseWGPUTextureAccessIfNeeded(/*for_transfer=*/true);
 
   // Populate the output resource
-  *out_resource = viz::TransferableResource::MakeGL(
+  *out_resource = viz::TransferableResource::MakeGpu(
       current_swap_buffer_->mailbox, GL_LINEAR, GetTextureTarget(),
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
-      IsOverlayCandidate());
+      Format(), IsOverlayCandidate());
   out_resource->color_space = gfx::ColorSpace::CreateSRGB();
-  out_resource->format = Format();
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).

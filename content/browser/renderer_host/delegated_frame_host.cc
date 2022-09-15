@@ -425,10 +425,10 @@ void DelegatedFrameHost::DidCopyStaleContent(
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
   ContinueDelegatedFrameEviction();
 
-  auto transfer_resource = viz::TransferableResource::MakeGL(
+  auto transfer_resource = viz::TransferableResource::MakeGpu(
       result->GetTextureResult()->planes[0].mailbox, GL_LINEAR, GL_TEXTURE_2D,
       result->GetTextureResult()->planes[0].sync_token, result->size(),
-      false /* is_overlay_candidate */);
+      viz::RGBA_8888, false /* is_overlay_candidate */);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
   DCHECK_EQ(1u, release_callbacks.size());

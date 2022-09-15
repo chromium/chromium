@@ -102,10 +102,9 @@ class DisplayResourceProviderSkiaTest : public testing::Test {
     gpu::SyncToken sync_token = GenSyncToken();
     EXPECT_TRUE(sync_token.HasData());
 
-    TransferableResource gl_resource = TransferableResource::MakeGL(
-        gpu_mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+    TransferableResource gl_resource = TransferableResource::MakeGpu(
+        gpu_mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, format,
         false /* is_overlay_candidate */);
-    gl_resource.format = format;
     return gl_resource;
   }
 
@@ -132,8 +131,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
                              0x42);
   auto mailbox = gpu::Mailbox::Generate();
   constexpr gfx::Size size(64, 64);
-  TransferableResource gl_resource = TransferableResource::MakeGL(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size,
+  TransferableResource gl_resource = TransferableResource::MakeGpu(
+      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size, RGBA_8888,
       false /* is_overlay_candidate */);
   ResourceId id1 =
       child_resource_provider_->ImportResource(gl_resource, base::DoNothing());
@@ -212,8 +211,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
                              0x42);
   auto mailbox = gpu::Mailbox::Generate();
   constexpr gfx::Size size(64, 64);
-  TransferableResource gl_resource = TransferableResource::MakeGL(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size,
+  TransferableResource gl_resource = TransferableResource::MakeGpu(
+      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size, RGBA_8888,
       false /* is_overlay_candidate */);
   ResourceId id1 =
       child_resource_provider_->ImportResource(gl_resource, base::DoNothing());

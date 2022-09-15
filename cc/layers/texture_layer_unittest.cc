@@ -136,12 +136,12 @@ struct CommonResourceObjects {
     const uint32_t arbitrary_target1 = GL_TEXTURE_2D;
     const uint32_t arbitrary_target2 = GL_TEXTURE_EXTERNAL_OES;
     gfx::Size size(128, 128);
-    resource1_ = viz::TransferableResource::MakeGL(
+    resource1_ = viz::TransferableResource::MakeGpu(
         mailbox_name1_, GL_LINEAR, arbitrary_target1, sync_token1_, size,
-        false /* is_overlay_candidate */);
-    resource2_ = viz::TransferableResource::MakeGL(
+        viz::RGBA_8888, false /* is_overlay_candidate */);
+    resource2_ = viz::TransferableResource::MakeGpu(
         mailbox_name2_, GL_LINEAR, arbitrary_target2, sync_token2_, size,
-        false /* is_overlay_candidate */);
+        viz::RGBA_8888, false /* is_overlay_candidate */);
     shared_bitmap_id_ = viz::SharedBitmap::GenerateId();
     sw_release_callback_ = base::BindRepeating(
         &MockReleaseCallback::Release2, base::Unretained(&mock_callback_),
@@ -697,10 +697,10 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
         base::Unretained(this), mailbox_char);
 
     const gfx::Size size(64, 64);
-    auto resource = viz::TransferableResource::MakeGL(
+    auto resource = viz::TransferableResource::MakeGpu(
         MailboxFromChar(mailbox_char), GL_LINEAR, GL_TEXTURE_2D,
         SyncTokenFromUInt(static_cast<uint32_t>(mailbox_char)), size,
-        false /* is_overlay_candidate */);
+        viz::RGBA_8888, false /* is_overlay_candidate */);
     layer_->SetTransferableResource(resource, std::move(callback));
     // Damage the layer so we send a new frame with the new resource to the
     // Display compositor.
@@ -928,9 +928,10 @@ class TextureLayerNoExtraCommitForMailboxTest
     }
 
     constexpr gfx::Size size(64, 64);
-    *resource = viz::TransferableResource::MakeGL(
+    *resource = viz::TransferableResource::MakeGpu(
         MailboxFromChar('1'), GL_LINEAR, GL_TEXTURE_2D,
-        SyncTokenFromUInt(0x123), size, false /* is_overlay_candidate */);
+        SyncTokenFromUInt(0x123), size, viz::RGBA_8888,
+        false /* is_overlay_candidate */);
     *release_callback = base::BindOnce(
         &TextureLayerNoExtraCommitForMailboxTest::ResourceReleased,
         base::Unretained(this));
@@ -1012,9 +1013,9 @@ class TextureLayerChangeInvisibleMailboxTest
 
   viz::TransferableResource MakeResource(char name) {
     constexpr gfx::Size size(64, 64);
-    return viz::TransferableResource::MakeGL(
+    return viz::TransferableResource::MakeGpu(
         MailboxFromChar(name), GL_LINEAR, GL_TEXTURE_2D,
-        SyncTokenFromUInt(static_cast<uint32_t>(name)), size,
+        SyncTokenFromUInt(static_cast<uint32_t>(name)), size, viz::RGBA_8888,
         false /* is_overlay_candidate */);
   }
 
@@ -1131,9 +1132,9 @@ class TextureLayerReleaseResourcesBase
       viz::TransferableResource* resource,
       viz::ReleaseCallback* release_callback) override {
     constexpr gfx::Size size(64, 64);
-    *resource = viz::TransferableResource::MakeGL(
+    *resource = viz::TransferableResource::MakeGpu(
         MailboxFromChar('1'), GL_LINEAR, GL_TEXTURE_2D, SyncTokenFromUInt(1),
-        size, false /* is_overlay_candidate */);
+        size, viz::RGBA_8888, false /* is_overlay_candidate */);
     *release_callback =
         base::BindOnce(&TextureLayerReleaseResourcesBase::ResourceReleased,
                        base::Unretained(this));
@@ -1209,10 +1210,10 @@ class TextureLayerWithResourceMainThreadDeleted : public LayerTreeTest {
         &TextureLayerWithResourceMainThreadDeleted::ReleaseCallback,
         base::Unretained(this));
     constexpr gfx::Size size(64, 64);
-    auto resource = viz::TransferableResource::MakeGL(
+    auto resource = viz::TransferableResource::MakeGpu(
         MailboxFromChar(mailbox_char), GL_LINEAR, GL_TEXTURE_2D,
         SyncTokenFromUInt(static_cast<uint32_t>(mailbox_char)), size,
-        false /* is_overlay_candidate */);
+        viz::RGBA_8888, false /* is_overlay_candidate */);
     layer_->SetTransferableResource(resource, std::move(callback));
   }
 
@@ -1280,10 +1281,10 @@ class TextureLayerWithResourceImplThreadDeleted : public LayerTreeTest {
         &TextureLayerWithResourceImplThreadDeleted::ReleaseCallback,
         base::Unretained(this));
     constexpr gfx::Size size(64, 64);
-    auto resource = viz::TransferableResource::MakeGL(
+    auto resource = viz::TransferableResource::MakeGpu(
         MailboxFromChar(mailbox_char), GL_LINEAR, GL_TEXTURE_2D,
         SyncTokenFromUInt(static_cast<uint32_t>(mailbox_char)), size,
-        false /* is_overlay_candidate */);
+        viz::RGBA_8888, false /* is_overlay_candidate */);
     layer_->SetTransferableResource(resource, std::move(callback));
   }
 

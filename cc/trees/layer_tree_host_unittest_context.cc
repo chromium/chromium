@@ -846,8 +846,8 @@ class LayerTreeHostContextTestDontUseLostResources
     texture->SetBounds(gfx::Size(10, 10));
     texture->SetIsDrawable(true);
     constexpr gfx::Size size(64, 64);
-    auto resource = viz::TransferableResource::MakeGL(
-        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+    auto resource = viz::TransferableResource::MakeGpu(
+        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, viz::RGBA_8888,
         false /* is_overlay_candidate */);
     texture->SetTransferableResource(
         resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::

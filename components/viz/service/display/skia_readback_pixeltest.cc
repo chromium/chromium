@@ -366,10 +366,9 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
         kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY, pixels);
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-    TransferableResource gl_resource = TransferableResource::MakeGL(
-        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+    TransferableResource gl_resource = TransferableResource::MakeGpu(
+        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, format,
         /*is_overlay_candidate=*/false);
-    gl_resource.format = format;
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, child_context_provider_, mailbox);
     return child_resource_provider_->ImportResource(

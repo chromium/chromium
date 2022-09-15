@@ -175,12 +175,11 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
   if (mailbox.IsZero())
     return false;
 
-  *out_resource = viz::TransferableResource::MakeGL(
+  *out_resource = viz::TransferableResource::MakeGpu(
       mailbox, GLFilter(), TextureTarget(), GetSyncToken(), Size(),
-      IsOverlayCandidate());
+      GetResourceFormat(), IsOverlayCandidate());
 
   out_resource->color_space = GetColorSpace();
-  out_resource->format = GetResourceFormat();
   if (NeedsReadLockFences()) {
     out_resource->synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;

@@ -421,10 +421,11 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
-    auto renderer_resource = viz::TransferableResource::MakeGL(
+    auto renderer_resource = viz::TransferableResource::MakeGpu(
         renderer_buffer->mailbox_holder.mailbox,
         /*filter=*/GL_LINEAR, renderer_buffer->mailbox_holder.texture_target,
         renderer_buffer->mailbox_holder.sync_token, renderer_buffer->size,
+        viz::RGBA_8888,
         /*is_overlay_candidate=*/false);
 
     renderer_resource.id = renderer_buffer->id;
@@ -462,10 +463,11 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                       gfx::ProtectedVideoType::kClear);
 
   // Additionally append to the resource_list
-  auto camera_resource = viz::TransferableResource::MakeGL(
+  auto camera_resource = viz::TransferableResource::MakeGpu(
       camera_buffer->mailbox_holder.mailbox,
       /*filter=*/GL_LINEAR, camera_buffer->mailbox_holder.texture_target,
       camera_buffer->mailbox_holder.sync_token, camera_buffer->size,
+      viz::RGBA_8888,
       /*is_overlay_candidate=*/false);
 
   camera_resource.id = camera_buffer->id;

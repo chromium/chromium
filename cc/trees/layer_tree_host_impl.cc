@@ -4688,10 +4688,9 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
                                     ->SharedImageInterface()
                                     ->GenUnverifiedSyncToken();
 
-    transferable = viz::TransferableResource::MakeGL(
-        mailbox, GL_LINEAR, texture_target, sync_token, upload_size,
+    transferable = viz::TransferableResource::MakeGpu(
+        mailbox, GL_LINEAR, texture_target, sync_token, upload_size, format,
         overlay_candidate);
-    transferable.format = format;
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                                     shared_bitmap_id);
