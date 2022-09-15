@@ -442,6 +442,7 @@ void FastPairPresenterImpl::ShowCompanionApp(scoped_refptr<Device> device,
 
 void FastPairPresenterImpl::RemoveNotifications() {
   notification_controller_->RemoveNotifications();
+  address_to_devices_with_discovery_notification_already_shown_map_.clear();
 }
 
 }  // namespace quick_pair
