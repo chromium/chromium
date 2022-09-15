@@ -10,7 +10,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierFactory.java",
     "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierFactoryImpl.java",
     "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeVerificationResultStore.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java",
   ]
   deps = [
     "//base:base_java",
