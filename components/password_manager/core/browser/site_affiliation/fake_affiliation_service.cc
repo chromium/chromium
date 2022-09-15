@@ -31,6 +31,9 @@ void FakeAffiliationService::KeepPrefetchForFacets(
 void FakeAffiliationService::TrimCacheForFacetURI(const FacetURI& facet_uri) {}
 void FakeAffiliationService::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 }
+void FakeAffiliationService::GetAllGroups(GroupsCallback callback) const {
+  std::move(callback).Run({});
+}
 
 void FakeAffiliationService::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,

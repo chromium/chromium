@@ -35,6 +35,8 @@ class AffiliationService : public KeyedService {
       absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
                     PasswordStoreBackendError>)>;
 
+  using GroupsCallback = base::OnceCallback<void(std::vector<GroupedFacets>)>;
+
   // Prefetches change password URLs for sites requested. Receives a callback to
   // run when the prefetch finishes.
   virtual void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
@@ -97,6 +99,10 @@ class AffiliationService : public KeyedService {
   // Wipes results from cache which don't correspond to the any facet from
   // |facet_uris|.
   virtual void TrimUnusedCache(std::vector<FacetURI> facet_uris) = 0;
+
+  // Retrieves all stored facet groups from the cache. This information can be
+  // used to group passwords together.
+  virtual void GetAllGroups(GroupsCallback callback) const = 0;
 
   // Retrieves affiliation and branding information about the Android
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and

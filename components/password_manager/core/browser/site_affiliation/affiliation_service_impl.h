@@ -102,6 +102,7 @@ class AffiliationServiceImpl : public AffiliationService,
   void TrimCacheForFacetURI(const FacetURI& facet_uri) override;
   void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris) override;
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
+  void GetAllGroups(GroupsCallback callback) const override;
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<PasswordForm>> forms,
       AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,

@@ -46,6 +46,7 @@ class MockAffiliationService : public AffiliationService {
   MOCK_METHOD(void, KeepPrefetchForFacets, (std::vector<FacetURI>), (override));
   MOCK_METHOD(void, TrimCacheForFacetURI, (const FacetURI&), (override));
   MOCK_METHOD(void, TrimUnusedCache, (std::vector<FacetURI>), (override));
+  MOCK_METHOD(void, GetAllGroups, (GroupsCallback), (override, const));
 
   void ExpectCallToInjectAffiliationAndBrandingInformation(
       const std::vector<AffiliationAndBrandingInformation>& results_to_inject);
