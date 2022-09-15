@@ -4,6 +4,7 @@
 
 import './viewer-thumbnail.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -202,9 +203,11 @@ export class ViewerThumbnailBarElement extends PolymerElement {
 
         // On tab, first redirect focus to the last thumbnail to focus to the
         // element after the thumbnail bar from any thumbnail.
-        this.shadowRoot!
-            .querySelector<ViewerThumbnailElement>(
-                'viewer-thumbnail:last-of-type')!.focus({preventScroll: true});
+        const lastThumbnail =
+            this.shadowRoot!.querySelector<ViewerThumbnailElement>(
+                'viewer-thumbnail:last-of-type');
+        assert(lastThumbnail);
+        lastThumbnail.focus({preventScroll: true});
         break;
       case 'ArrowRight':
       case 'ArrowDown':
