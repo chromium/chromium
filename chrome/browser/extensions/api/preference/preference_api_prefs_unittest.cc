@@ -16,6 +16,7 @@
 #include "components/prefs/mock_pref_change_callback.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,37 +38,6 @@ const char kDefaultPref3[] = "default pref 3";
 const char kDefaultPref4[] = "default pref 4";
 
 }  // namespace
-
-// An implementation of the PreferenceAPI which returns the ExtensionPrefs and
-// ExtensionPrefValueMap from the TestExtensionPrefs, rather than from a
-// profile (which we don't create in unittests).
-class TestPreferenceAPI : public PreferenceAPIBase {
- public:
-  explicit TestPreferenceAPI(TestExtensionPrefs* test_extension_prefs,
-                             ContentSettingsService* content_settings)
-      : test_extension_prefs_(test_extension_prefs),
-        content_settings_(content_settings) {}
-
-  TestPreferenceAPI(const TestPreferenceAPI&) = delete;
-  TestPreferenceAPI& operator=(const TestPreferenceAPI&) = delete;
-
-  ~TestPreferenceAPI() {}
-
- private:
-  // PreferenceAPIBase implementation.
-  ExtensionPrefs* extension_prefs() override {
-    return test_extension_prefs_->prefs();
-  }
-  ExtensionPrefValueMap* extension_pref_value_map() override {
-    return test_extension_prefs_->extension_pref_value_map();
-  }
-  scoped_refptr<ContentSettingsStore> content_settings_store() override {
-    return content_settings_->content_settings_store();
-  }
-
-  raw_ptr<TestExtensionPrefs> test_extension_prefs_;
-  raw_ptr<ContentSettingsService> content_settings_;
-};
 
 class ExtensionControlledPrefsTest : public PrefsPrepopulatedTestBase {
  public:
@@ -98,13 +68,13 @@ class ExtensionControlledPrefsTest : public PrefsPrepopulatedTestBase {
 
   TestingProfile profile_;
   raw_ptr<ContentSettingsService> content_settings_;
-  TestPreferenceAPI test_preference_api_;
+  ExtensionPrefsHelper prefs_helper_;
 };
 
 ExtensionControlledPrefsTest::ExtensionControlledPrefsTest()
     : PrefsPrepopulatedTestBase(),
       content_settings_(ContentSettingsService::Get(&profile_)),
-      test_preference_api_(&prefs_, content_settings_) {
+      prefs_helper_(prefs_.prefs(), prefs_.extension_pref_value_map()) {
   content_settings_->OnExtensionPrefsAvailable(prefs_.prefs());
 }
 
@@ -124,7 +94,7 @@ void ExtensionControlledPrefsTest::InstallExtensionControlledPref(
     const std::string& key,
     base::Value value) {
   EnsureExtensionInstalled(extension);
-  test_preference_api_.SetExtensionControlledPref(
+  prefs_helper_.SetExtensionControlledPref(
       extension->id(), key, kExtensionPrefsScopeRegular, std::move(value));
 }
 
@@ -133,7 +103,7 @@ void ExtensionControlledPrefsTest::InstallExtensionControlledPrefIncognito(
     const std::string& key,
     base::Value value) {
   EnsureExtensionInstalled(extension);
-  test_preference_api_.SetExtensionControlledPref(
+  prefs_helper_.SetExtensionControlledPref(
       extension->id(), key, kExtensionPrefsScopeIncognitoPersistent,
       std::move(value));
 }
@@ -143,7 +113,7 @@ void ExtensionControlledPrefsTest::
                                                        const std::string& key,
                                                        base::Value value) {
   EnsureExtensionInstalled(extension);
-  test_preference_api_.SetExtensionControlledPref(
+  prefs_helper_.SetExtensionControlledPref(
       extension->id(), key, kExtensionPrefsScopeIncognitoSessionOnly,
       std::move(value));
 }
