@@ -30,7 +30,7 @@ const base::Feature kForceShowContinueSection{
 const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kQuickActionShowBubbleLauncher{
-    "QuickActionShowBubbleLauncher", base::FEATURE_ENABLED_BY_DEFAULT};
+    "QuickActionShowBubbleLauncher", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kDynamicSearchUpdateAnimation{
     "DynamicSearchUpdateAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCompactBubbleLauncher{"CompactBubbleLauncher",

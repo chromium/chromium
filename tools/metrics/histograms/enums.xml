@@ -59506,6 +59506,7 @@ from previous Chrome versions.
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>
   <int value="-143382681" label="InstantTethering:enabled"/>
   <int value="-143121333" label="WebXRIncubations:enabled"/>
+  <int value="-142004292" label="QuickActionShowBubbleLauncher:disabled"/>
   <int value="-141516902" label="UseModernMediaControls:enabled"/>
   <int value="-140763100"
       label="EnableServiceWorkersForChromeUntrusted:disabled"/>
@@ -63110,6 +63111,7 @@ from previous Chrome versions.
   <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>
   <int value="2089897928" label="enable-audio-focus"/>
   <int value="2089901626" label="QuickSettingsPWA:enabled"/>
+  <int value="2089934964" label="QuickActionShowBubbleLauncher:enabled"/>
   <int value="2091002949" label="RemoveNavigationHistory:disabled"/>
   <int value="2091676363" label="EnableDefaultAppsMigration:disabled"/>
   <int value="2091943748"

@@ -5562,6 +5562,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "quick-gesture-show-launcher",
+    "owners": [ "anasalazar", "//ash/shelf/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "quick-intensive-throttling-after-loading",
     "owners": [ "jiahe.zhang@intel.com", "fdoray" ],
     "expiry_milestone": 110
