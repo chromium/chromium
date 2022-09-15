@@ -114,6 +114,10 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1309492
   "arc.DragDrop.chrome_to_android",
 
+  # https://crbug.com/1364035
+  "arc.Optin",
+  "arc.OptinNetworkError",
+
   # https://crbug.com/1312121
   "policy.DefaultJavaScriptSetting",
   "policy.CookiesBlockedForUrls",
@@ -178,11 +182,20 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.RemoveOk.bullseye_stable",
   "crostini.RemoveOk.buster_stable",
 
+  # http://crbug.com/1363663
+  "crostini.AppGeditFilesharing.clamshell_stable",
+  "crostini.DragDrop.bullseye_stable",
+  "crostini.FilesAppWatch.bullseye_stable",
+  "crostini.HomeDirectoryCreateFile.bullseye_stable",
+  "crostini.Restart.buster_stable",
+  "crostini.RestartIcon.buster_stable",
+  "crostini.RunWithARC.buster_stable",
+
   # b/241122961
   "policy.BlockThirdPartyCookies",
 
   # https://crbug.com/1350180
-  # also see http://crbug.com/1350191
+  # also see http://crbug.com/13501e1
   "printer.Print",
 
   # https://crbug.com/1350191
@@ -208,6 +221,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1362184
   "dlp.DataLeakPreventionRulesListClipboardHistory.ash",
+  "dlp.DataLeakPreventionRulesListPrinting.ash_blocked",
+  "dlp.DataLeakPreventionRulesListScreenshot.ash_allowed",
+  "dlp.DataLeakPreventionRulesListScreenshot.ash_blocked",
   "dlp.DataLeakPreventionRulesListClipboardOmni",
   "dlp.DataLeakPreventionRulesListPrinting.ash_allowed",
 ]
