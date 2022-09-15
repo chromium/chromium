@@ -804,7 +804,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2022-10-16">
+<histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2023-10-16">
   <owner>olivierrobin@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
