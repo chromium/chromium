@@ -53,8 +53,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace blink {
-namespace cssvalue {
+namespace blink::cssvalue {
 
 namespace {
 
@@ -817,32 +816,67 @@ void CSSGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSImageGeneratorValue::TraceAfterDispatch(visitor);
 }
 
-static String ColorInterpolationSpaceToString(
-    Color::ColorInterpolationSpace color_space) {
+static void AppendColorInterpolationSpace(
+    StringBuilder& result,
+    Color::ColorInterpolationSpace color_space,
+    Color::HueInterpolationMethod hue_interpolation_method) {
   switch (color_space) {
     case Color::ColorInterpolationSpace::kLab:
-      return String("lab");
+      result.Append("lab");
+      break;
     case Color::ColorInterpolationSpace::kLCH:
-      return String("lch");
+      result.Append("lch");
+      break;
     case Color::ColorInterpolationSpace::kOKLab:
-      return String("oklab");
+      result.Append("oklab");
+      break;
     case Color::ColorInterpolationSpace::kOKLCH:
-      return String("oklch");
+      result.Append("oklch");
+      break;
     case Color::ColorInterpolationSpace::kSRGBLinear:
-      return String("srgb-linear");
+      result.Append("srgb-linear");
+      break;
     case Color::ColorInterpolationSpace::kSRGB:
-      return String("srgb");
+      result.Append("srgb");
+      break;
     case Color::ColorInterpolationSpace::kXYZD65:
-      return String("xyz-d65");
+      result.Append("xyz-d65");
+      break;
     case Color::ColorInterpolationSpace::kXYZD50:
-      return String("xyz-d50");
+      result.Append("xyz-d50");
+      break;
     case Color::ColorInterpolationSpace::kHSL:
-      return String("hsl");
+      result.Append("hsl");
+      break;
     case Color::ColorInterpolationSpace::kHWB:
-      return String("hwb");
+      result.Append("hwb");
+      break;
     case Color::ColorInterpolationSpace::kNone:
       NOTREACHED();
-      return String();
+      break;
+  }
+
+  if (color_space == Color::ColorInterpolationSpace::kLCH ||
+      color_space == Color::ColorInterpolationSpace::kOKLCH ||
+      color_space == Color::ColorInterpolationSpace::kHSL ||
+      color_space == Color::ColorInterpolationSpace::kHWB) {
+    switch (hue_interpolation_method) {
+      case Color::HueInterpolationMethod::kDecreasing:
+        result.Append(" decreasing hue");
+        break;
+      case Color::HueInterpolationMethod::kIncreasing:
+        result.Append(" increasing hue");
+        break;
+      case Color::HueInterpolationMethod::kLonger:
+        result.Append(" longer hue");
+        break;
+      case Color::HueInterpolationMethod::kSpecified:
+        result.Append(" specified hue");
+        break;
+      // Shorter is the default value and does not get serialized
+      case Color::HueInterpolationMethod::kShorter:
+        break;
+    }
   }
 }
 
@@ -942,8 +976,8 @@ String CSSLinearGradientValue::CustomCSSText() const {
         result.Append(" ");
       wrote_something = true;
       result.Append("in ");
-      result.Append(
-          ColorInterpolationSpaceToString(color_interpolation_space_));
+      AppendColorInterpolationSpace(result, color_interpolation_space_,
+                                    hue_interpolation_method_);
     }
 
     AppendCSSTextForColorStops(result, wrote_something);
@@ -1104,7 +1138,8 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
       Gradient::CreateLinear(desc.p0, desc.p1, desc.spread_method,
                              Gradient::ColorInterpolation::kPremultiplied);
 
-  gradient->SetColorInterpolationSpace(color_interpolation_space_);
+  gradient->SetColorInterpolationSpace(color_interpolation_space_,
+                                       hue_interpolation_method_);
   gradient->AddColorStops(desc.stops);
 
   return gradient;
@@ -1157,7 +1192,8 @@ CSSLinearGradientValue* CSSLinearGradientValue::ComputedCSSValue(
       first_x_, first_y_, second_x_, second_y_, angle_,
       repeating_ ? kRepeating : kNonRepeating, GradientType());
 
-  result->SetColorInterpolationSpace(color_interpolation_space_);
+  result->SetColorInterpolationSpace(color_interpolation_space_,
+                                     hue_interpolation_method_);
   result->AddComputedStops(style, allow_visited_style, stops_);
   return result;
 }
@@ -1305,8 +1341,8 @@ String CSSRadialGradientValue::CustomCSSText() const {
 
     if (ShouldSerializeColorSpace()) {
       result.Append(" in ");
-      result.Append(
-          ColorInterpolationSpaceToString(color_interpolation_space_));
+      AppendColorInterpolationSpace(result, color_interpolation_space_,
+                                    hue_interpolation_method_);
     }
 
     AppendCSSTextForColorStops(result, kAppendSeparator);
@@ -1351,8 +1387,8 @@ String CSSRadialGradientValue::CustomCSSText() const {
         result.Append(" ");
       result.Append("in ");
       wrote_something = true;
-      result.Append(
-          ColorInterpolationSpaceToString(color_interpolation_space_));
+      AppendColorInterpolationSpace(result, color_interpolation_space_,
+                                    hue_interpolation_method_);
     }
 
     AppendCSSTextForColorStops(result, wrote_something);
@@ -1542,7 +1578,8 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
       is_degenerate ? 1 : second_radius.AspectRatio(), desc.spread_method,
       Gradient::ColorInterpolation::kPremultiplied);
 
-  gradient->SetColorInterpolationSpace(color_interpolation_space_);
+  gradient->SetColorInterpolationSpace(color_interpolation_space_,
+                                       hue_interpolation_method_);
   gradient->AddColorStops(desc.stops);
 
   return gradient;
@@ -1608,7 +1645,8 @@ CSSRadialGradientValue* CSSRadialGradientValue::ComputedCSSValue(
       first_x_, first_y_, first_radius_, second_x_, second_y_, second_radius_,
       shape_, sizing_behavior_, end_horizontal_size_, end_vertical_size_,
       repeating_ ? kRepeating : kNonRepeating, GradientType());
-  result->SetColorInterpolationSpace(color_interpolation_space_);
+  result->SetColorInterpolationSpace(color_interpolation_space_,
+                                     hue_interpolation_method_);
   result->AddComputedStops(style, allow_visited_style, stops_);
   return result;
 }
@@ -1657,7 +1695,8 @@ String CSSConicGradientValue::CustomCSSText() const {
       result.Append(" ");
     result.Append("in ");
     wrote_something = true;
-    result.Append(ColorInterpolationSpaceToString(color_interpolation_space_));
+    AppendColorInterpolationSpace(result, color_interpolation_space_,
+                                  hue_interpolation_method_);
   }
 
   AppendCSSTextForColorStops(result, wrote_something);
@@ -1689,7 +1728,8 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
       position, angle, desc.start_angle, desc.end_angle, desc.spread_method,
       Gradient::ColorInterpolation::kPremultiplied);
 
-  gradient->SetColorInterpolationSpace(color_interpolation_space_);
+  gradient->SetColorInterpolationSpace(color_interpolation_space_,
+                                       hue_interpolation_method_);
   gradient->AddColorStops(desc.stops);
 
   return gradient;
@@ -1708,7 +1748,8 @@ CSSConicGradientValue* CSSConicGradientValue::ComputedCSSValue(
     bool allow_visited_style) const {
   auto* result = MakeGarbageCollected<CSSConicGradientValue>(
       x_, y_, from_angle_, repeating_ ? kRepeating : kNonRepeating);
-  result->SetColorInterpolationSpace(color_interpolation_space_);
+  result->SetColorInterpolationSpace(color_interpolation_space_,
+                                     hue_interpolation_method_);
   result->AddComputedStops(style, allow_visited_style, stops_);
   return result;
 }
@@ -1730,5 +1771,4 @@ void CSSConicGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSGradientValue::TraceAfterDispatch(visitor);
 }
 
-}  // namespace cssvalue
-}  // namespace blink
+}  // namespace blink::cssvalue

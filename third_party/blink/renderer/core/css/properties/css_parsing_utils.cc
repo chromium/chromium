@@ -2517,56 +2517,66 @@ static CSSValue* ConsumeDeprecatedRadialGradient(
              : nullptr;
 }
 
-static bool ConsumeColorSpace(CSSParserTokenRange& args,
-                              Color::ColorInterpolationSpace& result) {
+static bool ConsumeColorSpace(
+    CSSParserTokenRange& args,
+    Color::ColorInterpolationSpace& color_space,
+    Color::HueInterpolationMethod& hue_interpolation) {
   if (!RuntimeEnabledFeatures::CSSColor4Enabled())
     return false;
 
   if (!ConsumeIdent<CSSValueID::kIn>(args))
     return false;
 
-  if (ConsumeIdent<CSSValueID::kXyz>(args)) {
-    result = Color::ColorInterpolationSpace::kXYZD65;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kXyzD50>(args)) {
-    result = Color::ColorInterpolationSpace::kXYZD50;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kXyzD65>(args)) {
-    result = Color::ColorInterpolationSpace::kXYZD65;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kSRGBLinear>(args)) {
-    result = Color::ColorInterpolationSpace::kSRGBLinear;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kLab>(args)) {
-    result = Color::ColorInterpolationSpace::kLab;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kOklab>(args)) {
-    result = Color::ColorInterpolationSpace::kOKLab;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kLch>(args)) {
-    result = Color::ColorInterpolationSpace::kLCH;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kOklch>(args)) {
-    result = Color::ColorInterpolationSpace::kOKLCH;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kSRGB>(args)) {
-    result = Color::ColorInterpolationSpace::kSRGB;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kHsl>(args)) {
-    result = Color::ColorInterpolationSpace::kHSL;
-    return true;
-  }
-  if (ConsumeIdent<CSSValueID::kHwb>(args)) {
-    result = Color::ColorInterpolationSpace::kHWB;
+  absl::optional<Color::ColorInterpolationSpace> read_color_space;
+  if (ConsumeIdent<CSSValueID::kXyz>(args))
+    read_color_space = Color::ColorInterpolationSpace::kXYZD65;
+  else if (ConsumeIdent<CSSValueID::kXyzD50>(args))
+    read_color_space = Color::ColorInterpolationSpace::kXYZD50;
+  else if (ConsumeIdent<CSSValueID::kXyzD65>(args))
+    read_color_space = Color::ColorInterpolationSpace::kXYZD65;
+  else if (ConsumeIdent<CSSValueID::kSRGBLinear>(args))
+    read_color_space = Color::ColorInterpolationSpace::kSRGBLinear;
+  else if (ConsumeIdent<CSSValueID::kLab>(args))
+    read_color_space = Color::ColorInterpolationSpace::kLab;
+  else if (ConsumeIdent<CSSValueID::kOklab>(args))
+    read_color_space = Color::ColorInterpolationSpace::kOKLab;
+  else if (ConsumeIdent<CSSValueID::kLch>(args))
+    read_color_space = Color::ColorInterpolationSpace::kLCH;
+  else if (ConsumeIdent<CSSValueID::kOklch>(args))
+    read_color_space = Color::ColorInterpolationSpace::kOKLCH;
+  else if (ConsumeIdent<CSSValueID::kSRGB>(args))
+    read_color_space = Color::ColorInterpolationSpace::kSRGB;
+  else if (ConsumeIdent<CSSValueID::kHsl>(args))
+    read_color_space = Color::ColorInterpolationSpace::kHSL;
+  else if (ConsumeIdent<CSSValueID::kHwb>(args))
+    read_color_space = Color::ColorInterpolationSpace::kHWB;
+
+  if (read_color_space) {
+    color_space = read_color_space.value();
+    absl::optional<Color::HueInterpolationMethod> read_hue;
+    if (color_space == Color::ColorInterpolationSpace::kHSL ||
+        color_space == Color::ColorInterpolationSpace::kHWB ||
+        color_space == Color::ColorInterpolationSpace::kLCH ||
+        color_space == Color::ColorInterpolationSpace::kOKLCH) {
+      if (ConsumeIdent<CSSValueID::kShorter>(args))
+        read_hue = Color::HueInterpolationMethod::kShorter;
+      else if (ConsumeIdent<CSSValueID::kLonger>(args))
+        read_hue = Color::HueInterpolationMethod::kLonger;
+      else if (ConsumeIdent<CSSValueID::kDecreasing>(args))
+        read_hue = Color::HueInterpolationMethod::kDecreasing;
+      else if (ConsumeIdent<CSSValueID::kIncreasing>(args))
+        read_hue = Color::HueInterpolationMethod::kIncreasing;
+      else if (ConsumeIdent<CSSValueID::kSpecified>(args))
+        read_hue = Color::HueInterpolationMethod::kSpecified;
+      if (read_hue) {
+        if (!ConsumeIdent<CSSValueID::kHue>(args))
+          return false;
+        hue_interpolation = read_hue.value();
+      } else {
+        // Shorter is the default method for hue interpolation.
+        hue_interpolation = Color::HueInterpolationMethod::kShorter;
+      }
+    }
     return true;
   }
 
@@ -2588,7 +2598,9 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
   // [ [ circle | ellipse] || <size-keyword> ]] ]
 
   Color::ColorInterpolationSpace color_space;
-  bool has_color_space = ConsumeColorSpace(args, color_space);
+  Color::HueInterpolationMethod hue_interpolation_method;
+  bool has_color_space =
+      ConsumeColorSpace(args, color_space, hue_interpolation_method);
 
   for (int i = 0; i < 3; ++i) {
     if (args.Peek().GetType() == kIdentToken) {
@@ -2655,8 +2667,10 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
     // Right now, CSS radial gradients have the same start and end centers.
   }
 
-  if (!has_color_space)
-    has_color_space = ConsumeColorSpace(args, color_space);
+  if (!has_color_space) {
+    has_color_space =
+        ConsumeColorSpace(args, color_space, hue_interpolation_method);
+  }
 
   if ((shape || size_keyword || horizontal_size || center_x || center_y ||
        has_color_space) &&
@@ -2670,7 +2684,7 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
           vertical_size, repeating, cssvalue::kCSSRadialGradient);
 
   if (has_color_space)
-    result->SetColorInterpolationSpace(color_space);
+    result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
 
   return ConsumeGradientColorStops(args, context, result,
                                    ConsumeGradientLengthOrPercent)
@@ -2687,7 +2701,9 @@ static CSSValue* ConsumeLinearGradient(
   // [ in <color-space>? || [ <angle> | to <side-or-corner> ]?]
   bool expect_comma = true;
   Color::ColorInterpolationSpace color_space;
-  bool has_color_space = ConsumeColorSpace(args, color_space);
+  Color::HueInterpolationMethod hue_interpolation_method;
+  bool has_color_space =
+      ConsumeColorSpace(args, color_space, hue_interpolation_method);
 
   const CSSPrimitiveValue* angle =
       ConsumeAngle(args, context, WebFeature::kUnitlessZeroAngleGradient);
@@ -2714,8 +2730,10 @@ static CSSValue* ConsumeLinearGradient(
   }
   // It's possible that the <color-space> comes after the [ <angle> |
   // <side-or-corner> ]
-  if (!has_color_space)
-    has_color_space = ConsumeColorSpace(args, color_space);
+  if (!has_color_space) {
+    has_color_space =
+        ConsumeColorSpace(args, color_space, hue_interpolation_method);
+  }
 
   if (has_color_space)
     expect_comma = true;
@@ -2728,7 +2746,7 @@ static CSSValue* ConsumeLinearGradient(
           end_x, end_y, nullptr, nullptr, angle, repeating, gradient_type);
 
   if (has_color_space)
-    result->SetColorInterpolationSpace(color_space);
+    result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
 
   return ConsumeGradientColorStops(args, context, result,
                                    ConsumeGradientLengthOrPercent)
@@ -2740,7 +2758,9 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
                                       const CSSParserContext& context,
                                       cssvalue::CSSGradientRepeat repeating) {
   Color::ColorInterpolationSpace color_space;
-  bool has_color_space = ConsumeColorSpace(args, color_space);
+  Color::HueInterpolationMethod hue_interpolation_method;
+  bool has_color_space =
+      ConsumeColorSpace(args, color_space, hue_interpolation_method);
 
   const CSSPrimitiveValue* from_angle = nullptr;
   if (ConsumeIdent<CSSValueID::kFrom>(args)) {
@@ -2757,8 +2777,10 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
       return nullptr;
   }
 
-  if (!has_color_space)
-    has_color_space = ConsumeColorSpace(args, color_space);
+  if (!has_color_space) {
+    has_color_space =
+        ConsumeColorSpace(args, color_space, hue_interpolation_method);
+  }
 
   // Comma separator required when fromAngle, position or color_space is
   // present.
@@ -2771,7 +2793,7 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
       center_x, center_y, from_angle, repeating);
 
   if (has_color_space)
-    result->SetColorInterpolationSpace(color_space);
+    result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
 
   return ConsumeGradientColorStops(args, context, result,
                                    ConsumeGradientAngleOrPercent)

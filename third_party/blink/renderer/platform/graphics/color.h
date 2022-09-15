@@ -238,6 +238,13 @@ class PLATFORM_EXPORT Color {
     kNone,
   };
   ColorInterpolationSpace GetColorInterpolationSpace() const;
+  enum class HueInterpolationMethod : uint8_t {
+    kShorter,
+    kLonger,
+    kIncreasing,
+    kDecreasing,
+    kSpecified,
+  };
 
  private:
   constexpr explicit Color(RGBA32 color)

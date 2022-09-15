@@ -1300,6 +1300,12 @@
     "xyz",
     "xyz-d50",
     "xyz-d65",
+    // hue interpolation methods
+    "shorter",
+    "longer",
+    "decreasing",
+    "increasing",
+    "specified",
 
     // For gradient interpolations in certain color spaces
     "in",

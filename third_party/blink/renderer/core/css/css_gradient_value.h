@@ -121,8 +121,11 @@ class CSSGradientValue : public CSSImageGeneratorValue {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
-  void SetColorInterpolationSpace(Color::ColorInterpolationSpace cs) {
-    color_interpolation_space_ = cs;
+  void SetColorInterpolationSpace(
+      Color::ColorInterpolationSpace color_interpolation_space,
+      Color::HueInterpolationMethod hue_interpolation_method) {
+    color_interpolation_space_ = color_interpolation_space;
+    hue_interpolation_method_ = hue_interpolation_method;
   }
   bool ShouldSerializeColorSpace() const;
 
@@ -159,6 +162,8 @@ class CSSGradientValue : public CSSImageGeneratorValue {
   bool is_cacheable_ : 1;
   Color::ColorInterpolationSpace color_interpolation_space_ =
       Color::ColorInterpolationSpace::kNone;
+  Color::HueInterpolationMethod hue_interpolation_method_ =
+      Color::HueInterpolationMethod::kShorter;
 };
 
 class CSSLinearGradientValue final : public CSSGradientValue {
