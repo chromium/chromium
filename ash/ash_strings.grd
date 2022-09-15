@@ -896,8 +896,8 @@ This file contains the strings for ash.
         <ph name="ORGANIZATION_NAME">$1<ex>google.com</ex></ph> has <ph name="FEATURE_STATE">$2<ex>activated</ex></ph> <ph name="FEATURE_NAME">$3<ex>Full-screen magnifier</ex></ph>.
       </message>
       <message name="IDS_ASH_HIGH_CONTRAST_SHORTCUT_DISABLED"
-               desc="The label used in the notification used to indicate that, the shortcut for high contrast feature has been disabled.">
-        high-contrast mode
+               desc="The label used in the notification used to indicate that, the shortcut for color inversion feature (formerly known as high contrast) has been disabled.">
+        color inversion mode
       </message>
       <message name="IDS_ASH_DOCKED_MAGNIFIER_SHORTCUT_DISABLED"
                desc="The label used in the notification used to indicate that, the shortcut for docked magnifier feature has been disabled.">
@@ -999,7 +999,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SWITCH_ACCESS_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables Switch Access, to confirm they meant to disable the feature.">
         Are you sure you want to turn off Switch Access?
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGH_CONTRAST_MODE" desc="The label used in the accessibility menu of the system tray to toggle on/off high contrast feature.">
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGH_CONTRAST_MODE" desc="The label used in the accessibility menu of the system tray to toggle on/off color inversion feature (formerly known as high contrast).">
         Color inversion
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SCREEN_MAGNIFIER" desc="The label used in the accessibility menu of the system tray to toggle on/off a magnifier that magnifies the entire screen.">
@@ -2857,11 +2857,11 @@ Connect your device to power.
       <message name="IDS_ASH_LOGOUT_CONFIRMATION_BUTTON" desc="The text for okay button of the logout confirmation dialog.">
         Sign out now
       </message>
-      <message name="IDS_ASH_HIGH_CONTRAST_TITLE" desc="Dialog title for the hight contrast confirmation dialog.">
-        High contrast
+      <message name="IDS_ASH_HIGH_CONTRAST_TITLE" desc="Dialog title for the color inversion (formerly known as high contrast) confirmation dialog.">
+        Color inversion
       </message>
-      <message name="IDS_ASH_HIGH_CONTRAST_BODY" desc="The text for the high contrast confirmation dialog.">
-        You pressed the keyboard shortcut for high contrast. Do you want to turn it on?
+      <message name="IDS_ASH_HIGH_CONTRAST_BODY" desc="The text for the color inversion (formerly known as high contrast) confirmation dialog.">
+        You pressed the keyboard shortcut for color inversion. Do you want to turn it on?
       </message>
       <message name="IDS_ASH_DOCKED_MAGNIFIER_TITLE" desc="Dialog title when docked magnifier is enabled.">
         Docked magnifier
@@ -2942,12 +2942,12 @@ Connect your device to power.
 
       <!-- Notification that an accelerator was pressed, so the user knows how to toggle it back -->
       <message name="IDS_HIGH_CONTRAST_ACCEL_TITLE"
-               desc="Notification title to tell users that they just pressed the Ctrl+Search+H shortcut to toggle High Contrast Mode, and that pressing it again will toggle it off.">
-        High Contrast Mode
+               desc="Notification title to tell users that they just pressed the Ctrl+Search+H shortcut to toggle Color Inversion Mode (formerly known as High Contrast), and that pressing it again will toggle it off.">
+        Color Inversion Mode
       </message>
       <message name="IDS_HIGH_CONTRAST_ACCEL_MSG"
-               desc="Notification message to tell users that they just pressed the Ctrl+Search+H shortcut to toggle High Contrast Mode, and that pressing it again will toggle it off.">
-        High Contrast Mode enabled. Press Ctrl+Search+H again to toggle it off.
+               desc="Notification message to tell users that they just pressed the Ctrl+Search+H shortcut to toggle Color Inversion Mode (formerly known as High Contrast), and that pressing it again will toggle it off.">
+        Color Inversion Mode enabled. Press Ctrl+Search+H again to toggle it off.
       </message>
 
       <!-- Notification that an accelerator was pressed, so the user knows how to toggle it back -->

@@ -1188,10 +1188,10 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_DISPLAY_AND_MAGNIFICATION_PAGE_ALT1" desc="Text for search result item which, when clicked, navigates the user to display and magnification accessibility settings. Alternate phrase for: 'Display and magnification'">
     Low vision display tools
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGH_CONTRAST" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable high-contrast mode.">
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGH_CONTRAST" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable color-inversion mode (formerly known as high-contrast mode).">
     High contrast mode
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGH_CONTRAST_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable high-contrast mode. Alternate phrase for: 'High contrast mode'">
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_HIGH_CONTRAST_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable color-inversion mode (formerly known as high-contrast mode). Alternate phrase for: 'High contrast mode'">
     Invert colors
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable full-screen magnification.">

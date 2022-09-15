@@ -626,8 +626,8 @@
   <message name="IDS_LARGE_CURSOR_OPTION_ON" desc="A value for Large Mouse Cursor accessibility option when it is on.">
     Large
   </message>
-  <message name="IDS_OOBE_HIGH_CONTRAST_MODE_OPTION" desc="High contrast mode option shown on OOBE screens accessibility menu.">
-    High contrast mode
+  <message name="IDS_OOBE_HIGH_CONTRAST_MODE_OPTION" desc="Color inversion mode (formerly known as high contrast) option shown on OOBE screens accessibility menu.">
+    Color inversion mode
   </message>
   <message name="IDS_OOBE_SCREEN_MAGNIFIER_OPTION" desc="Screen magnifier option shown on OOBE screens accessibility menu.">
     Screen magnifier

@@ -358,7 +358,7 @@
     Open the Files app
   </message>
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_HIGH_CONTRAST" desc="Description of the command in keyboard shortcut viewer.">
-    Turn on high contrast mode
+    Turn on color inversion mode
   </message>
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK" desc="Description of the command in keyboard shortcut viewer.">
     Turn ChromeVox (spoken feedback) on or off
