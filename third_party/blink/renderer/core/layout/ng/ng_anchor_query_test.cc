@@ -73,8 +73,6 @@ std::ostream& operator<<(std::ostream& os, const AnchorTestData& value) {
 }
 
 TEST_F(NGAnchorQueryTest, AnchorNameAdd) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -108,8 +106,6 @@ TEST_F(NGAnchorQueryTest, AnchorNameAdd) {
 }
 
 TEST_F(NGAnchorQueryTest, AnchorNameChange) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -147,8 +143,6 @@ TEST_F(NGAnchorQueryTest, AnchorNameChange) {
 }
 
 TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -184,8 +178,6 @@ TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
 
 // https://tabatkins.github.io/specs/css-anchor-position/#determining
 TEST_F(NGAnchorQueryTest, AnchorNameValid) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <div id="container" style="position: relative">
       <div id="static1">
@@ -227,8 +219,6 @@ TEST_F(NGAnchorQueryTest, AnchorNameValid) {
 }
 
 TEST_F(NGAnchorQueryTest, BlockFlow) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -273,8 +263,6 @@ TEST_F(NGAnchorQueryTest, BlockFlow) {
 }
 
 TEST_F(NGAnchorQueryTest, Inline) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -334,8 +322,6 @@ TEST_F(NGAnchorQueryTest, Inline) {
 }
 
 TEST_F(NGAnchorQueryTest, OutOfFlow) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -363,8 +349,6 @@ TEST_F(NGAnchorQueryTest, OutOfFlow) {
 
 // Relative-positioning should shift the rectangles.
 TEST_F(NGAnchorQueryTest, Relative) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -386,8 +370,6 @@ TEST_F(NGAnchorQueryTest, Relative) {
 
 // CSS Transform should not shift the rectangles.
 TEST_F(NGAnchorQueryTest, Transform) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -409,8 +391,6 @@ TEST_F(NGAnchorQueryTest, Transform) {
 
 // Scroll positions should not shift the rectangles.
 TEST_F(NGAnchorQueryTest, Scroll) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
@@ -435,8 +415,7 @@ TEST_F(NGAnchorQueryTest, Scroll) {
 }
 
 TEST_F(NGAnchorQueryTest, FragmentedContainingBlock) {
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
+  ScopedLayoutNGBlockFragmentationForTest block_fragmentation(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     html, body {
