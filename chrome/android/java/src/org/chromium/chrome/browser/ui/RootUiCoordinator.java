@@ -1150,8 +1150,9 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
-            mContextualPageActionController = new ContextualPageActionController(
-                    mProfileSupplier, mActivityTabProvider, adaptiveToolbarButtonController);
+            mContextualPageActionController = new ContextualPageActionController(mProfileSupplier,
+                    mActivityTabProvider, mActivityLifecycleDispatcher, mActivity.getResources(),
+                    adaptiveToolbarButtonController);
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 
