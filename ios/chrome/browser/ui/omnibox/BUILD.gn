@@ -143,6 +143,7 @@ source_set("omnibox_internal") {
     ":features",
     ":omnibox",
     ":omnibox_popup_shared",
+    ":omnibox_suggestion_icon_util",
     ":omnibox_util",
     "resources:omnibox_clear_icon",
     "//base",
