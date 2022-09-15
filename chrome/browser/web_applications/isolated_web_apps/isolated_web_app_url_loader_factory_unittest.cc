@@ -33,7 +33,7 @@ using ::testing::IsNull;
 using ::testing::IsTrue;
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
-  AppId app_id = GenerateAppId(/*manifest_id=*/"/", start_url);
+  AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetScope(start_url.DeprecatedGetOriginAsURL());
   web_app->AddSource(WebAppManagement::Type::kCommandLine);

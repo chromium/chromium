@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "url/gurl.h"
@@ -43,7 +43,15 @@ absl::optional<std::string> IsolatedWebAppValidator::ValidateMetadata(
   // Verify that the bundle only contains isolated-app:// URLs using the
   // Signed Web Bundle ID as their host.
   for (const GURL& entry : entries) {
-    auto entry_web_bundle_id = ParseIsolatedAppUrl(entry);
+    base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+        IsolatedWebAppUrlInfo::Create(entry);
+    if (!url_info.has_value()) {
+      return base::StringPrintf(
+          "Invalid metadata: The URL of an exchange is invalid: %s",
+          url_info.error().c_str());
+    }
+
+    auto entry_web_bundle_id = url_info->ParseSignedWebBundleId();
     if (!entry_web_bundle_id.has_value()) {
       return base::StringPrintf(
           "Invalid metadata: The URL of an exchange is invalid: %s",

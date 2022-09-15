@@ -7,8 +7,8 @@
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -89,25 +89,22 @@ void LogErrorMessageToConsole(int frame_tree_node_id,
 }
 
 base::expected<std::reference_wrapper<const WebApp>, std::string>
-FindIsolatedWebAppWithUrl(Profile* profile, const GURL& url) {
+FindIsolatedWebApp(Profile* profile, const IsolatedWebAppUrlInfo& url_info) {
   // TODO(b/242738845): Defer navigation in IsolatedAppThrottle until
   // WebAppProvider is ready to ensure we never fail this DCHECK.
   auto* web_app_provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(web_app_provider->is_registry_ready());
   const WebAppRegistrar& registrar = web_app_provider->registrar();
-
-  AppId expected_app_id =
-      GenerateAppId(/*manifest_id=*/"/", url.GetWithEmptyPath());
-  const WebApp* iwa = registrar.GetAppById(expected_app_id);
+  const WebApp* iwa = registrar.GetAppById(url_info.app_id());
 
   if (iwa == nullptr || !iwa->is_locally_installed()) {
     return base::unexpected(base::StrCat(
-        {"Isolated Web App not installed: ", url.GetWithEmptyPath().spec()}));
+        {"Isolated Web App not installed: ", url_info.origin().Serialize()}));
   }
 
   if (!iwa->isolation_data().has_value()) {
     return base::unexpected(base::StrCat(
-        {"App is not an Isolated Web App: ", url.GetWithEmptyPath().spec()}));
+        {"App is not an Isolated Web App: ", url_info.origin().Serialize()}));
   }
 
   return *iwa;
@@ -136,8 +133,15 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
   DCHECK(resource_request.url.SchemeIs(chrome::kIsolatedAppScheme));
   DCHECK(resource_request.url.IsStandard());
 
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(resource_request.url);
+  if (!url_info.has_value()) {
+    LogErrorAndFail(url_info.error(), std::move(loader_client));
+    return;
+  }
+
   base::expected<std::reference_wrapper<const WebApp>, std::string> iwa =
-      FindIsolatedWebAppWithUrl(profile_, resource_request.url);
+      FindIsolatedWebApp(profile_, *url_info);
   if (!iwa.has_value()) {
     LogErrorAndFail(iwa.error(), std::move(loader_client));
     return;
