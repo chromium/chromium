@@ -17,6 +17,7 @@
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store_change.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store_util.h"
 #import "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -217,7 +218,11 @@ void CredentialProviderService::RequestSyncAllCredentialsIfNeeded() {
 }
 
 void CredentialProviderService::SyncAllCredentials(
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
+    absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
+                  password_manager::PasswordStoreBackendError> forms_or_error) {
+  std::vector<std::unique_ptr<PasswordForm>> forms =
+      password_manager::GetLoginsOrEmptyListOnFailure(
+          std::move(forms_or_error));
   [credential_store_ removeAllCredentials];
   AddCredentials(std::move(forms));
   SyncStore(true);
@@ -383,7 +388,11 @@ void CredentialProviderService::OnLoginsRetained(
 }
 
 void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
-    std::vector<std::unique_ptr<PasswordForm>> forms) {
+    absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
+                  password_manager::PasswordStoreBackendError> forms_or_error) {
+  std::vector<std::unique_ptr<PasswordForm>> forms =
+      password_manager::GetLoginsOrEmptyListOnFailure(
+          std::move(forms_or_error));
   AddCredentials(std::move(forms));
   SyncStore(false);
 }

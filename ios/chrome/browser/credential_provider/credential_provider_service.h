@@ -7,6 +7,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_member.h"
@@ -69,9 +71,11 @@ class CredentialProviderService
   void RequestSyncAllCredentialsIfNeeded();
 
   // Replaces all data with credentials created from the passed forms and then
-  // syncs to disk.
+  // syncs to disk. Errors are treated as an empty list of credentials.
   void SyncAllCredentials(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
+      absl::variant<
+          std::vector<std::unique_ptr<password_manager::PasswordForm>>,
+          password_manager::PasswordStoreBackendError> forms_or_error);
 
   // Syncs the credential store to disk.
   void SyncStore(bool set_first_time_sync_flag);
@@ -105,9 +109,12 @@ class CredentialProviderService
                             retained_passwords) override;
 
   // Completion called after the affiliations are injected in the added forms.
-  // If no affiliation matcher is available, it is called right away.
+  // If no affiliation matcher is available, it is called right away. Errors are
+  // treated as an empty list of credentials.
   void OnInjectedAffiliationAfterLoginsChanged(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
+      absl::variant<
+          std::vector<std::unique_ptr<password_manager::PasswordForm>>,
+          password_manager::PasswordStoreBackendError> forms_or_error);
 
   // syncer::SyncServiceObserver:
   void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;

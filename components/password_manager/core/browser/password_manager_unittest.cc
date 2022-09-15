@@ -294,11 +294,11 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
 ACTION_P2(InvokeConsumer, store, form) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   result.push_back(std::make_unique<PasswordForm>(form));
-  arg0->OnGetPasswordStoreResultsFrom(store, std::move(result));
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(store, std::move(result));
 }
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsFrom(
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(
       store, std::vector<std::unique_ptr<PasswordForm>>());
 }
 
@@ -1976,7 +1976,7 @@ TEST_P(PasswordManagerTest, SaveFormFetchedAfterSubmit) {
   // Emulate fetching password form from PasswordStore after submission but
   // before post-navigation load.
   ASSERT_TRUE(store_consumer);
-  store_consumer->OnGetPasswordStoreResultsFrom(
+  store_consumer->OnGetPasswordStoreResultsOrErrorFrom(
       store_.get(), std::vector<std::unique_ptr<PasswordForm>>());
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -2584,7 +2584,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_SlowBackend) {
 
   // The storage responded. The fallback can be shown.
   ASSERT_TRUE(store_consumer);
-  store_consumer->OnGetPasswordStoreResultsFrom(
+  store_consumer->OnGetPasswordStoreResultsOrErrorFrom(
       store_.get(), std::vector<std::unique_ptr<PasswordForm>>());
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, false, false))

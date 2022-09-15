@@ -655,8 +655,8 @@ void PasswordStoreProxyBackend::MaybeRetryToAddLoginOnFail(
     PasswordChangesOrError result) {
   if (was_using_android_backend &&
       absl::holds_alternative<PasswordStoreBackendError>(result) &&
-      absl::get<PasswordStoreBackendError>(result) ==
-          PasswordStoreBackendError::kUnrecoverable) {
+      absl::get<PasswordStoreBackendError>(result).recovery_type ==
+          PasswordStoreBackendErrorRecoveryType::kUnrecoverable) {
     built_in_backend_->AddLoginAsync(form, std::move(callback));
   } else {
     std::move(callback).Run(result);
@@ -670,8 +670,8 @@ void PasswordStoreProxyBackend::MaybeRetryToUpdateLoginOnFail(
     const PasswordChangesOrError& result) {
   if (was_using_android_backend &&
       absl::holds_alternative<PasswordStoreBackendError>(result) &&
-      absl::get<PasswordStoreBackendError>(result) ==
-          PasswordStoreBackendError::kUnrecoverable) {
+      absl::get<PasswordStoreBackendError>(result).recovery_type ==
+          PasswordStoreBackendErrorRecoveryType::kUnrecoverable) {
     built_in_backend_->UpdateLoginAsync(form, std::move(callback));
   } else {
     std::move(callback).Run(result);

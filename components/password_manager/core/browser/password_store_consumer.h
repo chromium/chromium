@@ -11,6 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
 
@@ -26,21 +28,19 @@ class PasswordStoreInterface;
 // tasks upon destruction.
 class PasswordStoreConsumer {
  public:
+  // TODO(crbug.com/1361990): Use base::expected instead of absl::variant.
+  using FormsOrError = absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
+                                     PasswordStoreBackendError>;
   PasswordStoreConsumer();
 
-  // Called when the GetLogins() request is finished, with the associated
-  // |results|.
-  virtual void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<PasswordForm>> results) = 0;
-
-  // Like OnGetPasswordStoreResults(), but also receives the originating
-  // PasswordStoreInterface as a parameter. This is useful for consumers that
-  // query both the profile-scoped and the account-scoped store. The default
-  // implementation simply calls OnGetPasswordStoreResults(), so consumers that
-  // don't care about the store can just ignore this.
-  virtual void OnGetPasswordStoreResultsFrom(
+  // Called when `GetLogins()` request is finished, with a vector of forms or
+  // with an error if the logins couldn't be fetched. The default implementation
+  // calls `OnGetPasswordStoreResultsFrom` with the results or an empty vector
+  // on error. Receives the originating `store`, useful for differentiateing
+  // between the profile-scoped and account-scoped password stores.
+  virtual void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      std::vector<std::unique_ptr<PasswordForm>> results);
+      FormsOrError results_or_error);
 
   // Called when the GetSiteStats() request is finished, with the associated
   // site statistics.
@@ -58,6 +58,24 @@ class PasswordStoreConsumer {
 
  protected:
   virtual ~PasswordStoreConsumer();
+
+  // Called when the GetLogins() request is finished, with the associated
+  // |results|.
+  // TODO(crbug.com/1360343): Remove when the `FormsOrError` version is
+  // implemented by all consumers.
+  virtual void OnGetPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results) = 0;
+
+  // Like OnGetPasswordStoreResults(), but also receives the originating
+  // PasswordStoreInterface as a parameter. This is useful for consumers that
+  // query both the profile-scoped and the account-scoped store. The default
+  // implementation simply calls OnGetPasswordStoreResults(), so consumers that
+  // don't care about the store can just ignore this.
+  // TODO(crbug.com/1360343): Remove when the `FormsOrError` version is
+  // implemented by all consumers.
+  virtual void OnGetPasswordStoreResultsFrom(
+      PasswordStoreInterface* store,
+      std::vector<std::unique_ptr<PasswordForm>> results);
 
  private:
   base::CancelableTaskTracker cancelable_task_tracker_;

@@ -21,7 +21,7 @@ void MockAffiliationService::
 void MockAffiliationService::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
     AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
-    PasswordFormsCallback result_callback) {
+    PasswordFormsOrErrorCallback result_callback) {
   const std::vector<AffiliationAndBrandingInformation>& information =
       OnInjectAffiliationAndBrandingInformationCalled();
   if (information.empty()) {

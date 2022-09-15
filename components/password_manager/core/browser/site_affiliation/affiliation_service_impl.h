@@ -105,7 +105,7 @@ class AffiliationServiceImpl : public AffiliationService,
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<PasswordForm>> forms,
       AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
-      PasswordFormsCallback result_callback) override;
+      PasswordFormsOrErrorCallback result_callback) override;
 
   // Returns whether or not |form| represents an Android credential.
   static bool IsValidAndroidCredential(const PasswordFormDigest& form);

@@ -265,18 +265,30 @@ bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code) {
 
 PasswordStoreBackendError BackendErrorFromAndroidBackendError(
     const AndroidBackendError& error) {
-  if (error.type != AndroidBackendErrorType::kExternalError)
-    return PasswordStoreBackendError::kUnspecified;
+  if (error.type != AndroidBackendErrorType::kExternalError) {
+    return PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized,
+        PasswordStoreBackendErrorRecoveryType::kUnspecified);
+  }
 
   // External error with no api error code specified should never happen.
   // Treat is as unrecoverable.
-  if (!error.api_error_code.has_value())
-    return PasswordStoreBackendError::kUnrecoverable;
-
-  return IsUnrecoverableBackendError(static_cast<AndroidBackendAPIErrorCode>(
-             error.api_error_code.value()))
-             ? PasswordStoreBackendError::kUnrecoverable
-             : PasswordStoreBackendError::kRecoverable;
+  if (!error.api_error_code.has_value()) {
+    return PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized,
+        PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+  }
+  PasswordStoreBackendErrorRecoveryType recovery_type =
+      IsUnrecoverableBackendError(
+          static_cast<AndroidBackendAPIErrorCode>(error.api_error_code.value()))
+          ? PasswordStoreBackendErrorRecoveryType::kUnrecoverable
+          : PasswordStoreBackendErrorRecoveryType::kRecoverable;
+  PasswordStoreBackendErrorType error_type =
+      (static_cast<AndroidBackendAPIErrorCode>(error.api_error_code.value()) ==
+       AndroidBackendAPIErrorCode::kAuthErrorResolvable)
+          ? PasswordStoreBackendErrorType::kAuthErrorResolvable
+          : PasswordStoreBackendErrorType::kUncategorized;
+  return PasswordStoreBackendError(error_type, recovery_type);
 }
 
 bool IsUnenrolledFromUPM(const PrefService* prefs) {
@@ -889,8 +901,7 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
                 ? SuccessStatus::kError
                 : SuccessStatus::kSuccess,
             /*error=*/absl::nullopt);
-        std::move(callback).Run(
-            GetLoginsOrEmptyListOnFailure(std::move(results)));
+        std::move(callback).Run(std::move(results));
       },
       PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
                                           metric_infix),

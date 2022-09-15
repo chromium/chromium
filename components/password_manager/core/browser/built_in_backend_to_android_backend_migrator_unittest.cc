@@ -40,6 +40,9 @@ namespace password_manager {
 namespace {
 
 constexpr base::TimeDelta kLatencyDelta = base::Milliseconds(123u);
+const PasswordStoreBackendError kBackendError = PasswordStoreBackendError(
+    PasswordStoreBackendErrorType::kUncategorized,
+    PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
 
 PasswordForm CreateTestPasswordForm(int index = 0) {
   PasswordForm form;
@@ -678,10 +681,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
   InitSyncService(/*is_password_sync_enabled=*/GetParam().is_sync_enabled);
 
   auto test_migration_callback = [](LoginsOrErrorReply reply) -> void {
-    LoginsResultOrError result =
-        GetParam().is_successful_migration
-            ? LoginsResultOrError(LoginsResult())
-            : LoginsResultOrError(PasswordStoreBackendError::kUnspecified);
+    LoginsResultOrError result = GetParam().is_successful_migration
+                                     ? LoginsResultOrError(LoginsResult())
+                                     : LoginsResultOrError(kBackendError);
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(reply), std::move(result)),
         kLatencyDelta);
@@ -800,9 +802,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
       .WillByDefault(
           WithArg<1>(Invoke([](PasswordChangesOrErrorReply callback) -> void {
             base::SequencedTaskRunnerHandle::Get()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(callback),
-                               PasswordStoreBackendError::kUnspecified));
+                FROM_HERE, base::BindOnce(std::move(callback), kBackendError));
           })));
 
   // Once one UpdateLoginAsync() call fails, all consecutive ones will not be
@@ -846,9 +846,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
       .WillByDefault(
           WithArg<1>(Invoke([](PasswordChangesOrErrorReply callback) -> void {
             base::SequencedTaskRunnerHandle::Get()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(callback),
-                               PasswordStoreBackendError::kUnspecified));
+                FROM_HERE, base::BindOnce(std::move(callback), kBackendError));
           })));
 
   // Once one AddLoginAsync() call fails, all consecutive ones will not be

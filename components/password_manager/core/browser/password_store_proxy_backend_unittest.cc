@@ -45,6 +45,13 @@ using ::testing::WithArg;
 using Type = PasswordStoreChange::Type;
 using RemoveChangesReceived = PasswordStoreBackend::RemoteChangesReceived;
 
+const PasswordStoreBackendError kUnrecoverableError = PasswordStoreBackendError(
+    PasswordStoreBackendErrorType::kUncategorized,
+    PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+const PasswordStoreBackendError kRecoverableError = PasswordStoreBackendError(
+    PasswordStoreBackendErrorType::kUncategorized,
+    PasswordStoreBackendErrorRecoveryType::kRecoverable);
+
 PasswordForm CreateTestForm() {
   PasswordForm form;
   form.username_value = u"Todd Tester";
@@ -782,7 +789,7 @@ TEST_F(PasswordStoreProxyBackendTest,
 
   EXPECT_CALL(android_backend(), AddLoginAsync)
       .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
-        std::move(reply).Run(PasswordStoreBackendError::kUnrecoverable);
+        std::move(reply).Run(kUnrecoverableError);
       })));
   const PasswordStoreChangeList changes = {
       PasswordStoreChange(PasswordStoreChange::Type::ADD, CreateTestForm())};
@@ -805,13 +812,11 @@ TEST_F(PasswordStoreProxyBackendTest, DoesntRetryAddLoginOnRecoverableError) {
 
   EXPECT_CALL(android_backend(), AddLoginAsync)
       .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
-        std::move(reply).Run(PasswordStoreBackendError::kRecoverable);
+        std::move(reply).Run(kRecoverableError);
       })));
   EXPECT_CALL(built_in_backend(), AddLoginAsync).Times(0);
   // Check that caller doesn't receive an error from android backend.
-  EXPECT_CALL(
-      mock_reply,
-      Run(PasswordChangesOrError(PasswordStoreBackendError::kRecoverable)));
+  EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(kRecoverableError)));
   proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
 }
 
@@ -827,7 +832,7 @@ TEST_F(PasswordStoreProxyBackendTest,
 
   EXPECT_CALL(android_backend(), UpdateLoginAsync)
       .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
-        std::move(reply).Run(PasswordStoreBackendError::kUnrecoverable);
+        std::move(reply).Run(kUnrecoverableError);
       })));
   const PasswordStoreChangeList changes = {
       PasswordStoreChange(PasswordStoreChange::Type::UPDATE, CreateTestForm())};

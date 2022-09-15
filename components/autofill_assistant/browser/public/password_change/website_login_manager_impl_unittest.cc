@@ -179,7 +179,8 @@ class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
               [account_store = account_store_.get()](
                   base::WeakPtr<password_manager::PasswordStoreConsumer>
                       consumer) {
-                consumer->OnGetPasswordStoreResultsFrom(account_store, {});
+                consumer->OnGetPasswordStoreResultsOrErrorFrom(account_store,
+                                                               {});
               }));
     }
     ON_CALL(*store(), GetLogins(_, _))
@@ -189,8 +190,8 @@ class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
               std::vector<std::unique_ptr<PasswordForm>> result;
               result.push_back(
                   std::make_unique<PasswordForm>(MakeSimplePasswordForm()));
-              consumer->OnGetPasswordStoreResultsFrom(store(),
-                                                      std::move(result));
+              consumer->OnGetPasswordStoreResultsOrErrorFrom(store(),
+                                                             std::move(result));
             }));
 
     manager_ =
@@ -231,7 +232,7 @@ MATCHER_P(FormMatches, form, "") {
 }
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsFrom(
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(
       store, std::vector<std::unique_ptr<PasswordForm>>());
 }
 

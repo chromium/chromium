@@ -87,7 +87,7 @@ class MockHttpAuthObserver : public HttpAuthObserver {
 };
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsFrom(
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(
       store, std::vector<std::unique_ptr<PasswordForm>>());
 }
 }  // namespace
@@ -168,7 +168,8 @@ TEST_F(HttpAuthManagerTest, HttpAuthFilling) {
     ASSERT_TRUE(consumer);
     std::vector<std::unique_ptr<PasswordForm>> result;
     result.push_back(std::make_unique<PasswordForm>(stored_form));
-    consumer->OnGetPasswordStoreResultsFrom(store_.get(), std::move(result));
+    consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
+                                                   std::move(result));
     testing::Mock::VerifyAndClearExpectations(&store_);
     httpauth_manager()->DetachObserver(&observer);
   }

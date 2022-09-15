@@ -24,6 +24,16 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
               OnGetPasswordStoreResults,
               (std::vector<std::unique_ptr<PasswordForm>>),
               (override));
+  MOCK_METHOD(void,
+              OnGetPasswordStoreResultsFrom,
+              (PasswordStoreInterface*,
+               std::vector<std::unique_ptr<PasswordForm>>),
+              (override));
+
+  MOCK_METHOD(void,
+              OnGetPasswordStoreResultsOrErrorFrom,
+              (PasswordStoreInterface*, FormsOrError),
+              (override));
 
   MOCK_METHOD(void,
               OnGetAllFieldInfo,

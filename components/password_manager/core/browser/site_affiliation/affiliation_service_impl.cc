@@ -285,7 +285,7 @@ void AffiliationServiceImpl::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 void AffiliationServiceImpl::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
     AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
-    PasswordFormsCallback result_callback) {
+    PasswordFormsOrErrorCallback result_callback) {
   std::vector<PasswordForm*> android_credentials;
   for (const auto& form : forms) {
     if (IsValidAndroidCredential(PasswordFormDigest(*form)))

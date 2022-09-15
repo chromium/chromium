@@ -109,13 +109,15 @@ class LeakDetectionDelegateHelperTest
       std::vector<PasswordForm> password_forms) {
     EXPECT_CALL(*store_, GetAutofillableLogins)
         .WillOnce(testing::WithArg<0>(
-            [password_forms](base::WeakPtr<PasswordStoreConsumer> consumer) {
+            [password_forms, store = store_.get()](
+                base::WeakPtr<PasswordStoreConsumer> consumer) {
               std::vector<std::unique_ptr<PasswordForm>> results;
               for (auto& form : password_forms) {
                 results.push_back(
                     std::make_unique<PasswordForm>(std::move(form)));
               }
-              consumer->OnGetPasswordStoreResults(std::move(results));
+              consumer->OnGetPasswordStoreResultsOrErrorFrom(
+                  store, std::move(results));
             }));
   }
 

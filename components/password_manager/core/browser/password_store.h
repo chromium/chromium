@@ -190,11 +190,14 @@ class PasswordStore : public PasswordStoreInterface {
       const PasswordFormDigest& form,
       scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler);
 
-  // Retrieves and fills in affiliation and branding information for Android
-  // credentials in |forms| and invokes |callback| with the result. Called on
+  // If |forms_or_error| contains forms, it retrieves and fills in affiliation
+  // and branding information for Android credentials in the forms and invokes
+  // |callback| with the result. If an error was received instead, it directly
+  // invokes |callback| with it, as no forms could be fetched. Called on
   // the main sequence.
-  void InjectAffiliationAndBrandingInformation(LoginsReply callback,
-                                               LoginsResult forms);
+  void InjectAffiliationAndBrandingInformation(
+      LoginsOrErrorReply callback,
+      LoginsResultOrError forms_or_error);
 
   // This member is called to perform the actual interaction with the storage.
   // The backend is injected via the public constructor, this member owns the

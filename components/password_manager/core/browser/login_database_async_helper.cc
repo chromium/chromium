@@ -92,12 +92,16 @@ LoginsResultOrError LoginDatabaseAsyncHelper::GetAllLogins() {
   PrimaryKeyToFormMap key_to_form_map;
 
   if (!login_db_) {
-    return PasswordStoreBackendError::kUnrecoverable;
+    return PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized,
+        PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
   FormRetrievalResult result = login_db_->GetAllLogins(&key_to_form_map);
   if (result != FormRetrievalResult::kSuccess &&
       result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
-    return PasswordStoreBackendError::kUnrecoverable;
+    return PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized,
+        PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
 
   std::vector<std::unique_ptr<PasswordForm>> obtained_forms;
@@ -112,7 +116,9 @@ LoginsResultOrError LoginDatabaseAsyncHelper::GetAutofillableLogins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<PasswordForm>> results;
   if (!login_db_ || !login_db_->GetAutofillableLogins(&results)) {
-    return PasswordStoreBackendError::kUnrecoverable;
+    return PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized,
+        PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
   return results;
 }
@@ -125,7 +131,9 @@ LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
   for (const auto& form : forms) {
     std::vector<std::unique_ptr<PasswordForm>> matched_forms;
     if (!login_db_ || !login_db_->GetLogins(form, include_psl, &matched_forms))
-      return PasswordStoreBackendError::kUnrecoverable;
+      return PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kUncategorized,
+          PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
@@ -148,8 +156,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
   CommitTransaction();
   return error == AddCredentialError::kNone
              ? changes
-             : PasswordChangesOrError(
-                   PasswordStoreBackendError::kUnrecoverable);
+             : PasswordChangesOrError(PasswordStoreBackendError(
+                   PasswordStoreBackendErrorType::kUncategorized,
+                   PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
@@ -167,8 +176,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
   CommitTransaction();
   return error == UpdateCredentialError::kNone
              ? changes
-             : PasswordChangesOrError(
-                   PasswordStoreBackendError::kUnrecoverable);
+             : PasswordChangesOrError(PasswordStoreBackendError(
+                   PasswordStoreBackendErrorType::kUncategorized,
+                   PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLogin(
@@ -204,8 +214,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
   // the login data.
   CommitTransaction();
   return success ? changes
-                 : PasswordChangesOrError(
-                       PasswordStoreBackendError::kUnrecoverable);
+                 : PasswordChangesOrError(PasswordStoreBackendError(
+                       PasswordStoreBackendErrorType::kUncategorized,
+                       PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
@@ -254,8 +265,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
       NotifyDeletionsHaveSynced(/*success=*/true);
   }
   return success ? changes
-                 : PasswordChangesOrError(
-                       PasswordStoreBackendError::kUnrecoverable);
+                 : PasswordChangesOrError(PasswordStoreBackendError(
+                       PasswordStoreBackendErrorType::kUncategorized,
+                       PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
 }
 
 PasswordStoreChangeList LoginDatabaseAsyncHelper::DisableAutoSignInForOrigins(

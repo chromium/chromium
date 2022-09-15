@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,16 +26,6 @@ struct PasswordForm;
 
 class FieldInfoStore;
 class SmartBubbleStatsStore;
-
-enum class PasswordStoreBackendError {
-  // Error which isn't specified properly, should be treated as kUnrecoverable.
-  kUnspecified,
-  // Recoverable which can be possible fixed by retrying request.
-  kRecoverable,
-  // Unrecoverable errors which can't be fixed easily. It may require some input
-  // from a user (to enter a passphrase) or indicate broken database.
-  kUnrecoverable,
-};
 
 using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 using LoginsReply = base::OnceCallback<void(LoginsResult)>;

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 
 namespace password_manager {

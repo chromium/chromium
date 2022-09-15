@@ -32,6 +32,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -598,8 +599,13 @@ class AffiliationServiceImplTestWithFetcherFactory
                        std::move(fake_fetcher_factory)));
   }
 
-  void OnFormsCallback(std::vector<std::unique_ptr<PasswordForm>> forms) {
-    result_forms_.swap(forms);
+  void OnFormsCallback(
+      absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
+                    PasswordStoreBackendError> forms_or_error) {
+    if (absl::holds_alternative<PasswordStoreBackendError>(forms_or_error))
+      return;
+    result_forms_.swap(
+        absl::get<std::vector<std::unique_ptr<PasswordForm>>>(forms_or_error));
   }
 
   std::vector<std::unique_ptr<PasswordForm>> result_forms_;
