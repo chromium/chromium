@@ -435,7 +435,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
         gl_image, std::move(acquire_fence),
         gfx::OverlayPlaneData(
             overlay_plane_candidate.plane_z_order,
-            absl::get<gfx::OverlayTransform>(overlay_plane_candidate.transform),
+            overlay_plane_candidate.transform,
             overlay_plane_candidate.display_rect,
             overlay_plane_candidate.uv_rect, !overlay_plane_candidate.is_opaque,
             ToEnclosingRect(overlay_plane_candidate.damage_rect),

@@ -1915,7 +1915,7 @@ TEST_F(UnderlayTest, AllowVerticalFlip) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+            candidate_list.back().transform);
 }
 
 TEST_F(UnderlayTest, AllowHorizontalFlip) {
@@ -1943,7 +1943,7 @@ TEST_F(UnderlayTest, AllowHorizontalFlip) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+            candidate_list.back().transform);
 }
 
 TEST_F(SingleOverlayOnTopTest, AllowPositiveScaleTransform) {
@@ -2067,8 +2067,7 @@ TEST_F(UnderlayTest, Allow90DegreeRotation) {
       std::move(surface_damage_rect_list), nullptr, &candidate_list,
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90, candidate_list.back().transform);
 }
 
 TEST_F(UnderlayTest, Allow180DegreeRotation) {
@@ -2094,8 +2093,7 @@ TEST_F(UnderlayTest, Allow180DegreeRotation) {
       std::move(surface_damage_rect_list), nullptr, &candidate_list,
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_180,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_180, candidate_list.back().transform);
 }
 
 TEST_F(UnderlayTest, Allow270DegreeRotation) {
@@ -2121,8 +2119,7 @@ TEST_F(UnderlayTest, Allow270DegreeRotation) {
       std::move(surface_damage_rect_list), nullptr, &candidate_list,
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270, candidate_list.back().transform);
 }
 
 TEST_F(UnderlayTest, AllowsOpaqueCandidates) {

@@ -68,8 +68,7 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     }
 
     // Check if screen rotation matches.
-    if (absl::get<gfx::OverlayTransform>(candidate.transform) !=
-        display_transform_) {
+    if (candidate.transform != display_transform_) {
       candidate.overlay_handled = false;
       return;
     }
