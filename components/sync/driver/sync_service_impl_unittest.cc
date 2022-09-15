@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -32,6 +33,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
+#include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/configure_context.h"
@@ -1042,6 +1044,68 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
 
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
+}
+
+TEST_F(SyncServiceImplTest,
+       DisableSyncOnClientLogsPassphraseTypeForNotMyBirthday) {
+  const PassphraseType kPassphraseType = PassphraseType::kKeystorePassphrase;
+
+  SignIn();
+  CreateService(SyncServiceImpl::MANUAL_START);
+  InitializeForNthSync();
+
+  service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+      kPassphraseType, /*passphrase_time=*/base::Time());
+
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  ASSERT_TRUE(service()->IsSyncFeatureEnabled());
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = NOT_MY_BIRTHDAY;
+
+  base::HistogramTester histogram_tester;
+  service()->OnActionableError(client_cmd);
+
+  ASSERT_FALSE(service()->IsSyncFeatureEnabled());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete",
+      /*sample=*/kPassphraseType,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SyncServiceImplTest,
+       DisableSyncOnClientLogsPassphraseTypeForEncryptionObsolete) {
+  const PassphraseType kPassphraseType = PassphraseType::kKeystorePassphrase;
+
+  SignIn();
+  CreateService(SyncServiceImpl::MANUAL_START);
+  InitializeForNthSync();
+
+  service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
+      kPassphraseType, /*passphrase_time=*/base::Time());
+
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  ASSERT_TRUE(service()->IsSyncFeatureEnabled());
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = ENCRYPTION_OBSOLETE;
+
+  base::HistogramTester histogram_tester;
+  service()->OnActionableError(client_cmd);
+
+  ASSERT_FALSE(service()->IsSyncFeatureEnabled());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete",
+      /*sample=*/kPassphraseType,
+      /*expected_bucket_count=*/1);
 }
 
 // Verify a that local sync mode isn't impacted by sync being disabled.

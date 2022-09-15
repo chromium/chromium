@@ -914,6 +914,17 @@ chromium-metrics-reviews@google.com.
   <summary>Sync passphrase type collected at each metrics upload.</summary>
 </histogram>
 
+<histogram name="Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete"
+    enum="SyncPassphraseType" expires_after="2023-02-19">
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The active sync passphrase type when the client receives a NOT_MY_BIRTHDAY
+    or ENCRYPTION_OBSOLETE event from the server.
+  </summary>
+</histogram>
+
 <histogram name="Sync.PasswordNotesStateInUpdate"
     enum="SyncPasswordNotesStateInUpdate" expires_after="2023-02-01">
   <owner>mamir@chromium.org</owner>

@@ -827,8 +827,15 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       break;
     case DISABLE_SYNC_ON_CLIENT:
       if (error.error_type == NOT_MY_BIRTHDAY) {
-        UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", BIRTHDAY_ERROR,
-                                  STOP_SOURCE_LIMIT);
+        base::UmaHistogramEnumeration("Sync.StopSource", BIRTHDAY_ERROR,
+                                      STOP_SOURCE_LIMIT);
+      }
+
+      if (error.error_type == NOT_MY_BIRTHDAY ||
+          error.error_type == ENCRYPTION_OBSOLETE) {
+        base::UmaHistogramEnumeration(
+            "Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete",
+            crypto_.GetPassphraseType());
       }
 
       // Security domain state might be reset, reset local state as well.
