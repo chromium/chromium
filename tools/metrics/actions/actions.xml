@@ -34161,7 +34161,12 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessage feature."/>
   <suffix name="AutoDarkUserEducationMessageOptIn"
       label="For AutoDarkUserEducationMessageOptIn feature."/>
+  <suffix name="AutofillVirtualCardSuggestion"
+      label="For AutofillVirtualCardSuggestion feature."/>
   <suffix name="BadgedReadingList" label="For BadgedReadingList feature."/>
+  <suffix name="BadgedTranslateManualTrigger"
+      label="For BadgedTranslateManualTrigger feature."/>
+  <suffix name="BatterySaverMode" label="For BatterySaverMode feature."/>
   <suffix name="Bookmark" label="For Bookmark feature."/>
   <suffix name="BottomToolbarTip" label="For BottomToolbarTip feature."/>
   <suffix name="ChromeDuet" label="For ChromeDuet feature."/>
@@ -34174,6 +34179,12 @@ should be able to be added at any place in this file.
       label="For ChromeHomeMenuHeader feature."/>
   <suffix name="ChromeHomePullToRefresh"
       label="For ChromeHomePullToRefresh feature."/>
+  <suffix name="ChromeReengagementNotification1"
+      label="For ChromeReengagementNotification1 feature."/>
+  <suffix name="ChromeReengagementNotification2"
+      label="For ChromeReengagementNotification2 feature."/>
+  <suffix name="ChromeReengagementNotification3"
+      label="For ChromeReengagementNotification3 feature."/>
   <suffix name="ContextualPageActions_PriceTracking"
       label="For Contextual page actions price tracking feature."/>
   <suffix name="ContextualPageActions_PriceTrackingActionChip"
@@ -34188,17 +34199,11 @@ should be able to be added at any place in this file.
       label="For ContextualSearchPanel feature."/>
   <suffix name="ContextualSearchPromotePanelOpen"
       label="For ContextualSearchPromotePanelOpen feature."/>
-  <suffix name="ContextualSearchPromotePanelOpen"
-      label="For ContextualSearchPromotePanelOpen feature."/>
-  <suffix name="ContextualSearchPromoteTap"
-      label="For ContextualSearchPromoteTap feature."/>
   <suffix name="ContextualSearchPromoteTap"
       label="For ContextualSearchPromoteTap feature."/>
   <suffix name="ContextualSearchTap" label="For ContextualSearchTap feature."/>
   <suffix name="ContextualSearchTappedButShouldLongpress"
       label="For ContextualSearchTappedButShouldLongpress feature."/>
-  <suffix name="ContextualSearchWebSearch"
-      label="For ContextualSearchWebSearch feature."/>
   <suffix name="ContextualSearchWebSearch"
       label="For ContextualSearchWebSearch feature."/>
   <suffix name="ContextualSuggestions"
@@ -34208,12 +34213,25 @@ should be able to be added at any place in this file.
   <suffix name="DataSaverMilestonePromo"
       label="For DataSaverMilestonePromo feature."/>
   <suffix name="DataSaverPreview" label="For DataSaverPreview feature."/>
+  <suffix name="DefaultSiteView" label="For DefaultSiteView feature."/>
   <suffix name="DesktopPwaInstall" label="For desktop PWA install icon."/>
+  <suffix name="DesktopSharedHighlighting"
+      label="For DesktopSharedHighlighting feature."/>
+  <suffix name="DesktopSnoozeFeature"
+      label="For DesktopSnoozeFeature feature."/>
   <suffix name="DesktopTabGroupsNewGroup" label="For desktop Tab Groups."/>
+  <suffix name="DiscoverFeedHeaderMenu"
+      label="For DiscoverFeedHeaderMenu feature."/>
   <suffix name="DownloadHome" label="For DownloadHome feature."/>
+  <suffix name="DownloadIndicator" label="For DownloadIndicator feature."/>
+  <suffix name="DownloadInfoBarDownloadContinuing"
+      label="For DownloadInfoBarDownloadContinuing feature."/>
+  <suffix name="DownloadInfoBarDownloadsAreFaster"
+      label="For DownloadInfoBarDownloadsAreFaster feature."/>
   <suffix name="DownloadPage" label="For DownloadPage feature."/>
   <suffix name="DownloadPageScreenshot"
       label="For DownloadPageScreenshot feature."/>
+  <suffix name="DownloadSettings" label="For DownloadSettings feature."/>
   <suffix name="EphemeralTab" label="For Ephemeral Tab."/>
   <suffix name="ExploreSitesTile" label="For Explore Sites feature."/>
   <suffix name="ExtensionsMenu" label="For Extensions menu opening."/>
@@ -34227,6 +34245,8 @@ should be able to be added at any place in this file.
   <suffix name="FeatureNotificationGuideIncognitoTabNotificationShown"
       label="For feature notification guide incognito tab notification
              feature."/>
+  <suffix name="FeatureNotificationGuideIncognitoTabUsed"
+      label="For FeatureNotificationGuideIncognitoTabUsed feature."/>
   <suffix name="FeatureNotificationGuideNTPSuggestionCardHelpBubble"
       label="For feature notification guide NTP suggestion card help bubble."/>
   <suffix name="FeatureNotificationGuideNTPSuggestionCardNotificationShown"
@@ -34241,13 +34261,19 @@ should be able to be added at any place in this file.
   <suffix name="FeatureNotificationGuideVoiceSearchNotificationShown"
       label="For feature notification guide voice search notification
              feature."/>
+  <suffix name="FeatureNotificationGuideVoiceSearchUsed"
+      label="For FeatureNotificationGuideVoiceSearchUsed feature."/>
   <suffix name="FeedCardMenu" label="For FeedCardMenu feature."/>
   <suffix name="FeedHeaderMenu" label="For FeedHeaderMenu feature."/>
+  <suffix name="FeedSwipeRefresh" label="For FeedSwipeRefresh feature."/>
+  <suffix name="FocusHelpBubbleScreenReaderPromo"
+      label="For FocusHelpBubbleScreenReaderPromo feature."/>
   <suffix name="FollowWhileBrowsing"
       label="For Follow While-Browsing IPH feature."/>
   <suffix name="GenericAlwaysTriggerHelpUiFeature"
       label="For generic always show help UI feature."/>
   <suffix name="GlobalMediaControls" label="For GlobalMediaControls feature."/>
+  <suffix name="GMCCastStartStop" label="For GMCCastStartStop feature."/>
   <suffix name="GMCCastStartStopFeature"
       label="For Global Media Controls Cast start and stop feature."/>
   <suffix name="HomePageButton" label="For HomePageButton feature."/>
@@ -34258,7 +34284,20 @@ should be able to be added at any place in this file.
   <suffix name="IntentChip"
       label="In product help for opening a webpage in an app using the intent
              chip."/>
+  <suffix name="KeyboardAccessoryAddressFilling"
+      label="For KeyboardAccessoryAddressFilling feature."/>
+  <suffix name="KeyboardAccessoryBarSwiping"
+      label="For KeyboardAccessoryBarSwiping feature."/>
+  <suffix name="KeyboardAccessoryPasswordFilling"
+      label="For KeyboardAccessoryPasswordFilling feature."/>
+  <suffix name="KeyboardAccessoryPaymentFilling"
+      label="For KeyboardAccessoryPaymentFilling feature."/>
+  <suffix name="KeyboardAccessoryPaymentOffer"
+      label="For KeyboardAccessoryPaymentOffer feature."/>
+  <suffix name="LiveCaption" label="For LiveCaption feature."/>
   <suffix name="LongPressToolbarTip" label="For LongPressToolbar feature."/>
+  <suffix name="LowUserEngagementDetector"
+      label="For LowUserEngagementDetector feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
   <suffix name="MicToolbar" label="In product help for toolbar mic."/>
   <suffix name="NewIncognitoTabTip" label="For NewIncognitoTabTip feature."/>
@@ -34287,7 +34326,17 @@ should be able to be added at any place in this file.
       label="For ReadingListDiscoveryFeature feature."/>
   <suffix name="ReadingListEntryPoint"
       label="For ReadingListEntryPoint feature."/>
+  <suffix name="ReadingListInSidePanel"
+      label="For ReadingListInSidePanel feature."/>
   <suffix name="ReadingListMessages" label="For ReadingListMessages feature."/>
+  <suffix name="ReadLaterAppMenuBookmarks"
+      label="For ReadLaterAppMenuBookmarks feature."/>
+  <suffix name="ReadLaterAppMenuBookmarkThisPage"
+      label="For ReadLaterAppMenuBookmarkThisPage feature."/>
+  <suffix name="ReadLaterBottomSheet"
+      label="For ReadLaterBottomSheet feature."/>
+  <suffix name="ReadLaterContextMenu"
+      label="For ReadLaterContextMenu feature."/>
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
   <suffix name="RequestDesktopSiteAppMenu"
       label="For the RequestDesktopSiteAppMenu feature."/>
@@ -34295,15 +34344,21 @@ should be able to be added at any place in this file.
       label="For SharedHighlightingBuilder feature."/>
   <suffix name="SharedHighlightingReceiver"
       label="For SharedHighlightingReceiver feature."/>
+  <suffix name="ShareScreenshot" label="For ShareScreenshot feature."/>
   <suffix name="SharingHubLinkToggle"
       label="For Sharing Hub link toggle feature."/>
+  <suffix name="SharingHubWebnotesStylize"
+      label="For SharingHubWebnotesStylize feature."/>
   <suffix name="ShoppingListMenuItem"
       label="For ShoppingListMenuItem feature."/>
+  <suffix name="ShoppingListSaveFlow"
+      label="For ShoppingListSaveFlow feature."/>
   <suffix name="SideSearch" label="For the side search feature."/>
   <suffix name="SideSearchAutoTriggering"
       label="For side search feature automatic triggering."/>
   <suffix name="SideSearchPageActionLabel"
       label="For side search feature page action label triggering."/>
+  <suffix name="TabAudioMuting" label="For TabAudioMuting feature."/>
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
   <suffix name="TabGroupsQuicklyComparePages"
       label="For long press links to create tab groups."/>
@@ -34326,9 +34381,11 @@ should be able to be added at any place in this file.
       label="For voice search video tutorial."/>
   <suffix name="VideoTutorial_TryNow"
       label="For video tutorial Try Now feature."/>
+  <suffix name="WebFeedAwareness" label="For WebFeedAwareness feature."/>
   <suffix name="WebFeedFollow" label="For Web Feed follow recommendations."/>
   <suffix name="WebFeedPostFollowDialog"
       label="For Web Feed successful follow operations."/>
+  <suffix name="WebUiHelpBubbleTest" label="For WebUiHelpBubbleTest feature."/>
   <suffix name="WebUITabStrip" label="For the WebUI tab strip."/>
   <affected-action name="InProductHelp.NotifyEvent.IPH"/>
   <affected-action name="InProductHelp.NotifyUsedEvent.IPH"/>
