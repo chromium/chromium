@@ -26,6 +26,7 @@ group("resources") {
     "multidevice_internals:resources",
     "network_ui:resources",
     "notification_tester:resources",
+    "password_change:resources",
   ]
 }
 

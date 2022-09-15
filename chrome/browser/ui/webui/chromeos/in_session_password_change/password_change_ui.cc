@@ -23,6 +23,8 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/password_change_resources.h"
+#include "chrome/grit/password_change_resources_map.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
@@ -95,11 +97,12 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
   source->AddString("hostedHeader", GetHostedHeaderText(password_change_url));
   source->UseStringsJs();
 
-  source->SetDefaultResource(IDR_PASSWORD_CHANGE_APP_HTML);
-  source->AddResourcePath("password_change_app.js", IDR_PASSWORD_CHANGE_APP_JS);
+  source->AddResourcePaths(
+      base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
+  source->SetDefaultResource(IDR_PASSWORD_CHANGE_PASSWORD_CHANGE_APP_HTML);
+
   source->AddResourcePath("webview_saml_injected.js",
                           IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
-  source->AddResourcePath("password_change.js", IDR_PASSWORD_CHANGE_JS);
 
   // Add Gaia Authenticator resources
   source->AddResourcePaths(
@@ -143,9 +146,10 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
   AddSize(source, "OldNew", ConfirmPasswordChangeDialog::GetSize(true, true));
 
   source->UseStringsJs();
-  source->SetDefaultResource(IDR_CONFIRM_PASSWORD_CHANGE_HTML);
-  source->AddResourcePath("confirm_password_change.js",
-                          IDR_CONFIRM_PASSWORD_CHANGE_JS);
+
+  source->AddResourcePaths(
+      base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
+  source->SetDefaultResource(IDR_PASSWORD_CHANGE_CONFIRM_PASSWORD_CHANGE_HTML);
 
   // The ConfirmPasswordChangeHandler is added by the dialog, so no need to add
   // it here.
@@ -182,9 +186,11 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->UseStringsJs();
-  source->SetDefaultResource(IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML);
-  source->AddResourcePath("urgent_password_expiry_notification_app.js",
-                          IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_APP_JS);
+
+  source->AddResourcePaths(
+      base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
+  source->SetDefaultResource(
+      IDR_PASSWORD_CHANGE_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML);
 
   web_ui->AddMessageHandler(
       std::make_unique<UrgentPasswordExpiryNotificationHandler>());

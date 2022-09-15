@@ -22,6 +22,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/password_change_resources.h"
+#include "chrome/grit/password_change_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -74,8 +76,9 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
   ui::network_element::AddOncLocalizedStrings(html);
   html->UseStringsJs();
 
-  html->AddResourcePath("lock_screen_network.js", IDR_LOCK_SCREEN_NETWORK_JS);
-  html->SetDefaultResource(IDR_LOCK_SCREEN_NETWORK_HTML);
+  html->AddResourcePaths(
+      base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
+  html->SetDefaultResource(IDR_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_HTML);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html);

@@ -156,21 +156,6 @@
           <include name="IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG" file="resources\chromeos\googleg.svg" type="BINDATA" />
         </if>
 
-        <include name="IDR_PASSWORD_CHANGE_APP_HTML" file="resources\chromeos\password_change\password_change_app.html" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_APP_JS" file="resources\chromeos\password_change\password_change_app.js" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\password_change\password_change.js" type="BINDATA" use_base_dir="false"/>
-        <include name="IDR_PASSWORD_CHANGE_EVENT_TARGET_JS" file="resources\gaia_auth_host\event_target.js" type="BINDATA" />
-        <include name="IDR_CONFIRM_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\confirm_password_change.html" type="chrome_html" />
-        <include name="IDR_CONFIRM_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\confirm_password_change.js" type="chrome_html" />
-        <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML" file="resources\chromeos\password_change\urgent_password_expiry_notification.html" type="chrome_html" />
-        <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\password_change\urgent_password_expiry_notification_app.js" type="chrome_html" use_base_dir="false" />
-        <include name="IDR_LOCK_SCREEN_REAUTH_APP_HTML" file="resources\chromeos\password_change\lock_screen_reauth_app.html" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_LOCK_SCREEN_REAUTH_HTML" file="resources\chromeos\password_change\lock_screen_reauth.html" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_LOCK_SCREEN_REAUTH_APP_JS" file="resources\chromeos\password_change\lock_screen_reauth_app.js" type="BINDATA" />
-        <include name="IDR_LOCK_SCREEN_REAUTH_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\password_change\lock_screen_reauth.js" type="chrome_html" use_base_dir="false" />
-        <include name="IDR_LOCK_SCREEN_NETWORK_HTML" file="resources\chromeos\password_change\lock_screen_network.html" type="BINDATA" />
-        <include name="IDR_LOCK_SCREEN_NETWORK_JS" file="resources\chromeos\password_change\lock_screen_network.js" type="BINDATA" />
-
         <include name="IDR_CROSTINI_INSTALLER_INDEX_HTML" file="resources\chromeos\crostini_installer\index.html" type="BINDATA" />
         <include name="IDR_CROSTINI_INSTALLER_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\crostini_installer\app.js" type="BINDATA" use_base_dir="false" />
         <include name="IDR_CROSTINI_INSTALLER_BROWSER_PROXY_JS" file="resources\chromeos\crostini_installer\browser_proxy.js" type="BINDATA" />
