@@ -47,6 +47,8 @@ void ReadAnythingModel::Init(
 
   size_t letter_spacing_index = static_cast<size_t>((int)letter_spacing);
   if (letter_spacing_model_->IsValidLetterSpacingIndex(letter_spacing_index)) {
+    letter_spacing_model_->SetDefaultLetterSpacingIndexFromPref(
+        letter_spacing_index);
     letter_spacing_ =
         (int)(letter_spacing_model_->GetLetterSpacingAt(letter_spacing_index));
   }
@@ -306,6 +308,11 @@ ReadAnythingLetterSpacingModel::ReadAnythingLetterSpacingModel() {
 
 bool ReadAnythingLetterSpacingModel::IsValidLetterSpacingIndex(size_t index) {
   return index < GetItemCount();
+}
+
+void ReadAnythingLetterSpacingModel::SetDefaultLetterSpacingIndexFromPref(
+    size_t index) {
+  default_index_ = index;
 }
 
 absl::optional<size_t> ReadAnythingLetterSpacingModel::GetDefaultIndex() const {

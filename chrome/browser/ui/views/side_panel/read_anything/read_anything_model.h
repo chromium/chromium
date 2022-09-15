@@ -122,6 +122,7 @@ class ReadAnythingLetterSpacingModel : public ui::ComboboxModel {
   ~ReadAnythingLetterSpacingModel() override;
 
   bool IsValidLetterSpacingIndex(size_t index);
+  void SetDefaultLetterSpacingIndexFromPref(size_t index);
   read_anything::mojom::LetterSpacing GetLetterSpacingAt(size_t index);
 
  protected:

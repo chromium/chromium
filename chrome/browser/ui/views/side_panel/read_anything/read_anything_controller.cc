@@ -82,6 +82,9 @@ void ReadAnythingController::OnLetterSpacingChanged(int new_index) {
     return;
 
   model_->SetSelectedLetterSpacingByIndex(new_index);
+
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingLetterSpacing, new_index);
 }
 
 ui::ComboboxModel* ReadAnythingController::GetLetterSpacingModel() {
