@@ -43,14 +43,6 @@ if (enable_java_templates) {
       ":native_libraries_gen",
     ]
     sources = [
-      # TODO(https://crbug.com/1038372): Remove base after downstream migrates.
-      "java/src/org/chromium/base/annotations/CheckDiscard.java",
-      "java/src/org/chromium/base/annotations/DoNotClassMerge.java",
-      "java/src/org/chromium/base/annotations/DoNotInline.java",
-      "java/src/org/chromium/base/annotations/IdentifierNameString.java",
-      "java/src/org/chromium/base/annotations/MainDex.java",
-      "java/src/org/chromium/base/annotations/MockedInTests.java",
-      "java/src/org/chromium/base/annotations/UsedByReflection.java",
       "java/src/org/chromium/build/annotations/AlwaysInline.java",
       "java/src/org/chromium/build/annotations/CheckDiscard.java",
       "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
