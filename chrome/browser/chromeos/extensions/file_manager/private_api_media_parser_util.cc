@@ -72,7 +72,7 @@ base::Value::Dict MojoMediaMetadataToValue(
     file_manager_private::StreamInfo stream_info;
     stream_info.type = std::move(info->type);
     std::swap(stream_info.tags.additional_properties,
-              info->additional_properties.GetDict());
+              info->additional_properties);
     media_metadata.raw_tags.push_back(std::move(stream_info));
   }
 

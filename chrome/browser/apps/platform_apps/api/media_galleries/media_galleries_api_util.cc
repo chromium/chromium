@@ -52,7 +52,7 @@ base::Value::Dict SerializeMediaMetadata(
     media_galleries::StreamInfo stream_info;
     stream_info.type = std::move(info->type);
     stream_info.tags.additional_properties =
-        std::move(info->additional_properties.GetDict());
+        std::move(info->additional_properties);
     extension_metadata.raw_tags.push_back(std::move(stream_info));
   }
 
