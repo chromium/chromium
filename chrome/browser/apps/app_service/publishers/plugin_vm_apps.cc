@@ -297,7 +297,7 @@ void PluginVmApps::LaunchAppWithIntent(const std::string& app_id,
                                        IntentPtr intent,
                                        LaunchSource launch_source,
                                        WindowInfoPtr window_info,
-                                       LaunchAppWithIntentCallback callback) {
+                                       LaunchCallback callback) {
   // Retrieve URLs from the files in the intent.
   std::vector<plugin_vm::LaunchArg> args;
   if (intent && intent->files.size() > 0) {
@@ -312,11 +312,12 @@ void PluginVmApps::LaunchAppWithIntent(const std::string& app_id,
   plugin_vm::LaunchPluginVmApp(
       profile_, app_id, args,
       base::BindOnce(
-          [](LaunchAppWithIntentCallback callback,
-             plugin_vm::LaunchPluginVmAppResult result,
+          [](LaunchCallback callback,
+             plugin_vm::LaunchPluginVmAppResult plugin_vm_result,
              const std::string& failure_reason) {
-            std::move(callback).Run(
-                result == plugin_vm::LaunchPluginVmAppResult::SUCCESS);
+            std::move(callback).Run(ConvertBoolToLaunchResult(
+                plugin_vm_result ==
+                plugin_vm::LaunchPluginVmAppResult::SUCCESS));
           },
           std::move(callback)));
 }

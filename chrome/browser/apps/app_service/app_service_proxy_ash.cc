@@ -303,13 +303,12 @@ void AppServiceProxyAsh::SetArcIsRegistered() {
   }
 }
 
-void AppServiceProxyAsh::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void AppServiceProxyAsh::LaunchAppWithIntent(const std::string& app_id,
+                                             int32_t event_flags,
+                                             IntentPtr intent,
+                                             LaunchSource launch_source,
+                                             WindowInfoPtr window_info,
+                                             LaunchCallback callback) {
   // TODO(1359312): Apply DLP checks if possible
   AppServiceProxyBase::LaunchAppWithIntent(
       app_id, event_flags, std::move(intent), launch_source,

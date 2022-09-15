@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
@@ -175,13 +176,12 @@ void CrostiniApps::Launch(const std::string& app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId);
 }
 
-void CrostiniApps::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
+                                       int32_t event_flags,
+                                       IntentPtr intent,
+                                       LaunchSource launch_source,
+                                       WindowInfoPtr window_info,
+                                       LaunchCallback callback) {
   // Retrieve URLs from the files in the intent.
   std::vector<crostini::LaunchArg> args;
   if (intent && intent->files.size() > 0) {
@@ -198,9 +198,9 @@ void CrostiniApps::LaunchAppWithIntent(
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       std::move(intent), args,
       base::BindOnce(
-          [](LaunchAppWithIntentCallback callback, bool success,
+          [](LaunchCallback callback, bool success,
              const std::string& failure_reason) {
-            std::move(callback).Run(success);
+            std::move(callback).Run(ConvertBoolToLaunchResult(success));
           },
           std::move(callback)));
 }

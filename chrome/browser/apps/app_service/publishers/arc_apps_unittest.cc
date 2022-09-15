@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -404,14 +405,16 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<bool> result;
+  absl::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
-          [&result](bool callback_result) { result = callback_result; }));
+          [&result](apps::LaunchResult&& callback_result) {
+            result = callback_result.state;
+          }));
 
-  ASSERT_TRUE(result.has_value() && result.value());
+  ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -435,15 +438,16 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<bool> result;
+  absl::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
-          [&result](bool callback_result) { result = callback_result; }));
+          [&result](apps::LaunchResult&& callback_result) {
+            result = callback_result.state;
+          }));
 
-  ASSERT_TRUE(result.has_value());
-  ASSERT_FALSE(result.value());
+  ASSERT_EQ(apps::State::FAILED, result.value_or(apps::State::SUCCESS));
 }
 
 TEST_F(
@@ -472,14 +476,16 @@ TEST_F(
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<bool> result;
+  absl::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
-          [&result](bool callback_result) { result = callback_result; }));
+          [&result](apps::LaunchResult&& callback_result) {
+            result = callback_result.state;
+          }));
 
-  ASSERT_TRUE(result.has_value() && result.value());
+  ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -509,14 +515,16 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  absl::optional<bool> result;
+  absl::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
-          [&result](bool callback_result) { result = callback_result; }));
+          [&result](apps::LaunchResult&& callback_result) {
+            result = callback_result.state;
+          }));
 
-  ASSERT_TRUE(result.has_value() && result.value());
+  ASSERT_EQ(apps::State::SUCCESS, result.value_or(apps::State::FAILED));
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];

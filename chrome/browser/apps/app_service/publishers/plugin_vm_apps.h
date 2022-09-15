@@ -73,7 +73,7 @@ class PluginVmApps : public apps::PublisherBase,
                            IntentPtr intent,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
-                           LaunchAppWithIntentCallback callback) override;
+                           LaunchCallback callback) override;
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
   void SetPermission(const std::string& app_id,

@@ -398,13 +398,12 @@ void AppServiceProxyBase::LaunchAppWithFiles(
   }
 }
 
-void AppServiceProxyBase::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
+                                              int32_t event_flags,
+                                              IntentPtr intent,
+                                              LaunchSource launch_source,
+                                              WindowInfoPtr window_info,
+                                              LaunchCallback callback) {
   CHECK(intent);
   app_registry_cache_.ForOneApp(
       app_id,
@@ -412,12 +411,12 @@ void AppServiceProxyBase::LaunchAppWithIntent(
        callback = std::move(callback)](const AppUpdate& update) mutable {
         auto* publisher = GetPublisher(update.AppType());
         if (!publisher) {
-          std::move(callback).Run(/*success=*/false);
+          std::move(callback).Run(LaunchResult(State::FAILED));
           return;
         }
 
         if (MaybeShowLaunchPreventionDialog(update)) {
-          std::move(callback).Run(/*success=*/false);
+          std::move(callback).Run(LaunchResult(State::FAILED));
           return;
         }
 

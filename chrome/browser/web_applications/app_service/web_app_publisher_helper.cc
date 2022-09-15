@@ -1006,11 +1006,11 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
     apps::IntentPtr intent,
     apps::LaunchSource launch_source,
     apps::WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+    apps::LaunchCallback callback) {
   CHECK(intent);
 
   if (IsShuttingDown()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(apps::LaunchResult(apps::State::FAILED));
     return;
   }
 
@@ -1021,12 +1021,12 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
     guest_os::LaunchTerminalWithIntent(
         profile_, display_id, std::move(intent),
         base::BindOnce(
-            [](base::OnceCallback<void(bool)> callback, bool success,
+            [](apps::LaunchCallback callback, bool success,
                const std::string& failure_reason) {
               if (!success) {
                 LOG(WARNING) << "Launch terminal failed: " << failure_reason;
               }
-              std::move(callback).Run(success);
+              std::move(callback).Run(apps::ConvertBoolToLaunchResult(success));
             },
             std::move(callback)));
     return;
@@ -1037,8 +1037,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
       app_id, event_flags, std::move(intent), launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       base::BindOnce(
-          [](base::OnceCallback<void(bool)> success_callback,
-             apps::LaunchSource launch_source,
+          [](apps::LaunchCallback callback, apps::LaunchSource launch_source,
              const std::vector<content::WebContents*>& web_contentses) {
 // TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1052,8 +1051,8 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
               }
             }
 #endif
-            std::move(success_callback)
-                .Run(/*success=*/!web_contentses.empty());
+            std::move(callback).Run(
+                apps::ConvertBoolToLaunchResult(!web_contentses.empty()));
           },
           std::move(callback), launch_source));
 }

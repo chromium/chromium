@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -53,8 +54,25 @@
 namespace file_manager {
 namespace file_tasks {
 
-using extensions::api::file_manager_private::Verb;
+extensions::api::file_manager_private::TaskResult
+ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
+                                TaskType task_type) {
+  // TODO(benwells): return the correct code here, depending
+  // on how the app will be opened in multiprofile.
+  namespace fmp = extensions::api::file_manager_private;
+  switch (result.state) {
+    case apps::State::SUCCESS:
+      if (task_type == TASK_TYPE_WEB_APP) {
+        return fmp::TASK_RESULT_OPENED;
+      } else {
+        return fmp::TASK_RESULT_MESSAGE_SENT;
+      }
+    case apps::State::FAILED:
+      return fmp::TASK_RESULT_FAILED;
+  }
+}
 
+using extensions::api::file_manager_private::Verb;
 namespace {
 TaskType GetTaskType(apps::AppType app_type) {
   switch (app_type) {
@@ -331,22 +349,9 @@ void ExecuteAppServiceTask(
             std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
             base::BindOnce(
                 [](FileTaskFinishedCallback done, TaskType task_type,
-                   bool success) {
-                  if (!success) {
-                    std::move(done).Run(extensions::api::file_manager_private::
-                                            TASK_RESULT_FAILED,
-                                        "");
-                  } else if (task_type == TASK_TYPE_WEB_APP) {
-                    // TODO(benwells): return the correct code here, depending
-                    // on how the app will be opened in multiprofile.
-                    std::move(done).Run(extensions::api::file_manager_private::
-                                            TASK_RESULT_OPENED,
-                                        "");
-                  } else {
-                    std::move(done).Run(extensions::api::file_manager_private::
-                                            TASK_RESULT_MESSAGE_SENT,
-                                        "");
-                  }
+                   apps::LaunchResult&& result) {
+                  std::move(done).Run(
+                      ConvertLaunchResultToTaskResult(result, task_type), "");
                 },
                 std::move(done), task.task_type));
   } else {

@@ -27,11 +27,18 @@ struct LaunchResult {
   LaunchResult& operator=(const LaunchResult& launch_result) = delete;
   LaunchResult(const LaunchResult& launch_result) = delete;
 
+  enum State { SUCCESS, FAILED };
+  explicit LaunchResult(LaunchResult::State state);
+
   // A single launch event may result in multiple app instances being created.
   std::vector<base::UnguessableToken> instance_ids;
+
+  // Indicates whether the launch attempt was successful or not.
+  State state = LaunchResult::State::FAILED;
 };
 
 using LaunchCallback = base::OnceCallback<void(LaunchResult&&)>;
+using State = LaunchResult::State;
 
 #if BUILDFLAG(IS_CHROMEOS)
 LaunchResult ConvertMojomLaunchResultToLaunchResult(
@@ -40,6 +47,10 @@ LaunchResult ConvertMojomLaunchResultToLaunchResult(
 base::OnceCallback<void(crosapi::mojom::LaunchResultPtr)>
 LaunchResultToMojomLaunchResultCallback(LaunchCallback callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+LaunchResult ConvertBoolToLaunchResult(bool success);
+
+bool ConvertLaunchResultToBool(const LaunchResult& result);
 
 }  // namespace apps
 

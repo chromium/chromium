@@ -214,23 +214,27 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   }
 }
 
-void ExtensionAppsChromeOs::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
+                                                int32_t event_flags,
+                                                IntentPtr intent,
+                                                LaunchSource launch_source,
+                                                WindowInfoPtr window_info,
+                                                LaunchCallback callback) {
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
   bool is_quickoffice = extension_misc::IsQuickOfficeExtension(extension->id());
   if (extension->is_app() || is_quickoffice) {
     content::WebContents* web_contents = LaunchAppWithIntentImpl(
         app_id, event_flags, std::move(intent), launch_source,
-        std::move(window_info), std::move(callback));
+        std::move(window_info),
+        base::BindOnce(
+            [](LaunchCallback callback, bool success) {
+              std::move(callback).Run(ConvertBoolToLaunchResult(success));
+            },
+            std::move(callback)));
 
     if (launch_source == LaunchSource::kFromArc && web_contents) {
       // Add a flag to remember this web_contents originated in the ARC context.
@@ -241,8 +245,14 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(
   } else {
     DCHECK(extension->is_extension());
     // TODO(petermarshall): Set Arc flag as above?
-    LaunchExtension(app_id, event_flags, std::move(intent), launch_source,
-                    std::move(window_info), std::move(callback));
+    LaunchExtension(
+        app_id, event_flags, std::move(intent), launch_source,
+        std::move(window_info),
+        base::BindOnce(
+            [](LaunchCallback callback, bool success) {
+              std::move(callback).Run(ConvertBoolToLaunchResult(success));
+            },
+            std::move(callback)));
   }
 }
 

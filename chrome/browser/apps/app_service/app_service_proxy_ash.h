@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
@@ -124,7 +125,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                            IntentPtr intent,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
-                           base::OnceCallback<void(bool)> callback) override;
+                           LaunchCallback callback) override;
   void LaunchAppWithIntent(
       const std::string& app_id,
       int32_t event_flags,

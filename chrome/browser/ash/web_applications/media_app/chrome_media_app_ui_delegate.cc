@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/hats/hats_config.h"
@@ -179,8 +180,8 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
         base::BindOnce(
             [](base::OnceCallback<void()> callback,
                base::WeakPtr<content::WebContents> web_contents,
-               bool launch_success) {
-              if (launch_success && web_contents) {
+               apps::LaunchResult&& result) {
+              if (result.state == apps::State::SUCCESS && web_contents) {
                 web_contents->Close();
               }
               std::move(callback).Run();

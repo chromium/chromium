@@ -141,7 +141,7 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
                                   apps::IntentPtr intent,
                                   apps::LaunchSource launch_source,
                                   apps::WindowInfoPtr window_info,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  apps::LaunchCallback callback) {
   publisher_helper().LaunchAppWithIntent(app_id, event_flags, std::move(intent),
                                          launch_source, std::move(window_info),
                                          std::move(callback));
@@ -284,7 +284,12 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
       app_id, event_flags, apps::ConvertMojomIntentToIntent(intent),
       apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
       apps::ConvertMojomWindowInfoToWindowInfo(window_info),
-      std::move(callback));
+      base::BindOnce(
+          [](LaunchAppWithIntentCallback callback,
+             apps::LaunchResult&& result) {
+            std::move(callback).Run(apps::ConvertLaunchResultToBool(result));
+          },
+          std::move(callback)));
 }
 
 void WebApps::SetPermission(const std::string& app_id,

@@ -52,15 +52,14 @@ void AppPublisher::LaunchAppWithFiles(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void AppPublisher::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void AppPublisher::LaunchAppWithIntent(const std::string& app_id,
+                                       int32_t event_flags,
+                                       IntentPtr intent,
+                                       LaunchSource launch_source,
+                                       WindowInfoPtr window_info,
+                                       LaunchCallback callback) {
   NOTIMPLEMENTED();
-  std::move(callback).Run(/*success=*/false);
+  std::move(callback).Run(LaunchResult(State::FAILED));
 }
 
 void AppPublisher::SetPermission(const std::string& app_id,

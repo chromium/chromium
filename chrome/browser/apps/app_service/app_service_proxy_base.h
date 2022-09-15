@@ -175,7 +175,7 @@ class AppServiceProxyBase : public KeyedService,
                                    IntentPtr intent,
                                    LaunchSource launch_source,
                                    WindowInfoPtr window_info,
-                                   base::OnceCallback<void(bool)> callback);
+                                   LaunchCallback callback);
   // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
   // interface.
   virtual void LaunchAppWithIntent(

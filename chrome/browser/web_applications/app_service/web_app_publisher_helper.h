@@ -21,6 +21,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -221,7 +222,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                            apps::IntentPtr intent,
                            apps::LaunchSource launch_source,
                            apps::WindowInfoPtr window_info,
-                           base::OnceCallback<void(bool)> callback);
+                           apps::LaunchCallback callback);
 
   content::WebContents* LaunchAppWithParams(apps::AppLaunchParams params);
 

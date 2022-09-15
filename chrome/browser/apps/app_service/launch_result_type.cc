@@ -17,6 +17,8 @@ LaunchResult::~LaunchResult() = default;
 
 LaunchResult::LaunchResult(LaunchResult&& other) = default;
 
+LaunchResult::LaunchResult(LaunchResult::State state) : state(state) {}
+
 #if BUILDFLAG(IS_CHROMEOS)
 LaunchResult ConvertMojomLaunchResultToLaunchResult(
     crosapi::mojom::LaunchResultPtr mojom_launch_result) {
@@ -43,5 +45,13 @@ LaunchResultToMojomLaunchResultCallback(LaunchCallback callback) {
       std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+LaunchResult ConvertBoolToLaunchResult(bool success) {
+  return success ? LaunchResult(State::SUCCESS) : LaunchResult(State::FAILED);
+}
+
+bool ConvertLaunchResultToBool(const LaunchResult& result) {
+  return result.state == State::SUCCESS ? true : false;
+}
 
 }  // namespace apps

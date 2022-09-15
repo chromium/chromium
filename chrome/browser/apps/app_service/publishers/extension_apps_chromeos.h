@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
@@ -83,7 +84,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                            IntentPtr intent,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
-                           base::OnceCallback<void(bool)> callback) override;
+                           LaunchCallback callback) override;
   void GetMenuModel(const std::string& app_id,
                     MenuType menu_type,
                     int64_t display_id,

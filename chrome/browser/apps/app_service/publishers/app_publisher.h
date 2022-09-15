@@ -103,7 +103,7 @@ class AppPublisher {
                                    IntentPtr intent,
                                    LaunchSource launch_source,
                                    WindowInfoPtr window_info,
-                                   base::OnceCallback<void(bool)> callback);
+                                   LaunchCallback callback);
 
   // Launches an app with |params|.
   //

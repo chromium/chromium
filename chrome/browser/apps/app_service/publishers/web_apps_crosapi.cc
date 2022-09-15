@@ -123,15 +123,14 @@ void WebAppsCrosapi::LaunchAppWithFiles(
   controller_->Launch(std::move(params), base::DoNothing());
 }
 
-void WebAppsCrosapi::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void WebAppsCrosapi::LaunchAppWithIntent(const std::string& app_id,
+                                         int32_t event_flags,
+                                         IntentPtr intent,
+                                         LaunchSource launch_source,
+                                         WindowInfoPtr window_info,
+                                         LaunchCallback callback) {
   if (!LogIfNotConnected(FROM_HERE)) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
 
@@ -143,7 +142,7 @@ void WebAppsCrosapi::LaunchAppWithIntent(
       apps_util::ConvertAppServiceToCrosapiIntent(intent, proxy_->profile());
   controller_->Launch(std::move(params), base::DoNothing());
   // TODO(crbug/1261263): handle the case where launch fails.
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(LaunchResult(State::SUCCESS));
 }
 
 void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
