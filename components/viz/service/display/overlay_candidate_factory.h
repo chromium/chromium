@@ -46,16 +46,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
  public:
   using CandidateStatus = OverlayCandidate::CandidateStatus;
 
-  // The coordinate space of |render_pass| is the target space for candidates
-  // produced by this factory.
   OverlayCandidateFactory(const AggregatedRenderPass* render_pass,
                           DisplayResourceProvider* resource_provider,
                           const SurfaceDamageRectList* surface_damage_rect_list,
                           const SkM44* output_color_matrix,
                           const gfx::RectF primary_rect,
                           bool is_delegated_context = false,
-                          bool supports_clip_rect = false,
-                          bool supports_arbitrary_transform = false);
+                          bool supports_clip_rect = false);
 
   OverlayCandidateFactory(const OverlayCandidateFactory&) = delete;
   OverlayCandidateFactory& operator=(const OverlayCandidateFactory&) = delete;
@@ -115,10 +112,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
 
   void AssignDamage(const DrawQuad* quad, OverlayCandidate& candidate) const;
 
-  // Damage returned from this function is in target space.
-  // If quad doesn't have damage from the surface damage list, this returns the
-  // intersection of unassigned damage and the smallest axis-aligned rectangle
-  // containing |display_rect| in target space.
+  // Damage returned from this function is in target content space.
   gfx::RectF GetDamageRect(const DrawQuad* quad,
                            const OverlayCandidate& candidate) const;
 
@@ -129,7 +123,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   const gfx::RectF primary_rect_;
   const bool is_delegated_context_;
   const bool supports_clip_rect_;
-  const bool supports_arbitrary_transform_;
 
   // The union of all surface damages that are not specifically assigned to a
   // draw quad.
