@@ -18,7 +18,7 @@
 
 namespace gpu {
 class CommandBufferStub;
-class DXGIKeyedMutexManager;
+class DXGISharedHandleManager;
 class SharedImageBacking;
 class SharedImageRepresentationFactoryRef;
 class SharedImageStub;
@@ -61,7 +61,7 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   virtual gpu::SharedImageStub* GetSharedImageStub() = 0;
 
 #if BUILDFLAG(IS_WIN)
-  virtual gpu::DXGIKeyedMutexManager* GetDXGIKeyedMutexManager() = 0;
+  virtual gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() = 0;
 #endif
 
   // Checks whether the stub has been destroyed.

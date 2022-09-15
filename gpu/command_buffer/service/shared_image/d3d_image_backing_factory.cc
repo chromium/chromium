@@ -10,7 +10,7 @@
 #include "base/win/scoped_handle.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/direct_composition_support.h"
@@ -101,8 +101,8 @@ DXGI_FORMAT GetDXGITypelessFormat(gfx::BufferFormat buffer_format) {
   }
 }
 
-scoped_refptr<DXGIKeyedMutexState> ValidateAndOpenSharedHandle(
-    DXGIKeyedMutexManager* dxgi_keyed_mutex_manager,
+scoped_refptr<DXGISharedHandleState> ValidateAndOpenSharedHandle(
+    DXGISharedHandleManager* dxgi_shared_handle_manager,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat format,
     const gfx::Size& size) {
@@ -122,16 +122,16 @@ scoped_refptr<DXGIKeyedMutexState> ValidateAndOpenSharedHandle(
     return nullptr;
   }
 
-  scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state =
-      dxgi_keyed_mutex_manager->GetOrCreateKeyedMutexState(
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      dxgi_shared_handle_manager->GetOrCreateSharedHandleState(
           std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle));
-  if (!dxgi_keyed_mutex_state) {
+  if (!dxgi_shared_handle_state) {
     LOG(ERROR) << "Failed to open DXGI shared handle";
     return nullptr;
   }
 
   D3D11_TEXTURE2D_DESC desc = {};
-  dxgi_keyed_mutex_state->d3d11_texture()->GetDesc(&desc);
+  dxgi_shared_handle_state->d3d11_texture()->GetDesc(&desc);
 
   // TODO: Add checks for device specific limits.
   if (desc.Width != static_cast<UINT>(size.width()) ||
@@ -146,16 +146,16 @@ scoped_refptr<DXGIKeyedMutexState> ValidateAndOpenSharedHandle(
     return nullptr;
   }
 
-  return dxgi_keyed_mutex_state;
+  return dxgi_shared_handle_state;
 }
 
 }  // anonymous namespace
 
 D3DImageBackingFactory::D3DImageBackingFactory(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    scoped_refptr<DXGIKeyedMutexManager> dxgi_keyed_mutex_manager)
+    scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager)
     : d3d11_device_(std::move(d3d11_device)),
-      dxgi_keyed_mutex_manager_(std::move(dxgi_keyed_mutex_manager)) {
+      dxgi_shared_handle_manager_(std::move(dxgi_shared_handle_manager)) {
   DCHECK(d3d11_device_);
 }
 
@@ -393,13 +393,13 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state =
-      dxgi_keyed_mutex_manager_->CreateAnonymousKeyedMutexState(
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      dxgi_shared_handle_manager_->CreateAnonymousSharedHandleState(
           base::win::ScopedHandle(shared_handle), d3d11_texture);
 
   return D3DImageBacking::CreateFromDXGISharedHandle(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(dxgi_keyed_mutex_state));
+      std::move(d3d11_texture), std::move(dxgi_shared_handle_state));
 }
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
@@ -434,18 +434,18 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state =
-      ValidateAndOpenSharedHandle(dxgi_keyed_mutex_manager_.get(),
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
                                   std::move(handle), format, size);
-  if (!dxgi_keyed_mutex_state)
+  if (!dxgi_shared_handle_state)
     return nullptr;
 
-  auto d3d11_texture = dxgi_keyed_mutex_state->d3d11_texture();
+  auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
 
   auto backing = D3DImageBacking::CreateFromDXGISharedHandle(
       mailbox, viz::GetResourceFormat(format), size, color_space,
       surface_origin, alpha_type, usage, std::move(d3d11_texture),
-      std::move(dxgi_keyed_mutex_state));
+      std::move(dxgi_shared_handle_state));
   if (backing)
     backing->SetCleared();
   return backing;
@@ -464,17 +464,17 @@ D3DImageBackingFactory::CreateSharedImageVideoPlanes(
     return {};
   }
 
-  scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state =
-      ValidateAndOpenSharedHandle(dxgi_keyed_mutex_manager_.get(),
+  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
+      ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
                                   std::move(handle), format, size);
-  if (!dxgi_keyed_mutex_state)
+  if (!dxgi_shared_handle_state)
     return {};
 
-  auto d3d11_texture = dxgi_keyed_mutex_state->d3d11_texture();
+  auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
 
   return D3DImageBacking::CreateFromVideoTexture(
       mailboxes, GetDXGIFormat(format), size, usage, std::move(d3d11_texture),
-      /*array_slice=*/0, std::move(dxgi_keyed_mutex_state));
+      /*array_slice=*/0, std::move(dxgi_shared_handle_state));
 }
 
 bool D3DImageBackingFactory::UseMapOnDefaultTextures() {

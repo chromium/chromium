@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_DXGI_KEYED_MUTEX_MANAGER_H_
-#define GPU_COMMAND_BUFFER_SERVICE_DXGI_KEYED_MUTEX_MANAGER_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_DXGI_SHARED_HANDLE_MANAGER_H_
+#define GPU_COMMAND_BUFFER_SERVICE_DXGI_SHARED_HANDLE_MANAGER_H_
 
 #include <map>
 
@@ -20,40 +20,40 @@
 
 namespace gpu {
 
-// DXGIKeyedMutexManager caches the state associated with DXGI shared handles
+// DXGISharedHandleManager caches the state associated with DXGI shared handles
 // using gfx::DXGIHandleToken as the key. These tokens are used to uniquely
 // identify the texture associated with the shared handle even after the handle
 // is duplicated. See |dxgi_token| in GpuMemoryBufferHandle.
 //
-// DXGIKeyedMutexManager is safe to call from any thread and is guaranteed to
+// DXGISharedHandleManager is safe to call from any thread and is guaranteed to
 // outlive any scoped_refptrs it hands out. Currently, the manager is only used
 // on the GPU main thread, but it is expected that in the near future, the
 // scoped_refptrs could be released on other threads e.g. on DrDC thread.
 //
-// DXGIKeyedMutexState holds the shared handle and its associated state like
+// DXGISharedHandleState holds the shared handle and its associated state like
 // D3D texture, keyed mutex state, etc. Its lifetime is managed exclusively by
-// scoped_refptrs handed out by the DXGIKeyedMutexManager.
+// scoped_refptrs handed out by the DXGISharedHandleManager.
 //
-// DXGIKeyedMutexState is implemented as a ref-counted type with custom AddRef
+// DXGISharedHandleState is implemented as a ref-counted type with custom AddRef
 // and Release methods. The manager only holds raw pointers to state instances
-// for lookup by token, so DXGIKeyedMutexState ensures that the raw pointers
+// for lookup by token, so DXGISharedHandleState ensures that the raw pointers
 // are cleaned up when the refcount goes to zero.
 
-class DXGIKeyedMutexManager;
+class DXGISharedHandleManager;
 
-class GPU_GLES2_EXPORT DXGIKeyedMutexState
+class GPU_GLES2_EXPORT DXGISharedHandleState
     : public base::subtle::RefCountedThreadSafeBase {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  DXGIKeyedMutexState(base::PassKey<DXGIKeyedMutexManager>,
-                      scoped_refptr<DXGIKeyedMutexManager> manager,
-                      gfx::DXGIHandleToken token,
-                      base::win::ScopedHandle shared_handle,
-                      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
+  DXGISharedHandleState(base::PassKey<DXGISharedHandleManager>,
+                        scoped_refptr<DXGISharedHandleManager> manager,
+                        gfx::DXGIHandleToken token,
+                        base::win::ScopedHandle shared_handle,
+                        Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
 
-  DXGIKeyedMutexState(const DXGIKeyedMutexState&) = delete;
-  DXGIKeyedMutexState& operator=(const DXGIKeyedMutexState&) = delete;
+  DXGISharedHandleState(const DXGISharedHandleState&) = delete;
+  DXGISharedHandleState& operator=(const DXGISharedHandleState&) = delete;
 
   void AddRef() const;
   void Release() const;
@@ -73,9 +73,9 @@ class GPU_GLES2_EXPORT DXGIKeyedMutexState
   void EndAccessD3D12();
 
  private:
-  ~DXGIKeyedMutexState();
+  ~DXGISharedHandleState();
 
-  scoped_refptr<DXGIKeyedMutexManager> manager_;
+  scoped_refptr<DXGISharedHandleManager> manager_;
   const gfx::DXGIHandleToken token_;
 
   // If |d3d11_texture_| has a keyed mutex, it will be stored in
@@ -91,17 +91,17 @@ class GPU_GLES2_EXPORT DXGIKeyedMutexState
   int acquired_for_d3d11_count_ = 0;
 };
 
-class GPU_GLES2_EXPORT DXGIKeyedMutexManager
-    : public base::RefCountedThreadSafe<DXGIKeyedMutexManager> {
+class GPU_GLES2_EXPORT DXGISharedHandleManager
+    : public base::RefCountedThreadSafe<DXGISharedHandleManager> {
  public:
-  explicit DXGIKeyedMutexManager(
+  explicit DXGISharedHandleManager(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
   // Retrieves an existing state associated with |token| or creates a new one if
   // none exists. Note that the returned state won't not have |shared_handle| as
   // its handle if |token| was registered previously, but the state's handle
   // will refer to the same D3D11 texture. Returns a nullptr on error.
-  scoped_refptr<DXGIKeyedMutexState> GetOrCreateKeyedMutexState(
+  scoped_refptr<DXGISharedHandleState> GetOrCreateSharedHandleState(
       gfx::DXGIHandleToken token,
       base::win::ScopedHandle shared_handle);
 
@@ -109,26 +109,27 @@ class GPU_GLES2_EXPORT DXGIKeyedMutexManager
   // No other state will have references to the same shared handle and texture.
   // Useful when creating handles which are guaranteed to never be duplicated
   // e.g. WebGPU usage shared image that only needs a handle for Dawn interop.
-  scoped_refptr<DXGIKeyedMutexState> CreateAnonymousKeyedMutexState(
+  scoped_refptr<DXGISharedHandleState> CreateAnonymousSharedHandleState(
       base::win::ScopedHandle shared_handle,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
 
   size_t GetSharedHandleMapSizeForTesting() const;
 
  private:
-  friend class base::RefCountedThreadSafe<DXGIKeyedMutexManager>;
-  friend class DXGIKeyedMutexState;
+  friend class base::RefCountedThreadSafe<DXGISharedHandleManager>;
+  friend class DXGISharedHandleState;
 
-  ~DXGIKeyedMutexManager();
+  ~DXGISharedHandleManager();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 
   mutable base::Lock lock_;
 
-  using SharedHandleMap = std::map<gfx::DXGIHandleToken, DXGIKeyedMutexState*>;
+  using SharedHandleMap =
+      std::map<gfx::DXGIHandleToken, DXGISharedHandleState*>;
   SharedHandleMap shared_handle_state_map_ GUARDED_BY(lock_);
 };
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_DXGI_KEYED_MUTEX_MANAGER_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_DXGI_SHARED_HANDLE_MANAGER_H_

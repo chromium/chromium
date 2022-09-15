@@ -44,7 +44,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   gl::GLContext* GetGLContext() override;
   gpu::SharedImageStub* GetSharedImageStub() override;
 #if BUILDFLAG(IS_WIN)
-  gpu::DXGIKeyedMutexManager* GetDXGIKeyedMutexManager() override;
+  gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;
 #endif
   bool HasStub() override;
   bool MakeContextCurrent() override;

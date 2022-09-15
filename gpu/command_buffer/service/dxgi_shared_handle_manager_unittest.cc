@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 
 #include <d3d11_1.h>
 #include <windows.h>
@@ -18,7 +18,7 @@
 namespace gpu {
 namespace {
 
-class DXGIKeyedMutexManagerTest : public testing::Test {
+class DXGISharedHandleManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     // Using DXGI NT handles is universally supported only on Win8 and above.
@@ -27,12 +27,12 @@ class DXGIKeyedMutexManagerTest : public testing::Test {
         base::win::GetVersion() >= base::win::Version::WIN8;
     d3d11_device_ = gl::QueryD3D11DeviceObjectFromANGLE();
     if (shared_handles_supported && d3d11_device_) {
-      dxgi_keyed_mutex_manager_ =
-          base::MakeRefCounted<DXGIKeyedMutexManager>(d3d11_device_);
+      dxgi_shared_handle_manager_ =
+          base::MakeRefCounted<DXGISharedHandleManager>(d3d11_device_);
     }
   }
 
-  bool ShouldSkipTest() const { return !dxgi_keyed_mutex_manager_; }
+  bool ShouldSkipTest() const { return !dxgi_shared_handle_manager_; }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> CreateTexture() {
     D3D11_TEXTURE2D_DESC desc;
@@ -71,10 +71,10 @@ class DXGIKeyedMutexManagerTest : public testing::Test {
   }
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  scoped_refptr<DXGIKeyedMutexManager> dxgi_keyed_mutex_manager_;
+  scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
 };
 
-TEST_F(DXGIKeyedMutexManagerTest, LookupByToken) {
+TEST_F(DXGISharedHandleManagerTest, LookupByToken) {
   if (ShouldSkipTest())
     return;
 
@@ -87,12 +87,13 @@ TEST_F(DXGIKeyedMutexManagerTest, LookupByToken) {
   base::win::ScopedHandle orig_handle = CreateSharedHandle(d3d11_texture);
   ASSERT_TRUE(orig_handle.IsValid());
 
-  scoped_refptr<DXGIKeyedMutexState> orig_state =
-      dxgi_keyed_mutex_manager_->GetOrCreateKeyedMutexState(
+  scoped_refptr<DXGISharedHandleState> orig_state =
+      dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
           orig_token, std::move(orig_handle));
   ASSERT_NE(orig_state, nullptr);
 
-  EXPECT_EQ(dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(), 1u);
+  EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
+            1u);
 
   for (int i = 0; i < kNumHandles - 1; i++) {
     HANDLE handle;
@@ -103,21 +104,22 @@ TEST_F(DXGIKeyedMutexManagerTest, LookupByToken) {
     base::win::ScopedHandle new_handle(handle);
     ASSERT_TRUE(new_handle.IsValid());
 
-    scoped_refptr<DXGIKeyedMutexState> state =
-        dxgi_keyed_mutex_manager_->GetOrCreateKeyedMutexState(
+    scoped_refptr<DXGISharedHandleState> state =
+        dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
             orig_token, std::move(new_handle));
     EXPECT_EQ(state, orig_state);
 
-    EXPECT_EQ(dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(),
+    EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
               1u);
   }
 
   orig_state = nullptr;
 
-  EXPECT_EQ(dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(), 0u);
+  EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
+            0u);
 }
 
-TEST_F(DXGIKeyedMutexManagerTest, LookupByTokenMultiThread) {
+TEST_F(DXGISharedHandleManagerTest, LookupByTokenMultiThread) {
   if (ShouldSkipTest())
     return;
 
@@ -130,12 +132,13 @@ TEST_F(DXGIKeyedMutexManagerTest, LookupByTokenMultiThread) {
   base::win::ScopedHandle orig_handle = CreateSharedHandle(d3d11_texture);
   ASSERT_TRUE(orig_handle.IsValid());
 
-  scoped_refptr<DXGIKeyedMutexState> orig_state =
-      dxgi_keyed_mutex_manager_->GetOrCreateKeyedMutexState(
+  scoped_refptr<DXGISharedHandleState> orig_state =
+      dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
           orig_token, std::move(orig_handle));
   ASSERT_NE(orig_state, nullptr);
 
-  EXPECT_EQ(dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(), 1u);
+  EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
+            1u);
 
   base::Lock lock;
   base::ConditionVariable cv(&lock);
@@ -155,19 +158,19 @@ TEST_F(DXGIKeyedMutexManagerTest, LookupByTokenMultiThread) {
           base::win::ScopedHandle new_handle(handle);
           ASSERT_TRUE(new_handle.IsValid());
 
-          scoped_refptr<DXGIKeyedMutexState> state =
-              dxgi_keyed_mutex_manager_->GetOrCreateKeyedMutexState(
+          scoped_refptr<DXGISharedHandleState> state =
+              dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
                   orig_token, std::move(new_handle));
           EXPECT_EQ(state, orig_state);
 
           EXPECT_EQ(
-              dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(),
+              dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
               1u);
 
           state = nullptr;
 
           EXPECT_EQ(
-              dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(),
+              dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
               1u);
 
           base::AutoLock auto_lock(lock);
@@ -179,11 +182,13 @@ TEST_F(DXGIKeyedMutexManagerTest, LookupByTokenMultiThread) {
   while (remaining_handles > 0)
     cv.Wait();
 
-  EXPECT_EQ(dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(), 1u);
+  EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
+            1u);
 
   orig_state = nullptr;
 
-  EXPECT_EQ(dxgi_keyed_mutex_manager_->GetSharedHandleMapSizeForTesting(), 0u);
+  EXPECT_EQ(dxgi_shared_handle_manager_->GetSharedHandleMapSizeForTesting(),
+            0u);
 }
 
 }  // anonymous namespace

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 
 #include <d3d11_1.h>
 #include <windows.h>
@@ -43,21 +43,21 @@ bool IsSameHandle(HANDLE handle, HANDLE other) {
 
 }  // namespace
 
-DXGIKeyedMutexState::DXGIKeyedMutexState(
-    base::PassKey<DXGIKeyedMutexManager>,
-    scoped_refptr<DXGIKeyedMutexManager> map,
+DXGISharedHandleState::DXGISharedHandleState(
+    base::PassKey<DXGISharedHandleManager>,
+    scoped_refptr<DXGISharedHandleManager> manager,
     gfx::DXGIHandleToken token,
     base::win::ScopedHandle shared_handle,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture)
     : base::subtle::RefCountedThreadSafeBase(kRefCountPreference),
-      manager_(std::move(map)),
+      manager_(std::move(manager)),
       token_(std::move(token)),
       shared_handle_(std::move(shared_handle)),
       d3d11_texture_(std::move(d3d11_texture)) {
   d3d11_texture_.As(&dxgi_keyed_mutex_);
 }
 
-DXGIKeyedMutexState::~DXGIKeyedMutexState() {
+DXGISharedHandleState::~DXGISharedHandleState() {
   if (acquired_for_d3d11_count_ > 0) {
     EndAccessD3D11();
   }
@@ -66,11 +66,11 @@ DXGIKeyedMutexState::~DXGIKeyedMutexState() {
   }
 }
 
-void DXGIKeyedMutexState::AddRef() const {
+void DXGISharedHandleState::AddRef() const {
   base::subtle::RefCountedThreadSafeBase::AddRef();
 }
 
-void DXGIKeyedMutexState::Release() const {
+void DXGISharedHandleState::Release() const {
   // Hold the lock to prevent a race between erasing the state from the map and
   // adding another reference to it. If GetOrCreateStateByToken runs before we
   // erase the state from the map, we would return a scoped_refptr that will
@@ -87,7 +87,7 @@ void DXGIKeyedMutexState::Release() const {
   }
 }
 
-bool DXGIKeyedMutexState::BeginAccessD3D11() {
+bool DXGISharedHandleState::BeginAccessD3D11() {
   // Nop for shared images that are created without keyed mutex (D3D11 only).
   if (!dxgi_keyed_mutex_)
     return true;
@@ -110,7 +110,7 @@ bool DXGIKeyedMutexState::BeginAccessD3D11() {
   return true;
 }
 
-void DXGIKeyedMutexState::EndAccessD3D11() {
+void DXGISharedHandleState::EndAccessD3D11() {
   // Nop for shared images that are created without keyed mutex (D3D11 only).
   if (!dxgi_keyed_mutex_)
     return;
@@ -125,7 +125,7 @@ void DXGIKeyedMutexState::EndAccessD3D11() {
   }
 }
 
-bool DXGIKeyedMutexState::BeginAccessD3D12() {
+bool DXGISharedHandleState::BeginAccessD3D12() {
   if (!dxgi_keyed_mutex_) {
     DLOG(ERROR) << "D3D12 access not supported without keyed mutex";
     return false;
@@ -138,25 +138,25 @@ bool DXGIKeyedMutexState::BeginAccessD3D12() {
   return true;
 }
 
-void DXGIKeyedMutexState::EndAccessD3D12() {
+void DXGISharedHandleState::EndAccessD3D12() {
   acquired_for_d3d12_ = false;
 }
 
-DXGIKeyedMutexManager::DXGIKeyedMutexManager(
+DXGISharedHandleManager::DXGISharedHandleManager(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
     : d3d11_device_(std::move(d3d11_device)) {
   DCHECK(d3d11_device_);
 }
 
-DXGIKeyedMutexManager::~DXGIKeyedMutexManager() {
+DXGISharedHandleManager::~DXGISharedHandleManager() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(lock_);
   DCHECK(shared_handle_state_map_.empty());
 #endif
 }
 
-scoped_refptr<DXGIKeyedMutexState>
-DXGIKeyedMutexManager::GetOrCreateKeyedMutexState(
+scoped_refptr<DXGISharedHandleState>
+DXGISharedHandleManager::GetOrCreateSharedHandleState(
     gfx::DXGIHandleToken token,
     base::win::ScopedHandle shared_handle) {
   DCHECK(shared_handle.IsValid());
@@ -165,7 +165,7 @@ DXGIKeyedMutexManager::GetOrCreateKeyedMutexState(
 
   auto it = shared_handle_state_map_.find(token);
   if (it != shared_handle_state_map_.end()) {
-    DXGIKeyedMutexState* state = it->second;
+    DXGISharedHandleState* state = it->second;
     DCHECK(state);
     // If there's already a shared handle associated with the token, it should
     // refer to the same D3D11 texture (or kernel object).
@@ -193,9 +193,9 @@ DXGIKeyedMutexManager::GetOrCreateKeyedMutexState(
     return nullptr;
   }
 
-  auto state = base::MakeRefCounted<DXGIKeyedMutexState>(
-      base::PassKey<DXGIKeyedMutexManager>(), base::WrapRefCounted(this), token,
-      std::move(shared_handle), std::move(d3d11_texture));
+  auto state = base::MakeRefCounted<DXGISharedHandleState>(
+      base::PassKey<DXGISharedHandleManager>(), base::WrapRefCounted(this),
+      token, std::move(shared_handle), std::move(d3d11_texture));
 
   shared_handle_state_map_.insert(
       std::make_pair(std::move(token), state.get()));
@@ -203,8 +203,8 @@ DXGIKeyedMutexManager::GetOrCreateKeyedMutexState(
   return state;
 }
 
-scoped_refptr<DXGIKeyedMutexState>
-DXGIKeyedMutexManager::CreateAnonymousKeyedMutexState(
+scoped_refptr<DXGISharedHandleState>
+DXGISharedHandleManager::CreateAnonymousSharedHandleState(
     base::win::ScopedHandle shared_handle,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture) {
   DCHECK(shared_handle.IsValid());
@@ -214,9 +214,9 @@ DXGIKeyedMutexManager::CreateAnonymousKeyedMutexState(
 
   auto token = gfx::DXGIHandleToken();
 
-  auto state = base::MakeRefCounted<DXGIKeyedMutexState>(
-      base::PassKey<DXGIKeyedMutexManager>(), base::WrapRefCounted(this), token,
-      std::move(shared_handle), std::move(d3d11_texture));
+  auto state = base::MakeRefCounted<DXGISharedHandleState>(
+      base::PassKey<DXGISharedHandleManager>(), base::WrapRefCounted(this),
+      token, std::move(shared_handle), std::move(d3d11_texture));
 
   std::pair<SharedHandleMap::iterator, bool> inserted =
       shared_handle_state_map_.insert(
@@ -226,7 +226,7 @@ DXGIKeyedMutexManager::CreateAnonymousKeyedMutexState(
   return state;
 }
 
-size_t DXGIKeyedMutexManager::GetSharedHandleMapSizeForTesting() const {
+size_t DXGISharedHandleManager::GetSharedHandleMapSizeForTesting() const {
   base::AutoLock auto_lock(lock_);
   return shared_handle_state_map_.size();
 }

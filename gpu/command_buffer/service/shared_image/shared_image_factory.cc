@@ -65,7 +65,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -330,7 +330,7 @@ SharedImageFactory::SharedImageFactory(
     // TODO(sunnyps): Should we get the device from SharedContextState instead?
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
-        shared_image_manager_->dxgi_keyed_mutex_manager());
+        shared_image_manager_->dxgi_shared_handle_manager());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }

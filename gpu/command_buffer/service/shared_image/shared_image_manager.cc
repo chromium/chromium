@@ -23,7 +23,7 @@
 #include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
@@ -79,8 +79,8 @@ SharedImageManager::SharedImageManager(bool thread_safe,
 #if BUILDFLAG(IS_WIN)
   auto d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
   if (d3d11_device) {
-    dxgi_keyed_mutex_manager_ =
-        base::MakeRefCounted<DXGIKeyedMutexManager>(std::move(d3d11_device));
+    dxgi_shared_handle_manager_ =
+        base::MakeRefCounted<DXGISharedHandleManager>(std::move(d3d11_device));
   }
 #endif
   CALLED_ON_VALID_THREAD();

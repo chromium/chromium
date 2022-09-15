@@ -65,7 +65,7 @@ struct DXGIHandle {
   // A unique identifier for the texture corresponding to this GMB handle. This
   // is needed because there's no other way to uniquely identify the underlying
   // texture. Handles get duplicated and the OS provides no other identifier.
-  // DXGIKeyedMutexManager in the GPU service uses this as a key to cache
+  // DXGISharedHandleManager in the GPU service uses this as a key to cache
   // state across calls that reference the same texture via different handles.
   DXGIHandleToken token;
 

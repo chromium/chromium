@@ -16,7 +16,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
@@ -218,7 +218,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
   return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      /*dxgi_keyed_mutex_state=*/{}, std::move(swap_chain), is_back_buffer));
+      /*dxgi_shared_handle_state=*/{}, std::move(swap_chain), is_back_buffer));
 }
 
 // static
@@ -231,13 +231,13 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromDXGISharedHandle(
     SkAlphaType alpha_type,
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state) {
-  DCHECK(dxgi_keyed_mutex_state);
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
+  DCHECK(dxgi_shared_handle_state);
 
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
   // Keyed mutexes are required for Dawn interop but are not used for XR
   // composition where fences are used instead.
-  DCHECK(!has_webgpu_usage || dxgi_keyed_mutex_state->has_keyed_mutex());
+  DCHECK(!has_webgpu_usage || dxgi_shared_handle_state->has_keyed_mutex());
 
   // Do not cache a GL texture in the backing if it could be owned by WebGPU
   // since there's no GL context to MakeCurrent in the destructor.
@@ -254,7 +254,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromDXGISharedHandle(
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      std::move(dxgi_keyed_mutex_state)));
+      std::move(dxgi_shared_handle_state)));
   return backing;
 }
 
@@ -282,7 +282,7 @@ D3DImageBacking::CreateFromVideoTexture(
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     unsigned array_slice,
-    scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state) {
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
   DCHECK(d3d11_texture);
   DCHECK(SupportsVideoFormat(dxgi_format));
   DCHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
@@ -290,7 +290,7 @@ D3DImageBacking::CreateFromVideoTexture(
   // Shared handle and keyed mutex are required for Dawn interop.
   const bool has_webgpu_usage = usage & gpu::SHARED_IMAGE_USAGE_WEBGPU;
   const bool has_keyed_mutex =
-      dxgi_keyed_mutex_state && dxgi_keyed_mutex_state->has_keyed_mutex();
+      dxgi_shared_handle_state && dxgi_shared_handle_state->has_keyed_mutex();
   DCHECK(!has_webgpu_usage || has_keyed_mutex);
 
   std::vector<std::unique_ptr<SharedImageBacking>> shared_images(
@@ -320,7 +320,7 @@ D3DImageBacking::CreateFromVideoTexture(
     shared_images[plane_index] = base::WrapUnique(new D3DImageBacking(
         mailbox, plane_format, plane_size, kInvalidColorSpace,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, d3d11_texture,
-        std::move(gl_texture), dxgi_keyed_mutex_state));
+        std::move(gl_texture), dxgi_shared_handle_state));
     shared_images[plane_index]->SetCleared();
   }
 
@@ -345,7 +345,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateForSharedMemory(
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      /*dxgi_keyed_mutex_state=*/{}));
+      /*dxgi_shared_handle_state=*/{}));
   return backing;
 }
 
@@ -359,7 +359,7 @@ D3DImageBacking::D3DImageBacking(
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<gles2::TexturePassthrough> gl_texture,
-    scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state,
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer)
     : ClearTrackingSharedImageBacking(
@@ -376,7 +376,7 @@ D3DImageBacking::D3DImageBacking(
           false /* is_thread_safe */),
       d3d11_texture_(std::move(d3d11_texture)),
       gl_texture_(std::move(gl_texture)),
-      dxgi_keyed_mutex_state_(std::move(dxgi_keyed_mutex_state)),
+      dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
       swap_chain_(std::move(swap_chain)),
       is_back_buffer_(is_back_buffer) {
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
@@ -387,7 +387,7 @@ D3DImageBacking::~D3DImageBacking() {
   if (!have_context())
     gl_texture_->MarkContextLost();
   gl_texture_.reset();
-  dxgi_keyed_mutex_state_.reset();
+  dxgi_shared_handle_state_.reset();
   swap_chain_.Reset();
   d3d11_texture_.Reset();
 #if BUILDFLAG(USE_DAWN)
@@ -614,8 +614,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   auto it = dawn_external_images_.find(device);
   dawn::native::d3d12::ExternalImageDXGI* external_image_ptr = nullptr;
   if (it == dawn_external_images_.end()) {
-    DCHECK(dxgi_keyed_mutex_state_);
-    const HANDLE shared_handle = dxgi_keyed_mutex_state_->GetSharedHandle();
+    DCHECK(dxgi_shared_handle_state_);
+    const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
     DCHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
 
     dawn::native::d3d12::ExternalImageDescriptorDXGISharedHandle
@@ -664,27 +664,27 @@ void D3DImageBacking::OnMemoryDump(
 }
 
 bool D3DImageBacking::BeginAccessD3D12() {
-  if (dxgi_keyed_mutex_state_)
-    return dxgi_keyed_mutex_state_->BeginAccessD3D12();
+  if (dxgi_shared_handle_state_)
+    return dxgi_shared_handle_state_->BeginAccessD3D12();
   // D3D12 access is only allowed with shared handle and keyed mutex.
   return false;
 }
 
 void D3DImageBacking::EndAccessD3D12() {
-  if (dxgi_keyed_mutex_state_)
-    dxgi_keyed_mutex_state_->EndAccessD3D12();
+  if (dxgi_shared_handle_state_)
+    dxgi_shared_handle_state_->EndAccessD3D12();
 }
 
 bool D3DImageBacking::BeginAccessD3D11() {
-  if (dxgi_keyed_mutex_state_)
-    return dxgi_keyed_mutex_state_->BeginAccessD3D11();
+  if (dxgi_shared_handle_state_)
+    return dxgi_shared_handle_state_->BeginAccessD3D11();
   // D3D11 access is allowed without shared handle and keyed mutex.
   return true;
 }
 
 void D3DImageBacking::EndAccessD3D11() {
-  if (dxgi_keyed_mutex_state_)
-    dxgi_keyed_mutex_state_->EndAccessD3D11();
+  if (dxgi_shared_handle_state_)
+    dxgi_shared_handle_state_->EndAccessD3D11();
 }
 
 gl::GLImage* D3DImageBacking::GetGLImage() const {

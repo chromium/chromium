@@ -13,7 +13,7 @@
 #include "base/unguessable_token.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
@@ -152,7 +152,7 @@ class D3DImageBackingFactoryTestBase : public testing::Test {
             &shared_image_manager_, nullptr);
     shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
-        shared_image_manager_.dxgi_keyed_mutex_manager());
+        shared_image_manager_.dxgi_shared_handle_manager());
   }
 
  protected:
@@ -1014,7 +1014,7 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
 
   D3DImageBacking* backing_d3d = static_cast<D3DImageBacking*>(backing.get());
   EXPECT_EQ(
-      backing_d3d->dxgi_keyed_mutex_state_for_testing()->GetSharedHandle(),
+      backing_d3d->dxgi_shared_handle_state_for_testing()->GetSharedHandle(),
       shared_handle);
 
   // Check that a second backing created from the duplicated handle shares the
@@ -1035,8 +1035,8 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
 
   D3DImageBacking* dup_backing_d3d =
       static_cast<D3DImageBacking*>(dup_backing.get());
-  EXPECT_EQ(dup_backing_d3d->dxgi_keyed_mutex_state_for_testing(),
-            backing_d3d->dxgi_keyed_mutex_state_for_testing());
+  EXPECT_EQ(dup_backing_d3d->dxgi_shared_handle_state_for_testing(),
+            backing_d3d->dxgi_shared_handle_state_for_testing());
   EXPECT_EQ(dup_backing_d3d->d3d11_texture_for_testing(),
             backing_d3d->d3d11_texture_for_testing());
 
@@ -1357,15 +1357,16 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
         mailboxes, std::move(gmb_handle), gfx::BufferFormat::YUV_420_BIPLANAR,
         size, usage);
   } else {
-    scoped_refptr<DXGIKeyedMutexState> dxgi_keyed_mutex_state;
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state;
     if (use_shared_handle) {
-      dxgi_keyed_mutex_state = shared_image_manager_.dxgi_keyed_mutex_manager()
-                                   ->CreateAnonymousKeyedMutexState(
-                                       std::move(shared_handle), d3d11_texture);
+      dxgi_shared_handle_state =
+          shared_image_manager_.dxgi_shared_handle_manager()
+              ->CreateAnonymousSharedHandleState(std::move(shared_handle),
+                                                 d3d11_texture);
     }
     shared_image_backings = D3DImageBacking::CreateFromVideoTexture(
         mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
-        /*array_slice=*/0, std::move(dxgi_keyed_mutex_state));
+        /*array_slice=*/0, std::move(dxgi_shared_handle_state));
   }
   EXPECT_EQ(shared_image_backings.size(), kNumPlanes);
 

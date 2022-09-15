@@ -23,7 +23,7 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
-class DXGIKeyedMutexManager;
+class DXGISharedHandleManager;
 class SharedImageBacking;
 struct Mailbox;
 
@@ -32,7 +32,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
  public:
   D3DImageBackingFactory(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-      scoped_refptr<DXGIKeyedMutexManager> dxgi_keyed_mutex_manager);
+      scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager);
 
   D3DImageBackingFactory(const D3DImageBackingFactory&) = delete;
   D3DImageBackingFactory& operator=(const D3DImageBackingFactory&) = delete;
@@ -128,7 +128,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   absl::optional<bool> map_on_default_textures_;
 
-  scoped_refptr<DXGIKeyedMutexManager> dxgi_keyed_mutex_manager_;
+  scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
 };
 
 }  // namespace gpu
