@@ -47,6 +47,8 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
@@ -56,6 +58,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "ui/views/vector_icons.h"
 #endif
 
 using download::DownloadItem;
@@ -63,6 +66,7 @@ using MixedContentStatus = download::DownloadItem::MixedContentStatus;
 using safe_browsing::DownloadFileType;
 using ReportThreatDetailsResult =
     safe_browsing::PingManager::ReportThreatDetailsResult;
+using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 
 namespace {
 
@@ -910,6 +914,81 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
           safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings));
       break;
   }
+}
+
+DownloadItemModel::BubbleUIInfo
+DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
+  download::DownloadDangerType danger_type = GetDangerType();
+  TailoredVerdict tailored_verdict = safe_browsing::DownloadProtectionService::
+      GetDownloadProtectionTailoredVerdict(download_);
+
+  // Suspicious archives
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
+      tailored_verdict.tailored_verdict_type() ==
+          TailoredVerdict::SUSPICIOUS_ARCHIVE) {
+    return DownloadUIModel::BubbleUIInfo(
+               l10n_util::GetStringUTF16(
+                   IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE))
+        .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+        .AddPrimaryButton(DownloadCommands::Command::DISCARD)
+        .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
+                          DownloadCommands::Command::DISCARD,
+                          /*is_prominent=*/true)
+        .AddSubpageButton(
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
+            DownloadCommands::Command::KEEP,
+            /*is_prominent=*/false);
+  }
+
+  // Cookie theft
+  if (danger_type ==
+          download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
+      tailored_verdict.tailored_verdict_type() ==
+          TailoredVerdict::COOKIE_THEFT) {
+    // TODO(crbug.com/1351925): Check the adjustments field and add the account
+    // information in the subpage summary.
+    return DownloadUIModel::BubbleUIInfo(
+               l10n_util::GetStringUTF16(
+                   IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT))
+        .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                         ui::kColorAlertHighSeverity)
+        .AddPrimaryButton(DownloadCommands::Command::DISCARD)
+        .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
+                          DownloadCommands::Command::DISCARD,
+                          /*is_prominent=*/true);
+  }
+
+  NOTREACHED();
+  return DownloadUIModel::BubbleUIInfo();
+}
+
+bool DownloadItemModel::ShouldShowTailoredWarning() const {
+  if (!IsBubbleV2Enabled() ||
+      !base::FeatureList::IsEnabled(safe_browsing::kDownloadTailoredWarnings)) {
+    return false;
+  }
+
+  static const struct ValidCombination {
+    download::DownloadDangerType danger_type;
+    TailoredVerdict::TailoredVerdictType tailored_verdict_type;
+  } kValidTailoredWarningCombinations[]{
+      {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
+       TailoredVerdict::SUSPICIOUS_ARCHIVE},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       TailoredVerdict::COOKIE_THEFT}};
+
+  download::DownloadDangerType danger_type = GetDangerType();
+  TailoredVerdict tailored_verdict = safe_browsing::DownloadProtectionService::
+      GetDownloadProtectionTailoredVerdict(download_);
+  for (const auto& combination : kValidTailoredWarningCombinations) {
+    if (danger_type == combination.danger_type &&
+        tailored_verdict.tailored_verdict_type() ==
+            combination.tailored_verdict_type) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool DownloadItemModel::ShouldShowInBubble() const {

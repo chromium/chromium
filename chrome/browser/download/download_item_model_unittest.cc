@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
@@ -46,6 +47,7 @@
 using download::DownloadItem;
 using offline_items_collection::FailState;
 using safe_browsing::DownloadFileType;
+using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -1410,3 +1412,132 @@ TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
     Mock::VerifyAndClearExpectations(&model());
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+class DownloadItemModelTailoredWarningTest : public DownloadItemModelTest {
+ public:
+  DownloadItemModelTailoredWarningTest() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2,
+         safe_browsing::kDownloadTailoredWarnings},
+        {});
+  }
+
+  ~DownloadItemModelTailoredWarningTest() override = default;
+
+ protected:
+  void SetupTailoredWarningForItem(
+      download::DownloadDangerType danger_type,
+      TailoredVerdict::TailoredVerdictType tailored_verdict_type) {
+    ON_CALL(item(), GetDangerType()).WillByDefault(Return(danger_type));
+    TailoredVerdict tailored_verdict;
+    tailored_verdict.set_tailored_verdict_type(tailored_verdict_type);
+    safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
+        &item(), "token",
+        safe_browsing::ClientDownloadResponse::SAFE,  // placeholder
+        tailored_verdict);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DownloadItemModelTailoredWarningTest, ShouldShowTailoredWarning) {
+  SetupDownloadItemDefaults();
+
+  const struct ShouldShowTailoredWarningTestCase {
+    download::DownloadDangerType danger_type;
+    TailoredVerdict::TailoredVerdictType tailored_verdict_type;
+    bool expected_should_show;
+  } kShouldShowTailoredWarningTestCases[] = {
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+       TailoredVerdict::COOKIE_THEFT, true},
+      {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
+       TailoredVerdict::SUSPICIOUS_ARCHIVE, true},
+      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+       TailoredVerdict::COOKIE_THEFT, false},
+      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+       TailoredVerdict::SUSPICIOUS_ARCHIVE, false},
+  };
+  for (const auto& test_case : kShouldShowTailoredWarningTestCases) {
+    SetupTailoredWarningForItem(test_case.danger_type,
+                                test_case.tailored_verdict_type);
+    EXPECT_EQ(test_case.expected_should_show,
+              model().ShouldShowTailoredWarning());
+  }
+}
+
+TEST_F(DownloadItemModelTailoredWarningTest,
+       GetBubbleUIInfoForTailoredWarning_CookieTheft) {
+  SetupDownloadItemDefaults();
+  SetupTailoredWarningForItem(
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+      TailoredVerdict::COOKIE_THEFT);
+
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.primary_button_command);
+  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
+  EXPECT_EQ(
+      u"This file contains malware that can compromise your personal or social "
+      u"network accounts",
+      bubble_ui_info.warning_summary);
+}
+
+TEST_F(DownloadItemModelTailoredWarningTest,
+       GetBubbleUIInfoForTailoredWarning_SuspiciousArchive) {
+  SetupDownloadItemDefaults();
+  SetupTailoredWarningForItem(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
+                              TailoredVerdict::SUSPICIOUS_ARCHIVE);
+
+  DownloadUIModel::BubbleUIInfo bubble_ui_info =
+      model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.primary_button_command);
+  EXPECT_EQ(2u, bubble_ui_info.subpage_buttons.size());
+  EXPECT_EQ(DownloadCommands::Command::DISCARD,
+            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
+  EXPECT_EQ(DownloadCommands::Command::KEEP,
+            bubble_ui_info.subpage_buttons[1].command);
+  EXPECT_FALSE(bubble_ui_info.subpage_buttons[1].is_prominent);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(u"Chrome blocked this archive file because it may hide malware",
+            bubble_ui_info.warning_summary);
+#else
+  EXPECT_EQ(u"Chromium blocked this archive file because it may hide malware",
+            bubble_ui_info.warning_summary);
+#endif
+}
+
+class DownloadItemModelTailoredWarningDisabledTest
+    : public DownloadItemModelTailoredWarningTest {
+ public:
+  DownloadItemModelTailoredWarningDisabledTest() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2},
+        {safe_browsing::kDownloadTailoredWarnings});
+  }
+
+  ~DownloadItemModelTailoredWarningDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DownloadItemModelTailoredWarningDisabledTest,
+       GetBubbleUIInfoForTailoredWarning_Disabled) {
+  SetupDownloadItemDefaults();
+  SetupTailoredWarningForItem(
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+      TailoredVerdict::COOKIE_THEFT);
+  EXPECT_FALSE(model().ShouldShowTailoredWarning());
+}
+
+#endif

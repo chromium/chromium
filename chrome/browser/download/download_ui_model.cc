@@ -954,6 +954,10 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
     }
   }
 
+  if (ShouldShowTailoredWarning()) {
+    return GetBubbleUIInfoForTailoredWarning();
+  }
+
   DownloadUIModel::BubbleUIInfo ui_info;
   switch (GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
@@ -1191,6 +1195,12 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
   return bubble_ui_info;
 }
 
+DownloadUIModel::BubbleUIInfo
+DownloadUIModel::GetBubbleUIInfoForTailoredWarning() const {
+  NOTREACHED();
+  return DownloadUIModel::BubbleUIInfo();
+}
+
 DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfo(
     bool is_download_bubble_v2) const {
   switch (GetState()) {
@@ -1210,6 +1220,10 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfo(
           .AddIconAndColor(vector_icons::kFileDownloadOffIcon,
                            ui::kColorSecondaryForeground);
   }
+}
+
+bool DownloadUIModel::ShouldShowTailoredWarning() const {
+  return false;
 }
 
 bool DownloadUIModel::ShouldShowInBubble() const {

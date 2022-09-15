@@ -2795,6 +2795,12 @@ are declared in tools/grit/grit_rule.gni.
           </if>
       </if>
 
+      <!-- Tailored Warning in Download Bubble -->
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT"
+               desc="Subpage summary for cookie theft warning.">
+        This file contains malware that can compromise your personal or social network accounts
+      </message>
+
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">
         <message name="IDS_OMNIBOX_PWA_INSTALL_ICON_LABEL" desc="String for the omnibox icon label promoting an app installation">

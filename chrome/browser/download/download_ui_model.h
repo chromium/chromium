@@ -505,9 +505,13 @@ class DownloadUIModel {
       offline_items_collection::FailState fail_state) const;
   BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete(
       bool is_download_bubble_v2) const;
+  virtual BubbleUIInfo GetBubbleUIInfoForTailoredWarning() const;
 
   // Returns |true| if this download should be displayed in the download bubble.
   virtual bool ShouldShowInBubble() const;
+
+  // Should this download trigger a tailored warning?
+  virtual bool ShouldShowTailoredWarning() const;
 
   // Ephemeral warnings are ones that are quickly removed from the bubble if the
   // user has not acted on them, and later deleted altogether. Is this that kind

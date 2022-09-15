@@ -77,6 +77,10 @@ extern const base::Feature kDownloadBubble;
 // kDownloadBubble is already enabled.
 extern const base::Feature kDownloadBubbleV2;
 
+// The kill switch for download tailored warnings. The main control is on the
+// server-side.
+extern const base::Feature kDownloadTailoredWarnings;
+
 // Enables Enhanced Safe Browsing.
 extern const base::Feature kEnhancedProtection;
 
