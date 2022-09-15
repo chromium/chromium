@@ -11238,6 +11238,27 @@
             ]
         }
     ],
+    "WebRTC-BurstyPacer": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "burst:20ms,_V1"
+                },
+                {
+                    "name": "burst:40ms,_V1"
+                }
+            ]
+        }
+    ],
     "WebRTC-Bwe-LossBasedBweV2": [
         {
             "platforms": [
