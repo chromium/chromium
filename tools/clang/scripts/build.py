@@ -641,15 +641,12 @@ def main():
 
   targets = 'AArch64;ARM;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
 
-  projects = 'clang;lld;clang-tools-extra'
-  runtimes = 'compiler-rt'
-
   base_cmake_args = [
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
-      '-DLLVM_ENABLE_PROJECTS=' + projects,
-      '-DLLVM_ENABLE_RUNTIMES=' + runtimes,
+      '-DLLVM_ENABLE_PROJECTS=clang;lld;clang-tools-extra',
+      '-DLLVM_ENABLE_RUNTIMES=compiler-rt',
       '-DLLVM_TARGETS_TO_BUILD=' + targets,
       # PIC needed for Rust build (links LLVM into shared object)
       '-DLLVM_ENABLE_PIC=ON',
@@ -664,6 +661,10 @@ def main():
       '-DLLVM_INCLUDE_GO_TESTS=OFF',
       # See crbug.com/1126219: Use native symbolizer instead of DIA
       '-DLLVM_ENABLE_DIA_SDK=OFF',
+      # Link all binaries with lld. Effectively passes -fuse-ld=lld to the
+      # compiler driver. On Windows, cmake calls the linker directly, so there
+      # the same is achieved by passing -DCMAKE_LINKER=$lld below.
+      '-DLLVM_ENABLE_LLD=ON',
       # The default value differs per platform, force it off everywhere.
       '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
       # Don't use curl.
@@ -708,8 +709,6 @@ def main():
     if sys.platform.startswith('linux'):
       MaybeDownloadHostGcc(args)
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
-
-  base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
 
   if sys.platform.startswith('linux'):
     # Download sysroots. This uses basically Chromium's sysroots, but with
@@ -791,7 +790,6 @@ def main():
     EnsureDirExists(LLVM_BOOTSTRAP_DIR)
     os.chdir(LLVM_BOOTSTRAP_DIR)
 
-    projects = 'clang;lld'
     runtimes = []
     if args.pgo or sys.platform == 'darwin':
       # Need libclang_rt.profile for PGO.
@@ -807,7 +805,7 @@ def main():
       bootstrap_targets += ';ARM;AArch64'
     bootstrap_args = base_cmake_args + [
         '-DLLVM_TARGETS_TO_BUILD=' + bootstrap_targets,
-        '-DLLVM_ENABLE_PROJECTS=' + projects,
+        '-DLLVM_ENABLE_PROJECTS=clang;lld',
         '-DLLVM_ENABLE_RUNTIMES=' + ';'.join(runtimes),
         '-DCMAKE_INSTALL_PREFIX=' + LLVM_BOOTSTRAP_INSTALL_DIR,
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
@@ -866,10 +864,8 @@ def main():
     EnsureDirExists(LLVM_INSTRUMENTED_DIR)
     os.chdir(LLVM_INSTRUMENTED_DIR)
 
-    projects = 'clang'
-
     instrument_args = base_cmake_args + [
-        '-DLLVM_ENABLE_PROJECTS=' + projects,
+        '-DLLVM_ENABLE_PROJECTS=clang',
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
         '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
