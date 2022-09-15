@@ -3435,6 +3435,33 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt,
       /*expected_set_priority=*/9.0);
+  // set priority with no bid should work.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(R"({bid:0, render:"https://response.test/" })",
+                              /*extra_code=*/R"(
+            setPriority(9.0);
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_set_priority=*/9.0);
+  // set priority with an invalid bid should work.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(R"({bid:1/0, render:"https://response.test/" })",
+                              /*extra_code=*/R"(
+            setPriority(9.0);
+          )"),
+      /*expected_bid=*/
+      mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/ generateBid() bid of inf is not a valid bid."},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_set_priority=*/9.0);
 }
 
 TEST_F(BidderWorkletTest, ReportWin) {

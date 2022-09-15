@@ -280,9 +280,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
 
     void PostErrorBidCallbackToUserThread(
         GenerateBidCallbackInternal callback,
-        std::vector<std::string> error_msgs = std::vector<std::string>(),
-        absl::optional<GURL> debug_loss_report_url = absl::nullopt,
-        PrivateAggregationRequests private_aggregation_requests = {});
+        std::vector<std::string> error_msgs = std::vector<std::string>());
 
     static void PostResumeToUserThread(
         base::WeakPtr<BidderWorklet> parent,

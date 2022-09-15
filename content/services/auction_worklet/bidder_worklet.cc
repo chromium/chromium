@@ -717,15 +717,24 @@ void BidderWorklet::V8State::GenerateBid(
   }
 
   if (!context_recycler->set_bid_bindings()->has_bid()) {
-    // If we either don't have a valid return value, or we have no return value
-    // and no intermediate result was given through setBid, return an error.
-    // Keep debug loss reports and Private Aggregation API requests since
-    // `generateBid()` might use them to detect script timeout or failures.
-    PostErrorBidCallbackToUserThread(
-        std::move(callback), std::move(errors_out),
-        context_recycler->for_debugging_only_bindings()->TakeLossReportUrl(),
-        context_recycler->private_aggregation_bindings()
-            ->TakePrivateAggregationRequests());
+    // If no bid was returned (due to an error or just not choosing to bid), or
+    // the method timed out and no intermediate result was given through
+    // `setBid()`, return an error. Keep debug loss reports and Private
+    // Aggregation API requests since `generateBid()` might use them to detect
+    // script timeout or failures. Keep any set priority because an interest
+    // group may want to update them even when not bidding.
+    user_thread_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback), mojom::BidderWorkletBidPtr(),
+            /*bidding_signals_data_version=*/absl::nullopt,
+            context_recycler->for_debugging_only_bindings()
+                ->TakeLossReportUrl(),
+            /*debug_win_report_url=*/absl::nullopt,
+            context_recycler->set_priority_bindings()->set_priority(),
+            context_recycler->private_aggregation_bindings()
+                ->TakePrivateAggregationRequests(),
+            std::move(errors_out)));
     return;
   }
 
@@ -784,19 +793,17 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
     GenerateBidCallbackInternal callback,
-    std::vector<std::string> error_msgs,
-    absl::optional<GURL> debug_loss_report_url,
-    PrivateAggregationRequests private_aggregation_requests) {
+    std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), mojom::BidderWorkletBidPtr(),
                      /*bidding_signals_data_version=*/absl::nullopt,
-                     /*debug_loss_report_url=*/std::move(debug_loss_report_url),
+                     /*debug_loss_report_url=*/absl::nullopt,
                      /*debug_win_report_url=*/absl::nullopt,
                      /*set_priority=*/absl::nullopt,
-                     std::move(private_aggregation_requests),
-                     std::move(error_msgs)));
+                     /*update_priority_signals_overrides=*/
+                     PrivateAggregationRequests(), std::move(error_msgs)));
 }
 
 void BidderWorklet::ResumeIfPaused() {
