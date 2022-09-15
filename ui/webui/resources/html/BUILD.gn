@@ -12,15 +12,11 @@ generate_grd("build_grdp") {
   input_files = [
     "assert.html",
     "load_time_data.html",
-    "parse_html_subset.html",
     "test_loader.html",
   ]
 
   if (is_chromeos_ash) {
     input_files += [
-      "action_link.html",
-      "cr.html",
-      "event_tracker.html",
       "promise_resolver.html",
       "util.html",
     ]
