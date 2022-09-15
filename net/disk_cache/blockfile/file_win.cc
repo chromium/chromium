@@ -94,8 +94,10 @@ void CompletionHandler::OnIOCompleted(
     NOTREACHED();
   }
 
+  // `callback_` may self delete while in `OnFileIOComplete`.
   if (data->callback_)
-    data->callback_->OnFileIOComplete(static_cast<int>(actual_bytes));
+    data->callback_.ExtractAsDangling()->OnFileIOComplete(
+        static_cast<int>(actual_bytes));
 
   delete data;
 }
