@@ -709,11 +709,7 @@ def main():
       MaybeDownloadHostGcc(args)
       base_cmake_args += [ '-DLLVM_STATIC_LINK_CXX_STDLIB=ON' ]
 
-  if sys.platform != 'darwin':
-    # The host clang has lld, but self-hosting with lld is still slightly
-    # broken on mac.
-    # TODO: check if this works now.
-    base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
+  base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
 
   if sys.platform.startswith('linux'):
     # Download sysroots. This uses basically Chromium's sysroots, but with
@@ -795,7 +791,7 @@ def main():
     EnsureDirExists(LLVM_BOOTSTRAP_DIR)
     os.chdir(LLVM_BOOTSTRAP_DIR)
 
-    projects = 'clang'
+    projects = 'clang;lld'
     runtimes = []
     if args.pgo or sys.platform == 'darwin':
       # Need libclang_rt.profile for PGO.
@@ -804,8 +800,6 @@ def main():
       # libraries are needed though, and only libclang_rt (i.e.
       # COMPILER_RT_BUILD_BUILTINS).
       runtimes.append('compiler-rt')
-    if sys.platform != 'darwin':
-      projects += ';lld'
 
     bootstrap_targets = 'X86'
     if sys.platform == 'darwin':
