@@ -507,14 +507,13 @@ component("base") {
 
   if (is_ios) {
     sources += [
-      "l10n/l10n_util_ios.h",
-      "l10n/l10n_util_ios.mm",
       "l10n/l10n_util_mac.h",
       "l10n/l10n_util_mac.mm",
       "l10n/l10n_util_mac_bridge.h",
       "l10n/l10n_util_mac_bridge.mm",
     ]
     public_deps += [ "//ui/events:event_constants" ]
+    deps += [ ":l10n_util_ios" ]
     deps -= [
       "//ui/events",
       "//ui/events/devices",
@@ -624,6 +623,18 @@ component("base") {
 
   if (is_android || is_ios) {
     sources -= [ "device_form_factor_desktop.cc" ]
+  }
+}
+
+if (is_ios) {
+  source_set("l10n_util_ios") {
+    configs += [ "//build/config/compiler:enable_arc" ]
+    sources = [
+      "l10n/l10n_util_ios.h",
+      "l10n/l10n_util_ios.mm",
+    ]
+    deps = [ "//base" ]
+    frameworks = [ "Foundation.framework" ]
   }
 }
 
@@ -1064,6 +1075,7 @@ test("ui_base_unittests") {
       "l10n/l10n_util_mac_unittest.mm",
       "test/ios/ui_image_test_utils_unittest.mm",
     ]
+    deps += [ ":l10n_util_ios" ]
     deps -= [
       "//ui/events:events_base",
       "//ui/events:test_support",

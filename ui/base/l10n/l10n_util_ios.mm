@@ -7,25 +7,56 @@
 #import <Foundation/Foundation.h>
 
 #include "base/check.h"
-#include "base/lazy_instance.h"
-#include "base/mac/bundle_locations.h"
-#import "base/mac/scoped_nsobject.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "base/threading/thread_local.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace l10n_util {
 namespace {
+
+// Class used to implement a per thread cache of the NSLocale.
+class LocaleCache {
+ public:
+  static NSLocale* LocaleForIdentifier(NSString* identifier) {
+    using TLSLocaleCache = base::ThreadLocalOwnedPointer<LocaleCache>;
+    static base::NoDestructor<TLSLocaleCache> gInstance;
+
+    TLSLocaleCache& tls_cache = *gInstance;
+    LocaleCache* cache = tls_cache.Get();
+    if (!cache) {
+      tls_cache.Set(std::make_unique<LocaleCache>());
+      cache = tls_cache.Get();
+    }
+
+    DCHECK(cache);
+    return cache->LocaleForIdentifierInternal(identifier);
+  }
+
+ private:
+  NSLocale* LocaleForIdentifierInternal(NSString* identifier) {
+    if (!locale_ || ![locale_.localeIdentifier isEqualToString:identifier]) {
+      locale_ = [[NSLocale alloc] initWithLocaleIdentifier:identifier];
+    }
+
+    DCHECK(locale_);
+    return locale_;
+  }
+
+  __strong NSLocale* locale_;
+};
 
 // Helper version of GetDisplayNameForLocale() operating on NSString*.
 // Note: this function may be called from any thread and it *must* be
 // thread-safe. Thus attention must be paid if any caching is introduced.
 NSString* GetDisplayNameForLocale(NSString* language,
                                   NSString* display_locale) {
-  base::scoped_nsobject<NSLocale> ns_locale(
-      [[NSLocale alloc] initWithLocaleIdentifier:display_locale]);
-
+  NSLocale* ns_locale = LocaleCache::LocaleForIdentifier(display_locale);
   NSString* localized_language_name =
-      [ns_locale.get() displayNameForKey:NSLocaleIdentifier value:language];
+      [ns_locale displayNameForKey:NSLocaleIdentifier value:language];
 
   // Return localized language if system API provided it. Do not attempt to
   // manually parse into error format if no |locale| was provided.

@@ -9,12 +9,6 @@
 
 #include "base/component_export.h"
 
-#ifdef __OBJC__
-@class NSString;
-#else
-class NSString;
-#endif
-
 namespace l10n_util {
 
 // Get localized language name using NSLocale Foundation API. If the system
