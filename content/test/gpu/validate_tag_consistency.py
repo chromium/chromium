@@ -47,6 +47,8 @@ TAG_HEADER = """\
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
+# Browser Target CPU
+# tags: [ target-cpu-64 target-cpu-32 target-cpu-31 ]
 # ANGLE Backend
 # tags: [ angle-disabled
 #         angle-d3d9 angle-d3d11
