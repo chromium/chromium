@@ -48,15 +48,20 @@ constexpr auto kAllowedCallerPrograms =
 
 #elif BUILDFLAG(IS_WIN)
 
-// Names of environment variables that store the path to the Program Files or
-// the Program Files (x86) directory. We may find Chrome in any of the env vars
-// below, depending on the architecture of the Chrome binary, the NMH binary,
-// and the OS.
-constexpr auto kProgramFilesEnvVars =
+// Names of environment variables that store the path to directories where apps
+// are installed.
+constexpr auto kAppsDirectoryEnvVars =
     base::MakeFixedFlatSet<base::StringPiece>({
         "PROGRAMFILES",
+
+        // May happen if Chrome is upgraded from a 32-bit version.
         "PROGRAMFILES(X86)",
+
+        // Refers to "C:\Program Files" if current process is 32-bit.
         "ProgramW6432",
+
+        // For per-user installations.
+        "LOCALAPPDATA",
     });
 
 // Relative to the Program Files directory.
@@ -121,20 +126,19 @@ bool IsLaunchedByTrustedProcess() {
   }
 
   // Check if the caller's image path is allowlisted.
-  for (const base::StringPiece& program_files_env_var : kProgramFilesEnvVars) {
-    std::string program_files_path_utf8;
-    if (!environment->GetVar(program_files_env_var, &program_files_path_utf8)) {
+  for (const base::StringPiece& apps_dir_env_var : kAppsDirectoryEnvVars) {
+    std::string apps_dir_path_utf8;
+    if (!environment->GetVar(apps_dir_env_var, &apps_dir_path_utf8)) {
       continue;
     }
-    auto program_files_path =
-        base::FilePath::FromUTF8Unsafe(program_files_path_utf8);
-    if (!program_files_path.IsParent(parent_image_path)) {
+    auto apps_dir_path = base::FilePath::FromUTF8Unsafe(apps_dir_path_utf8);
+    if (!apps_dir_path.IsParent(parent_image_path)) {
       continue;
     }
     for (const base::FilePath::StringPieceType& allowed_caller_program :
          kAllowedCallerPrograms) {
       base::FilePath allowed_caller_program_full_path =
-          program_files_path.Append(allowed_caller_program);
+          apps_dir_path.Append(allowed_caller_program);
       if (base::FilePath::CompareEqualIgnoreCase(
               parent_image_path.value(),
               allowed_caller_program_full_path.value())) {
