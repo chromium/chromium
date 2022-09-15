@@ -200,6 +200,10 @@ void IconButton::SetToggled(bool toggled) {
     return;
 
   toggled_ = toggled;
+
+  if (delegate_)
+    delegate_->OnButtonToggled(this);
+
   UpdateVectorIcon();
 }
 
@@ -279,6 +283,10 @@ void IconButton::NotifyClick(const ui::Event& event) {
     haptics_util::PlayHapticToggleEffect(
         !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
   }
+
+  if (delegate_)
+    delegate_->OnButtonClicked(this);
+
   views::Button::NotifyClick(event);
 }
 

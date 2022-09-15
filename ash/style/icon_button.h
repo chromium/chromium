@@ -50,6 +50,18 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     kCanDisplayDisabledToggleValue = 1,
   };
 
+  // Delegate performs further actions when the button states change.
+  class Delegate {
+   public:
+    // Called when the button is toggled on/off.
+    virtual void OnButtonToggled(IconButton* button) = 0;
+    // Called when the button is clicked.
+    virtual void OnButtonClicked(IconButton* button) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   IconButton(PressedCallback callback,
              Type type,
              const gfx::VectorIcon* icon,
@@ -81,6 +93,8 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   void set_button_behavior(DisabledButtonBehavior button_behavior) {
     button_behavior_ = button_behavior;
   }
+
+  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
   // Sets the vector icon of the button, it might change on different `toggled_`
   // states.
@@ -128,6 +142,8 @@ class ASH_EXPORT IconButton : public views::ImageButton {
 
   const Type type_;
   const gfx::VectorIcon* icon_ = nullptr;
+
+  Delegate* delegate_ = nullptr;
 
   // True if this button is togglable.
   bool is_togglable_ = false;
