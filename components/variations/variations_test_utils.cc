@@ -20,25 +20,80 @@
 namespace variations {
 namespace {
 
-const char* kTestSeed_StudyNames[] = {"UMA-Uniformity-Trial-10-Percent"};
+// kTestSeed is a simple VariationsSeed containing:
+// serial_number: "test"
+// study: {
+//   name: "UMA-Uniformity-Trial-50-Percent"
+//   consistency: PERMANENT
+//   experiment: {
+//     name: "default"
+//     probability_weight: 1
+//   }
+//   experiment: {
+//     name: "group_01"
+//     probability_weight: 1
+//   }
+// }
+
+const char* kTestSeed_StudyNames[] = {"UMA-Uniformity-Trial-50-Percent"};
 
 const char kTestSeed_Base64UncompressedData[] =
-    "CigxZDI5NDY0ZmIzZDc4ZmYxNTU2ZTViNTUxYzY0NDdjYmM3NGU1ZmQwEr0BCh9VTUEtVW5pZm"
-    "9ybWl0eS1UcmlhbC0xMC1QZXJjZW50GICckqUFOAFCB2RlZmF1bHRKCwoHZGVmYXVsdBABSgwK"
-    "CGdyb3VwXzAxEAFKDAoIZ3JvdXBfMDIQAUoMCghncm91cF8wMxABSgwKCGdyb3VwXzA0EAFKDA"
-    "oIZ3JvdXBfMDUQAUoMCghncm91cF8wNhABSgwKCGdyb3VwXzA3EAFKDAoIZ3JvdXBfMDgQAUoM"
-    "Cghncm91cF8wORAB";
+    "CgR0ZXN0Ej4KH1VNQS1Vbmlmb3JtaXR5LVRyaWFsLTUwLVBlcmNlbnQ4AUoLCgdkZWZhdWx0EA"
+    "FKDAoIZ3JvdXBfMDEQAQ==";
 
 const char kTestSeed_Base64CompressedData[] =
-    "H4sIAAAAAAAAAOPSMEwxsjQxM0lLMk4xt0hLMzQ1NUs1TTI1NUw2MzExT05KNjdJNU1LMRDay8"
-    "glH+rrqBual5mWX5SbWVKpG1KUmZija2igG5BalJyaVyLRMGfSUlYLRif2lNS0xNKcEi9uLhhT"
-    "gNGLh4sjvSi/tCDewBCFZ4TCM0bhmaDwTFF4Zig8cxSeBQrPUoARAEVeJPrqAAAA";
+    "H4sIAAAAAAAA/+JiKUktLhGy45IP9XXUDc3LTMsvys0sqdQNKcpMzNE1NdANSC1KTs0rsWD04u"
+    "ZiT0lNSyzNKRFg9OLh4kgvyi8tiDcwFGAEBAAA//90/JgERgAAAA==";
 
 const char kTestSeed_Base64Signature[] =
-    "MEQCIDD1IVxjzWYncun+9IGzqYjZvqxxujQEayJULTlbTGA/AiAr0oVmEgVUQZBYq5VLOSvy96"
-    "JkMYgzTkHPwbv7K/CmgA==";
+    "MEUCIQD5AEAzk5qEuE3xOZl+xSZR15Ac1RJpsXMiou7i5W0sMAIgRn++ngh03HaMGC+Pjl9NOu"
+    "Doxf83qsSwycF2PSS1nYQ=";
 
 const char* kCrashingSeed_StudyNames[] = {"CrashingStudy"};
+
+// kCrashingSeed is a VariationsSeed that triggers a crash for testing:
+// serial_number:  "35ed2d9e354b414befdf930a734094019c0162f1"
+// study:  {
+//   name:  "CrashingStudy"
+//   consistency:  PERMANENT
+//   experiment:  {
+//     name:  "EnabledLaunch"
+//     probability_weight:  100
+//     feature_association:  {
+//       enable_feature:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   experiment:  {
+//     name:  "ForcedOn_ForceFieldTrialSetupCrashForTesting"
+//     probability_weight:  0
+//     feature_association:  {
+//       forcing_feature_on:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   experiment:  {
+//     name:  "ForcedOff_ForceFieldTrialSetupCrashForTesting"
+//     probability_weight:  0
+//     feature_association:  {
+//       forcing_feature_off:  "ForceFieldTrialSetupCrashForTesting"
+//     }
+//   }
+//   filter:  {
+//     min_version:  "91.*"
+//     channel:  CANARY
+//     channel:  DEV
+//     channel:  BETA
+//     channel:  STABLE
+//     platform:  PLATFORM_ANDROID
+//     platform:  PLATFORM_IOS
+//     platform:  PLATFORM_ANDROID_WEBVIEW
+//     platform:  PLATFORM_WINDOWS
+//     platform:  PLATFORM_MAC
+//     platform:  PLATFORM_LINUX
+//     platform:  PLATFORM_CHROMEOS
+//     platform:  PLATFORM_CHROMEOS_LACROS
+//   }
+// }
+// version:  "hash/4aa56a1dc30dfc767615248d6fee29830198b276"
 
 const char kCrashingSeed_Base64UncompressedData[] =
     "CigzNWVkMmQ5ZTM1NGI0MTRiZWZkZjkzMGE3MzQwOTQwMTljMDE2MmYxEp4CCg1DcmFzaGluZ1"

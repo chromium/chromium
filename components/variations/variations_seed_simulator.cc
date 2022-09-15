@@ -57,8 +57,6 @@ std::string SimulateGroupAssignment(
       trial->AppendGroup(experiment.name(), experiment.probability_weight());
     }
   }
-  if (processed_study.is_expired())
-    trial->Disable();
   return trial->group_name();
 }
 
@@ -139,9 +137,7 @@ VariationsSeedSimulator::Result VariationsSeedSimulator::ComputeDifferences(
     // TODO(asvitkine): This should be handled more intelligently. There are
     // several cases that fall into this category:
     //   1) There's an existing field trial with this name but it is not active.
-    //   2) There's an existing expired field trial with this name, which is
-    //      also not considered as active.
-    //   3) This is a new study config that previously didn't exist.
+    //   2) This is a new study config that previously didn't exist.
     // The above cases should be differentiated and handled explicitly.
     if (it == current_state.end())
       continue;
@@ -238,15 +234,6 @@ VariationsSeedSimulator::SessionStudyGroupChanged(
   DCHECK_EQ(Study_Consistency_SESSION, study.consistency());
 
   const Study_Experiment* experiment = FindExperiment(study, selected_group);
-  if (processed_study.is_expired() &&
-      selected_group != study.default_experiment_name()) {
-    // An expired study will result in the default group being selected - mark
-    // it as changed if the current group differs from the default.
-    if (experiment)
-      return ConvertExperimentTypeToChangeType(experiment->type());
-    return CHANGED;
-  }
-
   if (!experiment)
     return CHANGED;
   if (experiment->probability_weight() == 0 &&

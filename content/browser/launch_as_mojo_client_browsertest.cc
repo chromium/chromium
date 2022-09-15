@@ -99,8 +99,8 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
       command_line.AppendSwitchASCII(switches::kForceFieldTrials,
                                      force_field_trials);
 
-      std::string params = base::FieldTrialList::AllParamsToString(
-          false, variations::EscapeValue);
+      std::string params =
+          base::FieldTrialList::AllParamsToString(variations::EscapeValue);
       if (!params.empty()) {
         command_line.AppendSwitchASCII(
             variations::switches::kForceFieldTrialParams, params);

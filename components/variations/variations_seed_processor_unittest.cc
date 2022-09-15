@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <map>
 #include <memory>
 #include <utility>
@@ -37,11 +38,6 @@ using testing::IsEmpty;
 
 namespace variations {
 namespace {
-
-// Converts |time| to Study proto format.
-int64_t TimeToProtoTime(const base::Time& time) {
-  return (time - base::Time::UnixEpoch()).InSeconds();
-}
 
 // Constants for testing associating command line flags with trial groups.
 const char kFlagStudyName[] = "flag_test_trial";
@@ -238,6 +234,19 @@ TYPED_TEST(VariationsSeedProcessorTest, EmitStudyCountMetric) {
   }
 }
 
+TYPED_TEST(VariationsSeedProcessorTest, IgnoreExpiryDateStudy) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
+
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  // Set an expiry far in the future.
+  study->set_expiry_date(std::numeric_limits<int64_t>::max());
+
+  this->CreateTrialsFromSeed(seed);
+  // No trial should be created, since expiry_date is not supported.
+  EXPECT_EQ("", base::FieldTrialList::FindFullName(kFlagStudyName));
+}
+
 TYPED_TEST(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
@@ -329,65 +338,6 @@ TYPED_TEST(VariationsSeedProcessorTest, CreateTrialForRegisteredGroup) {
   // And the previous group should still be selected.
   EXPECT_EQ(kOtherGroupName,
             base::FieldTrialList::FindFullName(kFlagStudyName));
-}
-
-TYPED_TEST(VariationsSeedProcessorTest,
-           NonExpiredStudyPrioritizedOverExpiredStudy) {
-  VariationsSeedProcessor seed_processor;
-
-  const std::string kTrialName = "A";
-  const std::string kGroup1Name = "Group1";
-
-  VariationsSeed seed;
-  Study* study1 = seed.add_study();
-  study1->set_name(kTrialName);
-  study1->set_default_experiment_name("Default");
-  AddExperiment(kGroup1Name, 100, study1);
-  AddExperiment("Default", 0, study1);
-  Study* study2 = seed.add_study();
-  *study2 = *study1;
-  ASSERT_EQ(seed.study(0).name(), seed.study(1).name());
-
-  const base::Time year_ago = base::Time::Now() - base::Days(365);
-
-  ClientFilterableState client_state(base::BindOnce([] { return false; }));
-  client_state.locale = "en-CA";
-  client_state.reference_date = base::Time::Now();
-  client_state.version = base::Version("20.0.0.0");
-  client_state.channel = Study::STABLE;
-  client_state.form_factor = Study::DESKTOP;
-  client_state.platform = Study::PLATFORM_ANDROID;
-
-  // Check that adding [expired, non-expired] activates the non-expired one.
-  ASSERT_EQ(std::string(), base::FieldTrialList::FindFullName(kTrialName));
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.Init();
-
-    base::FeatureList feature_list;
-    study1->set_expiry_date(TimeToProtoTime(year_ago));
-    base::MockEntropyProvider mock_low_entropy_provider(0.9);
-    seed_processor.CreateTrialsFromSeed(
-        seed, client_state, this->override_callback_.callback(),
-        &mock_low_entropy_provider, &feature_list);
-    EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
-  }
-
-  // Check that adding [non-expired, expired] activates the non-expired one.
-  ASSERT_EQ(std::string(), base::FieldTrialList::FindFullName(kTrialName));
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.Init();
-
-    base::FeatureList feature_list;
-    study1->clear_expiry_date();
-    study2->set_expiry_date(TimeToProtoTime(year_ago));
-    base::MockEntropyProvider mock_low_entropy_provider(0.9);
-    seed_processor.CreateTrialsFromSeed(
-        seed, client_state, this->override_callback_.callback(),
-        &mock_low_entropy_provider, &feature_list);
-    EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
-  }
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, OverrideUIStrings) {
@@ -772,139 +722,6 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     EXPECT_EQ(test_case.expected_trial_activated,
               base::FieldTrialList::IsTrialActive(study->name()));
   }
-}
-
-TYPED_TEST(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
-  struct base::Feature kDisabledFeature {
-    "kDisabledFeature", base::FEATURE_DISABLED_BY_DEFAULT
-  };
-  struct base::Feature kEnabledFeature {
-    "kEnabledFeature", base::FEATURE_ENABLED_BY_DEFAULT
-  };
-  const base::Time now = base::Time::Now();
-  const base::Time year_ago = now - base::Days(365);
-  const base::Time year_later = now + base::Days(365);
-
-  struct {
-    const base::Feature& feature;
-    bool study_force_feature_state;
-    base::Time expiry_date;
-    bool expected_feature_enabled;
-  } test_cases[] = {
-      {kDisabledFeature, true, year_ago, false},
-      {kDisabledFeature, true, year_later, true},
-      {kEnabledFeature, false, year_ago, true},
-      {kEnabledFeature, false, year_later, false},
-  };
-
-  for (size_t i = 0; i < std::size(test_cases); i++) {
-    const auto& test_case = test_cases[i];
-    SCOPED_TRACE(
-        base::StringPrintf("Test[%" PRIuS "]: %s", i, test_case.feature.name));
-
-    // Needed for base::FeatureList::GetInstance() when creating field trials.
-    base::test::ScopedFeatureList base_scoped_feature_list;
-    base_scoped_feature_list.Init();
-
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(std::string(), std::string());
-
-    // Expired study with a 100% feature group and a default group that has no
-    // feature association.
-    VariationsSeed seed;
-    Study* study = seed.add_study();
-    study->set_name("Study1");
-    study->set_default_experiment_name("Default");
-
-    study->set_expiry_date(TimeToProtoTime(test_case.expiry_date));
-
-    AddExperiment("Default", 0, study);
-    Study::Experiment* feature_experiment = AddExperiment("Feature", 1, study);
-    if (test_case.study_force_feature_state) {
-      feature_experiment->mutable_feature_association()->add_enable_feature(
-          test_case.feature.name);
-    } else {
-      feature_experiment->mutable_feature_association()->add_disable_feature(
-          test_case.feature.name);
-    }
-
-    this->CreateTrialsFromSeed(seed, feature_list.get());
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
-
-    // The feature should not be enabled, because the study is expired.
-    EXPECT_EQ(test_case.expected_feature_enabled,
-              base::FeatureList::IsEnabled(test_case.feature));
-  }
-}
-
-TYPED_TEST(VariationsSeedProcessorTest, NoDefaultExperiment) {
-  VariationsSeed seed;
-  Study* study = seed.add_study();
-  study->set_name("Study1");
-
-  AddExperiment("A", 1, study);
-
-  this->CreateTrialsFromSeed(seed);
-
-  base::FieldTrial* trial = base::FieldTrialList::Find("Study1");
-  trial->Disable();
-
-  EXPECT_EQ(ProcessedStudy::kGenericDefaultExperimentName,
-            base::FieldTrialList::FindFullName("Study1"));
-}
-
-TYPED_TEST(VariationsSeedProcessorTest, ExistingFieldTrial_ExpiredByConfig) {
-  static struct base::Feature kFeature {
-    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
-  };
-
-  // In this case, an existing forced trial exists with a different default
-  // group than the study config, which is expired. This tests that we don't
-  // crash in such a case.
-  auto* trial = base::FieldTrialList::FactoryGetFieldTrial(
-      "Study1", 100, "ExistingDefault",
-      base::FieldTrialList::GetEntropyProviderForSessionRandomization());
-  trial->AppendGroup("A", 100);
-  trial->SetForced();
-
-  VariationsSeed seed;
-  Study* study = seed.add_study();
-  study->set_name("Study1");
-  const base::Time year_ago = base::Time::Now() - base::Days(365);
-  study->set_expiry_date(TimeToProtoTime(year_ago));
-  auto* exp1 = AddExperiment("A", 1, study);
-  exp1->mutable_feature_association()->add_enable_feature(kFeature.name);
-  AddExperiment("Default", 1, study);
-  study->set_default_experiment_name("Default");
-
-  this->CreateTrialsFromSeed(seed);
-
-  // The expected effect is that processing the server config will expire
-  // the existing trial.
-  EXPECT_EQ("ExistingDefault", trial->group_name());
-}
-
-TYPED_TEST(VariationsSeedProcessorTest, ExpiredStudy_NoDefaultGroup) {
-  static struct base::Feature kFeature {
-    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
-  };
-
-  // Although it's not expected for the server to provide a study with an expiry
-  // date set, but not default experiment, this tests that we don't crash if
-  // that happens.
-  VariationsSeed seed;
-  Study* study = seed.add_study();
-  study->set_name("Study1");
-  const base::Time year_ago = base::Time::Now() - base::Days(365);
-  study->set_expiry_date(TimeToProtoTime(year_ago));
-  auto* exp1 = AddExperiment("A", 1, study);
-  exp1->mutable_feature_association()->add_enable_feature(kFeature.name);
-
-  EXPECT_FALSE(study->has_default_experiment_name());
-  this->CreateTrialsFromSeed(seed);
-  EXPECT_EQ("VariationsDefaultExperiment",
-            base::FieldTrialList::FindFullName("Study1"));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {

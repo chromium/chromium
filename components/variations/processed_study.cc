@@ -173,7 +173,7 @@ ProcessedStudy::ProcessedStudy(const ProcessedStudy& other) = default;
 
 ProcessedStudy::~ProcessedStudy() = default;
 
-bool ProcessedStudy::Init(const Study* study, bool is_expired) {
+bool ProcessedStudy::Init(const Study* study) {
   base::FieldTrial::Probability total_probability = 0;
   bool all_assignments_to_one_group = false;
   std::vector<std::string> associated_features;
@@ -184,7 +184,6 @@ bool ProcessedStudy::Init(const Study* study, bool is_expired) {
   }
 
   study_ = study;
-  is_expired_ = is_expired;
   total_probability_ = total_probability;
   all_assignments_to_one_group_ = all_assignments_to_one_group;
   associated_features_.swap(associated_features);

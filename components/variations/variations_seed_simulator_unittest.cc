@@ -20,11 +20,6 @@ namespace variations {
 
 namespace {
 
-// Converts |time| to Study proto format.
-int64_t TimeToProtoTime(const base::Time& time) {
-  return (time - base::Time::UnixEpoch()).InSeconds();
-}
-
 // Creates and activates a single-group field trial with name |trial_name| and
 // group |group_name| and variations |params| (if not null).
 void CreateTrial(const std::string& trial_name,
@@ -102,22 +97,8 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
   // is the number of "kill critical" group changes.
   std::string SimulateStudyDifferences(const Study* study) {
     ProcessedStudy processed_study;
-    if (!processed_study.Init(study, false))
+    if (!processed_study.Init(study))
       return "invalid study";
-    std::vector<ProcessedStudy> studies = {processed_study};
-    return ConvertSimulationResultToString(SimulateDifferences(studies));
-  }
-
-  // Simulates the differences between expired |study| and the current field
-  // trial state, returning a string like "1 2 3", where 1 is the number of
-  // regular group changes, 2 is the number of "kill best effort" group changes
-  // and 3 is the number of "kill critical" group changes.
-  std::string SimulateStudyDifferencesExpired(const Study* study) {
-    ProcessedStudy processed_study;
-    if (!processed_study.Init(study, true))
-      return "invalid study";
-    if (!processed_study.is_expired())
-      return "not expired";
     std::vector<ProcessedStudy> studies = {processed_study};
     return ConvertSimulationResultToString(SimulateDifferences(studies));
   }
@@ -192,27 +173,6 @@ TEST_F(VariationsSeedSimulatorTest, PermanentGroupChangeDueToExperimentID) {
   EXPECT_EQ("1 0 0", SimulateStudyDifferences(&study));
 }
 
-TEST_F(VariationsSeedSimulatorTest, PermanentExpired) {
-  CreateTrial("A", "B", nullptr);
-
-  Study study = CreateStudy("A", Study_Consistency_PERMANENT);
-  Study_Experiment* experiment = AddExperiment("B", 1, &study);
-  AddExperiment("C", 0, &study);
-
-  // There should be a difference because the study is expired, which should
-  // result in the default group "C" being chosen.
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-
-  experiment->set_type(Study_Experiment_Type_NORMAL);
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_IGNORE_CHANGE);
-  EXPECT_EQ("0 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_BEST_EFFORT);
-  EXPECT_EQ("0 1 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
-  EXPECT_EQ("0 0 1", SimulateStudyDifferencesExpired(&study));
-}
-
 TEST_F(VariationsSeedSimulatorTest, SessionRandomized) {
   CreateTrial("A", "B", nullptr);
 
@@ -265,28 +225,6 @@ TEST_F(VariationsSeedSimulatorTest, SessionRandomizedGroupProbabilityZero) {
   EXPECT_EQ("0 1 0", SimulateStudyDifferences(&study));
   experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
   EXPECT_EQ("0 0 1", SimulateStudyDifferences(&study));
-}
-
-TEST_F(VariationsSeedSimulatorTest, SessionRandomizedExpired) {
-  CreateTrial("A", "B", nullptr);
-
-  Study study = CreateStudy("A", Study_Consistency_SESSION);
-  Study_Experiment* experiment = AddExperiment("B", 1, &study);
-  AddExperiment("C", 1, &study);
-  AddExperiment("D", 1, &study);
-
-  // There should be a difference because the study is expired, which should
-  // result in the default group "D" being chosen.
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-
-  experiment->set_type(Study_Experiment_Type_NORMAL);
-  EXPECT_EQ("1 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_IGNORE_CHANGE);
-  EXPECT_EQ("0 0 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_BEST_EFFORT);
-  EXPECT_EQ("0 1 0", SimulateStudyDifferencesExpired(&study));
-  experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
-  EXPECT_EQ("0 0 1", SimulateStudyDifferencesExpired(&study));
 }
 
 TEST_F(VariationsSeedSimulatorTest, ParamsUnchanged) {
@@ -387,29 +325,6 @@ TEST_F(VariationsSeedSimulatorTest, ParamsAdded) {
   EXPECT_EQ("0 1 0", SimulateStudyDifferences(&study));
   experiment->set_type(Study_Experiment_Type_KILL_CRITICAL);
   EXPECT_EQ("0 0 1", SimulateStudyDifferences(&study));
-}
-
-// Tests that simulating an expired trial without a default group doesn't crash.
-// This is very much an edge case which should generally not be encountered due
-// to server-side, but we should ensure that it still doesn't cause a client
-// side crash.
-TEST_F(VariationsSeedSimulatorTest, NoDefaultGroup) {
-  static struct base::Feature kFeature {
-    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
-  };
-  CreateTrial("Study1", "VariationsDefaultExperiment", nullptr);
-
-  Study study;
-  study.set_consistency(Study::PERMANENT);
-  study.set_name("Study1");
-  const base::Time year_ago = base::Time::Now() - base::Days(365);
-  study.set_expiry_date(TimeToProtoTime(year_ago));
-  auto* exp1 = AddExperiment("A", 1, &study);
-  study.clear_default_experiment_name();
-  exp1->mutable_feature_association()->add_enable_feature(kFeature.name);
-
-  EXPECT_FALSE(study.has_default_experiment_name());
-  EXPECT_EQ("0 0 0", SimulateStudyDifferencesExpired(&study));
 }
 
 }  // namespace variations

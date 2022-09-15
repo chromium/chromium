@@ -898,31 +898,6 @@ TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Permanent) {
             internal::GetClientCountryForStudy(study, client_state));
 }
 
-TEST(VariationsStudyFilteringTest, IsStudyExpired) {
-  const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::Hours(1);
-  const struct {
-    const base::Time expiry_date;
-    bool expected_result;
-  } expiry_test_cases[] = {
-    { now - delta, true },
-    { now, true },
-    { now + delta, false },
-  };
-
-  Study study;
-
-  // Expiry date not set should result in false.
-  EXPECT_FALSE(internal::IsStudyExpired(study, now));
-
-  for (size_t i = 0; i < std::size(expiry_test_cases); ++i) {
-    study.set_expiry_date(TimeToProtoTime(expiry_test_cases[i].expiry_date));
-    const bool result = internal::IsStudyExpired(study, now);
-    EXPECT_EQ(expiry_test_cases[i].expected_result, result)
-        << "Case " << i << " failed!";
-  }
-}
-
 TEST(VariationsStudyFilteringTest, ValidateStudy) {
   Study study;
   study.set_name("study");
@@ -931,42 +906,42 @@ TEST(VariationsStudyFilteringTest, ValidateStudy) {
   Study::Experiment* default_group = AddExperiment("def", 200, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_EQ(300, processed_study.total_probability());
 
   // Min version checks.
   study.mutable_filter()->set_min_version("1.2.3.*");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   study.mutable_filter()->set_min_version("1.*.3");
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   study.mutable_filter()->set_min_version("1.2.3");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
 
   // Max version checks.
   study.mutable_filter()->set_max_version("2.3.4.*");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   study.mutable_filter()->set_max_version("*.3");
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   study.mutable_filter()->set_max_version("2.3.4");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
 
   // A blank default study is allowed.
   study.clear_default_experiment_name();
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
 
   study.set_default_experiment_name("xyz");
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
 
   study.set_default_experiment_name("def");
   default_group->clear_name();
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
 
   default_group->set_name("def");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   Study::Experiment* repeated_group = study.add_experiment();
   repeated_group->set_name("abc");
   repeated_group->set_probability_weight(1);
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
 }
 
 }  // namespace variations

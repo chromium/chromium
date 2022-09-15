@@ -28,10 +28,10 @@ std::string GenerateParam(const std::string& param_key,
 
 std::string GetVariationsCommandLine() {
   std::string field_trial_states;
-  base::FieldTrialList::AllStatesToString(&field_trial_states, true);
+  base::FieldTrialList::AllStatesToString(&field_trial_states);
 
   std::string field_trial_params =
-      base::FieldTrialList::AllParamsToString(true, &EscapeValue);
+      base::FieldTrialList::AllParamsToString(&EscapeValue);
 
   std::string enable_features;
   std::string disable_features;

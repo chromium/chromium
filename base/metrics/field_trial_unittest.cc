@@ -289,22 +289,6 @@ TEST_F(FieldTrialTest, OneWinner) {
   EXPECT_NE(winner_name, default_group_name);
 }
 
-TEST_F(FieldTrialTest, DisableProbability) {
-  const std::string default_group_name = "Default group";
-  const std::string loser = "Loser";
-  const std::string name = "Trial";
-
-  // Create a field trail that is disabled.
-  FieldTrial* trial = FieldTrialList::FactoryGetFieldTrial(
-      name, 1000000000, default_group_name,
-      base::FieldTrialList::GetEntropyProviderForSessionRandomization());
-  trial->Disable();
-  trial->AppendGroup(loser, 999999999);  // 99.9999999% chance of being chosen.
-
-  // And that default_group_name should ALWAYS win.
-  EXPECT_EQ(default_group_name, trial->group_name());
-}
-
 TEST_F(FieldTrialTest, ActiveGroups) {
   std::string no_group("No Group");
   scoped_refptr<FieldTrial> trial = CreateFieldTrial(no_group, 10, "Default");
@@ -457,7 +441,7 @@ TEST_F(FieldTrialTest, SaveAll) {
   scoped_refptr<FieldTrial> trial =
       CreateFieldTrial("Some name", 10, "Default some name");
   EXPECT_EQ("", trial->group_name_internal());
-  FieldTrialList::AllStatesToString(&save_string, false);
+  FieldTrialList::AllStatesToString(&save_string);
   EXPECT_EQ("Some name/Default some name/", save_string);
   // Getting all states should have finalized the trial.
   EXPECT_EQ("Default some name", trial->group_name_internal());
@@ -467,7 +451,7 @@ TEST_F(FieldTrialTest, SaveAll) {
   trial = CreateFieldTrial("trial2", 10, "Default some name");
   trial->AppendGroup("Winner", 10);
   trial->Activate();
-  FieldTrialList::AllStatesToString(&save_string, false);
+  FieldTrialList::AllStatesToString(&save_string);
   EXPECT_EQ("Some name/Default some name/*trial2/Winner/", save_string);
   save_string.clear();
 
@@ -476,7 +460,7 @@ TEST_F(FieldTrialTest, SaveAll) {
   trial2->AppendGroup("yyyy", 10);
   trial2->Activate();
 
-  FieldTrialList::AllStatesToString(&save_string, false);
+  FieldTrialList::AllStatesToString(&save_string);
   // We assume names are alphabetized... though this is not critical.
   EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/",
             save_string);
@@ -485,28 +469,14 @@ TEST_F(FieldTrialTest, SaveAll) {
   // Create a third trial with only the default group.
   scoped_refptr<FieldTrial> trial3 = CreateFieldTrial("zzz", 10, "default");
 
-  FieldTrialList::AllStatesToString(&save_string, false);
+  FieldTrialList::AllStatesToString(&save_string);
   EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/zzz/default/",
             save_string);
 
-  // Create disabled study.
-  scoped_refptr<FieldTrial> disabled_trial =
-      FieldTrialList::FactoryGetFieldTrial(
-          "Disabled trial name", 1000000000, "Default group",
-          base::FieldTrialList::GetEntropyProviderForSessionRandomization());
-  disabled_trial->AppendGroup("Disabled trial group name", 999999999);
-  disabled_trial->Disable();
-
   save_string.clear();
-  FieldTrialList::AllStatesToString(&save_string, false);
+  FieldTrialList::AllStatesToString(&save_string);
   EXPECT_EQ("Some name/Default some name/*trial2/Winner/*xxx/yyyy/zzz/default/",
             save_string);
-  save_string.clear();
-  FieldTrialList::AllStatesToString(&save_string, true);
-  EXPECT_EQ(
-      "Disabled trial name/Default group/"
-      "Some name/Default some name/*trial2/Winner/*xxx/yyyy/zzz/default/",
-      save_string);
 }
 
 TEST_F(FieldTrialTest, Restore) {
@@ -646,19 +616,6 @@ TEST_F(FieldTrialTest, DuplicateFieldTrial) {
   // But it is an error to try to change to a different winner.
   FieldTrial* trial2 = FieldTrialList::CreateFieldTrial("Some_name", "Loser");
   EXPECT_TRUE(trial2 == nullptr);
-}
-
-TEST_F(FieldTrialTest, DisableImmediately) {
-  scoped_refptr<FieldTrial> trial = CreateFieldTrial("trial", 100, "default");
-  trial->Disable();
-  ASSERT_EQ("default", trial->group_name());
-}
-
-TEST_F(FieldTrialTest, DisableAfterInitialization) {
-  scoped_refptr<FieldTrial> trial = CreateFieldTrial("trial", 100, "default");
-  trial->AppendGroup("non_default", 100);
-  trial->Disable();
-  ASSERT_EQ("default", trial->group_name());
 }
 
 TEST_F(FieldTrialTest, ForcedFieldTrials) {
@@ -882,73 +839,6 @@ TEST_F(FieldTrialTest, ObserveReentrancy) {
   EXPECT_NE(FieldTrial::kNotFinalized, trial_1->group_);
 }
 
-TEST_F(FieldTrialTest, ObserveDisabled) {
-  const char kTrialName[] = "TrialToObserve2";
-
-  TestFieldTrialObserver observer;
-  scoped_refptr<FieldTrial> trial =
-      CreateFieldTrial(kTrialName, 100, kDefaultGroupName);
-  trial->AppendGroup("A", 25);
-  trial->AppendGroup("B", 25);
-  trial->AppendGroup("C", 25);
-  trial->Disable();
-
-  // Observer shouldn't be notified of a disabled trial.
-  RunLoop().RunUntilIdle();
-  EXPECT_TRUE(observer.trial_name().empty());
-  EXPECT_TRUE(observer.group_name().empty());
-
-  // Observer shouldn't be notified even after an |Activate()| call.
-  trial->Activate();
-  RunLoop().RunUntilIdle();
-  EXPECT_TRUE(observer.trial_name().empty());
-  EXPECT_TRUE(observer.group_name().empty());
-}
-
-TEST_F(FieldTrialTest, ObserveForcedDisabled) {
-  const char kTrialName[] = "TrialToObserve3";
-
-  TestFieldTrialObserver observer;
-  scoped_refptr<FieldTrial> trial =
-      CreateFieldTrial(kTrialName, 100, kDefaultGroupName);
-  trial->AppendGroup("A", 25);
-  trial->AppendGroup("B", 25);
-  trial->AppendGroup("C", 25);
-  trial->SetForced();
-  trial->Disable();
-
-  // Observer shouldn't be notified of a disabled trial, even when forced.
-  RunLoop().RunUntilIdle();
-  EXPECT_TRUE(observer.trial_name().empty());
-  EXPECT_TRUE(observer.group_name().empty());
-
-  // Observer shouldn't be notified even after an |Activate()| call.
-  trial->Activate();
-  RunLoop().RunUntilIdle();
-  EXPECT_TRUE(observer.trial_name().empty());
-  EXPECT_TRUE(observer.group_name().empty());
-}
-
-TEST_F(FieldTrialTest, DisabledTrialNotActive) {
-  const char kTrialName[] = "DisabledTrial";
-  ASSERT_FALSE(FieldTrialList::TrialExists(kTrialName));
-
-  scoped_refptr<FieldTrial> trial =
-      CreateFieldTrial(kTrialName, 100, kDefaultGroupName);
-  trial->AppendGroup("X", 50);
-  trial->Disable();
-
-  // Ensure the trial is not listed as active.
-  FieldTrial::ActiveGroups active_groups;
-  FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
-  EXPECT_TRUE(active_groups.empty());
-
-  // Ensure the trial is not listed in the |StatesToString()| result.
-  std::string states;
-  FieldTrialList::StatesToString(&states);
-  EXPECT_TRUE(states.empty());
-}
-
 TEST_F(FieldTrialTest, NotDisabled) {
   const char kTrialName[] = "NotDisabled";
   const char kGroupName[] = "Group2";
@@ -1056,7 +946,7 @@ TEST(FieldTrialTestWithoutList, StatesStringFormat) {
     trial2->Activate();
     scoped_refptr<FieldTrial> trial3 = CreateFieldTrial("zzz", 10, "default");
 
-    FieldTrialList::AllStatesToString(&save_string, false);
+    FieldTrialList::AllStatesToString(&save_string);
   }
 
   // Starting with a new blank FieldTrialList.
@@ -1161,7 +1051,7 @@ TEST_F(FieldTrialListTest, AddTrialsToAllocator) {
 
     FieldTrialList::CreateFieldTrial("Trial1", "Group1");
     FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();
-    FieldTrialList::AllStatesToString(&save_string, false);
+    FieldTrialList::AllStatesToString(&save_string);
     shm_region = FieldTrialList::DuplicateFieldTrialSharedMemoryForTesting();
     ASSERT_TRUE(shm_region.IsValid());
   }
@@ -1174,7 +1064,7 @@ TEST_F(FieldTrialListTest, AddTrialsToAllocator) {
   ASSERT_TRUE(shm_mapping.IsValid());
   FieldTrialList::CreateTrialsFromSharedMemoryMapping(std::move(shm_mapping));
   std::string check_string;
-  FieldTrialList::AllStatesToString(&check_string, false);
+  FieldTrialList::AllStatesToString(&check_string);
   EXPECT_EQ(save_string, check_string);
 }
 
@@ -1212,7 +1102,7 @@ TEST_F(FieldTrialListTest, DoNotAddSimulatedFieldTrialsToAllocator) {
   ASSERT_TRUE(shm_mapping.IsValid());
   FieldTrialList::CreateTrialsFromSharedMemoryMapping(std::move(shm_mapping));
   std::string check_string;
-  FieldTrialList::AllStatesToString(&check_string, false);
+  FieldTrialList::AllStatesToString(&check_string);
   ASSERT_EQ(check_string.find("Simulated"), std::string::npos);
 }
 
@@ -1293,7 +1183,7 @@ TEST_F(FieldTrialListTest, ClearParamsFromSharedMemory) {
   ASSERT_TRUE(shm_mapping.IsValid());
   FieldTrialList::CreateTrialsFromSharedMemoryMapping(std::move(shm_mapping));
   std::string check_string;
-  FieldTrialList::AllStatesToString(&check_string, false);
+  FieldTrialList::AllStatesToString(&check_string);
   EXPECT_EQ("*Trial1/Group1/", check_string);
 }
 
@@ -1478,14 +1368,13 @@ TEST_F(FieldTrialTest, TestAllParamsToString) {
   params["p2"] = "v2";
   FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
       "t1", "g1", params);
-  EXPECT_EQ(
-      "", FieldTrialList::AllParamsToString(false, &MockEscapeQueryParamValue));
+  EXPECT_EQ("", FieldTrialList::AllParamsToString(&MockEscapeQueryParamValue));
 
   scoped_refptr<FieldTrial> trial1 = CreateFieldTrial("t1", 100, "Default");
   trial1->AppendGroup("g1", 100);
   trial1->Activate();
-  EXPECT_EQ(exptected_output, FieldTrialList::AllParamsToString(
-                                  false, &MockEscapeQueryParamValue));
+  EXPECT_EQ(exptected_output,
+            FieldTrialList::AllParamsToString(&MockEscapeQueryParamValue));
 
   // Create study with two groups and params that don't belog to the assigned
   // group. This should be in the output.
@@ -1495,8 +1384,8 @@ TEST_F(FieldTrialTest, TestAllParamsToString) {
   trial2->AppendGroup("g1", 100);
   trial2->AppendGroup("g2", 0);
   trial2->Activate();
-  EXPECT_EQ(exptected_output, FieldTrialList::AllParamsToString(
-                                  false, &MockEscapeQueryParamValue));
+  EXPECT_EQ(exptected_output,
+            FieldTrialList::AllParamsToString(&MockEscapeQueryParamValue));
 }
 
 }  // namespace base

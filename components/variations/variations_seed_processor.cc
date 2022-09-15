@@ -136,8 +136,8 @@ void RegisterFeatureOverrides(const ProcessedStudy& processed_study,
   const std::string& group_name = trial->GetGroupNameWithoutActivation();
   int experiment_index = processed_study.GetExperimentIndexByName(group_name);
   // If the chosen experiment was not found in the study, simply return.
-  // Although not normally expected, but could happen in exception cases, see
-  // tests: ExpiredStudy_NoDefaultGroup, ExistingFieldTrial_ExpiredByConfig
+  // Although not normally expected, but could happen if the trial was forced
+  // on the command line.
   if (experiment_index == -1)
     return;
 
@@ -359,9 +359,6 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
       randomization_seed = study.randomization_seed();
   }
 
-  // The trial is created without specifying an expiration date because the
-  // expiration check in field_trial.cc is based on the build date. Instead,
-  // the expiration check using |reference_date| is done explicitly below.
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           study.name(), processed_study.total_probability(),
@@ -395,8 +392,6 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   }
 
   trial->SetForced();
-  if (processed_study.is_expired())
-    trial->Disable();
 
   if (enables_or_disables_features)
     RegisterFeatureOverrides(processed_study, trial.get(), feature_list);
@@ -415,8 +410,8 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
     int experiment_index = processed_study.GetExperimentIndexByName(group_name);
     // If the chosen experiment was not found in the study, simply return.
-    // Although not normally expected, but could happen in exception cases, see
-    // tests: ExpiredStudy_NoDefaultGroup, ExistingFieldTrial_ExpiredByConfig
+    // Although not normally expected, but could happen if the trial was forced
+    // on the command line.
     if (experiment_index != -1) {
       ApplyUIStringOverrides(study.experiment(experiment_index),
                              override_callback);

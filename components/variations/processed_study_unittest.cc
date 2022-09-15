@@ -69,7 +69,7 @@ TEST(ProcessedStudyTest, InitValidStudy) {
   Study study = CreateValidStudy();
 
   ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   histogram_tester.ExpectTotalCount(kInvalidStudyReasonHistogram, 0);
 }
 
@@ -81,7 +81,7 @@ TEST(ProcessedStudyTest, InitInvalidMinVersion) {
   study.mutable_filter()->set_min_version("invalid");
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidMinVersion, 1);
 }
@@ -94,7 +94,7 @@ TEST(ProcessedStudyTest, InitInvalidMaxVersion) {
   study.mutable_filter()->set_max_version("1.invalid.1");
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram, InvalidStudyReason::kInvalidMaxVersion, 1);
 }
@@ -107,7 +107,7 @@ TEST(ProcessedStudyTest, InitInvalidMinOsVersion) {
   study.mutable_filter()->set_min_os_version("0.*.0");
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(kInvalidStudyReasonHistogram,
                                       InvalidStudyReason::kInvalidMinOsVersion,
                                       1);
@@ -121,7 +121,7 @@ TEST(ProcessedStudyTest, InitInvalidMaxOsVersion) {
   study.mutable_filter()->set_max_os_version("\001\000\000\003");
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(kInvalidStudyReasonHistogram,
                                       InvalidStudyReason::kInvalidMaxOsVersion,
                                       1);
@@ -135,7 +135,7 @@ TEST(ProcessedStudyTest, InitBlankStudyName) {
   study.set_name("");
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(kInvalidStudyReasonHistogram,
                                       InvalidStudyReason::kBlankStudyName, 1);
 }
@@ -149,7 +149,7 @@ TEST(ProcessedStudyTest, InitMissingExperimentName) {
   AddExperiment("", 0, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram, InvalidStudyReason::kMissingExperimentName,
       1);
@@ -166,7 +166,7 @@ TEST(ProcessedStudyTest, InitRepeatedExperimentName) {
   AddExperiment("Group", 0, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram, InvalidStudyReason::kRepeatedExperimentName,
       1);
@@ -184,7 +184,7 @@ TEST(ProcessedStudyTest, InitTriggerAndNonTriggerExperimentId) {
   experiment->set_google_web_trigger_experiment_id(123);
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram,
       InvalidStudyReason::kTriggerAndNonTriggerExperimentId, 1);
@@ -200,7 +200,7 @@ TEST(ProcessedStudyTest, InitExperimentProbabilityOverflow) {
   AddExperiment("Group", kMaxProbabilityValue + 1, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram,
       InvalidStudyReason::kExperimentProbabilityOverflow, 1);
@@ -217,7 +217,7 @@ TEST(ProcessedStudyTest, InitTotalProbabilityOverflow) {
   AddExperiment("Group2", 1, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram,
       InvalidStudyReason::kTotalProbabilityOverflow, 1);
@@ -233,7 +233,7 @@ TEST(ProcessedStudyTest, InitMissingDefaultExperimentInList) {
   study.set_default_experiment_name("NonExistentGroup");
 
   ProcessedStudy processed_study;
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   histogram_tester.ExpectUniqueSample(
       kInvalidStudyReasonHistogram,
       InvalidStudyReason::kMissingDefaultExperimentInList, 1);
@@ -247,43 +247,43 @@ TEST(ProcessedStudyTest, ValidateStudy) {
   Study::Experiment* default_group = AddExperiment("def", 200, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_EQ(300, processed_study.total_probability());
   EXPECT_FALSE(processed_study.all_assignments_to_one_group());
 
   // Min version checks.
   study.mutable_filter()->set_min_version("1.2.3.*");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   study.mutable_filter()->set_min_version("1.*.3");
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   study.mutable_filter()->set_min_version("1.2.3");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
 
   // Max version checks.
   study.mutable_filter()->set_max_version("2.3.4.*");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   study.mutable_filter()->set_max_version("*.3");
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
   study.mutable_filter()->set_max_version("2.3.4");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
 
   // A blank default study is allowed.
   study.clear_default_experiment_name();
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
 
   study.set_default_experiment_name("xyz");
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
 
   study.set_default_experiment_name("def");
   default_group->clear_name();
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
 
   default_group->set_name("def");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   Study::Experiment* repeated_group = study.add_experiment();
   repeated_group->set_name("abc");
   repeated_group->set_probability_weight(1);
-  EXPECT_FALSE(processed_study.Init(&study, false));
+  EXPECT_FALSE(processed_study.Init(&study));
 }
 
 TEST(ProcessedStudyTest, ValidateStudyWithAssociatedFeatures) {
@@ -296,7 +296,7 @@ TEST(ProcessedStudyTest, ValidateStudyWithAssociatedFeatures) {
   AddExperiment("def", 100, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_EQ(400, processed_study.total_probability());
 
   EXPECT_THAT(processed_study.associated_features(), ::testing::IsEmpty());
@@ -305,14 +305,14 @@ TEST(ProcessedStudyTest, ValidateStudyWithAssociatedFeatures) {
   const char kFeature2Name[] = "Feature2";
 
   exp1->mutable_feature_association()->add_enable_feature(kFeature1Name);
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_THAT(processed_study.associated_features(),
               ::testing::ElementsAre(kFeature1Name));
 
   exp1->clear_feature_association();
   exp1->mutable_feature_association()->add_enable_feature(kFeature1Name);
   exp1->mutable_feature_association()->add_enable_feature(kFeature2Name);
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   // Since there's multiple different features, |associated_features| should now
   // contain them all.
   EXPECT_THAT(processed_study.associated_features(),
@@ -322,21 +322,21 @@ TEST(ProcessedStudyTest, ValidateStudyWithAssociatedFeatures) {
   exp1->mutable_feature_association()->add_enable_feature(kFeature1Name);
   exp2->mutable_feature_association()->add_enable_feature(kFeature1Name);
   exp3->mutable_feature_association()->add_disable_feature(kFeature1Name);
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_THAT(processed_study.associated_features(),
               ::testing::ElementsAre(kFeature1Name));
 
   // Setting a different feature name on exp2 should cause |associated_features|
   // to contain both feature names.
   exp2->mutable_feature_association()->set_enable_feature(0, kFeature2Name);
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_THAT(processed_study.associated_features(),
               ::testing::ElementsAre(kFeature1Name, kFeature2Name));
 
   // Setting a different activation type should result in empty
   // |associated_features|.
   study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_THAT(processed_study.associated_features(), ::testing::IsEmpty());
 }
 
@@ -347,17 +347,17 @@ TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
   AddExperiment("def", 100, &study);
 
   ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_TRUE(processed_study.all_assignments_to_one_group());
 
   AddExperiment("abc", 0, &study);
 
   AddExperiment("flag", 0, &study)->set_forcing_flag("flag_test1");
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_TRUE(processed_study.all_assignments_to_one_group());
 
   AddExperiment("xyz", 1, &study);
-  EXPECT_TRUE(processed_study.Init(&study, false));
+  EXPECT_TRUE(processed_study.Init(&study));
   EXPECT_FALSE(processed_study.all_assignments_to_one_group());
 
   // Try with default group and first group being at 0.
@@ -366,10 +366,10 @@ TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
   study2.set_default_experiment_name("def");
   AddExperiment("def", 0, &study2);
   AddExperiment("xyz", 34, &study2);
-  EXPECT_TRUE(processed_study.Init(&study2, false));
+  EXPECT_TRUE(processed_study.Init(&study2));
   EXPECT_TRUE(processed_study.all_assignments_to_one_group());
   AddExperiment("abc", 12, &study2);
-  EXPECT_TRUE(processed_study.Init(&study2, false));
+  EXPECT_TRUE(processed_study.Init(&study2));
   EXPECT_FALSE(processed_study.all_assignments_to_one_group());
 }
 

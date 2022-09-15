@@ -71,10 +71,10 @@ void CfmBrowserService::OnBindService(
 
 void CfmBrowserService::GetVariationsData(GetVariationsDataCallback callback) {
   std::string field_trial_parameters =
-      base::FieldTrialList::AllParamsToString(true, &variations::EscapeValue);
+      base::FieldTrialList::AllParamsToString(&variations::EscapeValue);
 
   std::string field_trial_states;
-  base::FieldTrialList::AllStatesToString(&field_trial_states, true);
+  base::FieldTrialList::AllStatesToString(&field_trial_states);
 
   std::string enabled_features;
   std::string disabled_features;
