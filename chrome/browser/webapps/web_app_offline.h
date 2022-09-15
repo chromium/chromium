@@ -23,6 +23,11 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context);
 
+// Tracks how long the offline page is showing and the reason why it gets
+// closed (e.g. page is refreshed after coming back online or web contents gets
+// destroyed).
+void TrackOfflinePageVisibility(content::RenderFrameHost* render_frame_host);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEBAPPS_WEB_APP_OFFLINE_H_

@@ -1859,6 +1859,7 @@ static_library("browser") {
     "web_data_service_factory.h",
     "webapps/chrome_webapps_client.cc",
     "webapps/chrome_webapps_client.h",
+    "webapps/web_app_offline.cc",
     "webapps/web_app_offline.h",
     "webid/federated_identity_account_keyed_permission_context.cc",
     "webid/federated_identity_account_keyed_permission_context.h",

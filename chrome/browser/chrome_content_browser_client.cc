@@ -6831,11 +6831,15 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
   if (error_code != net::ERR_INTERNET_DISCONNECTED)
     return nullptr;
 
-  if (!base::FeatureList::IsEnabled(features::kPWAsDefaultOfflinePage)) {
+  if (!base::FeatureList::IsEnabled(features::kPWAsDefaultOfflinePage))
     return nullptr;
-  }
 
-  return web_app::GetOfflinePageInfo(url, render_frame_host, browser_context);
+  content::mojom::AlternativeErrorPageOverrideInfoPtr error_page =
+      web_app::GetOfflinePageInfo(url, render_frame_host, browser_context);
+  if (error_page)
+    web_app::TrackOfflinePageVisibility(render_frame_host);
+
+  return error_page;
 }
 
 bool ChromeContentBrowserClient::OpenExternally(

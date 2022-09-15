@@ -24631,6 +24631,12 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Failed at setting the registry value"/>
 </enum>
 
+<enum name="DefaultOfflineClosingReason">
+  <int value="0" label="Network re-established"/>
+  <int value="1" label="New navigation"/>
+  <int value="2" label="Tab/App closed"/>
+</enum>
+
 <enum name="DefaultSearchChangeOrigin">
   <int value="0" label="DSP changed by synced Pref"/>
   <int value="1" label="DSP changed by Sync ADD"/>

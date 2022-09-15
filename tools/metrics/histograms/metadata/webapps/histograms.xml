@@ -275,6 +275,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.DefaultOffline.ClosingReason"
+    enum="DefaultOfflineClosingReason" expires_after="2023-09-01">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Keeps track of why the default offline (error) page is no longer visible.
+    Logged once each time the default error page shown, after determining that
+    it is no longer needed, e.g. because a new navigation occurred for the error
+    page's WebContents, the device is online again and the WebContents was
+    refreshed or when the WebContents is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.DefaultOffline.DurationShown" units="seconds"
+    expires_after="2023-09-01">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Keeps track of how long the default offline (error) page was shown for PWAs.
+    Logged once each time the default error page shown, after determining that
+    it is no longer needed, e.g. because a new navigation occurred for the error
+    page's WebContents, the device is online again and the WebContents was
+    refreshed or when the WebContents is destroyed.
+  </summary>
+</histogram>
+
 <histogram base="true" name="WebApp.Engagement"
     enum="SiteEngagementServiceEngagementType" expires_after="2023-02-19">
   <owner>mgiuca@chromium.org</owner>

@@ -5,17 +5,23 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_switches.h"
@@ -33,6 +39,17 @@
 #include "ash/constants/ash_features.h"
 #endif
 
+using ::testing::ElementsAre;
+
+namespace {
+
+constexpr char kHistogramClosingReason[] =
+    "WebApp.DefaultOffline.ClosingReason";
+constexpr char kHistogramDurationShown[] =
+    "WebApp.DefaultOffline.DurationShown";
+
+}  // namespace
+
 namespace web_app {
 
 enum class PageFlagParam {
@@ -44,8 +61,8 @@ enum class PageFlagParam {
 class WebAppOfflineTest : public InProcessBrowserTest {
  public:
   // Start a web app without a service worker and disconnect.
-  void StartWebAppAndDisconnect(content::WebContents* web_contents,
-                                base::StringPiece relative_url) {
+  web_app::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
+                                          base::StringPiece relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateToURLAndWait(browser(), target_url);
     web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
@@ -57,6 +74,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     content::TestNavigationObserver observer(web_contents, 1);
     web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
     observer.Wait();
+    return app_id;
   }
 
   // Start a PWA with a service worker and disconnect.
@@ -77,6 +95,12 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
     observer.Wait();
   }
+
+  void ReloadWebContents(content::WebContents* web_contents) {
+    content::TestNavigationObserver observer(web_contents, 1);
+    web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
+    observer.Wait();
+  }
 };
 
 class WebAppOfflinePageTest
@@ -91,13 +115,19 @@ class WebAppOfflinePageTest
     }
   }
 
-  void ExpectUniqueSample(net::Error error, int samples) {
-    // Expect that the histogram has been updated.
+  void SyncHistograms() {
     content::FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  }
+
+  // Expect that the histogram has been updated.
+  void ExpectUniqueSample(net::Error error, int samples) {
+    SyncHistograms();
     histogram_tester_.ExpectUniqueSample(
         "Net.ErrorPageCounts.WebAppAlternativeErrorPage", -error, samples);
   }
+
+  base::HistogramTester* histogram() { return &histogram_tester_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -202,6 +232,104 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
         EvalJs(web_contents,
                "document.getElementById('default-web-app-msg') === null")
             .ExtractBool());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
+  StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
+
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
+
+  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+    // Expect that the default offline page is showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') !== null")
+            .ExtractBool());
+
+    // Navigate somewhere else (anywhere else but the current page will do).
+    EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
+
+    SyncHistograms();
+    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+                ElementsAre(base::Bucket(/* min= */ 1, /* count= */ 1)));
+  } else {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
+    // Expect that the default offline page is not showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') === null")
+            .ExtractBool());
+
+    // Navigate somewhere else (anywhere else but the current page will do).
+    EXPECT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
+
+    // There should be no histograms still.
+    SyncHistograms();
+    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
+  StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
+
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
+
+  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+    // Expect that the default offline page is showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') !== null")
+            .ExtractBool());
+
+    // The URL interceptor only blocks the first navigation. This one should
+    // go through.
+    ReloadWebContents(web_contents);
+
+    // Expect that the default offline page is not showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') === null")
+            .ExtractBool());
+
+    SyncHistograms();
+    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+                ElementsAre(base::Bucket(/* min= */ 0, /* count= */ 1)));
+  } else {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
+    // Expect that the default offline page is not showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') === null")
+            .ExtractBool());
+
+    // The URL interceptor only blocks the first navigation. This one should
+    // go through.
+    ReloadWebContents(web_contents);
+
+    // There should be no histograms still.
+    SyncHistograms();
+    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
   }
 }
 
