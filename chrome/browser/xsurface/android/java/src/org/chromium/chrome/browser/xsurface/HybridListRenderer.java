@@ -92,4 +92,12 @@ public interface HybridListRenderer {
      * Called when a pull to refresh is initiated by the user.
      */
     default void onPullToRefreshStarted() {}
+
+    /**
+     * Returns helper to manager the list layout.
+     * @return @{@link ListLayoutHelper} instance.
+     */
+    default ListLayoutHelper getListLayoutHelper() {
+        return null;
+    }
 }

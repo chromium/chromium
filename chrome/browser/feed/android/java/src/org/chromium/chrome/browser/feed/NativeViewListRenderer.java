@@ -11,6 +11,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
+import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -37,6 +39,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     private final Context mContext;
 
     private ListContentManager mManager;
+    private ListLayoutHelper mLayoutHelper;
     private RecyclerView mView;
 
     public NativeViewListRenderer(Context mContext) {
@@ -82,6 +85,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         mView.setLayoutManager(new LinearLayoutManager(mContext));
         mManager.addObserver(this);
         onItemRangeInserted(0, mManager.getItemCount());
+        mLayoutHelper = new NativeViewListLayoutHelper();
         return mView;
     }
 
@@ -119,6 +123,16 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         notifyItemMoved(curIndex, newIndex);
     }
 
+    @Override
+    public ListLayoutHelper getListLayoutHelper() {
+        return mLayoutHelper;
+    }
+
+    @VisibleForTesting
+    RecyclerView getListViewForTest() {
+        return mView;
+    }
+
     private View createCannotRenderViewItem() {
         TextView viewItem = new AppCompatTextView(mContext);
         String message = "Unable to render external view";
@@ -131,5 +145,23 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         viewItem.setLayoutParams(layoutParams);
 
         return viewItem;
+    }
+
+    class NativeViewListLayoutHelper implements ListLayoutHelper {
+        @Override
+        public int findFirstVisibleItemPosition() {
+            return ((LinearLayoutManager) mView.getLayoutManager()).findFirstVisibleItemPosition();
+        }
+
+        @Override
+        public int findLastVisibleItemPosition() {
+            return ((LinearLayoutManager) mView.getLayoutManager()).findLastVisibleItemPosition();
+        }
+
+        @Override
+        public void scrollToPositionWithOffset(int position, int offset) {
+            ((LinearLayoutManager) mView.getLayoutManager())
+                    .scrollToPositionWithOffset(position, offset);
+        }
     }
 }

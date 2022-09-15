@@ -65,6 +65,11 @@ public interface ListContentManager {
         return 0;
     }
 
+    /** Returns column count the item at index should span across. */
+    default int getSpanCount(int index) {
+        return 1;
+    }
+
     /** Adds an observer to be notified when the list content changes. */
     default void addObserver(ListContentManagerObserver o) {}
 
