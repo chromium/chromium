@@ -418,9 +418,13 @@ class DiskMountManagerImpl : public DiskMountManager,
                            base::CompareCase::SENSITIVE)) {
         UnmountPath(mount_point.mount_path,
                     BindOnce(
-                        [](const std::string& path, MountError error) {
-                          LOG(ERROR)
-                              << "Cannot unmount '" << path << "': " << error;
+                        [](const std::string& path, const MountError error) {
+                          if (error != MountError::kNone) {
+                            LOG(ERROR)
+                                << "Cannot unmount '" << path << "': " << error;
+                          } else {
+                            VLOG(1) << "Unmounted '" << path << "'";
+                          }
                         },
                         mount_point.mount_path));
       }
