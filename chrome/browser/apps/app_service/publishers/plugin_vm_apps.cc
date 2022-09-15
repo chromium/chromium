@@ -327,6 +327,10 @@ void PluginVmApps::LaunchAppWithIntent(const std::string& app_id,
           [](LaunchCallback callback,
              plugin_vm::LaunchPluginVmAppResult plugin_vm_result,
              const std::string& failure_reason) {
+            if (plugin_vm_result !=
+                plugin_vm::LaunchPluginVmAppResult::SUCCESS) {
+              LOG(ERROR) << "Plugin VM launch error: " << failure_reason;
+            }
             std::move(callback).Run(
                 ConvertPluginVmResultToLaunchResult(plugin_vm_result));
           },

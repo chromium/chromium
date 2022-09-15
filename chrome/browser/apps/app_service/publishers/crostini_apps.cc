@@ -200,6 +200,9 @@ void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
       base::BindOnce(
           [](LaunchCallback callback, bool success,
              const std::string& failure_reason) {
+            if (!success) {
+              LOG(ERROR) << "Crostini launch error: " << failure_reason;
+            }
             std::move(callback).Run(ConvertBoolToLaunchResult(success));
           },
           std::move(callback)));
