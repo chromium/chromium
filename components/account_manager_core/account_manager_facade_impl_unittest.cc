@@ -333,7 +333,9 @@ TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   testing::StrictMock<MockAccountManagerFacadeObserver> observer;
-  account_manager_facade->AddObserver(&observer);
+  base::ScopedObservation<AccountManagerFacade, AccountManagerFacade::Observer>
+      observation{&observer};
+  observation.Observe(account_manager_facade.get());
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
   base::RunLoop run_loop;
@@ -347,7 +349,9 @@ TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   testing::StrictMock<MockAccountManagerFacadeObserver> observer;
-  account_manager_facade->AddObserver(&observer);
+  base::ScopedObservation<AccountManagerFacade, AccountManagerFacade::Observer>
+      observation{&observer};
+  observation.Observe(account_manager_facade.get());
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
   base::RunLoop run_loop;
@@ -887,7 +891,9 @@ TEST_F(AccountManagerFacadeImplTest, ReportAuthError) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   testing::StrictMock<MockAccountManagerFacadeObserver> observer;
-  account_manager_facade->AddObserver(&observer);
+  base::ScopedObservation<AccountManagerFacade, AccountManagerFacade::Observer>
+      observation{&observer};
+  observation.Observe(account_manager_facade.get());
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
   GoogleServiceAuthError error =
