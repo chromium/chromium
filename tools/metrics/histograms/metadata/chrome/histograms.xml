@@ -22,6 +22,63 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Chrome.KAnonymityService.JoinSet.Action"
+    enum="KAnonymityServiceJoinSetAction" expires_after="M108">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Track execution of KAnonymity Service JoinSet requests for both normal
+    operation and errors. The kJoinSet enumeration is emitted when the service
+    is called and either kJoinSetSuccess or one of the error enumerations is
+    emitted at the end of the request.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.QuerySet.Action"
+    enum="KAnonymityServiceQuerySetAction" expires_after="M108">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Track execution of KAnonymity Service QuerySet requests for both normal
+    operation and errors. The kQuerySet enumeration is emitted when the service
+    is called and either kQuerySetsSuccess or one of the error enumerations is
+    emitted at the end of the request.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
+    expires_after="M108">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of elements queried per call for each call to QuerySet.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.TrustTokenGetter.Action"
+    enum="KAnonymityServiceJoinSetAction" expires_after="M108">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Track execution of KAnonymityTrustTokenGetter requests for both normal
+    operation and errors. The kTryGetTrustTokenAndKey enumeration is emitted
+    when the service is called and either kGetTrustTokenSuccess or one of the
+    error enumerations is emitted at the end of the request.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.TrustTokenGetter.Latency" units="ms"
+    expires_after="M108">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records how the length of time the K-Anonymity service spends fetching trust
+    tokens. This includes time taken waiting in the TrustTokenGetter queue,
+    getting the OAuth token, getting the key commitment, and requesting the
+    trust token. This metric is only measured for successful requests.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow"
     units="%" expires_after="2023-07-25">
   <owner>xiyuan@chromium.org</owner>

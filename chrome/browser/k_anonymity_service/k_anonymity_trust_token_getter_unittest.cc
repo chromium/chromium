@@ -9,7 +9,9 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -189,6 +191,30 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
     SimulateResponseForPendingRequest(request_url, "");
   }
 
+  void CheckHistogramActions(
+      const base::HistogramTester& hist,
+      std::vector<KAnonymityTrustTokenGetterAction> actions) {
+    for (auto action : actions) {
+      hist.ExpectBucketCount("Chrome.KAnonymityService.TrustTokenGetter.Action",
+                             action, 1);
+    }
+    hist.ExpectTotalCount("Chrome.KAnonymityService.TrustTokenGetter.Action",
+                          actions.size());
+  }
+
+  void CheckHistogramActions(
+      const base::HistogramTester& hist,
+      const base::flat_map<KAnonymityTrustTokenGetterAction, size_t> actions) {
+    size_t event_count = 0;
+    for (auto action : actions) {
+      hist.ExpectBucketCount("Chrome.KAnonymityService.TrustTokenGetter.Action",
+                             action.first, action.second);
+      event_count += action.second;
+    }
+    hist.ExpectTotalCount("Chrome.KAnonymityService.TrustTokenGetter.Action",
+                          event_count);
+  }
+
   KAnonymityTrustTokenGetter* getter() { return getter_.get(); }
 
   void SetHasTokens(bool has_tokens) {
@@ -215,6 +241,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetNotSignedIn) {
   InitializeIdentity(/*signed_on=*/false);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
       base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
@@ -224,10 +251,15 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNotSignedIn) {
                 run_loop.Quit();
               })));
   run_loop.Run();
+  CheckHistogramActions(
+      hist, {
+                KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+            });
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetAuthTokenFailed) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
       base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
@@ -238,10 +270,15 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetAuthTokenFailed) {
               })));
   SimulateFailedResponseForAuthToken();
   run_loop.Run();
+  CheckHistogramActions(
+      hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+             KAnonymityTrustTokenGetterAction::kRequestAccessToken,
+             KAnonymityTrustTokenGetterAction::kAccessTokenRequestFailed});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetNonUniqueUserIdFetchFailed) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
       base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
@@ -255,11 +292,17 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNonUniqueUserIdFetchFailed) {
       "https://chromekanonymityauth-pa.googleapis.com/v1/"
       "generateShortIdentifier");
   run_loop.Run();
+  CheckHistogramActions(
+      hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+             KAnonymityTrustTokenGetterAction::kRequestAccessToken,
+             KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID,
+             KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientIDFailed});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest,
        TryJoinSetMalformedNonUniqueUserIdResponse) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   std::vector<std::string> bad_responses = {
       "",                              // empty
       "1df3fd33sasdf",                 // base64 nonsense
@@ -293,10 +336,21 @@ TEST_F(KAnonymityTrustTokenGetterTest,
     run_loop.Run();
     task_environment()->FastForwardBy(base::Minutes(1));
   }
+  CheckHistogramActions(
+      hist,
+      {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+        bad_responses.size()},
+       {KAnonymityTrustTokenGetterAction::kRequestAccessToken,
+        bad_responses.size()},
+       {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID,
+        bad_responses.size()},
+       {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientIDParseError,
+        bad_responses.size()}});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetKeyFetchFails) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
       base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
@@ -310,11 +364,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetKeyFetchFails) {
   SimulateFailedResponseForPendingRequest(
       "https://chromekanonymityauth-pa.googleapis.com/v1/2/fetchKeys");
   run_loop.Run();
+  CheckHistogramActions(
+      hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+             KAnonymityTrustTokenGetterAction::kRequestAccessToken,
+             KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID,
+             KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey,
+             KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyFailed});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest,
        TryJoinSetMalformedKeyCommitmentResponse) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   std::vector<std::string> bad_responses = {
       "",                              // empty
       "1df3fd33sasdf",                 // base64 nonsense
@@ -410,10 +471,22 @@ TEST_F(KAnonymityTrustTokenGetterTest,
     run_loop.Run();
     task_environment()->FastForwardBy(base::Minutes(1));
   }
+  CheckHistogramActions(
+      hist, {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+              bad_responses.size()},
+             {KAnonymityTrustTokenGetterAction::kRequestAccessToken,
+              bad_responses.size()},
+             {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID,
+              bad_responses.size()},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey,
+              bad_responses.size()},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError,
+              bad_responses.size()}});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetNoToken) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   getter()->TryGetTrustTokenAndKey(
       base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
@@ -429,10 +502,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNoToken) {
       "https://chromekanonymityauth-pa.googleapis.com/v1/2/issueTrustToken");
 
   run_loop.Run();
+  CheckHistogramActions(
+      hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+             KAnonymityTrustTokenGetterAction::kRequestAccessToken,
+             KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID,
+             KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey,
+             KAnonymityTrustTokenGetterAction::kFetchTrustToken,
+             KAnonymityTrustTokenGetterAction::kFetchTrustTokenFailed});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetSignedIn) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   base::Time key_expiration = base::Time::Now() + base::Days(1);
   getter()->TryGetTrustTokenAndKey(
@@ -463,10 +544,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetSignedIn) {
   RespondWithTrustTokenKeys(2, key_expiration);
   RespondWithTrustTokenIssued(2);
   run_loop.Run();
+  CheckHistogramActions(
+      hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
+             KAnonymityTrustTokenGetterAction::kRequestAccessToken,
+             KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID,
+             KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey,
+             KAnonymityTrustTokenGetterAction::kFetchTrustToken,
+             KAnonymityTrustTokenGetterAction::kGetTrustTokenSuccess});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetRepeatedly) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
@@ -493,10 +582,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetRepeatedly) {
       2);  // Give a token to the second request to unblock it.
   run_loop.Run();
   EXPECT_EQ(10, callback_count);
+  CheckHistogramActions(
+      hist, {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey, 10},
+             {KAnonymityTrustTokenGetterAction::kRequestAccessToken, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustToken, 2},
+             {KAnonymityTrustTokenGetterAction::kGetTrustTokenSuccess, 10}});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TryGetFailureDropsAllRequests) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
@@ -518,10 +615,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetFailureDropsAllRequests) {
       "https://chromekanonymityauth-pa.googleapis.com/v1/2/issueTrustToken");
   run_loop.Run();
   EXPECT_EQ(10, callback_count);
+  CheckHistogramActions(
+      hist, {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey, 10},
+             {KAnonymityTrustTokenGetterAction::kRequestAccessToken, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustToken, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenFailed, 1}});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysDontExpire) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::Time expiration = base::Time::Now() + base::Days(1);
   {
     base::RunLoop run_loop;
@@ -555,10 +660,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysDontExpire) {
     RespondWithTrustTokenIssued(10);
     run_loop.Run();
   }
+  CheckHistogramActions(
+      hist, {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey, 2},
+             {KAnonymityTrustTokenGetterAction::kRequestAccessToken, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustToken, 2},
+             {KAnonymityTrustTokenGetterAction::kGetTrustTokenSuccess, 2}});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenExpire) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::Time expiration = base::Time::Now() + base::Days(1);
   {
     base::RunLoop run_loop;
@@ -593,10 +706,18 @@ TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenExpire) {
     RespondWithTrustTokenIssued(2);
     run_loop.Run();
   }
+  CheckHistogramActions(
+      hist, {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey, 2},
+             {KAnonymityTrustTokenGetterAction::kRequestAccessToken, 2},
+             {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustToken, 2},
+             {KAnonymityTrustTokenGetterAction::kGetTrustTokenSuccess, 2}});
 }
 
 TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysExpire) {
   InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
   base::Time expiration = base::Time::Now() + base::Days(1);
   {
     base::RunLoop run_loop;
@@ -632,4 +753,58 @@ TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysExpire) {
     RespondWithTrustTokenIssued(3);
     run_loop.Run();
   }
+  CheckHistogramActions(
+      hist, {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey, 2},
+             {KAnonymityTrustTokenGetterAction::kRequestAccessToken, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID, 2},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey, 2},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustToken, 2},
+             {KAnonymityTrustTokenGetterAction::kGetTrustTokenSuccess, 2}});
+}
+
+// Verify that the latency recorded includes both the queued time and the
+// time for each step of getting the trust token.
+TEST_F(KAnonymityTrustTokenGetterTest, RecordTokenLatency) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::HistogramTester hist;
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [](absl::optional<KeyAndNonUniqueUserId> result) {
+                ASSERT_TRUE(result);
+                EXPECT_EQ(2, result->non_unique_user_id);
+              })));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  base::RunLoop run_loop;
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                ASSERT_TRUE(result);
+                EXPECT_EQ(2, result->non_unique_user_id);
+                run_loop.Quit();
+              })));
+  RespondWithOAuthToken(base::Time::Max());
+  task_environment()->FastForwardBy(base::Seconds(1));
+  RespondWithTrustTokenNonUniqueUserId(2);
+  task_environment()->FastForwardBy(base::Seconds(1));
+  RespondWithTrustTokenKeys(2, base::Time::Max());
+  task_environment()->FastForwardBy(base::Seconds(1));
+  RespondWithTrustTokenIssued(2);
+  RespondWithTrustTokenIssued(2);
+  run_loop.Run();
+
+  CheckHistogramActions(
+      hist, {{KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey, 2},
+             {KAnonymityTrustTokenGetterAction::kRequestAccessToken, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey, 1},
+             {KAnonymityTrustTokenGetterAction::kFetchTrustToken, 2},
+             {KAnonymityTrustTokenGetterAction::kGetTrustTokenSuccess, 2}});
+
+  hist.ExpectTimeBucketCount(
+      "Chrome.KAnonymityService.TrustTokenGetter.Latency", base::Seconds(4), 1);
+  hist.ExpectTimeBucketCount(
+      "Chrome.KAnonymityService.TrustTokenGetter.Latency", base::Seconds(3), 1);
+  hist.ExpectTotalCount("Chrome.KAnonymityService.TrustTokenGetter.Latency", 2);
 }

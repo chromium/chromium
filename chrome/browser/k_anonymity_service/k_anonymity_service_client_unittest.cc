@@ -5,8 +5,11 @@
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_client.h"
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -97,6 +100,32 @@ class KAnonymityServiceClientTest : public testing::Test {
         "");
   }
 
+  template <typename A>
+  void CheckHistogramActions(const std::string& uma_key,
+                             const base::HistogramTester& hist,
+                             const base::flat_map<A, size_t> actions) {
+    size_t event_count = 0;
+    for (auto action : actions) {
+      hist.ExpectBucketCount(uma_key, action.first, action.second);
+      event_count += action.second;
+    }
+    hist.ExpectTotalCount(uma_key, event_count);
+  }
+
+  void CheckJoinSetHistogramActions(
+      const base::HistogramTester& hist,
+      const base::flat_map<KAnonymityServiceJoinSetAction, size_t> actions) {
+    CheckHistogramActions("Chrome.KAnonymityService.JoinSet.Action", hist,
+                          actions);
+  }
+
+  void CheckQuerySetHistogramActions(
+      const base::HistogramTester& hist,
+      const base::flat_map<KAnonymityServiceQuerySetAction, size_t> actions) {
+    CheckHistogramActions("Chrome.KAnonymityService.QuerySet.Action", hist,
+                          actions);
+  }
+
   Profile* profile() { return profile_.get(); }
 
  private:
@@ -110,6 +139,7 @@ class KAnonymityServiceClientTest : public testing::Test {
 TEST_F(KAnonymityServiceClientTest, TryJoinSetFetchTokenFails) {
   InitializeIdentity(false);
   KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   k_service.JoinSet("1",
                     base::OnceCallback<void(bool)>(
@@ -118,11 +148,15 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetFetchTokenFails) {
                           run_loop.Quit();
                         })));
   run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kJoinSetRequestFailed, 1}});
 }
 
 TEST_F(KAnonymityServiceClientTest, TryJoinSetSuccess) {
   InitializeIdentity(true);
   KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   k_service.JoinSet("1",
                     base::OnceCallback<void(bool)>(
@@ -134,14 +168,18 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetSuccess) {
   RespondWithTrustTokenKeys(2);
   RespondWithTrustTokenIssued(2);
   run_loop.Run();
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 1},
+             {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 1}});
 }
 
 TEST_F(KAnonymityServiceClientTest, TryJoinSetRepeatedly) {
   InitializeIdentity(true);
   KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   int callback_count = 0;
-  for (int i = 0; i < 10; i++) {
+  for (size_t i = 0; i < 10; i++) {
     k_service.JoinSet("1",
                       base::OnceCallback<void(bool)>(base::BindLambdaForTesting(
                           [&callback_count, &run_loop, i](bool result) {
@@ -159,11 +197,15 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetRepeatedly) {
     RespondWithTrustTokenIssued(2);
   run_loop.Run();
   EXPECT_EQ(10, callback_count);
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 10},
+             {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 10}});
 }
 
 TEST_F(KAnonymityServiceClientTest, TryJoinSetOneAtATime) {
   InitializeIdentity(true);
   KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
     base::RunLoop run_loop;
@@ -184,11 +226,15 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetOneAtATime) {
     run_loop.Run();
   }
   EXPECT_EQ(10, callback_count);
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 10},
+             {KAnonymityServiceJoinSetAction::kJoinSetSuccess, 10}});
 }
 
 TEST_F(KAnonymityServiceClientTest, TryJoinSetFailureDropsAllRequests) {
   InitializeIdentity(true);
   KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
@@ -206,10 +252,14 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetFailureDropsAllRequests) {
       "generateShortIdentifier");
   run_loop.Run();
   EXPECT_EQ(10, callback_count);
+  CheckJoinSetHistogramActions(
+      hist, {{KAnonymityServiceJoinSetAction::kJoinSet, 10},
+             {KAnonymityServiceJoinSetAction::kJoinSetRequestFailed, 10}});
 }
 
 TEST_F(KAnonymityServiceClientTest, TryQuerySetAllNotKAnon) {
   KAnonymityServiceClient k_service(profile());
+  base::HistogramTester hist;
   base::RunLoop run_loop;
   std::vector<std::string> sets;
   sets.push_back("1");
@@ -224,4 +274,7 @@ TEST_F(KAnonymityServiceClientTest, TryQuerySetAllNotKAnon) {
             run_loop.Quit();
           })));
   run_loop.Run();
+  CheckQuerySetHistogramActions(
+      hist, {{KAnonymityServiceQuerySetAction::kQuerySet, 1}});
+  hist.ExpectUniqueSample("Chrome.KAnonymityService.QuerySet.Size", 2, 1);
 }

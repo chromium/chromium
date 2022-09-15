@@ -81,6 +81,15 @@ class KAnonymityTrustTokenGetter {
     base::Time expiration;
   };
 
+  struct PendingRequest {
+    explicit PendingRequest(TryGetTrustTokenAndKeyCallback callback);
+    ~PendingRequest();
+    PendingRequest(PendingRequest&&) noexcept;
+    PendingRequest& operator=(PendingRequest&&) noexcept;
+    base::Time request_start;
+    TryGetTrustTokenAndKeyCallback callback;
+  };
+
   // Entry point for processing the request on the front of the queue.
   void TryGetTrustTokenAndKeyInternal();
 
@@ -135,7 +144,7 @@ class KAnonymityTrustTokenGetter {
   signin::AccessTokenInfo access_token_;
   KeyAndNonUniqueUserIdWithExpiration
       key_and_non_unique_user_id_with_expiration_;
-  base::circular_deque<TryGetTrustTokenAndKeyCallback> pending_callbacks_;
+  base::circular_deque<PendingRequest> pending_callbacks_;
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

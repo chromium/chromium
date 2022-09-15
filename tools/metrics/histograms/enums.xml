@@ -53230,6 +53230,39 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="Normal navigation"/>
 </enum>
 
+<enum name="KAnonymityServiceJoinSetAction">
+  <int value="0" label="JoinSet"/>
+  <int value="1" label="JoinSetSuccess"/>
+  <int value="2" label="FetchJoinSetOHTTPKey"/>
+  <int value="3" label="FetchJoinSetOHTTPKeyFailed"/>
+  <int value="4" label="SendJoinSetRequest"/>
+  <int value="5" label="JoinSetRequestFailed"/>
+</enum>
+
+<enum name="KAnonymityServiceQuerySetAction">
+  <int value="0" label="QuerySet"/>
+  <int value="1" label="QuerySetsSuccess"/>
+  <int value="2" label="FetchQuerySetOHTTPKey"/>
+  <int value="3" label="FetchQuerySetOHTTPKeyFailed"/>
+  <int value="4" label="SendQuerySetRequest"/>
+  <int value="5" label="QuerySetRequestFailed"/>
+</enum>
+
+<enum name="KAnonymityTrustTokenGetterAction">
+  <int value="0" label="TryGetTrustTokenAndKey"/>
+  <int value="1" label="GetTrustTokenSuccess"/>
+  <int value="2" label="RequestAccessToken"/>
+  <int value="3" label="AccessTokenRequestFailed"/>
+  <int value="4" label="FetchNonUniqueClientID"/>
+  <int value="5" label="FetchNonUniqueClientIDFailed"/>
+  <int value="6" label="FetchNonUniqueClientIDParseError"/>
+  <int value="7" label="FetchTrustTokenKey"/>
+  <int value="8" label="FetchTrustTokenKeyFailed"/>
+  <int value="9" label="FetchTrustTokenKeyParseError"/>
+  <int value="10" label="FetchTrustToken"/>
+  <int value="11" label="FetchTrustTokenFailed"/>
+</enum>
+
 <enum name="KeepaliveRequestBlockStatus">
   <int value="0" label="Not Blocked"/>
   <int value="1" label="Blocked due to NetworkContext::CanCreateLoader"/>

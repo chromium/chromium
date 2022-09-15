@@ -8,6 +8,7 @@
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -49,6 +50,18 @@ constexpr net::NetworkTrafficAnnotationTag
 
 }  // namespace
 
+KAnonymityTrustTokenGetter::PendingRequest::PendingRequest(
+    KAnonymityTrustTokenGetter::TryGetTrustTokenAndKeyCallback callback)
+    : request_start(base::Time::Now()), callback(std::move(callback)) {}
+
+KAnonymityTrustTokenGetter::PendingRequest::~PendingRequest() = default;
+
+KAnonymityTrustTokenGetter::PendingRequest::PendingRequest(
+    KAnonymityTrustTokenGetter::PendingRequest&&) noexcept = default;
+KAnonymityTrustTokenGetter::PendingRequest&
+KAnonymityTrustTokenGetter::PendingRequest::operator=(
+    KAnonymityTrustTokenGetter::PendingRequest&&) noexcept = default;
+
 KAnonymityTrustTokenGetter::KAnonymityTrustTokenGetter(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -66,8 +79,10 @@ KAnonymityTrustTokenGetter::~KAnonymityTrustTokenGetter() = default;
 
 void KAnonymityTrustTokenGetter::TryGetTrustTokenAndKey(
     TryGetTrustTokenAndKeyCallback callback) {
+  RecordTrustTokenGetterAction(
+      KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey);
   bool currently_fetching = pending_callbacks_.size() > 0;
-  pending_callbacks_.push_back(std::move(callback));
+  pending_callbacks_.emplace_back(std::move(callback));
   if (currently_fetching)
     return;
   TryGetTrustTokenAndKeyInternal();
@@ -93,6 +108,8 @@ void KAnonymityTrustTokenGetter::RequestAccessToken() {
     FailAllCallbacks();
     return;
   }
+  RecordTrustTokenGetterAction(
+      KAnonymityTrustTokenGetterAction::kRequestAccessToken);
 
   // Choose scopes to obtain for the access token.
   signin::ScopeSet scopes;
@@ -118,12 +135,16 @@ void KAnonymityTrustTokenGetter::OnAccessTokenRequestCompleted(
     signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kAccessTokenRequestFailed);
     FailAllCallbacks();
     return;
   }
 
   if (access_token_info.expiration_time <= base::Time::Now()) {
     // Token we got has already expired.
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kAccessTokenRequestFailed);
     FailAllCallbacks();
   }
 
@@ -141,6 +162,8 @@ void KAnonymityTrustTokenGetter::CheckTrustTokenKeyCommitment() {
 }
 
 void KAnonymityTrustTokenGetter::FetchNonUniqueUserId() {
+  RecordTrustTokenGetterAction(
+      KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID);
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
       GURL(base::StrCat({kKAnonymityAuthServer, kGenNonUniqueUserIdPath}));
@@ -165,6 +188,8 @@ void KAnonymityTrustTokenGetter::OnFetchedNonUniqueUserId(
     std::unique_ptr<std::string> response) {
   url_loader_.reset();
   if (!response) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientIDFailed);
     FailAllCallbacks();
     return;
   }
@@ -178,12 +203,16 @@ void KAnonymityTrustTokenGetter::OnFetchedNonUniqueUserId(
 void KAnonymityTrustTokenGetter::OnParsedNonUniqueUserId(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientIDParseError);
     FailAllCallbacks();
     return;
   }
 
   base::Value::Dict* response_dict = result->GetIfDict();
   if (!response_dict) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientIDParseError);
     FailAllCallbacks();
     return;
   }
@@ -191,6 +220,8 @@ void KAnonymityTrustTokenGetter::OnParsedNonUniqueUserId(
   absl::optional<int> maybe_non_unique_user_id =
       response_dict->FindInt("shortClientIdentifier");
   if (!maybe_non_unique_user_id) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientIDParseError);
     FailAllCallbacks();
     return;
   }
@@ -200,6 +231,8 @@ void KAnonymityTrustTokenGetter::OnParsedNonUniqueUserId(
 
 void KAnonymityTrustTokenGetter::FetchTrustTokenKeyCommitment(
     int non_unique_user_id) {
+  RecordTrustTokenGetterAction(
+      KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey);
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(
       base::StrCat({kKAnonymityAuthServer,
@@ -226,6 +259,8 @@ void KAnonymityTrustTokenGetter::OnFetchedTrustTokenKeyCommitment(
     std::unique_ptr<std::string> response) {
   if (url_loader_->NetError() != net::OK) {
     url_loader_.reset();
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyFailed);
     FailAllCallbacks();
     return;
   }
@@ -246,24 +281,32 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
     int non_unique_user_id,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.has_value()) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
     return;
   }
 
   base::Value::Dict* response_dict = result->GetIfDict();
   if (!response_dict) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
     return;
   }
 
   std::string* maybe_version = response_dict->FindString("protocolVersion");
   if (!maybe_version) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
     return;
   }
 
   const absl::optional<int> maybe_id = response_dict->FindInt("id");
   if (!maybe_id) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
     return;
   }
@@ -271,17 +314,23 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
   const absl::optional<int> maybe_batchsize =
       response_dict->FindInt("batchSize");
   if (!maybe_batchsize) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
     return;
   }
 
   base::Value::List* maybe_keys = response_dict->FindList("keys");
   if (!maybe_keys) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
     return;
   }
 
   if (maybe_keys->empty()) {
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
     return;
   }
@@ -293,6 +342,8 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
     if (!key_commit_dict) {
       DLOG(ERROR) << "Key commitment not a dict: "
                   << key_commitment.DebugString();
+      RecordTrustTokenGetterAction(
+          KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
       FailAllCallbacks();
       return;
     }
@@ -305,12 +356,16 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
     if (!maybe_key || !maybe_key_id || !maybe_expiry) {
       DLOG(ERROR) << "Key commitment missing required field: "
                   << key_commitment.DebugString();
+      RecordTrustTokenGetterAction(
+          KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
       FailAllCallbacks();
       return;
     }
     if (!base::StringToInt64(*maybe_expiry, &expiry)) {
       DLOG(ERROR) << "Key commitment expiry has invalid format: "
                   << *maybe_expiry;
+      RecordTrustTokenGetterAction(
+          KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
       FailAllCallbacks();
       return;
     }
@@ -370,6 +425,8 @@ void KAnonymityTrustTokenGetter::OnHasTrustTokensComplete(
 }
 
 void KAnonymityTrustTokenGetter::FetchTrustToken() {
+  RecordTrustTokenGetterAction(
+      KAnonymityTrustTokenGetterAction::kFetchTrustToken);
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(base::StrCat(
       {kKAnonymityAuthServer,
@@ -408,6 +465,8 @@ void KAnonymityTrustTokenGetter::OnFetchedTrustToken(
   if (url_loader_->NetError() != net::OK) {
     DLOG(ERROR) << "Couldn't get trust token: " << url_loader_->NetError();
     url_loader_.reset();
+    RecordTrustTokenGetterAction(
+        KAnonymityTrustTokenGetterAction::kFetchTrustTokenFailed);
     FailAllCallbacks();
     return;
   }
@@ -415,6 +474,7 @@ void KAnonymityTrustTokenGetter::OnFetchedTrustToken(
   // If the fetch succeeded, that means that the response included the trust
   // tokens we requested. They are stored in the network service so we can
   // redeem them later.
+
   CompleteOneRequest();
 }
 
@@ -424,6 +484,11 @@ void KAnonymityTrustTokenGetter::FailAllCallbacks() {
 }
 
 void KAnonymityTrustTokenGetter::CompleteOneRequest() {
+  RecordTrustTokenGetterAction(
+      KAnonymityTrustTokenGetterAction::kGetTrustTokenSuccess);
+  // Only record timing UMA when we actually fetched a token.
+  RecordTrustTokenGet(pending_callbacks_.front().request_start,
+                      base::Time::Now());
   DoCallback(true);
   if (!pending_callbacks_.empty())
     TryGetTrustTokenAndKeyInternal();
@@ -437,8 +502,10 @@ void KAnonymityTrustTokenGetter::DoCallback(bool status) {
     result = key_and_non_unique_user_id_with_expiration_.key_and_id;
   }
 
-  TryGetTrustTokenAndKeyCallback callback(
-      std::move(pending_callbacks_.front()));
+  // We call the callback *before* removing the current request from the list.
+  // It is possible that the callback may synchronously enqueue another request.
+  // If we remove the current request first then enqueuing the request would
+  // start another thread of execution since there was an empty queue.
+  std::move(pending_callbacks_.front().callback).Run(result);
   pending_callbacks_.pop_front();
-  std::move(callback).Run(result);
 }

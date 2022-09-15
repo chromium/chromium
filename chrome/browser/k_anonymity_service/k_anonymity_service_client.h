@@ -70,6 +70,7 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate {
                        base::OnceCallback<void(bool)> callback);
     ~PendingJoinRequest();
     std::string id;
+    base::Time request_start;
     base::OnceCallback<void(bool)> callback;
   };
 
