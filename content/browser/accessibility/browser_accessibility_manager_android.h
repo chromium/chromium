@@ -92,9 +92,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   BrowserAccessibility* GetFocus() const override;
   void SendLocationChangeEvents(
       const std::vector<blink::mojom::LocationChangesPtr>& changes) override;
-  BrowserAccessibility* RetargetForEvents(
-      BrowserAccessibility* node,
-      RetargetEventType type) const override;
+  ui::AXNode* RetargetForEvents(ui::AXNode* node,
+                                RetargetEventType type) const override;
   void FireBlinkEvent(ax::mojom::Event event_type,
                       BrowserAccessibility* node,
                       int action_request_id) override;

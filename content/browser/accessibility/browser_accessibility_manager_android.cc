@@ -94,8 +94,8 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
   return focus;
 }
 
-BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
-    BrowserAccessibility* node,
+ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
+    ui::AXNode* node,
     RetargetEventType type) const {
   // TODO(crbug.com/1350627): Node should not be null. But this seems to be
   // happening in the wild for reasons not yet determined. Because the only
@@ -112,7 +112,8 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
   // Sometimes we get events on nodes in our internal accessibility tree
   // that aren't exposed on Android. Get |updated| to point to the lowest
   // ancestor that is exposed.
-  BrowserAccessibility* updated = node->PlatformGetLowestPlatformAncestor();
+  BrowserAccessibility* wrapper = GetFromAXNode(node);
+  BrowserAccessibility* updated = wrapper->PlatformGetLowestPlatformAncestor();
   DCHECK(updated);
 
   switch (type) {
@@ -122,7 +123,7 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
       // character with a dot after a short pause. On Android we don't want to
       // fire an event for those changes, but we do want to make sure our
       // internal state is correct, so we call OnDataChanged() and then return.
-      if (updated->IsPasswordField() && node != updated) {
+      if (updated->IsPasswordField() && wrapper != updated) {
         updated->OnDataChanged();
         return nullptr;
       }
@@ -153,7 +154,7 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
       NOTREACHED();
       break;
   }
-  return updated;
+  return updated->node();
 }
 
 void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
