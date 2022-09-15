@@ -50,7 +50,7 @@ function querySelector<E extends Element>(
 // Converts a JS string to mojo_base::mojom::String16 object.
 function strToMojoString16(str: string): {data: number[]} {
   const arr = [];
-  for (var i = 0; i < str.length; i++) {
+  for (let i = 0; i < str.length; i++) {
     arr[i] = str.charCodeAt(i);
   }
   return {data: arr};
