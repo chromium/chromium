@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.supervised_user.website_approval.WebsiteApprovalCoordinator;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -19,13 +22,13 @@ import org.chromium.url.GURL;
 class WebsiteParentApproval {
     // Favicon default specs
     private static final int FAVICON_MIN_SOURCE_SIZE_PIXEL = 16;
-    private static final int FAVICON_DESIRED_SIZE_PIXEL = 32;
 
     /**
-     * Wrapper class used to store a fetched favicon.
+     * Wrapper class used to store a fetched favicon and the fallback monogram icon.
      */
     private static final class FaviconHelper {
         Bitmap mFavicon;
+        Bitmap mFallbackIcon;
 
         public void setFavicon(Bitmap favicon) {
             mFavicon = favicon;
@@ -34,6 +37,28 @@ class WebsiteParentApproval {
         public Bitmap getFavicon() {
             return mFavicon;
         }
+
+        public void setFallbackIcon(Bitmap fallbackIcon) {
+            mFallbackIcon = fallbackIcon;
+        }
+
+        public Bitmap getFallbackIcon() {
+            return mFallbackIcon;
+        }
+    }
+
+    /**
+     * Created a fallback monogram icon from the first letter of the formatted url.
+     */
+    private static Bitmap createFaviconFallback(Resources res, GURL url) {
+        int sizeWidthPx = res.getDimensionPixelSize(R.dimen.monogram_size);
+        int cornerRadiusPx = res.getDimensionPixelSize(R.dimen.monogram_corner_radius);
+        int textSizePx = res.getDimensionPixelSize(R.dimen.monogram_text_size);
+        int backgroundColor = Color.BLUE;
+
+        RoundedIconGenerator roundedIconGenerator = new RoundedIconGenerator(
+                sizeWidthPx, sizeWidthPx, cornerRadiusPx, backgroundColor, textSizePx);
+        return roundedIconGenerator.generateIconForUrl(url);
     }
 
     /**
@@ -57,8 +82,6 @@ class WebsiteParentApproval {
      * @param windowAndroid the window to which the approval UI should be attached
      * @param url the full URL the supervised user navigated to
      *
-     * TODO(crbug.com/1272462): add favicon, callback parameters and specify callback result
-     * values.
      * */
     @CalledByNative
     private static void requestLocalApproval(WindowAndroid windowAndroid, GURL url) {
@@ -68,8 +91,14 @@ class WebsiteParentApproval {
         delegate.requestLocalAuth(windowAndroid, url,
                 (success) -> { onParentAuthComplete(success, windowAndroid, url, faviconHelper); });
 
+        int desiredFaviconWidthPx =
+                windowAndroid.getContext().get().getResources().getDimensionPixelSize(
+                        R.dimen.favicon_size_width);
+        // Trigger favicon fetching asynchronously and create fallback monoggram.
         WebsiteParentApprovalJni.get().fetchFavicon(url, FAVICON_MIN_SOURCE_SIZE_PIXEL,
-                FAVICON_DESIRED_SIZE_PIXEL, (Bitmap favicon) -> faviconHelper.setFavicon(favicon));
+                desiredFaviconWidthPx, (Bitmap favicon) -> faviconHelper.setFavicon(favicon));
+        faviconHelper.setFallbackIcon(
+                createFaviconFallback(windowAndroid.getContext().get().getResources(), url));
     }
 
     /** Displays the screen giving the parent the option to approve or deny the website.*/
@@ -80,6 +109,8 @@ class WebsiteParentApproval {
             return;
         }
 
+        Bitmap favicon = faviconHelper.getFavicon() != null ? faviconHelper.getFavicon()
+                                                            : faviconHelper.getFallbackIcon();
         // Launch the bottom sheet.
         WebsiteApprovalCoordinator websiteApprovalUi = new WebsiteApprovalCoordinator(
                 windowAndroid, url, new WebsiteApprovalCoordinator.CompletionCallback() {
@@ -94,8 +125,8 @@ class WebsiteParentApproval {
                         // TODO(crbug.com/1330897): add metrics.
                         WebsiteParentApprovalJni.get().onCompletion(false);
                     }
-                });
-        // TODO(crbug.com/1340912): consume faviconHelper to set the favicon.
+                }, favicon);
+
         websiteApprovalUi.show();
     }
 

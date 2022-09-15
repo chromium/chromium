@@ -8,4 +8,8 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Website approval bottom sheet -->
     <dimen name="website_approval_horizontal_margin">24dp</dimen>
+    <dimen name="favicon_size_width">24dp</dimen>
+    <dimen name="monogram_corner_radius">4dp</dimen>
+    <dimen name="monogram_size">20dp</dimen>
+    <dimen name="monogram_text_size">14dp</dimen>
 </resources>

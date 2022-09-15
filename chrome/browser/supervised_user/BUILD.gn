@@ -74,6 +74,7 @@ if (is_android) {
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/bottomsheet/android:java",
+      "//components/browser_ui/widget/android:java",
       "//components/signin/public/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_appcompat_appcompat_java",

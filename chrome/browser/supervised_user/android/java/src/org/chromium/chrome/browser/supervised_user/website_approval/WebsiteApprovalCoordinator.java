@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.supervised_user.website_approval;
 
+import android.graphics.Bitmap;
+
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -42,10 +44,11 @@ public class WebsiteApprovalCoordinator {
      * @param url the full URL for which the request is being made (code in this module is
      * responsible for displaying the appropriate part of the URL to the user)
      */
-    public WebsiteApprovalCoordinator(
-            WindowAndroid windowAndroid, GURL url, CompletionCallback completionCallback) {
+    public WebsiteApprovalCoordinator(WindowAndroid windowAndroid, GURL url,
+            CompletionCallback completionCallback, Bitmap favicon) {
         PropertyModel model = new PropertyModel.Builder(WebsiteApprovalProperties.ALL_KEYS)
                                       .with(WebsiteApprovalProperties.URL, url)
+                                      .with(WebsiteApprovalProperties.FAVICON, favicon)
                                       .build();
 
         mBottomSheetController = BottomSheetControllerProvider.from(windowAndroid);

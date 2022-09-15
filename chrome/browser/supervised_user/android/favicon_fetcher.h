@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_FETCHER_H_
 #define CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_FETCHER_H_
 
-#include <string>
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,8 +31,8 @@ class FaviconFetcher {
   void FetchFavicon(
       const GURL& url,
       bool continue_to_server,
-      int min_source_size_in_pixel,
-      int desired_size_in_pixel,
+      int min_source_side_size_in_pixel,
+      int desired_side_size_in_pixel,
       const base::android::ScopedJavaGlobalRef<jobject>& callback);
 
  private:

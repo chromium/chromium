@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.supervised_user.website_approval;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -121,5 +123,10 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
     public void setFullUrlText(String url) {
         TextView urlTextView = mContentView.findViewById(R.id.full_url);
         urlTextView.setText(url);
+    }
+
+    public void setFaviconBitmap(Bitmap bitmap) {
+        ImageView faviconImageView = mContentView.findViewById(R.id.favicon);
+        faviconImageView.setImageBitmap(bitmap);
     }
 }
