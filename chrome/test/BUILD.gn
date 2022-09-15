@@ -2200,6 +2200,7 @@ if (!is_android) {
       "../browser/ui/thumbnails/thumbnail_readiness_tracker_browsertest.cc",
       "../browser/ui/toolbar/toolbar_actions_model_browsertest.cc",
       "../browser/ui/update_chrome_dialog_browsertest.cc",
+      "../browser/ui/user_education/open_page_and_show_help_bubble_browsertest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_dialog_views_browsertest.cc",
       "../browser/ui/views/autofill_assistant/password_change/assistant_stopped_bubble_coordinator_impl_browsertest.cc",
       "../browser/ui/views/bluetooth_device_credentials_view_browsertest.cc",

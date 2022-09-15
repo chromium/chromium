@@ -1445,6 +1445,8 @@ static_library("ui") {
       "user_education/browser_feature_promo_snooze_service.h",
       "user_education/browser_tutorial_service.cc",
       "user_education/browser_tutorial_service.h",
+      "user_education/open_page_and_show_help_bubble.cc",
+      "user_education/open_page_and_show_help_bubble.h",
       "user_education/reopen_tab_in_product_help.cc",
       "user_education/reopen_tab_in_product_help.h",
       "user_education/reopen_tab_in_product_help_factory.cc",
