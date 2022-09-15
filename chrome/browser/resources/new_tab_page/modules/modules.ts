@@ -257,7 +257,8 @@ export class ModulesElement extends PolymerElement {
     const modules = await ModuleRegistry.getInstance().initializeModules(
         loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
-      NewTabPageProxy.getInstance().handler.onModulesLoadedWithData();
+      NewTabPageProxy.getInstance().handler.onModulesLoadedWithData(
+          modules.map(module => module.descriptor.id));
       const moduleContainers = modules.map(module => {
         const moduleWrapper = new ModuleWrapperElement();
         moduleWrapper.module = module;

@@ -171,6 +171,8 @@ const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
 const base::Feature kNtpShortcuts{"NtpShortcuts",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
+const char kNtpModulesEligibleForHappinessTrackingSurveyParam[] =
+    "NtpModulesEligibleForHappinessTrackingSurveyParam";
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
 const char kNtpModulesOrderParam[] = "NtpModulesOrderParam";

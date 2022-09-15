@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -72,6 +74,16 @@ namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 const int64_t kMaxModuleFreImpressions = 8;
+
+// Returns a list of module IDs that are eligible for HATS.
+std::vector<std::string> GetSurveyEligibleModuleIds() {
+  return base::SplitString(
+      base::GetFieldTrialParamValueByFeature(
+          features::kHappinessTrackingSurveysForDesktopNtpModules,
+          ntp_features::kNtpModulesEligibleForHappinessTrackingSurveyParam),
+      ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
 
 // Returns true if the scrim (dark gradient overlay) should be hidden for the
 // NTP's background image. This is done to fix specific GWS themes where the
@@ -661,7 +673,18 @@ void NewTabPageHandler::UpdateDisabledModules() {
       std::move(module_ids));
 }
 
-void NewTabPageHandler::OnModulesLoadedWithData() {
+void NewTabPageHandler::OnModulesLoadedWithData(
+    const std::vector<std::string>& module_ids) {
+  std::vector<std::string> survey_eligible_module_ids =
+      GetSurveyEligibleModuleIds();
+  // If none of the loaded modules are eligible for HATS, return early.
+  if (!std::any_of(module_ids.begin(), module_ids.end(),
+                   [&survey_eligible_module_ids](std::string id) {
+                     return base::Contains(survey_eligible_module_ids, id);
+                   })) {
+    return;
+  }
+
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
   CHECK(hats_service);

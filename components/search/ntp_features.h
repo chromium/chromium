@@ -86,6 +86,8 @@ extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 extern const char kNtpDriveModuleExperimentGroupParam[];
 // Parameter determining the type of middle slot promo data to render.
 extern const char kNtpMiddleSlotPromoDismissalParam[];
+// Parameter determining the modules that are eligigle for HATS.
+extern const char kNtpModulesEligibleForHappinessTrackingSurveyParam[];
 // Parameter determining the type of Photos data to render.
 extern const char kNtpPhotosModuleDataParam[];
 // Parameter determining the art work in opt-in card.
