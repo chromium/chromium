@@ -248,28 +248,33 @@ class DiskMountManagerImpl : public DiskMountManager,
     std::vector<std::string> devices_to_unmount;
 
     // Get list of all devices to unmount.
-    int device_path_len = device_path.length();
     for (const auto& disk : disks_) {
+      DCHECK(disk);
       if (!disk->mount_path().empty() &&
-          strncmp(device_path.c_str(), disk->device_path().c_str(),
-                  device_path_len) == 0) {
+          base::StartsWith(disk->device_path(), device_path)) {
         devices_to_unmount.push_back(disk->mount_path());
       }
     }
 
-    // We should detect at least original device.
+    // Is there anything to unmount?
     if (devices_to_unmount.empty()) {
-      if (disks_.find(device_path) == disks_.end()) {
-        LOG(WARNING) << "Cannot find device '" << device_path << "'";
+      const auto it = disks_.find(device_path);
+      if (it == disks_.end()) {
+        LOG(ERROR) << "Cannot find device '" << device_path << "'";
         std::move(callback).Run(MountError::kInvalidDevicePath);
         return;
       }
 
       // Nothing to unmount.
+      DCHECK(*it);
+      DCHECK_EQ((*it)->device_path(), device_path);
+      DCHECK_EQ((*it)->mount_path(), "");
+      LOG(WARNING) << "Disk '" << device_path << "' is already unmounted";
       std::move(callback).Run(MountError::kNone);
       return;
     }
 
+    // There is something to unmount.
     std::unique_ptr<UnmountDeviceRecursivelyCallbackData> cb_data =
         std::make_unique<UnmountDeviceRecursivelyCallbackData>(
             std::move(callback));
@@ -279,6 +284,7 @@ class DiskMountManagerImpl : public DiskMountManager,
         BindOnce(&OnAllUnmountDeviceRecursively, std::move(cb_data)));
 
     for (const std::string& device : devices_to_unmount) {
+      VLOG(1) << "Unmounting '" << device << "'...";
       cros_disks_client_->Unmount(
           device, BindOnce(&DiskMountManagerImpl::OnUnmountDeviceRecursively,
                            weak_ptr_factory_.GetWeakPtr(), raw_cb_data, device,
