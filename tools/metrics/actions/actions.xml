@@ -16852,6 +16852,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensIOS.NewTabPageEntryPointTapped">
+  <owner>hujasonx@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    Recorded when the user taps the entrypoint to Lens in the New Tab Page. (iOS
+    only).
+  </description>
+</action>
+
 <action name="Mobile.OmniboxContextMenu.SearchCopiedImage">
   <owner>rkgibson@google.com</owner>
   <owner>stkhapugin@google.com</owner>

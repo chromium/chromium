@@ -392,6 +392,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)openLens {
+  base::RecordAction(
+      UserMetricsAction("Mobile.LensIOS.NewTabPageEntrypointTapped"));
   [self.dispatcher openInputSelectionForEntrypoint:LensEntrypoint::NewTabPage];
 }
 
