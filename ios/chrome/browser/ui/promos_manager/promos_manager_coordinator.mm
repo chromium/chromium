@@ -10,18 +10,22 @@
 #import "base/check.h"
 #import "base/containers/small_map.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
+#import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_view_provider.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,6 +49,11 @@
   base::small_map<
       std::map<promos_manager::Promo, id<BanneredPromoViewProvider>>>
       _banneredViewProviderPromos;
+
+  // Promos that conform to the StandardPromoAlertProvider protocol.
+  base::small_map<
+      std::map<promos_manager::Promo, id<StandardPromoAlertProvider>>>
+      _alertProviderPromos;
 }
 
 // A mediator that observes when it's a good time to display a promo.
@@ -84,10 +93,12 @@
   auto handler_it = _displayHandlerPromos.find(promo);
   auto provider_it = _viewProviderPromos.find(promo);
   auto bannered_provider_it = _banneredViewProviderPromos.find(promo);
+  auto alert_provider_it = _alertProviderPromos.find(promo);
 
   DCHECK(handler_it == _displayHandlerPromos.end() ||
          provider_it == _viewProviderPromos.end() ||
-         bannered_provider_it == _banneredViewProviderPromos.end());
+         bannered_provider_it == _banneredViewProviderPromos.end() ||
+         alert_provider_it == _alertProviderPromos.end());
 
   if (handler_it != _displayHandlerPromos.end()) {
     id<StandardPromoDisplayHandler> handler = handler_it->second;
@@ -125,6 +136,57 @@
                                         completion:nil];
 
     [self.mediator recordImpression:banneredProvider.identifier];
+  } else if (alert_provider_it != _alertProviderPromos.end()) {
+    id<StandardPromoAlertProvider> alertProvider = alert_provider_it->second;
+
+    DCHECK([alertProvider.title length] != 0);
+    DCHECK([alertProvider.message length] != 0);
+    // The "Default Action" should always be implemented by feature
+    DCHECK([alertProvider
+        respondsToSelector:@selector(standardPromoAlertDefaultAction)]);
+
+    UIAlertController* alert = [UIAlertController
+        alertControllerWithTitle:alertProvider.title
+                         message:alertProvider.message
+                  preferredStyle:UIAlertControllerStyleAlert];
+
+    NSString* defaultActionButtonText =
+        [alertProvider respondsToSelector:@selector(defaultActionButtonText)]
+            ? alertProvider.defaultActionButtonText
+            : l10n_util::GetNSString(
+                  IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_PRIMARY_BUTTON_TEXT);
+    NSString* cancelActionButtonText =
+        [alertProvider respondsToSelector:@selector(cancelActionButtonText)]
+            ? alertProvider.cancelActionButtonText
+            : l10n_util::GetNSString(
+                  IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_CANCEL_BUTTON_TEXT);
+
+    UIAlertAction* defaultAction = [UIAlertAction
+        actionWithTitle:defaultActionButtonText
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction* action) {
+                  if ([alertProvider respondsToSelector:@selector
+                                     (standardPromoAlertDefaultAction)])
+                    [alertProvider standardPromoAlertDefaultAction];
+                }];
+
+    UIAlertAction* cancelAction = [UIAlertAction
+        actionWithTitle:cancelActionButtonText
+                  style:UIAlertActionStyleCancel
+                handler:^(UIAlertAction* action) {
+                  if ([alertProvider respondsToSelector:@selector
+                                     (standardPromoAlertCancelAction)])
+                    [alertProvider standardPromoAlertCancelAction];
+                }];
+
+    [alert addAction:defaultAction];
+    [alert addAction:cancelAction];
+
+    [self.baseViewController presentViewController:alert
+                                          animated:YES
+                                        completion:nil];
+
+    [self.mediator recordImpression:alertProvider.identifier];
   } else {
     NOTREACHED();
   }
@@ -259,6 +321,12 @@
     _banneredViewProviderPromos
         [promos_manager::Promo::PostRestoreSignInFullscreen] =
             [[PostRestoreSignInProvider alloc] init];
+
+  // StandardPromoAlertProvider promo(s) below:
+  if (post_restore_signin::features::CurrentPostRestoreSignInType() ==
+      post_restore_signin::features::PostRestoreSignInType::kAlert)
+    _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
+        [[PostRestoreSignInProvider alloc] init];
 }
 
 - (base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
@@ -277,6 +345,10 @@
   for (auto const& [promo, banneredProvider] : _banneredViewProviderPromos)
     if ([banneredProvider respondsToSelector:@selector(impressionLimits)])
       result[promo] = banneredProvider.impressionLimits;
+
+  for (auto const& [promo, alertProvider] : _alertProviderPromos)
+    if ([alertProvider respondsToSelector:@selector(impressionLimits)])
+      result[promo] = alertProvider.impressionLimits;
 
   return result;
 }

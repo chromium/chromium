@@ -1847,6 +1847,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_SECONDARY_ACTION" desc="The secondary action text of the fullscreen, post restore sign-in promo. [iOS only]">
         Don't Sign In
       </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_TITLE" desc="The title text of the alert post restore sign-in promo. [iOS only]">
+        Sync Isn't Working
+      </message>
+      <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE" desc="The message text of the alert post restore sign-in promo. [iOS only]">
+        Sign in again to your account <ph name="USER_NAME">$1<ex>example@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_PRIMARY_BUTTON_TEXT" desc="The default text for the primary button alert promo. [iOS only]">
+        OK
+      </message>
+      <message name="IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_CANCEL_BUTTON_TEXT" desc="The default text for the cancel button alert promo. [iOS only]">
+        Cancel
+      </message>
       <message name="IDS_IOS_PRINT_PDF_ERROR_SUBTITLE" desc="Message of a popup window indicating that the printing operation did not succeed. [Length: 100em] [iOS only]">
         Make sure you have a network connection, and try again.
       </message>

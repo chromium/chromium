@@ -6,10 +6,13 @@
 
 #import "base/check_op.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,6 +49,33 @@
 
   // Returns the fullscreen, FRE-like promo as the default.
   return promos_manager::Promo::PostRestoreSignInFullscreen;
+}
+
+#pragma mark - StandardPromoAlertHandler
+
+- (void)standardPromoAlertDefaultAction {
+  // TODO(crbug.com/1363283): Implement `standardPromoAlertDefaultAction`.
+}
+
+- (void)standardPromoAlertCancelAction {
+  // TODO(crbug.com/1363283): Implement `standardPromoAlertCancelAction`.
+}
+
+#pragma mark - StandardPromoAlertProvider
+
+- (NSString*)title {
+  return l10n_util::GetNSString(
+      IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE);
+}
+
+- (NSString*)message {
+  // TODO(crbug.com/1363906): Remove mock user data, `userEmail`, below, and
+  // instead pass the user email off ChromeIdentity.
+  NSString* userEmail = @"elisa@example.test";
+
+  return l10n_util::GetNSStringF(
+      IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE,
+      base::SysNSStringToUTF16(userEmail));
 }
 
 #pragma mark - StandardPromoViewProvider
