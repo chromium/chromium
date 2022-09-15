@@ -753,9 +753,16 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 }
 
-void ChromeContentRendererClient::WebViewCreated(blink::WebView* web_view,
-                                                 bool was_created_by_renderer) {
+void ChromeContentRendererClient::WebViewCreated(
+    blink::WebView* web_view,
+    bool was_created_by_renderer,
+    const url::Origin* outermost_origin) {
   new prerender::NoStatePrefetchClient(web_view);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  ChromeExtensionsRendererClient::GetInstance()->WebViewCreated(
+      web_view, outermost_origin);
+#endif
 }
 
 SkBitmap* ChromeContentRendererClient::GetSadPluginBitmap() {

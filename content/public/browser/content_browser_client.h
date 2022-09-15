@@ -2321,6 +2321,12 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Called when a `SharedStorageWorkletHost` is created for `rfh`.
   virtual void OnSharedStorageWorkletHostCreated(RenderFrameHost* rfh) {}
+
+  // Whether the outermost origin should be sent to the renderer. This is
+  // needed if the outermost origin is an extension, but for normal pages
+  // we do not want to expose this.
+  virtual bool ShouldSendOutermostOriginToRenderer(
+      const url::Origin& outermost_origin);
 };
 
 }  // namespace content

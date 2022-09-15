@@ -21,6 +21,7 @@ class WebFrame;
 class WebLocalFrame;
 struct WebPluginParams;
 class WebURL;
+class WebView;
 }
 
 namespace content {
@@ -82,6 +83,8 @@ class ChromeExtensionsRendererClient
 
   // See ChromeContentRendererClient methods with the same names.
   void RenderThreadStarted();
+  void WebViewCreated(blink::WebView* web_view,
+                      const url::Origin* outermost_origin);
   void RenderFrameCreated(content::RenderFrame* render_frame,
                           service_manager::BinderRegistry* registry);
   bool OverrideCreatePlugin(content::RenderFrame* render_frame,

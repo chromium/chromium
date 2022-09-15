@@ -43,7 +43,8 @@ class AwContentRendererClient : public content::ContentRendererClient,
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void WebViewCreated(blink::WebView* web_view,
-                      bool was_created_by_renderer) override;
+                      bool was_created_by_renderer,
+                      const url::Origin* outermost_origin) override;
   void PrepareErrorPage(content::RenderFrame* render_frame,
                         const blink::WebURLError& error,
                         const std::string& http_method,

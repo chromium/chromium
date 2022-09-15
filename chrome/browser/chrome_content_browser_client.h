@@ -824,6 +824,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnSharedStorageWorkletHostCreated(
       content::RenderFrameHost* rfh) override;
 
+  bool ShouldSendOutermostOriginToRenderer(
+      const url::Origin& outermost_origin) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

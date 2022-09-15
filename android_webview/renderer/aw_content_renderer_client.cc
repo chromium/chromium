@@ -168,8 +168,10 @@ void AwContentRendererClient::RenderFrameCreated(
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
 }
 
-void AwContentRendererClient::WebViewCreated(blink::WebView* web_view,
-                                             bool was_created_by_renderer) {
+void AwContentRendererClient::WebViewCreated(
+    blink::WebView* web_view,
+    bool was_created_by_renderer,
+    const url::Origin* outermost_origin) {
   AwRenderViewExt::WebViewCreated(web_view, was_created_by_renderer);
 }
 

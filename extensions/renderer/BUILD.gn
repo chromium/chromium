@@ -108,6 +108,8 @@ source_set("renderer") {
     "extension_throttle_manager.h",
     "extension_url_loader_throttle.cc",
     "extension_url_loader_throttle.h",
+    "extension_web_view_helper.cc",
+    "extension_web_view_helper.h",
     "extensions_render_frame_observer.cc",
     "extensions_render_frame_observer.h",
     "extensions_renderer_client.cc",

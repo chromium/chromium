@@ -427,7 +427,7 @@ bool RenderViewHostImpl::CreateRenderView(
         RenderFrameProxyHost::FromID(GetProcess()->GetID(), proxy_route_id);
     DCHECK(main_rfph);
   }
-  const FrameTreeNode* const frame_tree_node =
+  FrameTreeNode* const frame_tree_node =
       main_rfh ? main_rfh->frame_tree_node() : main_rfph->frame_tree_node();
 
   mojom::CreateViewParamsPtr params = mojom::CreateViewParams::New();
@@ -496,6 +496,14 @@ bool RenderViewHostImpl::CreateRenderView(
   params->window_was_opened_by_another_window =
       window_was_opened_by_another_window;
   params->base_background_color = delegate_->GetBaseBackgroundColor();
+  if (auto* parent_rfh = frame_tree_node->GetParentOrOuterDocument()) {
+    url::Origin outermost_origin =
+        parent_rfh->GetOutermostMainFrame()->GetLastCommittedOrigin();
+    if (GetContentClient()->browser()->ShouldSendOutermostOriginToRenderer(
+            outermost_origin)) {
+      params->outermost_origin = outermost_origin;
+    }
+  }
 
   bool is_portal = frame_tree_->delegate()->IsPortal();
   bool is_guest_view = delegate_->IsGuest();

@@ -1395,4 +1395,9 @@ bool ContentBrowserClient::OpenExternally(RenderFrameHost* opener,
   return false;
 }
 
+bool ContentBrowserClient::ShouldSendOutermostOriginToRenderer(
+    const url::Origin& outermost_origin) {
+  return false;
+}
+
 }  // namespace content

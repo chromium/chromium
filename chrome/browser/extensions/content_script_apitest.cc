@@ -2165,4 +2165,95 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest,
   ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
 }
 
+class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {
+ protected:
+  ContentScriptApiFencedFrameTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames, {{"implementation_type", "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
+    UseHttpsTestServer();
+  }
+  ~ContentScriptApiFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Inject two extensions with matching rules. Only the extension
+// that matches the outermost extension's content_scripts should
+// get injected.
+// The documentIdle extension should execute (sending 'done').
+// The documentStart extension should not-execute (sending 'fail') since it
+// isn't the parent extension of the fenced frame.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
+                       InjectionMatchesCorrectExtension) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const char kDocumentIdleExtensionManifest[] =
+      R"MANIFEST({
+        "name": "Document Idle Extesnsion",
+        "version": "0.1",
+        "manifest_version": 3,
+        "content_scripts": [{
+          "matches": ["https://*/fenced_frames/title1.html"],
+          "js": ["script.js"],
+          "run_at": "document_idle",
+          "all_frames": true
+        }]
+      })MANIFEST";
+
+  const char kDocumentStartExtensionManifest[] =
+      R"MANIFEST({
+        "name": "Document Start extension",
+        "version": "0.1",
+        "manifest_version": 3,
+        "content_scripts": [{
+          "matches": ["https://*/fenced_frames/title1.html"],
+          "js": ["script.js"],
+          "run_at": "document_start",
+          "all_frames": true
+        }]
+      })MANIFEST";
+
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  const char kFencedFrameHtml[] =
+      R"HTML(<html>Fenced Frame Test!<fencedframe src="%s">
+          </fencedframe></html>)HTML";
+
+  TestExtensionDir document_idle_extension_dir;
+  document_idle_extension_dir.WriteManifest(kDocumentIdleExtensionManifest);
+  document_idle_extension_dir.WriteFile(
+      FILE_PATH_LITERAL("test.html"),
+      base::StringPrintf(kFencedFrameHtml, fenced_frame_url.spec().c_str()));
+  document_idle_extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                                        kNonBlockingScript);
+  const Extension* extension =
+      LoadExtension(document_idle_extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  TestExtensionDir document_start_extension_dir;
+  const char kFailureScript[] = "chrome.test.sendMessage('fail');";
+
+  document_start_extension_dir.WriteManifest(kDocumentStartExtensionManifest);
+  document_start_extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                                         kFailureScript);
+
+  ASSERT_TRUE(LoadExtension(document_start_extension_dir.UnpackedPath()));
+
+  ExtensionTestMessageListener listener;
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL extension_test_url = extension->GetResourceURL("test.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
+
+  EXPECT_EQ(extension_test_url,
+            tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_EQ("done", listener.message());
+}
+
 }  // namespace extensions

@@ -6886,3 +6886,18 @@ void ChromeContentBrowserClient::OnSharedStorageWorkletHostCreated(
     observer->OnSharedStorageWorkletHostCreated(rfh);
   }
 }
+
+bool ChromeContentBrowserClient::ShouldSendOutermostOriginToRenderer(
+    const url::Origin& outermost_origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // We only want to send the outermost origin if it is an extension scheme.
+  // We do not send the outermost origin to every renderer to avoid leaking
+  // additional information into the renderer about the embedder. For
+  // extensions though this is required for the way content injection API
+  // works. We do not want one extension injecting content into the context
+  // of another extension.
+  return outermost_origin.scheme() == extensions::kExtensionScheme;
+#else
+  return false;
+#endif
+}

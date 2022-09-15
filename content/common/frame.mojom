@@ -60,6 +60,7 @@ import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";
 
@@ -148,6 +149,12 @@ struct CreateViewParams {
   // Used by fenced frames to determine various security restrictions such as
   // the URL type and size constraints.
   blink.mojom.FencedFrameMode fenced_frame_mode;
+
+  // If the view is created embedded inside an extension, what the outermost
+  // origin is. This is not set for non-extensions to avoid leaking
+  // information into other renderers about what the embedding page is,
+  // however it is required for extensions.
+  url.mojom.Origin? outermost_origin;
 
   // Endpoint for any messages that are broadcast to all views in a WebContents.
   pending_associated_receiver<blink.mojom.PageBroadcast> blink_page_broadcast;
