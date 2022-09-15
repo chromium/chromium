@@ -1213,8 +1213,16 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                  {{256, kAll}, kInstallableIconTopLeftColor}});
 }
 
+// TODO(crbug.com/1342625): Test is flaky.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckDoesFindIconUrlChangeForDefaultApps \
+  DISABLED_CheckDoesFindIconUrlChangeForDefaultApps
+#else
+#define MAYBE_CheckDoesFindIconUrlChangeForDefaultApps \
+  CheckDoesFindIconUrlChangeForDefaultApps
+#endif
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckDoesFindIconUrlChangeForDefaultApps) {
+                       MAYBE_CheckDoesFindIconUrlChangeForDefaultApps) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",
