@@ -24,6 +24,7 @@
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
+#import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
 #include "components/password_manager/ios/test_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -44,6 +45,7 @@ using autofill::FormData;
 using autofill::PasswordFormFillData;
 using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
+using password_manager::IsCrossOriginIframe;
 using password_manager::PasswordGenerationFrameHelper;
 using ::testing::_;
 using ::testing::Return;
@@ -981,8 +983,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   PasswordFormFillData form_fill_data;
   test_helpers::SetPasswordFormFillData(
@@ -1058,8 +1059,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   [[[form_helper_ expect] ignoringNonObjectArgs]
       setUpForUniqueIDsWithInitialState:1
@@ -1089,8 +1089,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   if (IsCrossOriginSupportEnabled()) {
     OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
@@ -1114,8 +1113,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
@@ -1162,8 +1160,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
@@ -1216,8 +1213,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
 
@@ -1244,8 +1240,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   id mock_completion_handler =
       [OCMArg checkWithBlock:^(void (^completionHandler)(
@@ -1284,8 +1279,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-              frame->GetSecurityOrigin());
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame));
 
   if (IsCrossOriginSupportEnabled()) {
     OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
