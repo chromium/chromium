@@ -877,7 +877,7 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kLockScreen);
 
   // We already have a generic message for declaring externally_connectable.
-  skip.insert(APIPermissionID::kExternallyConnectableAllUrls);
+  skip.insert(APIPermissionID::kDeprecated_ExternallyConnectableAllUrls);
 
   const PermissionMessageProvider* provider = PermissionMessageProvider::Get();
   PermissionsInfo* info = PermissionsInfo::GetInstance();

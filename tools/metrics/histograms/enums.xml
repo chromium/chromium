@@ -36094,7 +36094,7 @@ Called by update_extension_permission.py.-->
   <int value="60" label="kDeleted_ExperienceSamplingPrivate"/>
   <int value="61" label="kExperimental"/>
   <int value="62" label="kDeleted_ExtensionView"/>
-  <int value="63" label="kExternallyConnectableAllUrls"/>
+  <int value="63" label="kDeprecated_ExternallyConnectableAllUrls"/>
   <int value="64" label="kFeedbackPrivate"/>
   <int value="65" label="kFileBrowserHandler"/>
   <int value="66" label="kFileBrowserHandlerInternal"/>

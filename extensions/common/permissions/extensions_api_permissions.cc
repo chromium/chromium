@@ -66,7 +66,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kDiagnostics, "diagnostics",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kDns, "dns"},
-    {APIPermissionID::kExternallyConnectableAllUrls,
+    {APIPermissionID::kDeprecated_ExternallyConnectableAllUrls,
      "externally_connectable.all_urls",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kFeedbackPrivate, "feedbackPrivate",
