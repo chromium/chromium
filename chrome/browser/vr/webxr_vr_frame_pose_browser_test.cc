@@ -150,12 +150,9 @@ std::string GetMatrixAsString(const gfx::Transform& m) {
   // differences.
   return base::StringPrintf(
       "[%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f]",
-      m.matrix().rc(0, 0), m.matrix().rc(1, 0), m.matrix().rc(2, 0),
-      m.matrix().rc(3, 0), m.matrix().rc(0, 1), m.matrix().rc(1, 1),
-      m.matrix().rc(2, 1), m.matrix().rc(3, 1), m.matrix().rc(0, 2),
-      m.matrix().rc(1, 2), m.matrix().rc(2, 2), m.matrix().rc(3, 2),
-      m.matrix().rc(0, 3), m.matrix().rc(1, 3), m.matrix().rc(2, 3),
-      m.matrix().rc(3, 3));
+      m.rc(0, 0), m.rc(1, 0), m.rc(2, 0), m.rc(3, 0), m.rc(0, 1), m.rc(1, 1),
+      m.rc(2, 1), m.rc(3, 1), m.rc(0, 2), m.rc(1, 2), m.rc(2, 2), m.rc(3, 2),
+      m.rc(0, 3), m.rc(1, 3), m.rc(2, 3), m.rc(3, 3));
 }
 
 std::string GetPoseAsString(const Frame& frame) {

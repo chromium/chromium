@@ -191,8 +191,7 @@ gfx::Point3F VrController::Position() const {
 
 void VrController::GetTransform(gfx::Transform* out) const {
   *out = gfx::Transform(Orientation());
-  const gfx::Point3F& position = Position();
-  out->matrix().postTranslate(position.x(), position.y(), position.z());
+  out->PostTranslate3d(Position().OffsetFromOrigin());
 }
 
 void VrController::GetRelativePointerTransform(gfx::Transform* out) const {

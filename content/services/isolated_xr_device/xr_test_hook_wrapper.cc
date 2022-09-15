@@ -29,9 +29,8 @@ PoseFrameData MojoToDevicePoseFrameData(
     device_test::mojom::PoseFrameDataPtr& pose) {
   PoseFrameData ret = {};
   ret.is_valid = !!pose->device_to_origin;
-  if (ret.is_valid) {
-    pose->device_to_origin->matrix().getColMajor(ret.device_to_origin);
-  }
+  if (ret.is_valid)
+    pose->device_to_origin->GetColMajorF(ret.device_to_origin);
 
   return ret;
 }

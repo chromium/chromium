@@ -1594,10 +1594,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   ASSERT_TRUE(
       root_rwhv->GetTransformToViewCoordSpace(child_rwhv, &transform_to_child));
   EXPECT_TRUE(transform_to_child.IsScaleOrTranslation());
-  EXPECT_NEAR(2.f / scale_factor, transform_to_child.matrix().rc(0, 0),
-              kScaleTolerance);
-  EXPECT_NEAR(2.f / scale_factor, transform_to_child.matrix().rc(1, 1),
-              kScaleTolerance);
+  EXPECT_NEAR(2.f / scale_factor, transform_to_child.rc(0, 0), kScaleTolerance);
+  EXPECT_NEAR(2.f / scale_factor, transform_to_child.rc(1, 1), kScaleTolerance);
 
   gfx::PointF child_origin =
       child_rwhv->TransformPointToRootCoordSpaceF(gfx::PointF());
@@ -1606,12 +1604,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   ASSERT_TRUE(child_rwhv->GetTransformToViewCoordSpace(root_rwhv,
                                                        &transform_from_child));
   EXPECT_TRUE(transform_from_child.IsScaleOrTranslation());
-  EXPECT_NEAR(0.5f * scale_factor, transform_from_child.matrix().rc(0, 0),
+  EXPECT_NEAR(0.5f * scale_factor, transform_from_child.rc(0, 0),
               kScaleTolerance);
-  EXPECT_NEAR(0.5f * scale_factor, transform_from_child.matrix().rc(1, 1),
+  EXPECT_NEAR(0.5f * scale_factor, transform_from_child.rc(1, 1),
               kScaleTolerance);
-  EXPECT_EQ(child_origin.x(), transform_from_child.matrix().rc(0, 3));
-  EXPECT_EQ(child_origin.y(), transform_from_child.matrix().rc(1, 3));
+  EXPECT_EQ(child_origin.x(), transform_from_child.rc(0, 3));
+  EXPECT_EQ(child_origin.y(), transform_from_child.rc(1, 3));
 
   gfx::Transform transform_child_to_child =
       transform_from_child * transform_to_child;
@@ -1627,7 +1625,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     for (int row = 0; row < kDim; ++row) {
       for (int col = 0; col < kDim; ++col) {
         EXPECT_NEAR(row == col ? 1.f : 0.f,
-                    transform_child_to_child.matrix().rc(row, col), kTolerance);
+                    transform_child_to_child.rc(row, col), kTolerance);
       }
     }
   }
@@ -7134,7 +7132,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
   float device_scale_factor = current_device_scale_factor();
   gfx::Transform expected_transform1;
   gfx::Transform expected_transform2;
-  expected_transform2.matrix().postTranslate(-100 * device_scale_factor, 0, 0);
+  expected_transform2.PostTranslate(-100 * device_scale_factor, 0);
 
   gfx::Rect expected_region = gfx::ScaleToEnclosingRect(
       gfx::Rect(100, 100), device_scale_factor, device_scale_factor);
