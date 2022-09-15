@@ -26,8 +26,16 @@ void TabDiscardTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Pages can only be discarded while they are in the background, and we only
   // need to inform the user after they have been subsequently reloaded so it
-  // is suffifient to wait for a StartNavigation event before updating this
+  // is sufficient to wait for a StartNavigation event before updating this
   // variable.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    // Ignore navigations from inner frames because we only care about
+    // top-level discards. Ignore same-document navigations because actual
+    // discard reloads will not be same-document navigations and including
+    // them causes the state to get reset.
+    return;
+  }
   was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
   was_animated_ = false;
 }
