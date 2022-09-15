@@ -27,37 +27,38 @@ class FakeChromeIdentityService : public ChromeIdentityService {
 
   // ChromeIdentityService implementation.
   DismissASMViewControllerBlock PresentAccountDetailsController(
-      ChromeIdentity* identity,
+      id<SystemIdentity> identity,
       UIViewController* viewController,
       BOOL animated) override;
   ChromeIdentityInteractionManager* CreateChromeIdentityInteractionManager()
       const override;
   FakeChromeIdentityInteractionManager*
   CreateFakeChromeIdentityInteractionManager() const;
-  void IterateOverIdentities(IdentityIteratorCallback callback) override;
-  void ForgetIdentity(ChromeIdentity* identity,
+  void IterateOverIdentities(SystemIdentityIteratorCallback callback) override;
+  void ForgetIdentity(id<SystemIdentity> identity,
                       ForgetIdentityCallback callback) override;
-  void GetAccessToken(ChromeIdentity* identity,
+  void GetAccessToken(id<SystemIdentity> identity,
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       ios::AccessTokenCallback callback) override;
-  void GetAvatarForIdentity(ChromeIdentity* identity) override;
-  UIImage* GetCachedAvatarForIdentity(ChromeIdentity* identity) override;
-  void GetHostedDomainForIdentity(ChromeIdentity* identity,
+  void GetAvatarForIdentity(id<SystemIdentity> identity) override;
+  UIImage* GetCachedAvatarForIdentity(id<SystemIdentity> identity) override;
+  void GetHostedDomainForIdentity(id<SystemIdentity> identity,
                                   GetHostedDomainCallback callback) override;
   bool IsServiceSupported() override;
-  NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity) override;
+  NSString* GetCachedHostedDomainForIdentity(
+      id<SystemIdentity> identity) override;
 
   MOCK_METHOD1(GetMDMDeviceStatus,
                ios::MDMDeviceStatus(NSDictionary* user_info));
 
   MOCK_METHOD3(HandleMDMNotification,
-               bool(ChromeIdentity* identity,
+               bool(id<SystemIdentity> identity,
                     NSDictionary* user_info,
                     ios::MDMStatusCallback callback));
 
   // Simulates `identity` removed from another Google app.
-  void SimulateForgetIdentityFromOtherApp(ChromeIdentity* identity);
+  void SimulateForgetIdentityFromOtherApp(id<SystemIdentity> identity);
 
   // Simulates reloading the identities from the keychain by SSOAuth.
   void FireChromeIdentityReload();
@@ -70,7 +71,7 @@ class FakeChromeIdentityService : public ChromeIdentityService {
 
   // Adds `identity` to the available identities. No-op if the identity
   // is already added.
-  void AddIdentity(ChromeIdentity* identity);
+  void AddIdentity(id<SystemIdentity> identity);
 
   // When set to true, call to GetAccessToken() fakes a MDM error.
   void SetFakeMDMError(bool fakeMDMError);
@@ -78,23 +79,23 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // Adds a mapping from the `identity` to the capability name -> capability
   // result value used when calling FetchCapabilities.
   // Assumes the `identity` has been added to the available identities.
-  void SetCapabilities(ChromeIdentity* identity, NSDictionary* capabilities);
+  void SetCapabilities(id<SystemIdentity> identity, NSDictionary* capabilities);
 
   // Waits until all asynchronous callbacks have been completed by the service.
   // Returns true on successful completion.
   bool WaitForServiceCallbacksToComplete();
 
   // Triggers an update notification for `identity`.
-  void TriggerIdentityUpdateNotification(ChromeIdentity* identity);
+  void TriggerIdentityUpdateNotification(id<SystemIdentity> identity);
 
  protected:
   void FetchCapabilities(
-      NSArray* capabilities,
-      ChromeIdentity* identity,
+      id<SystemIdentity> identity,
+      NSArray<NSString*>* capabilities,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion) override;
 
  private:
-  NSMutableArray<ChromeIdentity*>* identities_;
+  NSMutableArray<id<SystemIdentity>>* identities_;
   NSMutableDictionary<NSString*, NSDictionary*>* capabilitiesByIdentity_;
 
   // If true, call to GetAccessToken() fakes a MDM error.

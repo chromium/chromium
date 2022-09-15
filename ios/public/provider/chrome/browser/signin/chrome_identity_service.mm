@@ -97,28 +97,10 @@ void ChromeIdentityService::ApplicationDidDiscardSceneSessions(
 
 DismissASMViewControllerBlock
 ChromeIdentityService::PresentAccountDetailsController(
-    ChromeIdentity* identity,
-    UIViewController* view_controller,
-    BOOL animated) {
-  return PresentAccountDetailsController(
-      static_cast<id<SystemIdentity>>(identity), view_controller, animated);
-}
-
-DismissASMViewControllerBlock
-ChromeIdentityService::PresentAccountDetailsController(
     id<SystemIdentity> identity,
     UIViewController* view_controller,
     BOOL animated) {
   return nil;
-}
-
-DismissASMViewControllerBlock
-ChromeIdentityService::PresentWebAndAppSettingDetailsController(
-    ChromeIdentity* identity,
-    UIViewController* view_controller,
-    BOOL animated) {
-  return PresentWebAndAppSettingDetailsController(
-      static_cast<id<SystemIdentity>>(identity), view_controller, animated);
 }
 
 DismissASMViewControllerBlock
@@ -137,6 +119,8 @@ ChromeIdentityService::CreateChromeIdentityInteractionManager() const {
 
 void ChromeIdentityService::IterateOverIdentities(
     IdentityIteratorCallback callback) {
+  // This helper method needs to be kept until all client code has been
+  // converted to use the iterator taking id<SystemIdentity> instead.
   IterateOverIdentities(base::BindRepeating(
       [](IdentityIteratorCallback callback, id<SystemIdentity> identity) {
         return callback.Run(
@@ -148,48 +132,20 @@ void ChromeIdentityService::IterateOverIdentities(
 void ChromeIdentityService::IterateOverIdentities(
     SystemIdentityIteratorCallback) {}
 
-void ChromeIdentityService::ForgetIdentity(ChromeIdentity* identity,
-                                           ForgetIdentityCallback callback) {
-  ForgetIdentity(static_cast<id<SystemIdentity>>(identity), callback);
-}
-
 void ChromeIdentityService::ForgetIdentity(id<SystemIdentity> identity,
                                            ForgetIdentityCallback callback) {}
 
-void ChromeIdentityService::GetAccessToken(ChromeIdentity* identity,
-                                           const std::set<std::string>& scopes,
-                                           AccessTokenCallback callback) {
-  GetAccessToken(static_cast<id<SystemIdentity>>(identity), scopes, callback);
-}
-
 void ChromeIdentityService::GetAccessToken(id<SystemIdentity> identity,
                                            const std::set<std::string>& scopes,
                                            AccessTokenCallback callback) {}
-
-void ChromeIdentityService::GetAccessToken(ChromeIdentity* identity,
-                                           const std::string& client_id,
-                                           const std::set<std::string>& scopes,
-                                           AccessTokenCallback callback) {
-  GetAccessToken(static_cast<id<SystemIdentity>>(identity), client_id, scopes,
-                 callback);
-}
 
 void ChromeIdentityService::GetAccessToken(id<SystemIdentity> identity,
                                            const std::string& client_id,
                                            const std::set<std::string>& scopes,
                                            AccessTokenCallback callback) {}
-
-void ChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity) {
-  GetAvatarForIdentity(static_cast<id<SystemIdentity>>(identity));
-}
 
 void ChromeIdentityService::GetAvatarForIdentity(id<SystemIdentity> identity) {
   NOTREACHED();
-}
-
-UIImage* ChromeIdentityService::GetCachedAvatarForIdentity(
-    ChromeIdentity* identity) {
-  return GetCachedAvatarForIdentity(static_cast<id<SystemIdentity>>(identity));
 }
 
 UIImage* ChromeIdentityService::GetCachedAvatarForIdentity(
@@ -199,21 +155,8 @@ UIImage* ChromeIdentityService::GetCachedAvatarForIdentity(
 }
 
 void ChromeIdentityService::GetHostedDomainForIdentity(
-    ChromeIdentity* identity,
-    GetHostedDomainCallback callback) {
-  GetHostedDomainForIdentity(static_cast<id<SystemIdentity>>(identity),
-                             callback);
-}
-
-void ChromeIdentityService::GetHostedDomainForIdentity(
     id<SystemIdentity> identity,
     GetHostedDomainCallback callback) {}
-
-NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
-    ChromeIdentity* identity) {
-  return GetCachedHostedDomainForIdentity(
-      static_cast<id<SystemIdentity>>(identity));
-}
 
 NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
     id<SystemIdentity> identity) {
@@ -230,23 +173,9 @@ NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
 }
 
 void ChromeIdentityService::CanOfferExtendedSyncPromos(
-    ChromeIdentity* identity,
-    CapabilitiesCallback completion) {
-  FetchCapability(identity, @(kCanOfferExtendedChromeSyncPromosCapabilityName),
-                  completion);
-}
-
-void ChromeIdentityService::CanOfferExtendedSyncPromos(
     id<SystemIdentity> identity,
     CapabilitiesCallback completion) {
   FetchCapability(identity, @(kCanOfferExtendedChromeSyncPromosCapabilityName),
-                  completion);
-}
-
-void ChromeIdentityService::IsSubjectToParentalControls(
-    ChromeIdentity* identity,
-    CapabilitiesCallback completion) {
-  FetchCapability(identity, @(kIsSubjectToParentalControlsCapabilityName),
                   completion);
 }
 
@@ -266,22 +195,10 @@ MDMDeviceStatus ChromeIdentityService::GetMDMDeviceStatus(
   return 0;
 }
 
-bool ChromeIdentityService::HandleMDMNotification(ChromeIdentity* identity,
-                                                  NSDictionary* user_info,
-                                                  MDMStatusCallback callback) {
-  return HandleMDMNotification(static_cast<id<SystemIdentity>>(identity),
-                               user_info, callback);
-}
-
 bool ChromeIdentityService::HandleMDMNotification(id<SystemIdentity> identity,
                                                   NSDictionary* user_info,
                                                   MDMStatusCallback callback) {
   return false;
-}
-
-bool ChromeIdentityService::IsMDMError(ChromeIdentity* identity,
-                                       NSError* error) {
-  return IsMDMError(static_cast<id<SystemIdentity>>(identity), error);
 }
 
 bool ChromeIdentityService::IsMDMError(id<SystemIdentity> identity,
@@ -302,14 +219,6 @@ bool ChromeIdentityService::IsInvalidGrantError(NSDictionary* user_info) {
 }
 
 void ChromeIdentityService::FetchCapabilities(
-    NSArray* capabilities,
-    ChromeIdentity* identity,
-    ChromeIdentityCapabilitiesFetchCompletionBlock completion) {
-  FetchCapabilities(static_cast<id<SystemIdentity>>(identity), capabilities,
-                    completion);
-}
-
-void ChromeIdentityService::FetchCapabilities(
     id<SystemIdentity> identity,
     NSArray<NSString*>* capabilities,
     ChromeIdentityCapabilitiesFetchCompletionBlock completion) {
@@ -322,48 +231,23 @@ void ChromeIdentityService::FireIdentityListChanged(bool notify_user) {
 }
 
 void ChromeIdentityService::FireAccessTokenRefreshFailed(
-    ChromeIdentity* identity,
-    NSDictionary* user_info) {
-  for (auto& observer : observer_list_)
-    observer.OnAccessTokenRefreshFailed(identity, user_info);
-}
-
-void ChromeIdentityService::FireAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     NSDictionary* user_info) {
-  FireAccessTokenRefreshFailed(
-      base::mac::ObjCCastStrict<ChromeIdentity>(identity), user_info);
-}
-
-void ChromeIdentityService::FireProfileDidUpdate(ChromeIdentity* identity) {
+  // Need to cast to ChromeIdentity* until all observers have been converted
+  // to override the method taking an id<SystemIdentity>.
+  ChromeIdentity* chrome_identity =
+      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
   for (auto& observer : observer_list_)
-    observer.OnProfileUpdate(identity);
+    observer.OnAccessTokenRefreshFailed(chrome_identity, user_info);
 }
 
 void ChromeIdentityService::FireProfileDidUpdate(id<SystemIdentity> identity) {
-  FireProfileDidUpdate(base::mac::ObjCCastStrict<ChromeIdentity>(identity));
-}
-
-void ChromeIdentityService::FetchCapability(ChromeIdentity* identity,
-                                            NSString* capability_name,
-                                            CapabilitiesCallback completion) {
-  const base::TimeTicks fetch_start = base::TimeTicks::Now();
-  FetchCapabilities(
-      @[ capability_name ], identity,
-      ^(NSDictionary<NSString*, NSNumber*>* capabilities, NSError* error) {
-        base::UmaHistogramTimes(
-            "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
-            base::TimeTicks::Now() - fetch_start);
-
-        FetchCapabilitiesResult result = ComputeFetchCapabilitiesResult(
-            [capabilities objectForKey:capability_name], error);
-        base::UmaHistogramEnumeration(
-            "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-            result.fetch_result);
-
-        if (completion)
-          completion(result.capability_value);
-      });
+  // Need to cast to ChromeIdentity* until all observers have been converted
+  // to override the method taking an id<SystemIdentity>.
+  ChromeIdentity* chrome_identity =
+      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
+  for (auto& observer : observer_list_)
+    observer.OnProfileUpdate(chrome_identity);
 }
 
 void ChromeIdentityService::FetchCapability(id<SystemIdentity> identity,

@@ -32,7 +32,7 @@ class TestChromeIdentityService : public ChromeIdentityService {
  public:
   struct FetchCapabilitiesRequest {
     NSArray* capabilities;
-    ChromeIdentity* identity;
+    id<SystemIdentity> identity;
     ChromeIdentityCapabilitiesFetchCompletionBlock completion;
   };
 
@@ -43,7 +43,7 @@ class TestChromeIdentityService : public ChromeIdentityService {
   // Sets the capability `kCanOfferExtendedChromeSyncPromosCapabilityName` under
   // test.
   void SetCapabilityUnderTestCanOfferExtendedSyncPromos(
-      ChromeIdentity* identity) {
+      id<SystemIdentity> identity) {
     SetCapabilityUnderTest(
         @(kCanOfferExtendedChromeSyncPromosCapabilityName),
         ^(ChromeIdentityCapabilityResult* fetched_capability_result) {
@@ -57,7 +57,7 @@ class TestChromeIdentityService : public ChromeIdentityService {
   // Sets the capability `kIsSubjectToParentalControlsCapabilityName` under
   // test.
   void SetCapabilityUnderTestIsSubjectToParentalControls(
-      ChromeIdentity* identity) {
+      id<SystemIdentity> identity) {
     SetCapabilityUnderTest(
         @(kIsSubjectToParentalControlsCapabilityName),
         ^(ChromeIdentityCapabilityResult* fetched_capability_result) {
@@ -91,8 +91,8 @@ class TestChromeIdentityService : public ChromeIdentityService {
 
  protected:
   void FetchCapabilities(
-      NSArray* capabilities,
-      ChromeIdentity* identity,
+      id<SystemIdentity> identity,
+      NSArray<NSString*>* capabilities,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion) override {
     EXPECT_FALSE(fetch_capabilities_request_.has_value());
     FetchCapabilitiesRequest request;

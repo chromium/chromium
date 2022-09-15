@@ -157,10 +157,6 @@ class ChromeIdentityService {
   // Returns a block to dismiss the presented view. This block can be ignored if
   // not needed.
   virtual ios::DismissASMViewControllerBlock PresentAccountDetailsController(
-      ChromeIdentity* identity,
-      UIViewController* view_controller,
-      BOOL animated);
-  virtual ios::DismissASMViewControllerBlock PresentAccountDetailsController(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
       BOOL animated);
@@ -171,10 +167,6 @@ class ChromeIdentityService {
   // `animated` the view is presented with animation if YES.
   // Returns a block to dismiss the presented view. This block can be ignored if
   // not needed.
-  virtual DismissASMViewControllerBlock
-  PresentWebAndAppSettingDetailsController(ChromeIdentity* identity,
-                                           UIViewController* view_controller,
-                                           BOOL animated);
   virtual DismissASMViewControllerBlock
   PresentWebAndAppSettingDetailsController(id<SystemIdentity> identity,
                                            UIViewController* view_controller,
@@ -188,7 +180,7 @@ class ChromeIdentityService {
   // Iterates over all known ChromeIdentities, sorted by the ordering used
   // in account manager, which is typically based on the keychain ordering
   // of accounts.
-  virtual void IterateOverIdentities(IdentityIteratorCallback callback);
+  void IterateOverIdentities(IdentityIteratorCallback callback);
   virtual void IterateOverIdentities(SystemIdentityIteratorCallback callback);
 
   // Forgets the given identity on the device. This method logs the user out.
@@ -196,25 +188,16 @@ class ChromeIdentityService {
   // authentication token.
   // This may be called on an arbitrary thread, but callback will always be on
   // the main thread.
-  virtual void ForgetIdentity(ChromeIdentity* identity,
-                              ForgetIdentityCallback callback);
   virtual void ForgetIdentity(id<SystemIdentity> identity,
                               ForgetIdentityCallback callback);
 
   // Asynchronously retrieves access tokens for the given identity and scopes.
   // Uses the default client id and client secret.
-  virtual void GetAccessToken(ChromeIdentity* identity,
-                              const std::set<std::string>& scopes,
-                              AccessTokenCallback callback);
   virtual void GetAccessToken(id<SystemIdentity> identity,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);
 
   // Asynchronously retrieves access tokens for the given identity and scopes.
-  virtual void GetAccessToken(ChromeIdentity* identity,
-                              const std::string& client_id,
-                              const std::set<std::string>& scopes,
-                              AccessTokenCallback callback);
   virtual void GetAccessToken(id<SystemIdentity> identity,
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
@@ -224,18 +207,14 @@ class ChromeIdentityService {
   // For high resolution iPads, returns large images (200 x 200) to avoid
   // pixelization.
   // Observer::OnProfileUpdate() will be called when the avatar is available.
-  virtual void GetAvatarForIdentity(ChromeIdentity* identity);
   virtual void GetAvatarForIdentity(id<SystemIdentity> identity);
 
   // Synchronously returns any cached avatar, or nil.
   // GetAvatarForIdentity() should be generally used instead of this method.
-  virtual UIImage* GetCachedAvatarForIdentity(ChromeIdentity* identity);
   virtual UIImage* GetCachedAvatarForIdentity(id<SystemIdentity> identity);
 
   // Fetches the identity hosted domain, from the cache or the network. Calls
   // back on the main thread.
-  virtual void GetHostedDomainForIdentity(ChromeIdentity* identity,
-                                          GetHostedDomainCallback callback);
   virtual void GetHostedDomainForIdentity(id<SystemIdentity> identity,
                                           GetHostedDomainCallback callback);
 
@@ -245,7 +224,6 @@ class ChromeIdentityService {
   //   + an empty string, if this is a consumer account (e.g. foo@gmail.com).
   //   + non-empty string, if the hosted domain was fetched and this account
   //     has a hosted domain.
-  virtual NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity);
   virtual NSString* GetCachedHostedDomainForIdentity(
       id<SystemIdentity> identity);
 
@@ -254,15 +232,11 @@ class ChromeIdentityService {
   // will have a refresh period of 24 hours, meaning that at retrieval it may be
   // stale. If the value is not populated, as in a fresh install, the callback
   // will evaluate to false.
-  void CanOfferExtendedSyncPromos(ChromeIdentity* identity,
-                                  CapabilitiesCallback callback);
   void CanOfferExtendedSyncPromos(id<SystemIdentity> identity,
                                   CapabilitiesCallback callback);
 
   // Asynchronously returns the value of the account capability that determines
   // whether parental controls should be applied to `identity`.
-  void IsSubjectToParentalControls(ChromeIdentity* identity,
-                                   CapabilitiesCallback callback);
   void IsSubjectToParentalControls(id<SystemIdentity> identity,
                                    CapabilitiesCallback callback);
 
@@ -276,16 +250,12 @@ class ChromeIdentityService {
   // true if the notification linked to `identity` and `user_info` was an MDM
   // one. In this case, `callback` will be called later with the status of the
   // device.
-  virtual bool HandleMDMNotification(ChromeIdentity* identity,
-                                     NSDictionary* user_info,
-                                     MDMStatusCallback callback);
   virtual bool HandleMDMNotification(id<SystemIdentity> identity,
                                      NSDictionary* user_info,
                                      MDMStatusCallback callback);
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management).
-  virtual bool IsMDMError(ChromeIdentity* identity, NSError* error);
   virtual bool IsMDMError(id<SystemIdentity> identity, NSError* error);
 
   // Adds and removes observers.
@@ -300,10 +270,6 @@ class ChromeIdentityService {
   // Asynchronously retrieves the list of supported capabilities for the given
   // Chrome identity.
   virtual void FetchCapabilities(
-      NSArray* capabilities,
-      ChromeIdentity* identity,
-      ChromeIdentityCapabilitiesFetchCompletionBlock completion);
-  virtual void FetchCapabilities(
       id<SystemIdentity> identity,
       NSArray<NSString*>* capabilities,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion);
@@ -316,20 +282,14 @@ class ChromeIdentityService {
 
   // Fires `OnAccessTokenRefreshFailed` on all observers, with the corresponding
   // identity and user info.
-  void FireAccessTokenRefreshFailed(ChromeIdentity* identity,
-                                    NSDictionary* user_info);
   void FireAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                     NSDictionary* user_info);
 
   // Fires `OnProfileUpdate` on all observers, with the corresponding identity.
-  void FireProfileDidUpdate(ChromeIdentity* identity);
   void FireProfileDidUpdate(id<SystemIdentity> identity);
 
  private:
   // Asynchronously retrieves the specified capability for the Chrome identity.
-  void FetchCapability(ChromeIdentity* identity,
-                       NSString* capability_name,
-                       CapabilitiesCallback completion);
   void FetchCapability(id<SystemIdentity> identity,
                        NSString* capability_name,
                        CapabilitiesCallback completion);

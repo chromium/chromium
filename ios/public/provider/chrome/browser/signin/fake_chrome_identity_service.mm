@@ -33,7 +33,7 @@ namespace {
 NSString* const kIdentityEmailFormat = @"%@@gmail.com";
 NSString* const kIdentityGaiaIDFormat = @"%@ID";
 
-NSString* FakeGetHostedDomainForIdentity(ChromeIdentity* identity) {
+NSString* FakeGetHostedDomainForIdentity(id<SystemIdentity> identity) {
   return base::SysUTF8ToNSString(gaia::ExtractDomainName(
       gaia::CanonicalizeEmail(base::SysNSStringToUTF8(identity.userEmail))));
 }
@@ -45,13 +45,13 @@ NSString* FakeGetHostedDomainForIdentity(ChromeIdentity* identity) {
 const char kCachedAvatarAssociatedKey[] = "CachedAvatarAssociatedKey";
 
 // Get cached identity avatar. May return nil if no image is cached.
-UIImage* GetCachedAvatarForIdentity(ChromeIdentity* identity) {
+UIImage* GetCachedAvatarForIdentity(id<SystemIdentity> identity) {
   return base::mac::ObjCCastStrict<UIImage>(
       objc_getAssociatedObject(identity, &kCachedAvatarAssociatedKey));
 }
 
 // Set cached identity avatar.
-void SetCachedAvatarForIdentity(ChromeIdentity* identity, UIImage* avatar) {
+void SetCachedAvatarForIdentity(id<SystemIdentity> identity, UIImage* avatar) {
   objc_setAssociatedObject(identity, &kCachedAvatarAssociatedKey, avatar,
                            OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
@@ -169,7 +169,7 @@ FakeChromeIdentityService::GetInstanceFromChromeProvider() {
 
 DismissASMViewControllerBlock
 FakeChromeIdentityService::PresentAccountDetailsController(
-    ChromeIdentity* identity,
+    id<SystemIdentity> identity,
     UIViewController* viewController,
     BOOL animated) {
   UIViewController* accountDetailsViewController =
@@ -194,15 +194,15 @@ FakeChromeIdentityService::CreateFakeChromeIdentityInteractionManager() const {
 }
 
 void FakeChromeIdentityService::IterateOverIdentities(
-    IdentityIteratorCallback callback) {
-  for (ChromeIdentity* identity in identities_) {
+    SystemIdentityIteratorCallback callback) {
+  for (id<SystemIdentity> identity in identities_) {
     if (callback.Run(identity) == kIdentityIteratorInterruptIteration)
       return;
   }
 }
 
 void FakeChromeIdentityService::ForgetIdentity(
-    ChromeIdentity* identity,
+    id<SystemIdentity> identity,
     ForgetIdentityCallback callback) {
   [identities_ removeObject:identity];
   [capabilitiesByIdentity_ removeObjectForKey:identity.gaiaID];
@@ -220,7 +220,7 @@ void FakeChromeIdentityService::ForgetIdentity(
 }
 
 void FakeChromeIdentityService::GetAccessToken(
-    ChromeIdentity* identity,
+    id<SystemIdentity> identity,
     const std::string& client_id,
     const std::set<std::string>& scopes,
     ios::AccessTokenCallback callback) {
@@ -255,11 +255,12 @@ void FakeChromeIdentityService::GetAccessToken(
 }
 
 UIImage* FakeChromeIdentityService::GetCachedAvatarForIdentity(
-    ChromeIdentity* identity) {
+    id<SystemIdentity> identity) {
   return ::GetCachedAvatarForIdentity(identity);
 }
 
-void FakeChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity) {
+void FakeChromeIdentityService::GetAvatarForIdentity(
+    id<SystemIdentity> identity) {
   // `GetAvatarForIdentity` is normally an asynchronous operation, this is
   // replicated here by dispatching it.
   ++_pendingCallback;
@@ -275,7 +276,7 @@ void FakeChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity) {
 }
 
 void FakeChromeIdentityService::GetHostedDomainForIdentity(
-    ChromeIdentity* identity,
+    id<SystemIdentity> identity,
     GetHostedDomainCallback callback) {
   NSString* domain = FakeGetHostedDomainForIdentity(identity);
   // `GetHostedDomainForIdentity` is normally an asynchronous operation , this
@@ -292,7 +293,7 @@ bool FakeChromeIdentityService::IsServiceSupported() {
 }
 
 NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
-    ChromeIdentity* identity) {
+    id<SystemIdentity> identity) {
   NSString* domain =
       ChromeIdentityService::GetCachedHostedDomainForIdentity(identity);
   if (domain) {
@@ -302,7 +303,7 @@ NSString* FakeChromeIdentityService::GetCachedHostedDomainForIdentity(
 }
 
 void FakeChromeIdentityService::SimulateForgetIdentityFromOtherApp(
-    ChromeIdentity* identity) {
+    id<SystemIdentity> identity) {
   [identities_ removeObject:identity];
   [capabilitiesByIdentity_ removeObjectForKey:identity.gaiaID];
   FireChromeIdentityReload();
@@ -333,14 +334,14 @@ void FakeChromeIdentityService::AddIdentities(NSArray* identitiesNames) {
   }
 }
 
-void FakeChromeIdentityService::AddIdentity(ChromeIdentity* identity) {
+void FakeChromeIdentityService::AddIdentity(id<SystemIdentity> identity) {
   if (![identities_ containsObject:identity]) {
     [identities_ addObject:identity];
   }
   FireIdentityListChanged(/*notify_user=*/false);
 }
 
-void FakeChromeIdentityService::SetCapabilities(ChromeIdentity* identity,
+void FakeChromeIdentityService::SetCapabilities(id<SystemIdentity> identity,
                                                 NSDictionary* capabilities) {
   DCHECK([identities_ containsObject:identity]);
   [capabilitiesByIdentity_ setObject:capabilities forKey:identity.gaiaID];
@@ -358,13 +359,13 @@ bool FakeChromeIdentityService::WaitForServiceCallbacksToComplete() {
 }
 
 void FakeChromeIdentityService::TriggerIdentityUpdateNotification(
-    ChromeIdentity* identity) {
+    id<SystemIdentity> identity) {
   FireProfileDidUpdate(identity);
 }
 
 void FakeChromeIdentityService::FetchCapabilities(
-    NSArray* capabilities,
-    ChromeIdentity* identity,
+    id<SystemIdentity> identity,
+    NSArray<NSString*>* capabilities,
     ChromeIdentityCapabilitiesFetchCompletionBlock completion) {
   NSMutableDictionary* result = [[NSMutableDictionary alloc] init];
   NSDictionary* capabilitiesForIdentity =
