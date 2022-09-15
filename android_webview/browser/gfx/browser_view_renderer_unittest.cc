@@ -207,7 +207,7 @@ class TestAnimateInAndOutOfScreen : public RenderingTest {
     if (draw_gl_count_on_rt_ == 0)
       transform = new_constraints_.transform;
 
-    transform.matrix().getColMajor(params->transform);
+    transform.GetColMajorF(params->transform);
     return true;
   }
 

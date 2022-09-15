@@ -405,8 +405,7 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   viz::FrameTimingDetailsMap timing_details;
 
-  gfx::Transform transform(gfx::Transform::kSkipInitialization);
-  transform.matrix().setColMajor(params.transform);
+  gfx::Transform transform = gfx::Transform::ColMajorF(params.transform);
   transform.Translate(scroll_offset_.x(), scroll_offset_.y());
 
   gfx::Size viewport(params.width, params.height);

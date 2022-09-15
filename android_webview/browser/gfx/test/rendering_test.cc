@@ -150,7 +150,7 @@ bool RenderingTest::WillDrawOnRT(HardwareRendererDrawParams* params) {
   params->width = window_->surface_size().width();
   params->height = window_->surface_size().height();
   gfx::Transform transform;
-  transform.matrix().getColMajor(params->transform);
+  transform.GetColMajorF(params->transform);
   return true;
 }
 
