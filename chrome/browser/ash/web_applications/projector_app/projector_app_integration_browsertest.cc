@@ -73,7 +73,6 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
           ->get_web_ui_for_test()
           ->GetWebContents();
   PrepareAppForTest(annotator_embedder);
-  WaitForLoadStop(annotator_embedder);
 
   // Checks ink is loaded by ensuring the ink engine canvas has a non zero width
   // and height attributes (checking <canvas.width/height is insufficient since

@@ -47,6 +47,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -127,6 +128,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     create_drive_integration_service_ =
         base::BindRepeating(&ProjectorClientTest::CreateDriveIntegrationService,
                             base::Unretained(this));
@@ -203,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
 // This test covers launching the Projector app with files when the app is
 // already open. The launch event should recycle the existing window and should
 // not open a new window.
-// TODO(crbug.com/1360322) Disabled due to flake.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DISABLED_SendFilesToProjectorApp) {
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   const size_t starting_browser_count = chrome::GetTotalBrowserCount();
 
   auto* profile = browser()->profile();
@@ -219,6 +220,11 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DISABLED_SendFilesToProjectorApp) {
   ASSERT_TRUE(app_browser1);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
 
+  content::WebContents* tab =
+      app_browser1->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(WaitForLoadStop(tab));
+
   base::FilePath file1("test1"), file2("test2");
   // Launch the app again with files. This operation should recycle the same
   // window.
@@ -231,8 +237,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DISABLED_SendFilesToProjectorApp) {
   EXPECT_EQ(app_browser1, app_browser2);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), starting_browser_count + 1);
 
-  content::WebContents* tab =
-      app_browser2->tab_strip_model()->GetActiveWebContents();
+  tab = app_browser2->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
