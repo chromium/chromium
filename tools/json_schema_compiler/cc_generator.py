@@ -997,7 +997,7 @@ class _Generator(object):
       assert not underlying_type.is_serializable_function, \
           'Serializable functions should have been handled above.'
       if is_ptr: # Non-serializable functions are just represented as dicts.
-        c.Append('%(dst_var)s = std::make_unique<base::Value::Dict>();')
+        c.Append('%(dst_var)s.emplace();')
     elif underlying_type.property_type == PropertyType.ANY:
       c.Append('%(dst_var)s = %(src_var)s.Clone();')
     elif underlying_type.property_type == PropertyType.ARRAY:

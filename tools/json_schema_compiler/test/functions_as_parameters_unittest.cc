@@ -58,7 +58,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
     base::Value empty_dictionary(base::Value::Type::DICTIONARY);
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(empty_dictionary, &out));
-    EXPECT_FALSE(out.event_callback.get());
+    EXPECT_FALSE(out.event_callback.has_value());
   }
   {
     base::Value value(base::Value::Type::DICTIONARY);
@@ -66,7 +66,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
 
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, &out));
-    EXPECT_TRUE(out.event_callback.get());
+    EXPECT_TRUE(out.event_callback.has_value());
   }
   {
     base::Value value(base::Value::Type::DICTIONARY);
@@ -74,7 +74,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
 
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, &out));
-    EXPECT_TRUE(out.event_callback.get());
+    EXPECT_TRUE(out.event_callback.has_value());
   }
 }
 
@@ -113,8 +113,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest,
   {
     // Test with the optional property set.
     OptionalSerializableFunctionType serializable_type;
-    serializable_type.function_property =
-        std::make_unique<std::string>(kFunction);
+    serializable_type.function_property = kFunction;
     base::Value::Dict serialized = serializable_type.ToValue();
     OptionalSerializableFunctionType deserialized;
     ASSERT_TRUE(OptionalSerializableFunctionType::Populate(

@@ -80,7 +80,7 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
   }
 
   if (!is_webview && BackgroundInfo::HasLazyContext(extension) &&
-      create_properties.onclick.get()) {
+      create_properties.onclick) {
     *error = kOnclickDisallowedError;
     return false;
   }

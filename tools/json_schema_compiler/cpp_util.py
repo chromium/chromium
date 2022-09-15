@@ -116,6 +116,7 @@ def ShouldUseAbslOptional(type_):
                              PropertyType.BOOLEAN,
                              PropertyType.CHOICES,
                              PropertyType.DOUBLE,
+                             PropertyType.FUNCTION,
                              PropertyType.INTEGER,
                              PropertyType.OBJECT,
                              PropertyType.STRING):
