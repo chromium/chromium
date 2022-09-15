@@ -62,6 +62,11 @@
 
 @end
 
+typedef NS_ENUM(NSUInteger, SuggestionGroupDisplayStyle) {
+  SuggestionGroupDisplayStyleDefault,   // Vertical list.
+  SuggestionGroupDisplayStyleCarousel,  // Horizontal scrolling icons.
+};
+
 // A group of AutocompleteSuggestions with an optional section header.
 @protocol AutocompleteSuggestionGroup
 
@@ -71,6 +76,9 @@
 // Contained suggestions.
 @property(nonatomic, strong, readonly)
     NSArray<id<AutocompleteSuggestion>>* suggestions;
+
+// How suggestion are displayed.
+@property(nonatomic, readonly) SuggestionGroupDisplayStyle displayStyle;
 
 @end
 

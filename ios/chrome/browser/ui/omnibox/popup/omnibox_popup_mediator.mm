@@ -299,12 +299,38 @@ const CGFloat kOmniboxIconSize = 16;
   return formatter;
 }
 
+// Extracts tiles from AutocompleteMatch of type TILE_NAVSUGGEST.
+- (id<AutocompleteSuggestionGroup>)extractTiles:
+    (const AutocompleteMatch&)match {
+  DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
+  DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+
+  NSMutableArray<id<AutocompleteSuggestion>>* wrappedTiles =
+      [[NSMutableArray alloc] init];
+
+  for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
+    AutocompleteMatch tileMatch = AutocompleteMatch(match);
+    // TODO(crbug.com/1363546): replace with a new wrapper.
+    tileMatch.destination_url = tile.url;
+    tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
+    tileMatch.description = tile.title;
+    [wrappedTiles addObject:[self wrapMatch:tileMatch]];
+  }
+
+  id<AutocompleteSuggestionGroup> tileGroup = [AutocompleteSuggestionGroupImpl
+      groupWithTitle:nil
+         suggestions:wrappedTiles
+        displayStyle:SuggestionGroupDisplayStyleCarousel];
+
+  return tileGroup;
+}
+
 // Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
 // AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
+  id<AutocompleteSuggestionGroup> tileGroup = nil;
+
   NSMutableArray<id<AutocompleteSuggestion>>* wrappedSuggestions =
-      [[NSMutableArray alloc] init];
-  NSMutableArray<id<AutocompleteSuggestion>>* wrappedTiles =
       [[NSMutableArray alloc] init];
 
   size_t size = _currentResult.size();
@@ -312,15 +338,8 @@ const CGFloat kOmniboxIconSize = 16;
     const AutocompleteMatch& match =
         ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
     if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
-      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
-      for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
-        AutocompleteMatch tileMatch = AutocompleteMatch(match);
-        // TODO(crbug.com/1363546): replace with a new wrapper.
-        tileMatch.destination_url = tile.url;
-        tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
-        tileMatch.description = tile.title;
-        [wrappedTiles addObject:[self wrapMatch:tileMatch]];
-      }
+      DCHECK(!tileGroup) << "There should be only one TILE_NAVSUGGEST";
+      tileGroup = [self extractTiles:match];
     } else {
       [wrappedSuggestions addObject:[self wrapMatch:match]];
     }
@@ -329,21 +348,15 @@ const CGFloat kOmniboxIconSize = 16;
   id<AutocompleteSuggestionGroup> pedalGroup =
       [self.pedalSectionExtractor extractPedals:wrappedSuggestions];
   id<AutocompleteSuggestionGroup> suggestionGroup =
-      [[AutocompleteSuggestionGroupImpl alloc]
-          initWithTitle:nil
-            suggestions:wrappedSuggestions];
-  id<AutocompleteSuggestionGroup> tileGroup =
-      [[AutocompleteSuggestionGroupImpl alloc] initWithTitle:nil
-                                                 suggestions:wrappedTiles];
+      [AutocompleteSuggestionGroupImpl groupWithTitle:nil
+                                          suggestions:wrappedSuggestions];
 
   NSMutableArray<id<AutocompleteSuggestionGroup>>* nonPedalGroups =
       [[NSMutableArray alloc] init];
 
   [nonPedalGroups addObject:suggestionGroup];
-  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
-    if (tileGroup.suggestions.count > 0) {
-      [nonPedalGroups addObject:tileGroup];
-    }
+  if (tileGroup) {
+    [nonPedalGroups addObject:tileGroup];
   }
   self.nonPedalSuggestions = nonPedalGroups;
   NSArray<id<AutocompleteSuggestionGroup>>* groups;

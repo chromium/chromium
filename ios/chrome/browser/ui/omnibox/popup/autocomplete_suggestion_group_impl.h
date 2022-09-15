@@ -18,9 +18,23 @@
 @property(nonatomic, strong, readonly)
     NSArray<id<AutocompleteSuggestion>>* suggestions;
 
-- (instancetype)initWithTitle:(NSString*)title
-                  suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions;
+// How suggestion are displayed.
+@property(nonatomic, readonly) SuggestionGroupDisplayStyle displayStyle;
 
+- (instancetype)initWithTitle:(NSString*)title
+                  suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+                 displayStyle:(SuggestionGroupDisplayStyle)displayStyle
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (AutocompleteSuggestionGroupImpl*)
+    groupWithTitle:(NSString*)title
+       suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+      displayStyle:(SuggestionGroupDisplayStyle)displayStyle;
+
+// Instantiates a suggestion group with `SuggestionGroupDisplayStyleDefault` as
+// displayStyle.
 + (AutocompleteSuggestionGroupImpl*)
     groupWithTitle:(NSString*)title
        suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions;

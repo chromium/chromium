@@ -11,20 +11,32 @@
 @implementation AutocompleteSuggestionGroupImpl
 
 - (instancetype)initWithTitle:(NSString*)title
-                  suggestions:
-                      (NSArray<id<AutocompleteSuggestion>>*)suggestions {
+                  suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+                 displayStyle:(SuggestionGroupDisplayStyle)displayStyle {
   self = [super init];
   if (self) {
     _title = [title copy];
     _suggestions = suggestions;
+    _displayStyle = displayStyle;
   }
   return self;
 }
 
 + (AutocompleteSuggestionGroupImpl*)
     groupWithTitle:(NSString*)title
+       suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions
+      displayStyle:(SuggestionGroupDisplayStyle)displayStyle {
+  return [[self alloc] initWithTitle:title
+                         suggestions:suggestions
+                        displayStyle:displayStyle];
+}
+
++ (AutocompleteSuggestionGroupImpl*)
+    groupWithTitle:(NSString*)title
        suggestions:(NSArray<id<AutocompleteSuggestion>>*)suggestions {
-  return [[self alloc] initWithTitle:title suggestions:suggestions];
+  return [[self alloc] initWithTitle:title
+                         suggestions:suggestions
+                        displayStyle:SuggestionGroupDisplayStyleDefault];
 }
 
 @end
