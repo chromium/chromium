@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -76,7 +75,6 @@ import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewOb
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
@@ -830,11 +828,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     public void finishedShowing() {
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedShowing();
-        }
-
-        if (BrowserStartupController.getInstance().isFullBrowserStarted()
-                && StartSurfaceConfiguration.WARM_UP_RENDERER.getValue()) {
-            StartSurfaceConfigurationJni.get().warmupRenderer(Profile.getLastUsedRegularProfile());
         }
     }
 
