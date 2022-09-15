@@ -16,6 +16,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -213,12 +214,11 @@ std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
 
 // TODO(pbos): Migrate most code that calls contents_view_->(some View method)
 // into this class. This was done in steps to limit the size of the diff.
-class BubbleDialogModelHost::ContentsView : public View {
+class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
  public:
   explicit ContentsView(BubbleDialogModelHost* parent) : parent_(parent) {
     // Note that between-child spacing is manually handled using kMarginsKey.
-    SetLayoutManager(
-        std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
   }
 
   void OnThemeChanged() override {
@@ -599,7 +599,14 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
 
   ui::DialogModelField* first_field = nullptr;
   ui::DialogModelField* last_field = nullptr;
-  for (View* const view : contents_view_->children()) {
+
+  auto* scroll_view =
+      views::ScrollView::GetScrollViewForContents(contents_view_);
+  const views::View::Views& children = scroll_view
+                                           ? scroll_view->contents()->children()
+                                           : contents_view_->children();
+
+  for (View* const view : children) {
     ui::DialogModelField* const field =
         FindDialogModelHostField(view).dialog_model_field;
 
@@ -622,9 +629,14 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
     }
     last_field = field;
   }
+
   contents_view_->InvalidateLayout();
 
-  set_margins(gfx::Insets::TLBR(
+  // Since ContentsView can have ScrollView as a child view, dialog margins
+  // may not be taken into account by them. Thus, reset the dialog margins and
+  // add insets directly to contents view.
+  set_margins(gfx::Insets());
+  contents_view_->SetInsideBorderInsets(gfx::Insets::TLBR(
       GetDialogTopMargins(layout_provider, first_field, GetPassKey()), 0,
       GetDialogBottomMargins(layout_provider, last_field,
                              GetDialogButtons() != ui::DIALOG_BUTTON_NONE,
