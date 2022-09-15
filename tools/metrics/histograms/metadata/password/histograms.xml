@@ -1378,6 +1378,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.Import.DesktopInteractions"
+    enum="PasswordsImportDesktopInteractions" expires_after="2023-02-01">
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Records the user actions related to passwords import flow on desktop.
+    Reported upon interactions with the password settings page.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ImportDuration" units="ms"
     expires_after="2023-02-01">
   <owner>eliaskh@chromium.org</owner>

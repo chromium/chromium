@@ -629,6 +629,18 @@ enum class PasswordViewPageInteractions {
   kMaxValue = kCredentialRequestedByUrl,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordsImportDesktopInteractions {
+  // Import dialog opened from the three-dot menu.
+  kDialogOpenedFromThreeDot = 0,
+  // Import dialog opened from the empty passwords list.
+  kDialogOpenedFromEmptyState = 1,
+  // Import flow canceled before the file selection.
+  kCanceledBeforeFileSelect = 2,
+  kMaxValue = kCanceledBeforeFileSelect,
+};
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     PasswordAccountStorageUsageLevel usage_level);
 

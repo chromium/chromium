@@ -77186,6 +77186,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Invalid JSON (either syntactically or structurally)"/>
 </enum>
 
+<enum name="PasswordsImportDesktopInteractions">
+  <int value="0" label="Import dialog opened from the three-dot menu."/>
+  <int value="1" label="Import dialog opened from the empty passwords list."/>
+  <int value="2" label="Import flow canceled before the file selection."/>
+</enum>
+
 <enum name="PasswordStoreAndroidBackendAPIError">
   <int value="4" label="SIGN_IN_REQUIRED"/>
   <int value="5" label="INVALID_ACCOUNT"/>

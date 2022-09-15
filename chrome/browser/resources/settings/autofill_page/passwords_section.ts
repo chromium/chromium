@@ -61,6 +61,7 @@ import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM} from './password_view.js';
+import {PasswordsImportDesktopInteractions, recordPasswordsImportInteraction} from './passwords_import_dialog.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 import {getTemplate} from './passwords_section.html.js';
 import {UserUtilMixin, UserUtilMixinInterface} from './user_util_mixin.js';
@@ -342,6 +343,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         // The action is triggered from a dummy anchor element poining to "#".
         // For that case preventing the default behaviour is required here.
         event.preventDefault();
+        recordPasswordsImportInteraction(
+            PasswordsImportDesktopInteractions.DIALOG_OPENED_FROM_EMPTY_STATE);
         this.showPasswordsImportDialog_ = true;
       });
     }
@@ -543,9 +546,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   /**
-   * Fires an event that should trigger the password import process.
+   * Opens the passwords import dialog.
    */
   private onImportTap_() {
+    recordPasswordsImportInteraction(
+        PasswordsImportDesktopInteractions.DIALOG_OPENED_FROM_THREE_DOT_MENU);
     this.showPasswordsImportDialog_ = true;
     this.$.exportImportMenu.close();
   }

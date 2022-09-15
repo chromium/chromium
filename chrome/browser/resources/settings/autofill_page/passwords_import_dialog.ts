@@ -55,6 +55,27 @@ enum StoreOption {
   DEVICE = 'device',
 }
 
+export function recordPasswordsImportInteraction(
+    interaction: PasswordsImportDesktopInteractions) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.Import.DesktopInteractions', interaction,
+      PasswordsImportDesktopInteractions.COUNT);
+}
+
+/**
+ * Should be kept in sync with
+ * |password_manager::metrics_util::PasswordsImportDesktopInteractions|.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+export enum PasswordsImportDesktopInteractions {
+  DIALOG_OPENED_FROM_THREE_DOT_MENU = 0,
+  DIALOG_OPENED_FROM_EMPTY_STATE = 1,
+  CANCELED_BEFORE_FILE_SELECT = 2,
+  // Must be last.
+  COUNT = 3,
+}
+
 export class PasswordsImportDialogElement extends
     PasswordsImportDialogElementBase {
   static get is() {
@@ -347,6 +368,10 @@ export class PasswordsImportDialogElement extends
   }
 
   private onCloseClick_() {
+    if (this.isState_(ImportDialogState.START)) {
+      recordPasswordsImportInteraction(
+          PasswordsImportDesktopInteractions.CANCELED_BEFORE_FILE_SELECT);
+    }
     this.$.dialog.close();
   }
 }
