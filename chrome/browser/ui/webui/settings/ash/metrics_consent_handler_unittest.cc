@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -44,6 +45,11 @@ namespace settings {
 namespace {
 
 using ::testing::Eq;
+
+// For a user to be recognized as an owner, it needs to be the author of the
+// device settings. So use the default user name that DevicePolicyBuilder uses.
+const char* kOwner = policy::PolicyBuilder::kFakeUsername;
+constexpr char kNonOwner[] = "non@owner.com";
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   StatsReportingController::RegisterLocalStatePrefs(local_state->registry());
@@ -119,7 +125,7 @@ class MetricsConsentHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> RegisterOwner(const AccountId& account_id) {
     DeviceSettingsService::Get()->SetSessionManager(
         &fake_session_manager_client_, owner_keys);
-    std::unique_ptr<TestingProfile> owner = CreateUser(owner_keys);
+    std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, owner_keys);
     test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         account_id, false, user_manager::USER_TYPE_REGULAR, owner.get());
     test_user_manager_->SetOwnerId(account_id);
@@ -141,10 +147,18 @@ class MetricsConsentHandlerTest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> CreateUser(
+      const char* username,
       scoped_refptr<ownership::MockOwnerKeyUtil> keys) {
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
         keys);
-    std::unique_ptr<TestingProfile> user = std::make_unique<TestingProfile>();
+
+    TestingProfile::Builder builder;
+    builder.SetProfileName(username);
+    std::unique_ptr<TestingProfile> user = builder.Build();
+
+    FakeNssService::InitializeForBrowserContext(user.get(),
+                                                /*enable_system_slot=*/false);
+
     OwnerSettingsServiceAshFactory::GetForBrowserContext(user.get())
         ->OnTPMTokenReady();
     content::RunAllTasksUntilIdle();
@@ -270,7 +284,7 @@ class MetricsConsentHandlerTest : public testing::Test {
 };
 
 TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId("owner@example.com", "2");
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
   // Owner should not use user consent, but local pref.
@@ -306,18 +320,19 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId("owner@example.com", "2");
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto account_id = AccountId::FromUserEmailGaiaId("test@example.com", "1");
-  std::unique_ptr<TestingProfile> non_owner = CreateUser(non_owner_keys);
+  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, "1");
+  std::unique_ptr<TestingProfile> non_owner =
+      CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      account_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
+      non_owner_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
 
   // User should use user consent pref.
   test_metrics_service_client_->SetShouldUseUserConsent(true);
 
-  LoginUser(account_id);
+  LoginUser(non_owner_id);
   EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
 
   InitializeTestHandler(non_owner.get());
@@ -346,18 +361,19 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
-  auto owner_id = AccountId::FromUserEmailGaiaId("owner@example.com", "2");
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
-  auto account_id = AccountId::FromUserEmailGaiaId("test@example.com", "1");
-  std::unique_ptr<TestingProfile> non_owner = CreateUser(non_owner_keys);
+  auto non_owner_id = AccountId::FromUserEmailGaiaId(kNonOwner, "1");
+  std::unique_ptr<TestingProfile> non_owner =
+      CreateUser(kNonOwner, non_owner_keys);
   test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      account_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
+      non_owner_id, false, user_manager::USER_TYPE_REGULAR, non_owner.get());
 
   // User cannot use user consent. This happens if the device is managed.
   test_metrics_service_client_->SetShouldUseUserConsent(false);
 
-  LoginUser(account_id);
+  LoginUser(non_owner_id);
   EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
 
   InitializeTestHandler(non_owner.get());

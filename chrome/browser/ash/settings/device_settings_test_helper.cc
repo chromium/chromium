@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -77,6 +78,9 @@ void DeviceSettingsTestBase::SetUp() {
                                               owner_key_util_);
 
   profile_ = std::make_unique<TestingProfile>();
+
+  FakeNssService::InitializeForBrowserContext(profile_.get(),
+                                              /*enable_system_slot=*/false);
 }
 
 void DeviceSettingsTestBase::TearDown() {

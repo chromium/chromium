@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,6 +28,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+// For a user to be recognized as an owner, it needs to be the author of the
+// device settings. So use the default user name that DevicePolicyBuilder uses.
+const char* kOwner = policy::PolicyBuilder::kFakeUsername;
+constexpr char kNonOwner[] = "non_owner@example.com";
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   StatsReportingController::RegisterLocalStatePrefs(local_state->registry());
@@ -54,11 +60,25 @@ class StatsReportingControllerTest : public testing::Test {
                             base::Unretained(this)));
   }
 
+  // Creates and sets up a new profile. If `username` matches the username in
+  // the device policies, the user will be recognized as the owner. `keys` will
+  // be used to access / manipulate owner keys (note: access to the private
+  // owner key is also a sign of being the owner).
   std::unique_ptr<TestingProfile> CreateUser(
+      const char* username,
       scoped_refptr<ownership::MockOwnerKeyUtil> keys) {
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
         keys);
-    std::unique_ptr<TestingProfile> user = std::make_unique<TestingProfile>();
+
+    TestingProfile::Builder builder;
+    builder.SetProfileName(username);
+    std::unique_ptr<TestingProfile> user = builder.Build();
+
+    // Initialize NSS for the user in case it tries to access or generate a
+    // private key.
+    FakeNssService::InitializeForBrowserContext(user.get(),
+                                                /*enable_system_slot=*/false);
+
     OwnerSettingsServiceAshFactory::GetForBrowserContext(user.get())
         ->OnTPMTokenReady();
     content::RunAllTasksUntilIdle();
@@ -124,7 +144,7 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipUnknown) {
   ExpectThatPendingValueIsNotSet();
   ExpectThatSignedStoredValueIs(false);
 
-  std::unique_ptr<TestingProfile> user = CreateUser(no_keys);
+  std::unique_ptr<TestingProfile> user = CreateUser(kNonOwner, no_keys);
   StatsReportingController::Get()->SetEnabled(user.get(), true);
   // A pending value is written in case there is no owner. It will be cleared
   // and written properly when ownership is taken. We will read from the
@@ -154,7 +174,7 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipNone) {
   ExpectThatSignedStoredValueIs(false);
 
   // Before the device is owned, the value is written as a pending value:
-  std::unique_ptr<TestingProfile> user = CreateUser(no_keys);
+  std::unique_ptr<TestingProfile> user = CreateUser(kNonOwner, no_keys);
   StatsReportingController::Get()->SetEnabled(user.get(), true);
   EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
   EXPECT_TRUE(value_at_last_notification_);
@@ -171,7 +191,7 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipNone) {
 TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken) {
   DeviceSettingsService::Get()->SetSessionManager(&fake_session_manager_client_,
                                                   both_keys);
-  std::unique_ptr<TestingProfile> owner = CreateUser(both_keys);
+  std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, both_keys);
 
   EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
             DeviceSettingsService::Get()->GetOwnershipStatus());
@@ -207,7 +227,7 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken) {
 TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken_NonOwner) {
   DeviceSettingsService::Get()->SetSessionManager(&fake_session_manager_client_,
                                                   both_keys);
-  std::unique_ptr<TestingProfile> owner = CreateUser(both_keys);
+  std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, both_keys);
 
   EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
             DeviceSettingsService::Get()->GetOwnershipStatus());
@@ -217,7 +237,8 @@ TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipTaken_NonOwner) {
   ExpectThatSignedStoredValueIs(false);
 
   // Setting value has no effect from a non-owner once device is owned:
-  std::unique_ptr<TestingProfile> non_owner = CreateUser(public_key_only);
+  std::unique_ptr<TestingProfile> non_owner =
+      CreateUser(kNonOwner, public_key_only);
   StatsReportingController::Get()->SetEnabled(non_owner.get(), true);
   EXPECT_FALSE(StatsReportingController::Get()->IsEnabled());
   EXPECT_FALSE(value_at_last_notification_);
@@ -234,7 +255,8 @@ TEST_F(StatsReportingControllerTest, SetBeforeOwnershipTaken) {
   ExpectThatSignedStoredValueIs(false);
 
   // Before device is owned, setting the value means writing a pending value:
-  std::unique_ptr<TestingProfile> pre_ownership_user = CreateUser(no_keys);
+  std::unique_ptr<TestingProfile> pre_ownership_user =
+      CreateUser(kOwner, no_keys);
   StatsReportingController::Get()->SetEnabled(pre_ownership_user.get(), true);
   EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
   EXPECT_TRUE(value_at_last_notification_);
@@ -243,7 +265,7 @@ TEST_F(StatsReportingControllerTest, SetBeforeOwnershipTaken) {
 
   DeviceSettingsService::Get()->SetSessionManager(&fake_session_manager_client_,
                                                   both_keys);
-  std::unique_ptr<TestingProfile> owner = CreateUser(both_keys);
+  std::unique_ptr<TestingProfile> owner = CreateUser(kOwner, both_keys);
   EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
             DeviceSettingsService::Get()->GetOwnershipStatus());
 

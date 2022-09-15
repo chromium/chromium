@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -42,7 +43,9 @@ namespace em = enterprise_management;
 namespace ash {
 
 namespace {
-constexpr char kOwner[] = "me@owner";
+// For a user to be recognized as an owner, it needs to be the author of the
+// device settings. So use the default user name that DevicePolicyBuilder uses.
+const char* const kOwner = policy::PolicyBuilder::kFakeUsername;
 constexpr char kUser1[] = "h@xxor";
 
 void NotReached() {
@@ -92,6 +95,8 @@ class CrosSettingsTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(account_id.GetUserEmail());
 
+    FakeNssService::InitializeForBrowserContext(profile_.get(),
+                                                /*enable_system_slot=*/false);
     OwnerSettingsServiceAsh* service =
         OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
     DCHECK(service);

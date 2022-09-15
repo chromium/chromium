@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -173,7 +174,7 @@ TEST_F(DeviceSettingsServiceTest, StoreSuccess) {
 
   owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
-            true);
+            /*tpm_is_ready=*/false);
   device_settings_service_->Store(
       device_policy_->GetCopy(),
       base::BindOnce(&DeviceSettingsServiceTest::SetOperationCompleted,
@@ -263,6 +264,13 @@ TEST_F(DeviceSettingsServiceTest, OwnershipStatus) {
 TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForNonOwner) {
   owner_key_util_->Clear();
 
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetProfileName("non@owner.com");
+  std::unique_ptr<TestingProfile> non_owner_profile = profile_builder.Build();
+
+  FakeNssService::InitializeForBrowserContext(non_owner_profile.get(),
+                                              /*enable_system_slot=*/false);
+
   EXPECT_FALSE(device_settings_service_->HasPrivateOwnerKey());
   EXPECT_FALSE(device_settings_service_->GetPublicKey().get());
   EXPECT_EQ(DeviceSettingsService::OWNERSHIP_UNKNOWN,
@@ -271,7 +279,8 @@ TEST_F(DeviceSettingsServiceTest, OnTPMTokenReadyForNonOwner) {
   const std::string& user_id = device_policy_->policy_data().username();
   InitOwner(AccountId::FromUserEmail(user_id), false);
   OwnerSettingsServiceAsh* service =
-      OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
+      OwnerSettingsServiceAshFactory::GetForBrowserContext(
+          non_owner_profile.get());
   ASSERT_TRUE(service);
   service->IsOwnerAsync(base::BindOnce(&DeviceSettingsServiceTest::OnIsOwner,
                                        base::Unretained(this)));
@@ -441,7 +450,7 @@ TEST_F(DeviceSettingsServiceTest, Observer) {
   EXPECT_CALL(observer_, DeviceSettingsUpdated()).Times(1);
   owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
-            true);
+            /*tpm_is_ready=*/false);
   ReloadDeviceSettings();
   Mock::VerifyAndClearExpectations(&observer_);
 
