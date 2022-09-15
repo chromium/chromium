@@ -462,7 +462,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
     }
 
     dbus::MessageReader reader(response);
-    dbus::MessageReader array_reader(NULL);
+    dbus::MessageReader array_reader(nullptr);
     if (!reader.PopArray(&array_reader)) {
       LOG(ERROR) << "Invalid response: " << response->ToString();
       std::move(error_callback).Run();
@@ -472,7 +472,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
     std::vector<MountEntry> entries;
     while (array_reader.HasMoreData()) {
       MountEntry entry;
-      dbus::MessageReader sub_reader(NULL);
+      dbus::MessageReader sub_reader(nullptr);
       if (!array_reader.PopStruct(&sub_reader) ||
           !ReadMountEntryFromDbus(&sub_reader, &entry)) {
         LOG(ERROR) << "Invalid response: " << response->ToString();
@@ -772,17 +772,7 @@ std::ostream& operator<<(std::ostream& out, const MountEntry& entry) {
 // DiskInfo
 
 DiskInfo::DiskInfo(const std::string& device_path, dbus::Response* response)
-    : device_path_(device_path),
-      is_drive_(false),
-      has_media_(false),
-      on_boot_device_(false),
-      on_removable_device_(false),
-      is_read_only_(false),
-      is_hidden_(true),
-      is_virtual_(false),
-      is_auto_mountable_(false),
-      device_type_(DeviceType::kUnknown),
-      total_size_in_bytes_(0) {
+    : device_path_(device_path) {
   InitializeFromResponse(response);
 }
 
@@ -898,11 +888,13 @@ DiskInfo::~DiskInfo() = default;
 //     variant       string "vfat"
 //   }
 // ]
-void DiskInfo::InitializeFromResponse(dbus::Response* response) {
+bool DiskInfo::InitializeFromResponse(dbus::Response* response) {
   dbus::MessageReader reader(response);
-  base::Value value(dbus::PopDataAsValue(&reader));
-  if (!value.is_dict())
-    return;
+  const base::Value value(dbus::PopDataAsValue(&reader));
+  if (!value.is_dict()) {
+    LOG(ERROR) << "Value is not a dict: " << value;
+    return false;
+  }
 
   is_drive_ = value.FindBoolKey(cros_disks::kDeviceIsDrive).value_or(is_drive_);
   is_read_only_ =
@@ -942,10 +934,9 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
   device_number_ =
       value.FindIntKey(cros_disks::kDeviceNumber).value_or(device_number_);
 
-  // dbus::PopDataAsValue() pops uint64_t as double.
-  // The top 11 bits of uint64_t are dropped by the use of double. But, this
-  // works
-  // unless the size exceeds 8 PB.
+  // dbus::PopDataAsValue() pops uint64_t as double. The top 11 bits of uint64_t
+  // are dropped by the use of double. But, this works unless the size exceeds 8
+  // PB.
   absl::optional<double> device_size_double =
       value.FindDoubleKey(cros_disks::kDeviceSize);
   if (device_size_double.has_value())
@@ -957,11 +948,19 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
   if (media_type_double.has_value())
     device_type_ = DeviceMediaTypeToDeviceType(media_type_double.value());
 
-  base::Value* mount_paths = value.FindListKey(cros_disks::kDeviceMountPaths);
-  if (mount_paths && !mount_paths->GetListDeprecated().empty() &&
-      mount_paths->GetListDeprecated()[0].is_string()) {
-    mount_path_ = mount_paths->GetListDeprecated()[0].GetString();
+  if (const base::Value* const mount_paths =
+          value.FindListKey(cros_disks::kDeviceMountPaths);
+      mount_paths && mount_paths->is_list()) {
+    if (const base::Value::List& mount_paths_as_list = mount_paths->GetList();
+        !mount_paths_as_list.empty()) {
+      if (const base::Value& first_mount_path = mount_paths_as_list.front();
+          first_mount_path.is_string()) {
+        mount_path_ = first_mount_path.GetString();
+      }
+    }
   }
+
+  return !mount_path_.empty();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

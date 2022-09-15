@@ -261,20 +261,11 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
   const std::string& file_system_type() const { return file_system_type_; }
 
  private:
-  void InitializeFromResponse(dbus::Response* response);
+  bool InitializeFromResponse(dbus::Response* response);
 
   std::string device_path_;
   std::string mount_path_;
   std::string storage_device_path_;
-  bool is_drive_;
-  bool has_media_;
-  bool on_boot_device_;
-  bool on_removable_device_;
-  bool is_read_only_;
-  bool is_hidden_;
-  bool is_virtual_;
-  bool is_auto_mountable_;
-
   std::string file_path_;
   std::string label_;
   std::string vendor_id_;
@@ -282,12 +273,20 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
   std::string product_id_;
   std::string product_name_;
   std::string drive_model_;
-  DeviceType device_type_;
-  int bus_number_;
-  int device_number_;
-  uint64_t total_size_in_bytes_;
   std::string uuid_;
   std::string file_system_type_;
+  uint64_t total_size_in_bytes_ = 0;
+  DeviceType device_type_ = DeviceType::kUnknown;
+  int bus_number_ = 0;
+  int device_number_ = 0;
+  bool is_drive_ = false;
+  bool has_media_ = false;
+  bool on_boot_device_ = false;
+  bool on_removable_device_ = false;
+  bool is_read_only_ = false;
+  bool is_hidden_ = true;
+  bool is_virtual_ = false;
+  bool is_auto_mountable_ = false;
 };
 
 // A struct to represent information about a mount point sent from cros-disks.
