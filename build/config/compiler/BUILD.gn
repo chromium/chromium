@@ -550,14 +550,6 @@ config("compiler") {
     } else {
       cflags += [ "-ffp-contract=off" ]
     }
-
-    if (default_toolchain != "//build/toolchain/cros:target") {
-      # TODO(crbug.com/1361629): Fix the compiler so this is not needed.
-      cflags += [
-        "-mllvm",
-        "-simplifycfg-hoist-common-skip-limit=0",
-      ]
-    }
   }
 
   # Rust compiler setup (for either clang or rustc).
