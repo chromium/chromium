@@ -15,6 +15,18 @@ ScrollbarThemeFluent& ScrollbarThemeFluent::GetInstance() {
   return theme;
 }
 
+ScrollbarThemeFluent::ScrollbarThemeFluent() {
+  WebThemeEngine* theme_engine = WebThemeEngineHelper::GetNativeThemeEngine();
+  scrollbar_button_length_ =
+      theme_engine->GetSize(WebThemeEngine::kPartScrollbarUpArrow).height();
+  scrollbar_thumb_thickness_ =
+      theme_engine->GetSize(WebThemeEngine::kPartScrollbarVerticalThumb)
+          .width();
+  scrollbar_track_thickness_ =
+      theme_engine->GetSize(WebThemeEngine::kPartScrollbarVerticalTrack)
+          .width();
+}
+
 int ScrollbarThemeFluent::ScrollbarThickness(float scale_from_dip,
                                              EScrollbarWidth scrollbar_width) {
   // The difference between track's and thumb's thicknesses should always be
@@ -39,8 +51,8 @@ gfx::Rect ScrollbarThemeFluent::ThumbRect(const Scrollbar& scrollbar) {
   const gfx::Rect track_rect = TrackRect(scrollbar);
   const float offset_from_viewport =
       scrollbar.Orientation() == kHorizontalScrollbar
-          ? (track_rect.height() - thumb_thickness) / 2
-          : (track_rect.width() - thumb_thickness) / 2;
+          ? (track_rect.height() - thumb_thickness) / 2.0f
+          : (track_rect.width() - thumb_thickness) / 2.0f;
 
   // Thumb rect position is relative to the inner edge of the scrollbar
   // track. Therefore the thumb is translated to the opposite end (towards
@@ -68,7 +80,7 @@ gfx::Size ScrollbarThemeFluent::ButtonSize(const Scrollbar& scrollbar) const {
     const int button_height_unclamped =
         scrollbar_button_length_ * scrollbar.ScaleFromDIP();
     const int button_height = scrollbar.Height() < 2 * button_height_unclamped
-                                  ? scrollbar.Height() / 2
+                                  ? base::ClampFloor(scrollbar.Height() / 2.0f)
                                   : button_height_unclamped;
     return gfx::Size(button_width, button_height);
   } else {
@@ -76,7 +88,7 @@ gfx::Size ScrollbarThemeFluent::ButtonSize(const Scrollbar& scrollbar) const {
     const int button_width_unclamped =
         scrollbar_button_length_ * scrollbar.ScaleFromDIP();
     const int button_width = scrollbar.Width() < 2 * button_width_unclamped
-                                 ? scrollbar.Width() / 2
+                                 ? base::ClampFloor(scrollbar.Width() / 2.0f)
                                  : button_width_unclamped;
     return gfx::Size(button_width, button_height);
   }

@@ -30,6 +30,7 @@ class PLATFORM_EXPORT ScrollbarThemeSettings {
   friend class ScrollbarThemeFluentTest;
   friend class ScrollbarThemeMacTest;
   friend class WebRuntimeFeatures;
+  friend class WebThemeEngineDefault;
 
   static void SetMockScrollbarsEnabled(bool);
   static bool MockScrollbarsEnabled();

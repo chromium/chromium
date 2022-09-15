@@ -31,6 +31,11 @@ constexpr int kOffsetFromViewport = 100;
 
 class ScrollbarThemeFluentMock final : public ScrollbarThemeFluent {
  public:
+  ScrollbarThemeFluentMock() {
+    scrollbar_button_length_ = kScrollbarButtonLength;
+    scrollbar_thumb_thickness_ = kScrollbarThumbThickness;
+    scrollbar_track_thickness_ = kScrollbarTrackThickness;
+  }
   int ThumbLength(const Scrollbar& scrollbar) override {
     return kThumbLengthForTests;
   }

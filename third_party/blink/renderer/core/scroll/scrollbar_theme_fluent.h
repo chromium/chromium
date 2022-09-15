@@ -26,20 +26,19 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
                          EScrollbarWidth scrollbar_width) override;
 
  protected:
-  ScrollbarThemeFluent() = default;
+  ScrollbarThemeFluent();
 
   gfx::Rect ThumbRect(const Scrollbar&) override;
   gfx::Size ButtonSize(const Scrollbar&) const override;
 
  private:
+  friend class ScrollbarThemeFluentMock;
   int ThumbThickness(const float scale_from_dip) const;
 
-  // TODO(crbug.com/1353042): Remove hardcoded values. Get dimensions from
-  // ui/native_theme via WebThemeEngine.
-  // Button height for vertical scrollbar and width for horizontal.
-  int scrollbar_button_length_ = 18;
-  int scrollbar_thumb_thickness_ = 6;
-  int scrollbar_track_thickness_ = 14;
+  // Button's height for vertical and width for the horizontal scrollbar.
+  int scrollbar_button_length_;
+  int scrollbar_thumb_thickness_;
+  int scrollbar_track_thickness_;
 };
 
 }  // namespace blink
