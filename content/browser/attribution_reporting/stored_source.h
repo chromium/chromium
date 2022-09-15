@@ -41,7 +41,8 @@ class CONTENT_EXPORT StoredSource {
   StoredSource(CommonSourceInfo common_info,
                AttributionLogic attribution_logic,
                ActiveState active_state,
-               Id source_id);
+               Id source_id,
+               int64_t aggregatable_budget_consumed);
 
   ~StoredSource();
 
@@ -59,6 +60,10 @@ class CONTENT_EXPORT StoredSource {
 
   Id source_id() const { return source_id_; }
 
+  int64_t aggregatable_budget_consumed() const {
+    return aggregatable_budget_consumed_;
+  }
+
   const std::vector<uint64_t>& dedup_keys() const { return dedup_keys_; }
 
   void SetDedupKeys(std::vector<uint64_t> dedup_keys) {
@@ -73,6 +78,8 @@ class CONTENT_EXPORT StoredSource {
   ActiveState active_state_;
 
   Id source_id_;
+
+  int64_t aggregatable_budget_consumed_;
 
   // Dedup keys associated with the source. Only set in values returned from
   // `AttributionStorage::GetActiveSources()`.

@@ -287,7 +287,6 @@ absl::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement,
 struct StoredSourceData {
   StoredSource source;
   int num_conversions;
-  int64_t aggregatable_budget_consumed;
 };
 
 constexpr int kSourceColumnCount = 17;
@@ -348,9 +347,9 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
               std::move(destination_origin), std::move(reporting_origin),
               source_time, expiry_time, *source_type, priority,
               std::move(*filter_data), debug_key, std::move(*aggregation_keys)),
-          *attribution_logic, *active_state, source_id),
-      .num_conversions = num_conversions,
-      .aggregatable_budget_consumed = aggregatable_budget_consumed};
+          *attribution_logic, *active_state, source_id,
+          aggregatable_budget_consumed),
+      .num_conversions = num_conversions};
 }
 
 absl::optional<StoredSourceData> ReadSourceToAttribute(
@@ -594,7 +593,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
 
   const StoredSource::Id source_id(db_->GetLastInsertRowId());
   const StoredSource stored_source(source.common_info(), attribution_logic,
-                                   *active_state, source_id);
+                                   *active_state, source_id,
+                                   /*aggregatable_budget_consumed=*/0);
 
   if (!rate_limit_table_.AddRateLimitForSource(db_.get(), stored_source))
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -887,7 +887,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     DCHECK(new_aggregatable_report.has_value());
     store_aggregatable_status = MaybeStoreAggregatableAttributionReport(
         *new_aggregatable_report,
-        source_to_attribute->aggregatable_budget_consumed);
+        source_to_attribute->source.aggregatable_budget_consumed());
   }
 
   if (store_event_level_status == EventLevelResult::kInternalError ||

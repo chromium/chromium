@@ -890,7 +890,9 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
                 AttributionTrigger::AggregatableResult::kExcessiveAttributions),
             ReplacedEventLevelReportIs(absl::nullopt)));
 
-  const auto source = source_builder.SetDefaultFilterData().BuildStored();
+  const auto source = source_builder.SetDefaultFilterData()
+                          .SetAggregatableBudgetConsumed(5)
+                          .BuildStored();
   auto contributions =
       DefaultAggregatableHistogramContributions(/*histogram_values=*/{5});
   ASSERT_THAT(contributions, SizeIs(1));
@@ -1016,6 +1018,7 @@ TEST_F(AttributionStorageTest,
           .SetSourceEventId(5)
           .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
           .SetPriority(0)
+          .SetAggregatableBudgetConsumed(1)
           .BuildStored(),
       DefaultAggregatableHistogramContributions());
 
@@ -1306,7 +1309,9 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   storage()->StoreSource(builder.Build());
   delegate()->set_randomized_response(absl::nullopt);
 
-  const AttributionReport expected_event_level_report =
+  base::Time trigger_time = base::Time::Now();
+
+  AttributionReport expected_event_level_report =
       ReportBuilder(
           AttributionInfoBuilder(
               builder
@@ -1315,7 +1320,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
                   .SetActiveState(StoredSource::ActiveState::
                                       kReachedEventLevelAttributionLimit)
                   .BuildStored())
-              .SetTime(base::Time::Now())
+              .SetTime(trigger_time)
               .Build())
           .SetTriggerData(7)
           .SetReportTime(fake_report_time)
@@ -1341,9 +1346,30 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess)));
 
+  // The source's aggregatable budget consumed changes between the two
+  // GetAttributionReports() calls due to the aggregatable trigger, which
+  // requires a reflection of that change within the event level report
+  // for the test to pass.
+  expected_event_level_report =
+      ReportBuilder(
+          AttributionInfoBuilder(
+              builder
+                  .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
+                  .SetDefaultFilterData()
+                  .SetAggregatableBudgetConsumed(1)
+                  .SetActiveState(StoredSource::ActiveState::
+                                      kReachedEventLevelAttributionLimit)
+                  .BuildStored())
+              .SetTime(trigger_time)
+              .Build())
+          .SetTriggerData(7)
+          .SetReportTime(fake_report_time)
+          .Build();
+
   const AttributionReport expected_aggregatable_report =
       GetExpectedAggregatableReport(
-          builder.BuildStored(), DefaultAggregatableHistogramContributions());
+          builder.SetAggregatableBudgetConsumed(1).BuildStored(),
+          DefaultAggregatableHistogramContributions({1}));
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -2084,6 +2110,12 @@ TEST_F(AttributionStorageTest, MaxReportingOriginsPerAttribution) {
                           TriggerDebugKeyIs(1), TriggerDebugKeyIs(2)));
 }
 
+TEST_F(AttributionStorageTest, SourceBudgetValueRetrieved) {
+  storage()->StoreSource(SourceBuilder().Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(AggregatableBudgetConsumedIs(0)));
+}
+
 TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
   delegate()->set_aggregatable_budget_per_source(16);
 
@@ -2134,6 +2166,20 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
                                                 /*histogram_values=*/{9})
                                                 .Build()),
       AttributionTrigger::AggregatableResult::kSuccess);
+}
+
+TEST_F(AttributionStorageTest, BudgetConsumedAfterTriggerIsRetrieved) {
+  auto provider = TestAggregatableSourceProvider(/*size=*/1);
+  storage()->StoreSource(provider.GetBuilder().Build());
+
+  EXPECT_EQ(
+      MaybeCreateAndStoreAggregatableReport(DefaultAggregatableTriggerBuilder(
+                                                /*histogram_values=*/{2})
+                                                .Build()),
+      AttributionTrigger::AggregatableResult::kSuccess);
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(AggregatableBudgetConsumedIs(2)));
 }
 
 TEST_F(AttributionStorageTest,
@@ -2501,7 +2547,9 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
             NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(contributions))))));
 
-  const auto source = source_builder.SetDefaultFilterData().BuildStored();
+  const auto source = source_builder.SetDefaultFilterData()
+                          .SetAggregatableBudgetConsumed(5)
+                          .BuildStored();
   auto expected_event_level_report =
       GetExpectedEventLevelReport(source, trigger);
   auto expected_aggregatable_report =

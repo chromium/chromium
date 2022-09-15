@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 
 #include <limits.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <tuple>
@@ -554,6 +555,12 @@ SourceBuilder& SourceBuilder::SetAggregationKeys(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetAggregatableBudgetConsumed(
+    int64_t aggregatable_budget_consumed) {
+  aggregatable_budget_consumed_ = aggregatable_budget_consumed;
+  return *this;
+}
+
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
   return CommonSourceInfo(source_event_id_, source_origin_, destination_origin_,
                           reporting_origin_, source_time_,
@@ -568,7 +575,7 @@ StorableSource SourceBuilder::Build() const {
 
 StoredSource SourceBuilder::BuildStored() const {
   StoredSource source(BuildCommonInfo(), attribution_logic_, active_state_,
-                      source_id_);
+                      source_id_, aggregatable_budget_consumed_);
   source.SetDedupKeys(dedup_keys_);
   return source;
 }
@@ -822,7 +829,8 @@ bool operator==(const StorableSource& a, const StorableSource& b) {
 bool operator==(const StoredSource& a, const StoredSource& b) {
   const auto tie = [](const StoredSource& source) {
     return std::make_tuple(source.common_info(), source.attribution_logic(),
-                           source.active_state(), source.dedup_keys());
+                           source.active_state(), source.dedup_keys(),
+                           source.aggregatable_budget_consumed());
   };
   return tie(a) == tie(b);
 }
@@ -1133,7 +1141,9 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
   out << "{common_info=" << source.common_info()
       << ",attribution_logic=" << source.attribution_logic()
       << ",active_state=" << source.active_state()
-      << ",source_id=" << *source.source_id() << ",dedup_keys=[";
+      << ",source_id=" << *source.source_id()
+      << ",aggregatable_budget_consumed="
+      << source.aggregatable_budget_consumed() << ",dedup_keys=[";
 
   const char* separator = "";
   for (int64_t dedup_key : source.dedup_keys()) {

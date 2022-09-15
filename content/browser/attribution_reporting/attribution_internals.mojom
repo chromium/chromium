@@ -101,6 +101,7 @@ struct WebUISource {
   map<string, array<string>> filter_data;
   // The value is a hex-encoded unsigned 128-bit integer.
   map<string, string> aggregation_keys;
+  uint64 aggregatable_budget_consumed;
 
   // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`.
   enum Attributability {

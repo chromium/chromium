@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_internals_handler_impl.h"
 
+#include <stdint.h>
+
 #include <iterator>
 #include <string>
 #include <utility>
@@ -22,6 +24,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting_constants.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -43,6 +46,11 @@ namespace content {
 
 namespace {
 
+static_assert(kAttributionAggregatableBudgetPerSource == 65536,
+              "please update BUDGET_PER_SOURCE in "
+              "content/browser/resources/attribution_reporting/"
+              "attribution_internals.ts with new value");
+
 using Attributability =
     ::attribution_internals::mojom::WebUISource::Attributability;
 using Empty = ::attribution_internals::mojom::Empty;
@@ -58,7 +66,9 @@ attribution_internals::mojom::DebugKeyPtr WebUIDebugKey(
 attribution_internals::mojom::WebUISourcePtr WebUISource(
     const CommonSourceInfo& source,
     Attributability attributability,
-    const std::vector<uint64_t>& dedup_keys) {
+    const std::vector<uint64_t>& dedup_keys,
+    int64_t aggregatable_budget_consumed) {
+  DCHECK_GE(aggregatable_budget_consumed, 0);
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), source.source_origin(),
       source.DestinationSite().Serialize(), source.reporting_origin(),
@@ -72,7 +82,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
             return std::make_pair(key.first,
                                   HexEncodeAggregationKey(key.second));
           }),
-      attributability);
+      aggregatable_budget_consumed, attributability);
 }
 
 void ForwardSourcesToWebUI(
@@ -100,8 +110,9 @@ void ForwardSourcesToWebUI(
       }
     }
 
-    web_ui_sources.push_back(WebUISource(source.common_info(), attributability,
-                                         source.dedup_keys()));
+    web_ui_sources.push_back(
+        WebUISource(source.common_info(), attributability, source.dedup_keys(),
+                    source.aggregatable_budget_consumed()));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_sources));
@@ -292,7 +303,8 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
   }
 
   auto web_ui_source =
-      WebUISource(source.common_info(), attributability, /*dedup_keys=*/{});
+      WebUISource(source.common_info(), attributability, /*dedup_keys=*/{},
+                  /*aggregatable_budget_consumed=*/0);
 
   for (auto& observer : observers_) {
     observer->OnSourceRejected(web_ui_source.Clone());
