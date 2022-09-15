@@ -67,6 +67,9 @@ ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
       } else {
         return fmp::TASK_RESULT_MESSAGE_SENT;
       }
+    case apps::State::FAILED_DIRECTORY_NOT_SHARED:
+      DCHECK(task_type == TASK_TYPE_PLUGIN_VM_APP);
+      return fmp::TASK_RESULT_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
     case apps::State::FAILED:
       return fmp::TASK_RESULT_FAILED;
   }
@@ -332,7 +335,8 @@ void ExecuteAppServiceTask(
     DCHECK(task.task_type == TASK_TYPE_ARC_APP ||
            task.task_type == TASK_TYPE_WEB_APP ||
            task.task_type == TASK_TYPE_FILE_HANDLER ||
-           task.task_type == TASK_TYPE_CROSTINI_APP);
+           task.task_type == TASK_TYPE_CROSTINI_APP ||
+           task.task_type == TASK_TYPE_PLUGIN_VM_APP);
   } else {
     DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
            task.task_type == TASK_TYPE_FILE_HANDLER);

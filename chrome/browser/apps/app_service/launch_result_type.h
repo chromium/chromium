@@ -27,7 +27,7 @@ struct LaunchResult {
   LaunchResult& operator=(const LaunchResult& launch_result) = delete;
   LaunchResult(const LaunchResult& launch_result) = delete;
 
-  enum State { SUCCESS, FAILED };
+  enum State { SUCCESS, FAILED, FAILED_DIRECTORY_NOT_SHARED };
   explicit LaunchResult(LaunchResult::State state);
 
   // A single launch event may result in multiple app instances being created.

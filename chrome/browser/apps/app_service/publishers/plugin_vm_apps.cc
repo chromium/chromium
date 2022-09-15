@@ -183,6 +183,18 @@ apps::IntentFilters CreateIntentFilterForPluginVm(
   return intent_filters;
 }
 
+apps::LaunchResult ConvertPluginVmResultToLaunchResult(
+    plugin_vm::LaunchPluginVmAppResult plugin_vm_result) {
+  switch (plugin_vm_result) {
+    case plugin_vm::LaunchPluginVmAppResult::SUCCESS:
+      return apps::LaunchResult(apps::State::SUCCESS);
+    case plugin_vm::LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED:
+      return apps::LaunchResult(apps::State::FAILED_DIRECTORY_NOT_SHARED);
+    case plugin_vm::LaunchPluginVmAppResult::FAILED:
+      return apps::LaunchResult(apps::State::FAILED);
+  }
+}
+
 }  // namespace
 
 namespace apps {
@@ -315,9 +327,8 @@ void PluginVmApps::LaunchAppWithIntent(const std::string& app_id,
           [](LaunchCallback callback,
              plugin_vm::LaunchPluginVmAppResult plugin_vm_result,
              const std::string& failure_reason) {
-            std::move(callback).Run(ConvertBoolToLaunchResult(
-                plugin_vm_result ==
-                plugin_vm::LaunchPluginVmAppResult::SUCCESS));
+            std::move(callback).Run(
+                ConvertPluginVmResultToLaunchResult(plugin_vm_result));
           },
           std::move(callback)));
 }

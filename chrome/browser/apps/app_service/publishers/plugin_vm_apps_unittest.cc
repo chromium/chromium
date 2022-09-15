@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/plugin_vm/mock_plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -33,6 +34,9 @@
 
 namespace apps {
 
+using MockPluginVmManager =
+    testing::StrictMock<plugin_vm::test::MockPluginVmManager>;
+
 class PluginVmAppsTest : public testing::Test {
  public:
   PluginVmAppsTest()
@@ -43,6 +47,8 @@ class PluginVmAppsTest : public testing::Test {
   AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
   TestingProfile* profile() { return profile_.get(); }
+
+  MockPluginVmManager* plugin_vm_manager() { return plugin_vm_manager_; }
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -58,6 +64,14 @@ class PluginVmAppsTest : public testing::Test {
     mount_points_->RegisterFileSystem(
         mount_name_, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), GetMyFilesFolderPath());
+    plugin_vm_manager_ = static_cast<MockPluginVmManager*>(
+        plugin_vm::PluginVmManagerFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_.get(),
+                base::BindRepeating([](content::BrowserContext*)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockPluginVmManager>();
+                })));
   }
 
   void TearDown() override {
@@ -131,6 +145,7 @@ class PluginVmAppsTest : public testing::Test {
   std::unique_ptr<plugin_vm::PluginVmTestHelper> test_helper_;
   storage::ExternalMountPoints* mount_points_;
   std::string mount_name_;
+  MockPluginVmManager* plugin_vm_manager_;
 };
 
 TEST_F(PluginVmAppsTest, AppServiceHasPluginVmIntentFilters) {
@@ -176,19 +191,9 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent) {
       GetMyFilesFileSystemURL("PvmDefault/file").ToGURL()));
   intent->files = {std::move(files)};
 
-  using MockPluginVmManager =
-      testing::StrictMock<plugin_vm::test::MockPluginVmManager>;
-  auto& plugin_vm_manager = *static_cast<MockPluginVmManager*>(
-      plugin_vm::PluginVmManagerFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile(),
-          base::BindRepeating(
-              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                return std::make_unique<MockPluginVmManager>();
-              })));
-
   // Retrieve the callback object when we reach the end of LaunchPluginVmApp().
   plugin_vm::PluginVmManager::LaunchPluginVmCallback launch_plugin_vm_callback;
-  EXPECT_CALL(plugin_vm_manager, LaunchPluginVm(testing::_))
+  EXPECT_CALL(*plugin_vm_manager(), LaunchPluginVm(testing::_))
       .WillOnce(testing::Invoke(
           [&](plugin_vm::PluginVmManager::LaunchPluginVmCallback callback) {
             EXPECT_TRUE(launch_plugin_vm_callback.is_null());
@@ -204,6 +209,31 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent) {
   // took from LaunchAppWithIntent were converted successfully for
   // LaunchPluginVmApp() to pass the validity checks inside LaunchPluginVmApp().
   ASSERT_FALSE(launch_plugin_vm_callback.is_null());
+}
+
+TEST_F(PluginVmAppsTest, LaunchAppWithIntent_FailedDirectoryNotShared) {
+  std::string app_id = AddPluginVmAppWithExtensionTypes("app_id", {"txt"});
+  apps::IntentPtr intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+  std::vector<apps::IntentFilePtr> files;
+
+  // Add a file in the downloads directory so that PluginVm does NOT have access
+  // to it.
+  files.push_back(std::make_unique<apps::IntentFile>(
+      GetMyFilesFileSystemURL("Downloads/file").ToGURL()));
+  intent->files = {std::move(files)};
+
+  absl::optional<State> result_state;
+  app_service_proxy()->LaunchAppWithIntent(
+      app_id, /*event_flags=*/0, std::move(intent), LaunchSource::kUnknown,
+      std::unique_ptr<WindowInfo>(),
+      base::BindLambdaForTesting(
+          [&result_state](apps::LaunchResult&& callback_result) {
+            result_state = callback_result.state;
+          }));
+
+  ASSERT_EQ(result_state.value_or(apps::State::SUCCESS),
+            apps::State::FAILED_DIRECTORY_NOT_SHARED);
 }
 
 }  // namespace apps
