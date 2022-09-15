@@ -353,10 +353,9 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     }
   }
 
-  // Allows updating start_url and manifest_id when kWebAppEnableManifestId is
-  // enabled. Both fields are allowed to change as long as the app_id generated
-  // from them doesn't change.
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
+  // Allows updating start_url and manifest_id. Both fields are allowed to
+  // change as long as the app_id generated from them doesn't change.
+  {
     if (install_info_->manifest_id != app->manifest_id())
       return true;
     if (install_info_->start_url != app->start_url())

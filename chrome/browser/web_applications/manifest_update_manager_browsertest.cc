@@ -3942,17 +3942,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_TRUE(web_app->note_taking_new_note_url().is_empty());
 }
 
-class ManifestUpdateManagerBrowserTest_ManifestId
-    : public ManifestUpdateManagerBrowserTest {
- public:
-  ManifestUpdateManagerBrowserTest_ManifestId() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableManifestId);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using ManifestUpdateManagerBrowserTest_ManifestId =
+    ManifestUpdateManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
                        AllowStartUrlUpdate) {
@@ -4053,9 +4044,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   )";
   OverrideManifest(kManifestTemplate, {"start", kInstallableIconList});
   AppId app_id = InstallWebApp();
-  // Manually set manifest_id to null. manifest_id can be null when the
-  // kWebAppEnableManifestId is turnned off or when the app is sync installed
-  // from older versions of Chromium.
+  // Manually set manifest_id to null. manifest_id can be null when the app is
+  // sync installed from older versions of Chromium.
   {
     ScopedRegistryUpdate update(&GetProvider().sync_bridge());
     WebApp* app = update->UpdateApp(app_id);

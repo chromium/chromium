@@ -8,7 +8,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/image/image.h"
 
@@ -288,8 +287,7 @@ void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
 
 void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
                                    const webapps::InstallableData& data) {
-  if (blink::IsEmptyManifest(data.manifest) ||
-      !base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
+  if (blink::IsEmptyManifest(data.manifest)) {
     callback->sendSuccess(protocol::Maybe<protocol::String>(),
                           protocol::Maybe<protocol::String>());
     return;

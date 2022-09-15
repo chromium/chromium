@@ -1969,14 +1969,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
   EXPECT_EQ(web_contents, nullptr);
 }
 
-class WebAppBrowserTest_ManifestId : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_ManifestId() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableManifestId};
-};
+using WebAppBrowserTest_ManifestId = WebAppBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId,
                        DISABLE_POSIX(NoManifestId)) {

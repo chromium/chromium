@@ -950,12 +950,6 @@ const char kDesktopPWAsLaunchHandlerDescription[] =
     "implementation of: "
     "https://github.com/WICG/sw-launch/blob/main/launch_handler.md";
 
-const char kDesktopPWAsManifestIdName[] = "Desktop PWA manifest id";
-const char kDesktopPWAsManifestIdDescription[] =
-    "Enable web app manifests to declare id. Prototype "
-    "implementation of: "
-    "https://github.com/philloooo/pwa-unique-id/blob/main/explainer.md";
-
 const char kDesktopPWAsTabStripName[] = "Desktop PWA tab strips";
 const char kDesktopPWAsTabStripDescription[] =
     "Experimental UI for exploring what PWA windows would look like with a tab "

@@ -49,7 +49,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -131,23 +130,11 @@ void WebAppInstallFinalizer::FinalizeInstall(
   AppId app_id =
       GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
-  // A web app might be sync installed with id received from WebAppSpecifics
-  // that's different from start_url hash, in this case we look up the app by
-  // start_url and respect the app_id from the existing WebApp.
-  if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId) &&
-      !existing_web_app) {
-    existing_web_app =
-        GetWebAppRegistrar().GetAppByStartUrl(web_app_info.start_url);
-  }
   std::unique_ptr<WebApp> web_app;
   if (existing_web_app) {
     app_id = existing_web_app->app_id();
     // Prepare copy-on-write:
     // Allows changing manifest_id and start_url when manifest_id is enabled.
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kWebAppEnableManifestId)) {
-      DCHECK_EQ(web_app_info.start_url, existing_web_app->start_url());
-    }
     web_app = std::make_unique<WebApp>(*existing_web_app);
 
     // The UI may initiate a full install to overwrite the existing

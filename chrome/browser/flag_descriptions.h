@@ -541,9 +541,6 @@ extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 extern const char kDesktopPWAsLaunchHandlerName[];
 extern const char kDesktopPWAsLaunchHandlerDescription[];
 
-extern const char kDesktopPWAsManifestIdName[];
-extern const char kDesktopPWAsManifestIdDescription[];
-
 extern const char kDesktopPWAsTabStripName[];
 extern const char kDesktopPWAsTabStripDescription[];
 

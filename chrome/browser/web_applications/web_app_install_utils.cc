@@ -956,10 +956,9 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
-    web_app.SetStartUrl(web_app_info.start_url);
-    web_app.SetManifestId(web_app_info.manifest_id);
-  }
+  web_app.SetStartUrl(web_app_info.start_url);
+  web_app.SetManifestId(web_app_info.manifest_id);
+
   web_app.SetDisplayMode(web_app_info.display_mode);
   web_app.SetDisplayModeOverride(web_app_info.display_override);
 
