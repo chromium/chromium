@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetReidScoreBrowserTestWithUkmRecording,
   auto expected_surface = blink::IdentifiableSurface::FromTypeAndToken(
       kReidScoreType, base::make_span(tokens));
 
-  const std::pair<uint64_t, int64_t> kExpectedReidEntry{
-      expected_surface.ToUkmMetricHash(), 1u};
-  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedReidEntry));
+  EXPECT_THAT(seen_metrics, IsSupersetOf({
+                                Key(expected_surface.ToUkmMetricHash()),
+                            }));
 }
