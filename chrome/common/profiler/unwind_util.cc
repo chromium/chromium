@@ -51,11 +51,10 @@ namespace {
 
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
 #if BUILDFLAG(USE_ANDROID_UNWINDER_V2)
-constexpr const char* kCfiFileName = "assets/unwind_cfi_32_v2";
-
 class ChromeUnwinderCreator {
  public:
   ChromeUnwinderCreator() {
+    constexpr char kCfiFileName[] = "assets/unwind_cfi_32_v2";
     base::MemoryMappedFile::Region cfi_region;
     int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
     DCHECK_GE(fd, 0);
@@ -79,12 +78,12 @@ class ChromeUnwinderCreator {
   base::MemoryMappedFile chrome_cfi_file_;
 };
 #else   // BUILDFLAG(USE_ANDROID_UNWINDER_V2)
-constexpr const char* kCfiFileName = "assets/unwind_cfi_32";
-
 // Encapsulates the setup required to create the Chrome unwinder on Android.
 class ChromeUnwinderCreator {
  public:
   ChromeUnwinderCreator() {
+    constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
+
     base::MemoryMappedFile::Region cfi_region;
     int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
     DCHECK_GE(fd, 0);
@@ -151,14 +150,11 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
 // unwinders to work -- are available in the current context. Unwinder assets
 // are only embedded into certain builds of Chrome.
 bool AreUnwinderAssetsAvailable() {
-  base::MemoryMappedFile::Region unused;
-  const int fd = base::android::OpenApkAsset(kCfiFileName, &unused);
-  if (fd == -1) {
-    return false;
-  }
-  // The destructor will close the file automatically.
-  base::File asset(fd);
-  return true;
+  const version_info::Channel channel = chrome::GetChannel();
+  // CFI is currently only embedded into dev and canary builds of Chrome:
+  // https://crsrc.org/c/chrome/android/chrome_public_apk_tmpl.gni;l=30-36;drc=2b4d4975755c2394a9d45a77a8acf7597ff67dfc
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV;
 }
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 
