@@ -1150,6 +1150,27 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Comparison Windows (reclient) (reproxy cache)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win|expcache",
+        short_name = "re",
+    ),
+    cores = 32,
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 6 * time.hour,
+    reclient_cache_silo = "Comparison Windows - cache siloed",
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = 250,
+    reclient_bootstrap_env = {
+        "RBE_experimental_goma_deps_cache": True,
+    },
+    os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
+)
+
+ci.builder(
     name = "Comparison Simple Chrome (reclient)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
