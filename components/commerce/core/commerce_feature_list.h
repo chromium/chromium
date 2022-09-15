@@ -51,24 +51,13 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
 
 // Price tracking variations for iOS.
 constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTrackingWithOptimizationGuide[] = {
-        {"price_tracking_with_optimization_guide", "true"},
-        {"price_tracking_opt_out", "false"}};
-
-constexpr flags_ui::FeatureEntry::FeatureParam
-    kCommercePriceTrackingWithOptimizationGuideAndOptOut[] = {
-        {"price_tracking_with_optimization_guide", "true"},
-        {"price_tracking_opt_out", "true"}};
+    kCommercePriceTrackingNotifications[] = {
+        {"enable_price_notification", "true"}};
 
 constexpr flags_ui::FeatureEntry::FeatureVariation
     kCommercePriceTrackingVariations[] = {
-        {"Price Tracking with Optimization Guide",
-         kCommercePriceTrackingWithOptimizationGuide,
-         std::size(kCommercePriceTrackingWithOptimizationGuide), nullptr},
-        {"Price Tracking with Optimization Guide and Opt Out",
-         kCommercePriceTrackingWithOptimizationGuideAndOptOut,
-         std::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
-         nullptr}};
+        {"Price Tracking Notifications", kCommercePriceTrackingNotifications,
+         std::size(kCommercePriceTrackingNotifications), nullptr}};
 
 extern const base::Feature kCommerceAllowLocalImages;
 extern const base::Feature kCommerceAllowServerImages;
