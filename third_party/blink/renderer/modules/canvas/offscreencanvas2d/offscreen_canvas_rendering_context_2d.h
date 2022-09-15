@@ -129,7 +129,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
       const SkIRect& dirty_rect,
       CanvasPerformanceMonitor::DrawType) final;
 
-  sk_sp<PaintFilter> StateGetFilterImpl() final;
+  sk_sp<PaintFilter> StateGetFilter() final;
   void SnapshotStateForFilter() final;
 
   void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const final;
