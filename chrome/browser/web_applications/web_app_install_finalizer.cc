@@ -519,6 +519,21 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   hooks_options.os_hooks[OsHookType::kFileHandlers] = true;
   hooks_options.os_hooks[OsHookType::kProtocolHandlers] = true;
 
+  switch (finalize_options.source) {
+    case WebAppManagement::kSystem:
+    case WebAppManagement::kPolicy:
+    case WebAppManagement::kDefault:
+      hooks_options.reason = SHORTCUT_CREATION_AUTOMATED;
+      break;
+    case WebAppManagement::kKiosk:
+    case WebAppManagement::kSubApp:
+    case WebAppManagement::kWebAppStore:
+    case WebAppManagement::kSync:
+    case WebAppManagement::kCommandLine:
+      hooks_options.reason = SHORTCUT_CREATION_BY_USER;
+      break;
+  }
+
   os_integration_manager_->InstallOsHooks(
       app_id,
       base::BindOnce(&WebAppInstallFinalizer::OnInstallHooksFinished,

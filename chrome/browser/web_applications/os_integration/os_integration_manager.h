@@ -59,6 +59,7 @@ struct InstallOsHooksOptions {
   OsHooksOptions os_hooks;
   bool add_to_desktop = false;
   bool add_to_quick_launch_bar = false;
+  ShortcutCreationReason reason = SHORTCUT_CREATION_BY_USER;
 };
 
 // Retire these 3 once the sub-manager project is done.
@@ -235,6 +236,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   virtual void CreateShortcuts(const AppId& app_id,
                                bool add_to_desktop,
+                               ShortcutCreationReason reason,
                                CreateShortcutsCallback callback);
 
   // Installation:

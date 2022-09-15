@@ -59,6 +59,7 @@ class WebAppShortcutManager {
   bool CanCreateShortcuts() const;
   void CreateShortcuts(const AppId& app_id,
                        bool add_to_desktop,
+                       ShortcutCreationReason reason,
                        CreateShortcutsCallback callback);
   // Fetch already-updated shortcut data and deploy to OS integration.
   void UpdateShortcuts(const AppId& app_id,
@@ -129,6 +130,7 @@ class WebAppShortcutManager {
 
   void OnShortcutInfoRetrievedCreateShortcuts(
       bool add_to_desktop,
+      ShortcutCreationReason reason,
       CreateShortcutsCallback callback,
       std::unique_ptr<ShortcutInfo> info);
 

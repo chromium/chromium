@@ -203,6 +203,7 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration() {
   } else {
     web_app::InstallOsHooksOptions install_options;
     install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+    install_options.reason = SHORTCUT_CREATION_AUTOMATED;
     os_integration_manager_->InstallOsHooks(
         app_id_,
         base::BindOnce(&RunOnOsLoginCommand::OnOsHooksSet,

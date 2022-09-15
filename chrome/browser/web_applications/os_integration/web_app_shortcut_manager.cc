@@ -128,6 +128,7 @@ void WebAppShortcutManager::SuppressShortcutsForTesting() {
 
 void WebAppShortcutManager::CreateShortcuts(const AppId& app_id,
                                             bool add_to_desktop,
+                                            ShortcutCreationReason reason,
                                             CreateShortcutsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(CanCreateShortcuts());
@@ -136,7 +137,7 @@ void WebAppShortcutManager::CreateShortcuts(const AppId& app_id,
       app_id,
       base::BindOnce(
           &WebAppShortcutManager::OnShortcutInfoRetrievedCreateShortcuts,
-          weak_ptr_factory_.GetWeakPtr(), add_to_desktop,
+          weak_ptr_factory_.GetWeakPtr(), add_to_desktop, reason,
           base::BindOnce(&WebAppShortcutManager::OnShortcutsCreated,
                          weak_ptr_factory_.GetWeakPtr(), app_id,
                          std::move(callback))));
@@ -229,6 +230,7 @@ void WebAppShortcutManager::OnShortcutsDeleted(const AppId& app_id,
 
 void WebAppShortcutManager::OnShortcutInfoRetrievedCreateShortcuts(
     bool add_to_desktop,
+    ShortcutCreationReason reason,
     CreateShortcutsCallback callback,
     std::unique_ptr<ShortcutInfo> info) {
   if (suppress_shortcuts_for_testing_) {
@@ -247,9 +249,9 @@ void WebAppShortcutManager::OnShortcutInfoRetrievedCreateShortcuts(
   locations.on_desktop = add_to_desktop;
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
 
-  internals::ScheduleCreatePlatformShortcuts(
-      shortcut_data_dir, locations, SHORTCUT_CREATION_BY_USER, std::move(info),
-      std::move(callback));
+  internals::ScheduleCreatePlatformShortcuts(shortcut_data_dir, locations,
+                                             reason, std::move(info),
+                                             std::move(callback));
 }
 
 void WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(

@@ -219,7 +219,7 @@ void OsIntegrationManager::InstallOsHooks(
   // TODO(ortuno): Make adding a shortcut to the applications menu independent
   // from adding a shortcut to desktop.
   if (options.os_hooks[OsHookType::kShortcuts]) {
-    CreateShortcuts(app_id, options.add_to_desktop,
+    CreateShortcuts(app_id, options.add_to_desktop, options.reason,
                     std::move(shortcuts_callback));
   } else {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -414,9 +414,10 @@ FakeOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
 
 void OsIntegrationManager::CreateShortcuts(const AppId& app_id,
                                            bool add_to_desktop,
+                                           ShortcutCreationReason reason,
                                            CreateShortcutsCallback callback) {
   if (shortcut_manager_->CanCreateShortcuts()) {
-    shortcut_manager_->CreateShortcuts(app_id, add_to_desktop,
+    shortcut_manager_->CreateShortcuts(app_id, add_to_desktop, reason,
                                        std::move(callback));
   } else {
     std::move(callback).Run(false);

@@ -27,6 +27,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               CreateShortcuts,
               (const AppId& app_id,
                bool add_to_desktop,
+               ShortcutCreationReason reason,
                CreateShortcutsCallback callback),
               (override));
 
