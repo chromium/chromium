@@ -151,9 +151,10 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
 // are only embedded into certain builds of Chrome.
 bool AreUnwinderAssetsAvailable() {
   const version_info::Channel channel = chrome::GetChannel();
-  // CFI is currently only embedded into dev and canary builds of Chrome:
-  // https://crsrc.org/c/chrome/android/chrome_public_apk_tmpl.gni;l=30-36;drc=2b4d4975755c2394a9d45a77a8acf7597ff67dfc
-  return channel == version_info::Channel::CANARY ||
+  // CFI is currently only embedded into dev, canary, and beta builds of Chrome:
+  // https://crsrc.org/c/chrome/android/chrome_public_apk_tmpl.gni;l=30-36;drc=32cca7e9d8c49d42e393c75ffb404a0f8899704d
+  return channel == version_info::Channel::BETA ||
+         channel == version_info::Channel::CANARY ||
          channel == version_info::Channel::DEV;
 }
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
