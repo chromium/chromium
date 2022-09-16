@@ -378,10 +378,6 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
           continue;
         }
         mojom_link->text = *text;
-        auto* color = part_dict.FindStringByDottedPath("link.color");
-        if (color && !color->empty()) {
-          mojom_link->color = *color;
-        }
         mojom_parts.push_back(
             new_tab_page::mojom::PromoPart::NewLink(std::move(mojom_link)));
       } else if (part_dict.Find("text")) {
@@ -391,10 +387,6 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
           continue;
         }
         mojom_text->text = *text;
-        auto* color = part_dict.FindStringByDottedPath("text.color");
-        if (color && !color->empty()) {
-          mojom_text->color = *color;
-        }
         mojom_parts.push_back(
             new_tab_page::mojom::PromoPart::NewText(std::move(mojom_text)));
       }

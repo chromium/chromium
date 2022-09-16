@@ -602,12 +602,10 @@ TEST_F(NewTabPageHandlerTest, UpdatePromoData) {
   EXPECT_EQ("https://image.com/target", image->target);
   ASSERT_TRUE(promo->middle_slot_parts[1]->is_link());
   const auto& link = promo->middle_slot_parts[1]->get_link();
-  EXPECT_EQ("red", link->color);
   EXPECT_EQ("bar", link->text);
   EXPECT_EQ("https://link.com/", link->url);
   ASSERT_TRUE(promo->middle_slot_parts[2]->is_text());
   const auto& text = promo->middle_slot_parts[2]->get_text();
-  EXPECT_EQ("green", text->color);
   EXPECT_EQ("blub", text->text);
 }
 

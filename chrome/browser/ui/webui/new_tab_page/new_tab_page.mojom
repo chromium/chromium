@@ -157,13 +157,11 @@ struct PromoImagePart {
 };
 
 struct PromoLinkPart {
-  string? color;
   string text;
   url.mojom.Url url;
 };
 
 struct PromoTextPart {
-  string? color;
   string text;
 };
 
