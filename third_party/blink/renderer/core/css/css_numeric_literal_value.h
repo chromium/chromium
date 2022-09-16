@@ -29,7 +29,8 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   bool IsFontRelativeLength() const {
     return GetType() == UnitType::kQuirkyEms || GetType() == UnitType::kEms ||
            GetType() == UnitType::kExs || GetType() == UnitType::kRems ||
-           GetType() == UnitType::kChs || GetType() == UnitType::kIcs;
+           GetType() == UnitType::kChs || GetType() == UnitType::kIcs ||
+           GetType() == UnitType::kLhs;
   }
   bool IsQuirkyEms() const { return GetType() == UnitType::kQuirkyEms; }
   bool IsViewportPercentageLength() const {

@@ -134,7 +134,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
   const ComputedStyle* root_style =
       document.documentElement()->GetComputedStyle();
   CSSToLengthConversionData conversion_data(
-      &style, root_style, document.GetLayoutView(), container_sizes,
+      &style, &style, root_style, document.GetLayoutView(), container_sizes,
       style.EffectiveZoom());
 
   scoped_refptr<Gradient> gradient;

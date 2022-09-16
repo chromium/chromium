@@ -66,6 +66,10 @@ float MediaValuesDynamic::IcFontSize() const {
   return CalculateIcSize(frame_);
 }
 
+float MediaValuesDynamic::LineHeight() const {
+  return CalculateLineHeight(frame_);
+}
+
 double MediaValuesDynamic::ViewportWidth() const {
   if (viewport_dimensions_overridden_)
     return viewport_width_override_;

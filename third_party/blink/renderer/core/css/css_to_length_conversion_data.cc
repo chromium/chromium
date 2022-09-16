@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -190,7 +191,8 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
 }
 
 CSSToLengthConversionData::CSSToLengthConversionData(
-    const ComputedStyle* style,
+    const ComputedStyle* element_style,
+    const ComputedStyle* parent_style,
     WritingMode writing_mode,
     const FontSizes& font_sizes,
     const ViewportSize& viewport_size,
@@ -198,7 +200,8 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     float zoom)
     : CSSLengthResolver(
           ClampTo<float>(zoom, std::numeric_limits<float>::denorm_min())),
-      style_(style),
+      style_(element_style),
+      lh_style_(parent_style),
       writing_mode_(writing_mode),
       font_sizes_(font_sizes),
       viewport_size_(viewport_size),
@@ -208,14 +211,16 @@ CSSToLengthConversionData::CSSToLengthConversionData(
 }
 
 CSSToLengthConversionData::CSSToLengthConversionData(
-    const ComputedStyle* style,
+    const ComputedStyle* element_style,
+    const ComputedStyle* parent_style,
     const ComputedStyle* root_style,
     const LayoutView* layout_view,
     const ContainerSizes& container_sizes,
     float zoom)
-    : CSSToLengthConversionData(style,
-                                style->GetWritingMode(),
-                                FontSizes(style, root_style),
+    : CSSToLengthConversionData(element_style,
+                                parent_style,
+                                element_style->GetWritingMode(),
+                                FontSizes(element_style, root_style),
                                 ViewportSize(layout_view),
                                 container_sizes,
                                 zoom) {}
@@ -251,6 +256,22 @@ float CSSToLengthConversionData::IcFontSize() const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
   return font_sizes_.Ic();
+}
+
+float CSSToLengthConversionData::LineHeight() const {
+  const ComputedStyle* style = lh_style_ ? lh_style_ : style_;
+  if (!style)
+    return 0;
+  // TODO(crbug.com/937104): Needs test coverage for glyph relative unit
+  // invalidation.
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+  // The line-height is zoom'ed given the zoom factor of its style origin which
+  // may be the zoom factor of this element or the parent element.
+  // We need to unzoom the line-height's applied zoom before always applying
+  // the current Zoom() factor in CSSLengthResolver.
+  return AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
+                                            *style);
 }
 
 double CSSToLengthConversionData::ViewportWidth() const {

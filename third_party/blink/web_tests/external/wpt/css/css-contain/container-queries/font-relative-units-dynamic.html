@@ -131,3 +131,29 @@ test_template(document.currentScript.previousElementSibling, (t) => {
   assert_equals(getComputedStyle(main.querySelector("#test")).color, green);
 }, 'ch units respond to changes');
 </script>
+
+<template>
+  <style>
+    main {
+      font-size: 10px;
+      line-height: 5;
+    }
+    main.larger { font-size: 20px; }
+    @container (width <= 1lh) {
+      #test { color: green }
+    }
+  </style>
+  <div id="container">
+    <div>
+      <div id="test"></div>
+    </div>
+  </div>
+</template>
+<script>
+test_template(document.currentScript.previousElementSibling, (t) => {
+  t.add_cleanup(() => main.classList.remove("larger"));
+  assert_equals(getComputedStyle(main.querySelector("#test")).color, red);
+  main.classList.add("larger");
+  assert_equals(getComputedStyle(main.querySelector("#test")).color, green);
+}, 'lh units respond to changes');
+</script>

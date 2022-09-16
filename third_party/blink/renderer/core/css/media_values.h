@@ -104,6 +104,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static float CalculateExSize(LocalFrame*);
   static float CalculateChSize(LocalFrame*);
   static float CalculateIcSize(LocalFrame*);
+  static float CalculateLineHeight(LocalFrame*);
   static int CalculateDeviceWidth(LocalFrame*);
   static int CalculateDeviceHeight(LocalFrame*);
   static bool CalculateStrictMode(LocalFrame*);

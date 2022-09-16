@@ -227,6 +227,10 @@
       unit_type: "kIcs",
     },
     {
+      name: "lh",
+      unit_type: "kLhs",
+    },
+    {
       name: "__qem",
       unit_type: "kQuirkyEms",
     },

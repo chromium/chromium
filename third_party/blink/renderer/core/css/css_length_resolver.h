@@ -37,6 +37,7 @@ class CORE_EXPORT CSSLengthResolver {
   virtual double DynamicViewportHeight() const = 0;
   virtual double ContainerWidth() const = 0;
   virtual double ContainerHeight() const = 0;
+  virtual float LineHeight() const = 0;
 
   virtual WritingMode GetWritingMode() const = 0;
 

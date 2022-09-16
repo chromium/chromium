@@ -204,6 +204,9 @@ class CORE_EXPORT StyleResolverState {
   // reflect applied font properties.
   void UpdateFont();
 
+  // Update computed line-height and font used for 'lh' unit resolution.
+  void UpdateLineHeight();
+
  private:
   void UpdateLengthConversionData();
   CSSToLengthConversionData UnzoomedLengthConversionData(

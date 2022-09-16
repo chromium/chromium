@@ -225,6 +225,11 @@ void StyleCascade::Apply(CascadeFilter filter) {
 
   ApplyHighPriority(resolver);
 
+  if (map_.NativeBitset().Has(CSSPropertyID::kLineHeight)) {
+    LookupAndApply(GetCSSPropertyLineHeight(), resolver);
+  }
+  state_.UpdateLineHeight();
+
   ApplyWideOverlapping(resolver);
 
   ApplyMatchResult(resolver);

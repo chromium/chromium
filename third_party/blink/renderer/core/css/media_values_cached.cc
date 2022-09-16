@@ -49,17 +49,20 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     primary_hover_type = MediaValues::CalculatePrimaryHoverType(frame);
     available_hover_types = MediaValues::CalculateAvailableHoverTypes(frame);
     em_size = MediaValues::CalculateEmSize(frame);
-    // Use 0.5em as the fallback for ex and ch units. CalculateEx/ChSize() would
-    // trigger unconditional font metrics retrieval for MediaValuesCached
-    // regardless of whether they are being used in a media query. In addition
-    // to unnecessary load font data, it also causes these two tests to fail for
-    // some reason:
+    // Use 0.5em as the fallback for ex, ch, ic, and lh units. CalculateEx()
+    // etc would trigger unconditional font metrics retrieval for
+    // MediaValuesCached regardless of whether they are being used in a media
+    // query.
+    //
+    // If this is changed, beware that tests like this may start failing because
+    // font loading may be triggered before the call to
+    // testRunner.setTextSubpixelPositioning(true):
     //
     // virtual/text-antialias/sub-pixel/text-scaling-pixel.html
-    // virtual/highdpi-threaded/external/wpt/css/css-paint-api/hidpi/device-pixel-ratio.https.html
     ex_size = em_size / 2.0;
     ch_size = em_size / 2.0;
     ic_size = em_size;
+    line_height = em_size;
     three_d_enabled = MediaValues::CalculateThreeDEnabled(frame);
     immersive_mode = MediaValues::CalculateInImmersiveMode(frame);
     strict_mode = MediaValues::CalculateStrictMode(frame);
@@ -110,6 +113,10 @@ float MediaValuesCached::ChFontSize() const {
 
 float MediaValuesCached::IcFontSize() const {
   return data_.ic_size;
+}
+
+float MediaValuesCached::LineHeight() const {
+  return data_.line_height;
 }
 
 double MediaValuesCached::ViewportWidth() const {

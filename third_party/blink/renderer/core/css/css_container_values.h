@@ -31,6 +31,7 @@ class CSSContainerValues : public MediaValuesDynamic {
   float ExFontSize() const override;
   float ChFontSize() const override;
   float IcFontSize() const override;
+  float LineHeight() const override;
   // Note that ContainerWidth/ContainerHeight are used to resolve
   // container *units*. See `container_sizes_`.
   Element* ContainerElement() const override { return element_; }

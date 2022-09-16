@@ -1935,6 +1935,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // font-relative units (e.g. em, ex) in the base style must respond to the
   // animation. We cannot use the base computed style optimization in such
   // cases.
+  // TODO(crbug.com/937104): Handle line-height and lh units.
   if (CSSAnimations::IsAnimatingFontAffectingProperties(element_animations)) {
     if (base_data->GetBaseComputedStyle()->HasFontRelativeUnits())
       return false;
@@ -2147,6 +2148,7 @@ void StyleResolver::ComputeFont(Element& element,
   state.SetStyle(style);
 
   for (const CSSProperty* property : properties) {
+    // TODO(futhark): Handle lh unit properly
     if (property->IDEquals(CSSPropertyID::kLineHeight))
       state.UpdateFont();
     // TODO(futhark): If we start supporting fonts on ShadowRoot.fonts in

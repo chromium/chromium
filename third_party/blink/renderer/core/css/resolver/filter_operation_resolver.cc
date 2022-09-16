@@ -266,9 +266,9 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
   CSSToLengthConversionData::ViewportSize viewport_size(0, 0);
   CSSToLengthConversionData::ContainerSizes container_sizes;
   CSSToLengthConversionData conversion_data(
-      nullptr,  // ComputedStyle
+      nullptr /* element_style */, nullptr /* parent_style */,
       WritingMode::kHorizontalTb, font_sizes, viewport_size, container_sizes,
-      1);  // zoom
+      1 /* zoom */);
 
   for (auto& curr_value : To<CSSValueList>(in_value)) {
     if (curr_value->IsURIValue())

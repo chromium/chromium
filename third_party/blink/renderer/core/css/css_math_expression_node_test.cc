@@ -94,7 +94,7 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
       ComputedStyle::CreateInitialStyleSingleton();
   style->SetEffectiveZoom(5);
   CSSToLengthConversionData conversion_data(
-      style.get(), style.get(), nullptr,
+      style.get(), style.get(), style.get(), nullptr,
       CSSToLengthConversionData::ContainerSizes(), style->EffectiveZoom());
 
   TestAccumulatePixelsAndPercent(

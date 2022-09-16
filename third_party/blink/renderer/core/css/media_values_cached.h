@@ -53,6 +53,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     float ex_size = 8.f;
     float ch_size = 8.f;
     float ic_size = 16.f;
+    float line_height = 0;
     bool three_d_enabled = false;
     bool immersive_mode = false;
     bool strict_mode = true;
@@ -156,6 +157,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   float ExFontSize() const override;
   float ChFontSize() const override;
   float IcFontSize() const override;
+  float LineHeight() const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;

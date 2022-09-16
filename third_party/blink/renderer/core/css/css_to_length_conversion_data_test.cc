@@ -44,8 +44,8 @@ class CSSToLengthConversionDataTest : public PageTestBase {
     GetDocument().body()->AppendChild(div);
     UpdateAllLifecyclePhasesForTest();
     return CSSToLengthConversionData(
-        div->GetComputedStyle(), root->GetComputedStyle(),
-        GetDocument().GetLayoutView(),
+        div->GetComputedStyle(), GetDocument().body()->GetComputedStyle(),
+        root->GetComputedStyle(), GetDocument().GetLayoutView(),
         CSSToLengthConversionData::ContainerSizes(),
         data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()));
   }
@@ -65,8 +65,10 @@ TEST_F(CSSToLengthConversionDataTest, Normal) {
   EXPECT_FLOAT_EQ(16.0f, Convert(data, "1ex"));
   EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ch"));
   EXPECT_FLOAT_EQ(10.0f, Convert(data, "1rem"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1em"));
   EXPECT_FLOAT_EQ(36.0f, Convert(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1lh"));
+  data.ClearLhStyle();
+  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1lh"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, Zoomed) {
@@ -77,6 +79,9 @@ TEST_F(CSSToLengthConversionDataTest, Zoomed) {
   EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ch"));
   EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rem"));
   EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1lh"));
+  data.ClearLhStyle();
+  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1lh"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, AdjustedZoom) {
@@ -87,6 +92,9 @@ TEST_F(CSSToLengthConversionDataTest, AdjustedZoom) {
   EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ch"));
   EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rem"));
   EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1lh"));
+  data.ClearLhStyle();
+  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1lh"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, DifferentZoom) {
@@ -99,6 +107,9 @@ TEST_F(CSSToLengthConversionDataTest, DifferentZoom) {
   EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ch"));
   EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rem"));
   EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1lh"));
+  data.ClearLhStyle();
+  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1lh"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
@@ -109,6 +120,9 @@ TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
   EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ch"));
   EXPECT_FLOAT_EQ(10.0f, Convert(data, "1rem"));
   EXPECT_FLOAT_EQ(36.0f, Convert(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1lh"));
+  data.ClearLhStyle();
+  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1lh"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {

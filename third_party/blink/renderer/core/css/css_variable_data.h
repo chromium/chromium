@@ -174,6 +174,8 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   const bool needs_variable_resolution_ = false;
   bool has_font_units_ = false;
   bool has_root_font_units_ = false;
+  // TODO(crbug.com/937104): Detect lh cycles.
+  bool has_lh_units_ = false;
   String base_url_;
   WTF::TextEncoding charset_;
 

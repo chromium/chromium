@@ -335,6 +335,9 @@ float SVGLengthContext::ConvertValueToUserUnits(
     case CSSPrimitiveValue::UnitType::kIcs:
       user_units = ConvertValueFromICSToUserUnits(value);
       break;
+    case CSSPrimitiveValue::UnitType::kLhs:
+      user_units = ConvertValueFromLHSToUserUnits(value);
+      break;
     case CSSPrimitiveValue::UnitType::kViewportWidth:
     case CSSPrimitiveValue::UnitType::kViewportHeight:
     case CSSPrimitiveValue::UnitType::kViewportMin:
@@ -392,6 +395,8 @@ float SVGLengthContext::ConvertValueFromUserUnits(
       return ConvertValueFromUserUnitsToCHS(value);
     case CSSPrimitiveValue::UnitType::kIcs:
       return ConvertValueFromUserUnitsToICS(value);
+    case CSSPrimitiveValue::UnitType::kLhs:
+      return ConvertValueFromUserUnitsToLHS(value);
     case CSSPrimitiveValue::UnitType::kCentimeters:
       return value / kCssPixelsPerCentimeter;
     case CSSPrimitiveValue::UnitType::kMillimeters:
@@ -479,6 +484,16 @@ float SVGLengthContext::ConvertValueFromICSToUserUnits(float value) const {
          style->EffectiveZoom();
 }
 
+float SVGLengthContext::ConvertValueFromUserUnitsToLHS(float value) const {
+  // TODO(crbug.com/937104): Implement.
+  return 0;
+}
+
+float SVGLengthContext::ConvertValueFromLHSToUserUnits(float value) const {
+  // TODO(crbug.com/937104): Implement.
+  return 0;
+}
+
 float SVGLengthContext::ConvertValueFromUserUnitsToEXS(float value) const {
   const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
   if (!style)
@@ -545,7 +560,7 @@ float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
 
   DCHECK(context_);
   CSSToLengthConversionData conversion_data = CSSToLengthConversionData(
-      style, root_style, context_->GetDocument().GetLayoutView(),
+      style, style, root_style, context_->GetDocument().GetLayoutView(),
       CSSToLengthConversionData::ContainerSizes(
           context_->ParentOrShadowHostElement()),
       1.0f);

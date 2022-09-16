@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 
 namespace blink {
 
@@ -246,7 +247,7 @@ Length ViewportStyleResolver::ViewportLengthValue(CSSPropertyID id) {
   CSSToLengthConversionData::ContainerSizes container_sizes;
 
   Length result = primitive_value->ConvertToLength(CSSToLengthConversionData(
-      initial_style_.get(), WritingMode::kHorizontalTb, font_sizes,
+      initial_style_.get(), nullptr, WritingMode::kHorizontalTb, font_sizes,
       viewport_size, container_sizes, 1.0f));
 
   if (result.IsFixed() && document_->GetPage()) {

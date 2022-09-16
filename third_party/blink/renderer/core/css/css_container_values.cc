@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 
 namespace blink {
 
@@ -49,6 +50,12 @@ float CSSContainerValues::ChFontSize() const {
 
 float CSSContainerValues::IcFontSize() const {
   return font_sizes_.Ic();
+}
+
+float CSSContainerValues::LineHeight() const {
+  return AdjustForAbsoluteZoom::AdjustFloat(
+      element_->ComputedStyleRef().ComputedLineHeight(),
+      element_->ComputedStyleRef());
 }
 
 double CSSContainerValues::ContainerWidth() const {

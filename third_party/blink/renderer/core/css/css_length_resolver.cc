@@ -258,6 +258,9 @@ double CSSLengthResolver::ZoomedComputedPixels(
     case CSSPrimitiveValue::UnitType::kContainerMax:
       return value * ContainerMaxPercent() * Zoom();
 
+    case CSSPrimitiveValue::UnitType::kLhs:
+      return value * LineHeight() * Zoom();
+
     // Note that functions for font-relative units already account for the
     // zoom factor.
     case CSSPrimitiveValue::UnitType::kEms:

@@ -2128,8 +2128,8 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
       document.GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes;
   CSSToLengthConversionData conversion_data(
-      /* style */ nullptr, WritingMode::kHorizontalTb, font_sizes,
-      viewport_size, container_sizes,
+      /* element_style */ nullptr, /* parent_style */ nullptr,
+      WritingMode::kHorizontalTb, font_sizes, viewport_size, container_sizes,
       /* zoom */ 1.0f);
 
   return ComputeRegisteredPropertyValue(

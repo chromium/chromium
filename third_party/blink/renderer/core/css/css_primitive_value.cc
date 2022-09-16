@@ -538,6 +538,9 @@ bool CSSPrimitiveValue::UnitTypeToLengthUnitType(UnitType unit_type,
     case CSSPrimitiveValue::UnitType::kIcs:
       length_type = kUnitTypeIdeographicFullWidth;
       return true;
+    case CSSPrimitiveValue::UnitType::kLhs:
+      length_type = kUnitTypeLineHeight;
+      return true;
     case CSSPrimitiveValue::UnitType::kPercentage:
       length_type = kUnitTypePercentage;
       return true;
@@ -651,6 +654,8 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
       return CSSPrimitiveValue::UnitType::kChs;
     case kUnitTypeIdeographicFullWidth:
       return CSSPrimitiveValue::UnitType::kIcs;
+    case kUnitTypeLineHeight:
+      return CSSPrimitiveValue::UnitType::kLhs;
     case kUnitTypePercentage:
       return CSSPrimitiveValue::UnitType::kPercentage;
     case kUnitTypeViewportWidth:
@@ -739,6 +744,8 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "ch";
     case UnitType::kIcs:
       return "ic";
+    case UnitType::kLhs:
+      return "lh";
     case UnitType::kPixels:
       return "px";
     case UnitType::kCentimeters:

@@ -98,7 +98,7 @@ class CSSGradientValue : public CSSImageGeneratorValue {
 
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
-                                const ComputedStyle&,
+                                const ComputedStyle& style,
                                 const ContainerSizes&,
                                 const gfx::SizeF&) const;
 

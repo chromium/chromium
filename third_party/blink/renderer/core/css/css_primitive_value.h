@@ -122,6 +122,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kRems,
     kChs,
     kIcs,
+    kLhs,
     kUserUnits,  // The SVG term for unitless lengths
     // Angle units
     kDegrees,
@@ -190,6 +191,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeContainerMin,
     kUnitTypeContainerMax,
     kUnitTypeIdeographicFullWidth,
+    kUnitTypeLineHeight,
 
     // This value must come after the last length unit type to enable iteration
     // over the length unit types.
@@ -285,7 +287,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     return type == UnitType::kPercentage || type == UnitType::kEms ||
            type == UnitType::kExs || type == UnitType::kRems ||
            type == UnitType::kChs || type == UnitType::kIcs ||
-           IsViewportPercentageLength(type) ||
+           type == UnitType::kLhs || IsViewportPercentageLength(type) ||
            IsContainerPercentageLength(type);
   }
   bool IsLength() const;

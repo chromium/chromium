@@ -160,15 +160,16 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     mutable absl::optional<double> cached_height_;
   };
 
-  CSSToLengthConversionData()
-      : CSSLengthResolver(1 /* zoom */), style_(nullptr) {}
-  CSSToLengthConversionData(const ComputedStyle*,
+  CSSToLengthConversionData() : CSSLengthResolver(1 /* zoom */) {}
+  CSSToLengthConversionData(const ComputedStyle* element_style,
+                            const ComputedStyle* parent_style,
                             WritingMode,
                             const FontSizes&,
                             const ViewportSize&,
                             const ContainerSizes&,
                             float zoom);
-  CSSToLengthConversionData(const ComputedStyle* curr_style,
+  CSSToLengthConversionData(const ComputedStyle* element_style,
+                            const ComputedStyle* parent_style,
                             const ComputedStyle* root_style,
                             const LayoutView*,
                             const ContainerSizes&,
@@ -179,6 +180,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   float ExFontSize() const override;
   float ChFontSize() const override;
   float IcFontSize() const override;
+  float LineHeight() const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;
@@ -192,6 +194,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   WritingMode GetWritingMode() const override;
 
   void SetFontSizes(const FontSizes& font_sizes) { font_sizes_ = font_sizes; }
+  void ClearLhStyle() { lh_style_ = nullptr; }
 
   // See ContainerSizes::PreCachedCopy.
   //
@@ -200,17 +203,18 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   ContainerSizes PreCachedContainerSizesCopy() const;
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
-    return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,
-                                     viewport_size_, container_sizes_,
-                                     new_zoom);
+    return CSSToLengthConversionData(style_, lh_style_, writing_mode_,
+                                     font_sizes_, viewport_size_,
+                                     container_sizes_, new_zoom);
   }
   CSSToLengthConversionData Unzoomed() const {
     return CopyWithAdjustedZoom(1.0f);
   }
 
  private:
-  const ComputedStyle* style_;
-  WritingMode writing_mode_;
+  const ComputedStyle* style_ = nullptr;
+  const ComputedStyle* lh_style_ = nullptr;
+  WritingMode writing_mode_ = WritingMode::kHorizontalTb;
   FontSizes font_sizes_;
   ViewportSize viewport_size_;
   ContainerSizes container_sizes_;

@@ -8,7 +8,7 @@ PASS CSSUnitValue can be constructed with ex
 PASS CSSUnitValue can be constructed with ch
 PASS CSSUnitValue can be constructed with ic
 PASS CSSUnitValue can be constructed with rem
-FAIL CSSUnitValue can be constructed with lh Failed to construct 'CSSUnitValue': Invalid unit: lh
+PASS CSSUnitValue can be constructed with lh
 FAIL CSSUnitValue can be constructed with rlh Failed to construct 'CSSUnitValue': Invalid unit: rlh
 PASS CSSUnitValue can be constructed with vw
 PASS CSSUnitValue can be constructed with vh

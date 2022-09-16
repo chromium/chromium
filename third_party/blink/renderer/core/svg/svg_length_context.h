@@ -106,6 +106,9 @@ class CORE_EXPORT SVGLengthContext {
   float ConvertValueFromUserUnitsToICS(float value) const;
   float ConvertValueFromICSToUserUnits(float value) const;
 
+  float ConvertValueFromUserUnitsToLHS(float value) const;
+  float ConvertValueFromLHSToUserUnits(float value) const;
+
   const SVGElement* context_;
 };
 

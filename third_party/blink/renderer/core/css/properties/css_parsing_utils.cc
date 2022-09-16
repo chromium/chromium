@@ -955,6 +955,10 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
         if (!RuntimeEnabledFeatures::CSSIcUnitEnabled())
           return nullptr;
         break;
+      case CSSPrimitiveValue::UnitType::kLhs:
+        if (!RuntimeEnabledFeatures::CSSLhUnitEnabled())
+          return nullptr;
+        break;
       default:
         return nullptr;
     }

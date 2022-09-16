@@ -116,7 +116,7 @@ scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
 
 void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
-      Style(), RootElementStyle(), GetDocument().GetLayoutView(),
+      Style(), ParentStyle(), RootElementStyle(), GetDocument().GetLayoutView(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
       Style()->EffectiveZoom());
   element_style_resources_.UpdateLengthConversionData(
@@ -134,9 +134,9 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
   CSSToLengthConversionData::ContainerSizes container_sizes(
       container_unit_context_);
 
-  return CSSToLengthConversionData(Style(), Style()->GetWritingMode(),
-                                   font_sizes, viewport_size, container_sizes,
-                                   1);
+  return CSSToLengthConversionData(Style(), ParentStyle(),
+                                   Style()->GetWritingMode(), font_sizes,
+                                   viewport_size, container_sizes, 1);
 }
 
 CSSToLengthConversionData StyleResolverState::FontSizeConversionData() const {
@@ -151,6 +151,9 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData()
 void StyleResolverState::SetParentStyle(
     scoped_refptr<const ComputedStyle> parent_style) {
   parent_style_ = std::move(parent_style);
+  // TODO(crbug.com/937104): UpdateLengthConversionData() for both SetStyle()
+  // and SetParentStyle() is probably inefficient.
+  UpdateLengthConversionData();
 }
 
 void StyleResolverState::SetLayoutParentStyle(
@@ -246,6 +249,10 @@ void StyleResolverState::UpdateFont() {
   SetConversionFontSizes(
       CSSToLengthConversionData::FontSizes(Style(), RootElementStyle()));
   SetConversionZoom(Style()->EffectiveZoom());
+}
+
+void StyleResolverState::UpdateLineHeight() {
+  css_to_length_conversion_data_.ClearLhStyle();
 }
 
 }  // namespace blink
