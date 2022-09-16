@@ -65,19 +65,15 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
   // Make an exception for:
   // - EMAIL_ADDRESS because it is common to see second 'confirm email address'
   // field;
-  // - PHONE_HOME_NUMBER because it is used to store both prefix and suffix of a
-  // single number;
   // - phone number components because a form might request several phone
   // numbers.
-  // TODO(crbug.com/1156315) Remove feature & PHONE_HOME_NUMBER checks when
-  // launched.
+  // TODO(crbug.com/1156315) Clean up when launched.
   auto field_type_group = AutofillType(field_type).group();
   if (types_seen.count(field_type) && field_type != EMAIL_ADDRESS &&
-      (base::FeatureList::IsEnabled(
-           features::kAutofillEnableImportWhenMultiplePhoneNumbers)
-           ? field_type_group != FieldTypeGroup::kPhoneBilling &&
-                 field_type_group != FieldTypeGroup::kPhoneHome
-           : field_type != PHONE_HOME_NUMBER)) {
+      (!base::FeatureList::IsEnabled(
+           features::kAutofillEnableImportWhenMultiplePhoneNumbers) ||
+       (field_type_group != FieldTypeGroup::kPhoneBilling &&
+        field_type_group != FieldTypeGroup::kPhoneHome))) {
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
         << "Multiple fields of type "
@@ -515,13 +511,11 @@ bool FormDataImporter::ImportAddressProfileForSection(
             features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
       if (ignore_phone_number_fields)
         continue;
-      // PHONE_HOME_NUMBER is used for both prefix and suffix, so it might occur
-      // multiple times for a single number. Duplication of any other phone
-      // component means it belongs to a new number. Since Autofill currently
-      // supports storing only one phone number per profile, ignore this and all
-      // subsequent phone number fields.
-      if (server_field_type != PHONE_HOME_NUMBER &&
-          types_seen.count(server_field_type)) {
+      // Each phone number related type only occurs once per number. Seeing a
+      // type a second time implies that it belongs to a new number. Since
+      // Autofill currently supports storing only one phone number per profile,
+      // ignore this and all subsequent phone number fields.
+      if (types_seen.count(server_field_type)) {
         ignore_phone_number_fields = true;
         continue;
       }
