@@ -7,7 +7,7 @@ ADDRESS_HOME_LINE2 | ctl00$ctl00$cphBody$cphBody$txtSA_Address2 | Address Line 2
 ADDRESS_HOME_CITY | ctl00$ctl00$cphBody$cphBody$txtSA_City | City * |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1
 ADDRESS_HOME_STATE | ctl00$ctl00$cphBody$cphBody$ddlSA_State | State * |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1
 ADDRESS_HOME_ZIP | ctl00$ctl00$cphBody$cphBody$txtSA_Zip | ZIP Code * |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1
-PHONE_HOME_CITY_CODE | ctl00$ctl00$cphBody$cphBody$txtSA_Phone1 | Phone Number * |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | ctl00$ctl00$cphBody$cphBody$txtSA_Phone1 | Phone Number * |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1
 PHONE_HOME_NUMBER_PREFIX | ctl00$ctl00$cphBody$cphBody$txtSA_Phone2 | ZIP Code * |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1
 PHONE_HOME_NUMBER_SUFFIX | ctl00$ctl00$cphBody$cphBody$txtSA_Phone3 | ZIP Code * |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1
 PHONE_HOME_EXTENSION | ctl00$ctl00$cphBody$cphBody$txtSA_PhoneExt | Ext. |  | ctl00$ctl00$cphBody$cphBody$txtSA_FirstName_1

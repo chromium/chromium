@@ -7,7 +7,7 @@ ADDRESS_HOME_LINE2 | billAddressLine2 | Address Line 2: | Apt 2 | _1
 ADDRESS_HOME_CITY | billCity | City: | Agawam | _1
 ADDRESS_HOME_STATE | billState | MA | MA | _1
 ADDRESS_HOME_ZIP | billZip | Zip Code: | 01001 | _1
-PHONE_HOME_CITY_CODE | HomeArea | Contact Phone: | 310 | _1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | HomeArea | Contact Phone: | 310 | _1
 PHONE_HOME_NUMBER_PREFIX | HomePrefix | Contact Phone: | 555 | _1
 PHONE_HOME_NUMBER_SUFFIX | HomeSuffix | Contact Phone: | 1212 | _1
 CREDIT_CARD_TYPE | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType | Card Type: |  | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType_2

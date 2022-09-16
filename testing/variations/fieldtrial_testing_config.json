@@ -1389,6 +1389,31 @@
             ]
         }
     ],
+    "AutofillRefinedPhoneNumberTypes": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "WithoutPhoneNumberSeparators",
+                    "enable_features": [
+                        "AutofillEnableSupportForPhoneNumberTrunkTypes",
+                        "AutofillInferCountryCallingCode"
+                    ],
+                    "disable_features": [
+                        "AutofillConsiderPhoneNumberSeparatorsValidLabels"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillRetrieveOverallPredictionsFromCache": [
         {
             "platforms": [

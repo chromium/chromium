@@ -8,7 +8,7 @@ ADDRESS_HOME_LINE2 | addrsForm[0].address2 |  |  | addrsForm[0].firstName_1
 ADDRESS_HOME_CITY | addrsForm[0].city | *City |  | addrsForm[0].firstName_1
 ADDRESS_HOME_STATE | addrsForm[0].state | *State | {blank} | addrsForm[0].firstName_1
 ADDRESS_HOME_ZIP | addrsForm[0].postalCode1 | *Zip Code |  | addrsForm[0].firstName_1
-PHONE_HOME_CITY_CODE | addrsForm[0].phoneNumber1 | *Phone Number: |  | addrsForm[0].firstName_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | addrsForm[0].phoneNumber1 | *Phone Number: |  | addrsForm[0].firstName_1
 PHONE_HOME_NUMBER_PREFIX | addrsForm[0].phoneNumber2 | *Phone Number: |  | addrsForm[0].firstName_1
 PHONE_HOME_NUMBER_SUFFIX | addrsForm[0].phoneNumber3 | *Phone Number: |  | addrsForm[0].firstName_1
 PHONE_HOME_EXTENSION | addrsForm[0].phoneNumber4 | ext. |  | addrsForm[0].firstName_1
@@ -31,7 +31,7 @@ ADDRESS_HOME_LINE2 | addrsForm[2].address2 |  |  | addrsForm[2].firstName_3
 ADDRESS_HOME_CITY | addrsForm[2].city | *City |  | addrsForm[2].firstName_3
 ADDRESS_HOME_STATE | addrsForm[2].state | *State | {blank} | addrsForm[2].firstName_3
 ADDRESS_HOME_ZIP | addrsForm[2].postalCode1 | *Zip Code |  | addrsForm[2].firstName_3
-PHONE_HOME_CITY_CODE | addrsForm[2].phoneNumber1 | *Phone Number: |  | addrsForm[2].firstName_3
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | addrsForm[2].phoneNumber1 | *Phone Number: |  | addrsForm[2].firstName_3
 PHONE_HOME_NUMBER_PREFIX | addrsForm[2].phoneNumber2 | *Phone Number: |  | addrsForm[2].firstName_3
 PHONE_HOME_NUMBER_SUFFIX | addrsForm[2].phoneNumber3 | *Phone Number: |  | addrsForm[2].firstName_3
 PHONE_HOME_EXTENSION | addrsForm[2].phoneNumber4 | ext. |  | addrsForm[2].firstName_3

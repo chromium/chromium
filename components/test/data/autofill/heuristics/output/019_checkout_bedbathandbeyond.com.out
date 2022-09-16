@@ -7,13 +7,13 @@ ADDRESS_HOME_LINE2 | addr2 | Address 2 |  | first_nm_1
 ADDRESS_HOME_CITY | city | *City |  | first_nm_1
 ADDRESS_HOME_STATE | addr_state | *State |  | first_nm_1
 ADDRESS_HOME_ZIP | zip | *Zip Code |  | first_nm_1
-PHONE_HOME_CITY_CODE | day_phone_part1 | *Day phone |  | first_nm_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | day_phone_part1 | *Day phone |  | first_nm_1
 PHONE_HOME_NUMBER_PREFIX | day_phone_part2 | *Day phone |  | first_nm_1
 PHONE_HOME_NUMBER_SUFFIX | day_phone_part3 | *Day phone |  | first_nm_1
-PHONE_HOME_CITY_CODE | eve_phone_part1 | Evening phone |  | first_nm_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | eve_phone_part1 | Evening phone |  | first_nm_1
 PHONE_HOME_NUMBER_PREFIX | eve_phone_part2 | Evening phone |  | first_nm_1
 PHONE_HOME_NUMBER_SUFFIX | eve_phone_part3 | Evening phone |  | first_nm_1
-PHONE_HOME_CITY_CODE | mob_phone_part1 | Mobile phone |  | first_nm_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | mob_phone_part1 | Mobile phone |  | first_nm_1
 PHONE_HOME_NUMBER_PREFIX | mob_phone_part2 | Mobile phone |  | first_nm_1
 PHONE_HOME_NUMBER_SUFFIX | mob_phone_part3 | Mobile phone |  | first_nm_1
 EMAIL_ADDRESS | email_addr | *Email |  | first_nm_1
@@ -30,10 +30,10 @@ ADDRESS_HOME_LINE2 | ship_addr2 | Address 2 |  | ship_first_nm_2
 ADDRESS_HOME_CITY | ship_city | *City |  | ship_first_nm_2
 ADDRESS_HOME_STATE | ship_addr_state | *State |  | ship_first_nm_2
 ADDRESS_HOME_ZIP | ship_zip | *Zip Code |  | ship_first_nm_2
-PHONE_HOME_CITY_CODE | ship_day_phone_part1 | *Day phone |  | ship_first_nm_2
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | ship_day_phone_part1 | *Day phone |  | ship_first_nm_2
 PHONE_HOME_NUMBER_PREFIX | ship_day_phone_part2 | *Day phone |  | ship_first_nm_2
 PHONE_HOME_NUMBER_SUFFIX | ship_day_phone_part3 | *Day phone |  | ship_first_nm_2
-PHONE_HOME_CITY_CODE | ship_eve_phone_part1 | Evening phone |  | ship_first_nm_2
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | ship_eve_phone_part1 | Evening phone |  | ship_first_nm_2
 PHONE_HOME_NUMBER_PREFIX | ship_eve_phone_part2 | Evening phone |  | ship_first_nm_2
 PHONE_HOME_NUMBER_SUFFIX | ship_eve_phone_part3 | Evening phone |  | ship_first_nm_2
 UNKNOWN_TYPE | email | Privacy policy - Your Privacy Rights | enter your email address | email_1

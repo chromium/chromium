@@ -24,7 +24,7 @@ ADDRESS_HOME_STATE | FormUserControl$_mailingAddress$_stateMX | Mexican States |
 ADDRESS_HOME_STATE | FormUserControl$_mailingAddress$_stateXX | State/Province Other |  | FormUserControl$_guardianInformation$_lastName$_name_3
 ADDRESS_HOME_ZIP | FormUserControl$_mailingAddress$_zip | Zip/Postal Code* |  | FormUserControl$_guardianInformation$_lastName$_name_3
 PHONE_HOME_COUNTRY_CODE | FormUserControl$_contactInformation$_phoneNumber$_countryCode | Country Code | 1 | FormUserControl$_guardianInformation$_lastName$_name_3
-PHONE_HOME_CITY_AND_NUMBER | FormUserControl$_contactInformation$_phoneNumber$_phoneNumberTextBox | Country Code |  | FormUserControl$_guardianInformation$_lastName$_name_3
+PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX | FormUserControl$_contactInformation$_phoneNumber$_phoneNumberTextBox | Country Code |  | FormUserControl$_guardianInformation$_lastName$_name_3
 PHONE_HOME_EXTENSION | FormUserControl$_contactInformation$_phoneNumber$_extensionTextBox | Ext. |  | FormUserControl$_guardianInformation$_lastName$_name_3
 EMAIL_ADDRESS | FormUserControl$_contactInformation$_emailAddress$_emailAddressTextBox | Email Address* |  | FormUserControl$_contactInformation$_emailAddress$_emailAddressTextBox_4
 UNKNOWN_TYPE | FormUserControl$_userIdPassword$_userId$_userId | Create a User ID* |  | FormUserControl$_contactInformation$_emailAddress$_emailAddressTextBox_4

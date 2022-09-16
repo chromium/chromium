@@ -20,7 +20,7 @@ ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.MXStates_Selected
 UNKNOWN_TYPE | CreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1
 ADDRESS_HOME_ZIP | CreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | MyWalletInformation.UseMyWalletFunds_1
 PHONE_HOME_COUNTRY_CODE | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | MyWalletInformation.UseMyWalletFunds_1
-PHONE_HOME_CITY_AND_NUMBER | CreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | MyWalletInformation.UseMyWalletFunds_1
+PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX | CreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | MyWalletInformation.UseMyWalletFunds_1
 UNKNOWN_TYPE | TripInsurance.QuoteID | Yes, add trip protection for a total of $21.00. | 657566350481481886 | MyWalletInformation.UseMyWalletFunds_1
 UNKNOWN_TYPE | TripInsurance.QuoteID | No, I choose not to protect my purchase. | 657566350481481887 | MyWalletInformation.UseMyWalletFunds_1
 CREDIT_CARD_NUMBER | AncillaryCreditCardInformation.BillingCreditCardEntry.CardNumber | Card Number |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
@@ -37,4 +37,4 @@ ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.MXStates
 UNKNOWN_TYPE | AncillaryCreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
 ADDRESS_HOME_ZIP | AncillaryCreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
 PHONE_HOME_COUNTRY_CODE | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
-PHONE_HOME_CITY_AND_NUMBER | AncillaryCreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX | AncillaryCreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3

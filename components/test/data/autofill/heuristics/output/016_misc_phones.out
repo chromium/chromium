@@ -5,13 +5,13 @@ ADDRESS_HOME_CITY | city | City: |  | firstname_1
 ADDRESS_HOME_STATE | state | State: |  | firstname_1
 ADDRESS_HOME_ZIP | zip | Zip: |  | firstname_1
 PHONE_HOME_WHOLE_NUMBER | phone | Phone: |  | firstname_1
-PHONE_HOME_CITY_CODE | areacode1 | Area Code: |  | firstname_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | areacode1 | Area Code: |  | firstname_1
 PHONE_HOME_NUMBER | phone1 | Phone: |  | firstname_1
-PHONE_HOME_CITY_CODE | hphone1 | Phone: |  | firstname_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | hphone1 | Phone: |  | firstname_1
 PHONE_HOME_NUMBER_PREFIX | hphone2 |  |  | firstname_1
 PHONE_HOME_NUMBER_SUFFIX | hphone3 |  |  | firstname_1
 PHONE_HOME_EXTENSION | hphone4 | ext.: |  | firstname_1
-PHONE_HOME_CITY_CODE | hphone1a | Phone:        ( |  | firstname_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | hphone1a | Phone:        ( |  | firstname_1
 PHONE_HOME_NUMBER_PREFIX | hphone2a |  |  | firstname_1
 PHONE_HOME_NUMBER_SUFFIX | hphone3a |  |  | firstname_1
 PHONE_HOME_EXTENSION | hphone4a | ext.: |  | firstname_1

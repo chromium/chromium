@@ -6,6 +6,6 @@ ADDRESS_HOME_LINE2 | currentShipment.shipmentAddress.address2 | * Address: |  | 
 ADDRESS_HOME_CITY | currentShipment.shipmentAddress.city | City: |  | selectedShippingAddress_1
 ADDRESS_HOME_STATE | currentShipment.shipmentAddress.state | State: | NOSELECTION | selectedShippingAddress_1
 ADDRESS_HOME_ZIP | currentShipment.shipmentAddress.zipCode | ZipCode: |  | selectedShippingAddress_1
-PHONE_HOME_CITY_CODE | currentShipment.shipmentAddress.dayPhone.areaCode | Phone: |  | selectedShippingAddress_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | currentShipment.shipmentAddress.dayPhone.areaCode | Phone: |  | selectedShippingAddress_1
 PHONE_HOME_NUMBER | currentShipment.shipmentAddress.dayPhone.exchangeNbr | * Phone: |  | selectedShippingAddress_1
 PHONE_HOME_WHOLE_NUMBER | currentShipment.shipmentAddress.dayPhone.subscriberNbr | * Phone: |  | selectedShippingAddress_1

@@ -12,7 +12,7 @@ ADDRESS_HOME_CITY | creditCard.billingContact.address.city | City: |  | creditCa
 ADDRESS_HOME_STATE | creditCard.billingContact.address.state | State: | -1 | creditCard.billingContact.shippingAddressAsBillingAddress_2
 ADDRESS_HOME_ZIP | creditCard.billingContact.address.postalCode | Zip code: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
 EMAIL_ADDRESS | user.email | email address: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
-PHONE_HOME_CITY_CODE | user.phone.areaCode | phone: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | user.phone.areaCode | phone: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
 PHONE_HOME_NUMBER | user.phone.exchangeNumber | phone:Please enter your phone number |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
 PHONE_HOME_WHOLE_NUMBER | user.phone.subscriberNumber | phone:Please enter your phone number |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
 UNKNOWN_TYPE | user.profile.createAccount | Yes! Create an account for me at macys.com | true | creditCard.billingContact.shippingAddressAsBillingAddress_2
