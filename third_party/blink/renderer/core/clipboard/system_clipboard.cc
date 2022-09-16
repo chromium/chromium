@@ -126,14 +126,15 @@ void SystemClipboard::ReadPlainText(
 
 void SystemClipboard::WritePlainText(const String& plain_text,
                                      SmartReplaceOption) {
+  if (!clipboard_.is_bound())
+    return;
   // TODO(https://crbug.com/106449): add support for smart replace, which is
   // currently under-specified.
   String text = plain_text;
 #if BUILDFLAG(IS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(text);
 #endif
-  if (clipboard_.is_bound())
-    clipboard_->WriteText(NonNullString(text));
+  clipboard_->WriteText(NonNullString(text));
 }
 
 String SystemClipboard::ReadHTML(KURL& url,
@@ -182,8 +183,9 @@ void SystemClipboard::ReadSvg(
 }
 
 void SystemClipboard::WriteSvg(const String& markup) {
-  if (clipboard_.is_bound())
-    clipboard_->WriteSvg(NonNullString(markup));
+  if (!clipboard_.is_bound())
+    return;
+  clipboard_->WriteSvg(NonNullString(markup));
 }
 
 String SystemClipboard::ReadRTF() {
@@ -214,20 +216,20 @@ void SystemClipboard::WriteImageWithTag(Image* image,
                                         const String& title) {
   DCHECK(image);
 
-  PaintImage paint_image = image->PaintImageForCurrentFrame();
+  if (!clipboard_.is_bound())
+    return;
 
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
   // Orient the data.
   if (!image->HasDefaultOrientation()) {
     paint_image = Image::ResizeAndOrientImage(
         paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
         kInterpolationNone);
   }
-
   SkBitmap bitmap;
   if (sk_sp<SkImage> sk_image = paint_image.GetSwSkImage())
     sk_image->asLegacyBitmap(&bitmap);
-  if (!clipboard_.is_bound())
-    return;
+
   // The bitmap backing a canvas can be in non-native skia pixel order (aka
   // RGBA when kN32_SkColorType is BGRA-ordered, or higher bit-depth color-types
   // like F16. The IPC to the browser requires the bitmap to be in N32 format
@@ -256,8 +258,9 @@ void SystemClipboard::WriteImageWithTag(Image* image,
 }
 
 void SystemClipboard::WriteImage(const SkBitmap& bitmap) {
-  if (clipboard_.is_bound())
-    clipboard_->WriteImage(bitmap);
+  if (!clipboard_.is_bound())
+    return;
+  clipboard_->WriteImage(bitmap);
 }
 
 mojom::blink::ClipboardFilesPtr SystemClipboard::ReadFiles() {
@@ -309,14 +312,16 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
 }
 
 void SystemClipboard::CommitWrite() {
-  if (clipboard_.is_bound())
-    clipboard_->CommitWrite();
+  if (!clipboard_.is_bound())
+    return;
+  clipboard_->CommitWrite();
 }
 
 void SystemClipboard::CopyToFindPboard(const String& text) {
 #if BUILDFLAG(IS_MAC)
-  if (clipboard_.is_bound())
-    clipboard_->WriteStringToFindPboard(text);
+  if (!clipboard_.is_bound())
+    return;
+  clipboard_->WriteStringToFindPboard(text);
 #endif
 }
 
