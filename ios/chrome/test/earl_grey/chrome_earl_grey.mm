@@ -740,6 +740,17 @@ UIWindow* GetAnyKeyWindow() {
       [ChromeEarlGreyAppInterface clearAllWebStateBrowsingData]);
 }
 
+- (void)clearAllWebStateBrowsingData:(AppLaunchConfiguration)config {
+  EG_TEST_HELPER_ASSERT_NO_ERROR(
+      [ChromeEarlGreyAppInterface clearAllWebStateBrowsingData]);
+
+  // The app must be relaunched to rebuild internal //ios/web state after
+  // clearing browsing data with `[ChromeEarlGreyAppInterface
+  // clearAllWebStateBrowsingData]`.
+  config.relaunch_policy = ForceRelaunchByKilling;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
 #pragma mark - Sync Utilities (EG2)
 
 - (void)clearSyncServerData {

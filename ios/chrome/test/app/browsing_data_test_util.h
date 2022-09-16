@@ -25,6 +25,9 @@ namespace chrome_test_util {
 
 // Clears all the default WKWebsiteDataStore data including the WK back/forward
 // cache.
+// NOTE: This leaves objects inside //ios/web which manage JavaScriptFeatures in
+// an unknown state, relaunch the app after calling to ensure Chrome functions
+// correctly.
 [[nodiscard]] bool ClearAllWebStateBrowsingData();
 
 // Clears user decisions cache and returns whether clearing was successful or

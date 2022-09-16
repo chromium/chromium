@@ -566,7 +566,15 @@ UIWindow* GetAnyKeyWindow();
 
 // Clears all web state browsing data. A GREYAssert is induced if the data
 // cannot be cleared.
+// TODO:(crbug.com/1362915): Remove after all tests are updated to use
+// `clearAllWebStateBrowsingData:` below.
 - (void)clearAllWebStateBrowsingData;
+
+// Clears all web state browsing data then relaunches the application. (A
+// GREYAssert is induced if the data cannot be cleared.)
+// NOTE: The passed in `config` will be modified to set `relaunch_policy` to
+// `ForceRelaunchByKilling.
+- (void)clearAllWebStateBrowsingData:(AppLaunchConfiguration)config;
 
 #pragma mark - Bookmarks Utilities (EG2)
 

@@ -21,7 +21,6 @@
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -73,10 +72,6 @@ bool ClearAllWebStateBrowsingData() {
       removeDataOfTypes:[WKWebsiteDataStore allWebsiteDataTypes]
           modifiedSince:[NSDate distantPast]
       completionHandler:^{
-        web::BrowserState* browser_state =
-            chrome_test_util::GetOriginalBrowserState();
-        web::WKWebViewConfigurationProvider::FromBrowserState(browser_state)
-            .Purge();
         callback_finished = true;
       }];
   return WaitUntilConditionOrTimeout(20, ^{

@@ -100,7 +100,6 @@ source_set("test_support") {
     "//ios/web",
     "//ios/web/public/security",
     "//ios/web/public/test",
-    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//net",
     "//net:test_support",
     "//third_party/breakpad:client",
