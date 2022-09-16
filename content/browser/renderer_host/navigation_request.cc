@@ -1751,19 +1751,19 @@ NavigationRequest::NavigationRequest(
         begin_params_->impression.has_value());
 
     if (begin_params_->is_form_submission) {
-      if (commit_params_->is_browser_initiated &&
-          !commit_params_->post_content_type.empty()) {
-        // This is a form resubmit, so make sure to set the Content-Type header.
+      // During form resubmit, `commit_params_->post_content_type` is populated
+      // from the history. Use it.
+      if (!commit_params_->post_content_type.empty()) {
         headers.SetHeaderIfMissing(net::HttpRequestHeaders::kContentType,
                                    commit_params_->post_content_type);
-      } else if (!commit_params_->is_browser_initiated) {
-        // Save the Content-Type in case the form is resubmitted. This will get
-        // sent back to the renderer in the CommitNavigation IPC. The renderer
-        // will then send it back with the post body so that we can access it
-        // along with the body in FrameNavigationEntry::page_state_.
-        headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                          &commit_params_->post_content_type);
       }
+
+      // Save the Content-Type in case the form is resubmitted. This will get
+      // sent back to the renderer in the CommitNavigation IPC. The renderer
+      // will then send it back with the post body so that we can access it
+      // along with the body in FrameNavigationEntry::page_state_.
+      headers.GetHeader(net::HttpRequestHeaders::kContentType,
+                        &commit_params_->post_content_type);
     }
   }
 

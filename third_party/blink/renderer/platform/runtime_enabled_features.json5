@@ -1291,7 +1291,8 @@
     },
     {
       name: "FormRelAttribute",
-      status: "experimental",
+      status: "stable",
+      base_feature: "FormRelAttribute",
     },
     {
       name: "FractionalScrollOffsets",

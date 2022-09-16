@@ -3012,6 +3012,8 @@ interface HTMLFormElement : HTMLElement
     getter method
     getter name
     getter noValidate
+    getter rel
+    getter relList
     getter target
     method @@iterator
     method checkValidity
@@ -3028,6 +3030,8 @@ interface HTMLFormElement : HTMLElement
     setter method
     setter name
     setter noValidate
+    setter rel
+    setter relList
     setter target
 interface HTMLFrameElement : HTMLElement
     attribute @@toStringTag
