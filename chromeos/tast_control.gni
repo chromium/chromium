@@ -123,6 +123,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1364035
   "arc.Optin",
+  "arc.Optin.vm",
   "arc.OptinNetworkError",
 
   # https://crbug.com/1312121
