@@ -438,10 +438,24 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (mount_path.back() != '/')
       mount_path += '/';
 
+    // Paths to unmount, indexed by source path.
+    std::map<std::string, std::string> paths_to_unmount;
+
+    // For the already known mount points, use the mount path.
     for (const MountPoint& mount_point : mount_points_) {
-      if (base::StartsWith(mount_point.source_path, mount_path)) {
-        UnmountPath(mount_point.mount_path, {});
-      }
+      if (base::StartsWith(mount_point.source_path, mount_path))
+        paths_to_unmount.try_emplace(mount_point.source_path,
+                                     mount_point.mount_path);
+    }
+
+    // For the mount points that are not registered yet, use the source path.
+    for (const auto& [source_path, _] : mount_callbacks_) {
+      if (base::StartsWith(source_path, mount_path))
+        paths_to_unmount.try_emplace(source_path, source_path);
+    }
+
+    for (const auto& [_, path_to_unmount] : paths_to_unmount) {
+      UnmountPath(path_to_unmount, {});
     }
   }
 
@@ -1106,7 +1120,12 @@ class DiskMountManagerImpl : public DiskMountManager,
   // The list of disks found.
   Disks disks_;
 
-  std::map<std::string, MountPathCallback> mount_callbacks_;
+  // Callbacks of mount points in the process of being mounted, indexed by
+  // source path.
+  using MountCallbacks = std::map<std::string, MountPathCallback>;
+  MountCallbacks mount_callbacks_;
+
+  // Known mount points.
   MountPoints mount_points_;
 
   // A map entry with a key of the device path will be created upon calling
