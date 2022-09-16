@@ -184,8 +184,9 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       DCHECK_EQ(status.outputs.size(), 1);
       file_manager::util::ShowItemInFolder(
           profile_, status.outputs[0].url.path(),
-          base::BindOnce(&LogErrorOnShowItemInFolder));
-      OnEndUpload(status.outputs[0].url);
+          base::BindOnce(&OneDriveUploadHandler::OnShowItemInFolder,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         status.outputs[0].url));
       return;
     case file_manager::io_task::State::kCancelled:
       OnEndUpload(FileSystemURL(), "Move error: kCancelled");
@@ -197,6 +198,13 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       OnEndUpload(FileSystemURL(), "Move error: kNeedPassword");
       return;
   }
+}
+
+void OneDriveUploadHandler::OnShowItemInFolder(
+    const FileSystemURL uploaded_file_url,
+    platform_util::OpenOperationResult result) {
+  LogErrorOnShowItemInFolder(result);
+  OnEndUpload(uploaded_file_url);
 }
 
 }  // namespace chromeos::cloud_upload

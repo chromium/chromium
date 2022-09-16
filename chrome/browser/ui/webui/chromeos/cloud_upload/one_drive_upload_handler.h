@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -61,6 +62,11 @@ class OneDriveUploadHandler
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const file_manager::io_task::ProgressStatus& status) override;
+
+  // Called after the the request has been made to open files app on the
+  // destination file.
+  void OnShowItemInFolder(const storage::FileSystemURL uploaded_file_url,
+                          platform_util::OpenOperationResult result);
 
   Profile* const profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
