@@ -5,6 +5,8 @@
 source_set("price_notifications") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "price_notifications_coordinator.h",
+    "price_notifications_coordinator.mm",
     "price_notifications_mediator.h",
     "price_notifications_mediator.mm",
   ]
@@ -13,10 +15,10 @@ source_set("price_notifications") {
     ":price_notifications_ui",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons:settings_icons",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",

@@ -34,6 +34,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeAutofillCreditCard,
   SettingsItemTypeAutofillProfile,
   SettingsItemTypeVoiceSearch,
+  SettingsItemTypePriceNotifications,
   SettingsItemTypePrivacy,
   SettingsItemTypeLanguageSettings,
   SettingsItemTypeContentSettings,
@@ -154,5 +155,8 @@ extern NSString* const kSettingsIncognitoInterstitialId;
 // The accessibility identifier of the Incognito interstitial setting
 // when the setting is disabled because of Enterprise policy.
 extern NSString* const kSettingsIncognitoInterstitialDisabledId;
+
+// The accessibility identifier of the Price Notifications setting.
+extern NSString* const kSettingsPriceNotificationsId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_
