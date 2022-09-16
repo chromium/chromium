@@ -668,6 +668,8 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::AUTOMATIC_SIGNIN_TOAST:
     case metrics_util::AUTOMATIC_COMPROMISED_CREDENTIALS_REMINDER:
     case metrics_util::AUTOMATIC_MOVE_TO_ACCOUNT_STORE:
+    case metrics_util::AUTOMATIC_BIOMETRIC_AUTHENTICATION_FOR_FILLING:
+    case metrics_util::MANUAL_BIOMETRIC_AUTHENTICATION_FOR_FILLING:
       // Do nothing.
       return;
 

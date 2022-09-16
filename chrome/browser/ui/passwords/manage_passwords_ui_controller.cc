@@ -684,6 +684,21 @@ bool ManagePasswordsUIController::AuthenticateUser() {
 #endif
 }
 
+void ManagePasswordsUIController::AuthenticateUserWithMessage(
+    const std::u16string& message,
+    AvailabilityCallback callback) {
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  std::move(callback).Run(true);
+  return;
+#else
+  passwords_data_.client()
+      ->GetBiometricAuthenticator()
+      ->AuthenticateWithMessage(
+          device_reauth::BiometricAuthRequester::kTouchToFill, message,
+          std::move(callback));
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+}
+
 void ManagePasswordsUIController::
     AuthenticateUserForAccountStoreOptInAndSavePassword(
         const std::u16string& username,

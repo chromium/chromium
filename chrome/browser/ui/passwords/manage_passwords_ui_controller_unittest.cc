@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -46,6 +47,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "components/device_reauth/mock_biometric_authenticator.h"
+#endif
 
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::MockPasswordStoreInterface;
@@ -121,12 +126,27 @@ class TestPasswordManagerClient
                base::OnceCallback<void(ReauthSucceeded)>),
               (override));
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  scoped_refptr<device_reauth::BiometricAuthenticator>
+  GetBiometricAuthenticator() override {
+    return mock_authenticator_.get();
+  }
+
+  void SetAuthenticator(scoped_refptr<device_reauth::MockBiometricAuthenticator>
+                            mock_authenticator) {
+    mock_authenticator_ = mock_authenticator;
+  }
+#endif
+
   MockPasswordStoreInterface* GetProfilePasswordStore() const override {
     return mock_profile_store_.get();
   }
 
  private:
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator_;
+#endif
 };
 
 // This subclass is used to disable some code paths which are not essential for
@@ -1718,4 +1738,18 @@ TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
   std::move(reauth_callback).Run(ReauthSucceeded(false));
   ExpectIconAndControllerStateIs(
       password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest, IsBiometricAuthenticatorObtained) {
+  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  EXPECT_CALL(result_callback, Run(/*success=*/true));
+#else
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  client().SetAuthenticator(mock_authenticator);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+#endif
+  controller()->AuthenticateUserWithMessage(
+      /*message=*/u"Do you want to enable this feature", result_callback.Get());
 }

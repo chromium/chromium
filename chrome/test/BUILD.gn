@@ -238,6 +238,7 @@ static_library("test_support") {
     "//components/consent_auditor:test_support",
     "//components/content_settings/core/browser",
     "//components/custom_handlers/",
+    "//components/device_reauth:test_support",
     "//components/domain_reliability",
     "//components/find_in_page",
     "//components/gcm_driver:test_support",
@@ -8603,7 +8604,10 @@ test("unit_tests") {
     ldflags = [ "-Wl,--strip-debug" ]
   }
   if (is_win || is_mac) {
-    sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
+    sources += [
+      "../browser/component_updater/updater_state_unittest.cc",
+      "../browser/ui/passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller_unittest.cc",
+    ]
 
     deps += [ "//chrome/common/notifications:unit_tests" ]
   }

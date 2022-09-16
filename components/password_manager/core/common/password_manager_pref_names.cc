@@ -96,6 +96,8 @@ const char kPasswordChangeSuccessTrackerVersion[] =
     "password_manager.password_change_success_tracker.version";
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const char kHasUserInteractedWithBiometricAuthPromo[] =
+    "password_manager.has_user_interacted_with_biometric_authentication_promo";
 const char kBiometricAuthenticationBeforeFilling[] =
     "password_manager.biometric_authentication_filling";
 const char kHadBiometricsAvailable[] =

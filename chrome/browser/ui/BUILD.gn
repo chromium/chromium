@@ -465,6 +465,7 @@ static_library("ui") {
     "//components/crx_file",
     "//components/custom_handlers",
     "//components/device_event_log",
+    "//components/device_reauth",
     "//components/dom_distiller/content/browser",
     "//components/domain_reliability",
     "//components/download/content/factory",
@@ -3658,6 +3659,8 @@ static_library("ui") {
 
   if (is_win || is_mac) {
     sources += [
+      "passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller.cc",
+      "passwords/bubble_controllers/biometric_authentication_for_filling_bubble_controller.h",
       "webui/settings/native_certificates_handler.cc",
       "webui/settings/native_certificates_handler.h",
     ]

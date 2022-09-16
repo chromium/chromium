@@ -170,7 +170,11 @@ class ManagePasswordsUIController
       password_manager::ManagePasswordsReferrer referrer) override;
   void EnableSync(const AccountInfo& account) override;
   void OnDialogHidden() override;
+  // TODO(crbug.com/1353344): Replace AuthenticateUser with
+  // AuthenticateUserWithMessage
   bool AuthenticateUser() override;
+  void AuthenticateUserWithMessage(const std::u16string& message,
+                                   AvailabilityCallback callback) override;
   void AuthenticateUserForAccountStoreOptInAndSavePassword(
       const std::u16string& username,
       const std::u16string& password) override;

@@ -75850,6 +75850,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="12"
       label="Opened automatically / Offering to move profile password to
              account store"/>
+  <int value="13"
+      label="Opened manually / Offering to enable biometric authentication
+             before filling"/>
+  <int value="14"
+      label="Opened automatically / Offering to enable biometric
+             authentication before filling"/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">

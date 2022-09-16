@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
@@ -34,6 +35,8 @@ struct AccountInfo;
 // and notify about user actions.
 class PasswordsModelDelegate {
  public:
+  using AvailabilityCallback = base::OnceCallback<void(bool)>;
+
   // Returns WebContents* the model is attached to.
   virtual content::WebContents* GetWebContents() const = 0;
 
@@ -157,6 +160,13 @@ class PasswordsModelDelegate {
   // method returns false. The password in the reopened bubble will be revealed
   // if the authentication was successful.
   virtual bool AuthenticateUser() = 0;
+
+  // Called from the BiometricAuthenticationForFilling bubble controller when OS
+  // re-auth is needed to enable feature. Runs callback with true parameter
+  // immediately if user authentication is not available for the given platform.
+  // Otherwise, the method schedules a task to show an authentication dialog.
+  virtual void AuthenticateUserWithMessage(const std::u16string& message,
+                                           AvailabilityCallback callback) = 0;
 
   // Called from the Save/Update bubble controller when gaia re-auth is needed
   // to save passwords. This method triggers the reauth flow. Upon successful
