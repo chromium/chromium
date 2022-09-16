@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -24,11 +23,9 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/games/game_result.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 
@@ -46,6 +43,9 @@ constexpr double kEpsilon = 1e-5;
 
 // Flag to enable/disable diacritics stripping
 constexpr bool kStripDiacritics = true;
+
+// Flag to enable/disable acronym matcher.
+constexpr bool kUseAcronymMatcher = true;
 
 // Outcome of a call to GameSearchProvider::Start. These values persist to logs.
 // Entries should not be renumbered and numeric values should not be reused.
@@ -103,7 +103,7 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
 
   FuzzyTokenizedStringMatch match;
   return match.Relevance(tokenized_query, tokenized_title, kUseWeightedRatio,
-                         kStripDiacritics);
+                         kStripDiacritics, kUseAcronymMatcher);
 }
 
 std::vector<std::pair<const apps::Result*, double>> SearchGames(
