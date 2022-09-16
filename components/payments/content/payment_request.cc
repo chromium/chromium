@@ -210,12 +210,6 @@ void PaymentRequest::Init(
   GURL google_pay_url(methods::kGooglePay);
   GURL android_pay_url(methods::kAndroidPay);
   GURL google_play_billing_url(methods::kGooglePlayBilling);
-  // Looking for payment methods that are NOT google-related payment methods.
-  auto non_google_it = base::ranges::find_if(
-      spec_->url_payment_method_identifiers(), [&](const GURL& url) {
-        return url != google_pay_url && url != android_pay_url &&
-               url != google_play_billing_url;
-      });
   std::vector<JourneyLogger::PaymentMethodCategory> method_categories;
   if (base::Contains(spec_->url_payment_method_identifiers(), google_pay_url) ||
       base::Contains(spec_->url_payment_method_identifiers(),
@@ -231,7 +225,11 @@ void PaymentRequest::Init(
     method_categories.push_back(
         JourneyLogger::PaymentMethodCategory::kSecurePaymentConfirmation);
   }
-  if (non_google_it != spec_->url_payment_method_identifiers().end()) {
+  if (base::ranges::any_of(
+          spec_->url_payment_method_identifiers(), [&](const GURL& url) {
+            return url != google_pay_url && url != android_pay_url &&
+                   url != google_play_billing_url;
+          })) {
     method_categories.push_back(JourneyLogger::PaymentMethodCategory::kOther);
   }
   journey_logger_.SetRequestedPaymentMethods(method_categories);

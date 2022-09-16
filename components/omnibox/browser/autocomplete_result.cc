@@ -684,8 +684,8 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
     }
     return best;
   }
-  return base::ranges::find_if(
-      *matches, [](const auto& m) { return m.allowed_to_be_default_match; });
+  return base::ranges::find_if(*matches,
+                               &AutocompleteMatch::allowed_to_be_default_match);
 }
 
 // static
@@ -1140,9 +1140,8 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
   // Prevent old matches from this provider from outranking new ones and
   // becoming the default match by capping old matches' scores to be less than
   // the highest-scoring allowed-to-be-default match from this provider.
-  auto i = base::ranges::find_if(new_matches, [](const AutocompleteMatch& m) {
-    return m.allowed_to_be_default_match;
-  });
+  auto i = base::ranges::find_if(
+      new_matches, &AutocompleteMatch::allowed_to_be_default_match);
 
   // If the provider doesn't have any matches that are allowed-to-be-default,
   // cap scores below the global allowed-to-be-default match.

@@ -93,10 +93,9 @@ bool ContainsEqualPasswordFormsUnordered(
 
   bool had_mismatched_actual_form = false;
   for (const auto& actual : actual_values) {
-    auto it_matching_expectation = base::ranges::find_if(
-        remaining_expectations, [&actual](const PasswordForm* expected) {
-          return *expected == *actual;
-        });
+    auto it_matching_expectation = base::ranges::find(
+        remaining_expectations, *actual,
+        [](const PasswordForm* expected) { return *expected; });
     if (it_matching_expectation != remaining_expectations.end()) {
       // Erase the matched expectation by moving the last element to its place.
       *it_matching_expectation = remaining_expectations.back();

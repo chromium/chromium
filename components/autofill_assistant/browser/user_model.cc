@@ -186,10 +186,8 @@ void UserModel::SetSelectedLoginChoiceByIdentifier(
     const CollectUserDataOptions& collect_user_data_options,
     UserData* user_data) {
   const auto login_choice =
-      base::ranges::find_if(collect_user_data_options.login_choices,
-                            [&identifier](const LoginChoice& login_choice) {
-                              return login_choice.identifier == identifier;
-                            });
+      base::ranges::find(collect_user_data_options.login_choices, identifier,
+                         &LoginChoice::identifier);
   if (login_choice == collect_user_data_options.login_choices.end()) {
     user_data->selected_login_choice_.reset();
     return;

@@ -323,11 +323,10 @@ void ShortcutsBackend::OnURLsDeleted(
 
   ShortcutsDatabase::ShortcutIDs shortcut_ids;
   for (const auto& guid_pair : guid_map_) {
-    if (base::ranges::find_if(
+    if (base::ranges::any_of(
             deletion_info.deleted_rows(),
             history::URLRow::URLRowHasURL(
-                guid_pair.second->second.match_core.destination_url)) !=
-        deletion_info.deleted_rows().end()) {
+                guid_pair.second->second.match_core.destination_url))) {
       shortcut_ids.push_back(guid_pair.first);
     }
   }

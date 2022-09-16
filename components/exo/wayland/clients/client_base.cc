@@ -1241,10 +1241,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
 }
 
 ClientBase::Buffer* ClientBase::DequeueBuffer() {
-  auto buffer_it = base::ranges::find_if_not(
-      buffers_, [](const std::unique_ptr<ClientBase::Buffer>& buffer) {
-        return buffer->busy;
-      });
+  auto buffer_it =
+      base::ranges::find_if_not(buffers_, &ClientBase::Buffer::busy);
   if (buffer_it == buffers_.end())
     return nullptr;
 

@@ -467,12 +467,10 @@ void CollectUserDataAction::InternalProcessAction(
   // If Chrome password manager logins are requested, we need to asynchronously
   // obtain them before showing the UI.
   auto collect_user_data = proto_.collect_user_data();
-  auto password_manager_option = base::ranges::find_if(
-      collect_user_data.login_details().login_options(),
-      [&](const LoginDetailsProto::LoginOptionProto& option) {
-        return option.type_case() ==
-               LoginDetailsProto::LoginOptionProto::kPasswordManager;
-      });
+  auto password_manager_option =
+      base::ranges::find(collect_user_data.login_details().login_options(),
+                         LoginDetailsProto::LoginOptionProto::kPasswordManager,
+                         &LoginDetailsProto::LoginOptionProto::type_case);
   bool requests_pwm_logins =
       password_manager_option !=
       collect_user_data.login_details().login_options().end();

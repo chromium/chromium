@@ -95,11 +95,9 @@ bool VerifyFileHash256(const base::FilePath& filepath,
 
 bool IsValidBrand(const std::string& brand) {
   const size_t kMaxBrandSize = 4;
-  if (!brand.empty() && brand.size() != kMaxBrandSize)
-    return false;
-
-  return base::ranges::find_if_not(brand, &base::IsAsciiAlpha<char>) ==
-         brand.end();
+  return brand.empty() ||
+         (brand.size() == kMaxBrandSize &&
+          base::ranges::all_of(brand, &base::IsAsciiAlpha<char>));
 }
 
 // Helper function.
@@ -110,10 +108,10 @@ bool IsValidInstallerAttributePart(const std::string& part,
                                    size_t min_length,
                                    size_t max_length) {
   return part.size() >= min_length && part.size() <= max_length &&
-         base::ranges::find_if_not(part, [&special_chars](char ch) {
+         base::ranges::all_of(part, [&special_chars](char ch) {
            return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) ||
                   base::Contains(special_chars, ch);
-         }) == part.end();
+         });
 }
 
 // Returns true if the |name| parameter matches ^[-_a-zA-Z0-9]{1,256}$ .

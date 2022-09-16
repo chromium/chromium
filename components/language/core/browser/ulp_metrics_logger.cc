@@ -92,13 +92,12 @@ int ULPMetricsLogger::ULPLanguagesInAcceptLanguagesRatio(
     // Search for base matches of ulp_language in accept_languages (e.g. pt-BR
     // == pt-MZ).
     const std::string base_ulp_language = l10n_util::GetLanguage(ulp_language);
-    std::vector<std::string>::const_iterator base_match = base::ranges::find_if(
-        accept_languages,
-        [&base_ulp_language](const std::string& accept_language) {
-          return base_ulp_language.compare(
-                     l10n_util::GetLanguage(accept_language)) == 0;
-        });
-    if (base_match != accept_languages.end()) {
+    if (base::ranges::any_of(
+            accept_languages,
+            [&base_ulp_language](const std::string& accept_language) {
+              return base_ulp_language.compare(
+                         l10n_util::GetLanguage(accept_language)) == 0;
+            })) {
       ++num_ulp_languages_also_in_accept_languages;
     }
   }
@@ -114,12 +113,11 @@ std::vector<std::string> ULPMetricsLogger::RemoveULPLanguages(
   for (const auto& language : languages) {
     // Only add languages that do not have a base match in ulp_languages.
     const std::string base_language = l10n_util::GetLanguage(language);
-    std::vector<std::string>::const_iterator base_match = base::ranges::find_if(
-        ulp_languages, [&base_language](const std::string& ulp_language) {
-          return base_language.compare(l10n_util::GetLanguage(ulp_language)) ==
-                 0;
-        });
-    if (base_match == ulp_languages.end()) {
+    if (base::ranges::none_of(
+            ulp_languages, [&base_language](const std::string& ulp_language) {
+              return base_language.compare(
+                         l10n_util::GetLanguage(ulp_language)) == 0;
+            })) {
       filtered_languages.push_back(language);
     }
   }

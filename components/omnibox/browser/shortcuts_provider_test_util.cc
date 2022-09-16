@@ -113,12 +113,12 @@ void RunShortcutsProviderTest(
   EXPECT_EQ(expected_urls.size(), ac_matches.size()) << debug;
 
   for (const auto& expected_url : expected_urls) {
-    auto iter = base::ranges::find_if(
-        ac_matches, [&expected_url](const AutocompleteMatch& match) {
+    EXPECT_TRUE(base::ranges::any_of(
+        ac_matches,
+        [&expected_url](const AutocompleteMatch& match) {
           return expected_url.first == match.destination_url.spec() &&
                  expected_url.second == match.allowed_to_be_default_match;
-        });
-    EXPECT_TRUE(iter != ac_matches.end())
+        }))
         << debug
         << base::StringPrintf("Expected URL [%s], default [%d]\n",
                               expected_url.first.c_str(), expected_url.second);

@@ -876,13 +876,12 @@ bool AuraOutput::SendDisplayMetrics(const display::Display& display,
         display::GetDisplayZoomFactors(active_mode);
 
     // Ensure that the current zoom factor is a part of the list.
-    auto it =
-        base::ranges::find_if(zoom_factors, [&display_info](float zoom_factor) {
+    if (base::ranges::none_of(zoom_factors, [&display_info](float zoom_factor) {
           return std::abs(display_info.zoom_factor() - zoom_factor) <=
                  std::numeric_limits<float>::epsilon();
-        });
-    if (it == zoom_factors.end())
+        })) {
       zoom_factors.push_back(display_info.zoom_factor());
+    }
 
     for (float zoom_factor : zoom_factors) {
       int32_t output_scale = std::round(zoom_factor * 1000.f);

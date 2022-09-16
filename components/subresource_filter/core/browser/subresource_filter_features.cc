@@ -43,10 +43,10 @@ class CommaSeparatedStrings {
   CommaSeparatedStrings& operator=(const CommaSeparatedStrings&) = delete;
 
   bool CaseInsensitiveContains(base::StringPiece lowercase_key) const {
-    return base::ranges::find_if(pieces_, [lowercase_key](
-                                              base::StringPiece element) {
-             return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
-           }) != pieces_.end();
+    return base::ranges::any_of(
+        pieces_, [lowercase_key](base::StringPiece element) {
+          return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
+        });
   }
 
  private:

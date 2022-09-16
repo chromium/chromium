@@ -334,8 +334,8 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   }
   for (const auto& pair : urls_modified_notifications_) {
     const auto& rows = pair.second;
-    EXPECT_TRUE(base::ranges::find_if(rows, history::URLRow::URLRowHasURL(
-                                                row.url())) == rows.end());
+    EXPECT_TRUE(
+        base::ranges::none_of(rows, history::URLRow::URLRowHasURL(row.url())));
   }
   EXPECT_TRUE(found_delete_notification);
 }
@@ -357,8 +357,7 @@ bool ExpireHistoryTest::ModifiedNotificationSent(
     const bool is_from_expiration = pair.first;
     const auto& rows = pair.second;
     if (is_from_expiration == should_be_from_expiration &&
-        base::ranges::find_if(rows, history::URLRow::URLRowHasURL(url)) !=
-            rows.end()) {
+        base::ranges::any_of(rows, history::URLRow::URLRowHasURL(url))) {
       return true;
     }
   }

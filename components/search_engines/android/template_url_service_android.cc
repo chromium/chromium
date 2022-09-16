@@ -319,9 +319,8 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
   // Check if there is already a search engine created from Play API.
   TemplateURLService::TemplateURLVector template_urls =
       template_url_service_->GetTemplateURLs();
-  auto existing_play_api_turl = base::ranges::find_if(
-      template_urls,
-      [](const TemplateURL* turl) { return turl->created_from_play_api(); });
+  auto existing_play_api_turl =
+      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
   if (existing_play_api_turl != template_urls.cend()) {
     // Migrate old Play API database entries that were incorrectly marked as
     // safe_for_autoreplace() before M89.
@@ -398,9 +397,7 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
   // Clean up duplication between a Play API template URL and a corresponding
   // prepopulated template URL.
   auto play_api_it =
-      base::ranges::find_if(template_urls, [](TemplateURL* template_url) {
-        return template_url->created_from_play_api();
-      });
+      base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
   TemplateURL* play_api_turl =
       play_api_it != template_urls.end() ? *play_api_it : nullptr;
 

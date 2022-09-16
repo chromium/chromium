@@ -32,11 +32,11 @@ bool IsInDomainOrSubDomain(const GURL& url, const GURL& domain) {
 
 bool IsInDomainOrSubDomain(const GURL& url,
                            const std::vector<std::string>& allowed_domains) {
-  return base::ranges::find_if(allowed_domains,
-                               [url](const std::string& allowed_domain) {
-                                 return url.host() == allowed_domain ||
-                                        IsInSubDomain(url, allowed_domain);
-                               }) != allowed_domains.end();
+  return base::ranges::any_of(allowed_domains,
+                              [url](const std::string& allowed_domain) {
+                                return url.host() == allowed_domain ||
+                                       IsInSubDomain(url, allowed_domain);
+                              });
 }
 
 bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2) {

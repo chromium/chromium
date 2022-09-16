@@ -87,11 +87,10 @@ bool HasSyntheticTrial(const std::string& trial_name) {
   variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
   std::string trial_hash =
       base::StringPrintf("%x", variations::HashName(trial_name));
-  return base::ranges::find_if(
-             synthetic_trials, [trial_hash](const auto& trial) {
-               return base::StartsWith(trial, trial_hash,
-                                       base::CompareCase::SENSITIVE);
-             }) != synthetic_trials.end();
+  return base::ranges::any_of(synthetic_trials, [trial_hash](
+                                                    const auto& trial) {
+    return base::StartsWith(trial, trial_hash, base::CompareCase::SENSITIVE);
+  });
 }
 
 bool IsInSyntheticTrialGroup(const std::string& trial_name,

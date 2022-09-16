@@ -395,11 +395,9 @@ void PaymentRequestSpec::UpdateSelectedShippingOption(bool after_update) {
   // As per the spec, the selected shipping option should initially be the last
   // one in the array that has its selected field set to true. If none are
   // selected by the merchant, |selected_shipping_option_| stays nullptr.
-  auto selected_shipping_option_it = base::ranges::find_if(
-      base::Reversed(*details_->shipping_options),
-      [](const payments::mojom::PaymentShippingOptionPtr& element) {
-        return element->selected;
-      });
+  auto selected_shipping_option_it =
+      base::ranges::find_if(base::Reversed(*details_->shipping_options),
+                            &payments::mojom::PaymentShippingOption::selected);
   if (selected_shipping_option_it != details_->shipping_options->rend()) {
     selected_shipping_option_ = selected_shipping_option_it->get();
   }

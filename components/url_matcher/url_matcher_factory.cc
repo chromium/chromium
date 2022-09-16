@@ -177,7 +177,7 @@ namespace {
 
 // Returns true if some alphabetic characters in this string are upper case.
 bool ContainsUpperCase(const std::string& str) {
-  return base::ranges::find_if(str, ::isupper) != str.end();
+  return base::ranges::any_of(str, ::isupper);
 }
 
 }  // namespace

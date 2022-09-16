@@ -467,8 +467,7 @@ void SpellCheck::PerformSpellCheck(SpellcheckRequest* param) {
   DCHECK(param);
 
   if (languages_.empty() ||
-      base::ranges::find_if_not(languages_, &SpellcheckLanguage::IsEnabled) !=
-          languages_.end()) {
+      !base::ranges::all_of(languages_, &SpellcheckLanguage::IsEnabled)) {
     param->completion()->DidCancelCheckingText();
   } else {
     WebVector<blink::WebTextCheckingResult> results;
@@ -622,7 +621,7 @@ void SpellCheck::NotifyDictionaryObservers(
 }
 
 bool SpellCheck::IsWordInSupportedScript(const std::u16string& word) const {
-  return base::ranges::find_if(languages_, [word](const auto& language) {
-           return language->IsTextInSameScript(word);
-         }) != languages_.end();
+  return base::ranges::any_of(languages_, [word](const auto& language) {
+    return language->IsTextInSameScript(word);
+  });
 }

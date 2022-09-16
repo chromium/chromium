@@ -146,12 +146,11 @@ static SupportedCodecs GetSupportedCodecs(
       (supported_codecs & media::EME_CODEC_VP9_PROFILE0)) {
     std::vector<media::CodecProfileLevel> profiles;
     media::MediaCodecUtil::AddSupportedCodecProfileLevels(&profiles);
-    auto iter = base::ranges::find_if(
-        profiles, [](const media::CodecProfileLevel& profile) {
-          return profile.codec == media::VideoCodec::kVP9 &&
-                 profile.profile == media::VP9PROFILE_PROFILE2;
-        });
-    if (iter != profiles.end()) {
+    if (base::ranges::any_of(
+            profiles, [](const media::CodecProfileLevel& profile) {
+              return profile.codec == media::VideoCodec::kVP9 &&
+                     profile.profile == media::VP9PROFILE_PROFILE2;
+            })) {
       supported_codecs |= media::EME_CODEC_VP9_PROFILE2;
     }
   }
@@ -160,12 +159,11 @@ static SupportedCodecs GetSupportedCodecs(
       (supported_codecs & media::EME_CODEC_HEVC_PROFILE_MAIN)) {
     std::vector<media::CodecProfileLevel> profiles;
     media::MediaCodecUtil::AddSupportedCodecProfileLevels(&profiles);
-    auto iter = base::ranges::find_if(
-        profiles, [](const media::CodecProfileLevel& profile) {
-          return profile.codec == media::VideoCodec::kHEVC &&
-                 profile.profile == media::HEVCPROFILE_MAIN10;
-        });
-    if (iter != profiles.end()) {
+    if (base::ranges::any_of(
+            profiles, [](const media::CodecProfileLevel& profile) {
+              return profile.codec == media::VideoCodec::kHEVC &&
+                     profile.profile == media::HEVCPROFILE_MAIN10;
+            })) {
       supported_codecs |= media::EME_CODEC_HEVC_PROFILE_MAIN10;
     }
   }

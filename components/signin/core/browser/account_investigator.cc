@@ -189,28 +189,27 @@ AccountRelation AccountInvestigator::DiscernRelation(
   if (signed_in_accounts.empty() && signed_out_accounts.empty()) {
     return AccountRelation::EMPTY_COOKIE_JAR;
   }
-  auto signed_in_match_iter = base::ranges::find_if(
-      signed_in_accounts,
-      [&info](const ListedAccount& account) { return AreSame(info, account); });
-  auto signed_out_match_iter = base::ranges::find_if(
-      signed_out_accounts,
-      [&info](const ListedAccount& account) { return AreSame(info, account); });
-  if (signed_in_match_iter != signed_in_accounts.end()) {
+  if (base::ranges::any_of(signed_in_accounts,
+                           [&info](const ListedAccount& account) {
+                             return AreSame(info, account);
+                           })) {
     if (signed_in_accounts.size() == 1) {
       return signed_out_accounts.empty()
                  ? AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT
                  : AccountRelation::SINGLE_SINGED_IN_MATCH_WITH_SIGNED_OUT;
-    } else {
-      return AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT;
     }
-  } else if (signed_out_match_iter != signed_out_accounts.end()) {
+    return AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT;
+  }
+  if (base::ranges::any_of(signed_out_accounts,
+                           [&info](const ListedAccount& account) {
+                             return AreSame(info, account);
+                           })) {
     if (signed_in_accounts.empty()) {
       return signed_out_accounts.size() == 1
                  ? AccountRelation::NO_SIGNED_IN_SINGLE_SIGNED_OUT_MATCH
                  : AccountRelation::NO_SIGNED_IN_ONE_OF_SIGNED_OUT_MATCH;
-    } else {
-      return AccountRelation::WITH_SIGNED_IN_ONE_OF_SIGNED_OUT_MATCH;
     }
+    return AccountRelation::WITH_SIGNED_IN_ONE_OF_SIGNED_OUT_MATCH;
   }
 
   return signed_in_accounts.empty()

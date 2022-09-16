@@ -95,9 +95,8 @@ void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
 
   std::vector<std::unique_ptr<PasswordForm>> result;
   for (const PasswordForm* best_match : best_matches) {
-    auto it = base::ranges::find_if(*forms, [best_match](const auto& form) {
-      return best_match == form.get();
-    });
+    auto it = base::ranges::find(*forms, best_match,
+                                 &std::unique_ptr<PasswordForm>::get);
     DCHECK(it != forms->end());
     result.push_back(std::move(*it));
   }

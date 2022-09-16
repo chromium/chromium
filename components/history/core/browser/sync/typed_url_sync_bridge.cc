@@ -67,12 +67,10 @@ std::string GetStorageKeyFromURLRow(const URLRow& row) {
 }
 
 bool HasTypedUrl(const std::vector<VisitRow>& visits) {
-  auto typed_url_visit =
-      base::ranges::find_if(visits, [](const VisitRow& visit) {
-        return ui::PageTransitionCoreTypeIs(visit.transition,
-                                            ui::PAGE_TRANSITION_TYPED);
-      });
-  return typed_url_visit != visits.end();
+  return base::ranges::any_of(visits, [](const VisitRow& visit) {
+    return ui::PageTransitionCoreTypeIs(visit.transition,
+                                        ui::PAGE_TRANSITION_TYPED);
+  });
 }
 
 void RecordDatabaseError(SyncTypedUrlDatabaseError error) {

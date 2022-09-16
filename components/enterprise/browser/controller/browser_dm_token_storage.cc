@@ -180,9 +180,9 @@ void BrowserDMTokenStorage::InitIfNeeded() {
   }
 
   // checks if client ID includes an illegal character
-  if (base::ranges::find_if(client_id_, [](char ch) {
+  if (base::ranges::any_of(client_id_, [](char ch) {
         return ch == ' ' || !base::IsAsciiPrintable(ch);
-      }) != client_id_.end()) {
+      })) {
     SYSLOG(ERROR)
         << "Chrome browser cloud management client ID should not"
            " contain a space, new line, or any nonprintable character.";

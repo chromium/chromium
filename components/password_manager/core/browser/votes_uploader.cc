@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -225,12 +226,10 @@ AutofillUploadContents::ValueType GetValueType(
   // Check if |username_value| is an already stored username.
   // TODO(crbug.com/959776) Implement checking against usenames stored for all
   // domains and return STORED_FOR_ANOTHER_DOMAIN in that case.
-  auto credential_match = base::ranges::find_if(
-      stored_credentials, [&username_value](const PasswordForm* credential) {
-        return credential->username_value == username_value;
-      });
-  if (credential_match != stored_credentials.end())
+  if (base::Contains(stored_credentials, username_value,
+                     &PasswordForm::username_value)) {
     return AutofillUploadContents::STORED_FOR_CURRENT_DOMAIN;
+  }
 
   if (autofill::MatchesRegex<autofill::kEmailValueRe>(username_value))
     return AutofillUploadContents::EMAIL;

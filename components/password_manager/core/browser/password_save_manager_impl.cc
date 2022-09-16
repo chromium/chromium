@@ -122,10 +122,10 @@ bool AccountStoreMatchesContainForm(
     const std::vector<const PasswordForm*>& matches,
     const PasswordForm& form) {
   DCHECK(base::ranges::all_of(matches, &PasswordForm::IsUsingAccountStore));
-  return base::ranges::find_if(matches, [&form](const PasswordForm* match) {
-           return ArePasswordFormUniqueKeysEqual(*match, form) &&
-                  match->password_value == form.password_value;
-         }) != matches.end();
+  return base::ranges::any_of(matches, [&form](const PasswordForm* match) {
+    return ArePasswordFormUniqueKeysEqual(*match, form) &&
+           match->password_value == form.password_value;
+  });
 }
 
 PendingCredentialsState ResolvePendingCredentialsStates(

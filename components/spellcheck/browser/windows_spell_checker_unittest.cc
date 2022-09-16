@@ -163,13 +163,10 @@ void WindowsSpellCheckerTest::RunRequestTextCheckTest(
   } else {
     const std::u16string suggested_word(
         base::ASCIIToUTF16(test_case.expected_suggestion));
-    auto position = base::ranges::find_if(
-        suggestions, [&](const std::u16string& suggestion) {
-          return suggestion.compare(suggested_word) == 0;
-        });
-
-    ASSERT_FALSE(position == suggestions.end())
-        << "RequestTextCheck: Expected suggestion not found";
+    ASSERT_TRUE(base::ranges::any_of(suggestions, [&](const std::u16string&
+                                                          suggestion) {
+      return suggestion.compare(suggested_word) == 0;
+    })) << "RequestTextCheck: Expected suggestion not found";
   }
 }
 

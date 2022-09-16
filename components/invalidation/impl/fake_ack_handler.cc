@@ -42,27 +42,23 @@ void FakeAckHandler::RegisterUnsentInvalidation(Invalidation* invalidation) {
 }
 
 bool FakeAckHandler::IsUnacked(const Invalidation& invalidation) const {
-  return base::ranges::find_if(unacked_invalidations_,
-                               AckHandleMatcher(invalidation.ack_handle())) !=
-         unacked_invalidations_.end();
+  return base::ranges::any_of(unacked_invalidations_,
+                              AckHandleMatcher(invalidation.ack_handle()));
 }
 
 bool FakeAckHandler::IsAcknowledged(const Invalidation& invalidation) const {
-  return base::ranges::find_if(acked_invalidations_,
-                               AckHandleMatcher(invalidation.ack_handle())) !=
-         acked_invalidations_.end();
+  return base::ranges::any_of(acked_invalidations_,
+                              AckHandleMatcher(invalidation.ack_handle()));
 }
 
 bool FakeAckHandler::IsDropped(const Invalidation& invalidation) const {
-  return base::ranges::find_if(dropped_invalidations_,
-                               AckHandleMatcher(invalidation.ack_handle())) !=
-         dropped_invalidations_.end();
+  return base::ranges::any_of(dropped_invalidations_,
+                              AckHandleMatcher(invalidation.ack_handle()));
 }
 
 bool FakeAckHandler::IsUnsent(const Invalidation& invalidation) const {
-  return base::ranges::find_if(unsent_invalidations_,
-                               AckHandleMatcher(invalidation.ack_handle())) !=
-         unsent_invalidations_.end();
+  return base::ranges::any_of(unsent_invalidations_,
+                              AckHandleMatcher(invalidation.ack_handle()));
 }
 
 bool FakeAckHandler::AllInvalidationsAccountedFor() const {

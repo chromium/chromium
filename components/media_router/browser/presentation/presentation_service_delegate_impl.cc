@@ -468,8 +468,7 @@ void PresentationServiceDelegateImpl::StartPresentation(
         PresentationErrorType::UNKNOWN, "Invalid presentation arguments."));
     return;
   }
-  if (base::ranges::find_if_not(presentation_urls, IsValidPresentationUrl) !=
-      presentation_urls.end()) {
+  if (!base::ranges::all_of(presentation_urls, IsValidPresentationUrl)) {
     std::move(error_cb).Run(
         PresentationError(PresentationErrorType::NO_PRESENTATION_FOUND,
                           "Invalid presentation URL."));

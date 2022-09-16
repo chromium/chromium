@@ -43,11 +43,10 @@ bool HasExpiredOrIncompleteResult(
     return false;
 
   // Check if at least one of the bitmaps is expired.
-  auto it = base::ranges::find_if(
-      bitmap_results,
-      [](const auto& bitmap_result) { return bitmap_result.expired; });
-  if (it != bitmap_results.end())
+  if (base::ranges::any_of(bitmap_results,
+                           &favicon_base::FaviconRawBitmapResult::expired)) {
     return true;
+  }
 
   // Any favicon size is good if the desired size is 0.
   if (desired_size_in_dip == 0)
@@ -77,9 +76,8 @@ bool HasExpiredOrIncompleteResult(
 // Returns true if at least one of |bitmap_results| is valid.
 bool HasValidResult(
     const std::vector<favicon_base::FaviconRawBitmapResult>& bitmap_results) {
-  return base::ranges::find_if(bitmap_results, [](const auto& bitmap_result) {
-           return bitmap_result.is_valid();
-         }) != bitmap_results.end();
+  return base::ranges::any_of(bitmap_results,
+                              &favicon_base::FaviconRawBitmapResult::is_valid);
 }
 
 std::vector<int> GetDesiredPixelSizes(
