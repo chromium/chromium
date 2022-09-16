@@ -251,31 +251,29 @@ void DiskEntryOpener::DidOpenEntry(
 
 class ServiceWorkerResourceReaderImpl::DataReader {
  public:
-  DataReader(
-      base::WeakPtr<ServiceWorkerResourceReaderImpl> owner,
-      size_t total_bytes_to_read,
-      mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier> notifier,
-      mojo::ScopedDataPipeProducerHandle producer_handle)
+  DataReader(base::WeakPtr<ServiceWorkerResourceReaderImpl> owner,
+             size_t total_bytes_to_read,
+             mojo::ScopedDataPipeProducerHandle producer_handle)
       : owner_(std::move(owner)),
         total_bytes_to_read_(total_bytes_to_read),
-        notifier_(std::move(notifier)),
         producer_handle_(std::move(producer_handle)),
         watcher_(FROM_HERE,
                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                  base::SequencedTaskRunnerHandle::Get()) {
     DCHECK(owner_);
-    DCHECK(notifier_);
   }
   ~DataReader() = default;
 
   DataReader(const DataReader&) = delete;
   DataReader operator=(const DataReader&) = delete;
 
-  void Start() {
+  void Start(ReadDataCallback callback) {
 #if DCHECK_IS_ON()
     DCHECK_EQ(state_, State::kInitialized);
     state_ = State::kStarted;
 #endif
+    DCHECK(!callback_);
+    callback_ = std::move(callback);
 
     owner_->entry_opener_.EnsureEntryIsOpen(base::BindOnce(
         &DataReader::ContinueReadData, weak_factory_.GetWeakPtr()));
@@ -380,6 +378,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 
   void Complete(int status) {
 #if DCHECK_IS_ON()
+    DCHECK_NE(state_, State::kInitialized);
     DCHECK_NE(state_, State::kComplete);
     state_ = State::kComplete;
 #endif
@@ -387,8 +386,8 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     watcher_.Cancel();
     producer_handle_.reset();
 
-    if (notifier_.is_connected()) {
-      notifier_->OnComplete(status);
+    if (callback_) {
+      std::move(callback_).Run(status);
     }
 
     if (owner_) {
@@ -399,7 +398,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
   base::WeakPtr<ServiceWorkerResourceReaderImpl> owner_;
   const size_t total_bytes_to_read_;
   size_t current_bytes_read_ = 0;
-  mojo::Remote<mojom::ServiceWorkerDataPipeStateNotifier> notifier_;
+  ReadDataCallback callback_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::SimpleWatcher watcher_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
@@ -448,13 +447,12 @@ void ServiceWorkerResourceReaderImpl::ReadResponseHead(
                      weak_factory_.GetWeakPtr()));
 }
 
-void ServiceWorkerResourceReaderImpl::ReadData(
+void ServiceWorkerResourceReaderImpl::PrepareReadData(
     int64_t size,
-    mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier> notifier,
-    ReadDataCallback callback) {
+    PrepareReadDataCallback callback) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(state_, State::kIdle);
-  state_ = State::kReadDataStarted;
+  state_ = State::kReadDataPrepared;
 #endif
   DCHECK(!read_response_head_callback_) << "ReadResponseHead() being operating";
   DCHECK(!response_head_);
@@ -477,10 +475,16 @@ void ServiceWorkerResourceReaderImpl::ReadData(
   }
 
   data_reader_ = std::make_unique<DataReader>(weak_factory_.GetWeakPtr(), size,
-                                              std::move(notifier),
                                               std::move(producer_handle));
-  data_reader_->Start();
   std::move(callback).Run(std::move(consumer_handle));
+}
+
+void ServiceWorkerResourceReaderImpl::ReadData(ReadDataCallback callback) {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(state_, State::kReadDataPrepared);
+  state_ = State::kReadDataStarted;
+#endif
+  data_reader_->Start(std::move(callback));
 }
 
 void ServiceWorkerResourceReaderImpl::ContinueReadResponseHead() {

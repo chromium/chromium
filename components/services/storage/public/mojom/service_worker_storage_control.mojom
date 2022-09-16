@@ -62,18 +62,22 @@ enum ServiceWorkerStorageStorageKeyState {
   kDelete,
 };
 
-// A notifier interface for ServiceWorkerResourceReader::ReadData().
-interface ServiceWorkerDataPipeStateNotifier {
-  // Called when ReadData() completes. On success, |status| is the number of
-  // bytes written. On failure, |status| is a //net error, which is a negative
-  // number.
-  OnComplete(int32 status);
-};
-
 // An interface that reads a service worker script (resource) to storage.
-// A valid use of this interface is that exactly one call to
-// ReadResponseHead(), followed by possibly multiple ReadData() calls. Each call
-// must not be overlapped.
+// This is hosted in the browser process and should be only used from the
+// browser process, and relies on the callers to satisfy the calling order
+// invariant below.
+//
+// A valid use of this interface is that
+// 1. Exactly one call to ReadResponseHead().
+// 2. A call to PrepareReadData() followed by a call to ReadData().
+// Step 2 can be repeated multiple times.
+// Each call must not be overlapped.
+//
+// TODO(crbug.com/1353545): Clarify whether we should really support multiple
+// `PrepareReadData()` calls.
+//
+// TODO(crbug.com/1353545): Enforce the calling order requirement. See
+// https://chromium-review.googlesource.com/c/chromium/src/+/3823684/comments/fd5170e2_19c5fb5e
 interface ServiceWorkerResourceReader {
   // Reads the response head of the resource associated with this reader.
   // |status| is the number of bytes read, or a //net error.
@@ -82,11 +86,17 @@ interface ServiceWorkerResourceReader {
       (int32 status,
        network.mojom.URLResponseHead? response_head,
        mojo_base.mojom.BigBuffer? metadata);
-  // Reads the content of the resource associated with this reader. `pipe`
-  // can be empty when creating a data pipe fails.
-  ReadData(int64 size,
-           pending_remote<ServiceWorkerDataPipeStateNotifier> notifier) =>
+
+  // Prepare for reading the content of the resource associated with this
+  // reader. `pipe` can be empty when creating a data pipe fails.
+  // TODO(crbug.com/1353545): Clarify the meaning of `size` parameter.
+  PrepareReadData(int64 size) =>
       (handle<data_pipe_consumer>? pipe);
+
+  // Actually reads the content, and returns when finished.
+  // On success, |status| is the number of bytes written.
+  // On failure, |status| is a //net error, which is a negative number.
+  ReadData() => (int32 status);
 };
 
 // An interface that writes a service worker script (resource) to storage.

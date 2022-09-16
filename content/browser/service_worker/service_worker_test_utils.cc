@@ -543,11 +543,9 @@ void MockServiceWorkerResourceReader::ReadResponseHead(
   pending_read_response_head_callback_ = std::move(callback);
 }
 
-void MockServiceWorkerResourceReader::ReadData(
+void MockServiceWorkerResourceReader::PrepareReadData(
     int64_t,
-    mojo::PendingRemote<
-        storage::mojom::ServiceWorkerDataPipeStateNotifier> /*notifier*/,
-    ReadDataCallback callback) {
+    PrepareReadDataCallback callback) {
   DCHECK(!body_.is_valid());
   mojo::ScopedDataPipeConsumerHandle consumer;
   MojoCreateDataPipeOptions options;
@@ -557,6 +555,14 @@ void MockServiceWorkerResourceReader::ReadData(
   options.capacity_num_bytes = expected_max_data_bytes_;
   mojo::CreateDataPipe(&options, body_, consumer);
   std::move(callback).Run(std::move(std::move(consumer)));
+}
+
+void MockServiceWorkerResourceReader::ReadData(ReadDataCallback callback) {
+  // Calling `callback` anyway just to satisfy mojo constraint, but the timing
+  // and the argument are incorrect (e.g. `callback` should be called after all
+  // reads are completed). So far this is OK because no one in tests checks the
+  // response here.
+  std::move(callback).Run(0);
 }
 
 void MockServiceWorkerResourceReader::ExpectReadResponseHead(size_t len,
@@ -689,33 +695,6 @@ void MockServiceWorkerResourceWriter::CompletePendingWrite() {
   std::move(pending_callback_).Run(write.result);
   // Wait until |pending_callback_| finishes.
   base::RunLoop().RunUntilIdle();
-}
-
-MockServiceWorkerDataPipeStateNotifier::
-    MockServiceWorkerDataPipeStateNotifier() = default;
-
-MockServiceWorkerDataPipeStateNotifier::
-    ~MockServiceWorkerDataPipeStateNotifier() = default;
-
-mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
-MockServiceWorkerDataPipeStateNotifier::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
-
-int32_t MockServiceWorkerDataPipeStateNotifier::WaitUntilComplete() {
-  if (!complete_status_.has_value()) {
-    base::RunLoop loop;
-    on_complete_callback_ = loop.QuitClosure();
-    loop.Run();
-    DCHECK(complete_status_.has_value());
-  }
-  return *complete_status_;
-}
-
-void MockServiceWorkerDataPipeStateNotifier::OnComplete(int32_t status) {
-  complete_status_ = status;
-  if (on_complete_callback_)
-    std::move(on_complete_callback_).Run();
 }
 
 ServiceWorkerUpdateCheckTestUtils::ServiceWorkerUpdateCheckTestUtils() =
@@ -895,19 +874,26 @@ bool ServiceWorkerUpdateCheckTestUtils::VerifyStoredResponse(
 
   // Verify the response body.
   {
-    MockServiceWorkerDataPipeStateNotifier notifier;
     mojo::ScopedDataPipeConsumerHandle data_consumer;
     base::RunLoop loop;
-    reader->ReadData(response_data_size, notifier.BindNewPipeAndPassRemote(),
-                     base::BindLambdaForTesting(
-                         [&](mojo::ScopedDataPipeConsumerHandle pipe) {
-                           data_consumer = std::move(pipe);
-                           loop.Quit();
-                         }));
+    reader->PrepareReadData(response_data_size,
+                            base::BindLambdaForTesting(
+                                [&](mojo::ScopedDataPipeConsumerHandle pipe) {
+                                  data_consumer = std::move(pipe);
+                                  loop.Quit();
+                                }));
     loop.Run();
 
+    int32_t rv;
+    base::RunLoop loop2;
+    reader->ReadData(base::BindLambdaForTesting([&](int32_t status) {
+      rv = status;
+      loop2.Quit();
+    }));
+
     std::string body = ReadDataPipe(std::move(data_consumer));
-    int rv = notifier.WaitUntilComplete();
+    loop2.Run();
+
     if (rv < 0)
       return false;
     EXPECT_EQ(static_cast<int>(expected_body.size()), rv);

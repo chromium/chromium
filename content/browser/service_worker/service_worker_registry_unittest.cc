@@ -173,19 +173,25 @@ bool VerifyBasicResponse(
   storage->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
 
   const int kBigEnough = 512;
-  MockServiceWorkerDataPipeStateNotifier notifier;
   mojo::ScopedDataPipeConsumerHandle data_consumer;
   base::RunLoop loop;
-  reader->ReadData(
-      kBigEnough, notifier.BindNewPipeAndPassRemote(),
+  reader->PrepareReadData(
+      kBigEnough,
       base::BindLambdaForTesting([&](mojo::ScopedDataPipeConsumerHandle pipe) {
         data_consumer = std::move(pipe);
         loop.Quit();
       }));
   loop.Run();
 
+  int32_t rv;
+  base::RunLoop loop2;
+  reader->ReadData(base::BindLambdaForTesting([&](int32_t status) {
+    rv = status;
+    loop2.Quit();
+  }));
+
   std::string body = ReadDataPipe(std::move(data_consumer));
-  int rv = notifier.WaitUntilComplete();
+  loop2.Run();
 
   EXPECT_EQ(static_cast<int>(kExpectedHttpBody.size()), rv);
   if (rv <= 0)

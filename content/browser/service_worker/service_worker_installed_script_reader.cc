@@ -132,14 +132,14 @@ void ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete(
 
   body_size_ = response_head->content_length;
   int64_t content_length = response_head->content_length;
-  reader_->ReadData(
-      content_length, receiver_.BindNewPipeAndPassRemote(),
-      base::BindOnce(&ServiceWorkerInstalledScriptReader::OnReadDataStarted,
+  reader_->PrepareReadData(
+      content_length,
+      base::BindOnce(&ServiceWorkerInstalledScriptReader::OnReadDataPrepared,
                      AsWeakPtr(), std::move(response_head),
                      std::move(metadata)));
 }
 
-void ServiceWorkerInstalledScriptReader::OnReadDataStarted(
+void ServiceWorkerInstalledScriptReader::OnReadDataPrepared(
     network::mojom::URLResponseHeadPtr response_head,
     absl::optional<mojo_base::BigBuffer> metadata,
     mojo::ScopedDataPipeConsumerHandle body_consumer_handle) {
@@ -181,6 +181,9 @@ void ServiceWorkerInstalledScriptReader::OnReadDataStarted(
   client_->OnStarted(std::move(response_head), std::move(metadata),
                      std::move(body_consumer_handle),
                      std::move(meta_data_consumer));
+
+  reader_->ReadData(base::BindOnce(
+      &ServiceWorkerInstalledScriptReader::OnComplete, AsWeakPtr()));
 }
 
 void ServiceWorkerInstalledScriptReader::OnReaderDisconnected() {

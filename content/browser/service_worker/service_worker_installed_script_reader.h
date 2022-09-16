@@ -21,8 +21,7 @@ namespace content {
 // Reads a single service worker script from installed script storage. This acts
 // as a wrapper of ServiceWorkerResourceReader and converts script code cache
 // (metadata) from a BigBuffer to a mojo data pipe.
-class ServiceWorkerInstalledScriptReader
-    : public storage::mojom::ServiceWorkerDataPipeStateNotifier {
+class ServiceWorkerInstalledScriptReader {
  public:
   // Do not change the order. This is used for UMA.
   enum class FinishedReason {
@@ -56,7 +55,7 @@ class ServiceWorkerInstalledScriptReader
   ServiceWorkerInstalledScriptReader(
       mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader,
       Client* client);
-  ~ServiceWorkerInstalledScriptReader() override;
+  ~ServiceWorkerInstalledScriptReader();
 
   // Starts reading the script.
   void Start();
@@ -67,7 +66,7 @@ class ServiceWorkerInstalledScriptReader
       int result,
       network::mojom::URLResponseHeadPtr response_head,
       absl::optional<mojo_base::BigBuffer> metadata);
-  void OnReadDataStarted(
+  void OnReadDataPrepared(
       network::mojom::URLResponseHeadPtr response_head,
       absl::optional<mojo_base::BigBuffer> metadata,
       mojo::ScopedDataPipeConsumerHandle body_consumer_handle);
@@ -81,8 +80,7 @@ class ServiceWorkerInstalledScriptReader
     return weak_factory_.GetWeakPtr();
   }
 
-  // storage::mojom::ServiceWorkerDataPipeStateNotifier implementations:
-  void OnComplete(int32_t status) override;
+  void OnComplete(int32_t status);
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader_;
   // |client_| must outlive this.
@@ -96,9 +94,6 @@ class ServiceWorkerInstalledScriptReader
   // to an expected body size in OnReadInfoCompete().
   uint64_t body_size_ = std::numeric_limits<uint64_t>::max();
   bool was_body_written_ = false;
-
-  mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
-      this};
 
   base::WeakPtrFactory<ServiceWorkerInstalledScriptReader> weak_factory_{this};
 };

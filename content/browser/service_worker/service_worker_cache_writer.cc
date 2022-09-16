@@ -686,8 +686,7 @@ int ServiceWorkerCacheWriter::ReadResponseHead(
   return adapter->result();
 }
 
-class ServiceWorkerCacheWriter::DataPipeReader
-    : public storage::mojom::ServiceWorkerDataPipeStateNotifier {
+class ServiceWorkerCacheWriter::DataPipeReader {
  public:
   DataPipeReader(storage::mojom::ServiceWorkerResourceReader* reader,
                  ServiceWorkerCacheWriter* owner,
@@ -709,13 +708,12 @@ class ServiceWorkerCacheWriter::DataPipeReader
     callback_ = std::move(callback);
 
     if (!data_.is_valid()) {
-      // This is the initial call of Read(). Call ReadData() to get a data pipe
-      // to read the body.
-      DCHECK(!receiver_.is_bound());
-      reader_->ReadData(
-          -1, receiver_.BindNewPipeAndPassRemote(),
-          base::BindOnce(&ServiceWorkerCacheWriter::DataPipeReader::OnReadData,
-                         weak_factory_.GetWeakPtr()));
+      // This is the initial call of Read(). Call PrepareReadData() to get a
+      // data pipe to read the body.
+      reader_->PrepareReadData(
+          -1, base::BindOnce(
+                  &ServiceWorkerCacheWriter::DataPipeReader::OnReadDataPrepared,
+                  weak_factory_.GetWeakPtr()));
       return;
     }
     task_runner_->PostTask(
@@ -741,7 +739,7 @@ class ServiceWorkerCacheWriter::DataPipeReader
     owner_->AsyncDoLoop(num_bytes_to_read_);
   }
 
-  void OnReadData(mojo::ScopedDataPipeConsumerHandle data) {
+  void OnReadDataPrepared(mojo::ScopedDataPipeConsumerHandle data) {
     // An invalid handle can be returned when creating a data pipe fails on the
     // other side of the endpoint.
     if (!data) {
@@ -756,11 +754,10 @@ class ServiceWorkerCacheWriter::DataPipeReader
                        &ServiceWorkerCacheWriter::DataPipeReader::ReadInternal,
                        weak_factory_.GetWeakPtr()));
     ReadInternal(MOJO_RESULT_OK);
-  }
 
-  // storage::mojom::ServiceWorkerDataPipeStateNotifier override:
-  void OnComplete(int32_t status) override {
-    // TODO(https://crbug.com/1055677): notify of errors.
+    // TODO(https://crbug.com/1055677): provide a callback to notify of errors
+    // if any.
+    reader_->ReadData({});
   }
 
   // Parameters set on Read().
@@ -778,9 +775,6 @@ class ServiceWorkerCacheWriter::DataPipeReader
   mojo::ScopedDataPipeConsumerHandle data_;
   mojo::SimpleWatcher watcher_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
-      this};
 
   base::WeakPtrFactory<DataPipeReader> weak_factory_{this};
 };

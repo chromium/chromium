@@ -112,11 +112,10 @@ ReadResponseHeadResult ReadResponseHead(
 
 ReadDataResult ReadResponseData(mojom::ServiceWorkerResourceReader* reader,
                                 int data_size) {
-  FakeServiceWorkerDataPipeStateNotifier notifier;
   mojo::ScopedDataPipeConsumerHandle data_consumer;
   base::RunLoop loop;
-  reader->ReadData(
-      data_size, notifier.BindNewPipeAndPassRemote(),
+  reader->PrepareReadData(
+      data_size,
       base::BindLambdaForTesting([&](mojo::ScopedDataPipeConsumerHandle pipe) {
         data_consumer = std::move(pipe);
         loop.Quit();
@@ -124,8 +123,14 @@ ReadDataResult ReadResponseData(mojom::ServiceWorkerResourceReader* reader,
   loop.Run();
 
   ReadDataResult result;
+
+  base::RunLoop loop2;
+  reader->ReadData(base::BindLambdaForTesting([&](int32_t status) {
+    result.status = status;
+    loop2.Quit();
+  }));
   result.data = test::ReadDataPipeViaRunLoop(std::move(data_consumer));
-  result.status = notifier.WaitUntilComplete();
+  loop2.Run();
 
   return result;
 }

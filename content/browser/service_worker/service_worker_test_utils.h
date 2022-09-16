@@ -210,7 +210,9 @@ int64_t GetNewResourceIdSync(
 // Expects these calls, in this order:
 //    reader->ReadResponseHead(...);  // reader writes 5 into
 //                                    // |response_head->content_length|
+//    reader->PrepareReadData();
 //    reader->ReadData(...);          // reader writes "abcdef" into |buf|
+//    reader->PrepareReadData();
 //    reader->ReadData(...);          // reader writes "ghijkl" into |buf|
 // If an unexpected call happens, this class DCHECKs.
 // An expected read will not complete immediately. It  must be completed by the
@@ -236,11 +238,8 @@ class MockServiceWorkerResourceReader
   void ReadResponseHead(
       storage::mojom::ServiceWorkerResourceReader::ReadResponseHeadCallback
           callback) override;
-  void ReadData(
-      int64_t,
-      mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
-          notifier,
-      ReadDataCallback callback) override;
+  void PrepareReadData(int64_t, PrepareReadDataCallback callback) override;
+  void ReadData(ReadDataCallback callback) override;
 
   // Test helpers. ExpectReadResponseHead() and ExpectReadData() give precise
   // control over both the data to be written and the result to return.
@@ -369,28 +368,6 @@ class MockServiceWorkerResourceWriter
   net::CompletionOnceCallback pending_callback_;
 
   mojo::Receiver<storage::mojom::ServiceWorkerResourceWriter> receiver_{this};
-};
-
-// A test implementation of ServiceWorkerDataPipeStateNotifier.
-class MockServiceWorkerDataPipeStateNotifier
-    : public storage::mojom::ServiceWorkerDataPipeStateNotifier {
- public:
-  MockServiceWorkerDataPipeStateNotifier();
-  ~MockServiceWorkerDataPipeStateNotifier() override;
-
-  mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
-  BindNewPipeAndPassRemote();
-
-  int32_t WaitUntilComplete();
-
- private:
-  // storage::mojom::ServiceWorkerDataPipeStateNotifier implementations:
-  void OnComplete(int32_t status) override;
-
-  absl::optional<int32_t> complete_status_;
-  base::OnceClosure on_complete_callback_;
-  mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
-      this};
 };
 
 class ServiceWorkerUpdateCheckTestUtils {
