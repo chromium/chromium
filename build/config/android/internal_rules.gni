@@ -1842,6 +1842,7 @@ if (enable_java_templates) {
                              TESTONLY_AND_VISIBILITY + [
                                    "deps",
                                    "data",
+                                   "data_deps",
                                  ])
       inputs = [ invoker.input_jar ]
       if (defined(invoker.inputs)) {
@@ -1885,6 +1886,7 @@ if (enable_java_templates) {
       forward_variables_from(invoker,
                              [
                                "data",
+                               "data_deps",
                                "jar_excluded_patterns",
                                "jar_included_patterns",
                              ])
@@ -3938,6 +3940,14 @@ if (enable_java_templates) {
           # __device targets without the need to create a separate group()
           # target. This trade-off works because process_java_library is fast.
           deps += _java_host_deps
+
+          # Add runtime_deps here since robolectric_binary does not depend on top-level group.
+          if (defined(invoker.data)) {
+            data += invoker.data
+          }
+          if (defined(invoker.data_deps)) {
+            data_deps = invoker.data_deps
+          }
         }
       }
 
