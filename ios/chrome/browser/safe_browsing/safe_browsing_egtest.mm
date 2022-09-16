@@ -574,8 +574,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests performing a back navigation to a warning page and a forward navigation
 // from a warning page, in incognito mode.
-// crbug.com/1147360 Test is flaky
-- (void)DISABLED_testBackForwardNavigationWithWarningInIncognito {
+- (void)testBackForwardNavigationWithWarningInIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
@@ -599,8 +598,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that performing session restoration to a Safe Browsing warning page
 // preserves navigation history.
-// TODO(crbug.com/1106498): Re-enable this test after fixing flakiness.
-- (void)DISABLED_testRestoreToWarningPagePreservesHistory {
+- (void)testRestoreToWarningPagePreservesHistory {
   // Build up navigation history that consists of a safe URL, a warning page,
   // and another safe URL.
   [ChromeEarlGrey loadURL:_safeURL1];
