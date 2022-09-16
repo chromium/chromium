@@ -16,6 +16,7 @@
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -108,6 +110,25 @@ bool IsValidReportingOrigin(const SecurityOrigin* origin) {
   return origin && origin->IsPotentiallyTrustworthy() &&
          (origin->Protocol() == WTF::g_https_atom ||
           origin->Protocol() == WTF::g_http_atom);
+}
+
+bool SubframeHasAllowedContainerPolicy(LocalFrame* frame) {
+  DCHECK(frame->Parent());
+  const FramePolicy& frame_policy = frame->Owner()->GetFramePolicy();
+  const SecurityOrigin* origin =
+      frame->GetSecurityContext()->GetSecurityOrigin();
+  for (const auto& decl : frame_policy.container_policy) {
+    if (decl.feature ==
+        mojom::blink::PermissionsPolicyFeature::kAttributionReporting) {
+      // TODO(csharrison): This logic duplicates existing code in
+      // PermissionsPolicy::Allowlist. Clean this up by enhancing the logic
+      // exposed by PermissionsPolicy code and re-using that.
+      return decl.matches_all_origins ||
+             (decl.matches_opaque_src && origin->IsOpaque()) ||
+             base::Contains(decl.allowed_origins, origin->ToUrlOrigin());
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -351,6 +372,12 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
     maybe_log_audit_issue(
         AttributionReportingIssueType::kPermissionPolicyDisabled);
     return nullptr;
+  }
+
+  if (local_frame_->Parent() &&
+      !SubframeHasAllowedContainerPolicy(local_frame_)) {
+    maybe_log_audit_issue(
+        AttributionReportingIssueType::kPermissionPolicyNotDelegated);
   }
 
   if (!window->IsSecureContext()) {
