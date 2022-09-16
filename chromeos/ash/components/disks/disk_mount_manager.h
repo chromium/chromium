@@ -181,7 +181,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
     ~Observer() override;
   };
 
-  virtual ~DiskMountManager() {}
+  virtual ~DiskMountManager() = default;
 
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;

@@ -921,6 +921,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (!is_new) {
       disk->set_is_first_mount(is_first_mount);
     }
+
     const auto [it, ok] = disks_.insert(std::move(disk));
     DCHECK(ok);
     NotifyDiskStatusUpdate(is_new ? DISK_ADDED : DISK_CHANGED, **it);
@@ -1103,10 +1104,10 @@ class DiskMountManagerImpl : public DiskMountManager,
   CrosDisksClient* const cros_disks_client_ = CrosDisksClient::Get();
 
   // The list of disks found.
-  DiskMountManager::Disks disks_;
+  Disks disks_;
 
   std::map<std::string, MountPathCallback> mount_callbacks_;
-  DiskMountManager::MountPoints mount_points_;
+  MountPoints mount_points_;
 
   // A map entry with a key of the device path will be created upon calling
   // GetDeviceProperties(), for deferring mount events, and removed once it has
