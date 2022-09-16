@@ -14,7 +14,7 @@ dictionary SecurePaymentConfirmationRequest {
 
     required PaymentCredentialInstrument instrument;
     unsigned long timeout;
-    DOMString payeeName;
+    USVString payeeName;
     USVString payeeOrigin;
 
     // The relying party, which must be the relying party of a given credential
