@@ -217,6 +217,8 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/network/sim_lock_dialogs.d.ts",
     "cr_components/chromeos/smb_shares/add_smb_share_dialog.d.ts",
     "cr_components/chromeos/smb_shares/smb_browser_proxy.d.ts",
+    "cr_components/chromeos/traffic_counters/traffic_counters.d.ts",
+    "cr_components/chromeos/traffic_counters/traffic_counters_adapter.d.ts",
     "cr_components/chromeos/quick_unlock/pin_keyboard.d.ts",
     "cr_components/chromeos/quick_unlock/setup_pin_keyboard.d.ts",
     "cr_elements/cr_container_shadow_behavior.d.ts",

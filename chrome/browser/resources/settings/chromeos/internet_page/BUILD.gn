@@ -91,7 +91,6 @@ js_library("internet_detail_page") {
     ":network_proxy_section",
     ":settings_traffic_counters",
     ":tether_connection_dialog",
-    "//ash/webui/common/resources/traffic_counters:traffic_counters",
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder",
@@ -116,6 +115,7 @@ js_library("internet_detail_page") {
     "//ui/webui/resources/cr_components/chromeos/network:network_siminfo",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_health_container",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:assert.m",
@@ -267,7 +267,6 @@ js_library("network_summary") {
 
 js_library("network_summary_item") {
   deps = [
-    "//ash/webui/common/resources/traffic_counters:traffic_counters",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:cellular_utils",
@@ -275,6 +274,7 @@ js_library("network_summary_item") {
     "//ui/webui/resources/cr_components/chromeos/network:network_icon",
     "//ui/webui/resources/cr_components/chromeos/network:network_siminfo",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
     "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
     "//ui/webui/resources/js:assert.m",
@@ -380,12 +380,12 @@ js_library("esim_remove_profile_dialog") {
 js_library("settings_traffic_counters") {
   deps = [
     ":internet_shared_css",
-    "//ash/webui/common/resources/traffic_counters:traffic_counters",
-    "//ash/webui/common/resources/traffic_counters:traffic_counters_adapter",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters_adapter",
     "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list =

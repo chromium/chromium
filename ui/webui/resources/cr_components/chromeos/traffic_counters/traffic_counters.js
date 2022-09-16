@@ -9,9 +9,8 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {TrafficCounterSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './traffic_counters.html.js';
 import {TrafficCountersAdapter} from './traffic_counters_adapter.js';
 
 /**
@@ -108,7 +107,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

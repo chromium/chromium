@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-assert(is_chromeos_ash, "Only ChromeOS components belong here.")
+assert(is_chromeos, "Only ChromeOS components belong here.")
 
 # JS type check for Polymer 3
 js_type_check("closure_compile_module") {
@@ -39,4 +40,8 @@ js_library("traffic_counters_adapter") {
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "traffic_counters.js" ]
 }
