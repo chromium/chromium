@@ -49,7 +49,8 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gfx::NativePixmap> pixmap,
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
-      const GpuDriverBugWorkarounds& workarounds);
+      const GpuDriverBugWorkarounds& workarounds,
+      bool use_passthrough);
 
   OzoneImageBacking(const OzoneImageBacking&) = delete;
   OzoneImageBacking& operator=(const OzoneImageBacking&) = delete;
@@ -129,6 +130,7 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
   AccessStream last_write_stream_;
   scoped_refptr<SharedContextState> context_state_;
   const GpuDriverBugWorkarounds workarounds_;
+  bool use_passthrough_;
 };
 
 }  // namespace gpu
