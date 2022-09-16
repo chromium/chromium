@@ -5,23 +5,20 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_switches.h"
@@ -100,6 +97,12 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     content::TestNavigationObserver observer(web_contents, 1);
     web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
     observer.Wait();
+  }
+
+  void CloseBrowser(content::WebContents* web_contents) {
+    Browser* app_browser = chrome::FindBrowserWithWebContents(web_contents);
+    app_browser->window()->Close();
+    ui_test_utils::WaitForBrowserToClose(app_browser);
   }
 };
 
@@ -325,6 +328,50 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsBackOnline) {
     // The URL interceptor only blocks the first navigation. This one should
     // go through.
     ReloadWebContents(web_contents);
+
+    // There should be no histograms still.
+    SyncHistograms();
+    histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+    histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
+  web_app::AppId app_id =
+      StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
+
+  SyncHistograms();
+  histogram()->ExpectTotalCount(kHistogramDurationShown, 0);
+  histogram()->ExpectTotalCount(kHistogramClosingReason, 0);
+
+  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
+    // Expect that the default offline page is showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') !== null")
+            .ExtractBool());
+
+    CloseBrowser(web_contents);
+
+    SyncHistograms();
+    histogram()->ExpectTotalCount(kHistogramDurationShown, 1);
+    histogram()->ExpectTotalCount(kHistogramClosingReason, 1);
+    EXPECT_THAT(histogram()->GetAllSamples(kHistogramClosingReason),
+                ElementsAre(base::Bucket(/* min= */ 2, /* count= */ 1)));
+  } else {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
+    // Expect that the default offline page is not showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') === null")
+            .ExtractBool());
+
+    CloseBrowser(web_contents);
 
     // There should be no histograms still.
     SyncHistograms();
