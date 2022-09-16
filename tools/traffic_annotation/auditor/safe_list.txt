@@ -4,15 +4,11 @@ all,tools/*,*test*,*fuzzer*,*mock*,*fake*,weblayer/*
 all,net/android/java/src/org/chromium/net/NetworkTrafficAnnotationTag.java
 missing,remoting/host/token_validator_factory_impl.cc
 missing,components/cronet/cronet_url_request.cc
-missing,net/tools/quic/quic_http_proxy_backend_stream.cc
-missing,net/url_request/url_fetcher.cc
 missing,net/url_request/url_request_context.cc
 mutable_tag,components/download/internal/background_service/proto_conversions.cc
-mutable_tag,chrome/browser/media/router/providers/openscreen/platform/udp_socket.cc
 mutable_tag,net/traffic_annotation/network_traffic_annotation.h
 test_annotation,components/safe_search_api/stub_url_checker.cc
 test_annotation,net/quic/quic_chromium_client_session_peer.cc
-test_annotation,net/tools/quic/quic_http_proxy_backend_stream.cc
 # TODO(crbug.com/995852): Fix Android-specific annotations.
 missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
 missing,chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsServerFetcher.java
