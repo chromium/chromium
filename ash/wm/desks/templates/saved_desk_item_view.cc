@@ -512,8 +512,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
       if (SavedDeskLibraryView* library_view =
               overview_grid->GetSavedDeskLibraryView()) {
         for (auto* grid_view : library_view->grid_views()) {
-          grid_view->SortTemplateGridItems(
-              /*last_saved_template_uuid=*/base::GUID());
+          grid_view->SortEntries(/*order_first_uuid=*/{});
         }
       }
     }

@@ -355,50 +355,29 @@ SavedDeskItemView* SavedDeskLibraryView::GetItemForUUID(
   return nullptr;
 }
 
-void SavedDeskLibraryView::PopulateGridUI(
+void SavedDeskLibraryView::AddOrUpdateEntries(
     const std::vector<const DeskTemplate*>& entries,
-    const gfx::Rect& grid_bounds,
-    const base::GUID& last_saved_desk_uuid) {
-  GetWidget()->SetBounds(grid_bounds);
-
+    const base::GUID& order_first_uuid,
+    bool animate) {
   SavedDesks grouped_entries = Group(entries);
   if (desk_template_grid_view_) {
-    desk_template_grid_view_->PopulateGridUI(grouped_entries.desk_templates,
-                                             last_saved_desk_uuid);
+    desk_template_grid_view_->AddOrUpdateEntries(grouped_entries.desk_templates,
+                                                 order_first_uuid, animate);
   }
   if (save_and_recall_grid_view_) {
-    save_and_recall_grid_view_->PopulateGridUI(grouped_entries.save_and_recall,
-                                               last_saved_desk_uuid);
+    save_and_recall_grid_view_->AddOrUpdateEntries(
+        grouped_entries.save_and_recall, order_first_uuid, animate);
   }
 
   Layout();
 }
 
-void SavedDeskLibraryView::AddOrUpdateTemplates(
-    const std::vector<const DeskTemplate*>& entries,
-    bool initializing_grid_view,
-    const base::GUID& last_saved_desk_uuid) {
-  SavedDesks grouped_entries = Group(entries);
-  if (desk_template_grid_view_) {
-    desk_template_grid_view_->AddOrUpdateTemplates(
-        grouped_entries.desk_templates, initializing_grid_view,
-        last_saved_desk_uuid);
-  }
-  if (save_and_recall_grid_view_) {
-    save_and_recall_grid_view_->AddOrUpdateTemplates(
-        grouped_entries.save_and_recall, initializing_grid_view,
-        last_saved_desk_uuid);
-  }
-
-  Layout();
-}
-
-void SavedDeskLibraryView::DeleteTemplates(const std::vector<base::GUID>& uuids,
-                                           bool delete_animation) {
+void SavedDeskLibraryView::DeleteEntries(const std::vector<base::GUID>& uuids,
+                                         bool delete_animation) {
   if (desk_template_grid_view_)
-    desk_template_grid_view_->DeleteTemplates(uuids, delete_animation);
+    desk_template_grid_view_->DeleteEntries(uuids, delete_animation);
   if (save_and_recall_grid_view_)
-    save_and_recall_grid_view_->DeleteTemplates(uuids, delete_animation);
+    save_and_recall_grid_view_->DeleteEntries(uuids, delete_animation);
 
   Layout();
 }
@@ -450,7 +429,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::GUID& uuid,
       .SetOpacity(item_layer, 0.0f);
 
   // Delete the existing saved desk item without animation.
-  DeleteTemplates({uuid}, /*delete_animation=*/false);
+  DeleteEntries({uuid}, /*delete_animation=*/false);
 }
 
 bool SavedDeskLibraryView::IsAnimating() {

@@ -89,27 +89,8 @@ SavedDeskGridView::SavedDeskGridView()
 
 SavedDeskGridView::~SavedDeskGridView() = default;
 
-void SavedDeskGridView::PopulateGridUI(
-    const std::vector<const DeskTemplate*>& desk_templates,
-    const base::GUID& last_saved_template_uuid) {
-  DCHECK(grid_items_.empty());
-
-  // TODO(richui|sammiequon): See if this can be removed as this function should
-  // only be called once per overview session.
-  if (desk_templates.empty()) {
-    RemoveAllChildViews();
-    grid_items_.clear();
-    return;
-  }
-
-  AddOrUpdateTemplates(desk_templates,
-                       /*initializing_grid_view=*/true,
-                       last_saved_template_uuid);
-}
-
-void SavedDeskGridView::SortTemplateGridItems(
-    const base::GUID& last_saved_template_uuid) {
-  // Sort the `grid_items_` into alphabetical order based on template name.
+void SavedDeskGridView::SortEntries(const base::GUID& order_first_uuid) {
+  // Sort the `grid_items_` into alphabetical order based on saved desk name.
   // Note that this doesn't update the order of the child views, but just sorts
   // the vector. `Layout` is responsible for placing the views in the correct
   // locations in the grid.
@@ -117,23 +98,22 @@ void SavedDeskGridView::SortTemplateGridItems(
   std::unique_ptr<icu::Collator> collator(
       icu::Collator::createInstance(error_code));  // Use current ICU locale.
   DCHECK(U_SUCCESS(error_code));
-  // If there is a newly saved template, move that template to the front of the
-  // grid, and sort the rest of the templates after it.
-  std::sort(grid_items_.begin(), grid_items_.end(),
-            [&collator, last_saved_template_uuid](const SavedDeskItemView* a,
-                                                  const SavedDeskItemView* b) {
-              if (last_saved_template_uuid.is_valid() &&
-                  a->uuid() == last_saved_template_uuid) {
-                return true;
-              }
-              if (last_saved_template_uuid.is_valid() &&
-                  b->uuid() == last_saved_template_uuid) {
-                return false;
-              }
-              return base::i18n::CompareString16WithCollator(
-                         *collator, a->name_view()->GetAccessibleName(),
-                         b->name_view()->GetAccessibleName()) < 0;
-            });
+  // If there is a uuid that is to be placed first, move that saved desk to the
+  // front of the grid, and sort the rest of the entries after it.
+  std::sort(
+      grid_items_.begin(), grid_items_.end(),
+      [&collator, &order_first_uuid](const SavedDeskItemView* a,
+                                     const SavedDeskItemView* b) {
+        if (order_first_uuid.is_valid() && a->uuid() == order_first_uuid) {
+          return true;
+        }
+        if (order_first_uuid.is_valid() && b->uuid() == order_first_uuid) {
+          return false;
+        }
+        return base::i18n::CompareString16WithCollator(
+                   *collator, a->name_view()->GetAccessibleName(),
+                   b->name_view()->GetAccessibleName()) < 0;
+      });
 
   // A11y traverses views based on the order of the children, so we need to
   // manually reorder the child views to match the order that they are
@@ -149,10 +129,10 @@ void SavedDeskGridView::SortTemplateGridItems(
   Layout();
 }
 
-void SavedDeskGridView::AddOrUpdateTemplates(
+void SavedDeskGridView::AddOrUpdateEntries(
     const std::vector<const DeskTemplate*>& entries,
-    bool initializing_grid_view,
-    const base::GUID& last_saved_template_uuid) {
+    const base::GUID& order_first_uuid,
+    bool animate) {
   std::vector<SavedDeskItemView*> new_grid_items;
 
   for (const DeskTemplate* entry : entries) {
@@ -165,22 +145,19 @@ void SavedDeskGridView::AddOrUpdateTemplates(
       SavedDeskItemView* grid_item =
           AddChildView(std::make_unique<SavedDeskItemView>(entry->Clone()));
       grid_items_.push_back(grid_item);
-      if (!initializing_grid_view)
+      if (animate)
         new_grid_items.push_back(grid_item);
     }
   }
 
-  // Sort the `grid_items_` into alphabetical order based on template name. If a
-  // given uuid is valid, it'll push that template item to the front of the grid
-  // and sort the remaining templates after it.
-  SortTemplateGridItems(last_saved_template_uuid);
+  SortEntries(order_first_uuid);
 
-  if (!initializing_grid_view)
+  if (animate)
     AnimateGridItems(new_grid_items);
 }
 
-void SavedDeskGridView::DeleteTemplates(const std::vector<base::GUID>& uuids,
-                                        bool delete_animation) {
+void SavedDeskGridView::DeleteEntries(const std::vector<base::GUID>& uuids,
+                                      bool delete_animation) {
   OverviewHighlightController* highlight_controller =
       Shell::Get()
           ->overview_controller()

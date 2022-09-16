@@ -1740,6 +1740,15 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
   if (!saved_desk_library_widget_) {
     saved_desk_library_widget_ =
         SavedDeskLibraryView::CreateSavedDeskLibraryWidget(root_window_);
+
+    // Compute bounds for the library using the expanded height of the desk
+    // bar. `GetGridEffectiveBounds` will not be the correct bounds for the
+    // library if we are currently in the zero state mode.
+    gfx::Rect library_bounds = bounds_;
+    library_bounds.Inset(gfx::Insets::TLBR(
+        DesksBarView::GetExpandedBarHeight(root_window_), 0, 0, 0));
+
+    saved_desk_library_widget_->SetBounds(library_bounds);
   }
 
   for (auto& overview_mode_item : window_list_)

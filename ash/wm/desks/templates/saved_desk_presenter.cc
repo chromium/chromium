@@ -315,8 +315,6 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
 
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
-  GetAllEntries(base::GUID(), /*saved_desk_name=*/u"",
-                Shell::GetPrimaryRootWindow());
 
   should_show_templates_ui_ =
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
@@ -508,9 +506,9 @@ void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
     // Populate `SavedDeskLibraryView` with the desk template entries.
     if (SavedDeskLibraryView* library_view =
             overview_grid->GetSavedDeskLibraryView()) {
-      library_view->PopulateGridUI(result.entries,
-                                   overview_grid->GetGridEffectiveBounds(),
-                                   /*last_saved_desk_uuid=*/item_to_focus);
+      library_view->AddOrUpdateEntries(result.entries, item_to_focus,
+                                       /*animate=*/false);
+
       SavedDeskItemView* item_view =
           library_view->GetItemForUUID(item_to_focus);
       if (!item_view)
@@ -721,9 +719,8 @@ void SavedDeskPresenter::AddOrUpdateUIEntries(
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
-      library_view->AddOrUpdateTemplates(
-          new_entries, /*initializing_grid_view=*/false,
-          /*last_saved_template_uuid=*/base::GUID());
+      library_view->AddOrUpdateEntries(new_entries, /*order_first_uuid=*/{},
+                                       /*animate=*/true);
     }
   }
 
@@ -741,7 +738,7 @@ void SavedDeskPresenter::RemoveUIEntries(const std::vector<base::GUID>& uuids) {
   for (auto& overview_grid : overview_session_->grid_list()) {
     // Remove the entries from `SavedDeskLibraryView`.
     if (auto* library_view = overview_grid->GetSavedDeskLibraryView())
-      library_view->DeleteTemplates(uuids, /*delete_animation=*/true);
+      library_view->DeleteEntries(uuids, /*delete_animation=*/true);
   }
 
   if (on_update_ui_closure_for_testing_)

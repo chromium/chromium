@@ -47,22 +47,22 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
 
-  // Retrieve the item view for a given saved desk, or nullptr.
+  // Retrieves the item view for a given saved desk, or nullptr.
   SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);
 
-  // TODO(dandersson): Look into unifying this and `AddOrUpdateTemplates`.
-  void PopulateGridUI(const std::vector<const DeskTemplate*>& entries,
-                      const gfx::Rect& grid_bounds,
-                      const base::GUID& last_saved_desk_uuid);
+  // Updates existing saved desks and adds new saved desks to the grid. Also
+  // sorts entries in alphabetical order. If `order_first_uuid` is valid, the
+  // corresponding entry will be placed first. This will animate the entries to
+  // their final positions if `animate` is true. Currently only allows a maximum
+  // of 6 saved desks to be shown in the grid.
+  void AddOrUpdateEntries(const std::vector<const DeskTemplate*>& entries,
+                          const base::GUID& order_first_uuid,
+                          bool animate);
 
-  void AddOrUpdateTemplates(const std::vector<const DeskTemplate*>& entries,
-                            bool initializing_grid_view,
-                            const base::GUID& last_saved_desk_uuid);
-
-  // Delete all templates identified by `uuids`. If `delete_animation` is false,
+  // Deletes all entries identified by `uuids`. If `delete_animation` is false,
   // then the respective item views will just disappear instead of fading out.
-  void DeleteTemplates(const std::vector<base::GUID>& uuids,
-                       bool delete_animation);
+  void DeleteEntries(const std::vector<base::GUID>& uuids,
+                     bool delete_animation);
 
   // This performs the launch animation for Save & Recall. The `DeskItemView`
   // identified by `uuid` is animated up into the position of the desk preview
