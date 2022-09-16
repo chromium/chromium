@@ -544,18 +544,21 @@ class DiskMountManagerImpl : public DiskMountManager,
     // values of disks_.
     if (auto it = mount_callbacks_.find(entry.source_path);
         it != mount_callbacks_.end()) {
+      DCHECK_EQ(it->first, entry.source_path);
+      VLOG(1) << "Calling mount callback for '" << entry.source_path
+              << "' with error = " << entry.error_code;
       std::move(it->second).Run(entry.error_code, mount_info);
       mount_callbacks_.erase(std::move(it));
+    } else {
+      LOG(ERROR) << "No mount callback for '" << entry.source_path << "'";
     }
 
     NotifyMountStatusUpdate(MOUNTING, entry.error_code, mount_info);
 
-    if (disk)
+    if (disk) {
+      DCHECK(disk_it != disks_.end());
       disk->set_is_first_mount(false);
-
-    if (!want_to_keep) {
-      if (disk_it != disks_.end()) {
-        DCHECK(disk);
+      if (!want_to_keep) {
         VLOG(1) << "Removed Disk '" << disk->device_path() << "'";
         disks_.erase(disk_it);
       }
