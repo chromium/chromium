@@ -59,12 +59,14 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, ifram
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    navigation_id = resp["result"]["navigation"]
-    assert resp == {
+    recursive_compare({
         "id": 13,
         "result": {
-            "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"}}
+            "navigation": any_string,
+            "url": "data:text/html,<h2>test</h2>"}},
+        resp)
+
+    navigation_id = resp["result"]["navigation"]
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
