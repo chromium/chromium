@@ -27,7 +27,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = 'abd4d2ef'
+RUST_REVISION = '20220914'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-08-26.

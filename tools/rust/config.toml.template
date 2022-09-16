@@ -27,9 +27,7 @@ description = "$PACKAGE_VERSION chromium"
 # it fails to run under sudo even if the sudo user is not root, unless sources
 # are vendored in tree.
 locked-deps = true
-
-# TODO(crbug.com/1342708): fix vendoring and re-enable.
-vendor = false
+vendor = true
 
 target = ["x86_64-unknown-linux-gnu"]
 

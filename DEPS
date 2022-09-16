@@ -289,8 +289,13 @@ vars = {
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.78.0.6f1e751-gomaip',
 
-  # Enable fetching Rust-related packages.
+  # Fetch Rust-related packages.
   'use_rust': False,
+
+  # Fetch dependencies needed to build Rust toolchain. Not needed if developing
+  # Rust code in Chromium; instead enable use_rust. Only use if building the
+  # Rust toolchain.
+  'checkout_rust_toolchain_deps': False,
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
@@ -578,6 +583,16 @@ deps = {
     'dep_type': 'cipd',
     # TODO(https://crbug.com/1292038): gate this on use_rust as well as host_os.
     'condition': 'host_os == "linux"',
+  },
+  'src/third_party/rust_src/src': {
+    'packages': [
+      {
+        'package': 'chromium/third_party/rust_src',
+        'version': 'version:2@2022-09-14',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': 'checkout_rust_toolchain_deps',
   },
 
   # We don't know target_cpu at deps time. At least until there's a universal
