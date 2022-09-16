@@ -108381,7 +108381,7 @@
       ]
      ],
      "flexbox-align-self-vert-003.xhtml": [
-      "23b320941365cfd7ea49068342878de77d8b016a",
+      "721ce548563fddbefd8acc6f2d47fd2c031a2f5b",
       [
        null,
        [
@@ -108390,11 +108390,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            58
+           ],
+           [
+            0,
+            33
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "flexbox-align-self-vert-004.xhtml": [
-      "4c52875747ad84892fa38cdfcf11888e3db10cda",
+      "ff98bafd6000e8c73a15e62e6e244039d8173036",
       [
        null,
        [
@@ -108403,11 +108419,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            58
+           ],
+           [
+            0,
+            33
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "flexbox-align-self-vert-rtl-001.xhtml": [
-      "921b37212b4a91a0cc9d55fb8bff233bf3a5bfa7",
+      "a32ed619c88656b30d1387b9ec45edbbccc56574",
       [
        null,
        [
@@ -108416,7 +108448,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            60
+           ],
+           [
+            0,
+            101
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "flexbox-align-self-vert-rtl-002.xhtml": [
