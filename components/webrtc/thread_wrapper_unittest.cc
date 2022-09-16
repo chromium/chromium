@@ -38,7 +38,7 @@ static const int kMaxTestDelay = 40;
 
 namespace {
 
-class MockMessageHandler : public rtc::MessageHandlerAutoCleanup {
+class MockMessageHandler : public rtc::MessageHandler {
  public:
   MOCK_METHOD1(OnMessage, void(rtc::Message* msg));
 };
@@ -195,19 +195,6 @@ TEST_F(ThreadWrapperTest, ClearDelayed) {
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(kMaxTestDelay));
   run_loop.Run();
-}
-
-// Verify that the queue is cleared when a handler is destroyed.
-TEST_F(ThreadWrapperTest, ClearDestroyed) {
-  MockMessageHandler* handler_ptr;
-  {
-    MockMessageHandler handler;
-    handler_ptr = &handler;
-    thread_->Post(RTC_FROM_HERE, &handler, kTestMessage1, NULL, false);
-  }
-  rtc::MessageList removed;
-  thread_->Clear(handler_ptr, rtc::MQID_ANY, &removed);
-  DCHECK_EQ(0U, removed.size());
 }
 
 // Verify that BlockingCall() calls handler synchronously when called on the
