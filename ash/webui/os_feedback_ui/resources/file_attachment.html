@@ -76,11 +76,6 @@
     margin-inline-start: 12px;
   }
 
-  dialog {
-    bottom: auto;
-    top: auto;
-  }
-
   #selectFileCheckbox {
     margin-inline-end: 10px;
     margin-inline-start: 12px;
@@ -109,6 +104,8 @@
 
   #selectedFileName {
     color: var(--cros-text-color-primary);
+    font-size: 13px;
+    line-height: 20px;
   }
 
   #selectedFileContainer {
@@ -116,7 +113,6 @@
     flex-direction: row-reverse;
     width: 206px;
   }
-
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
   <button id="addFileLabel" class="file-input"
@@ -152,15 +148,20 @@
   </iron-icon>
   <span id="errorMessage">[[i18n('fileTooBigErrorMessage')]]</span>
 </cr-toast>
-<cr-dialog id="selectedImageDialog">
-  <div id="modalDialogTitle" slot="title">
-    <cr-icon-button id="closeDialogButton" class="icon-arrow-back"
-        on-click="handleSelectedImageDialogCloseClick_"
-        title="[[selectedFileName_]]">
-    </cr-icon-button>
-    <span id="modalDialogTitleText">[[selectedFileName_]]</span>
+<dialog id="selectedImageDialog">
+  <div id="modalDialogTitle" class="dialog-toolbar">
+    <cr-button id="closeDialogButton"
+        class="close-dialog-button"
+        title="[[selectedFileName_]]"
+        on-click="handleSelectedImageDialogCloseClick_">
+      <iron-icon id="backArrow" class="dialog-back-arrow"
+          icon="cr:arrow-back"></iron-icon>
+    </cr-button>
+    <div id="modalDialogTitleText">[[selectedFileName_]]</div>
   </div>
-  <div slot="body">
-    <img src="[[selectedImageUrl_]]" class="image-preview">
+  <div id="mainPanel" class="dialog-main-panel">
+    <div id="innerContentPanel" class="dialog-content-panel">
+      <img src="[[selectedImageUrl_]]" class="image-preview">
+    </div> 
   </div>
-</cr-dialog>
+</dialog>

@@ -158,7 +158,6 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   /** @protected */
   handleSelectedImageClick_() {
     this.$.selectedImageDialog.showModal();
-    this.$.closeDialogButton.focus();
     this.feedbackServiceProvider_.recordPreSubmitAction(
         FeedbackAppPreSubmitAction.kViewedImage);
   }
