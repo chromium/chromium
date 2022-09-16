@@ -136,8 +136,8 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
             animations:^{
               weakSelf.view.transform = CGAffineTransformIdentity;
             }
-            completion:^(BOOL finished) {
-              if (finished) {
+            completion:^(BOOL innerFinished) {
+              if (innerFinished) {
                 [weakSelf.delegate brandingIconDidPerformPopAnimation];
               }
             }];
