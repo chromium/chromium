@@ -378,30 +378,6 @@ base::OnceCallback<UnboundRunType> BindOnce(
   return cb;
 }
 
-// TODO(dtapuska): https://crbug.com/882836 Remove this do not want to cause
-// build breakages with changes in flight.
-template <
-    typename FunctionType,
-    typename... BoundParameters,
-    typename UnboundRunType =
-        base::internal::MakeUnboundRunType<FunctionType, BoundParameters...>>
-base::OnceCallback<UnboundRunType> Bind(FunctionType&& function,
-                                        BoundParameters&&... bound_parameters) {
-  static_assert(internal::CheckGCedTypeRestrictions<
-                    std::index_sequence_for<BoundParameters...>,
-                    std::decay_t<BoundParameters>...>::ok,
-                "A bound argument uses a bad pattern.");
-  auto cb = base::BindOnce(std::forward<FunctionType>(function),
-                           std::forward<BoundParameters>(bound_parameters)...);
-#if DCHECK_IS_ON()
-  using WrapperType =
-      ThreadCheckingCallbackWrapper<base::OnceCallback<UnboundRunType>>;
-  cb = base::BindOnce(&WrapperType::Run,
-                      std::make_unique<WrapperType>(std::move(cb)));
-#endif
-  return cb;
-}
-
 template <
     typename FunctionType,
     typename... BoundParameters,

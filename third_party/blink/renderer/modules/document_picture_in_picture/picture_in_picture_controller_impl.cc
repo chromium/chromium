@@ -507,7 +507,7 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
 
   open_document_pip_task_ = PostCancellableTask(
       *opener.GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      WTF::Bind(
+      WTF::BindOnce(
           &PictureInPictureControllerImpl::ResolveOpenDocumentPictureInPicture,
           WrapPersistent(this)));
 }
