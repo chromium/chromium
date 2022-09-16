@@ -308,6 +308,11 @@ bool ExecuteFileTask(Profile* profile,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);
 
+// Executes QuickOffice file handler for each element of |file_urls|. Returns
+// |false| if the execution cannot be initiated. Otherwise returns |true|.
+bool LaunchQuickOffice(Profile* profile,
+                       const std::vector<storage::FileSystemURL>& file_urls);
+
 // Callback function type for FindAllTypesOfTasks.
 typedef base::OnceCallback<void(
     std::unique_ptr<std::vector<FullTaskDescriptor>> result)>
