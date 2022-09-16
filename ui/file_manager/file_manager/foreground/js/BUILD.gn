@@ -629,6 +629,7 @@ js_library("file_manager") {
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:storage_adapter",
+    "//ui/file_manager/file_manager/common/js:trash",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:command_handler_deps",

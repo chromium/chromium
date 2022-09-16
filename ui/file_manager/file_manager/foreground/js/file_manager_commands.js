@@ -1152,8 +1152,9 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
 
     // Hide 'move-to-trash' if trash will not be used. E.g. drive or removable.
     if (event.command.id === 'move-to-trash' &&
-        !fileManager.fileOperationManager.willUseTrash(
-            fileManager.volumeManager, entries)) {
+        (!fileManager.fileOperationManager.willUseTrash(
+             fileManager.volumeManager, entries) ||
+         !fileManager.trashEnabled)) {
       event.canExecute = false;
       event.command.setHidden(true);
     }
@@ -1181,7 +1182,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     // We show undo toast rather than dialog for entries which will use trash.
     if (!permanentlyDelete &&
         fileManager.fileOperationManager.willUseTrash(
-            fileManager.volumeManager, entries)) {
+            fileManager.volumeManager, entries) &&
+        fileManager.trashEnabled) {
       chrome.fileManagerPrivate.startIOTask(
           chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
           /*params=*/ {});
@@ -1296,8 +1298,9 @@ CommandHandler.COMMANDS_['restore-from-trash'] =
         const entries =
             CommandUtil.getCommandEntries(fileManager, event.target);
 
-        const enabled =
-            entries.length > 0 && entries.every(e => util.isTrashEntry(e));
+        const enabled = entries.length > 0 &&
+            entries.every(e => util.isTrashEntry(e)) &&
+            fileManager.trashEnabled;
         event.canExecute = enabled;
         event.command.setHidden(!enabled);
       }
@@ -1322,7 +1325,8 @@ CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
     event.canExecute = true;
 
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    const visible = entries.length === 1 && util.isTrashRoot(entries[0]);
+    const visible = entries.length === 1 && util.isTrashRoot(entries[0]) &&
+        fileManager.trashEnabled;
     event.command.setHidden(!visible);
   }
 })();

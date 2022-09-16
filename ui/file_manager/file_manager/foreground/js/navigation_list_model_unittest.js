@@ -11,6 +11,7 @@ import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
+import {TrashRootEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -151,6 +152,9 @@ export function testModel() {
 
   // Trash is displayed as a root when feature is enabled.
   window.loadTimeData.data_['FILES_TRASH_ENABLED'] = true;
+  model.fakeTrashItem = new NavigationModelFakeItem(
+      'trash-label', NavigationModelItemType.TRASH,
+      new TrashRootEntry(volumeManager));
   model.reorderNavigationItems_();
   assertEquals(7, model.length);
   assertEquals(

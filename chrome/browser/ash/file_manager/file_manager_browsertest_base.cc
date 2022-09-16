@@ -20,6 +20,7 @@
 #include "ash/components/smbfs/smbfs_host.h"
 #include "ash/components/smbfs/smbfs_mounter.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -2822,6 +2823,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(enabled.has_value());
     profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive,
                                       !enabled.value());
+    return;
+  }
+
+  if (name == "setTrashEnabled") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    profile()->GetPrefs()->SetBoolean(ash::prefs::kFilesAppTrashEnabled,
+                                      enabled.value());
     return;
   }
 

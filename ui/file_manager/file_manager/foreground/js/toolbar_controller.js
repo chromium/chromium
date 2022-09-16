@@ -341,8 +341,8 @@ export class ToolbarController {
     // Show 'Move to Trash' rather than 'Delete' if possible.
     this.moveToTrashButton_.hidden = true;
     if (!this.deleteButton_.hidden && util.isTrashEnabled() &&
-        this.fileOperationManager_.willUseTrash(
-            this.volumeManager_, selection.entries)) {
+        this.moveToTrashCommand_.canExecuteChange(
+            this.listContainer_.currentList)) {
       this.deleteButton_.hidden = true;
       this.moveToTrashButton_.hidden = false;
     }

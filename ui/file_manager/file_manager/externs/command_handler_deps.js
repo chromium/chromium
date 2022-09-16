@@ -90,6 +90,9 @@ export class CommandHandlerDeps {
 
     /** @type {boolean} */
     this.guestMode;
+
+    /** @type {boolean} */
+    this.trashEnabled;
   }
 
   /** @return {DirectoryEntry|FilesAppEntry} */

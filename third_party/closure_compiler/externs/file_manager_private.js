@@ -555,7 +555,8 @@ chrome.fileManagerPrivate.FileWatchEvent;
  *   timezone: string,
  *   arcEnabled: boolean,
  *   arcRemovableMediaAccessEnabled: boolean,
- *   folderShortcuts: !Array<string>
+ *   folderShortcuts: !Array<string>,
+ *   trashEnabled: boolean
  * }}
  */
 chrome.fileManagerPrivate.Preferences;

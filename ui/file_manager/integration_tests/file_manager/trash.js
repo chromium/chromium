@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DialogType} from '../dialog_type.js';
-import {addEntries, ENTRIES, RootPath} from '../test_util.js';
+import {addEntries, ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -838,4 +838,73 @@ testcase.trashRestorationDialogInProgressDoesntShowUndo = async () => {
 
   // Ensure the secondary action is of the category cancel.
   chrome.test.assertEq(cancelButton.attributes['data-category'], 'cancel');
+};
+
+/**
+ * Tests that the `TrashEnabled` preference adds and removes the trash root
+ * from the directory tree.
+ */
+testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Select hello.txt and send it to the Trash, this file should not be removed
+  // in between enabling and disabling the feature.
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Wait for Trash root to be visible.
+  await remoteCall.waitForElement(
+      appId, '#directory-tree [entry-label="Trash"]');
+
+  // Disable trash.
+  await sendTestMessage({name: 'setTrashEnabled', enabled: false});
+
+  // Wait for the Trash root to disappear.
+  await remoteCall.waitForElementLost(
+      appId, '#directory-tree [entry-label="Trash"]');
+
+  // Ensure the delete button shows up instead of the move to trash button.
+  await remoteCall.waitUntilSelected(appId, 'world.ogv');
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+  // Cancel the dialog.
+  await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel');
+
+  // Enable trash.
+  await sendTestMessage({name: 'setTrashEnabled', enabled: true});
+
+  // Wait for the Trash root to appear again.
+  await remoteCall.waitForElement(
+      appId, '#directory-tree [entry-label="Trash"]');
+
+  // Navigate to the "Trash" root and ensure the file exists there now.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
+};
+
+/**
+ * Tests that the `TrashEnabled` preference adds and removes the trash root
+ * from the directory tree and when navigated on the Trash root, removal
+ * navigates the user back to My files.
+ */
+testcase.trashTogglingTrashEnabledNavigatesAwayFromTrashRoot = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Disable trash.
+  await sendTestMessage({name: 'setTrashEnabled', enabled: false});
+
+  // Wait for the Trash root to disappear.
+  await remoteCall.waitForElementLost(
+      appId, '#directory-tree [entry-label="Trash"]');
+
+  // Ensure the new root is now at My files.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
 };

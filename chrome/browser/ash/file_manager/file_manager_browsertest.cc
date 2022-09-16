@@ -1479,6 +1479,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashDragDropOutOfTrashPerformsRestoration").EnableTrash(),
         TestCase("trashCopyShouldBeDisabledCutShouldBeEnabled").EnableTrash(),
         TestCase("trashRestorationDialogInProgressDoesntShowUndo")
+            .EnableTrash(),
+        TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot")
+            .EnableTrash(),
+        TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree")
             .EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

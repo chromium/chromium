@@ -796,6 +796,7 @@ dictionary Preferences {
   boolean arcEnabled;
   boolean arcRemovableMediaAccessEnabled;
   DOMString[] folderShortcuts;
+  boolean trashEnabled;
 };
 
 dictionary PreferencesChange {

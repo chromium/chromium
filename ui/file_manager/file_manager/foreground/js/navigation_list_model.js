@@ -7,7 +7,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {DialogType} from '../../common/js/dialog_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {TrashRootEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -249,7 +248,7 @@ export class NavigationListModel extends EventTarget {
 
     /**
      * Root folder for trash.
-     * @private {NavigationModelFakeItem}
+     * @private {?NavigationModelFakeItem}
      */
     this.trashItem_ = null;
 
@@ -460,10 +459,19 @@ export class NavigationListModel extends EventTarget {
 
   /**
    * Set the fake Drive root and reorder items.
-   * @param {NavigationModelFakeItem} item Fake Drive root.
+   * @param {?NavigationModelFakeItem} item Fake Drive root.
    */
   set fakeDriveItem(item) {
     this.fakeDriveItem_ = item;
+    this.reorderNavigationItems_();
+  }
+
+  /**
+   * Set the fake Trash root and reorder items.
+   * @param {?NavigationModelFakeItem} item Fake Trash root.
+   */
+  set fakeTrashItem(item) {
+    this.trashItem_ = item;
     this.reorderNavigationItems_();
   }
 
@@ -723,12 +731,8 @@ export class NavigationListModel extends EventTarget {
     // not filtered out in the filtered volume manager so perform it here
     // instead.
     if (util.isTrashEnabled() && this.dialogType_ === DialogType.FULL_PAGE &&
-        !this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled()) {
-      if (!this.trashItem_) {
-        this.trashItem_ = new NavigationModelFakeItem(
-            str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
-            new TrashRootEntry(this.volumeManager_));
-      }
+        !this.volumeManager_.getMediaStoreFilesOnlyFilterEnabled() &&
+        this.trashItem_) {
       this.navigationItems_.push(this.trashItem_);
     }
 

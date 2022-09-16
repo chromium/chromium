@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/files/file.h"
@@ -69,6 +70,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/drive/event_logger.h"
 #include "components/drive/file_system_core_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1834,6 +1836,15 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
   // default to true.
   bool show_notification = params->params.show_notification.value_or(true);
 
+  // Check if Trash is enabled, this pref is mainly used by enterprise policy to
+  // disable trash on a per profile basis.
+  bool is_trash_enabled = false;
+  if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash) &&
+      profile && profile->GetPrefs()) {
+    is_trash_enabled =
+        profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
+  }
+
   std::unique_ptr<file_manager::io_task::IOTask> task;
   switch (type.value()) {
     case file_manager::io_task::OperationType::kCopy:
@@ -1853,7 +1864,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
           std::move(source_urls), file_system_context, show_notification);
       break;
     case file_manager::io_task::OperationType::kEmptyTrash:
-      if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+      if (is_trash_enabled) {
         task = std::make_unique<file_manager::io_task::EmptyTrashIOTask>(
             blink::StorageKey(render_frame_host()->GetLastCommittedOrigin()),
             profile, file_system_context,
@@ -1861,14 +1872,14 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       }
       break;
     case file_manager::io_task::OperationType::kRestore:
-      if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+      if (is_trash_enabled) {
         task = std::make_unique<file_manager::io_task::RestoreIOTask>(
             std::move(source_urls), profile, file_system_context,
             /*base_path=*/base::FilePath(), show_notification);
       }
       break;
     case file_manager::io_task::OperationType::kRestoreToDestination:
-      if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+      if (is_trash_enabled) {
         task =
             std::make_unique<file_manager::io_task::RestoreToDestinationIOTask>(
                 std::move(source_urls), std::move(destination_folder_url),
@@ -1877,7 +1888,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       }
       break;
     case file_manager::io_task::OperationType::kTrash:
-      if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+      if (is_trash_enabled) {
         task = std::make_unique<file_manager::io_task::TrashIOTask>(
             std::move(source_urls), profile, file_system_context,
             /*base_path=*/base::FilePath(), show_notification);

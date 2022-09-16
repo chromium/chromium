@@ -261,6 +261,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.arc_enabled = service->GetBoolean(arc::prefs::kArcEnabled);
   result.arc_removable_media_access_enabled =
       service->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);
+  result.trash_enabled = service->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
   std::vector<std::string> folder_shortcuts;
   const auto& value_list =
       service->GetList(ash::prefs::kFilesAppFolderShortcuts);
