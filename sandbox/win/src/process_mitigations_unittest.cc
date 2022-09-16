@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/process_mitigations.h"
 
+#include <excpt.h>
 #include <ktmw32.h>
 #include <windows.h>
 
@@ -12,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/scoped_native_library.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -454,6 +456,23 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
                                        TRANSACTION_MANAGER_VOLATILE,
                                        TRANSACTION_MANAGER_COMMIT_DEFAULT));
       if (ktm.IsValid() || ::GetLastError() != ERROR_ACCESS_DENIED)
+        return SBOX_TEST_FAILED;
+
+      break;
+    }
+
+    case (TESTPOLICY_PREANDPOSTSTARTUP): {
+      // Both policies should be set now.
+      PROCESS_MITIGATION_IMAGE_LOAD_POLICY policy = {};
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
+                                         ProcessImageLoadPolicy, &policy,
+                                         sizeof(policy))) {
+        return SBOX_TEST_NOT_FOUND;
+      }
+      if (!policy.NoLowMandatoryLabelImages)
+        return SBOX_TEST_FAILED;
+
+      if (!policy.PreferSystem32Images)
         return SBOX_TEST_FAILED;
 
       break;
@@ -1382,6 +1401,86 @@ TEST(ProcessMitigationsTest, CheckWin10ImageLoadPreferSys32PolicySuccess) {
       config2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_PREFER_SYS32),
       SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
+}
+
+// This test validates setting a pre-startup mitigation and a post startup
+// mitigation on the same windows policy works in release and crashes in debug.
+TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ImageLoad) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += base::NumberToWString(TESTPOLICY_PREANDPOSTSTARTUP);
+
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_IMAGE_LOAD_NO_LOW_LABEL),
+            SBOX_ALL_OK);
+
+  //---------------------------------
+  // 2) Test setting post-startup.
+  //---------------------------------
+  EXPECT_EQ(
+      config->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_PREFER_SYS32),
+      SBOX_ALL_OK);
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+}
+
+// This test validates setting a pre-startup mitigation and a post startup
+// mitigation on the same windows policy works in release and crashes in debug.
+TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ProcessDep) {
+  if (base::win::GetVersion() < base::win::Version::WIN8)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += base::NumberToWString(TESTPOLICY_DEP);
+
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_DEP), SBOX_ALL_OK);
+
+  //---------------------------------
+  // 2) Test setting post-startup.
+  //---------------------------------
+  EXPECT_EQ(config->SetDelayedProcessMitigations(MITIGATION_DEP_NO_ATL_THUNK),
+            SBOX_ALL_OK);
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+}
+
+// This test validates setting a pre-startup mitigation and a post startup
+// mitigation on the same windows policy works in release and crashes in debug.
+TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ASLR) {
+  if (base::win::GetVersion() < base::win::Version::WIN8)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += base::NumberToWString(TESTPOLICY_ASLR);
+
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_BOTTOM_UP_ASLR |
+                                          MITIGATION_HIGH_ENTROPY_ASLR),
+            SBOX_ALL_OK);
+
+  //---------------------------------
+  // 2) Test setting post-startup.
+  //---------------------------------
+  EXPECT_EQ(config->SetDelayedProcessMitigations(
+                MITIGATION_RELOCATE_IMAGE | MITIGATION_RELOCATE_IMAGE_REQUIRED),
+            SBOX_ALL_OK);
+
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }
 
 }  // namespace sandbox

@@ -35,10 +35,6 @@ public_app_shared_sources = [
   "initialize_mojo_core.h",
 ]
 
-if (is_win) {
-  public_app_shared_sources += [ "sandbox_helper_win.h" ]
-}
-
 public_app_shared_public_deps = [
   "//content:export",
   "//third_party/abseil-cpp:absl",
@@ -53,6 +49,11 @@ public_app_shared_deps = [
   "//content/public/renderer:renderer_sources",
   "//content/public/utility:utility_sources",
 ]
+
+if (is_win) {
+  public_app_shared_sources += [ "sandbox_helper_win.h" ]
+  public_app_shared_deps += [ "//sandbox/win:common" ]
+}
 
 if (is_component_build) {
   source_set("app_sources") {

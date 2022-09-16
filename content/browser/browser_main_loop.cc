@@ -189,6 +189,7 @@
 #include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
 #include "net/base/winsock_init.h"
 #include "sandbox/policy/win/sandbox_win.h"
+#include "sandbox/win/src/sandbox.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -587,11 +588,11 @@ int BrowserMainLoop::EarlyInitialization() {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (!parsed_command_line_.HasSwitch(switches::kSingleProcess)) {
-    if (base::FeatureList::IsEnabled(kBrowserDynamicCodeDisabled)) {
-      sandbox::ApplyProcessMitigationsToCurrentProcess(
-          sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT);
-    }
+  if (!parsed_command_line_.HasSwitch(switches::kSingleProcess) &&
+      base::FeatureList::IsEnabled(kBrowserDynamicCodeDisabled) &&
+      parameters_.sandbox_info && parameters_.sandbox_info->broker_services) {
+    parameters_.sandbox_info->broker_services->RatchetDownSecurityMitigations(
+        sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT);
   }
 #endif
 

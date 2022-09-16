@@ -13,9 +13,22 @@
 
 namespace sandbox {
 
-// Sets the mitigation policy for the current process, ignoring any settings
-// that are invalid for the current version of Windows.
-bool ApplyProcessMitigationsToCurrentProcess(MitigationFlags flags);
+// The sandbox supports 2 different security mitigation models, one for the
+// browser process and one for child processes. These functions should only
+// be called within the Sandbox code.
+
+// For the browser process, we have some mitigations set early in browser
+// startup. In order to properly track those settings, SetStartingMitigations
+// must be called before other mitigations are set.
+// RatchetDownSecurityMitigations is then called by the browser process to
+// gradually increase our security as startup continues. It's designed to
+// be called multiple times.
+void SetStartingMitigations(MitigationFlags starting_flags);
+bool RatchetDownSecurityMitigations(MitigationFlags additional_flags);
+
+// For child processes, we call this method to apply the DelayedMitigations.
+// This should only be called once.
+bool LockDownSecurityMitigations(MitigationFlags additional_flags);
 
 // Sets the mitigation policy for the current thread, ignoring any settings
 // that are invalid for the current version of Windows.

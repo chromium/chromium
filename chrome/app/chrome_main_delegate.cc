@@ -106,6 +106,7 @@
 #include "chrome/install_static/install_util.h"
 #include "components/browser_watcher/extended_crash_reporting.h"
 #include "sandbox/win/src/sandbox.h"
+#include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #endif
 
@@ -1612,6 +1613,13 @@ absl::optional<int> ChromeMainDelegate::PreBrowserMain() {
     // Don't do this if the locale is already set, which is done by integration
     // tests to ensure tests always run with the same locale.
     l10n_util::OverrideLocaleWithCocoaLocale();
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  if (IsExtensionPointDisableSet()) {
+    sandbox::SandboxFactory::GetBrokerServices()->SetStartingMitigations(
+        sandbox::MITIGATION_EXTENSION_POINT_DISABLE);
   }
 #endif
 

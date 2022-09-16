@@ -135,6 +135,19 @@ class [[clang::lto_visibility_public]] BrokerServices {
   virtual ResultCode GetPolicyDiagnostics(
       std::unique_ptr<PolicyDiagnosticsReceiver> receiver) = 0;
 
+  // For the broker, we have some mitigations set early in startup. In
+  // order to properly track those settings, SetStartingMitigations should be
+  // called before other mitigations are set by RatchetDownSecurityMitigations
+  virtual void SetStartingMitigations(MitigationFlags starting_mitigations) = 0;
+
+  // RatchetDownSecurityMitigations is then called by the broker process to
+  // gradually increase our security as startup continues. It's designed to
+  // be called multiple times. If you don't call SetStartingMitigations first
+  // and there were mitigations applied early in startup, the new mitigations
+  // may not be applied.
+  virtual bool RatchetDownSecurityMitigations(
+      MitigationFlags additional_flags) = 0;
+
  protected:
   ~BrokerServices() {}
 };

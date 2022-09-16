@@ -158,8 +158,10 @@ std::unique_ptr<AlternateDesktop> g_alt_desktop;
 
 }  // namespace
 
-SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level;
-SANDBOX_INTERCEPT MitigationFlags g_shared_delayed_mitigations;
+SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level =
+    INTEGRITY_LEVEL_LAST;
+SANDBOX_INTERCEPT MitigationFlags g_shared_delayed_mitigations = 0;
+SANDBOX_INTERCEPT MitigationFlags g_shared_startup_mitigations = 0;
 
 ConfigBase::ConfigBase() noexcept
     :
@@ -762,6 +764,14 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
                                  &g_shared_delayed_mitigations,
                                  sizeof(g_shared_delayed_mitigations));
   g_shared_delayed_mitigations = 0;
+  if (SBOX_ALL_OK != ret)
+    return ret;
+
+  g_shared_startup_mitigations = config()->GetProcessMitigations();
+  ret = target->TransferVariable("g_shared_startup_mitigations",
+                                 &g_shared_startup_mitigations,
+                                 sizeof(g_shared_startup_mitigations));
+  g_shared_startup_mitigations = 0;
   if (SBOX_ALL_OK != ret)
     return ret;
 

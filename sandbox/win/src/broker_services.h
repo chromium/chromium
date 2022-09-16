@@ -56,6 +56,9 @@ class BrokerServicesBase final : public BrokerServices,
   ResultCode WaitForAllTargets() override;
   ResultCode GetPolicyDiagnostics(
       std::unique_ptr<PolicyDiagnosticsReceiver> receiver) override;
+  void SetStartingMitigations(MitigationFlags starting_mitigations) override;
+  bool RatchetDownSecurityMitigations(
+      MitigationFlags additional_flags) override;
 
   static void FreezeTargetConfigForTesting(TargetConfig* config);
 

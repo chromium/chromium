@@ -660,6 +660,16 @@ ResultCode BrokerServicesBase::GetPolicyDiagnostics(
   return SBOX_ALL_OK;
 }
 
+void BrokerServicesBase::SetStartingMitigations(
+    sandbox::MitigationFlags starting_mitigations) {
+  sandbox::SetStartingMitigations(starting_mitigations);
+}
+
+bool BrokerServicesBase::RatchetDownSecurityMitigations(
+    MitigationFlags additional_flags) {
+  return sandbox::RatchetDownSecurityMitigations(additional_flags);
+}
+
 // static
 void BrokerServicesBase::FreezeTargetConfigForTesting(TargetConfig* config) {
   CHECK(!config->IsConfigured());

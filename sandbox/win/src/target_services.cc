@@ -120,9 +120,8 @@ TargetServicesBase* g_target_services = nullptr;
 
 }  // namespace
 
-SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level =
-    INTEGRITY_LEVEL_LAST;
-SANDBOX_INTERCEPT MitigationFlags g_shared_delayed_mitigations = 0;
+SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level;
+SANDBOX_INTERCEPT MitigationFlags g_shared_delayed_mitigations;
 
 TargetServicesBase::TargetServicesBase() {}
 
@@ -153,8 +152,9 @@ void TargetServicesBase::LowerToken() {
   process_state_.SetCsrssConnected(is_csrss_connected);
   // Enabling mitigations must happen last otherwise handle closing breaks
   if (g_shared_delayed_mitigations &&
-      !ApplyProcessMitigationsToCurrentProcess(g_shared_delayed_mitigations))
+      !LockDownSecurityMitigations(g_shared_delayed_mitigations)) {
     ::TerminateProcess(::GetCurrentProcess(), SBOX_FATAL_MITIGATION);
+  }
 }
 
 ProcessState* TargetServicesBase::GetState() {
