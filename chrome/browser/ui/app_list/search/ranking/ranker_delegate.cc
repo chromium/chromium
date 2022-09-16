@@ -50,8 +50,8 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   ftrl_result_params.num_experts = 2u;
 
   MrfuCache::Params mrfu_result_params;
-  mrfu_result_params.half_life = 20.0f;
-  mrfu_result_params.boost_factor = 2.9f;
+  mrfu_result_params.half_life = 30.0f;
+  mrfu_result_params.boost_factor = 2.5f;
   mrfu_result_params.max_items = 200u;
 
   // Category ranking parameters.
