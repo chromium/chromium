@@ -19,15 +19,7 @@
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "fuchsia_web/runners/cast/cast_runner_switches.h"
 #include "media/fuchsia/audio/fake_audio_device_enumerator.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-constexpr char kEnableCfv1Shim[] = "enable-cfv1-shim";
-
-}  // namespace
 
 namespace test {
 
@@ -49,17 +41,8 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV1::StartCastRunner() {
       STDERR_FILENO, launch_info.err->handle0.reset_and_get_address());
   ZX_CHECK(status == ZX_OK, status);
 
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  base::CommandLine command_line(CommandLineFromFeatures(runner_features_));
   command_line.AppendSwitchASCII("enable-logging", "stderr");
-
-  if (runner_features_ & kCastRunnerFeaturesHeadless)
-    command_line.AppendSwitch(kForceHeadlessForTestsSwitch);
-  if (!(runner_features_ & kCastRunnerFeaturesVulkan))
-    command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
-  if (runner_features_ & kCastRunnerFeaturesFrameHost)
-    command_line.AppendSwitch(kEnableFrameHostComponentForTestsSwitch);
-  if (runner_features_ & kCastRunnerFeaturesCfv1Shim)
-    command_line.AppendSwitch(kEnableCfv1Shim);
 
   // Add all switches and arguments, skipping the program.
   launch_info.arguments.emplace(std::vector<std::string>(

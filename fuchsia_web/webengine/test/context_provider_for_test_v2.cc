@@ -25,22 +25,8 @@ BuildRealm(base::CommandLine command_line) {
   static constexpr char kContextProviderService[] = "context_provider";
   realm_builder.AddChild(kContextProviderService, "#meta/context_provider.cm");
 
-  // Append the arguments in `command_line` to those given to the binary.
-  auto context_provider_decl =
-      realm_builder.GetComponentDecl(kContextProviderService);
-  for (auto& entry : *context_provider_decl.mutable_program()
-                          ->mutable_info()
-                          ->mutable_entries()) {
-    if (entry.key == "args") {
-      DCHECK(entry.value->is_str_vec());
-      entry.value->str_vec().insert(entry.value->str_vec().end(),
-                                    command_line.argv().begin() + 1,
-                                    command_line.argv().end());
-      break;
-    }
-  }
-  realm_builder.ReplaceComponentDecl(kContextProviderService,
-                                     std::move(context_provider_decl));
+  test::AppendCommandLineArguments(realm_builder, kContextProviderService,
+                                   command_line);
 
   auto fake_feedback_service = std::make_unique<test::FakeFeedbackService>(
       realm_builder, kContextProviderService);

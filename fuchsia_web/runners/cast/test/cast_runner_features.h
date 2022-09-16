@@ -5,6 +5,12 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_TEST_CAST_RUNNER_FEATURES_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_TEST_CAST_RUNNER_FEATURES_H_
 
+#include <stdint.h>
+
+namespace base {
+class CommandLine;
+}
+
 namespace test {
 
 // A bitfield of feature bits used by cast runner component test launchers.
@@ -21,6 +27,9 @@ enum : uint32_t {
   kCastRunnerFeaturesCfv1Shim = 1U << 4,
 #endif
 };
+
+// Returns a command line for launching cast_runner with the given `features`.
+base::CommandLine CommandLineFromFeatures(CastRunnerFeatures features);
 
 }  // namespace test
 

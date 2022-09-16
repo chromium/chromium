@@ -14,13 +14,14 @@ source_set("integration") {
     "cast_runner_features.h",
     "cast_runner_launcher_v2.h",
   ]
-  sources = [ "cast_runner_launcher_v2.cc" ]
+  sources = [
+    "cast_runner_features.cc",
+    "cast_runner_launcher_v2.cc",
+  ]
   public_deps = [
     "//fuchsia_web/common/test:test_support",
     "//media/fuchsia/audio:test_support_components",
     "//third_party/abseil-cpp:absl",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
@@ -29,15 +30,14 @@ source_set("integration") {
     "//fuchsia_web/runners:cast_runner_core",
     "//fuchsia_web/runners/cast/fidl",
     "//media/fuchsia/audio:test_support",
-    "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
@@ -53,7 +53,10 @@ source_set("cfv1_integration") {
     "cast_runner_features.h",
     "cast_runner_launcher_v1.h",
   ]
-  sources = [ "cast_runner_launcher_v1.cc" ]
+  sources = [
+    "cast_runner_features.cc",
+    "cast_runner_launcher_v1.cc",
+  ]
   public_deps = [
     "//base/test:test_support",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
@@ -64,7 +67,6 @@ source_set("cfv1_integration") {
     "//base",
     "//fuchsia_web/runners:cast_runner_core",
     "//media/fuchsia/audio:test_support",
-    "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
   ]

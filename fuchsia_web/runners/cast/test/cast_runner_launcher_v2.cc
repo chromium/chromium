@@ -19,16 +19,9 @@
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 
-#include <string>
-#include <utility>
-
 #include "base/command_line.h"
-#include "base/json/json_string_value_serializer.h"
-#include "base/values.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
-#include "fuchsia_web/runners/cast/cast_runner_switches.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 using ::component_testing::ChildRef;
 using ::component_testing::Directory;
@@ -41,36 +34,6 @@ using ::component_testing::Storage;
 
 namespace test {
 
-namespace {
-
-// Returns a JSON object containing an "args" list of strings to be processed by
-// cast_runner as if they were arguments on its command line; see ../main.cc's
-// ReadTestConfigData.
-std::string SerializeFeatures(CastRunnerFeatures runner_features) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-
-  if (runner_features & kCastRunnerFeaturesHeadless)
-    command_line.AppendSwitch(kForceHeadlessForTestsSwitch);
-  if (!(runner_features & kCastRunnerFeaturesVulkan))
-    command_line.AppendSwitch(kDisableVulkanForTestsSwitch);
-  if (runner_features & kCastRunnerFeaturesFrameHost)
-    command_line.AppendSwitch(kEnableFrameHostComponentForTestsSwitch);
-
-  base::Value::Dict feature_dict;
-  base::Value::List argv_list;
-  for (const auto& arg : command_line.argv()) {
-    argv_list.Append(arg);
-  }
-  feature_dict.Set("argv", std::move(argv_list));
-
-  std::string result;
-  JSONStringValueSerializer serializer(&result);
-  EXPECT_TRUE(serializer.Serialize(feature_dict));
-  return result;
-}
-
-}  // namespace
-
 CastRunnerLauncherV2::CastRunnerLauncherV2(CastRunnerFeatures runner_features)
     : runner_features_(runner_features) {}
 
@@ -81,6 +44,9 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV2::StartCastRunner() {
 
   static constexpr char kCastRunnerService[] = "cast_runner";
   realm_builder.AddChild(kCastRunnerService, "#meta/cast_runner.cm");
+
+  AppendCommandLineArguments(realm_builder, kCastRunnerService,
+                             CommandLineFromFeatures(runner_features_));
 
   // Run the fake fuchsia.feedback service; plumbing its protocols to
   // cast_runner.
@@ -112,14 +78,6 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncherV2::StartCastRunner() {
                 },
             .source = ParentRef(),
             .targets = {ChildRef{kCastRunnerService}}});
-
-  // Route the test config data from the test to the cast_runner.
-  DirectoryContents config_data_for_testing_directory;
-  config_data_for_testing_directory.AddFile(
-      "runner-features", SerializeFeatures(runner_features_));
-  realm_builder.RouteReadOnlyDirectory(
-      "config-data-for-testing", {ChildRef{kCastRunnerService}},
-      std::move(config_data_for_testing_directory));
 
   // Either route the fake AudioDeviceEnumerator or the system one.
   if (runner_features_ & kCastRunnerFeaturesFakeAudioDeviceEnumerator) {

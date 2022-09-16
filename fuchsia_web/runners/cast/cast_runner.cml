@@ -39,12 +39,6 @@
       path: "/config/data",
     },
     {
-      availability: "optional",
-      directory: "config-data-for-testing",
-      rights: [ "r*" ],
-      path: "/config/data-for-testing",
-    },
-    {
       protocol: [
         // Capabilities to be passed to WebEngine instances.
         "fuchsia.accessibility.semantics.SemanticsManager",
