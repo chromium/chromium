@@ -13,7 +13,7 @@ directory.
 
 For example, the code of `tools/perf/my_fancy_tool` should mostly be:
 
-    #!/usr/bin/env vpython
+    #!/usr/bin/env vpython3
     import sys
     from command_line_tools import my_fancy_tool
 

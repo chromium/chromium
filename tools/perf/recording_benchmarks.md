@@ -41,9 +41,9 @@ The following command will guide you through all of the steps required to record
 
 ```
 # Desktop:
-vpython tools/perf/update_wpr -s "$NAME"  -bss "$BSS" auto
+vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" auto
 # Mobile:
-vpython tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" auto
+vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" auto
 ```
 ## Manual Process (via update_wpr)
 
@@ -53,9 +53,9 @@ You can run specific steps from the guided process described above with the foll
 
 ```
 # Desktop:
-vpython tools/perf/update_wpr -s "$NAME"  -bss "$BSS" live
+vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" live
 # Mobile:
-vpython tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" live
+vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" live
 ```
 
 
@@ -63,9 +63,9 @@ vpython tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" live
 
 ```
 # Desktop:
-vpython tools/perf/update_wpr -s "$NAME"  -bss "$BSS" record
+vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" record
 # Mobile:
-vpython tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" record
+vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" record
 ```
 
 If the story requires login, then you need to add SKIP_LOGIN = False to the story class definition while recording and remove it after recording (crbug.com/882479). In order to make the WPR archive more robust, temporarily add pauses using action_runner.Wait(10) between the user interactions like page navigation and at the end of the story.
@@ -75,9 +75,9 @@ If the story requires login, then you need to add SKIP_LOGIN = False to the stor
 
 ```
 # Desktop:
-vpython tools/perf/update_wpr -s "$NAME"  -bss "$BSS" replay
+vpython3 tools/perf/update_wpr -s "$NAME"  -bss "$BSS" replay
 # Mobile:
-vpython tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" replay
+vpython3 tools/perf/update_wpr -s "$NAME" -d=$ID  -bss "$BSS" replay
 ```
 
 Check that the console:error:all metrics have low values and are similar to the live run.
@@ -97,9 +97,9 @@ After updating the archive, go back to the previous replay step and iterate.
 
 ```
 # Desktop:
-vpython tools/perf/update_wpr --story="$NAME" upload
+vpython3 tools/perf/update_wpr --story="$NAME" upload
 # Mobile:
-vpython tools/perf/update_wpr --story="$NAME" -d=$ID upload
+vpython3 tools/perf/update_wpr --story="$NAME" -d=$ID upload
 ```
 
 ### Final Steps
@@ -116,9 +116,9 @@ Run a pinpoint job and check that there are the same low number of console:error
 
 ```
 # Desktop:
-vpython tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 pinpoint
+vpython3 tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 pinpoint
 # Mobile:
-vpython tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 -d=$ID pinpoint
+vpython3 tools/perf/update_wpr --story="$NAME" --pageset-repeat=20 -d=$ID pinpoint
 ```
 
 Or manually test the newly created story by using a pinpoint job
