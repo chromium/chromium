@@ -595,11 +595,15 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnUnmountPath(UnmountPathCallback callback,
                      const std::string& mount_path,
                      MountError error) {
-    if (error == MountError::kPathNotMounted ||
-        error == MountError::kInvalidPath) {
-      // The path was already unmounted by something else.
+    if (error == MountError::kNone) {
+      VLOG(1) << "Unmounted '" << mount_path << "'";
+    } else {
       LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
-      error = MountError::kNone;
+      if (error == MountError::kPathNotMounted ||
+          error == MountError::kInvalidPath) {
+        // The path was already unmounted by something else.
+        error = MountError::kNone;
+      }
     }
 
     if (const MountPoints::const_iterator mount_point =
