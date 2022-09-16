@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/google_chrome_strings.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_handle.h"
@@ -293,6 +294,24 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetBubbleTitleText(IDS_BATTERY_SAVER_MODE_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
+
+  // kIPHHighEfficiencyInfoModeFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHHighEfficiencyInfoModeFeature,
+          kHighEfficiencyChipElementId,
+          IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TEXT,
+          IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_ACTION_TEXT,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (browser)
+                  chrome::ShowSettingsSubPage(browser,
+                                              chrome::kPerformanceSubPage);
+              }))
+          .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopCenter)));
 }
 
 void MaybeRegisterChromeTutorials(

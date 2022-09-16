@@ -138,6 +138,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHHighEfficiencyInfoModeFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the promo once a year if the page action chip was not opened.
+    config->trigger = EventConfig("high_efficiency_info_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("high_efficiency_info_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

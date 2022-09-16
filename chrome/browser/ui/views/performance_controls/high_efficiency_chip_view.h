@@ -40,7 +40,11 @@ class HighEfficiencyChipView : public PageActionIconView,
 
  private:
   const raw_ptr<Browser> browser_;
+  base::OneShotTimer timer_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+  base::WeakPtrFactory<HighEfficiencyChipView> weak_ptr_factory_{this};
+
+  void MaybeShowIPH();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_

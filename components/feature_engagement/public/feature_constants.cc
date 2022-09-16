@@ -37,6 +37,8 @@ const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature{
     "IPH_FocusHelpBubbleScreenReaderPromo", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHGMCCastStartStopFeature{
     "IPH_GMCCastStartStop", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHHighEfficiencyInfoModeFeature{
+    "IPH_HighEfficiencyInfoMode", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHLiveCaptionFeature{"IPH_LiveCaption",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHTabAudioMutingFeature{"IPH_TabAudioMuting",

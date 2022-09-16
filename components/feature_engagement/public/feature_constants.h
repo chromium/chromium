@@ -39,6 +39,7 @@ extern const base::Feature kIPHDesktopTabGroupsNewGroupFeature;
 extern const base::Feature kIPHExtensionsMenuFeature;
 extern const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature;
 extern const base::Feature kIPHGMCCastStartStopFeature;
+extern const base::Feature kIPHHighEfficiencyInfoModeFeature;
 extern const base::Feature kIPHLiveCaptionFeature;
 extern const base::Feature kIPHTabAudioMutingFeature;
 extern const base::Feature kIPHPasswordsAccountStorageFeature;

@@ -7545,6 +7545,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BATTERY_SAVER_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the battery saver mode in-product promo bubble.">
         Settings
       </message>
+      <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the high efficiency info mode in-product promo bubble.">
+        Settings
+      </message>
 
       <!-- User Education Tutorial Strings -->
       <if expr="use_titlecase">
