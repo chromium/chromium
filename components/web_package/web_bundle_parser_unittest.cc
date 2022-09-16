@@ -1011,7 +1011,6 @@ TEST_F(WebBundleParserTest, SignedBundleSignatureStackWithThreeEntries) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto [public_key, private_key] = WebBundleSigner::KeyPair::CreateRandom();
   auto bundle_and_keys =
       SignBundle(unsigned_bundle,
                  WebBundleSigner::ErrorForTesting::kInvalidSignatureLength);
@@ -1027,7 +1026,6 @@ TEST_F(WebBundleParserTest, SignedBundleWrongSignatureLength) {
 
 TEST_F(WebBundleParserTest, SignedBundleWrongSignatureStackEntryLength) {
   auto unsigned_bundle = CreateSmallBundle();
-  auto [public_key, private_key] = WebBundleSigner::KeyPair::CreateRandom();
   auto bundle_and_keys = SignBundle(
       unsigned_bundle,
       WebBundleSigner::ErrorForTesting::kAdditionalSignatureStackEntryElement);

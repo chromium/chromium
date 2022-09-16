@@ -108,6 +108,9 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
     CHECK_EQ(ED25519_sign(signature.data(), payload_to_sign.data(),
                           payload_to_sign.size(), key_pair.private_key.data()),
              1);
+    if (key_pair.produce_invalid_signature) {
+      signature[0] ^= 0xff;
+    }
 
     signature_stack.push_back(CreateSignatureStackEntry(
         key_pair.public_key, signature, error_for_testing));
@@ -134,17 +137,20 @@ std::vector<uint8_t> WebBundleSigner::SignBundle(
 }
 
 // static
-WebBundleSigner::KeyPair WebBundleSigner::KeyPair::CreateRandom() {
+WebBundleSigner::KeyPair WebBundleSigner::KeyPair::CreateRandom(
+    bool produce_invalid_signature) {
   std::vector<uint8_t> public_key(ED25519_PUBLIC_KEY_LEN);
   std::vector<uint8_t> private_key(ED25519_PRIVATE_KEY_LEN);
   ED25519_keypair(public_key.data(), private_key.data());
-  return KeyPair(public_key, private_key);
+  return KeyPair(public_key, private_key, produce_invalid_signature);
 }
 
 WebBundleSigner::KeyPair::KeyPair(base::span<const uint8_t> public_key,
-                                  base::span<const uint8_t> private_key)
+                                  base::span<const uint8_t> private_key,
+                                  bool produce_invalid_signature)
     : public_key(public_key.begin(), public_key.end()),
-      private_key(private_key.begin(), private_key.end()) {}
+      private_key(private_key.begin(), private_key.end()),
+      produce_invalid_signature(produce_invalid_signature) {}
 
 WebBundleSigner::KeyPair::KeyPair(const WebBundleSigner::KeyPair& other) =
     default;

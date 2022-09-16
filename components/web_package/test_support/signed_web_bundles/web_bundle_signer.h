@@ -30,20 +30,27 @@ class WebBundleSigner {
   };
 
   struct KeyPair {
-    static KeyPair CreateRandom();
+    static KeyPair CreateRandom(bool produce_invalid_signature = false);
 
     KeyPair(base::span<const uint8_t> public_key,
-            base::span<const uint8_t> private_key);
+            base::span<const uint8_t> private_key,
+            bool produce_invalid_signature = false);
     KeyPair(const KeyPair& other);
     ~KeyPair();
 
     std::vector<uint8_t> public_key;
     std::vector<uint8_t> private_key;
+    bool produce_invalid_signature;
   };
 
   // Creates an integrity block with the given signature stack entries.
   static cbor::Value CreateIntegrityBlock(
       const cbor::Value::ArrayValue& signature_stack);
+
+  static cbor::Value CreateIntegrityBlockForBundle(
+      base::span<const uint8_t> unsigned_bundle,
+      const std::vector<KeyPair>& key_pairs,
+      ErrorForTesting error_for_testing = ErrorForTesting::kNoError);
 
   // Signs an unsigned bundle with the given key pairs, in order. I.e. the first
   // key pair will sign the unsigned bundle, the second key pair will sign the
@@ -53,20 +60,15 @@ class WebBundleSigner {
       const std::vector<KeyPair>& key_pairs,
       ErrorForTesting error_for_testing = ErrorForTesting::kNoError);
 
+ private:
   // Creates a signature stack entry for the given public key and signature.
   static cbor::Value CreateSignatureStackEntry(
       base::span<const uint8_t> public_key,
       std::vector<uint8_t> signature,
       ErrorForTesting error_for_testing = ErrorForTesting::kNoError);
 
- private:
   static cbor::Value CreateSignatureStackEntryAttributes(
       std::vector<uint8_t> public_key,
-      ErrorForTesting error_for_testing = ErrorForTesting::kNoError);
-
-  static cbor::Value CreateIntegrityBlockForBundle(
-      base::span<const uint8_t> unsigned_bundle,
-      const std::vector<KeyPair>& key_pairs,
       ErrorForTesting error_for_testing = ErrorForTesting::kNoError);
 };
 
