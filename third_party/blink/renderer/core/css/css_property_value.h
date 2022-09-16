@@ -72,7 +72,7 @@ class CORE_EXPORT CSSPropertyValue {
                   index_in_shorthands_vector,
                   important,
                   implicit),
-        value_(value) {}
+        value_(value, Member<const CSSValue>::AtomicInitializerTag{}) {}
 
   // FIXME: Remove this.
   CSSPropertyValue(CSSPropertyValueMetadata metadata, const CSSValue& value)
@@ -99,6 +99,15 @@ class CORE_EXPORT CSSPropertyValue {
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::CSSPropertyValue)
+namespace WTF {
+template <>
+struct VectorTraits<blink::CSSPropertyValue>
+    : VectorTraitsBase<blink::CSSPropertyValue> {
+  static const bool kCanInitializeWithMemset = true;
+  static const bool kCanClearUnusedSlotsWithMemset = true;
+  static const bool kCanMoveWithMemcpy = true;
+  static const bool kCanTraceConcurrently = true;
+};
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_VALUE_H_

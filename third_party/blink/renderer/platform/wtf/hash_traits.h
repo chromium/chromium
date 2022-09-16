@@ -477,6 +477,9 @@ struct KeyValuePairHashTraits
     return KeyTraits::IsDeletedValue(value.key);
   }
 
+  // Even non-traceable keys need to have their trait set. This is because
+  // non-traceable keys still need to be processed concurrently for checking
+  // empty/deleted state.
   static constexpr bool kCanTraceConcurrently =
       KeyTraitsArg::kCanTraceConcurrently &&
       (ValueTraitsArg::kCanTraceConcurrently ||
