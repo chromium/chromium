@@ -1080,6 +1080,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SELECT_TO_SPEAK_MENU" desc="The name of the Select-to-speak floating menu.">
         Select-to-speak menu
       </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_SPEED_MENU" is_accessibility_with_no_ui="true" desc="The name of the Select-to-speak sub-menu which allows the user to adjust the speed at which text is spoken.">
+        Speech rate
+      </message>
       <message name="IDS_ASH_SWITCH_ACCESS_BACK_BUTTON_DESCRIPTION" desc="The tooltip text for the Switch Access back button. The back button allows users to exit the feature's current focus area.">
         Back button
       </message>

@@ -9,12 +9,14 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_menu_utils.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_constants.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_speed_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -92,6 +94,11 @@ void SelectToSpeakSpeedBubbleController::Hide() {
 
 bool SelectToSpeakSpeedBubbleController::IsVisible() const {
   return bubble_widget_ && bubble_widget_->IsVisible();
+}
+
+std::u16string
+SelectToSpeakSpeedBubbleController::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_SPEED_MENU);
 }
 
 void SelectToSpeakSpeedBubbleController::BubbleViewDestroyed() {
