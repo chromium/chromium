@@ -95,6 +95,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (const auto [_, ok] =
             mount_callbacks_.try_emplace(source_path, std::move(callback));
         !ok) {
+      LOG(ERROR) << "Disk '" << source_path << "' is already being mounted";
       std::move(callback).Run(MountError::kPathAlreadyMounted,
                               {source_path, "", type});
       return;
@@ -117,7 +118,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    VLOG(1) << "Mounting Disk '" << source_path << "'...";
+    VLOG(1) << "Mounting '" << source_path << "'...";
     cros_disks_client_->Mount(
         source_path, source_format, mount_label, mount_options, access_mode,
         RemountOption::kMountNewDevice,
@@ -138,6 +139,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   void UnmountPath(const std::string& mount_path,
                    UnmountPathCallback callback) override {
     UnmountChildMounts(mount_path);
+    VLOG(1) << "Unmounting '" << mount_path << "'...";
     cros_disks_client_->Unmount(mount_path,
                                 BindOnce(&DiskMountManagerImpl::OnUnmountPath,
                                          weak_ptr_factory_.GetWeakPtr(),
@@ -436,20 +438,9 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (mount_path.back() != '/')
       mount_path += '/';
 
-    for (const auto& mount_point : mount_points_) {
-      if (base::StartsWith(mount_point.source_path, mount_path,
-                           base::CompareCase::SENSITIVE)) {
-        UnmountPath(mount_point.mount_path,
-                    BindOnce(
-                        [](const std::string& path, const MountError error) {
-                          if (error != MountError::kNone) {
-                            LOG(ERROR)
-                                << "Cannot unmount '" << path << "': " << error;
-                          } else {
-                            VLOG(1) << "Unmounted '" << path << "'";
-                          }
-                        },
-                        mount_point.mount_path));
+    for (const MountPoint& mount_point : mount_points_) {
+      if (base::StartsWith(mount_point.source_path, mount_path)) {
+        UnmountPath(mount_point.mount_path, {});
       }
     }
   }
@@ -503,22 +494,24 @@ class DiskMountManagerImpl : public DiskMountManager,
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
     if (want_to_keep) {
+      VLOG(1) << "Mounted '" << mount_info.source_path << "' as '"
+              << mount_info.mount_path << "'";
       const auto [it, ok] = mount_points_.insert(mount_info);
-      if (ok) {
-        VLOG(1) << "Added MountPoint with mount_path '" << mount_info.mount_path
-                << "'";
-      } else {
+      if (!ok) {
         DCHECK_EQ(it->mount_path, mount_info.mount_path);
         // const_cast is Ok since we're not modifying it->mount_path.
         const_cast<MountPoint&>(*it) = mount_info;
-        VLOG(1) << "Updated MountPoint with mount_path '"
-                << mount_info.mount_path << "'";
+        VLOG(1) << "Updated mount point '" << mount_info.mount_path << "'";
       }
-    } else if (const MountPoints::const_iterator it =
-                   mount_points_.find(mount_info.mount_path);
-               it != mount_points_.end()) {
-      VLOG(1) << "Removed MountPoint '" << mount_info.mount_path << "'";
-      mount_points_.erase(it);
+    } else {
+      LOG(ERROR) << "Cannot mount '" << mount_info.source_path << "' as '"
+                 << mount_info.mount_path << "': " << entry.error_code;
+      if (const MountPoints::const_iterator it =
+              mount_points_.find(mount_info.mount_path);
+          it != mount_points_.end()) {
+        VLOG(1) << "Removed mount point '" << mount_info.mount_path << "'";
+        mount_points_.erase(it);
+      }
     }
 
     const Disks::const_iterator disk_it = disks_.find(mount_info.source_path);
@@ -901,16 +894,17 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    DVLOG(1) << "Found disk " << disk_info.device_path();
+    VLOG(1) << "Found disk '" << disk_info.device_path() << "'";
     // Delete previous disk info for this path:
     bool is_new = true;
     bool is_first_mount = false;
     std::string base_mount_path = std::string();
-    Disks::iterator iter = disks_.find(disk_info.device_path());
-    if (iter != disks_.end()) {
-      is_first_mount = iter->get()->is_first_mount();
-      base_mount_path = iter->get()->base_mount_path();
-      disks_.erase(iter);
+
+    if (Disks::iterator it = disks_.find(disk_info.device_path());
+        it != disks_.end()) {
+      is_first_mount = (*it)->is_first_mount();
+      base_mount_path = (*it)->base_mount_path();
+      disks_.erase(std::move(it));
       is_new = false;
     }
 
