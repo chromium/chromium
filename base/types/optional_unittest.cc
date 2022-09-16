@@ -406,9 +406,7 @@ TEST(OptionalTest, ConvertingCopyConstructor) {
   }
 
   // Make sure explicit is not marked for convertible case.
-  {
-    [[maybe_unused]] absl::optional<int> o(1);
-  }
+  { [[maybe_unused]] absl::optional<int> o(1); }
 }
 
 TEST(OptionalTest, ConvertingMoveConstructor) {
@@ -420,9 +418,7 @@ TEST(OptionalTest, ConvertingMoveConstructor) {
   }
 
   // Make sure explicit is not marked for convertible case.
-  {
-    [[maybe_unused]] absl::optional<int> o(1);
-  }
+  { [[maybe_unused]] absl::optional<int> o(1); }
 
   {
     class Test1 {
