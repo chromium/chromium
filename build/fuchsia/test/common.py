@@ -12,7 +12,7 @@ import subprocess
 from argparse import ArgumentParser
 from typing import Iterable, List, Optional
 
-from compatible_utils import parse_host_port
+from compatible_utils import get_ssh_prefix
 
 DIR_SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -185,13 +185,9 @@ def resolve_v1_packages(packages: List[str], target_id: Optional[str]) -> None:
     ssh_address = run_ffx_command(('target', 'get-ssh-address'),
                                   target_id,
                                   capture_output=True).stdout.strip()
-    address, port = parse_host_port(ssh_address)
-
     for package in packages:
-        subprocess.run([
-            'ssh', '-F',
-            os.path.expanduser('~/.fuchsia/sshconfig'), address, '-p',
-            str(port), '--', 'pkgctl', 'resolve',
+        resolve_cmd = [
+            '--', 'pkgctl', 'resolve',
             'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
-        ],
-                       check=True)
+        ]
+        subprocess.run(get_ssh_prefix(ssh_address) + resolve_cmd, check=True)

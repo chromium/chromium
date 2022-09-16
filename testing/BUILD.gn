@@ -76,7 +76,10 @@ group("unexpected_passes_common_pytype") {
 
 group("fuchsia_pytype") {
   testonly = true
-  data = [ "//build/fuchsia/test/" ]
+  data = [
+    "//build/fuchsia/test/",
+    "//build/util/lib/common/",
+  ]
   data_deps = [ ":pytype_dependencies" ]
 }
 

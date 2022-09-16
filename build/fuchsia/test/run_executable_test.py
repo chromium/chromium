@@ -18,6 +18,9 @@ from common import get_component_uri, register_common_args, \
 from compatible_utils import map_filter_file_to_package_file
 from ffx_integration import FfxTestRunner
 from test_runner import TestRunner
+from test_server import setup_test_server
+
+DEFAULT_TEST_SERVER_CONCURRENCY = 4
 
 
 def _copy_custom_output_file(test_runner: FfxTestRunner, file: str,
@@ -63,6 +66,7 @@ class ExecutableTestRunner(TestRunner):
         self._isolated_script_test_output = None
         self._logs_dir = logs_dir
         self._test_launcher_summary_output = None
+        self._test_server = None
 
     def _get_args(self) -> List[str]:
         if not self._test_args:
@@ -91,6 +95,13 @@ class ExecutableTestRunner(TestRunner):
             '--test-launcher-filter-file',
             help='Filter file(s) passed to target test process. Use ";" to '
             'separate multiple filter files.')
+        parser.add_argument('--test-launcher-jobs',
+                            type=int,
+                            help='Sets the number of parallel test jobs.')
+        parser.add_argument('--enable-test-server',
+                            action='store_true',
+                            default=False,
+                            help='Enable Chrome test server spawner.')
         parser.add_argument('test_process_args',
                             nargs='*',
                             help='Arguments for the test process.')
@@ -118,10 +129,21 @@ class ExecutableTestRunner(TestRunner):
                 args.test_launcher_filter_file.split(';'))
             child_args.append('--test-launcher-filter-file=' +
                               ';'.join(test_launcher_filter_files))
+        if args.test_launcher_jobs:
+            test_concurrency = args.test_launcher_jobs
+        else:
+            test_concurrency = DEFAULT_TEST_SERVER_CONCURRENCY
+        if args.enable_test_server:
+            self._test_server, spawner_url_base = setup_test_server(
+                self._target_id, test_concurrency)
+            child_args.append('--remote-test-server-spawner-url-base=%s' %
+                              spawner_url_base)
         child_args.extend(args.test_process_args)
         return child_args
 
     def _postprocess(self, test_runner: FfxTestRunner) -> None:
+        if self._test_server:
+            self._test_server.Stop()
         if self._test_launcher_summary_output:
             _copy_custom_output_file(
                 test_runner,

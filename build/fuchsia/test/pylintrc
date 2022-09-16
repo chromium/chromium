@@ -17,3 +17,7 @@ reports=no
 
 # Maximum number of arguments for function / method
 max-args=6
+
+[FORMAT]
+
+max-line-length=80
