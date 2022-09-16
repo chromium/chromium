@@ -5482,6 +5482,8 @@ static_library("browser") {
       "chromeos/policy/dlp/dlp_warn_notifier.h",
       "chromeos/reporting/device_reporting_settings_lacros.cc",
       "chromeos/reporting/device_reporting_settings_lacros.h",
+      "chromeos/reporting/metric_reporting_manager_lacros.cc",
+      "chromeos/reporting/metric_reporting_manager_lacros.h",
       "feedback/show_feedback_page_lacros.cc",
       "lacros/account_manager/account_cache.cc",
       "lacros/account_manager/account_cache.h",
