@@ -34,6 +34,12 @@ class UnitTest_BigQueryQuerier(queries.BigQueryQuerier):
   def GetResultCountTryQuery(self) -> str:
     return """submitted_builds SELECT * FROM bar"""
 
+  def GetFlakyOrFailingCiQuery(self) -> str:
+    return """SELECT * FROM foo"""
+
+  def GetFlakyOrFailingTryQuery(self) -> str:
+    return """submitted_builds SELECT * FROM bar"""
+
 
 class UnitTestResultProcessor(results_module.ResultProcessor):
   def GetTestSuiteAndNameFromResultDbName(self, result_db_name: str
