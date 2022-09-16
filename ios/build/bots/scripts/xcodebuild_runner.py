@@ -448,9 +448,3 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
   def tear_down(self):
     """Performs cleanup actions which must occur after every test launch."""
     test_runner.DeviceTestRunner.tear_down(self)
-
-  def launch(self):
-    try:
-      return super(DeviceXcodeTestRunner, self).launch()
-    finally:
-      self.tear_down()
