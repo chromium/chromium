@@ -8,7 +8,7 @@ namespace blink {
 
 void NoAllocDirectCallExceptionState::ThrowDOMException(DOMExceptionCode code,
                                                         const String& message) {
-  deferred_exception_ = WTF::Bind(
+  deferred_exception_ = WTF::BindOnce(
       [](v8::Isolate* isolate, ExceptionContext&& exception_context,
          DOMExceptionCode code, const String& message) {
         ExceptionState exception_state(isolate, std::move(exception_context));
@@ -19,7 +19,7 @@ void NoAllocDirectCallExceptionState::ThrowDOMException(DOMExceptionCode code,
 }
 
 void NoAllocDirectCallExceptionState::ThrowTypeError(const String& message) {
-  deferred_exception_ = WTF::Bind(
+  deferred_exception_ = WTF::BindOnce(
       [](v8::Isolate* isolate, ExceptionContext&& exception_context,
          const String& message) {
         ExceptionState exception_state(isolate, std::move(exception_context));
@@ -32,7 +32,7 @@ void NoAllocDirectCallExceptionState::ThrowTypeError(const String& message) {
 void NoAllocDirectCallExceptionState::ThrowSecurityError(
     const String& sanitized_message,
     const String& unsanitized_message) {
-  deferred_exception_ = WTF::Bind(
+  deferred_exception_ = WTF::BindOnce(
       [](v8::Isolate* isolate, ExceptionContext&& exception_context,
          const String& sanitized_message, const String& unsanitized_message) {
         ExceptionState exception_state(isolate, std::move(exception_context));
@@ -45,7 +45,7 @@ void NoAllocDirectCallExceptionState::ThrowSecurityError(
 }
 
 void NoAllocDirectCallExceptionState::ThrowRangeError(const String& message) {
-  deferred_exception_ = WTF::Bind(
+  deferred_exception_ = WTF::BindOnce(
       [](v8::Isolate* isolate, ExceptionContext&& exception_context,
          const String& message) {
         ExceptionState exception_state(isolate, std::move(exception_context));

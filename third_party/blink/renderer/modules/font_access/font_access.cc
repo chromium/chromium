@@ -95,15 +95,15 @@ ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
     context->GetBrowserInterfaceBroker().GetInterface(
         remote_.BindNewPipeAndPassReceiver());
     remote_.set_disconnect_handler(
-        WTF::Bind(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
+        WTF::BindOnce(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
   }
   DCHECK(remote_.is_bound());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   remote_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
-      WTF::Bind(&FontAccess::DidGetEnumerationResponse,
-                WrapWeakPersistent(this), WrapPersistent(options))));
+      WTF::BindOnce(&FontAccess::DidGetEnumerationResponse,
+                    WrapWeakPersistent(this), WrapPersistent(options))));
 
   return promise;
 }

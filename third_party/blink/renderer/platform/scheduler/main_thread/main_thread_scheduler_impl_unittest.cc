@@ -3493,11 +3493,12 @@ TEST_F(MainThreadSchedulerImplTest, MicrotaskCheckpointTiming) {
   const base::TimeDelta kTaskTime = base::Milliseconds(100);
   const base::TimeDelta kMicrotaskTime = base::Milliseconds(200);
   default_task_runner_->PostTask(
-      FROM_HERE, WTF::Bind(&MainThreadSchedulerImplTest::AdvanceMockTickClockBy,
-                           base::Unretained(this), kTaskTime));
+      FROM_HERE,
+      WTF::BindOnce(&MainThreadSchedulerImplTest::AdvanceMockTickClockBy,
+                    base::Unretained(this), kTaskTime));
   scheduler_->on_microtask_checkpoint_ =
-      WTF::Bind(&MainThreadSchedulerImplTest::AdvanceMockTickClockBy,
-                base::Unretained(this), kMicrotaskTime);
+      WTF::BindOnce(&MainThreadSchedulerImplTest::AdvanceMockTickClockBy,
+                    base::Unretained(this), kMicrotaskTime);
 
   scheduler_->AddTaskTimeObserver(&observer);
   base::RunLoop().RunUntilIdle();

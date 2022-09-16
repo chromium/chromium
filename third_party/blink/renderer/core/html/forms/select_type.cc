@@ -1062,8 +1062,9 @@ void ListBoxSelectType::ScrollToOption(HTMLOptionElement* option) {
   if (!has_pending_task) {
     select_->GetDocument()
         .GetTaskRunner(TaskType::kUserInteraction)
-        ->PostTask(FROM_HERE, WTF::Bind(&ListBoxSelectType::ScrollToOptionTask,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&ListBoxSelectType::ScrollToOptionTask,
+                                 WrapPersistent(this)));
   }
 }
 

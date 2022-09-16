@@ -168,8 +168,8 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
     task_handle_ = PostDelayedCancellableTask(
         *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
         FROM_HERE,
-        WTF::Bind(&CachedVideoFramePool::PurgeIdleFramePool,
-                  WrapWeakPersistent(this)),
+        WTF::BindOnce(&CachedVideoFramePool::PurgeIdleFramePool,
+                      WrapWeakPersistent(this)),
         kIdleTimeout);
   }
 
@@ -276,8 +276,8 @@ class CanvasResourceProviderCache
     task_handle_ = PostDelayedCancellableTask(
         *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
         FROM_HERE,
-        WTF::Bind(&CanvasResourceProviderCache::PurgeIdleFramePool,
-                  WrapWeakPersistent(this)),
+        WTF::BindOnce(&CanvasResourceProviderCache::PurgeIdleFramePool,
+                      WrapWeakPersistent(this)),
         kIdleTimeout);
   }
 

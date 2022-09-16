@@ -335,10 +335,11 @@ void ImageResource::AppendData(const char* data, size_t length) {
       DCHECK_LE(last_flush_time_, now);
       base::TimeDelta flush_delay =
           std::max(base::TimeDelta(), last_flush_time_ - now + kFlushDelay);
-      task_runner->PostDelayedTask(FROM_HERE,
-                                   WTF::Bind(&ImageResource::FlushImageIfNeeded,
-                                             WrapWeakPersistent(this)),
-                                   flush_delay);
+      task_runner->PostDelayedTask(
+          FROM_HERE,
+          WTF::BindOnce(&ImageResource::FlushImageIfNeeded,
+                        WrapWeakPersistent(this)),
+          flush_delay);
       is_pending_flushing_ = true;
     }
   }

@@ -55,8 +55,8 @@ void MojoAudioOutputIPC::RequestDeviceAuthorization(
   DoRequestDeviceAuthorization(
       session_id, device_id,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          WTF::Bind(&MojoAudioOutputIPC::ReceivedDeviceAuthorization,
-                    weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+          WTF::BindOnce(&MojoAudioOutputIPC::ReceivedDeviceAuthorization,
+                        weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
           static_cast<media::mojom::blink::OutputDeviceStatus>(
               media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL),
           media::AudioParameters::UnavailableDeviceParams(), String()));
@@ -76,7 +76,7 @@ void MojoAudioOutputIPC::CreateStream(media::AudioOutputIPCDelegate* delegate,
     DoRequestDeviceAuthorization(
         /*session_id=*/base::UnguessableToken(),
         media::AudioDeviceDescription::kDefaultDeviceId,
-        WTF::Bind(&TrivialAuthorizedCallback));
+        WTF::BindOnce(&TrivialAuthorizedCallback));
   }
 
   DCHECK_EQ(delegate_, delegate);
@@ -87,8 +87,8 @@ void MojoAudioOutputIPC::CreateStream(media::AudioOutputIPCDelegate* delegate,
   receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver());
   // Unretained is safe because |this| owns |receiver_|.
   receiver_.set_disconnect_with_reason_handler(
-      WTF::Bind(&MojoAudioOutputIPC::ProviderClientBindingDisconnected,
-                WTF::Unretained(this)));
+      WTF::BindOnce(&MojoAudioOutputIPC::ProviderClientBindingDisconnected,
+                    WTF::Unretained(this)));
   stream_provider_->Acquire(params, std::move(client_remote));
 }
 
@@ -191,7 +191,8 @@ void MojoAudioOutputIPC::DoRequestDeviceAuthorization(
     // OnDeviceAuthorized with ERROR_INTERNAL in the normal case.
     // The AudioOutputIPCDelegate will call CloseStream as necessary.
     io_task_runner_->PostTask(
-        FROM_HERE, WTF::Bind([](AuthorizationCB cb) {}, std::move(callback)));
+        FROM_HERE,
+        WTF::BindOnce([](AuthorizationCB cb) {}, std::move(callback)));
     return;
   }
 

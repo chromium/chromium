@@ -106,8 +106,8 @@ ScriptPromise StorageManager::persist(ScriptState* script_state,
   GetPermissionService(window)->RequestPermission(
       CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
-      WTF::Bind(&StorageManager::PermissionRequestComplete,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&StorageManager::PermissionRequestComplete,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -129,8 +129,8 @@ ScriptPromise StorageManager::persisted(ScriptState* script_state,
   GetPermissionService(ExecutionContext::From(script_state))
       ->HasPermission(
           CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
-          WTF::Bind(&StorageManager::PermissionRequestComplete,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+          WTF::BindOnce(&StorageManager::PermissionRequestComplete,
+                        WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -154,7 +154,7 @@ ScriptPromise StorageManager::estimate(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   auto callback = resolver->WrapCallbackInScriptScope(
-      WTF::Bind(&QueryStorageUsageAndQuotaCallback));
+      WTF::BindOnce(&QueryStorageUsageAndQuotaCallback));
   GetQuotaHost(execution_context)
       ->QueryStorageUsageAndQuota(
           mojom::blink::StorageType::kTemporary,
@@ -218,8 +218,8 @@ PermissionService* StorageManager::GetPermissionService(
         permission_service_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     permission_service_.set_disconnect_handler(
-        WTF::Bind(&StorageManager::PermissionServiceConnectionError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&StorageManager::PermissionServiceConnectionError,
+                      WrapWeakPersistent(this)));
   }
   return permission_service_.get();
 }

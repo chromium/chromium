@@ -109,10 +109,10 @@ class RTCRtpSenderImplTest : public ::testing::Test {
     // On complete, |*result_holder| is set with the result of replaceTrack()
     // and the |run_loop| quit.
     sender_->ReplaceTrack(
-        component,
-        WTF::Bind(&RTCRtpSenderImplTest::CallbackOnComplete,
-                  WTF::Unretained(this), WTF::Unretained(result_holder.get()),
-                  WTF::Unretained(run_loop.get())));
+        component, WTF::BindOnce(&RTCRtpSenderImplTest::CallbackOnComplete,
+                                 WTF::Unretained(this),
+                                 WTF::Unretained(result_holder.get()),
+                                 WTF::Unretained(run_loop.get())));
     // When the resulting callback is invoked, waits for |run_loop| to complete
     // and returns |*result_holder|.
     return base::BindOnce(&RTCRtpSenderImplTest::RunLoopAndReturnResult,

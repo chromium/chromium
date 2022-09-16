@@ -275,8 +275,8 @@ void HTMLParserScriptRunner::PendingScriptFinished(
   // the Blink C++ stack be thin when it executes JavaScript.
   document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
       ->PostTask(FROM_HERE,
-                 WTF::Bind(&HTMLParserScriptRunnerHost::NotifyScriptLoaded,
-                           WrapPersistent(host_.Get())));
+                 WTF::BindOnce(&HTMLParserScriptRunnerHost::NotifyScriptLoaded,
+                               WrapPersistent(host_.Get())));
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#scriptEndTag">

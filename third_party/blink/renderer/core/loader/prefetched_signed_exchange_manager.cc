@@ -115,7 +115,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     // It is safe to use Unretained(client), because |client| is a
     // ResourceLoader which owns |this|, and we are binding with weak ptr of
     // |this| here.
-    pending_method_calls_.push(WTF::Bind(
+    pending_method_calls_.push(WTF::BindOnce(
         &PrefetchedSignedExchangeLoader::LoadAsynchronously, GetWeakPtr(),
         std::move(request), std::move(url_request_extra_data), no_mime_sniffing,
         std::move(resource_load_info_notifier_wrapper),
@@ -126,7 +126,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       url_loader_->Freeze(value);
       return;
     }
-    pending_method_calls_.push(WTF::Bind(
+    pending_method_calls_.push(WTF::BindOnce(
         &PrefetchedSignedExchangeLoader::Freeze, GetWeakPtr(), value));
   }
   void DidChangePriority(WebURLRequest::Priority new_priority,
@@ -136,8 +136,8 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       return;
     }
     pending_method_calls_.push(
-        WTF::Bind(&PrefetchedSignedExchangeLoader::DidChangePriority,
-                  GetWeakPtr(), new_priority, intra_priority_value));
+        WTF::BindOnce(&PrefetchedSignedExchangeLoader::DidChangePriority,
+                      GetWeakPtr(), new_priority, intra_priority_value));
   }
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override {

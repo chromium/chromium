@@ -355,8 +355,8 @@ void AutoplayPolicy::OnIntersectionChangedForAutoplay(
 
     element_->GetDocument()
         .GetTaskRunner(TaskType::kInternalMedia)
-        ->PostTask(FROM_HERE, WTF::Bind(pause_and_preserve_autoplay,
-                                        WrapWeakPersistent(this)));
+        ->PostTask(FROM_HERE, WTF::BindOnce(pause_and_preserve_autoplay,
+                                            WrapWeakPersistent(this)));
     return;
   }
 
@@ -377,7 +377,7 @@ void AutoplayPolicy::OnIntersectionChangedForAutoplay(
   element_->GetDocument()
       .GetTaskRunner(TaskType::kInternalMedia)
       ->PostTask(FROM_HERE,
-                 WTF::Bind(maybe_autoplay, WrapWeakPersistent(this)));
+                 WTF::BindOnce(maybe_autoplay, WrapWeakPersistent(this)));
 }
 
 bool AutoplayPolicy::IsUsingDocumentUserActivationRequiredPolicy() const {

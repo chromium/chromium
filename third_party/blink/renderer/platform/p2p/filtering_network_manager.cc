@@ -138,10 +138,12 @@ void FilteringNetworkManager::CheckPermission() {
   // Request for media permission asynchronously.
   media_permission_->HasPermission(
       media::MediaPermission::AUDIO_CAPTURE,
-      WTF::Bind(&FilteringNetworkManager::OnPermissionStatus, GetWeakPtr()));
+      WTF::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
+                    GetWeakPtr()));
   media_permission_->HasPermission(
       media::MediaPermission::VIDEO_CAPTURE,
-      WTF::Bind(&FilteringNetworkManager::OnPermissionStatus, GetWeakPtr()));
+      WTF::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
+                    GetWeakPtr()));
 }
 
 void FilteringNetworkManager::OnPermissionStatus(bool granted) {
@@ -233,8 +235,9 @@ void FilteringNetworkManager::FireEventIfStarted() {
   //
   // TODO(crbug.com/787254): Use Frame-based TaskRunner here.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, WTF::Bind(&FilteringNetworkManager::SendNetworksChangedSignal,
-                           GetWeakPtr()));
+      FROM_HERE,
+      WTF::BindOnce(&FilteringNetworkManager::SendNetworksChangedSignal,
+                    GetWeakPtr()));
 
   sent_first_update_ = true;
 }

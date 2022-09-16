@@ -304,8 +304,9 @@ bool TextFinder::FindInternal(int identifier,
   if (options.run_synchronously_for_testing) {
     Scroll(std::move(scroll_context));
   } else {
-    scroll_task_.Reset(WTF::Bind(&TextFinder::Scroll, WrapWeakPersistent(this),
-                                 std::move(scroll_context)));
+    scroll_task_.Reset(WTF::BindOnce(&TextFinder::Scroll,
+                                     WrapWeakPersistent(this),
+                                     std::move(scroll_context)));
     GetFrame()->GetDocument()->EnqueueAnimationFrameTask(
         scroll_task_.callback());
   }

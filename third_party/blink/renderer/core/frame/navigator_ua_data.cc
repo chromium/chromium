@@ -222,9 +222,9 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
   execution_context->GetTaskRunner(TaskType::kPermission)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind([](ScriptPromiseResolver* resolver,
-                       UADataValues* values) { resolver->Resolve(values); },
-                    WrapPersistent(resolver), WrapPersistent(values)));
+          WTF::BindOnce([](ScriptPromiseResolver* resolver,
+                           UADataValues* values) { resolver->Resolve(values); },
+                        WrapPersistent(resolver), WrapPersistent(values)));
 
   return promise;
 }

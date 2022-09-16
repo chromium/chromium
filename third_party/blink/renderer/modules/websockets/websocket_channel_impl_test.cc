@@ -403,7 +403,7 @@ class CallTrackingClosure {
   base::OnceClosure Closure() {
     // This use of base::Unretained is safe because nothing can call the
     // callback once the test has finished.
-    return WTF::Bind(&CallTrackingClosure::Called, base::Unretained(this));
+    return WTF::BindOnce(&CallTrackingClosure::Called, base::Unretained(this));
   }
 
   bool WasCalled() const { return was_called_; }

@@ -75,8 +75,8 @@ void WebIDBTransaction::Put(int64_t object_store_id,
   callbacks->SetState(nullptr, transaction_id_);
   transaction_->Put(object_store_id, std::move(value), std::move(primary_key),
                     put_mode, std::move(index_keys),
-                    WTF::Bind(&WebIDBTransaction::PutCallback,
-                              WTF::Unretained(this), std::move(callbacks)));
+                    WTF::BindOnce(&WebIDBTransaction::PutCallback,
+                                  WTF::Unretained(this), std::move(callbacks)));
 }
 
 void WebIDBTransaction::PutCallback(

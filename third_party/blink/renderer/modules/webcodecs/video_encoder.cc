@@ -784,7 +784,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
   if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
-    auto readback_done_callback = WTF::Bind(
+    auto readback_done_callback = WTF::BindOnce(
         &VideoEncoder::OnReadbackDone, WrapWeakPersistent(this), keyframe,
         reset_count_, frame, std::move(encode_done_callback));
     if (StartReadback(std::move(frame), std::move(readback_done_callback))) {
@@ -953,7 +953,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   };
 
   blocking_request_in_progress_ = true;
-  media_encoder_->Flush(WTF::Bind(
+  media_encoder_->Flush(WTF::BindOnce(
       flush_done_callback, WrapCrossThreadWeakPersistent(this),
       WrapCrossThreadPersistent(request), std::move(reconf_done_callback)));
 }

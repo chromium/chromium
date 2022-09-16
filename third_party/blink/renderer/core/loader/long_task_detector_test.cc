@@ -70,8 +70,8 @@ class LongTaskDetectorTest : public testing::Test {
 
   void SimulateTask(base::TimeDelta duration) {
     Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-        FROM_HERE, WTF::Bind(&LongTaskDetectorTest::DummyTaskWithDuration,
-                             WTF::Unretained(this), duration));
+        FROM_HERE, WTF::BindOnce(&LongTaskDetectorTest::DummyTaskWithDuration,
+                                 WTF::Unretained(this), duration));
     platform_->RunUntilIdle();
   }
 

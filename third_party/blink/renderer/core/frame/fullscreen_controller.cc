@@ -210,8 +210,8 @@ void FullscreenController::EnterFullscreen(LocalFrame& frame,
   if (!(request_type & FullscreenRequestType::kForCrossProcessDescendant)) {
     frame.GetLocalFrameHostRemote().EnterFullscreen(
         std::move(fullscreen_options),
-        WTF::Bind(&FullscreenController::EnterFullscreenCallback,
-                  WTF::Unretained(this)));
+        WTF::BindOnce(&FullscreenController::EnterFullscreenCallback,
+                      WTF::Unretained(this)));
   }
 
   if (state_ == State::kInitial)

@@ -37,7 +37,7 @@ class IDBDatabaseGetAllResultSinkImpl
       : receiver_(this, std::move(receiver)),
         owner_(owner),
         key_only_(key_only) {
-    receiver_.set_disconnect_handler(WTF::Bind(
+    receiver_.set_disconnect_handler(WTF::BindOnce(
         &IDBDatabaseGetAllResultSinkImpl::OnDisconnect, WTF::Unretained(this)));
   }
 

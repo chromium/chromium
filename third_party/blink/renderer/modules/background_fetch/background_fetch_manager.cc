@@ -239,9 +239,10 @@ ScriptPromise BackgroundFetchManager::fetch(
     loaders_.push_back(loader);
     loader->Start(
         bridge_.Get(), execution_context, options->icons(),
-        WTF::Bind(&BackgroundFetchManager::DidLoadIcons, WrapPersistent(this),
-                  id, std::move(fetch_api_requests), std::move(options_ptr),
-                  WrapPersistent(resolver), WrapWeakPersistent(loader)));
+        WTF::BindOnce(&BackgroundFetchManager::DidLoadIcons,
+                      WrapPersistent(this), id, std::move(fetch_api_requests),
+                      std::move(options_ptr), WrapPersistent(resolver),
+                      WrapWeakPersistent(loader)));
     return promise;
   }
 
@@ -266,8 +267,8 @@ void BackgroundFetchManager::DidLoadIcons(
   ukm_data->ideal_to_chosen_icon_size = ideal_to_chosen_icon_size;
   bridge_->Fetch(
       id, std::move(requests), std::move(options), icon, std::move(ukm_data),
-      WTF::Bind(&BackgroundFetchManager::DidFetch, WrapPersistent(this),
-                WrapPersistent(resolver), base::Time::Now()));
+      WTF::BindOnce(&BackgroundFetchManager::DidFetch, WrapPersistent(this),
+                    WrapPersistent(resolver), base::Time::Now()));
 }
 
 void BackgroundFetchManager::DidFetch(
@@ -353,9 +354,9 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   bridge_->GetRegistration(
-      id, WTF::Bind(&BackgroundFetchManager::DidGetRegistration,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    base::Time::Now()));
+      id, WTF::BindOnce(&BackgroundFetchManager::DidGetRegistration,
+                        WrapPersistent(this), WrapPersistent(resolver),
+                        base::Time::Now()));
 
   return promise;
 }
@@ -499,7 +500,7 @@ ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  bridge_->GetDeveloperIds(WTF::Bind(
+  bridge_->GetDeveloperIds(WTF::BindOnce(
       &BackgroundFetchManager::DidGetDeveloperIds, WrapPersistent(this),
       WrapPersistent(resolver), base::Time::Now()));
 

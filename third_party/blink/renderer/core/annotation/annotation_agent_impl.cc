@@ -63,15 +63,15 @@ void AnnotationAgentImpl::Bind(
   // Breaking the mojo connection will cause this agent to remove itself from
   // the container.
   receiver_.set_disconnect_handler(
-      WTF::Bind(&AnnotationAgentImpl::Remove, WrapWeakPersistent(this)));
+      WTF::BindOnce(&AnnotationAgentImpl::Remove, WrapWeakPersistent(this)));
 }
 
 void AnnotationAgentImpl::Attach() {
   DCHECK(!IsRemoved());
   Document& document = *owning_container_->GetSupplementable();
   selector_->FindRange(document, AnnotationSelector::kSynchronous,
-                       WTF::Bind(&AnnotationAgentImpl::DidFinishAttach,
-                                 WrapWeakPersistent(this)));
+                       WTF::BindOnce(&AnnotationAgentImpl::DidFinishAttach,
+                                     WrapWeakPersistent(this)));
 }
 
 bool AnnotationAgentImpl::IsAttached() const {

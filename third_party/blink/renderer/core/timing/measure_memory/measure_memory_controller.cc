@@ -108,8 +108,8 @@ void StartMemoryMeasurement(LocalDOMWindow* window,
                             WebMemoryMeasurement::Mode mode) {
   Document* document = window->document();
   document->GetResourceCoordinator()->OnWebMemoryMeasurementRequested(
-      mode, WTF::Bind(&MeasureMemoryController::MeasurementComplete,
-                      WrapPersistent(controller)));
+      mode, WTF::BindOnce(&MeasureMemoryController::MeasurementComplete,
+                          WrapPersistent(controller)));
 }
 
 void StartMemoryMeasurement(WorkerGlobalScope* worker,

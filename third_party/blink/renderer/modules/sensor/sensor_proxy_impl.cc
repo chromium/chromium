@@ -48,8 +48,8 @@ void SensorProxyImpl::Initialize() {
 
   state_ = kInitializing;
   sensor_provider_proxy()->GetSensor(
-      type_,
-      WTF::Bind(&SensorProxyImpl::OnSensorCreated, WrapWeakPersistent(this)));
+      type_, WTF::BindOnce(&SensorProxyImpl::OnSensorCreated,
+                           WrapWeakPersistent(this)));
 }
 
 void SensorProxyImpl::AddConfiguration(
@@ -202,9 +202,9 @@ void SensorProxyImpl::OnSensorCreated(
   DCHECK_GE(device::GetSensorMaxAllowedFrequency(type_),
             frequency_limits_.second);
 
-  auto error_callback =
-      WTF::Bind(&SensorProxyImpl::HandleSensorError, WrapWeakPersistent(this),
-                SensorCreationResult::ERROR_NOT_AVAILABLE);
+  auto error_callback = WTF::BindOnce(
+      &SensorProxyImpl::HandleSensorError, WrapWeakPersistent(this),
+      SensorCreationResult::ERROR_NOT_AVAILABLE);
   sensor_remote_.set_disconnect_handler(std::move(error_callback));
 
   state_ = kInitialized;

@@ -750,9 +750,9 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
   payment_credential_remote->StorePaymentCredential(
       std::move(credential_id), rp_id_for_payment_extension,
       std::move(user_id_for_payment_extension),
-      WTF::Bind(&OnSaveCredentialIdForPaymentExtension,
-                std::make_unique<ScopedPromiseResolver>(resolver),
-                WrapPersistent(signal), std::move(credential)));
+      WTF::BindOnce(&OnSaveCredentialIdForPaymentExtension,
+                    std::make_unique<ScopedPromiseResolver>(resolver),
+                    WrapPersistent(signal), std::move(credential)));
 }
 
 void OnGetAssertionComplete(
@@ -1191,9 +1191,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           CredentialManagerProxy::From(script_state)->Authenticator();
       authenticator->GetAssertion(
           std::move(mojo_options),
-          WTF::Bind(&OnGetAssertionComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver),
-                    WrapPersistent(signal)));
+          WTF::BindOnce(&OnGetAssertionComplete,
+                        std::make_unique<ScopedPromiseResolver>(resolver),
+                        WrapPersistent(signal)));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
@@ -1222,9 +1222,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     auto* webotp_service =
         CredentialManagerProxy::From(script_state)->WebOTPService();
-    webotp_service->Receive(WTF::Bind(&OnSmsReceive, WrapPersistent(resolver),
-                                      WrapPersistent(signal),
-                                      base::TimeTicks::Now()));
+    webotp_service->Receive(
+        WTF::BindOnce(&OnSmsReceive, WrapPersistent(resolver),
+                      WrapPersistent(signal), base::TimeTicks::Now()));
 
     UseCounter::Count(context, WebFeature::kWebOTP);
     return promise;
@@ -1297,8 +1297,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
             DOMExceptionCode::kAbortError, "Request has been aborted."));
         return promise;
       }
-      options->signal()->AddAlgorithm(WTF::Bind(&AbortIdentityCredentialRequest,
-                                                WrapPersistent(script_state)));
+      options->signal()->AddAlgorithm(WTF::BindOnce(
+          &AbortIdentityCredentialRequest, WrapPersistent(script_state)));
     }
 
     bool prefer_auto_sign_in = options->identity()->preferAutoSignIn();
@@ -1309,8 +1309,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     auth_request->RequestToken(
         std::move(identity_provider_ptrs), prefer_auto_sign_in,
         show_iframe_requester,
-        WTF::Bind(&OnRequestToken, WrapPersistent(resolver),
-                  WrapPersistent(options)));
+        WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
+                      WrapPersistent(options)));
 
     return promise;
   }
@@ -1349,9 +1349,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->Get(
       requirement, options->password(), std::move(providers),
-      WTF::Bind(&OnGetComplete,
-                std::make_unique<ScopedPromiseResolver>(resolver),
-                required_origin_type));
+      WTF::BindOnce(&OnGetComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver),
+                    required_origin_type));
 
   return promise;
 }
@@ -1400,8 +1400,8 @@ ScriptPromise CredentialsContainer::store(ScriptState* script_state,
 
   credential_manager->Store(
       CredentialInfo::From(credential),
-      WTF::Bind(&OnStoreComplete,
-                std::make_unique<ScopedPromiseResolver>(resolver)));
+      WTF::BindOnce(&OnStoreComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
 }
@@ -1673,16 +1673,16 @@ ScriptPromise CredentialsContainer::create(
           mojo_options->user->id;
       authenticator->MakeCredential(
           std::move(mojo_options),
-          WTF::Bind(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver),
-                    WrapPersistent(signal), rp_id_for_payment_extension,
-                    std::move(user_id_for_payment_extension)));
+          WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                        std::make_unique<ScopedPromiseResolver>(resolver),
+                        WrapPersistent(signal), rp_id_for_payment_extension,
+                        std::move(user_id_for_payment_extension)));
     } else {
       authenticator->MakeCredential(
           std::move(mojo_options),
-          WTF::Bind(&OnMakePublicKeyCredentialComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver),
-                    WrapPersistent(signal), required_origin_type));
+          WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
+                        std::make_unique<ScopedPromiseResolver>(resolver),
+                        WrapPersistent(signal), required_origin_type));
     }
   }
 
@@ -1701,8 +1701,8 @@ ScriptPromise CredentialsContainer::preventSilentAccess(
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->PreventSilentAccess(
-      WTF::Bind(&OnPreventSilentAccessComplete,
-                std::make_unique<ScopedPromiseResolver>(resolver)));
+      WTF::BindOnce(&OnPreventSilentAccessComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
 }

@@ -190,7 +190,7 @@ void MessagePort::Entangle(MessagePortDescriptor port) {
   // 2. when the execution context is destroyed, the connector_ is reset.
   connector_->set_incoming_receiver(this);
   connector_->set_connection_error_handler(
-      WTF::Bind(&MessagePort::close, WrapWeakPersistent(this)));
+      WTF::BindOnce(&MessagePort::close, WrapWeakPersistent(this)));
 }
 
 void MessagePort::Entangle(MessagePortChannel channel) {

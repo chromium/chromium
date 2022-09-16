@@ -29,9 +29,9 @@ void IntersectionObserverController::PostTaskToDeliverNotifications() {
       ->GetTaskRunner(TaskType::kInternalIntersectionObserver)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind(&IntersectionObserverController::DeliverNotifications,
-                    WrapWeakPersistent(this),
-                    IntersectionObserver::kPostTaskToDeliver));
+          WTF::BindOnce(&IntersectionObserverController::DeliverNotifications,
+                        WrapWeakPersistent(this),
+                        IntersectionObserver::kPostTaskToDeliver));
 }
 
 void IntersectionObserverController::ScheduleIntersectionObserverForDelivery(

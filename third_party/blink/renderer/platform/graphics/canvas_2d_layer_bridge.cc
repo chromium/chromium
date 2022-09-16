@@ -393,12 +393,12 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
     lose_context_in_background_scheduled_ = true;
     if (dont_use_idle_scheduling_for_testing_) {
       Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-          FROM_HERE, WTF::Bind(&LoseContextInBackgroundForTestingWrapper,
-                               weak_ptr_factory_.GetWeakPtr()));
+          FROM_HERE, WTF::BindOnce(&LoseContextInBackgroundForTestingWrapper,
+                                   weak_ptr_factory_.GetWeakPtr()));
     } else {
       ThreadScheduler::Current()->PostIdleTask(
-          FROM_HERE, WTF::Bind(&LoseContextInBackgroundWrapper,
-                               weak_ptr_factory_.GetWeakPtr()));
+          FROM_HERE, WTF::BindOnce(&LoseContextInBackgroundWrapper,
+                                   weak_ptr_factory_.GetWeakPtr()));
     }
   } else if (IsHibernationEnabled() && ResourceProvider() && IsAccelerated() &&
              IsHidden() && !hibernation_scheduled_ &&
@@ -410,12 +410,12 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
     hibernation_scheduled_ = true;
     if (dont_use_idle_scheduling_for_testing_) {
       Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-          FROM_HERE, WTF::Bind(&HibernateWrapperForTesting,
-                               weak_ptr_factory_.GetWeakPtr()));
+          FROM_HERE, WTF::BindOnce(&HibernateWrapperForTesting,
+                                   weak_ptr_factory_.GetWeakPtr()));
     } else {
       ThreadScheduler::Current()->PostIdleTask(
           FROM_HERE,
-          WTF::Bind(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
+          WTF::BindOnce(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
     }
   }
   if (!IsHidden() && (IsHibernating() || lose_context_in_background_))

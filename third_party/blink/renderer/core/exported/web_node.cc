@@ -181,9 +181,9 @@ void WebNode::SimulateClick() {
   private_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kUserInteraction)
       ->PostTask(FROM_HERE,
-                 WTF::Bind(&Node::DispatchSimulatedClick,
-                           WrapWeakPersistent(private_.Get()), nullptr,
-                           SimulatedClickCreationScope::kFromUserAgent));
+                 WTF::BindOnce(&Node::DispatchSimulatedClick,
+                               WrapWeakPersistent(private_.Get()), nullptr,
+                               SimulatedClickCreationScope::kFromUserAgent));
 }
 
 WebElementCollection WebNode::GetElementsByHTMLTagName(

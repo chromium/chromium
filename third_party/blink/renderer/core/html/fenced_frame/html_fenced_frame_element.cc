@@ -557,8 +557,8 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
     return;
   if (GetDocument().IsPrerendering()) {
     GetDocument().AddPostPrerenderingActivationStep(
-        WTF::Bind(&HTMLFencedFrameElement::CreateDelegateAndNavigate,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&HTMLFencedFrameElement::CreateDelegateAndNavigate,
+                      WrapWeakPersistent(this)));
     return;
   }
 

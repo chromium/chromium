@@ -90,9 +90,9 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
     // the frame on another task. See https://crbug.com/1216445#c1
     realm_task_runner_->PostTask(
         FROM_HERE,
-        WTF::Bind(&FrameQueueUnderlyingSource<
-                      NativeFrameType>::MaybeSendFrameFromQueueToStream,
-                  WrapPersistent(this)));
+        WTF::BindOnce(&FrameQueueUnderlyingSource<
+                          NativeFrameType>::MaybeSendFrameFromQueueToStream,
+                      WrapPersistent(this)));
   }
   return ScriptPromise::CastUndefined(script_state);
 }

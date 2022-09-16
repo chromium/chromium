@@ -159,7 +159,7 @@ void Socket::ContextLifecycleStateChanged(
 void Socket::ConnectService() {
   service_ = DirectSocketsServiceMojoRemote::Create(
       GetExecutionContext(),
-      WTF::Bind(&Socket::OnServiceConnectionError, WrapPersistent(this)));
+      WTF::BindOnce(&Socket::OnServiceConnectionError, WrapPersistent(this)));
 }
 
 bool Socket::Closed() const {

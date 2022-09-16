@@ -47,8 +47,8 @@ void DeviceSensorEventPump::SetSensorProviderForTesting(
     mojo::PendingRemote<device::mojom::blink::SensorProvider> sensor_provider) {
   sensor_provider_.Bind(std::move(sensor_provider), task_runner_);
   sensor_provider_.set_disconnect_handler(
-      WTF::Bind(&DeviceSensorEventPump::HandleSensorProviderError,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&DeviceSensorEventPump::HandleSensorProviderError,
+                    WrapWeakPersistent(this)));
 }
 
 DeviceSensorEventPump::PumpState

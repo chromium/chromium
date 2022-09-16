@@ -222,9 +222,9 @@ ScriptPromise SharedStorage::set(ScriptState* script_state,
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageSet(
           key, value, ignore_if_present,
-          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kSet, start_time));
+          WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
+                        WrapPersistent(this),
+                        blink::SharedStorageVoidOperation::kSet, start_time));
 
   return promise;
 }
@@ -266,9 +266,10 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageAppend(
           key, value,
-          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kAppend, start_time));
+          WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
+                        WrapPersistent(this),
+                        blink::SharedStorageVoidOperation::kAppend,
+                        start_time));
 
   return promise;
 }
@@ -301,10 +302,10 @@ ScriptPromise SharedStorage::Delete(ScriptState* script_state,
 
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageDelete(
-          key,
-          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kDelete, start_time));
+          key, WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
+                             WrapPersistent(this),
+                             blink::SharedStorageVoidOperation::kDelete,
+                             start_time));
 
   return promise;
 }
@@ -329,9 +330,9 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
 
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageClear(
-          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kClear, start_time));
+          WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
+                        WrapPersistent(this),
+                        blink::SharedStorageVoidOperation::kClear, start_time));
 
   return promise;
 }
@@ -510,7 +511,7 @@ ScriptPromise SharedStorage::selectURL(
   GetSharedStorageDocumentService(execution_context)
       ->RunURLSelectionOperationOnWorklet(
           name, std::move(converted_urls), std::move(serialized_data),
-          WTF::Bind(
+          WTF::BindOnce(
               [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
                  base::TimeTicks start_time, bool success,
                  const String& error_message, const KURL& opaque_url) {
@@ -577,9 +578,9 @@ ScriptPromise SharedStorage::run(
   GetSharedStorageDocumentService(execution_context)
       ->RunOperationOnWorklet(
           name, std::move(serialized_data),
-          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                    WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kRun, start_time));
+          WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
+                        WrapPersistent(this),
+                        blink::SharedStorageVoidOperation::kRun, start_time));
 
   return promise;
 }

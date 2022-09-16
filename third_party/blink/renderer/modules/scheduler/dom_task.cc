@@ -70,12 +70,12 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
 
   if (signal_) {
     signal_->AddAlgorithm(
-        WTF::Bind(&DOMTask::OnAbort, WrapWeakPersistent(this)));
+        WTF::BindOnce(&DOMTask::OnAbort, WrapWeakPersistent(this)));
   }
 
   task_handle_ = PostDelayedCancellableTask(
       task_queue_->GetTaskRunner(), FROM_HERE,
-      WTF::Bind(&DOMTask::Invoke, WrapPersistent(this)), delay);
+      WTF::BindOnce(&DOMTask::Invoke, WrapPersistent(this)), delay);
 
   ScriptState* script_state =
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Create");

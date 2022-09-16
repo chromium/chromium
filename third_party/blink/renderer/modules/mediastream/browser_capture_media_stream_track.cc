@@ -229,13 +229,13 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   // to the new crop-target is observed.
   native_track->AddCropVersionCallback(
       crop_version,
-      WTF::Bind(&BrowserCaptureMediaStreamTrack::OnCropVersionObserved,
-                WrapWeakPersistent(this), crop_version));
+      WTF::BindOnce(&BrowserCaptureMediaStreamTrack::OnCropVersionObserved,
+                    WrapWeakPersistent(this), crop_version));
 
   native_source->Crop(
       crop_id_token.value(), crop_version,
-      WTF::Bind(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
-                WrapWeakPersistent(this), crop_version));
+      WTF::BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
+                    WrapWeakPersistent(this), crop_version));
 
   return promise;
 #endif

@@ -21,7 +21,7 @@ void BatteryDispatcher::Trace(Visitor* visitor) const {
 
 void BatteryDispatcher::QueryNextStatus() {
   monitor_->QueryNextStatus(
-      WTF::Bind(&BatteryDispatcher::OnDidChange, WrapPersistent(this)));
+      WTF::BindOnce(&BatteryDispatcher::OnDidChange, WrapPersistent(this)));
 }
 
 void BatteryDispatcher::OnDidChange(

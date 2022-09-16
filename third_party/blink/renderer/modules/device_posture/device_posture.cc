@@ -62,7 +62,7 @@ void DevicePosture::EnsureServiceConnection() {
 
   service_->AddListenerAndGetCurrentPosture(
       receiver_.BindNewPipeAndPassRemote(task_runner),
-      WTF::Bind(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
+      WTF::BindOnce(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }
 
 void DevicePosture::AddedEventListener(const AtomicString& event_type,

@@ -298,8 +298,8 @@ void WebAudioSourceProviderImpl::GetOutputDeviceInfoAsync(
   // underlying audio renderer will prefer the media parameters. See
   // IsOptimizedForHardwareParameters() for more details.
   media::BindToCurrentLoop(
-      WTF::Bind(std::move(info_cb),
-                media::OutputDeviceInfo(media::OUTPUT_DEVICE_STATUS_OK)))
+      WTF::BindOnce(std::move(info_cb),
+                    media::OutputDeviceInfo(media::OUTPUT_DEVICE_STATUS_OK)))
       .Run();
 }
 

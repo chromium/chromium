@@ -135,9 +135,9 @@ ScriptPromise BackgroundFetchRegistration::abort(ScriptState* script_state) {
   DCHECK(registration_);
   DCHECK(registration_service_);
 
-  registration_service_->Abort(WTF::Bind(&BackgroundFetchRegistration::DidAbort,
-                                         WrapPersistent(this),
-                                         WrapPersistent(resolver)));
+  registration_service_->Abort(
+      WTF::BindOnce(&BackgroundFetchRegistration::DidAbort,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -218,8 +218,8 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
 
   registration_service_->MatchRequests(
       std::move(request_to_match), std::move(cache_query_options), match_all,
-      WTF::Bind(&BackgroundFetchRegistration::DidGetMatchingRequests,
-                WrapPersistent(this), WrapPersistent(resolver), match_all));
+      WTF::BindOnce(&BackgroundFetchRegistration::DidGetMatchingRequests,
+                    WrapPersistent(this), WrapPersistent(resolver), match_all));
 
   return promise;
 }

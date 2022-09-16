@@ -250,12 +250,12 @@ class VideoCaptureImplTest : public ::testing::Test {
 
   void GetDeviceSupportedFormats() {
     video_capture_impl_->GetDeviceSupportedFormats(
-        WTF::Bind(&VideoCaptureImplTest::OnDeviceSupportedFormats,
-                  base::Unretained(this)));
+        WTF::BindOnce(&VideoCaptureImplTest::OnDeviceSupportedFormats,
+                      base::Unretained(this)));
   }
 
   void GetDeviceFormatsInUse() {
-    video_capture_impl_->GetDeviceFormatsInUse(WTF::Bind(
+    video_capture_impl_->GetDeviceFormatsInUse(WTF::BindOnce(
         &VideoCaptureImplTest::OnDeviceFormatsInUse, base::Unretained(this)));
   }
 

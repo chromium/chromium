@@ -171,7 +171,7 @@ TEST(FunctionalTest, RawPtr) {
 }
 
 void MakeClosure(base::OnceClosure** closure_out) {
-  *closure_out = new base::OnceClosure(WTF::Bind([] {}));
+  *closure_out = new base::OnceClosure(WTF::BindOnce([] {}));
   LEAK_SANITIZER_IGNORE_OBJECT(*closure_out);
 }
 

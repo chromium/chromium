@@ -116,8 +116,8 @@ void RunServeAsyncRequestsTask(scoped_refptr<base::TaskRunner> task_runner) {
   // getting the platform's one. (crbug.com/751425)
   WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
   if (TestWebFrameClient::IsLoading()) {
-    task_runner->PostTask(FROM_HERE,
-                          WTF::Bind(&RunServeAsyncRequestsTask, task_runner));
+    task_runner->PostTask(
+        FROM_HERE, WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner));
   } else {
     test::ExitRunLoop();
   }
@@ -245,7 +245,7 @@ void PumpPendingRequestsForFrameToLoad(WebLocalFrame* frame) {
   scoped_refptr<base::TaskRunner> task_runner =
       frame->GetTaskRunner(blink::TaskType::kInternalTest);
   task_runner->PostTask(FROM_HERE,
-                        WTF::Bind(&RunServeAsyncRequestsTask, task_runner));
+                        WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner));
   test::EnterRunLoop();
 }
 

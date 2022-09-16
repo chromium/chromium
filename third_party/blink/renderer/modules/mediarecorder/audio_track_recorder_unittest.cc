@@ -314,8 +314,8 @@ TEST_P(AudioTrackRecorderTest, OnDataOpus) {
       .Times(1)
       // Only reset the decoder once we've heard back:
       .WillOnce(testing::DoAll(
-          RunOnceClosure(WTF::Bind(&AudioTrackRecorderTest::ResetDecoder,
-                                   WTF::Unretained(this), second_params_)),
+          RunOnceClosure(WTF::BindOnce(&AudioTrackRecorderTest::ResetDecoder,
+                                       WTF::Unretained(this), second_params_)),
           [&encodedPacketSizes](const media::AudioParameters&,
                                 std::string encoded_data, base::TimeTicks) {
             encodedPacketSizes.push_back(encoded_data.size());

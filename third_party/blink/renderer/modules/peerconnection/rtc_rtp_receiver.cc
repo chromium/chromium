@@ -117,9 +117,9 @@ ScriptPromise RTCRtpReceiver::getStats(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  receiver_->GetStats(
-      WTF::Bind(WebRTCStatsReportCallbackResolver, WrapPersistent(resolver)),
-      GetExposedGroupIds(script_state));
+  receiver_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
+                                    WrapPersistent(resolver)),
+                      GetExposedGroupIds(script_state));
   return promise;
 }
 
@@ -486,8 +486,8 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
   video_from_depacketizer_underlying_source_ =
       MakeGarbageCollected<RTCEncodedVideoUnderlyingSource>(
           script_state,
-          WTF::Bind(&RTCRtpReceiver::UnregisterEncodedVideoStreamCallback,
-                    WrapWeakPersistent(this)));
+          WTF::BindOnce(&RTCRtpReceiver::UnregisterEncodedVideoStreamCallback,
+                        WrapWeakPersistent(this)));
   // The high water mark for the readable stream is set to 0 so that frames are
   // removed from the queue right away, without introducing a new buffer.
   ReadableStream* readable_stream =

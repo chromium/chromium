@@ -398,7 +398,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         NOTREACHED();
     }
 
-    ScrollableArea::ScrollCallback callback(WTF::Bind(
+    ScrollableArea::ScrollCallback callback(WTF::BindOnce(
         [](WeakPersistent<ScrollableArea> area) {
           if (area)
             area->OnScrollFinished();
@@ -778,8 +778,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollEnd(
     if (scrollable_area && scrollable_area->ExistingScrollAnimator() &&
         scrollable_area->ExistingScrollAnimator()->HasRunningAnimation()) {
       scrollable_area->RegisterScrollCompleteCallback(
-          WTF::Bind(&ScrollManager::HandleDeferredGestureScrollEnd,
-                    WrapWeakPersistent(this), gesture_event));
+          WTF::BindOnce(&ScrollManager::HandleDeferredGestureScrollEnd,
+                        WrapWeakPersistent(this), gesture_event));
       return WebInputEventResult::kNotHandled;
     }
 
@@ -806,7 +806,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollEnd(
     // We add a callback to set the hover state dirty and send a scroll end
     // event when the scroll ends without snap or the snap point is the same as
     // the scroll position.
-    base::ScopedClosureRunner callback(WTF::Bind(
+    base::ScopedClosureRunner callback(WTF::BindOnce(
         [](WeakPersistent<LocalFrame> local_frame,
            WeakPersistent<ScrollManager> scroll_manager) {
           if (local_frame) {

@@ -118,7 +118,7 @@ void DawnControlClientHolder::EnsureFlush() {
     // is empty. Do nothing.
     return;
   }
-  Microtask::EnqueueMicrotask(WTF::Bind(
+  Microtask::EnqueueMicrotask(WTF::BindOnce(
       [](scoped_refptr<DawnControlClientHolder> dawn_control_client) {
         if (auto context_provider =
                 dawn_control_client->GetContextProviderWeakPtr()) {

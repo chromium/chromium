@@ -373,8 +373,8 @@ void TextFragmentAnchor::DidFindFirstMatch(
       EnclosingBlock(range.StartPosition(), kCannotCrossEditingBoundary);
   DCHECK(enclosing_block);
   frame_->GetDocument()->EnqueueAnimationFrameTask(
-      WTF::Bind(&TextFragmentAnchor::FireBeforeMatchEvent, WrapPersistent(this),
-                WrapPersistent(&range)));
+      WTF::BindOnce(&TextFragmentAnchor::FireBeforeMatchEvent,
+                    WrapPersistent(this), WrapPersistent(&range)));
 
   state_ = kBeforeMatchEventQueued;
 }

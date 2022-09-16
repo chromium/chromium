@@ -56,7 +56,7 @@ constexpr uint32_t kMaxVideoFrameDimension = 1024;
 }  // namespace
 
 base::ScopedClosureRunner MakeScopedGarbageCollectionRequest() {
-  return base::ScopedClosureRunner(WTF::Bind([]() {
+  return base::ScopedClosureRunner(WTF::BindOnce([]() {
     // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
     //
     // Multiple GCs may be required to ensure everything is collected (due to

@@ -1438,8 +1438,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
 
       input_buffers_free_.pop_back();
       frame->AddDestructionObserver(media::BindToCurrentLoop(
-          WTF::Bind(&RTCVideoEncoder::Impl::InputBufferReleased,
-                    scoped_refptr<RTCVideoEncoder::Impl>(this), index)));
+          WTF::BindOnce(&RTCVideoEncoder::Impl::InputBufferReleased,
+                        scoped_refptr<RTCVideoEncoder::Impl>(this), index)));
     }
   }
   if (!failed_timestamp_match_) {

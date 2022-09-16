@@ -169,17 +169,17 @@ CanvasCaptureHandler::GetNewFrameCallback() {
   // to ensure that it be decremented even if the returned callback is dropped
   // instead of being run.
   pending_send_new_frame_calls_ += 1;
-  auto decrement_closure = WTF::Bind(
+  auto decrement_closure = WTF::BindOnce(
       [](base::WeakPtr<CanvasCaptureHandler> handler) {
         if (handler)
           handler->pending_send_new_frame_calls_ -= 1;
       },
       weak_ptr_factory_.GetWeakPtr());
 
-  return WTF::Bind(&CanvasCaptureHandler::OnNewFrameCallback,
-                   weak_ptr_factory_.GetWeakPtr(),
-                   base::ScopedClosureRunner(std::move(decrement_closure)),
-                   base::TimeTicks::Now(), gfx::ColorSpace());
+  return WTF::BindOnce(&CanvasCaptureHandler::OnNewFrameCallback,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::ScopedClosureRunner(std::move(decrement_closure)),
+                       base::TimeTicks::Now(), gfx::ColorSpace());
 }
 
 void CanvasCaptureHandler::OnNewFrameCallback(

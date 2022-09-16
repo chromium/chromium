@@ -1357,13 +1357,13 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     frame_->GetTaskRunner(TaskType::kInternalLoading)
         ->PostTask(
             FROM_HERE,
-            WTF::Bind(&DocumentLoader::CommitSameDocumentNavigationInternal,
-                      WrapWeakPersistent(this), url, frame_load_type,
-                      WrapPersistent(history_item),
-                      same_document_navigation_type, client_redirect_policy,
-                      has_transient_user_activation,
-                      WTF::RetainedRef(initiator_origin), is_browser_initiated,
-                      is_synchronously_committed, triggering_event_info));
+            WTF::BindOnce(
+                &DocumentLoader::CommitSameDocumentNavigationInternal,
+                WrapWeakPersistent(this), url, frame_load_type,
+                WrapPersistent(history_item), same_document_navigation_type,
+                client_redirect_policy, has_transient_user_activation,
+                WTF::RetainedRef(initiator_origin), is_browser_initiated,
+                is_synchronously_committed, triggering_event_info));
   } else {
     // Treat a navigation to the same url as replacing only if it did not
     // originate from a cross-origin iframe. If |is_synchronously_committed| is

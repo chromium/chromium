@@ -102,8 +102,9 @@ bool MediaStreamAudioSource::ConnectToInitializedTrack(
   if (is_stopped_)
     return false;
 
-  track->Start(WTF::Bind(&MediaStreamAudioSource::StopAudioDeliveryTo,
-                         weak_factory_.GetWeakPtr(), WTF::Unretained(track)));
+  track->Start(WTF::BindOnce(&MediaStreamAudioSource::StopAudioDeliveryTo,
+                             weak_factory_.GetWeakPtr(),
+                             WTF::Unretained(track)));
   deliverer_.AddConsumer(track);
   LogMessage(
       base::StringPrintf("%s => (added new MediaStreamAudioTrack as consumer, "

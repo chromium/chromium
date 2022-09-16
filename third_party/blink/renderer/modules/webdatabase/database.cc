@@ -316,10 +316,10 @@ bool Database::OpenAndVerifyVersion(bool set_version_in_new_database,
       async_task_context->Schedule(GetExecutionContext(), "openDatabase");
       GetExecutionContext()
           ->GetTaskRunner(TaskType::kDatabaseAccess)
-          ->PostTask(FROM_HERE, WTF::Bind(&Database::RunCreationCallback,
-                                          WrapPersistent(this),
-                                          WrapPersistent(creation_callback),
-                                          std::move(async_task_context)));
+          ->PostTask(FROM_HERE, WTF::BindOnce(&Database::RunCreationCallback,
+                                              WrapPersistent(this),
+                                              WrapPersistent(creation_callback),
+                                              std::move(async_task_context)));
     }
   }
 
@@ -855,9 +855,9 @@ void Database::RunTransaction(
       auto error = std::make_unique<SQLErrorData>(SQLError::kUnknownErr,
                                                   "database has been closed");
       GetDatabaseTaskRunner()->PostTask(
-          FROM_HERE, WTF::Bind(&CallTransactionErrorCallback,
-                               WrapPersistent(transaction_error_callback),
-                               std::move(error)));
+          FROM_HERE, WTF::BindOnce(&CallTransactionErrorCallback,
+                                   WrapPersistent(transaction_error_callback),
+                                   std::move(error)));
     }
   }
 }

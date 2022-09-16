@@ -101,13 +101,13 @@ void FontResource::StartLoadLimitTimersIfNecessary(
 
   font_load_short_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::Bind(&FontResource::FontLoadShortLimitCallback,
-                WrapWeakPersistent(this)),
+      WTF::BindOnce(&FontResource::FontLoadShortLimitCallback,
+                    WrapWeakPersistent(this)),
       kFontLoadWaitShort);
   font_load_long_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::Bind(&FontResource::FontLoadLongLimitCallback,
-                WrapWeakPersistent(this)),
+      WTF::BindOnce(&FontResource::FontLoadLongLimitCallback,
+                    WrapWeakPersistent(this)),
       kFontLoadWaitLong);
 }
 

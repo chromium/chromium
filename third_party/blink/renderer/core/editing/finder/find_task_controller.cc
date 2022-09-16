@@ -50,8 +50,8 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
     } else {
       controller_->GetLocalFrame()
           ->GetTaskRunner(blink::TaskType::kInternalFindInPage)
-          ->PostTask(FROM_HERE,
-                     WTF::Bind(&FindTask::Invoke, WrapWeakPersistent(this)));
+          ->PostTask(FROM_HERE, WTF::BindOnce(&FindTask::Invoke,
+                                              WrapWeakPersistent(this)));
     }
   }
 

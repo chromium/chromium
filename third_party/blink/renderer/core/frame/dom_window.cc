@@ -538,8 +538,8 @@ void DOMWindow::InstallCoopAccessMonitor(
   // TODO(arthursonzogni): Consider observing |accessing_main_frame| deletion
   // instead.
   monitor.reporter.set_disconnect_handler(
-      WTF::Bind(&DOMWindow::DisconnectCoopAccessMonitor,
-                WrapWeakPersistent(this), monitor.accessing_main_frame));
+      WTF::BindOnce(&DOMWindow::DisconnectCoopAccessMonitor,
+                    WrapWeakPersistent(this), monitor.accessing_main_frame));
 
   // As long as RenderDocument isn't shipped, it can exist a CoopAccessMonitor
   // for the same |accessing_main_frame|, because it might now host a different

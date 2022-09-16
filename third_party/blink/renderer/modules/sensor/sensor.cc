@@ -218,7 +218,7 @@ void Sensor::OnSensorReadingChanged() {
   // We also avoid scheduling if the elapsed time is slightly behind the
   // polling period.
   auto sensor_reading_changed =
-      WTF::Bind(&Sensor::NotifyReading, WrapWeakPersistent(this));
+      WTF::BindOnce(&Sensor::NotifyReading, WrapWeakPersistent(this));
   if (waitingTime < kWaitingIntervalThreshold) {
     // Invoke JS callbacks in a different callchain to obviate
     // possible modifications of SensorProxy::observers_ container
@@ -254,7 +254,7 @@ void Sensor::OnAddConfigurationRequestCompleted(bool result) {
 
   pending_activated_notification_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kSensor), FROM_HERE,
-      WTF::Bind(&Sensor::NotifyActivated, WrapWeakPersistent(this)));
+      WTF::BindOnce(&Sensor::NotifyActivated, WrapWeakPersistent(this)));
 }
 
 void Sensor::Activate() {
@@ -305,8 +305,8 @@ void Sensor::RequestAddConfiguration() {
   DCHECK(sensor_proxy_);
   sensor_proxy_->AddConfiguration(
       configuration_->Clone(),
-      WTF::Bind(&Sensor::OnAddConfigurationRequestCompleted,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&Sensor::OnAddConfigurationRequestCompleted,
+                    WrapWeakPersistent(this)));
 }
 
 void Sensor::HandleError(DOMExceptionCode code,
@@ -326,8 +326,8 @@ void Sensor::HandleError(DOMExceptionCode code,
                                                    unsanitized_message);
   pending_error_notification_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kSensor), FROM_HERE,
-      WTF::Bind(&Sensor::NotifyError, WrapWeakPersistent(this),
-                WrapPersistent(error)));
+      WTF::BindOnce(&Sensor::NotifyError, WrapWeakPersistent(this),
+                    WrapPersistent(error)));
 }
 
 void Sensor::NotifyReading() {
@@ -347,7 +347,8 @@ void Sensor::NotifyActivated() {
     DCHECK(!pending_reading_notification_.IsActive());
     pending_reading_notification_ = PostCancellableTask(
         *GetExecutionContext()->GetTaskRunner(TaskType::kSensor), FROM_HERE,
-        WTF::Bind(&Sensor::OnSensorReadingChanged, WrapWeakPersistent(this)));
+        WTF::BindOnce(&Sensor::OnSensorReadingChanged,
+                      WrapWeakPersistent(this)));
   }
 
   DispatchEvent(*Event::Create(event_type_names::kActivate));

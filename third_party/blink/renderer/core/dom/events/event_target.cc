@@ -482,7 +482,7 @@ bool EventTarget::AddEventListenerInternal(
       // pass the |options->capture()| boolean, which is the only thing
       // removeEventListener actually uses to find and remove the event
       // listener.
-      options->signal()->AddAlgorithm(WTF::Bind(
+      options->signal()->AddAlgorithm(WTF::BindOnce(
           [](EventTarget* event_target, const AtomicString& event_type,
              const EventListener* listener, bool capture) {
             event_target->removeEventListener(event_type, listener, capture);
@@ -965,8 +965,8 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
   event.async_task_context()->Schedule(context, event.type());
   context->GetTaskRunner(task_type)->PostTask(
       FROM_HERE,
-      WTF::Bind(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
-                WrapPersistent(&event), WrapPersistent(context)));
+      WTF::BindOnce(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
+                    WrapPersistent(&event), WrapPersistent(context)));
 }
 
 void EventTarget::DispatchEnqueuedEvent(Event* event,

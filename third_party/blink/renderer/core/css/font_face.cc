@@ -501,23 +501,23 @@ void FontFace::SetLoadStatus(LoadStatusType status) {
         GetExecutionContext()
             ->GetTaskRunner(TaskType::kDOMManipulation)
             ->PostTask(FROM_HERE,
-                       WTF::Bind(&LoadedProperty::Resolve<FontFace*>,
-                                 WrapPersistent(loaded_property_.Get()),
-                                 WrapPersistent(this)));
+                       WTF::BindOnce(&LoadedProperty::Resolve<FontFace*>,
+                                     WrapPersistent(loaded_property_.Get()),
+                                     WrapPersistent(this)));
       } else {
         GetExecutionContext()
             ->GetTaskRunner(TaskType::kDOMManipulation)
             ->PostTask(FROM_HERE,
-                       WTF::Bind(&LoadedProperty::Reject<DOMException*>,
-                                 WrapPersistent(loaded_property_.Get()),
-                                 WrapPersistent(error_.Get())));
+                       WTF::BindOnce(&LoadedProperty::Reject<DOMException*>,
+                                     WrapPersistent(loaded_property_.Get()),
+                                     WrapPersistent(error_.Get())));
       }
     }
 
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE,
-                   WTF::Bind(&FontFace::RunCallbacks, WrapPersistent(this)));
+        ->PostTask(FROM_HERE, WTF::BindOnce(&FontFace::RunCallbacks,
+                                            WrapPersistent(this)));
   }
 }
 

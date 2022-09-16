@@ -62,7 +62,7 @@ class TextFragmentAnchorMetricsTest : public SimTest {
     // When the beforematch event is not scheduled, a DCHECK will fail on
     // BeginFrame() because no event was scheduled, so we schedule an empty task
     // here.
-    GetDocument().EnqueueAnimationFrameTask(WTF::Bind([]() {}));
+    GetDocument().EnqueueAnimationFrameTask(WTF::BindOnce([]() {}));
     Compositor().BeginFrame();
   }
 

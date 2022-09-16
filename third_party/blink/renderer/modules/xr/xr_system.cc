@@ -958,8 +958,8 @@ void XRSystem::ExitPresent(base::OnceClosure on_exited) {
         // Once we exit fullscreen, we'll need to come back here to finish
         // shutting down the session.
         fullscreen_exit_observer_->ExitFullscreen(
-            doc, WTF::Bind(&XRSystem::ExitPresent, WrapWeakPersistent(this),
-                           std::move(on_exited)));
+            doc, WTF::BindOnce(&XRSystem::ExitPresent, WrapWeakPersistent(this),
+                               std::move(on_exited)));
         return;
       }
     }
@@ -1063,8 +1063,8 @@ ScriptPromise XRSystem::InternalIsSessionSupported(
   outstanding_support_queries_.insert(query);
   service_->SupportsSession(
       std::move(session_options),
-      WTF::Bind(&XRSystem::OnSupportsSessionReturned, WrapPersistent(this),
-                WrapPersistent(query)));
+      WTF::BindOnce(&XRSystem::OnSupportsSessionReturned, WrapPersistent(this),
+                    WrapPersistent(query)));
 
   return promise;
 }
@@ -1156,8 +1156,8 @@ void XRSystem::RequestImmersiveSession(PendingRequestSessionQuery* query,
         MakeGarbageCollected<XrExitFullscreenObserver>();
 
     base::OnceClosure callback =
-        WTF::Bind(&XRSystem::DoRequestSession, WrapWeakPersistent(this),
-                  WrapPersistent(query), std::move(session_options));
+        WTF::BindOnce(&XRSystem::DoRequestSession, WrapWeakPersistent(this),
+                      WrapPersistent(query), std::move(session_options));
     fullscreen_exit_observer_->ExitFullscreen(doc, std::move(callback));
     return;
   }
@@ -1170,8 +1170,8 @@ void XRSystem::DoRequestSession(
     device::mojom::blink::XRSessionOptionsPtr session_options) {
   service_->RequestSession(
       std::move(session_options),
-      WTF::Bind(&XRSystem::OnRequestSessionReturned, WrapWeakPersistent(this),
-                WrapPersistent(query)));
+      WTF::BindOnce(&XRSystem::OnRequestSessionReturned,
+                    WrapWeakPersistent(this), WrapPersistent(query)));
 }
 
 void XRSystem::RequestInlineSession(PendingRequestSessionQuery* query,
@@ -1225,8 +1225,8 @@ void XRSystem::RequestInlineSession(PendingRequestSessionQuery* query,
   auto session_options = XRSessionOptionsFromQuery(*query);
   service_->RequestSession(
       std::move(session_options),
-      WTF::Bind(&XRSystem::OnRequestSessionReturned, WrapWeakPersistent(this),
-                WrapPersistent(query)));
+      WTF::BindOnce(&XRSystem::OnRequestSessionReturned,
+                    WrapWeakPersistent(this), WrapPersistent(query)));
 }
 
 XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
@@ -1442,7 +1442,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
   if (DomWindow()->document()->IsPrerendering()) {
     // Pass a nullptr instead of |exception_state| because we can't guarantee
     // this object is alive until the prerendering page is activate.
-    DomWindow()->document()->AddPostPrerenderingActivationStep(WTF::Bind(
+    DomWindow()->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
         &XRSystem::RequestSessionInternal, WrapWeakPersistent(this),
         session_mode, WrapPersistent(query), /*exception_state=*/nullptr));
     return promise;
@@ -1552,8 +1552,8 @@ void XRSystem::OnRequestSessionReturned(
       MakeGarbageCollected<XrEnterFullscreenObserver>();
   fullscreen_enter_observer_->RequestFullscreen(
       fullscreen_element, setup_for_dom_overlay, session_has_camera_access,
-      WTF::Bind(&XRSystem::OnFullscreenConfigured, WrapPersistent(this),
-                WrapPersistent(query), std::move(result)));
+      WTF::BindOnce(&XRSystem::OnFullscreenConfigured, WrapPersistent(this),
+                    WrapPersistent(query), std::move(result)));
 }
 
 void XRSystem::OnFullscreenConfigured(
@@ -1639,8 +1639,8 @@ void XRSystem::FinishSessionCreation(
                   GetExecutionContext()->GetTaskRunner(
                       TaskType::kMiscPlatformAPI)));
       environment_provider_.set_disconnect_handler(
-          WTF::Bind(&XRSystem::OnEnvironmentProviderDisconnect,
-                    WrapWeakPersistent(this)));
+          WTF::BindOnce(&XRSystem::OnEnvironmentProviderDisconnect,
+                        WrapWeakPersistent(this)));
 
       session->OnEnvironmentProviderCreated();
     }
@@ -1804,9 +1804,9 @@ void XRSystem::TryEnsureService() {
   DomWindow()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(
           DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  service_.set_disconnect_handler(WTF::Bind(&XRSystem::Dispose,
-                                            WrapWeakPersistent(this),
-                                            DisposeType::kDisconnected));
+  service_.set_disconnect_handler(WTF::BindOnce(&XRSystem::Dispose,
+                                                WrapWeakPersistent(this),
+                                                DisposeType::kDisconnected));
 }
 
 bool XRSystem::IsImmersiveArAllowed() {

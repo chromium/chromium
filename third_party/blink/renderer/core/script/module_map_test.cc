@@ -177,8 +177,8 @@ void ModuleMapTestModulator::Trace(Visitor* visitor) const {
 void ModuleMapTestModulator::ResolveFetches() {
   for (const auto& test_request : test_requests_) {
     TaskRunner()->PostTask(FROM_HERE,
-                           WTF::Bind(&TestRequest::NotifyFetchFinished,
-                                     WrapPersistent(test_request.Get())));
+                           WTF::BindOnce(&TestRequest::NotifyFetchFinished,
+                                         WrapPersistent(test_request.Get())));
   }
   test_requests_.clear();
 }

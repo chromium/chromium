@@ -61,7 +61,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
     if (!receiver_.is_bound())
       return;
 
-    receiver_.set_disconnect_handler(WTF::Bind(&test::ExitRunLoop));
+    receiver_.set_disconnect_handler(WTF::BindOnce(&test::ExitRunLoop));
     test::EnterRunLoop();
   }
 

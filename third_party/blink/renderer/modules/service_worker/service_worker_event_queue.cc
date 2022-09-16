@@ -144,7 +144,7 @@ void ServiceWorkerEventQueue::EnqueueEvent(std::unique_ptr<Event> event) {
       std::make_unique<EventInfo>(
           tick_clock_->NowTicks() +
               event->custom_timeout.value_or(kEventTimeout),
-          WTF::Bind(std::move(event->abort_callback), event->event_id)));
+          WTF::BindOnce(std::move(event->abort_callback), event->event_id)));
 
   auto& queue = event->type == Event::Type::Offline ? queued_offline_events_
                                                     : queued_online_events_;
@@ -300,8 +300,8 @@ void ServiceWorkerEventQueue::ScheduleIdleCallback(base::TimeDelta delay) {
   // before |this| is destroyed at ServiceWorkerGlobalScope::Dispose().
   idle_callback_handle_ = PostDelayedCancellableTask(
       *task_runner_, FROM_HERE,
-      WTF::Bind(&ServiceWorkerEventQueue::TriggerIdleCallback,
-                WTF::Unretained(this)),
+      WTF::BindOnce(&ServiceWorkerEventQueue::TriggerIdleCallback,
+                    WTF::Unretained(this)),
       delay);
 }
 

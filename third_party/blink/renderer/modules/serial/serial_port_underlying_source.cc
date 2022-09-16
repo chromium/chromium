@@ -68,8 +68,8 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   serial_port_->Flush(
       device::mojom::blink::SerialPortFlushMode::kReceive,
-      WTF::Bind(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

@@ -443,7 +443,7 @@ ScriptPromise CookieStore::DoRead(
       cookie_url, default_site_for_cookies_, default_top_frame_origin_,
       std::move(backend_options),
       RuntimeEnabledFeatures::PartitionedCookiesEnabled(GetExecutionContext()),
-      WTF::Bind(backend_result_converter, WrapPersistent(resolver)));
+      WTF::BindOnce(backend_result_converter, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -526,8 +526,8 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
       default_site_for_cookies_, default_top_frame_origin_, status,
-      WTF::Bind(&CookieStore::OnSetCanonicalCookieResult,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&CookieStore::OnSetCanonicalCookieResult,
+                    WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

@@ -25,8 +25,9 @@ InternalsRTCPeerConnection::waitForPeerConnectionDispatchEventsTaskCreated(
   ScriptPromise promise = resolver->Promise();
   CHECK(!connection->dispatch_events_task_created_callback_for_testing_);
   connection->dispatch_events_task_created_callback_for_testing_ =
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver));
+      WTF::BindOnce(
+          [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+          WrapPersistent(resolver));
   return promise;
 }
 

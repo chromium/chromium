@@ -235,8 +235,10 @@ static SlotChangeList& ActiveSlotChangeList() {
   return *slot_change_list;
 }
 static void EnsureEnqueueMicrotask() {
-  if (ActiveMutationObservers().IsEmpty() && ActiveSlotChangeList().IsEmpty())
-    Microtask::EnqueueMicrotask(WTF::Bind(&MutationObserver::DeliverMutations));
+  if (ActiveMutationObservers().IsEmpty() && ActiveSlotChangeList().IsEmpty()) {
+    Microtask::EnqueueMicrotask(
+        WTF::BindOnce(&MutationObserver::DeliverMutations));
+  }
 }
 
 // static

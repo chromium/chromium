@@ -103,8 +103,8 @@ ScriptPromise Serial::getPorts(ScriptState* script_state,
   get_ports_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->GetPorts(WTF::Bind(&Serial::OnGetPorts, WrapPersistent(this),
-                               WrapPersistent(resolver)));
+  service_->GetPorts(WTF::BindOnce(&Serial::OnGetPorts, WrapPersistent(this),
+                                   WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -164,9 +164,10 @@ ScriptPromise Serial::requestPort(ScriptState* script_state,
   request_port_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->RequestPort(std::move(filters),
-                        WTF::Bind(&Serial::OnRequestPort, WrapPersistent(this),
-                                  WrapPersistent(resolver)));
+  service_->RequestPort(
+      std::move(filters),
+      WTF::BindOnce(&Serial::OnRequestPort, WrapPersistent(this),
+                    WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -228,8 +229,8 @@ void Serial::EnsureServiceConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
-  service_.set_disconnect_handler(
-      WTF::Bind(&Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
+  service_.set_disconnect_handler(WTF::BindOnce(
+      &Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
 
   service_->SetClient(receiver_.BindNewPipeAndPassRemote(task_runner));
 }

@@ -624,7 +624,7 @@ void WebMediaPlayerMSCompositor::ReplaceCurrentFrameWithACopy() {
   // passed on IO thread.
   io_task_runner_->PostTask(
       FROM_HERE,
-      media::BindToCurrentLoop(WTF::Bind(
+      media::BindToCurrentLoop(WTF::BindOnce(
           &WebMediaPlayerMSCompositor::ReplaceCurrentFrameWithACopyInternal,
           WrapRefCounted(this))));
 }

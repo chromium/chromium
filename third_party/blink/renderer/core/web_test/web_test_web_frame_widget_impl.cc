@@ -114,7 +114,7 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationForWebTests() {
 
 void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
     base::OnceClosure callback) {
-  LayerTreeHost()->RequestPresentationTimeForNextFrame(WTF::Bind(
+  LayerTreeHost()->RequestPresentationTimeForNextFrame(WTF::BindOnce(
       [](base::OnceClosure callback, const gfx::PresentationFeedback&) {
         std::move(callback).Run();
       },
@@ -148,8 +148,8 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
 
     frame->GetTaskRunner(TaskType::kInternalTest)
         ->PostDelayedTask(FROM_HERE,
-                          WTF::Bind(&WebTestWebFrameWidgetImpl::AnimateNow,
-                                    WrapWeakPersistent(this)),
+                          WTF::BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
+                                        WrapWeakPersistent(this)),
                           base::Milliseconds(1));
   }
 }

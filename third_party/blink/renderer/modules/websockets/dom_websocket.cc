@@ -113,8 +113,8 @@ void DOMWebSocket::EventQueue::Unpause() {
   state_ = kUnpausePosted;
   target_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebSocket)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&EventQueue::UnpauseTask, WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&EventQueue::UnpauseTask,
+                                          WrapWeakPersistent(this)));
 }
 
 void DOMWebSocket::EventQueue::ContextDestroyed() {
@@ -289,8 +289,9 @@ void DOMWebSocket::PostBufferedAmountUpdateTask() {
   buffered_amount_update_task_pending_ = true;
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebSocket)
-      ->PostTask(FROM_HERE, WTF::Bind(&DOMWebSocket::BufferedAmountUpdateTask,
-                                      WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&DOMWebSocket::BufferedAmountUpdateTask,
+                               WrapWeakPersistent(this)));
 }
 
 void DOMWebSocket::BufferedAmountUpdateTask() {

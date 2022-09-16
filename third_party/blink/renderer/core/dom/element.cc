@@ -3456,7 +3456,7 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
         ->PostTask(FROM_HERE,
-                   WTF::Bind(maybe_show_popup, WrapWeakPersistent(this)));
+                   WTF::BindOnce(maybe_show_popup, WrapWeakPersistent(this)));
   }
 
   TreeScope& scope = insertion_point.GetTreeScope();

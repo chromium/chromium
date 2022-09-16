@@ -127,8 +127,8 @@ void RTCDTMFSender::insertDTMF(const String& tones,
     playout_task_is_scheduled_ = true;
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE, WTF::Bind(&RTCDTMFSender::PlayoutTask,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE, WTF::BindOnce(&RTCDTMFSender::PlayoutTask,
+                                            WrapPersistent(this)));
   }
 }
 
@@ -163,7 +163,7 @@ void RTCDTMFSender::DidPlayTone(const String& tone) {
         ->GetTaskRunner(TaskType::kNetworking)
         ->PostDelayedTask(
             FROM_HERE,
-            WTF::Bind(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
+            WTF::BindOnce(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
             base::Milliseconds(inter_tone_gap_));
   }
 }

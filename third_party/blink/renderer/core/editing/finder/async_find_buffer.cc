@@ -83,9 +83,9 @@ void AsyncFindBuffer::NextIteration(RangeInFlatTree* search_range,
            ->GetTaskRunner(TaskType::kInternalFindInPage)
            .get(),
       FROM_HERE,
-      WTF::Bind(&AsyncFindBuffer::Run, WrapWeakPersistent(this),
-                WrapWeakPersistent(search_range), search_text, options,
-                std::move(completeCallback)));
+      WTF::BindOnce(&AsyncFindBuffer::Run, WrapWeakPersistent(this),
+                    WrapWeakPersistent(search_range), search_text, options,
+                    std::move(completeCallback)));
 }
 
 }  // namespace blink

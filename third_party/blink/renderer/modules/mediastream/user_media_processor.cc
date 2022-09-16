@@ -545,8 +545,8 @@ MediaStreamComponent* UserMediaProcessor::RequestInfo::CreateAndStartVideoTrack(
       video_capture_settings_.min_frame_rate(), video_capture_settings_.pan(),
       video_capture_settings_.tilt(), video_capture_settings_.zoom(),
       pan_tilt_zoom_allowed(),
-      WTF::Bind(&UserMediaProcessor::RequestInfo::OnTrackStarted,
-                WrapWeakPersistent(this)),
+      WTF::BindOnce(&UserMediaProcessor::RequestInfo::OnTrackStarted,
+                    WrapWeakPersistent(this)),
       true);
 }
 
@@ -673,8 +673,8 @@ void UserMediaProcessor::SetupAudioInput() {
                            "(Requesting device capabilities)",
                            current_request_info_->request_id()));
     GetMediaDevicesDispatcher()->GetAudioInputCapabilities(
-        WTF::Bind(&UserMediaProcessor::SelectAudioDeviceSettings,
-                  WrapWeakPersistent(this), WrapPersistent(request)));
+        WTF::BindOnce(&UserMediaProcessor::SelectAudioDeviceSettings,
+                      WrapWeakPersistent(this), WrapPersistent(request)));
   } else {
     if (!blink::IsAudioInputMediaType(audio_controls.stream_type)) {
       String failed_constraint_name = String(
@@ -853,8 +853,8 @@ void UserMediaProcessor::SetupVideoInput() {
 
   if (blink::IsDeviceMediaType(video_controls.stream_type)) {
     GetMediaDevicesDispatcher()->GetVideoInputCapabilities(
-        WTF::Bind(&UserMediaProcessor::SelectVideoDeviceSettings,
-                  WrapWeakPersistent(this), WrapPersistent(request)));
+        WTF::BindOnce(&UserMediaProcessor::SelectVideoDeviceSettings,
+                      WrapWeakPersistent(this), WrapPersistent(request)));
   } else {
     if (!blink::IsVideoInputMediaType(video_controls.stream_type)) {
       String failed_constraint_name = String(
@@ -1010,9 +1010,9 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
         current_request_info_->is_processing_user_gesture(),
         mojom::blink::StreamSelectionInfo::New(
             strategy, requested_audio_capture_session_id),
-        WTF::Bind(&UserMediaProcessor::OnStreamGenerated,
-                  WrapWeakPersistent(this),
-                  current_request_info_->request_id()));
+        WTF::BindOnce(&UserMediaProcessor::OnStreamGenerated,
+                      WrapWeakPersistent(this),
+                      current_request_info_->request_id()));
   }
 }
 
@@ -1151,10 +1151,10 @@ void UserMediaProcessor::OnStreamGenerated(
       String video_device_id(video_device.id.data());
       GetMediaDevicesDispatcher()->GetAllVideoInputDeviceFormats(
           video_device_id,
-          WTF::Bind(&UserMediaProcessor::GotAllVideoInputFormatsForDevice,
-                    WrapWeakPersistent(this),
-                    WrapPersistent(current_request_info_->request()), label,
-                    video_device_ids));
+          WTF::BindOnce(&UserMediaProcessor::GotAllVideoInputFormatsForDevice,
+                        WrapWeakPersistent(this),
+                        WrapPersistent(current_request_info_->request()), label,
+                        video_device_ids));
     }
   }
 }
@@ -1420,8 +1420,8 @@ MediaStreamSource* UserMediaProcessor::InitializeVideoSourceObject(
   }
 
   auto video_source = CreateVideoSource(
-      device, WTF::Bind(&UserMediaProcessor::OnLocalSourceStopped,
-                        WrapWeakPersistent(this)));
+      device, WTF::BindOnce(&UserMediaProcessor::OnLocalSourceStopped,
+                            WrapWeakPersistent(this)));
   MediaStreamSource* source =
       InitializeSourceObject(device, std::move(video_source));
 
@@ -1469,7 +1469,7 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 
   std::unique_ptr<blink::MediaStreamAudioSource> audio_source =
       CreateAudioSource(device, std::move(source_ready));
-  audio_source->SetStopCallback(WTF::Bind(
+  audio_source->SetStopCallback(WTF::BindOnce(
       &UserMediaProcessor::OnLocalSourceStopped, WrapWeakPersistent(this)));
 
 #if DCHECK_IS_ON()
@@ -1636,8 +1636,8 @@ void UserMediaProcessor::StartTracks(const String& label) {
   current_request_info_->InitializeWebStreams(blink_id, stream_components_set);
   // Wait for the tracks to be started successfully or to fail.
   current_request_info_->CallbackOnTracksStarted(
-      WTF::Bind(&UserMediaProcessor::OnCreateNativeTracksCompleted,
-                WrapWeakPersistent(this), label));
+      WTF::BindOnce(&UserMediaProcessor::OnCreateNativeTracksCompleted,
+                    WrapWeakPersistent(this), label));
 }
 
 MediaStreamComponent* UserMediaProcessor::CreateVideoTrack(
@@ -1749,10 +1749,10 @@ void UserMediaProcessor::GetUserMediaRequestSucceeded(
   // Therefore, post a task to complete the request with a clean stack.
   task_runner_->PostTask(
       FROM_HERE,
-      WTF::Bind(&UserMediaProcessor::DelayedGetUserMediaRequestSucceeded,
-                WrapWeakPersistent(this), current_request_info_->request_id(),
-                WrapPersistent(descriptors),
-                WrapPersistent(user_media_request)));
+      WTF::BindOnce(
+          &UserMediaProcessor::DelayedGetUserMediaRequestSucceeded,
+          WrapWeakPersistent(this), current_request_info_->request_id(),
+          WrapPersistent(descriptors), WrapPersistent(user_media_request)));
 }
 
 void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
@@ -1788,10 +1788,11 @@ void UserMediaProcessor::GetUserMediaRequestFailed(
   // Therefore, post a task to complete the request with a clean stack.
   task_runner_->PostTask(
       FROM_HERE,
-      WTF::Bind(&UserMediaProcessor::DelayedGetUserMediaRequestFailed,
-                WrapWeakPersistent(this), current_request_info_->request_id(),
-                WrapPersistent(current_request_info_->request()), result,
-                constraint_name));
+      WTF::BindOnce(&UserMediaProcessor::DelayedGetUserMediaRequestFailed,
+                    WrapWeakPersistent(this),
+                    current_request_info_->request_id(),
+                    WrapPersistent(current_request_info_->request()), result,
+                    constraint_name));
 }
 
 void UserMediaProcessor::DelayedGetUserMediaRequestFailed(

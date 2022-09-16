@@ -88,7 +88,7 @@ class HeapMojoAssociatedReceiverGCBaseTest : public TestSupportingGC {
     associated_remote_ = mojo::AssociatedRemote<sample::blink::Service>(
         owner_->associated_receiver().BindNewEndpointAndPassRemote(
             null_task_runner));
-    associated_remote_.set_disconnect_handler(WTF::Bind(
+    associated_remote_.set_disconnect_handler(WTF::BindOnce(
         [](HeapMojoAssociatedReceiverGCBaseTest* associated_receiver_test) {
           associated_receiver_test->run_loop().Quit();
           associated_receiver_test->disconnected() = true;

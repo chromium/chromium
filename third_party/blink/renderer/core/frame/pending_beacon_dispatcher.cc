@@ -191,8 +191,8 @@ void PendingBeaconDispatcher::ScheduleDispatchNextBundledBeacons() {
   // this class and members should not outlive the Document (ExecutionContext).
   task_handle_ = PostNonNestableDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::Bind(&PendingBeaconDispatcher::OnDispatchBeaconsAndRepeat,
-                WrapWeakPersistent(this), start_index),
+      WTF::BindOnce(&PendingBeaconDispatcher::OnDispatchBeaconsAndRepeat,
+                    WrapWeakPersistent(this), start_index),
       delayed);
 }
 

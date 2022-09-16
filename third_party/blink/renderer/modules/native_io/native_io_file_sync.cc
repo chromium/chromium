@@ -42,7 +42,7 @@ NativeIOFileSync::NativeIOFileSync(
       capacity_tracker_(capacity_tracker) {
   DCHECK_GE(backing_file_length, 0);
   DCHECK(capacity_tracker);
-  backend_file_.set_disconnect_handler(WTF::Bind(
+  backend_file_.set_disconnect_handler(WTF::BindOnce(
       &NativeIOFileSync::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
 

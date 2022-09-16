@@ -287,8 +287,8 @@ void DocumentAnimations::RemoveReplacedAnimations(
   for (auto it = animations_to_remove.rbegin();
        it != animations_to_remove.rend(); it++) {
     Animation* animation = *it;
-    Microtask::EnqueueMicrotask(WTF::Bind(&Animation::RemoveReplacedAnimation,
-                                          WrapWeakPersistent(animation)));
+    Microtask::EnqueueMicrotask(WTF::BindOnce(
+        &Animation::RemoveReplacedAnimation, WrapWeakPersistent(animation)));
   }
 }
 

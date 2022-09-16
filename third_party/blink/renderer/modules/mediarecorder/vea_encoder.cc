@@ -300,8 +300,8 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
         input_visible_size_.width(), input_visible_size_.height());
     video_frame->BackWithSharedMemory(&input_buffer->region);
     video_frame->AddDestructionObserver(media::BindToCurrentLoop(
-        WTF::Bind(&VEAEncoder::FrameFinished, WrapRefCounted(this),
-                  std::move(input_buffer))));
+        WTF::BindOnce(&VEAEncoder::FrameFinished, WrapRefCounted(this),
+                      std::move(input_buffer))));
   }
   frames_in_encode_.push(std::make_pair(
       media::WebmMuxer::VideoParameters(frame), capture_timestamp));

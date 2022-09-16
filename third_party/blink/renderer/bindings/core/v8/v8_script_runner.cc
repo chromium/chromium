@@ -542,15 +542,15 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             frame ? TaskType::kIdleTask : TaskType::kInternalDefault;
         execution_context->GetTaskRunner(task_type)->PostDelayedTask(
             FROM_HERE,
-            WTF::Bind(&DelayedProduceCodeCacheTask,
-                      // TODO(leszeks): Consider passing the
-                      // script state as a weak persistent.
-                      WrapPersistent(script_state),
-                      v8::Global<v8::Script>(isolate, script),
-                      WrapPersistent(cache_handler),
-                      classic_script->SourceText().length(),
-                      classic_script->SourceUrl(),
-                      classic_script->StartPosition()),
+            WTF::BindOnce(&DelayedProduceCodeCacheTask,
+                          // TODO(leszeks): Consider passing the
+                          // script state as a weak persistent.
+                          WrapPersistent(script_state),
+                          v8::Global<v8::Script>(isolate, script),
+                          WrapPersistent(cache_handler),
+                          classic_script->SourceText().length(),
+                          classic_script->SourceUrl(),
+                          classic_script->StartPosition()),
             delay);
       } else {
         V8CodeCache::ProduceCache(
@@ -837,10 +837,11 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
   // [not specced] Store V8 code cache on successful evaluation.
   if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess) {
     execution_context->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE,
-                   WTF::Bind(&Modulator::ProduceCacheModuleTreeTopLevel,
-                             WrapWeakPersistent(Modulator::From(script_state)),
-                             WrapWeakPersistent(module_script)));
+        ->PostTask(
+            FROM_HERE,
+            WTF::BindOnce(&Modulator::ProduceCacheModuleTreeTopLevel,
+                          WrapWeakPersistent(Modulator::From(script_state)),
+                          WrapWeakPersistent(module_script)));
   }
 
   if (!rethrow_errors.ShouldRethrow()) {

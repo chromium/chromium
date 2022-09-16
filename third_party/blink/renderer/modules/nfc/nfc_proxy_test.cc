@@ -67,8 +67,8 @@ class FakeNfcService : public device::mojom::blink::NFC {
     DCHECK(!receiver_.is_bound());
     receiver_.Bind(
         mojo::PendingReceiver<device::mojom::blink::NFC>(std::move(handle)));
-    receiver_.set_disconnect_handler(
-        WTF::Bind(&FakeNfcService::OnConnectionError, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(WTF::BindOnce(
+        &FakeNfcService::OnConnectionError, WTF::Unretained(this)));
   }
 
   void OnConnectionError() {

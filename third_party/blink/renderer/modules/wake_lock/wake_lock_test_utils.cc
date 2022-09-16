@@ -76,7 +76,7 @@ void MockWakeLock::Bind(
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
-      WTF::Bind(&MockWakeLock::OnConnectionError, WTF::Unretained(this)));
+      WTF::BindOnce(&MockWakeLock::OnConnectionError, WTF::Unretained(this)));
 }
 
 void MockWakeLock::Unbind() {
@@ -159,7 +159,7 @@ void MockPermissionService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(mojo::PendingReceiver<mojom::blink::PermissionService>(
       std::move(handle)));
-  receiver_.set_disconnect_handler(WTF::Bind(
+  receiver_.set_disconnect_handler(WTF::BindOnce(
       &MockPermissionService::OnConnectionError, WTF::Unretained(this)));
 }
 

@@ -165,11 +165,11 @@ FileWriterSync* DOMFileSystemSync::CreateWriter(
   auto* sync_helper = MakeGarbageCollected<FileWriterCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::Bind(&FileWriterCallbacksSyncHelper::OnSuccess,
-                WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&FileWriterCallbacksSyncHelper::OnSuccess,
+                    WrapPersistentIfNeeded(sync_helper));
   auto error_callback_wrapper =
-      WTF::Bind(&FileWriterCallbacksSyncHelper::OnError,
-                WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&FileWriterCallbacksSyncHelper::OnError,
+                    WrapPersistentIfNeeded(sync_helper));
 
   auto callbacks = std::make_unique<FileWriterCallbacks>(
       file_writer, std::move(success_callback_wrapper),

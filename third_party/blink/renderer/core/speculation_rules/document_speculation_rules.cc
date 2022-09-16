@@ -76,8 +76,8 @@ void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
 
   has_pending_update_ = true;
   Microtask::EnqueueMicrotask(
-      WTF::Bind(&DocumentSpeculationRules::UpdateSpeculationCandidates,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&DocumentSpeculationRules::UpdateSpeculationCandidates,
+                    WrapWeakPersistent(this)));
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {

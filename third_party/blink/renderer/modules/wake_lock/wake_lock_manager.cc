@@ -38,7 +38,7 @@ void WakeLockManager::AcquireWakeLock(ScriptPromiseResolver* resolver) {
         device::mojom::blink::WakeLockReason::kOther, "Blink Wake Lock",
         wake_lock_.BindNewPipeAndPassReceiver(
             execution_context_->GetTaskRunner(TaskType::kWakeLock)));
-    wake_lock_.set_disconnect_handler(WTF::Bind(
+    wake_lock_.set_disconnect_handler(WTF::BindOnce(
         &WakeLockManager::OnWakeLockConnectionError, WrapWeakPersistent(this)));
     wake_lock_->RequestWakeLock();
   }

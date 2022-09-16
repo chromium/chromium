@@ -525,8 +525,9 @@ void WebViewImpl::CloseWindowSoon() {
       ->GetPageScheduler()
       ->GetAgentGroupScheduler()
       .DefaultTaskRunner()
-      ->PostTask(FROM_HERE, WTF::Bind(&WebViewImpl::DoDeferredCloseWindowSoon,
-                                      weak_ptr_factory_.GetWeakPtr()));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&WebViewImpl::DoDeferredCloseWindowSoon,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebViewImpl::DoDeferredCloseWindowSoon() {
@@ -576,7 +577,7 @@ WebViewImpl::WebViewImpl(
     // corresponding browser-side `RenderViewHostImpl` (e.g. tests or
     // printing), call `Close()` directly instead to delete `this`.
     receiver_.set_disconnect_handler(
-        WTF::Bind(&WebViewImpl::MojoDisconnected, WTF::Unretained(this)));
+        WTF::BindOnce(&WebViewImpl::MojoDisconnected, WTF::Unretained(this)));
   }
   if (!web_view_client_)
     DCHECK(!does_composite_);
@@ -2966,7 +2967,7 @@ void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
   local_main_frame_host_remote_->ShowCreatedWindow(
       opener_frame_token, NavigationPolicyToDisposition(policy),
       std::move(window_features), opened_by_user_gesture,
-      WTF::Bind(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
+      WTF::BindOnce(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
 
   MainFrameDevToolsAgentImpl()->DidShowNewWindow();
 }
@@ -3018,13 +3019,13 @@ void WebViewImpl::SendUpdatedTargetURLToBrowser(const KURL& target_url) {
   if (GetPage()->MainFrame()->IsLocalFrame()) {
     DCHECK(local_main_frame_host_remote_);
     local_main_frame_host_remote_->UpdateTargetURL(
-        target_url, WTF::Bind(&WebViewImpl::TargetURLUpdatedInBrowser,
-                              WTF::Unretained(this)));
+        target_url, WTF::BindOnce(&WebViewImpl::TargetURLUpdatedInBrowser,
+                                  WTF::Unretained(this)));
   } else {
     DCHECK(remote_main_frame_host_remote_);
     remote_main_frame_host_remote_->UpdateTargetURL(
-        target_url, WTF::Bind(&WebViewImpl::TargetURLUpdatedInBrowser,
-                              WTF::Unretained(this)));
+        target_url, WTF::BindOnce(&WebViewImpl::TargetURLUpdatedInBrowser,
+                                  WTF::Unretained(this)));
   }
 }
 
@@ -3884,7 +3885,7 @@ void WebViewImpl::MojoDisconnected() {
   // process, and is used to release ownership of the corresponding
   // RenderViewImpl instance. https://crbug.com/1000035.
   GetPage()->GetAgentGroupScheduler().DefaultTaskRunner()->PostNonNestableTask(
-      FROM_HERE, WTF::Bind(&WebViewImpl::Close, WTF::Unretained(this)));
+      FROM_HERE, WTF::BindOnce(&WebViewImpl::Close, WTF::Unretained(this)));
 }
 
 void WebViewImpl::CreateRemoteMainFrame(

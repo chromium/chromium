@@ -1128,8 +1128,8 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
   ScriptPromise promise = resolver->Promise();
   mojom::blink::AdAuctionService::JoinInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::Bind(&NavigatorAuction::JoinComplete, WrapWeakPersistent(this),
-                    is_cross_origin));
+          WTF::BindOnce(&NavigatorAuction::JoinComplete,
+                        WrapWeakPersistent(this), is_cross_origin));
 
   PendingJoin pending_join{std::move(mojo_group), std::move(callback)};
   if (is_cross_origin) {
@@ -1190,8 +1190,8 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
   ScriptPromise promise = resolver->Promise();
   mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::Bind(&NavigatorAuction::LeaveComplete, WrapWeakPersistent(this),
-                    is_cross_origin));
+          WTF::BindOnce(&NavigatorAuction::LeaveComplete,
+                        WrapWeakPersistent(this), is_cross_origin));
 
   PendingLeave pending_leave{std::move(owner), std::move(group->name()),
                              std::move(callback)};
@@ -1319,7 +1319,7 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
   }
   ad_auction_service_->RunAdAuction(
       std::move(mojo_config), std::move(abort_receiver),
-      WTF::Bind(
+      WTF::BindOnce(
           &NavigatorAuction::AuctionComplete, WrapPersistent(this),
           WrapPersistent(resolver),
           WrapPersistent(config->hasSignal() ? config->signal() : nullptr)));
@@ -1395,7 +1395,7 @@ ScriptPromise NavigatorAuction::deprecatedURNToURL(
   ScriptPromise promise = resolver->Promise();
   ad_auction_service_->DeprecatedGetURLFromURN(
       std::move(uuid_url),
-      resolver->WrapCallbackInScriptScope(WTF::Bind(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &NavigatorAuction::GetURLFromURNComplete, WrapPersistent(this))));
   return promise;
 }
@@ -1436,7 +1436,7 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
   ScriptPromise promise = resolver->Promise();
   ad_auction_service_->DeprecatedReplaceInURN(
       std::move(uuid_url), std::move(replacements_list),
-      resolver->WrapCallbackInScriptScope(WTF::Bind(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &NavigatorAuction::ReplaceInURNComplete, WrapPersistent(this))));
   return promise;
 }
@@ -1487,8 +1487,8 @@ ScriptPromise NavigatorAuction::createAdRequest(
   ScriptPromise promise = resolver->Promise();
   ad_auction_service_->CreateAdRequest(
       std::move(mojo_config),
-      resolver->WrapCallbackInScriptScope(
-          WTF::Bind(&NavigatorAuction::AdsRequested, WrapPersistent(this))));
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          &NavigatorAuction::AdsRequested, WrapPersistent(this))));
   return promise;
 }
 
@@ -1541,7 +1541,7 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
   ad_auction_service_->FinalizeAd(
       ads->GetGuid(), std::move(mojo_config),
-      resolver->WrapCallbackInScriptScope(WTF::Bind(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &NavigatorAuction::FinalizeAdComplete, WrapPersistent(this))));
   return promise;
 }

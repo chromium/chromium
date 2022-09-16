@@ -193,10 +193,10 @@ void MediaCustomControlsFullscreenDetector::UpdateDominantAndFullscreenStatus(
   VideoElement()
       .GetDocument()
       .GetTaskRunner(TaskType::kInternalMedia)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(update_dominant_and_fullscreen, WrapWeakPersistent(this),
-                    is_dominant_visible_content, is_effectively_fullscreen));
+      ->PostTask(FROM_HERE, WTF::BindOnce(update_dominant_and_fullscreen,
+                                          WrapWeakPersistent(this),
+                                          is_dominant_visible_content,
+                                          is_effectively_fullscreen));
 }
 
 void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(

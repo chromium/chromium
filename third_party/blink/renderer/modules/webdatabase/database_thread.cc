@@ -119,8 +119,8 @@ void DatabaseThread::CleanupDatabaseThread() {
   open_database_set_.clear();
 
   thread_->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&DatabaseThread::CleanupDatabaseThreadCompleted,
-                           WrapCrossThreadPersistent(this)));
+      FROM_HERE, WTF::BindOnce(&DatabaseThread::CleanupDatabaseThreadCompleted,
+                               WrapCrossThreadPersistent(this)));
 }
 
 void DatabaseThread::CleanupDatabaseThreadCompleted() {

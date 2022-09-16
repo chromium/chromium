@@ -274,7 +274,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
           std::move(request), mojom::blink::CacheQueryOptions::New(),
           /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
           trace_id,
-          WTF::Bind(
+          WTF::BindOnce(
               [](scoped_refptr<ResponsesAccumulator> accumulator,
                  mojom::blink::FetchAPIRequestPtr request,
                  mojom::blink::MatchResultPtr result) {
@@ -403,7 +403,7 @@ class GetCacheKeysForRequestData {
         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
     cache_remote_->Keys(
         nullptr /* request */, mojom::blink::CacheQueryOptions::New(), trace_id,
-        WTF::Bind(
+        WTF::BindOnce(
             [](DataRequestParams params,
                std::unique_ptr<GetCacheKeysForRequestData> self,
                mojom::blink::CacheKeysResultPtr result) {
@@ -541,7 +541,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
 
   cache_storage->Keys(
       trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](String security_origin,
              std::unique_ptr<RequestCacheNamesCallback> callback,
              const Vector<String>& caches) {
@@ -586,7 +586,7 @@ void InspectorCacheStorageAgent::requestEntries(
 
   cache_storage->Open(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](DataRequestParams params,
              std::unique_ptr<RequestEntriesCallback> callback,
              mojom::blink::OpenResultPtr result) {
@@ -624,7 +624,7 @@ void InspectorCacheStorageAgent::deleteCache(
   }
   cache_storage->Delete(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](std::unique_ptr<DeleteCacheCallback> callback,
              mojom::blink::CacheStorageError error) {
             if (error == mojom::blink::CacheStorageError::kSuccess) {
@@ -658,7 +658,7 @@ void InspectorCacheStorageAgent::deleteEntry(
   }
   cache_storage->Open(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](String cache_name, String request, int64_t trace_id,
              std::unique_ptr<DeleteEntryCallback> callback,
              mojom::blink::OpenResultPtr result) {
@@ -683,7 +683,7 @@ void InspectorCacheStorageAgent::deleteEntry(
               auto* cache = cache_remote.get();
               cache->Batch(
                   std::move(batch_operations), trace_id,
-                  WTF::Bind(
+                  WTF::BindOnce(
                       [](mojo::AssociatedRemote<mojom::blink::CacheStorageCache>
                              cache_remote,
                          std::unique_ptr<DeleteEntryCallback> callback,
@@ -741,7 +741,7 @@ void InspectorCacheStorageAgent::requestCachedResponse(
       std::move(request), std::move(multi_query_options),
       /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,
       trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](std::unique_ptr<RequestCachedResponseCallback> callback,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              mojom::blink::MatchResultPtr result) {

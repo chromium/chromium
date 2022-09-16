@@ -226,9 +226,9 @@ void ImagePaintTimingDetector::StopRecordEntries() {
 }
 
 void ImagePaintTimingDetector::RegisterNotifyPresentationTime() {
-  auto callback = WTF::Bind(&ImagePaintTimingDetector::ReportPresentationTime,
-                            WrapCrossThreadWeakPersistent(this),
-                            last_registered_frame_index_);
+  auto callback = WTF::BindOnce(
+      &ImagePaintTimingDetector::ReportPresentationTime,
+      WrapCrossThreadWeakPersistent(this), last_registered_frame_index_);
   callback_manager_->RegisterCallback(std::move(callback));
 }
 

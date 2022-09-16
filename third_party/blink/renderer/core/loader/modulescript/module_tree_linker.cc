@@ -190,8 +190,8 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
   if (!url.IsValid()) {
     result_ = nullptr;
     modulator_->TaskRunner()->PostTask(
-        FROM_HERE, WTF::Bind(&ModuleTreeLinker::AdvanceState,
-                             WrapPersistent(this), State::kFinished));
+        FROM_HERE, WTF::BindOnce(&ModuleTreeLinker::AdvanceState,
+                                 WrapPersistent(this), State::kFinished));
     return;
   }
 
@@ -263,8 +263,8 @@ void ModuleTreeLinker::FetchRootInline(
   // <spec step="4">Fetch the descendants of and instantiate script, ...</spec>
   modulator_->TaskRunner()->PostTask(
       FROM_HERE,
-      WTF::Bind(&ModuleTreeLinker::FetchDescendants, WrapPersistent(this),
-                WrapPersistent(module_script)));
+      WTF::BindOnce(&ModuleTreeLinker::FetchDescendants, WrapPersistent(this),
+                    WrapPersistent(module_script)));
 }
 
 // Returning from #fetch-a-single-module-script, calling from

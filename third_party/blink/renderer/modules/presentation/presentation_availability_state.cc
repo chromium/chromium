@@ -21,7 +21,7 @@ void PresentationAvailabilityState::RequestAvailability(
   auto screen_availability = GetScreenAvailability(urls);
   // Reject Promise if screen availability is unsupported for all URLs.
   if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
-    Microtask::EnqueueMicrotask(WTF::Bind(
+    Microtask::EnqueueMicrotask(WTF::BindOnce(
         &PresentationAvailabilityCallbacks::RejectAvailabilityNotSupported,
         WrapPersistent(callback)));
     // Do not listen to urls if we reject the promise.
@@ -35,7 +35,7 @@ void PresentationAvailabilityState::RequestAvailability(
   }
 
   if (screen_availability != mojom::blink::ScreenAvailability::UNKNOWN) {
-    Microtask::EnqueueMicrotask(WTF::Bind(
+    Microtask::EnqueueMicrotask(WTF::BindOnce(
         &PresentationAvailabilityCallbacks::Resolve, WrapPersistent(callback),
         screen_availability == mojom::blink::ScreenAvailability::AVAILABLE));
   } else {

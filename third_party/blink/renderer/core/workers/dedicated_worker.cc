@@ -224,8 +224,8 @@ void DedicatedWorker::Start() {
 
   factory_client_->CreateWorkerHostDeprecated(
       token_, script_request_url_,
-      WTF::Bind(&DedicatedWorker::OnHostCreated, WrapWeakPersistent(this),
-                std::move(blob_url_loader_factory)));
+      WTF::BindOnce(&DedicatedWorker::OnHostCreated, WrapWeakPersistent(this),
+                    std::move(blob_url_loader_factory)));
 }
 
 void DedicatedWorker::OnHostCreated(
@@ -250,9 +250,9 @@ void DedicatedWorker::OnHostCreated(
         network::mojom::RequestDestination::kWorker,
         network::mojom::RequestMode::kSameOrigin,
         network::mojom::CredentialsMode::kSameOrigin,
-        WTF::Bind(&DedicatedWorker::OnResponse, WrapPersistent(this)),
-        WTF::Bind(&DedicatedWorker::OnFinished, WrapPersistent(this),
-                  std::move(back_forward_cache_controller_host)),
+        WTF::BindOnce(&DedicatedWorker::OnResponse, WrapPersistent(this)),
+        WTF::BindOnce(&DedicatedWorker::OnFinished, WrapPersistent(this),
+                      std::move(back_forward_cache_controller_host)),
         reject_coep_unsafe_none, std::move(blob_url_loader_factory));
     return;
   }

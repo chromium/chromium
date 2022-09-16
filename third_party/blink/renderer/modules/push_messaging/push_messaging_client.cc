@@ -72,10 +72,10 @@ void PushMessagingClient::Subscribe(
   if (!options->applicationServerKey()->ByteLength()) {
     ManifestManager* manifest_manager =
         ManifestManager::From(*GetSupplementable());
-    manifest_manager->RequestManifest(
-        WTF::Bind(&PushMessagingClient::DidGetManifest, WrapPersistent(this),
-                  WrapPersistent(service_worker_registration),
-                  std::move(options_ptr), user_gesture, std::move(callbacks)));
+    manifest_manager->RequestManifest(WTF::BindOnce(
+        &PushMessagingClient::DidGetManifest, WrapPersistent(this),
+        WrapPersistent(service_worker_registration), std::move(options_ptr),
+        user_gesture, std::move(callbacks)));
   } else {
     DoSubscribe(service_worker_registration, std::move(options_ptr),
                 user_gesture, std::move(callbacks));
@@ -133,9 +133,9 @@ void PushMessagingClient::DoSubscribe(
   GetPushMessagingRemote()->Subscribe(
       service_worker_registration->RegistrationId(), std::move(options),
       user_gesture,
-      WTF::Bind(&PushMessagingClient::DidSubscribe, WrapPersistent(this),
-                WrapPersistent(service_worker_registration),
-                std::move(callbacks)));
+      WTF::BindOnce(&PushMessagingClient::DidSubscribe, WrapPersistent(this),
+                    WrapPersistent(service_worker_registration),
+                    std::move(callbacks)));
 }
 
 void PushMessagingClient::DidSubscribe(

@@ -50,9 +50,9 @@ void WebIDBCursor::Advance(uint32_t count,
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id_, this);
 
   callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
-  cursor_->Advance(
-      count, WTF::Bind(&WebIDBCursor::AdvanceCallback, WTF::Unretained(this),
-                       std::move(callbacks)));
+  cursor_->Advance(count,
+                   WTF::BindOnce(&WebIDBCursor::AdvanceCallback,
+                                 WTF::Unretained(this), std::move(callbacks)));
 }
 
 void WebIDBCursor::AdvanceCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
@@ -112,9 +112,10 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
       ++pending_onsuccess_callbacks_;
 
       callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
-      cursor_->Prefetch(prefetch_amount_,
-                        WTF::Bind(&WebIDBCursor::PrefetchCallback,
-                                  WTF::Unretained(this), std::move(callbacks)));
+      cursor_->Prefetch(
+          prefetch_amount_,
+          WTF::BindOnce(&WebIDBCursor::PrefetchCallback, WTF::Unretained(this),
+                        std::move(callbacks)));
 
       // Increase prefetch_amount_ exponentially.
       prefetch_amount_ *= 2;
@@ -133,8 +134,8 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
   callbacks->SetState(weak_factory_.GetWeakPtr(), transaction_id_);
   cursor_->CursorContinue(
       IDBKey::Clone(key), IDBKey::Clone(primary_key),
-      WTF::Bind(&WebIDBCursor::CursorContinueCallback, WTF::Unretained(this),
-                std::move(callbacks)));
+      WTF::BindOnce(&WebIDBCursor::CursorContinueCallback,
+                    WTF::Unretained(this), std::move(callbacks)));
 }
 
 void WebIDBCursor::CursorContinueCallback(

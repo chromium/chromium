@@ -93,7 +93,8 @@ void HighestPmfReporter::OnMemoryPing(MemoryUsage usage) {
   if (FirstNavigationStarted()) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
-        WTF::Bind(&HighestPmfReporter::OnReportMetrics, WTF::Unretained(this)),
+        WTF::BindOnce(&HighestPmfReporter::OnReportMetrics,
+                      WTF::Unretained(this)),
         time_to_report[0]);
   }
 
@@ -131,7 +132,8 @@ void HighestPmfReporter::OnReportMetrics() {
       time_to_report[report_count_] - time_to_report[report_count_ - 1];
   task_runner_->PostDelayedTask(
       FROM_HERE,
-      WTF::Bind(&HighestPmfReporter::OnReportMetrics, WTF::Unretained(this)),
+      WTF::BindOnce(&HighestPmfReporter::OnReportMetrics,
+                    WTF::Unretained(this)),
       delay);
 }
 

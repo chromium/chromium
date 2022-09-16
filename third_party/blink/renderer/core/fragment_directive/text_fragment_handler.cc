@@ -204,8 +204,8 @@ void TextFragmentHandler::StartGeneratingForCurrentSelection() {
   }
   GetTextFragmentSelectorGenerator()->Generate(
       *current_selection_range,
-      WTF::Bind(&TextFragmentHandler::DidFinishSelectorGeneration,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&TextFragmentHandler::DidFinishSelectorGeneration,
+                    WrapWeakPersistent(this)));
 }
 
 void TextFragmentHandler::Trace(Visitor* visitor) const {

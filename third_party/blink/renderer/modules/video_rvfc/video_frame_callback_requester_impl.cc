@@ -112,8 +112,8 @@ void VideoFrameCallbackRequesterImpl::ScheduleWindowRaf() {
       ->GetDocument()
       .GetScriptedAnimationController()
       .ScheduleVideoFrameCallbacksExecution(
-          WTF::Bind(&VideoFrameCallbackRequesterImpl::OnExecution,
-                    weak_factory_.GetWeakPtr()));
+          WTF::BindOnce(&VideoFrameCallbackRequesterImpl::OnExecution,
+                        weak_factory_.GetWeakPtr()));
 }
 
 void VideoFrameCallbackRequesterImpl::ScheduleExecution() {
@@ -184,8 +184,8 @@ bool VideoFrameCallbackRequesterImpl::TryScheduleImmersiveXRSessionRaf() {
     return false;
 
   session->ScheduleVideoFrameCallbacksExecution(
-      WTF::Bind(&VideoFrameCallbackRequesterImpl::OnExecution,
-                weak_factory_.GetWeakPtr()));
+      WTF::BindOnce(&VideoFrameCallbackRequesterImpl::OnExecution,
+                    weak_factory_.GetWeakPtr()));
 
   return true;
 }

@@ -51,7 +51,7 @@ ScriptPromise FileSystemFileHandle::createWritable(
 
   mojo_ptr_->CreateFileWriter(
       options->keepExistingData(), options->autoClose(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
              mojom::blink::FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
@@ -84,7 +84,7 @@ ScriptPromise FileSystemFileHandle::getFile(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  mojo_ptr_->AsBlob(WTF::Bind(
+  mojo_ptr_->AsBlob(WTF::BindOnce(
       [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
          const String& name, FileSystemAccessErrorPtr result,
          const base::File::Info& info,
@@ -115,7 +115,7 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  mojo_ptr_->OpenAccessHandle(WTF::Bind(
+  mojo_ptr_->OpenAccessHandle(WTF::BindOnce(
       [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
          FileSystemAccessErrorPtr result,
          mojom::blink::FileSystemAccessAccessHandleFilePtr file,

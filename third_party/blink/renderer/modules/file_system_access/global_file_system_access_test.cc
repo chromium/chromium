@@ -129,7 +129,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationRequiredOtherwiseDenied) {
   EXPECT_FALSE(frame->HasStickyUserActivation());
 
   MockFileSystemAccessManager manager(frame->GetBrowserInterfaceBroker());
-  manager.SetChooseEntriesResponse(WTF::Bind(
+  manager.SetChooseEntriesResponse(WTF::BindOnce(
       [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         FAIL();
       }));
@@ -150,7 +150,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesSuccessful) {
   base::RunLoop manager_run_loop;
   MockFileSystemAccessManager manager(frame->GetBrowserInterfaceBroker(),
                                       manager_run_loop.QuitClosure());
-  manager.SetChooseEntriesResponse(WTF::Bind(
+  manager.SetChooseEntriesResponse(WTF::BindOnce(
       [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         auto error = mojom::blink::FileSystemAccessError::New();
         error->status = mojom::blink::FileSystemAccessStatus::kOk;
@@ -206,7 +206,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesErrors) {
 
     base::RunLoop manager_run_loop;
     manager.SetQuitClosure(manager_run_loop.QuitClosure());
-    manager.SetChooseEntriesResponse(WTF::Bind(
+    manager.SetChooseEntriesResponse(WTF::BindOnce(
         [](mojom::blink::FileSystemAccessStatus status,
            MockFileSystemAccessManager::ChooseEntriesCallback callback) {
           auto error = mojom::blink::FileSystemAccessError::New();

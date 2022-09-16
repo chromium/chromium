@@ -28,7 +28,7 @@ class AsyncCallbackHelper {
     if (!success_callback)
       return base::OnceCallback<void(CallbackParam*)>();
 
-    auto success_callback_wrapper = WTF::Bind(
+    auto success_callback_wrapper = WTF::BindOnce(
         [](V8Callback* persistent_callback, CallbackParam* param) {
           persistent_callback->InvokeAndReportException(nullptr, param);
         },
@@ -41,7 +41,7 @@ class AsyncCallbackHelper {
     if (!error_callback)
       return base::OnceCallback<void(base::File::Error)>();
 
-    return WTF::Bind(
+    return WTF::BindOnce(
         [](V8ErrorCallback* persistent_callback, base::File::Error error) {
           persistent_callback->InvokeAndReportException(
               nullptr, file_error::CreateDOMException(error));
@@ -56,7 +56,7 @@ class AsyncCallbackHelper {
     if (!success_callback)
       return VoidCallbacks::SuccessCallback();
 
-    auto success_callback_wrapper = WTF::Bind(
+    auto success_callback_wrapper = WTF::BindOnce(
         [](V8VoidCallback* persistent_callback) {
           persistent_callback->InvokeAndReportException(nullptr);
         },

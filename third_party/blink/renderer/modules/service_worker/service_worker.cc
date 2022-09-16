@@ -110,8 +110,8 @@ void ServiceWorker::postMessage(ScriptState* script_state,
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
       document->AddPostPrerenderingActivationStep(
-          WTF::Bind(&ServiceWorker::PostMessageInternal,
-                    WrapWeakPersistent(this), std::move(msg)));
+          WTF::BindOnce(&ServiceWorker::PostMessageInternal,
+                        WrapWeakPersistent(this), std::move(msg)));
       return;
     }
   }
@@ -126,9 +126,9 @@ void ServiceWorker::PostMessageInternal(BlinkTransferableMessage message) {
 ScriptPromise ServiceWorker::InternalsTerminate(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  host_->TerminateForTesting(
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver)));
+  host_->TerminateForTesting(WTF::BindOnce(
+      [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+      WrapPersistent(resolver)));
   return promise;
 }
 

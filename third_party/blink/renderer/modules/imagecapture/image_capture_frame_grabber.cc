@@ -310,7 +310,7 @@ void ImageCaptureFrameGrabber::GrabFrame(
   }
 
   auto scoped_callbacks =
-      MakeScopedWebCallbacks(std::move(callbacks), WTF::Bind(&OnError));
+      MakeScopedWebCallbacks(std::move(callbacks), WTF::BindOnce(&OnError));
 
   // A SingleShotFrameHandler is bound and given to the Track to guarantee that
   // only one VideoFrame is converted and delivered to OnSkImage(), otherwise

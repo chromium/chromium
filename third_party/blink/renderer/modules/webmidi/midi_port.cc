@@ -96,8 +96,8 @@ ScriptPromise MIDIPort::open(ScriptState* script_state) {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
-                 WTF::Bind(&MIDIPort::OpenAsynchronously, WrapPersistent(this),
-                           WrapPersistent(resolver)));
+                 WTF::BindOnce(&MIDIPort::OpenAsynchronously,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   running_open_count_++;
   return resolver->Promise();
 }
@@ -107,8 +107,8 @@ void MIDIPort::open() {
     return;
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(FROM_HERE, WTF::Bind(&MIDIPort::OpenAsynchronously,
-                                      WrapPersistent(this), nullptr));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&MIDIPort::OpenAsynchronously,
+                                          WrapPersistent(this), nullptr));
   running_open_count_++;
 }
 
@@ -120,8 +120,8 @@ ScriptPromise MIDIPort::close(ScriptState* script_state) {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
-                 WTF::Bind(&MIDIPort::CloseAsynchronously, WrapPersistent(this),
-                           WrapPersistent(resolver)));
+                 WTF::BindOnce(&MIDIPort::CloseAsynchronously,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

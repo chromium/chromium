@@ -228,8 +228,8 @@ NativeIOFile::NativeIOFile(
       capacity_tracker_(capacity_tracker) {
   DCHECK_GE(backing_file_length, 0);
   DCHECK(capacity_tracker);
-  backend_file_.set_disconnect_handler(
-      WTF::Bind(&NativeIOFile::OnBackendDisconnect, WrapWeakPersistent(this)));
+  backend_file_.set_disconnect_handler(WTF::BindOnce(
+      &NativeIOFile::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
 
 NativeIOFile::~NativeIOFile() {
@@ -362,8 +362,8 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
     base::File file = file_state_->TakeFile();
     backend_file_->SetLength(
         expected_length, std::move(file),
-        WTF::Bind(&NativeIOFile::DidSetLengthIpc, WrapPersistent(this),
-                  WrapPersistent(resolver)));
+        WTF::BindOnce(&NativeIOFile::DidSetLengthIpc, WrapPersistent(this),
+                      WrapPersistent(resolver)));
     return resolver->Promise();
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -606,9 +606,9 @@ void NativeIOFile::DidClose(
     resolver->Resolve();
     return;
   }
-  backend_file_->Close(
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver.Get())));
+  backend_file_->Close(WTF::BindOnce(
+      [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+      WrapPersistent(resolver.Get())));
 }
 
 // static

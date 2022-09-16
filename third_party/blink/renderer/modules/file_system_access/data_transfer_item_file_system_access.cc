@@ -65,7 +65,7 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
   auto* raw_fsa_manager = fsa_manager.get();
   raw_fsa_manager->GetEntryFromDataTransferToken(
       std::move(token_remote),
-      WTF::Bind(
+      WTF::BindOnce(
           [](mojo::Remote<mojom::blink::FileSystemAccessManager>,
              ScriptPromiseResolver* resolver,
              mojom::blink::FileSystemAccessEntryPtr entry) {

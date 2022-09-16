@@ -68,10 +68,10 @@ void PostTaskWithLowPriorityUntilTimeout(
       };
 
   lower_priority_task_runner->PostTask(
-      from_here, WTF::Bind(run_task_once, ref_counted_task));
+      from_here, WTF::BindOnce(run_task_once, ref_counted_task));
 
   normal_priority_task_runner->PostDelayedTask(
-      from_here, WTF::Bind(run_task_once, ref_counted_task), timeout);
+      from_here, WTF::BindOnce(run_task_once, ref_counted_task), timeout);
 }
 
 }  // namespace
@@ -173,10 +173,10 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
       // following delayed task should not persist a PendingScript.
       task_runner_->PostDelayedTask(
           FROM_HERE,
-          WTF::Bind(&ScriptRunner::RemoveDelayReasonFromScript,
-                    WrapWeakPersistent(this),
-                    WrapWeakPersistent(pending_script),
-                    DelayReason::kMilestone),
+          WTF::BindOnce(&ScriptRunner::RemoveDelayReasonFromScript,
+                        WrapWeakPersistent(this),
+                        WrapWeakPersistent(pending_script),
+                        DelayReason::kMilestone),
           delay_limit);
     }
     // Still to be delayed.
@@ -186,8 +186,8 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   // Script is really ready to evaluate.
   pending_async_scripts_.erase(it);
   base::OnceClosure task =
-      WTF::Bind(&ScriptRunner::ExecuteAsyncPendingScript,
-                WrapWeakPersistent(this), WrapPersistent(pending_script));
+      WTF::BindOnce(&ScriptRunner::ExecuteAsyncPendingScript,
+                    WrapWeakPersistent(this), WrapPersistent(pending_script));
   if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
     PostTaskWithLowPriorityUntilTimeout(
         FROM_HERE, std::move(task),
@@ -239,10 +239,10 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
       while (!pending_in_order_scripts_.IsEmpty() &&
              pending_in_order_scripts_.front()->IsReady()) {
         PendingScript* pending_in_order = pending_in_order_scripts_.TakeFirst();
-        task_runner_->PostTask(FROM_HERE,
-                               WTF::Bind(&ScriptRunner::ExecutePendingScript,
-                                         WrapWeakPersistent(this),
-                                         WrapPersistent(pending_in_order)));
+        task_runner_->PostTask(
+            FROM_HERE, WTF::BindOnce(&ScriptRunner::ExecutePendingScript,
+                                     WrapWeakPersistent(this),
+                                     WrapPersistent(pending_in_order)));
       }
       break;
 
@@ -253,16 +253,16 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
             pending_force_in_order_scripts_.TakeFirst();
         task_runner_->PostTask(
             FROM_HERE,
-            WTF::Bind(&ScriptRunner::ExecuteForceInOrderPendingScript,
-                      WrapWeakPersistent(this),
-                      WrapPersistent(pending_in_order)));
+            WTF::BindOnce(&ScriptRunner::ExecuteForceInOrderPendingScript,
+                          WrapWeakPersistent(this),
+                          WrapPersistent(pending_in_order)));
       }
       if (pending_force_in_order_scripts_.IsEmpty()) {
         task_runner_->PostTask(
             FROM_HERE,
-            WTF::Bind(&ScriptRunner::
-                          ExecuteParserBlockingScriptsBlockedByForceInOrder,
-                      WrapWeakPersistent(this)));
+            WTF::BindOnce(&ScriptRunner::
+                              ExecuteParserBlockingScriptsBlockedByForceInOrder,
+                          WrapWeakPersistent(this)));
       }
       break;
 

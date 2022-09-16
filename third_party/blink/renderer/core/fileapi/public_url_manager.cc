@@ -176,7 +176,7 @@ void PublicURLManager::Resolve(
 
   url_store_->ResolveAsURLLoaderFactory(
       url, std::move(factory_receiver),
-      WTF::Bind(
+      WTF::BindOnce(
           [](ExecutionContext* execution_context,
              const absl::optional<base::UnguessableToken>&
                  unsafe_agent_cluster_id,
@@ -249,7 +249,7 @@ void PublicURLManager::Resolve(
 
   url_store_->ResolveForNavigation(
       url, std::move(token_receiver),
-      WTF::Bind(
+      WTF::BindOnce(
           [](ExecutionContext* execution_context,
              const absl::optional<base::UnguessableToken>&
                  unsafe_agent_cluster_id) {

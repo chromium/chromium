@@ -44,8 +44,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
 
   // Fallback to unstable intermediate resource copy path.
   if (!recyclable_canvas_resource) {
-    auto finished_access_callback =
-        WTF::Bind(&StaticBitmapImage::UpdateSyncToken, WTF::RetainedRef(image));
+    auto finished_access_callback = WTF::BindOnce(
+        &StaticBitmapImage::UpdateSyncToken, WTF::RetainedRef(image));
 
     return base::AdoptRef(new WebGPUMailboxTexture(
         std::move(dawn_control_client), device, usage,

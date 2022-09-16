@@ -153,7 +153,7 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  *out_callback = WTF::Bind(&ReleaseFrameResources, provider_);
+  *out_callback = WTF::BindOnce(&ReleaseFrameResources, provider_);
 
   if (!out_resource)
     return true;

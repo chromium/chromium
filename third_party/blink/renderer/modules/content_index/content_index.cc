@@ -115,7 +115,7 @@ ScriptPromise ContentIndex::add(ScriptState* script_state,
   auto mojo_description = mojom::blink::ContentDescription::From(description);
   auto category = mojo_description->category;
   GetService()->GetIconSizes(
-      category, resolver->WrapCallbackInScriptScope(WTF::Bind(
+      category, resolver->WrapCallbackInScriptScope(WTF::BindOnce(
                     &ContentIndex::DidGetIconSizes, WrapPersistent(this),
                     std::move(mojo_description))));
 
@@ -148,7 +148,7 @@ void ContentIndex::DidGetIconSizes(
   auto* icon_loader = MakeGarbageCollected<ContentIndexIconLoader>();
   icon_loader->Start(registration_->GetExecutionContext(),
                      std::move(description), icon_sizes,
-                     resolver->WrapCallbackInScriptScope(WTF::Bind(
+                     resolver->WrapCallbackInScriptScope(WTF::BindOnce(
                          &ContentIndex::DidGetIcons, WrapPersistent(this))));
 }
 
@@ -178,7 +178,7 @@ void ContentIndex::DidGetIcons(ScriptPromiseResolver* resolver,
   if (base::FeatureList::IsEnabled(features::kContentIndexCheckOffline)) {
     GetService()->CheckOfflineCapability(
         registration_->RegistrationId(), launch_url,
-        resolver->WrapCallbackInScriptScope(WTF::Bind(
+        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
             &ContentIndex::DidCheckOfflineCapability, WrapPersistent(this),
             launch_url, std::move(description), std::move(icons))));
     return;
@@ -204,7 +204,7 @@ void ContentIndex::DidCheckOfflineCapability(
 
   GetService()->Add(registration_->RegistrationId(), std::move(description),
                     icons, launch_url,
-                    resolver->WrapCallbackInScriptScope(WTF::Bind(
+                    resolver->WrapCallbackInScriptScope(WTF::BindOnce(
                         &ContentIndex::DidAdd, WrapPersistent(this))));
 }
 
@@ -254,7 +254,7 @@ ScriptPromise ContentIndex::deleteDescription(ScriptState* script_state,
 
   GetService()->Delete(
       registration_->RegistrationId(), id,
-      resolver->WrapCallbackInScriptScope(WTF::Bind(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           &ContentIndex::DidDeleteDescription, WrapPersistent(this))));
 
   return promise;
@@ -304,8 +304,8 @@ ScriptPromise ContentIndex::getDescriptions(ScriptState* script_state,
 
   GetService()->GetDescriptions(
       registration_->RegistrationId(),
-      resolver->WrapCallbackInScriptScope(
-          WTF::Bind(&ContentIndex::DidGetDescriptions, WrapPersistent(this))));
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          &ContentIndex::DidGetDescriptions, WrapPersistent(this))));
 
   return promise;
 }

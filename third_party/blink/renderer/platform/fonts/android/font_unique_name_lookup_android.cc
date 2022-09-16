@@ -119,8 +119,8 @@ void FontUniqueNameLookupAndroid::Init() {
       // WTF::Unretained is safe here because |this| owns
       // |android_font_lookup_service_|.
       android_font_lookup_service_->FetchAllFontFiles(
-          WTF::Bind(&FontUniqueNameLookupAndroid::FontsPrefetched,
-                    WTF::Unretained(this)));
+          WTF::BindOnce(&FontUniqueNameLookupAndroid::FontsPrefetched,
+                        WTF::Unretained(this)));
     }
   }
   if (base::FeatureList::IsEnabled(features::kPrefetchFontLookupTables) &&

@@ -515,8 +515,8 @@ Vector<String> RTCRtpSenderImpl::StreamIds() const {
 
 void RTCRtpSenderImpl::ReplaceTrack(MediaStreamComponent* with_track,
                                     RTCVoidRequest* request) {
-  internal_->ReplaceTrack(
-      with_track, WTF::Bind(&OnReplaceTrackCompleted, WrapPersistent(request)));
+  internal_->ReplaceTrack(with_track, WTF::BindOnce(&OnReplaceTrackCompleted,
+                                                    WrapPersistent(request)));
 }
 
 std::unique_ptr<blink::RtcDtmfSenderHandler> RTCRtpSenderImpl::GetDtmfSender()
@@ -534,7 +534,7 @@ void RTCRtpSenderImpl::SetParameters(
     blink::RTCVoidRequest* request) {
   internal_->SetParameters(
       std::move(encodings), degradation_preference,
-      WTF::Bind(&OnSetParametersCompleted, WrapPersistent(request)));
+      WTF::BindOnce(&OnSetParametersCompleted, WrapPersistent(request)));
 }
 
 void RTCRtpSenderImpl::GetStats(

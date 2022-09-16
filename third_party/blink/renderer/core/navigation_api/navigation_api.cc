@@ -409,8 +409,8 @@ void NavigationApi::SetEntriesForRestore(
   }
   GetSupplementable()
       ->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE, WTF::Bind(&FireDisposeEventsAsync,
-                                      WrapPersistent(disposed_entries)));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&FireDisposeEventsAsync,
+                                          WrapPersistent(disposed_entries)));
 }
 
 NavigationHistoryEntry* NavigationApi::currentEntry() const {

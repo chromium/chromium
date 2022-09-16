@@ -719,8 +719,8 @@ void ResourceLoader::SetDefersLoading(LoaderFreezeMode mode) {
     if (freeze_mode_ == LoaderFreezeMode::kNone) {
       defers_handling_data_url_ = false;
       GetLoadingTaskRunner()->PostTask(
-          FROM_HERE,
-          WTF::Bind(&ResourceLoader::HandleDataUrl, WrapWeakPersistent(this)));
+          FROM_HERE, WTF::BindOnce(&ResourceLoader::HandleDataUrl,
+                                   WrapWeakPersistent(this)));
     }
   }
 
@@ -1184,8 +1184,8 @@ void ResourceLoader::DidStartLoadingResponseBody(
         std::max(static_cast<int64_t>(0), response.ExpectedContentLength()),
         std::move(body),
         progress_receiver_.BindNewEndpointAndPassRemote(GetLoadingTaskRunner()),
-        WTF::Bind(&ResourceLoader::FinishedCreatingBlob,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&ResourceLoader::FinishedCreatingBlob,
+                      WrapWeakPersistent(this)));
     return;
   }
 
@@ -1443,8 +1443,8 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
     DCHECK(!code_cache_request_);
     // Handle DataURL in another task instead of using |loader_|.
     GetLoadingTaskRunner()->PostTask(
-        FROM_HERE,
-        WTF::Bind(&ResourceLoader::HandleDataUrl, WrapWeakPersistent(this)));
+        FROM_HERE, WTF::BindOnce(&ResourceLoader::HandleDataUrl,
+                                 WrapWeakPersistent(this)));
     return;
   }
 

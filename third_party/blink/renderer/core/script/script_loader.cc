@@ -703,8 +703,8 @@ PendingScript* ScriptLoader::PrepareScript(
                   "https://crbug.com/927119"));
         element_document.GetTaskRunner(TaskType::kDOMManipulation)
             ->PostTask(FROM_HERE,
-                       WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                                 WrapPersistent(element_.Get())));
+                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                     WrapPersistent(element_.Get())));
         return nullptr;
 
       case Modulator::AcquiringImportMapsState::kAcquiring:
@@ -736,8 +736,8 @@ PendingScript* ScriptLoader::PrepareScript(
     if (src.IsEmpty()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
-                     WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                               WrapPersistent(element_.Get())));
+                     WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                   WrapPersistent(element_.Get())));
       return nullptr;
     }
 
@@ -753,8 +753,8 @@ PendingScript* ScriptLoader::PrepareScript(
     if (!url.IsValid()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
-                     WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                               WrapPersistent(element_.Get())));
+                     WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                   WrapPersistent(element_.Get())));
       return nullptr;
     }
 
@@ -800,8 +800,8 @@ PendingScript* ScriptLoader::PrepareScript(
             "External import maps are not yet supported."));
         element_document.GetTaskRunner(TaskType::kDOMManipulation)
             ->PostTask(FROM_HERE,
-                       WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                                 WrapPersistent(element_.Get())));
+                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                     WrapPersistent(element_.Get())));
         return nullptr;
 
       case ScriptTypeAtPrepare::kSpeculationRules:
@@ -819,8 +819,8 @@ PendingScript* ScriptLoader::PrepareScript(
             "External webbundle is not yet supported."));
         element_document.GetTaskRunner(TaskType::kDOMManipulation)
             ->PostTask(FROM_HERE,
-                       WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
-                                 WrapPersistent(element_.Get())));
+                       WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                     WrapPersistent(element_.Get())));
         return nullptr;
 
       case ScriptTypeAtPrepare::kClassic: {

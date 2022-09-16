@@ -67,9 +67,9 @@ void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
                                          base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
-  auto wrapped_callback =
-      WTF::Bind(&CacheStorage::OnCacheStorageAllowed, WrapWeakPersistent(this),
-                WrapPersistent(resolver), std::move(callback));
+  auto wrapped_callback = WTF::BindOnce(
+      &CacheStorage::OnCacheStorageAllowed, WrapWeakPersistent(this),
+      WrapPersistent(resolver), std::move(callback));
 
   if (allowed_.has_value()) {
     std::move(wrapped_callback).Run(allowed_.value());
@@ -138,8 +138,8 @@ ScriptPromise CacheStorage::open(ScriptState* script_state,
 
   IsCacheStorageAllowed(
       context, resolver,
-      WTF::Bind(&CacheStorage::OpenImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver), cache_name, trace_id));
+      WTF::BindOnce(&CacheStorage::OpenImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver), cache_name, trace_id));
 
   return promise;
 }
@@ -162,7 +162,7 @@ void CacheStorage::OpenImpl(ScriptPromiseResolver* resolver,
   // callback from ever being executed.
   cache_storage_remote_->Open(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              GlobalFetch::ScopedFetcher* fetcher,
              CacheStorageBlobClientList* blob_client_list,
@@ -213,8 +213,8 @@ ScriptPromise CacheStorage::has(ScriptState* script_state,
 
   IsCacheStorageAllowed(
       context, resolver,
-      WTF::Bind(&CacheStorage::HasImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver), cache_name, trace_id));
+      WTF::BindOnce(&CacheStorage::HasImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver), cache_name, trace_id));
 
   return promise;
 }
@@ -238,7 +238,7 @@ void CacheStorage::HasImpl(ScriptPromiseResolver* resolver,
   // callback from ever being executed.
   cache_storage_remote_->Has(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver, base::TimeTicks start_time,
              int64_t trace_id, mojom::blink::CacheStorageError result) {
             base::UmaHistogramTimes(
@@ -281,8 +281,8 @@ ScriptPromise CacheStorage::Delete(ScriptState* script_state,
 
   IsCacheStorageAllowed(
       context, resolver,
-      WTF::Bind(&CacheStorage::DeleteImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver), cache_name, trace_id));
+      WTF::BindOnce(&CacheStorage::DeleteImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver), cache_name, trace_id));
 
   return promise;
 }
@@ -306,7 +306,7 @@ void CacheStorage::DeleteImpl(ScriptPromiseResolver* resolver,
   // callback from ever being executed.
   cache_storage_remote_->Delete(
       cache_name, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver, base::TimeTicks start_time,
              int64_t trace_id, mojom::blink::CacheStorageError result) {
             base::UmaHistogramTimes(
@@ -348,8 +348,8 @@ ScriptPromise CacheStorage::keys(ScriptState* script_state) {
 
   IsCacheStorageAllowed(
       context, resolver,
-      WTF::Bind(&CacheStorage::KeysImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver), trace_id));
+      WTF::BindOnce(&CacheStorage::KeysImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver), trace_id));
 
   return promise;
 }
@@ -371,7 +371,7 @@ void CacheStorage::KeysImpl(ScriptPromiseResolver* resolver, int64_t trace_id) {
   // callback from ever being executed.
   cache_storage_remote_->Keys(
       trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver, base::TimeTicks start_time,
              int64_t trace_id, const Vector<String>& keys) {
             base::UmaHistogramTimes(
@@ -441,10 +441,10 @@ ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
 
   IsCacheStorageAllowed(
       context, resolver,
-      WTF::Bind(&CacheStorage::MatchImplHelper, WrapWeakPersistent(this),
-                WrapPersistent(resolver), WrapPersistent(options),
-                std::move(mojo_request), std::move(mojo_options),
-                in_related_fetch_event, in_range_fetch_event, trace_id));
+      WTF::BindOnce(&CacheStorage::MatchImplHelper, WrapWeakPersistent(this),
+                    WrapPersistent(resolver), WrapPersistent(options),
+                    std::move(mojo_request), std::move(mojo_options),
+                    in_related_fetch_event, in_range_fetch_event, trace_id));
 
   return promise;
 }
@@ -474,7 +474,7 @@ void CacheStorage::MatchImplHelper(
   cache_storage_remote_->Match(
       std::move(mojo_request), std::move(mojo_options), in_related_fetch_event,
       in_range_fetch_event, trace_id,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver, base::TimeTicks start_time,
              const MultiCacheQueryOptions* options, int64_t trace_id,
              CacheStorage* self, mojom::blink::MatchResultPtr result) {

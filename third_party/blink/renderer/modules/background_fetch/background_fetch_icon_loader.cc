@@ -40,10 +40,10 @@ void BackgroundFetchIconLoader::Start(
   DCHECK(bridge);
 
   icons_ = std::move(icons);
-  bridge->GetIconDisplaySize(
-      WTF::Bind(&BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon,
-                WrapWeakPersistent(this), WrapWeakPersistent(execution_context),
-                std::move(icon_callback)));
+  bridge->GetIconDisplaySize(WTF::BindOnce(
+      &BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon,
+      WrapWeakPersistent(this), WrapWeakPersistent(execution_context),
+      std::move(icon_callback)));
 }
 
 void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
@@ -83,10 +83,10 @@ void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
   resource_request.SetSkipServiceWorker(true);
   resource_request.SetTimeoutInterval(kIconFetchTimeout);
 
-  threaded_icon_loader_->Start(execution_context, resource_request,
-                               icon_display_size_pixels,
-                               WTF::Bind(&BackgroundFetchIconLoader::DidGetIcon,
-                                         WrapWeakPersistent(this)));
+  threaded_icon_loader_->Start(
+      execution_context, resource_request, icon_display_size_pixels,
+      WTF::BindOnce(&BackgroundFetchIconLoader::DidGetIcon,
+                    WrapWeakPersistent(this)));
 }
 
 KURL BackgroundFetchIconLoader::PickBestIconForDisplay(

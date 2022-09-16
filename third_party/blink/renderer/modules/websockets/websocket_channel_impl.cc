@@ -309,9 +309,10 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   // returning "true" just indicates that this was not a mixed content error.
   if (ShouldDisallowConnection(url)) {
     execution_context_->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE,
-                   WTF::Bind(&WebSocketChannelImpl::TearDownFailedConnection,
-                             WrapPersistent(this)));
+        ->PostTask(
+            FROM_HERE,
+            WTF::BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
+                          WrapPersistent(this)));
     return true;
   }
 
@@ -328,9 +329,10 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
         mojom::blink::ConsoleMessageSource::kNetwork,
         mojom::blink::ConsoleMessageLevel::kError, message.ToString()));
     execution_context_->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE,
-                   WTF::Bind(&WebSocketChannelImpl::TearDownFailedConnection,
-                             WrapPersistent(this)));
+        ->PostTask(
+            FROM_HERE,
+            WTF::BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,
+                          WrapPersistent(this)));
     return true;
   }
 
@@ -350,8 +352,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
           execution_context_->GetTaskRunner(TaskType::kWebSocket)),
       /*throttling_profile_id=*/devtools_token);
   handshake_client_receiver_.set_disconnect_with_reason_handler(
-      WTF::Bind(&WebSocketChannelImpl::OnConnectionError,
-                WrapWeakPersistent(this), FROM_HERE));
+      WTF::BindOnce(&WebSocketChannelImpl::OnConnectionError,
+                    WrapWeakPersistent(this), FROM_HERE));
   has_initiated_opening_handshake_ = true;
 
   if (handshake_throttle_) {
@@ -359,8 +361,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
     // the WebSocket is no longer referenced, there's no point in keeping it
     // alive just to receive the throttling result.
     handshake_throttle_->ThrottleHandshake(
-        url, WTF::Bind(&WebSocketChannelImpl::OnCompletion,
-                       WrapWeakPersistent(this)));
+        url, WTF::BindOnce(&WebSocketChannelImpl::OnCompletion,
+                           WrapWeakPersistent(this)));
   } else {
     // Treat no throttle as success.
     throttle_passed_ = true;
@@ -584,8 +586,8 @@ void WebSocketChannelImpl::OnConnectionEstablished(
       std::move(client_receiver),
       execution_context_->GetTaskRunner(TaskType::kNetworking));
   client_receiver_.set_disconnect_with_reason_handler(
-      WTF::Bind(&WebSocketChannelImpl::OnConnectionError,
-                WrapWeakPersistent(this), FROM_HERE));
+      WTF::BindOnce(&WebSocketChannelImpl::OnConnectionError,
+                    WrapWeakPersistent(this), FROM_HERE));
 
   DCHECK(!websocket_.is_bound());
   websocket_.Bind(std::move(websocket),

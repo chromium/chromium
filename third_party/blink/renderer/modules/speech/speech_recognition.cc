@@ -65,7 +65,7 @@ void SpeechRecognition::start(ExceptionState& exception_state) {
   receiver_.Bind(
       session_client.InitWithNewPipeAndPassReceiver(),
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  receiver_.set_disconnect_handler(WTF::Bind(
+  receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
 
   controller_->Start(

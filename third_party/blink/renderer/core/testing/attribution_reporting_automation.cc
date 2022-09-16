@@ -36,7 +36,7 @@ ScriptPromise AttributionReportingAutomation::resetAttributionReporting(
   test::mojom::blink::AttributionReportingAutomation* raw_automation =
       automation.get();
 
-  raw_automation->Reset(WTF::Bind(
+  raw_automation->Reset(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver,
          mojo::Remote<test::mojom::blink::AttributionReportingAutomation>,
          bool success) {

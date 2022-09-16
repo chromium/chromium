@@ -147,7 +147,7 @@ void SpeechSynthesisUtterance::Start(SpeechSynthesis* synthesis) {
           context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 
   // Add a disconnect handler so we can cleanup appropriately.
-  receiver_.set_disconnect_handler(WTF::Bind(
+  receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechSynthesisUtterance::OnDisconnected, WrapWeakPersistent(this)));
 }
 

@@ -181,17 +181,17 @@ ScriptPromise MLModelLoader::load(ScriptState* script_state,
 
       ml_context_->GetML()->CreateModelLoader(
           script_state, exception_state, std::move(options_mojo),
-          WTF::Bind(&MLModelLoader::OnRemoteLoaderCreated, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(resolver),
-                    WrapPersistent(buffer)));
+          WTF::BindOnce(&MLModelLoader::OnRemoteLoaderCreated,
+                        WrapPersistent(this), WrapPersistent(script_state),
+                        WrapPersistent(resolver), WrapPersistent(buffer)));
     } else {
       // Directly use `remote_loader_`.
       remote_loader_->Load(
           base::make_span(static_cast<const uint8_t*>(buffer->Data()),
                           buffer->ByteLength()),
-          WTF::Bind(&OnRemoteModelLoad,
-                    WrapPersistent(ExecutionContext::From(script_state)),
-                    WrapPersistent(resolver)));
+          WTF::BindOnce(&OnRemoteModelLoad,
+                        WrapPersistent(ExecutionContext::From(script_state)),
+                        WrapPersistent(resolver)));
     }
   }
 
@@ -233,8 +233,8 @@ void MLModelLoader::OnRemoteLoaderCreated(
       remote_loader_->Load(
           base::make_span(static_cast<const uint8_t*>(buffer->Data()),
                           buffer->ByteLength()),
-          WTF::Bind(&OnRemoteModelLoad, WrapPersistent(execution_context),
-                    WrapPersistent(resolver)));
+          WTF::BindOnce(&OnRemoteModelLoad, WrapPersistent(execution_context),
+                        WrapPersistent(resolver)));
       return;
     }
   }

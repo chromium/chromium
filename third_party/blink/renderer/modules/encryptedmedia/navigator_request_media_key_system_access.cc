@@ -185,8 +185,8 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   // Defer to determine support until the prerendering page is activated.
   if (window->document()->IsPrerendering()) {
     window->document()->AddPostPrerenderingActivationStep(
-        WTF::Bind(&MediaKeySystemAccessInitializer::StartRequestAsync,
-                  WrapWeakPersistent(initializer)));
+        WTF::BindOnce(&MediaKeySystemAccessInitializer::StartRequestAsync,
+                      WrapWeakPersistent(initializer)));
     return promise;
   }
 

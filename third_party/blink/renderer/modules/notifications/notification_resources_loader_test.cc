@@ -39,8 +39,8 @@ class NotificationResourcesLoaderTest : public PageTestBase {
  public:
   NotificationResourcesLoaderTest()
       : loader_(MakeGarbageCollected<NotificationResourcesLoader>(
-            Bind(&NotificationResourcesLoaderTest::DidFetchResources,
-                 WTF::Unretained(this)))) {}
+            WTF::BindOnce(&NotificationResourcesLoaderTest::DidFetchResources,
+                          WTF::Unretained(this)))) {}
 
   ~NotificationResourcesLoaderTest() override {
     loader_->Stop();

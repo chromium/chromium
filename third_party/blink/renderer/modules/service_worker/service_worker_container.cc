@@ -347,7 +347,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
   if (GetExecutionContext()->IsWindow()) {
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
-      document->AddPostPrerenderingActivationStep(WTF::Bind(
+      document->AddPostPrerenderingActivationStep(WTF::BindOnce(
           &ServiceWorkerContainer::RegisterServiceWorkerInternal,
           WrapWeakPersistent(this), scope_url, script_url,
           std::move(script_type), update_via_cache,
@@ -495,8 +495,8 @@ ScriptPromise ServiceWorkerContainer::ready(ScriptState* caller_state,
     ready_ = CreateReadyProperty();
     if (provider_) {
       provider_->GetRegistrationForReady(
-          WTF::Bind(&ServiceWorkerContainer::OnGetRegistrationForReady,
-                    WrapPersistent(this)));
+          WTF::BindOnce(&ServiceWorkerContainer::OnGetRegistrationForReady,
+                        WrapPersistent(this)));
     }
   }
 

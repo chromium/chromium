@@ -205,8 +205,8 @@ ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state,
       true /* audio input */, true /* video input */, true /* audio output */,
       true /* request_video_input_capabilities */,
       true /* request_audio_input_capabilities */,
-      WTF::Bind(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -239,7 +239,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
       on_success_follow_up;
 #if !BUILDFLAG(IS_ANDROID)
   if (media_type == UserMediaRequestType::kDisplayMedia) {
-    on_success_follow_up = WTF::Bind(
+    on_success_follow_up = WTF::BindOnce(
         &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
         WrapWeakPersistent(this));
   }
@@ -482,8 +482,9 @@ ScriptPromise MediaDevices::ProduceCropTarget(ScriptState* script_state,
   crop_id_resolvers_.insert(element, resolver);
   const ScriptPromise promise = resolver->Promise();
   GetDispatcherHost(window->GetFrame())
-      .ProduceCropId(WTF::Bind(&MediaDevices::ResolveProduceCropIdPromise,
-                               WrapPersistent(this), WrapPersistent(element)));
+      .ProduceCropId(WTF::BindOnce(&MediaDevices::ResolveProduceCropIdPromise,
+                                   WrapPersistent(this),
+                                   WrapPersistent(element)));
   RecordUma(ProduceCropTargetFunctionResult::kPromiseProduced);
   return promise;
 #endif
@@ -554,7 +555,8 @@ void MediaDevices::ScheduleDispatchEvent(Event* event) {
   DCHECK(context);
   dispatch_scheduled_events_task_handle_ = PostCancellableTask(
       *context->GetTaskRunner(TaskType::kMediaElementEvent), FROM_HERE,
-      WTF::Bind(&MediaDevices::DispatchScheduledEvents, WrapPersistent(this)));
+      WTF::BindOnce(&MediaDevices::DispatchScheduledEvents,
+                    WrapPersistent(this)));
 }
 
 void MediaDevices::DispatchScheduledEvents() {
@@ -719,8 +721,8 @@ mojom::blink::MediaDevicesDispatcherHost& MediaDevices::GetDispatcherHost(
         dispatcher_host_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kMediaElementEvent)));
     dispatcher_host_.set_disconnect_handler(
-        WTF::Bind(&MediaDevices::OnDispatcherHostConnectionError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&MediaDevices::OnDispatcherHostConnectionError,
+                      WrapWeakPersistent(this)));
   }
 
   DCHECK(dispatcher_host_.get());
@@ -737,8 +739,8 @@ void MediaDevices::SetDispatcherHostForTesting(
       std::move(dispatcher_host),
       execution_context->GetTaskRunner(TaskType::kMediaElementEvent));
   dispatcher_host_.set_disconnect_handler(
-      WTF::Bind(&MediaDevices::OnDispatcherHostConnectionError,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&MediaDevices::OnDispatcherHostConnectionError,
+                    WrapWeakPersistent(this)));
 }
 
 void MediaDevices::Trace(Visitor* visitor) const {
@@ -759,8 +761,8 @@ void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
     const String& id,
     MediaStreamTrack* track) {
   Microtask::EnqueueMicrotask(
-      WTF::Bind(&MediaDevices::CloseFocusWindowOfOpportunity,
-                WrapWeakPersistent(this), id, WrapWeakPersistent(track)));
+      WTF::BindOnce(&MediaDevices::CloseFocusWindowOfOpportunity,
+                    WrapWeakPersistent(this), id, WrapWeakPersistent(track)));
 }
 
 void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,

@@ -180,8 +180,8 @@ ScriptPromise DeviceOrientationController::RequestPermission(
   permission_service_->HasPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
       resolver->WrapCallbackInScriptScope(
-          WTF::Bind([](ScriptPromiseResolver* resolver,
-                       mojom::blink::PermissionStatus status) {
+          WTF::BindOnce([](ScriptPromiseResolver* resolver,
+                           mojom::blink::PermissionStatus status) {
             switch (status) {
               case mojom::blink::PermissionStatus::GRANTED:
               case mojom::blink::PermissionStatus::DENIED:

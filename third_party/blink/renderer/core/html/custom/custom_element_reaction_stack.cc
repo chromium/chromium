@@ -94,8 +94,8 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
   // If the processing the backup element queue is not set:
   if (!backup_queue_ || backup_queue_->IsEmpty()) {
     Microtask::EnqueueMicrotask(
-        WTF::Bind(&CustomElementReactionStack::InvokeBackupQueue,
-                  Persistent<CustomElementReactionStack>(this)));
+        WTF::BindOnce(&CustomElementReactionStack::InvokeBackupQueue,
+                      Persistent<CustomElementReactionStack>(this)));
   }
 
   Enqueue(backup_queue_, element, reaction);

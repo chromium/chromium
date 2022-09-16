@@ -199,9 +199,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
       layer_->SetFlipped(false);
     }
 
-    auto func =
-        WTF::Bind(&ImageLayerBridge::ResourceReleasedGpu,
-                  WrapWeakPersistent(this), std::move(image_for_compositor));
+    auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
+                              WrapWeakPersistent(this),
+                              std::move(image_for_compositor));
     *out_release_callback = std::move(func);
   } else {
     // Readback if needed and retain the readback in image_ to prevent future
@@ -239,8 +239,8 @@ bool ImageLayerBridge::PrepareTransferableResource(
     out_resource->color_space = sk_image->colorSpace()
                                     ? gfx::ColorSpace(*sk_image->colorSpace())
                                     : gfx::ColorSpace::CreateSRGB();
-    auto func = WTF::Bind(&ImageLayerBridge::ResourceReleasedSoftware,
-                          WrapWeakPersistent(this), std::move(registered));
+    auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedSoftware,
+                              WrapWeakPersistent(this), std::move(registered));
     *out_release_callback = std::move(func);
   }
 

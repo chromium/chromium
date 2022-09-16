@@ -54,8 +54,8 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
       commands_.pop_front();
       state_ = InternalState::kWaiting;
       task_runner_->PostTask(
-          FROM_HERE, WTF::Bind(&ReplayingBytesConsumer::NotifyAsReadable,
-                               WrapPersistent(this), notification_token_));
+          FROM_HERE, WTF::BindOnce(&ReplayingBytesConsumer::NotifyAsReadable,
+                                   WrapPersistent(this), notification_token_));
       return Result::kShouldWait;
   }
   NOTREACHED();

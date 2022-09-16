@@ -141,9 +141,10 @@ void AnnotationAgentGenerator::GenerateSelector() {
     generator_ = MakeGarbageCollected<TextFragmentSelectorGenerator>(frame_);
   }
 
-  generator_->Generate(*current_selection_range,
-                       WTF::Bind(&AnnotationAgentGenerator::DidFinishGeneration,
-                                 WrapWeakPersistent(this)));
+  generator_->Generate(
+      *current_selection_range,
+      WTF::BindOnce(&AnnotationAgentGenerator::DidFinishGeneration,
+                    WrapWeakPersistent(this)));
 }
 
 void AnnotationAgentGenerator::DidFinishGeneration(

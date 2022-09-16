@@ -168,7 +168,7 @@ bool ThrowExceptionIfSignalingStateClosed(
 void AsyncCallErrorCallback(V8RTCPeerConnectionErrorCallback* error_callback,
                             DOMException* exception) {
   DCHECK(error_callback);
-  Microtask::EnqueueMicrotask(WTF::Bind(
+  Microtask::EnqueueMicrotask(WTF::BindOnce(
       &V8RTCPeerConnectionErrorCallback::InvokeAndReportException,
       WrapPersistent(error_callback), nullptr, WrapPersistent(exception)));
 }
@@ -1355,8 +1355,8 @@ ScriptPromise RTCPeerConnection::generateCertificate(
 
   // Helper closure callback for RTCPeerConnection::generateCertificate.
   auto completion_callback =
-      WTF::Bind(RTCPeerConnection::GenerateCertificateCompleted,
-                WrapPersistent(resolver));
+      WTF::BindOnce(RTCPeerConnection::GenerateCertificateCompleted,
+                    WrapPersistent(resolver));
 
   // Generate certificate. The |certificateObserver| will resolve the promise
   // asynchronously upon completion. The observer will manage its own
@@ -1676,8 +1676,8 @@ ScriptPromise RTCPeerConnection::PromiseBasedGetStats(
       // while leaving the associated promise pending as specified.
       resolver->Detach();
     } else {
-      peer_handler_->GetStats(WTF::Bind(WebRTCStatsReportCallbackResolver,
-                                        WrapPersistent(resolver)),
+      peer_handler_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
+                                            WrapPersistent(resolver)),
                               GetExposedGroupIds(script_state));
     }
     return promise;
@@ -2585,8 +2585,8 @@ void RTCPeerConnection::ChangeIceGatheringState(
       webrtc::PeerConnectionInterface::kIceConnectionClosed) {
     ScheduleDispatchEvent(
         Event::Create(event_type_names::kIcegatheringstatechange),
-        WTF::Bind(&RTCPeerConnection::SetIceGatheringState,
-                  WrapPersistent(this), ice_gathering_state));
+        WTF::BindOnce(&RTCPeerConnection::SetIceGatheringState,
+                      WrapPersistent(this), ice_gathering_state));
     if (ice_gathering_state ==
         webrtc::PeerConnectionInterface::kIceGatheringComplete) {
       // If ICE gathering is completed, generate a null ICE candidate, to
@@ -2700,8 +2700,8 @@ void RTCPeerConnection::ChangePeerConnectionState(
       webrtc::PeerConnectionInterface::PeerConnectionState::kClosed) {
     ScheduleDispatchEvent(
         Event::Create(event_type_names::kConnectionstatechange),
-        WTF::Bind(&RTCPeerConnection::SetPeerConnectionState,
-                  WrapPersistent(this), peer_connection_state));
+        WTF::BindOnce(&RTCPeerConnection::SetPeerConnectionState,
+                      WrapPersistent(this), peer_connection_state));
   }
 }
 
@@ -2790,8 +2790,8 @@ void RTCPeerConnection::ScheduleDispatchEvent(Event* event,
     // https://www.w3.org/TR/webrtc/#operation
     dispatch_scheduled_events_task_handle_ = PostCancellableTask(
         *context->GetTaskRunner(TaskType::kNetworking), FROM_HERE,
-        WTF::Bind(&RTCPeerConnection::DispatchScheduledEvents,
-                  WrapPersistent(this)));
+        WTF::BindOnce(&RTCPeerConnection::DispatchScheduledEvents,
+                      WrapPersistent(this)));
   }
 }
 

@@ -105,8 +105,8 @@ AbortSignal* AbortSignal::timeout(ScriptState* script_state,
   // there are or will be event handlers attached.
   context->GetTaskRunner(task_type)->PostDelayedTask(
       FROM_HERE,
-      WTF::Bind(&AbortSignal::AbortTimeoutFired, WrapPersistent(signal),
-                WrapPersistent(script_state)),
+      WTF::BindOnce(&AbortSignal::AbortTimeoutFired, WrapPersistent(signal),
+                    WrapPersistent(script_state)),
       base::Milliseconds(milliseconds));
   return signal;
 }

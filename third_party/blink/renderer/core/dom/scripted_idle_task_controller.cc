@@ -138,15 +138,16 @@ void ScriptedIdleTaskController::ScheduleCallback(
     scoped_refptr<internal::IdleRequestCallbackWrapper> callback_wrapper,
     uint32_t timeout_millis) {
   scheduler_->PostIdleTask(
-      FROM_HERE, WTF::Bind(&internal::IdleRequestCallbackWrapper::IdleTaskFired,
-                           callback_wrapper));
+      FROM_HERE,
+      WTF::BindOnce(&internal::IdleRequestCallbackWrapper::IdleTaskFired,
+                    callback_wrapper));
   if (timeout_millis > 0) {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kIdleTask)
         ->PostDelayedTask(
             FROM_HERE,
-            WTF::Bind(&internal::IdleRequestCallbackWrapper::TimeoutFired,
-                      callback_wrapper),
+            WTF::BindOnce(&internal::IdleRequestCallbackWrapper::TimeoutFired,
+                          callback_wrapper),
             base::Milliseconds(timeout_millis));
   }
 }
@@ -250,8 +251,8 @@ void ScriptedIdleTaskController::ContextUnpaused() {
         ->GetTaskRunner(TaskType::kIdleTask)
         ->PostTask(
             FROM_HERE,
-            WTF::Bind(&internal::IdleRequestCallbackWrapper::TimeoutFired,
-                      callback_wrapper));
+            WTF::BindOnce(&internal::IdleRequestCallbackWrapper::TimeoutFired,
+                          callback_wrapper));
   }
   pending_timeouts_.clear();
 
@@ -261,8 +262,8 @@ void ScriptedIdleTaskController::ContextUnpaused() {
         internal::IdleRequestCallbackWrapper::Create(idle_task.key, this);
     scheduler_->PostIdleTask(
         FROM_HERE,
-        WTF::Bind(&internal::IdleRequestCallbackWrapper::IdleTaskFired,
-                  callback_wrapper));
+        WTF::BindOnce(&internal::IdleRequestCallbackWrapper::IdleTaskFired,
+                      callback_wrapper));
   }
 }
 

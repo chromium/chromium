@@ -121,8 +121,8 @@ ScriptPromise PaymentInstruments::deleteInstrument(
 
   manager_->DeletePaymentInstrument(
       instrument_key,
-      WTF::Bind(&PaymentInstruments::onDeletePaymentInstrument,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&PaymentInstruments::onDeletePaymentInstrument,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -143,8 +143,8 @@ ScriptPromise PaymentInstruments::get(ScriptState* script_state,
 
   manager_->GetPaymentInstrument(
       instrument_key,
-      WTF::Bind(&PaymentInstruments::onGetPaymentInstrument,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&PaymentInstruments::onGetPaymentInstrument,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -163,8 +163,8 @@ ScriptPromise PaymentInstruments::keys(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   manager_->KeysOfPaymentInstruments(
-      WTF::Bind(&PaymentInstruments::onKeysOfPaymentInstruments,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&PaymentInstruments::onKeysOfPaymentInstruments,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -185,8 +185,8 @@ ScriptPromise PaymentInstruments::has(ScriptState* script_state,
 
   manager_->HasPaymentInstrument(
       instrument_key,
-      WTF::Bind(&PaymentInstruments::onHasPaymentInstrument,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&PaymentInstruments::onHasPaymentInstrument,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -220,9 +220,9 @@ ScriptPromise PaymentInstruments::set(ScriptState* script_state,
           CreatePermissionDescriptor(
               mojom::blink::PermissionName::PAYMENT_HANDLER),
           user_gesture,
-          WTF::Bind(&PaymentInstruments::OnRequestPermission,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    instrument_key, WrapPersistent(details)));
+          WTF::BindOnce(&PaymentInstruments::OnRequestPermission,
+                        WrapPersistent(this), WrapPersistent(resolver),
+                        instrument_key, WrapPersistent(details)));
   return resolver->Promise();
 }
 
@@ -241,8 +241,8 @@ ScriptPromise PaymentInstruments::clear(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   manager_->ClearPaymentInstruments(
-      WTF::Bind(&PaymentInstruments::onClearPaymentInstruments,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&PaymentInstruments::onClearPaymentInstruments,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -324,8 +324,8 @@ void PaymentInstruments::OnRequestPermission(
 
   manager_->SetPaymentInstrument(
       instrument_key, std::move(instrument),
-      WTF::Bind(&PaymentInstruments::onSetPaymentInstrument,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&PaymentInstruments::onSetPaymentInstrument,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void PaymentInstruments::onDeletePaymentInstrument(

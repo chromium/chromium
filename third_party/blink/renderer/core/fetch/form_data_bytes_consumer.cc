@@ -198,8 +198,8 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
 
         data_pipe_getter->Read(
             std::move(pipe_producer_handle),
-            WTF::Bind(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
-                      WrapWeakPersistent(this)));
+            WTF::BindOnce(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
+                          WrapWeakPersistent(this)));
         DataPipeBytesConsumer::CompletionNotifier* completion_notifier =
             nullptr;
         data_pipe_consumer_ = MakeGarbageCollected<DataPipeBytesConsumer>(

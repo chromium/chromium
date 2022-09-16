@@ -151,7 +151,7 @@ ScriptPromise IdentityCredential::logoutRPs(
       CredentialManagerProxy::From(script_state)->FedCmLogoutRpsRequest();
   fedcm_logout_request->LogoutRps(
       std::move(logout_requests),
-      WTF::Bind(&OnLogoutRpsResponse, WrapPersistent(resolver)));
+      WTF::BindOnce(&OnLogoutRpsResponse, WrapPersistent(resolver)));
   return promise;
 }
 

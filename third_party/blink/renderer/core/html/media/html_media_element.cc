@@ -2496,8 +2496,8 @@ void HTMLMediaElement::SetOfficialPlaybackPosition(double position) const {
   // officialPlaybackPosition().
   official_playback_position_needs_update_ = false;
   Microtask::EnqueueMicrotask(
-      WTF::Bind(&HTMLMediaElement::RequireOfficialPlaybackPositionUpdate,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&HTMLMediaElement::RequireOfficialPlaybackPositionUpdate,
+                    WrapWeakPersistent(this)));
 }
 
 void HTMLMediaElement::RequireOfficialPlaybackPositionUpdate() const {
@@ -4435,8 +4435,8 @@ void HTMLMediaElement::ScheduleResolvePlayPromises() {
 
   play_promise_resolve_task_handle_ = PostCancellableTask(
       *GetDocument().GetTaskRunner(TaskType::kMediaElementEvent), FROM_HERE,
-      WTF::Bind(&HTMLMediaElement::ResolveScheduledPlayPromises,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&HTMLMediaElement::ResolveScheduledPlayPromises,
+                    WrapWeakPersistent(this)));
 }
 
 void HTMLMediaElement::ScheduleRejectPlayPromises(PlayPromiseError code) {
@@ -4462,8 +4462,8 @@ void HTMLMediaElement::ScheduleRejectPlayPromises(PlayPromiseError code) {
   play_promise_error_code_ = code;
   play_promise_reject_task_handle_ = PostCancellableTask(
       *GetDocument().GetTaskRunner(TaskType::kMediaElementEvent), FROM_HERE,
-      WTF::Bind(&HTMLMediaElement::RejectScheduledPlayPromises,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&HTMLMediaElement::RejectScheduledPlayPromises,
+                    WrapWeakPersistent(this)));
 }
 
 void HTMLMediaElement::ScheduleNotifyPlaying() {

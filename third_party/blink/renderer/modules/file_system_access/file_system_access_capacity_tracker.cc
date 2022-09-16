@@ -65,8 +65,9 @@ void FileSystemAccessCapacityTracker::RequestFileCapacityChange(
   }
   capacity_allocation_host_->RequestCapacityChange(
       capacity_delta,
-      WTF::Bind(&FileSystemAccessCapacityTracker::DidRequestCapacityChange,
-                WrapPersistent(this), required_capacity, std::move(callback)));
+      WTF::BindOnce(&FileSystemAccessCapacityTracker::DidRequestCapacityChange,
+                    WrapPersistent(this), required_capacity,
+                    std::move(callback)));
 }
 
 bool FileSystemAccessCapacityTracker::RequestFileCapacityChangeSync(

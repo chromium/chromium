@@ -220,8 +220,8 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
   open_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
   auto callback = open_resolver_->WrapCallbackInScriptScope(
-      WTF::Bind(&SerialPort::OnOpen, WrapPersistent(this),
-                client.InitWithNewPipeAndPassReceiver()));
+      WTF::BindOnce(&SerialPort::OnOpen, WrapPersistent(this),
+                    client.InitWithNewPipeAndPassReceiver()));
 
   parent_->OpenPort(info_->token, std::move(mojo_options), std::move(client),
                     std::move(callback));
@@ -298,7 +298,7 @@ ScriptPromise SerialPort::getSignals(ScriptState* script_state,
       script_state, exception_state.GetContext());
   signal_resolvers_.insert(resolver);
   port_->GetControlSignals(resolver->WrapCallbackInScriptScope(
-      WTF::Bind(&SerialPort::OnGetSignals, WrapPersistent(this))));
+      WTF::BindOnce(&SerialPort::OnGetSignals, WrapPersistent(this))));
   return resolver->Promise();
 }
 
@@ -355,7 +355,7 @@ ScriptPromise SerialPort::setSignals(ScriptState* script_state,
   port_->SetControlSignals(
       std::move(mojo_signals),
       resolver->WrapCallbackInScriptScope(
-          WTF::Bind(&SerialPort::OnSetSignals, WrapPersistent(this))));
+          WTF::BindOnce(&SerialPort::OnSetSignals, WrapPersistent(this))));
   return resolver->Promise();
 }
 
@@ -421,8 +421,8 @@ ScriptPromise SerialPort::forget(ScriptState* script_state,
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   parent_->ForgetPort(info_->token,
-                      WTF::Bind(&SerialPort::OnForget, WrapPersistent(this),
-                                WrapPersistent(resolver)));
+                      WTF::BindOnce(&SerialPort::OnForget, WrapPersistent(this),
+                                    WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -440,7 +440,7 @@ void SerialPort::StreamsClosed() {
   DCHECK(IsClosing());
 
   port_->Close(/*flush=*/true,
-               WTF::Bind(&SerialPort::OnClose, WrapPersistent(this)));
+               WTF::BindOnce(&SerialPort::OnClose, WrapPersistent(this)));
 }
 
 void SerialPort::Flush(
@@ -626,7 +626,7 @@ void SerialPort::OnOpen(
   port_.Bind(std::move(port),
              GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   port_.set_disconnect_handler(
-      WTF::Bind(&SerialPort::OnConnectionError, WrapWeakPersistent(this)));
+      WTF::BindOnce(&SerialPort::OnConnectionError, WrapWeakPersistent(this)));
   client_receiver_.Bind(
       std::move(client_receiver),
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));

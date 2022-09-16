@@ -304,8 +304,8 @@ bool MediaRecorderHandler::Start(int timeslice) {
         static_cast<MediaStreamVideoTrack*>(
             video_tracks_[0]->GetPlatformTrack());
     base::OnceClosure on_track_source_changed_cb = media::BindToCurrentLoop(
-        WTF::Bind(&MediaRecorderHandler::OnSourceReadyStateChanged,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
+                      WrapWeakPersistent(this)));
     const bool use_encoded_source_output =
         video_track->source() != nullptr &&
         video_track->source()->SupportsEncodedOutput();
@@ -343,8 +343,8 @@ bool MediaRecorderHandler::Start(int timeslice) {
         media::BindToCurrentLoop(WTF::BindRepeating(
             &MediaRecorderHandler::OnEncodedAudio, WrapWeakPersistent(this)));
     base::OnceClosure on_track_source_changed_cb = media::BindToCurrentLoop(
-        WTF::Bind(&MediaRecorderHandler::OnSourceReadyStateChanged,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
+                      WrapWeakPersistent(this)));
     audio_recorders_.emplace_back(std::make_unique<AudioTrackRecorder>(
         audio_codec_id_, audio_tracks_[0], std::move(on_encoded_audio_cb),
         std::move(on_track_source_changed_cb), audio_bits_per_second_,

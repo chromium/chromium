@@ -133,8 +133,8 @@ class WorkerSchedulerImplTest : public testing::Test {
                     const String& task_descriptor,
                     TaskType task_type) {
     worker_scheduler_->GetTaskRunner(task_type)->PostTask(
-        FROM_HERE, WTF::Bind(&AppendToVectorTestTask,
-                             WTF::Unretained(run_order), task_descriptor));
+        FROM_HERE, WTF::BindOnce(&AppendToVectorTestTask,
+                                 WTF::Unretained(run_order), task_descriptor));
   }
 
  protected:

@@ -197,8 +197,8 @@ void DevToolsAgent::BindReceiverForWorker(
   DCHECK(!associated_receiver_.is_bound());
 
   host_remote_.Bind(std::move(host_remote), std::move(task_runner));
-  host_remote_.set_disconnect_handler(
-      WTF::Bind(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
+  host_remote_.set_disconnect_handler(WTF::BindOnce(
+      &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 
   io_agent_ =
       new IOAgent(io_task_runner_, inspector_task_runner_,
@@ -212,8 +212,8 @@ void DevToolsAgent::BindReceiver(
   DCHECK(!associated_receiver_.is_bound());
   associated_receiver_.Bind(std::move(receiver), task_runner);
   associated_host_remote_.Bind(std::move(host_remote), task_runner);
-  associated_host_remote_.set_disconnect_handler(
-      WTF::Bind(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
+  associated_host_remote_.set_disconnect_handler(WTF::BindOnce(
+      &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 }
 
 void DevToolsAgent::AttachDevToolsSessionImpl(

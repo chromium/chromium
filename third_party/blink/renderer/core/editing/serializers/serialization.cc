@@ -156,7 +156,7 @@ class FailingLoader final : public WebURLLoader {
     client_ = client;
     freezable_task_runner_handle_->GetTaskRunner()->PostTask(
         FROM_HERE,
-        WTF::Bind(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
+        WTF::BindOnce(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
   }
   void Freeze(LoaderFreezeMode mode) override {
     mode_ = mode;
@@ -165,7 +165,7 @@ class FailingLoader final : public WebURLLoader {
     }
     freezable_task_runner_handle_->GetTaskRunner()->PostTask(
         FROM_HERE,
-        WTF::Bind(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
+        WTF::BindOnce(&FailingLoader::Fail, weak_ptr_factory_.GetWeakPtr()));
   }
   void DidChangePriority(WebURLRequest::Priority, int) override {}
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()

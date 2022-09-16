@@ -322,8 +322,8 @@ class InspectorPostBodyParser
       return;
     auto* reader = new InspectorFileReaderLoaderClient(
         blob_handle, task_runner_,
-        WTF::Bind(&InspectorPostBodyParser::BlobReadCallback,
-                  WTF::RetainedRef(this), WTF::Unretained(destination)));
+        WTF::BindOnce(&InspectorPostBodyParser::BlobReadCallback,
+                      WTF::RetainedRef(this), WTF::Unretained(destination)));
     reader->Start();
   }
 
@@ -1938,8 +1938,8 @@ void InspectorNetworkAgent::GetResponseBodyBlob(
   }
   InspectorFileReaderLoaderClient* client = new InspectorFileReaderLoaderClient(
       blob, context->GetTaskRunner(TaskType::kFileReading),
-      WTF::Bind(ResponseBodyFileReaderLoaderDone, resource_data->MimeType(),
-                resource_data->TextEncodingName(), std::move(callback)));
+      WTF::BindOnce(ResponseBodyFileReaderLoaderDone, resource_data->MimeType(),
+                    resource_data->TextEncodingName(), std::move(callback)));
   client->Start();
 }
 

@@ -73,8 +73,8 @@ ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
   auto permission_descriptor = CreatePermissionDescriptor(
       mojom::blink::PermissionName::WINDOW_PLACEMENT);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto callback = WTF::Bind(&WindowScreens::OnPermissionRequestComplete,
-                            WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&WindowScreens::OnPermissionRequestComplete,
+                                WrapPersistent(this), WrapPersistent(resolver));
 
   // Only allow the user prompts when the frame has a transient activation.
   // Otherwise, resolve or reject the promise with the current permission state.

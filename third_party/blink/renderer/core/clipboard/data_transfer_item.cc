@@ -76,11 +76,11 @@ void DataTransferItem::getAsString(ScriptState* script_state,
   auto task_context = std::make_unique<probe::AsyncTaskContext>();
   task_context->Schedule(context, "DataTransferItem.getAsString");
   context->GetTaskRunner(TaskType::kUserInteraction)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(&DataTransferItem::RunGetAsStringTask, WrapPersistent(this),
-                    WrapPersistent(context), WrapPersistent(callback),
-                    item_->GetAsString(), std::move(task_context)));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&DataTransferItem::RunGetAsStringTask,
+                               WrapPersistent(this), WrapPersistent(context),
+                               WrapPersistent(callback), item_->GetAsString(),
+                               std::move(task_context)));
 }
 
 File* DataTransferItem::getAsFile() const {

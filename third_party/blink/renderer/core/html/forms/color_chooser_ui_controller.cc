@@ -90,7 +90,7 @@ void ColorChooserUIController::OpenColorChooser() {
           frame_->DomWindow()->GetExecutionContext()->GetTaskRunner(
               TaskType::kUserInteraction)),
       client_->CurrentColor().Rgb(), client_->Suggestions());
-  receiver_.set_disconnect_handler(WTF::Bind(
+  receiver_.set_disconnect_handler(WTF::BindOnce(
       &ColorChooserUIController::EndChooser, WrapWeakPersistent(this)));
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)

@@ -81,7 +81,7 @@ class CORE_EXPORT ScriptPromiseResolver
   template <class ScriptPromiseResolver, typename... Args>
   base::OnceCallback<void(Args...)> WrapCallbackInScriptScope(
       base::OnceCallback<void(ScriptPromiseResolver*, Args...)> callback) {
-    return WTF::Bind(
+    return WTF::BindOnce(
         [](ScriptPromiseResolver* resolver,
            base::OnceCallback<void(ScriptPromiseResolver*, Args...)> callback,
            Args... args) {

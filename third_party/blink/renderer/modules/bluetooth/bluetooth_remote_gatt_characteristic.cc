@@ -150,8 +150,8 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::readValue(
   mojom::blink::WebBluetoothService* service = GetBluetooth()->Service();
   service->RemoteCharacteristicReadValue(
       characteristic_->instance_id,
-      WTF::Bind(&BluetoothRemoteGATTCharacteristic::ReadValueCallback,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&BluetoothRemoteGATTCharacteristic::ReadValueCallback,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -231,8 +231,9 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::WriteCharacteristicValue(
   mojom::blink::WebBluetoothService* service = GetBluetooth()->Service();
   service->RemoteCharacteristicWriteValue(
       characteristic_->instance_id, value_vector, write_type,
-      WTF::Bind(&BluetoothRemoteGATTCharacteristic::WriteValueCallback,
-                WrapPersistent(this), WrapPersistent(resolver), value_vector));
+      WTF::BindOnce(&BluetoothRemoteGATTCharacteristic::WriteValueCallback,
+                    WrapPersistent(this), WrapPersistent(resolver),
+                    value_vector));
 
   return promise;
 }
@@ -345,9 +346,9 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::startNotifications(
   num_in_flight_notification_registrations_++;
   service->RemoteCharacteristicStartNotifications(
       characteristic_->instance_id, std::move(client),
-      WTF::Bind(&BluetoothRemoteGATTCharacteristic::NotificationsCallback,
-                WrapPersistent(this), WrapPersistent(resolver),
-                /*starting=*/true));
+      WTF::BindOnce(&BluetoothRemoteGATTCharacteristic::NotificationsCallback,
+                    WrapPersistent(this), WrapPersistent(resolver),
+                    /*starting=*/true));
 
   return promise;
 }
@@ -378,9 +379,10 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::stopNotifications(
   mojom::blink::WebBluetoothService* service = GetBluetooth()->Service();
   service->RemoteCharacteristicStopNotifications(
       characteristic_->instance_id,
-      WTF::Bind(&BluetoothRemoteGATTCharacteristic::NotificationsCallback,
-                WrapPersistent(this), WrapPersistent(resolver),
-                /*starting=*/false, mojom::blink::WebBluetoothResult::SUCCESS));
+      WTF::BindOnce(&BluetoothRemoteGATTCharacteristic::NotificationsCallback,
+                    WrapPersistent(this), WrapPersistent(resolver),
+                    /*starting=*/false,
+                    mojom::blink::WebBluetoothResult::SUCCESS));
   return promise;
 }
 
@@ -448,10 +450,10 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::GetDescriptorsImpl(
   mojom::blink::WebBluetoothService* service = GetBluetooth()->Service();
   service->RemoteCharacteristicGetDescriptors(
       characteristic_->instance_id, quantity, descriptors_uuid,
-      WTF::Bind(&BluetoothRemoteGATTCharacteristic::GetDescriptorsCallback,
-                WrapPersistent(this), descriptors_uuid,
-                characteristic_->instance_id, quantity,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&BluetoothRemoteGATTCharacteristic::GetDescriptorsCallback,
+                    WrapPersistent(this), descriptors_uuid,
+                    characteristic_->instance_id, quantity,
+                    WrapPersistent(resolver)));
 
   return promise;
 }

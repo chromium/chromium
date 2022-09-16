@@ -495,8 +495,8 @@ LocalFrameMojoHandler::GetDevicePosture() {
 
   device_posture_provider_service_->AddListenerAndGetCurrentPosture(
       device_posture_receiver_.BindNewPipeAndPassRemote(task_runner),
-      WTF::Bind(&LocalFrameMojoHandler::OnPostureChanged,
-                WrapPersistent(this)));
+      WTF::BindOnce(&LocalFrameMojoHandler::OnPostureChanged,
+                    WrapPersistent(this)));
   return current_device_posture_;
 }
 
@@ -1028,7 +1028,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
       mojom::blink::UserActivationOption::kDoNotActivate,
       mojom::blink::EvaluationTiming::kSynchronous,
       mojom::blink::LoadEventBlockingOption::kDoNotBlock,
-      WTF::Bind(
+      WTF::BindOnce(
           [](JavaScriptExecuteRequestInIsolatedWorldCallback callback,
              absl::optional<base::Value> value, base::TimeTicks start_time) {
             std::move(callback).Run(value ? std::move(*value) : base::Value());

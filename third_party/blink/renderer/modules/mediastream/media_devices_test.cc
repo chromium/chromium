@@ -361,8 +361,8 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
 TEST_F(MediaDevicesTest, EnumerateDevices) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
-  media_devices->SetEnumerateDevicesCallbackForTesting(
-      WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
+  media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
+      &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   ScriptPromise promise = media_devices->enumerateDevices(
       scope.GetScriptState(), scope.GetExceptionState());
   platform()->RunUntilIdle();
@@ -436,11 +436,11 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
-  media_devices->SetEnumerateDevicesCallbackForTesting(
-      WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
+  media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
+      &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   media_devices->SetConnectionErrorCallbackForTesting(
-      WTF::Bind(&MediaDevicesTest::OnDispatcherHostConnectionError,
-                WTF::Unretained(this)));
+      WTF::BindOnce(&MediaDevicesTest::OnDispatcherHostConnectionError,
+                    WTF::Unretained(this)));
   EXPECT_FALSE(dispatcher_host_connection_error());
 
   // Simulate a connection error by closing the binding.
@@ -460,8 +460,8 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
 
   media_devices->SetConnectionErrorCallbackForTesting(
-      WTF::Bind(&MediaDevicesTest::OnDispatcherHostConnectionError,
-                WTF::Unretained(this)));
+      WTF::BindOnce(&MediaDevicesTest::OnDispatcherHostConnectionError,
+                    WTF::Unretained(this)));
   ASSERT_FALSE(dispatcher_host_connection_error());
 
   // Simulate a connection error by closing the binding.
@@ -480,11 +480,11 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
 TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
-  media_devices->SetEnumerateDevicesCallbackForTesting(
-      WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
+  media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
+      &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   media_devices->SetConnectionErrorCallbackForTesting(
-      WTF::Bind(&MediaDevicesTest::OnDispatcherHostConnectionError,
-                WTF::Unretained(this)));
+      WTF::BindOnce(&MediaDevicesTest::OnDispatcherHostConnectionError,
+                    WTF::Unretained(this)));
   EXPECT_FALSE(dispatcher_host_connection_error());
 
   ScriptPromise promise = media_devices->enumerateDevices(
@@ -502,15 +502,15 @@ TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
 TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
-  media_devices->SetDeviceChangeCallbackForTesting(
-      WTF::Bind(&MediaDevicesTest::OnDevicesChanged, WTF::Unretained(this)));
+  media_devices->SetDeviceChangeCallbackForTesting(WTF::BindOnce(
+      &MediaDevicesTest::OnDevicesChanged, WTF::Unretained(this)));
   EXPECT_FALSE(listener());
 
   // Subscribe for device change event.
   media_devices->StartObserving();
   platform()->RunUntilIdle();
   EXPECT_TRUE(listener());
-  listener().set_disconnect_handler(WTF::Bind(
+  listener().set_disconnect_handler(WTF::BindOnce(
       &MediaDevicesTest::OnListenerConnectionError, WTF::Unretained(this)));
 
   // Simulate a device change.

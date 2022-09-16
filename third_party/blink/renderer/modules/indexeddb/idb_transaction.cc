@@ -107,8 +107,8 @@ IDBTransaction::IDBTransaction(
 
   DCHECK_EQ(state_, kActive);
   V8PerIsolateData::From(script_state->GetIsolate())
-      ->AddEndOfScopeTask(
-          WTF::Bind(&IDBTransaction::SetActive, WrapPersistent(this), false));
+      ->AddEndOfScopeTask(WTF::BindOnce(&IDBTransaction::SetActive,
+                                        WrapPersistent(this), false));
 
   database_->TransactionCreated(this);
 }

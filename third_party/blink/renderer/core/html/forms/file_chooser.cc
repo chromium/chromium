@@ -80,10 +80,10 @@ bool FileChooser::OpenFileChooser(ChromeClientImpl& chrome_client_impl) {
   frame->GetBrowserInterfaceBroker().GetInterface(
       file_chooser_.BindNewPipeAndPassReceiver());
   file_chooser_.set_disconnect_handler(
-      WTF::Bind(&FileChooser::DidCloseChooser, WTF::Unretained(this)));
+      WTF::BindOnce(&FileChooser::DidCloseChooser, WTF::Unretained(this)));
   file_chooser_->OpenFileChooser(
       params_.Clone(),
-      WTF::Bind(&FileChooser::DidChooseFiles, WTF::Unretained(this)));
+      WTF::BindOnce(&FileChooser::DidChooseFiles, WTF::Unretained(this)));
 
   // Should be released on file choosing or connection error.
   AddRef();
@@ -100,10 +100,10 @@ void FileChooser::EnumerateChosenDirectory() {
   frame->GetBrowserInterfaceBroker().GetInterface(
       file_chooser_.BindNewPipeAndPassReceiver());
   file_chooser_.set_disconnect_handler(
-      WTF::Bind(&FileChooser::DidCloseChooser, WTF::Unretained(this)));
+      WTF::BindOnce(&FileChooser::DidCloseChooser, WTF::Unretained(this)));
   file_chooser_->EnumerateChosenDirectory(
       std::move(params_->selected_files[0]),
-      WTF::Bind(&FileChooser::DidChooseFiles, WTF::Unretained(this)));
+      WTF::BindOnce(&FileChooser::DidChooseFiles, WTF::Unretained(this)));
 
   // Should be released on file choosing or connection error.
   AddRef();

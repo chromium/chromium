@@ -218,20 +218,20 @@ void UserMediaClient::MaybeProcessNextRequestInfo() {
   if (current_request->IsUserMedia()) {
     user_media_processor_->ProcessRequest(
         current_request->MoveUserMediaRequest(),
-        WTF::Bind(&UserMediaClient::CurrentRequestCompleted,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&UserMediaClient::CurrentRequestCompleted,
+                      WrapWeakPersistent(this)));
   } else if (current_request->IsApplyConstraints()) {
     apply_constraints_processor_->ProcessRequest(
         current_request->apply_constraints_request(),
-        WTF::Bind(&UserMediaClient::CurrentRequestCompleted,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&UserMediaClient::CurrentRequestCompleted,
+                      WrapWeakPersistent(this)));
   } else {
     DCHECK(current_request->IsStopTrack());
     MediaStreamTrackPlatform* track = MediaStreamTrackPlatform::GetTrack(
         WebMediaStreamTrack(current_request->track_to_stop()));
     if (track) {
-      track->StopAndNotify(WTF::Bind(&UserMediaClient::CurrentRequestCompleted,
-                                     WrapWeakPersistent(this)));
+      track->StopAndNotify(WTF::BindOnce(
+          &UserMediaClient::CurrentRequestCompleted, WrapWeakPersistent(this)));
     } else {
       CurrentRequestCompleted();
     }
@@ -244,8 +244,8 @@ void UserMediaClient::CurrentRequestCompleted() {
   if (!pending_request_infos_.empty()) {
     frame_->GetTaskRunner(blink::TaskType::kInternalMedia)
         ->PostTask(FROM_HERE,
-                   WTF::Bind(&UserMediaClient::MaybeProcessNextRequestInfo,
-                             WrapWeakPersistent(this)));
+                   WTF::BindOnce(&UserMediaClient::MaybeProcessNextRequestInfo,
+                                 WrapWeakPersistent(this)));
   }
 }
 

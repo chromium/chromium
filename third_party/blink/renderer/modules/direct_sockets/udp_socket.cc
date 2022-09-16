@@ -107,7 +107,7 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
   service_->get()->OpenUdpSocket(
       std::move(open_udp_socket_options), GetUDPSocketReceiver(),
       GetUDPSocketListener(),
-      WTF::Bind(&UDPSocket::Init, WrapPersistent(this)));
+      WTF::BindOnce(&UDPSocket::Init, WrapPersistent(this)));
 
   return true;
 }
@@ -117,8 +117,8 @@ void UDPSocket::Init(int32_t result,
                      const absl::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK && peer_addr) {
     auto close_callback = base::BarrierCallback<ScriptValue>(
-        /*num_callbacks=*/2,
-        WTF::Bind(&UDPSocket::OnBothStreamsClosed, WrapWeakPersistent(this)));
+        /*num_callbacks=*/2, WTF::BindOnce(&UDPSocket::OnBothStreamsClosed,
+                                           WrapWeakPersistent(this)));
 
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
         script_state_, close_callback, udp_socket_);
@@ -163,7 +163,7 @@ UDPSocket::GetUDPSocketListener() {
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 
   socket_listener_.set_disconnect_handler(
-      WTF::Bind(&UDPSocket::OnSocketConnectionError, WrapPersistent(this)));
+      WTF::BindOnce(&UDPSocket::OnSocketConnectionError, WrapPersistent(this)));
 
   return pending_remote;
 }

@@ -33,7 +33,7 @@ class VideoAutoFullscreenFrameHost : public FakeLocalFrameHost {
     std::move(callback).Run(true);
     web_view_->MainFrameImpl()
         ->GetTaskRunner(TaskType::kInternalNavigationAssociated)
-        ->PostTask(FROM_HERE, WTF::Bind(
+        ->PostTask(FROM_HERE, WTF::BindOnce(
                                   [](WebViewImpl* web_view) {
                                     web_view->DidEnterFullscreen();
                                   },
@@ -43,7 +43,7 @@ class VideoAutoFullscreenFrameHost : public FakeLocalFrameHost {
   void ExitFullscreen() override {
     web_view_->MainFrameImpl()
         ->GetTaskRunner(TaskType::kInternalNavigationAssociated)
-        ->PostTask(FROM_HERE, WTF::Bind(
+        ->PostTask(FROM_HERE, WTF::BindOnce(
                                   [](WebViewImpl* web_view) {
                                     web_view->DidExitFullscreen();
                                   },

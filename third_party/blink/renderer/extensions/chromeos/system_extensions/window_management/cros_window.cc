@@ -134,7 +134,7 @@ ScriptPromise CrosWindow::moveTo(ScriptState* script_state,
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->MoveTo(
-      window_->id, x, y, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      window_->id, x, y, WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -149,7 +149,7 @@ ScriptPromise CrosWindow::moveBy(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->MoveBy(
       window_->id, delta_x, delta_y,
-      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -164,7 +164,7 @@ ScriptPromise CrosWindow::resizeTo(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->ResizeTo(
       window_->id, width, height,
-      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -179,7 +179,7 @@ ScriptPromise CrosWindow::resizeBy(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->ResizeBy(
       window_->id, delta_width, delta_height,
-      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -193,7 +193,7 @@ ScriptPromise CrosWindow::setFullscreen(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->SetFullscreen(
       window_->id, fullscreen,
-      WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -205,7 +205,7 @@ ScriptPromise CrosWindow::maximize(ScriptState* script_state) {
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->Maximize(
-      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      window_->id, WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -217,7 +217,7 @@ ScriptPromise CrosWindow::minimize(ScriptState* script_state) {
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->Minimize(
-      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      window_->id, WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -230,7 +230,7 @@ ScriptPromise CrosWindow::restore(ScriptState* script_state) {
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->Restore(
-      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      window_->id, WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -242,7 +242,7 @@ ScriptPromise CrosWindow::focus(ScriptState* script_state) {
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->Focus(
-      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      window_->id, WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -254,7 +254,7 @@ ScriptPromise CrosWindow::close(ScriptState* script_state) {
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   cros_window_management->Close(
-      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+      window_->id, WTF::BindOnce(&OnResponse, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

@@ -602,8 +602,9 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
     have_fired_load_event_ = true;
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(&SVGUseElement::DispatchPendingEvent,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&SVGUseElement::DispatchPendingEvent,
+                                 WrapPersistent(this)));
   }
 }
 

@@ -96,7 +96,7 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
   script_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   service_->GetKeyboardLayoutMap(
-      script_promise_resolver_->WrapCallbackInScriptScope(WTF::Bind(
+      script_promise_resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
           &KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this))));
   return script_promise_resolver_->Promise();
 }

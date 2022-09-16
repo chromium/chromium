@@ -953,7 +953,8 @@ ScriptPromise FetchManager::Fetch(ScriptState* script_state,
       MakeGarbageCollected<Loader>(GetExecutionContext(), this, resolver,
                                    request, &script_state->World(), signal);
   loaders_.insert(loader);
-  signal->AddAlgorithm(WTF::Bind(&Loader::Abort, WrapWeakPersistent(loader)));
+  signal->AddAlgorithm(
+      WTF::BindOnce(&Loader::Abort, WrapWeakPersistent(loader)));
   // TODO(ricea): Reject the Response body with AbortError, not TypeError.
   loader->Start();
   return promise;

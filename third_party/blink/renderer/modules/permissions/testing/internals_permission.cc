@@ -98,7 +98,7 @@ ScriptPromise InternalsPermission::setPermission(
   raw_permission_automation->SetPermission(
       std::move(descriptor), ToPermissionStatus(state.Utf8()), url,
       embedding_url,
-      WTF::Bind(
+      WTF::BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver* resolver,

@@ -678,8 +678,9 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
   if (GetExecutionContext()) {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kMediaElementEvent)
-        ->PostTask(FROM_HERE, WTF::Bind(&BaseAudioContext::NotifyStateChange,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&BaseAudioContext::NotifyStateChange,
+                                 WrapPersistent(this)));
 
     GraphTracer().DidChangeBaseAudioContext(this);
   }

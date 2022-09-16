@@ -96,8 +96,8 @@ ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
 
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  serial_port_->Drain(WTF::Bind(&SerialPortUnderlyingSink::OnFlushOrDrain,
-                                WrapPersistent(this)));
+  serial_port_->Drain(WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
+                                    WrapPersistent(this)));
   return pending_operation_->Promise();
 }
 
@@ -121,8 +121,8 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   serial_port_->Flush(device::mojom::blink::SerialPortFlushMode::kTransmit,
-                      WTF::Bind(&SerialPortUnderlyingSink::OnFlushOrDrain,
-                                WrapPersistent(this)));
+                      WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
+                                    WrapPersistent(this)));
   return pending_operation_->Promise();
 }
 

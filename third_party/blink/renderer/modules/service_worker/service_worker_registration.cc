@@ -238,13 +238,14 @@ void ServiceWorkerRegistration::EnableNavigationPreload(
     bool enable,
     ScriptPromiseResolver* resolver) {
   host_->EnableNavigationPreload(
-      enable, WTF::Bind(&DidEnableNavigationPreload, WrapPersistent(resolver)));
+      enable,
+      WTF::BindOnce(&DidEnableNavigationPreload, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::GetNavigationPreloadState(
     ScriptPromiseResolver* resolver) {
   host_->GetNavigationPreloadState(
-      WTF::Bind(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
+      WTF::BindOnce(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::SetNavigationPreloadHeader(
@@ -252,7 +253,7 @@ void ServiceWorkerRegistration::SetNavigationPreloadHeader(
     ScriptPromiseResolver* resolver) {
   host_->SetNavigationPreloadHeader(
       value,
-      WTF::Bind(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
+      WTF::BindOnce(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
 }
 
 ScriptPromise ServiceWorkerRegistration::update(
@@ -288,7 +289,7 @@ ScriptPromise ServiceWorkerRegistration::update(
   if (GetExecutionContext()->IsWindow()) {
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
-      document->AddPostPrerenderingActivationStep(WTF::Bind(
+      document->AddPostPrerenderingActivationStep(WTF::BindOnce(
           &ServiceWorkerRegistration::UpdateInternal, WrapWeakPersistent(this),
           std::move(mojom_settings_object), WrapPersistent(resolver)));
       return resolver->Promise();
@@ -318,8 +319,8 @@ ScriptPromise ServiceWorkerRegistration::unregister(
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
       document->AddPostPrerenderingActivationStep(
-          WTF::Bind(&ServiceWorkerRegistration::UnregisterInternal,
-                    WrapWeakPersistent(this), WrapPersistent(resolver)));
+          WTF::BindOnce(&ServiceWorkerRegistration::UnregisterInternal,
+                        WrapWeakPersistent(this), WrapPersistent(resolver)));
       return resolver->Promise();
     }
   }
@@ -388,16 +389,16 @@ void ServiceWorkerRegistration::UpdateInternal(
     ScriptPromiseResolver* resolver) {
   if (!host_)
     return;
-  host_->Update(
-      std::move(mojom_settings_object),
-      WTF::Bind(&DidUpdate, WrapPersistent(resolver), WrapPersistent(this)));
+  host_->Update(std::move(mojom_settings_object),
+                WTF::BindOnce(&DidUpdate, WrapPersistent(resolver),
+                              WrapPersistent(this)));
 }
 
 void ServiceWorkerRegistration::UnregisterInternal(
     ScriptPromiseResolver* resolver) {
   if (!host_)
     return;
-  host_->Unregister(WTF::Bind(&DidUnregister, WrapPersistent(resolver)));
+  host_->Unregister(WTF::BindOnce(&DidUnregister, WrapPersistent(resolver)));
 }
 
 }  // namespace blink

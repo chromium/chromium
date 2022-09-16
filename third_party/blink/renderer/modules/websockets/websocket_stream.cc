@@ -198,8 +198,8 @@ ScriptPromise WebSocketStream::UnderlyingSink::write(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
   base::OnceClosure callback =
-      WTF::Bind(&UnderlyingSink::FinishWriteCallback, WrapWeakPersistent(this),
-                WrapPersistent(resolver));
+      WTF::BindOnce(&UnderlyingSink::FinishWriteCallback,
+                    WrapWeakPersistent(this), WrapPersistent(resolver));
   v8::Local<v8::Value> v8chunk = chunk.V8Value();
   SendAny(script_state, v8chunk, resolver, std::move(callback),
           exception_state);
@@ -623,7 +623,7 @@ void WebSocketStream::Connect(ScriptState* script_state,
     }
 
     signal->AddAlgorithm(
-        WTF::Bind(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
+        WTF::BindOnce(&WebSocketStream::OnAbort, WrapWeakPersistent(this)));
   }
 
   auto result = common_.Connect(

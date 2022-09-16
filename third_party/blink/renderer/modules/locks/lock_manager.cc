@@ -339,9 +339,9 @@ ScriptPromise LockManager::request(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       context, resolver,
-      WTF::Bind(&LockManager::RequestImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver), WrapPersistent(options), name,
-                WrapPersistent(callback), mode));
+      WTF::BindOnce(&LockManager::RequestImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver), WrapPersistent(options), name,
+                    WrapPersistent(callback), mode));
 
   // 12. Return promise.
   return promise;
@@ -407,9 +407,9 @@ void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
     // 11.2.1. Enqueue the steps to abort the request request to the lock task
     // queue.
     // 11.2.2. Reject promise with an "AbortError" DOMException.
-    options->signal()->AddAlgorithm(WTF::Bind(&LockRequestImpl::Abort,
-                                              WrapWeakPersistent(request),
-                                              String(kRequestAbortedMessage)));
+    options->signal()->AddAlgorithm(
+        WTF::BindOnce(&LockRequestImpl::Abort, WrapWeakPersistent(request),
+                      String(kRequestAbortedMessage)));
   }
   service_->RequestLock(name, mode, wait, std::move(request_remote));
 }
@@ -437,8 +437,8 @@ ScriptPromise LockManager::query(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       context, resolver,
-      WTF::Bind(&LockManager::QueryImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&LockManager::QueryImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -460,7 +460,7 @@ void LockManager::QueryImpl(ScriptPromiseResolver* resolver) {
     }
   }
 
-  service_->QueryState(WTF::Bind(
+  service_->QueryState(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver,
          Vector<mojom::blink::LockInfoPtr> pending,
          Vector<mojom::blink::LockInfoPtr> held) {
@@ -513,7 +513,7 @@ void LockManager::CheckStorageAccessAllowed(
     base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
-  auto wrapped_callback = WTF::Bind(
+  auto wrapped_callback = WTF::BindOnce(
       &LockManager::DidCheckStorageAccessAllowed, WrapWeakPersistent(this),
       WrapPersistent(resolver), std::move(callback));
 

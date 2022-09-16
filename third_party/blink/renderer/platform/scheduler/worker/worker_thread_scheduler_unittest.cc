@@ -428,11 +428,12 @@ TEST_F(WorkerThreadSchedulerTest, TestMicrotaskCheckpointTiming) {
 
   base::TimeTicks start_time = task_environment_.NowTicks();
   default_task_runner_->PostTask(
-      FROM_HERE, WTF::Bind(&base::test::TaskEnvironment::FastForwardBy,
-                           base::Unretained(&task_environment_), kTaskTime));
+      FROM_HERE,
+      WTF::BindOnce(&base::test::TaskEnvironment::FastForwardBy,
+                    base::Unretained(&task_environment_), kTaskTime));
   scheduler_->set_on_microtask_checkpoint(
-      WTF::Bind(&base::test::TaskEnvironment::FastForwardBy,
-                base::Unretained(&task_environment_), kMicrotaskTime));
+      WTF::BindOnce(&base::test::TaskEnvironment::FastForwardBy,
+                    base::Unretained(&task_environment_), kMicrotaskTime));
 
   RecordingTaskTimeObserver observer;
 

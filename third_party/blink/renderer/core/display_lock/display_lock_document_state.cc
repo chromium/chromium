@@ -147,12 +147,12 @@ void DisplayLockDocumentState::ProcessDisplayLockActivationObservation(
     if (context->HadAnyViewportIntersectionNotifications()) {
       if (entry->isIntersecting()) {
         document_->View()->EnqueueStartOfLifecycleTask(
-            WTF::Bind(&DisplayLockContext::NotifyIsIntersectingViewport,
-                      WrapWeakPersistent(context)));
+            WTF::BindOnce(&DisplayLockContext::NotifyIsIntersectingViewport,
+                          WrapWeakPersistent(context)));
       } else {
         document_->View()->EnqueueStartOfLifecycleTask(
-            WTF::Bind(&DisplayLockContext::NotifyIsNotIntersectingViewport,
-                      WrapWeakPersistent(context)));
+            WTF::BindOnce(&DisplayLockContext::NotifyIsNotIntersectingViewport,
+                          WrapWeakPersistent(context)));
       }
       had_asynchronous_notifications = true;
     } else {
@@ -172,8 +172,8 @@ void DisplayLockDocumentState::ProcessDisplayLockActivationObservation(
     // lifecycle).
     document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
         ->PostTask(FROM_HERE,
-                   WTF::Bind(&DisplayLockDocumentState::ScheduleAnimation,
-                             WrapWeakPersistent(this)));
+                   WTF::BindOnce(&DisplayLockDocumentState::ScheduleAnimation,
+                                 WrapWeakPersistent(this)));
   }
 }
 

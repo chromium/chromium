@@ -89,8 +89,8 @@ void TextPaintTimingDetector::OnPaintFinished() {
   // |WrapCrossThreadWeakPersistent| guarantees that when |this| is killed,
   // the callback function will not be invoked.
   RegisterNotifyPresentationTime(
-      WTF::Bind(&TextPaintTimingDetector::ReportPresentationTime,
-                WrapCrossThreadWeakPersistent(this), frame_index_++));
+      WTF::BindOnce(&TextPaintTimingDetector::ReportPresentationTime,
+                    WrapCrossThreadWeakPersistent(this), frame_index_++));
   added_entry_in_latest_frame_ = false;
 }
 

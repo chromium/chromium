@@ -86,8 +86,8 @@ void WebGLTimerQueryEXT::ScheduleAllowAvailabilityUpdate() {
     return;
   task_handle_ = PostCancellableTask(
       *task_runner_, FROM_HERE,
-      WTF::Bind(&WebGLTimerQueryEXT::AllowAvailabilityUpdate,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&WebGLTimerQueryEXT::AllowAvailabilityUpdate,
+                    WrapWeakPersistent(this)));
 }
 
 void WebGLTimerQueryEXT::AllowAvailabilityUpdate() {

@@ -261,8 +261,9 @@ AudioContext::AudioContext(Document& document,
           execution_context->GetTaskRunner(TaskType::kPermission)));
   permission_service_->HasPermission(
       CreatePermissionDescriptor(microphone_permission_name),
-      WTF::Bind(&AudioContext::DidInitialPermissionCheck, WrapPersistent(this),
-                CreatePermissionDescriptor(microphone_permission_name)));
+      WTF::BindOnce(&AudioContext::DidInitialPermissionCheck,
+                    WrapPersistent(this),
+                    CreatePermissionDescriptor(microphone_permission_name)));
 }
 
 void AudioContext::Uninitialize() {
@@ -855,8 +856,8 @@ void AudioContext::EnsureAudioContextManagerService() {
               GetDocument()->GetTaskRunner(TaskType::kInternalMedia))));
 
   audio_context_manager_.set_disconnect_handler(
-      WTF::Bind(&AudioContext::OnAudioContextManagerServiceConnectionError,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&AudioContext::OnAudioContextManagerServiceConnectionError,
+                    WrapWeakPersistent(this)));
 }
 
 void AudioContext::OnAudioContextManagerServiceConnectionError() {

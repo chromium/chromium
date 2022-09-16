@@ -146,9 +146,9 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   ri->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, origin, info,
       base::saturated_cast<GLuint>(rgba_stide), dst_pixels,
-      WTF::Bind(&BackgroundReadback::OnARGBPixelsReadCompleted,
-                WrapCrossThreadPersistent(this), std::move(result_cb),
-                std::move(txt_frame), std::move(result)));
+      WTF::BindOnce(&BackgroundReadback::OnARGBPixelsReadCompleted,
+                    WrapCrossThreadPersistent(this), std::move(result_cb),
+                    std::move(txt_frame), std::move(result)));
 }
 
 void BackgroundReadback::OnARGBPixelsReadCompleted(

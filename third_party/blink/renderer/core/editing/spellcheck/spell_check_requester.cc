@@ -287,8 +287,8 @@ void SpellCheckRequester::DidCheck(int sequence) {
   if (!request_queue_.IsEmpty()) {
     timer_to_process_queued_request_ = PostCancellableTask(
         *window_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-        WTF::Bind(&SpellCheckRequester::TimerFiredToProcessQueuedRequest,
-                  WrapPersistent(this)));
+        WTF::BindOnce(&SpellCheckRequester::TimerFiredToProcessQueuedRequest,
+                      WrapPersistent(this)));
   }
 }
 

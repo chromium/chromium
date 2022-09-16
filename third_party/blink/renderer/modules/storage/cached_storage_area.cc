@@ -56,8 +56,8 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(
           "CachedStorageArea",
           WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
   virtual_time_pauser.PauseVirtualTime();
-  return WTF::Bind([](WebScopedVirtualTimePauser, bool) {},
-                   std::move(virtual_time_pauser));
+  return WTF::BindOnce([](WebScopedVirtualTimePauser, bool) {},
+                       std::move(virtual_time_pauser));
 }
 
 }  // namespace

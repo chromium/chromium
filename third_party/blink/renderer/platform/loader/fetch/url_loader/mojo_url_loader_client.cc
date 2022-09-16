@@ -304,8 +304,8 @@ void MojoURLLoaderClient::Freeze(WebLoaderFreezeMode mode) {
   }
   if (mode == WebLoaderFreezeMode::kNone) {
     task_runner_->PostTask(
-        FROM_HERE, WTF::Bind(&MojoURLLoaderClient::FlushDeferredMessages,
-                             weak_factory_.GetWeakPtr()));
+        FROM_HERE, WTF::BindOnce(&MojoURLLoaderClient::FlushDeferredMessages,
+                                 weak_factory_.GetWeakPtr()));
   } else if (mode == WebLoaderFreezeMode::kBufferIncoming &&
              !has_received_complete_ &&
              !back_forward_cache_eviction_timer_.IsRunning()) {
@@ -314,8 +314,9 @@ void MojoURLLoaderClient::Freeze(WebLoaderFreezeMode mode) {
     back_forward_cache_eviction_timer_.SetTaskRunner(task_runner_);
     back_forward_cache_eviction_timer_.Start(
         FROM_HERE, back_forward_cache_timeout_,
-        WTF::Bind(&MojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout,
-                  weak_factory_.GetWeakPtr()));
+        WTF::BindOnce(
+            &MojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout,
+            weak_factory_.GetWeakPtr()));
   }
 }
 

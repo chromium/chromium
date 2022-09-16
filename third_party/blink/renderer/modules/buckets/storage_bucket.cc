@@ -40,8 +40,9 @@ ScriptPromise StorageBucket::persist(ScriptState* script_state) {
     return promise;
   }
 
-  remote_->Persist(WTF::Bind(&StorageBucket::DidRequestPersist,
-                             WrapPersistent(this), WrapPersistent(resolver)));
+  remote_->Persist(WTF::BindOnce(&StorageBucket::DidRequestPersist,
+                                 WrapPersistent(this),
+                                 WrapPersistent(resolver)));
   return promise;
 }
 
@@ -57,8 +58,9 @@ ScriptPromise StorageBucket::persisted(ScriptState* script_state) {
     return promise;
   }
 
-  remote_->Persisted(WTF::Bind(&StorageBucket::DidGetPersisted,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+  remote_->Persisted(WTF::BindOnce(&StorageBucket::DidGetPersisted,
+                                   WrapPersistent(this),
+                                   WrapPersistent(resolver)));
   return promise;
 }
 
@@ -74,8 +76,9 @@ ScriptPromise StorageBucket::estimate(ScriptState* script_state) {
     return promise;
   }
 
-  remote_->Estimate(WTF::Bind(&StorageBucket::DidGetEstimate,
-                              WrapPersistent(this), WrapPersistent(resolver)));
+  remote_->Estimate(WTF::BindOnce(&StorageBucket::DidGetEstimate,
+                                  WrapPersistent(this),
+                                  WrapPersistent(resolver)));
   return promise;
 }
 
@@ -91,9 +94,9 @@ ScriptPromise StorageBucket::durability(ScriptState* script_state) {
     return promise;
   }
 
-  remote_->Durability(WTF::Bind(&StorageBucket::DidGetDurability,
-                                WrapPersistent(this),
-                                WrapPersistent(resolver)));
+  remote_->Durability(WTF::BindOnce(&StorageBucket::DidGetDurability,
+                                    WrapPersistent(this),
+                                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -112,8 +115,8 @@ ScriptPromise StorageBucket::setExpires(ScriptState* script_state,
 
   remote_->SetExpires(
       base::Time::FromJavaTime(expires),
-      WTF::Bind(&StorageBucket::DidSetExpires, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&StorageBucket::DidSetExpires, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -129,8 +132,9 @@ ScriptPromise StorageBucket::expires(ScriptState* script_state) {
     return promise;
   }
 
-  remote_->Expires(WTF::Bind(&StorageBucket::DidGetExpires,
-                             WrapPersistent(this), WrapPersistent(resolver)));
+  remote_->Expires(WTF::BindOnce(&StorageBucket::DidGetExpires,
+                                 WrapPersistent(this),
+                                 WrapPersistent(resolver)));
   return promise;
 }
 

@@ -191,8 +191,8 @@ void ExternalPopupMenu::UpdateFromElement(UpdateReason reason) {
       needs_update_ = true;
       owner_element_->GetDocument()
           .GetTaskRunner(TaskType::kUserInteraction)
-          ->PostTask(FROM_HERE, WTF::Bind(&ExternalPopupMenu::Update,
-                                          WrapPersistent(this)));
+          ->PostTask(FROM_HERE, WTF::BindOnce(&ExternalPopupMenu::Update,
+                                              WrapPersistent(this)));
       break;
 
     case kByStyleChange:

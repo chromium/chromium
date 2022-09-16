@@ -49,7 +49,7 @@ FaceDetector::FaceDetector(ExecutionContext* context,
       face_service_.BindNewPipeAndPassReceiver(task_runner),
       std::move(face_detector_options));
 
-  face_service_.set_disconnect_handler(WTF::Bind(
+  face_service_.set_disconnect_handler(WTF::BindOnce(
       &FaceDetector::OnFaceServiceConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -66,8 +66,8 @@ ScriptPromise FaceDetector::DoDetect(ScriptState* script_state,
   face_service_requests_.insert(resolver);
   face_service_->Detect(
       std::move(bitmap),
-      WTF::Bind(&FaceDetector::OnDetectFaces, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&FaceDetector::OnDetectFaces, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 

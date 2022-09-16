@@ -71,7 +71,7 @@ void DidNavigateOrOpenWindow(ScriptPromiseResolver* resolver,
 ServiceWorkerWindowClient::ResolveWindowClientCallback
 ServiceWorkerWindowClient::CreateResolveWindowClientCallback(
     ScriptPromiseResolver* resolver) {
-  return WTF::Bind(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
+  return WTF::BindOnce(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
 }
 
 ServiceWorkerWindowClient::ServiceWorkerWindowClient(
@@ -103,7 +103,7 @@ ScriptPromise ServiceWorkerWindowClient::focus(ScriptState* script_state) {
   global_scope->ConsumeWindowInteraction();
 
   global_scope->GetServiceWorkerHost()->FocusClient(
-      Uuid(), WTF::Bind(&DidFocus, WrapPersistent(resolver)));
+      Uuid(), WTF::BindOnce(&DidFocus, WrapPersistent(resolver)));
   return promise;
 }
 

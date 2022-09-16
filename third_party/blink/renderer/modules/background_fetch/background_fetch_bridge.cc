@@ -62,16 +62,16 @@ void BackgroundFetchBridge::Fetch(
   GetService()->Fetch(GetSupplementable()->RegistrationId(), developer_id,
                       std::move(requests), std::move(options), icon,
                       std::move(ukm_data),
-                      WTF::Bind(&BackgroundFetchBridge::DidGetRegistration,
-                                WrapPersistent(this), std::move(callback)));
+                      WTF::BindOnce(&BackgroundFetchBridge::DidGetRegistration,
+                                    WrapPersistent(this), std::move(callback)));
 }
 
 void BackgroundFetchBridge::GetRegistration(const String& developer_id,
                                             RegistrationCallback callback) {
   GetService()->GetRegistration(
       GetSupplementable()->RegistrationId(), developer_id,
-      WTF::Bind(&BackgroundFetchBridge::DidGetRegistration,
-                WrapPersistent(this), std::move(callback)));
+      WTF::BindOnce(&BackgroundFetchBridge::DidGetRegistration,
+                    WrapPersistent(this), std::move(callback)));
 }
 
 void BackgroundFetchBridge::DidGetRegistration(

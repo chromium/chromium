@@ -62,7 +62,7 @@ class TestInterfaceFactory : public media::mojom::InterfaceFactory {
 
     // Each AudioEncoder instance will try to open a connection to this
     // factory, so we must clean up after each one is destroyed.
-    receiver_.set_disconnect_handler(WTF::Bind(
+    receiver_.set_disconnect_handler(WTF::BindOnce(
         &TestInterfaceFactory::OnConnectionError, base::Unretained(this)));
   }
 

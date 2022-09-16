@@ -171,8 +171,8 @@ void WakeLock::DoRequest(V8WakeLockType::Enum type,
       CreatePermissionDescriptor(permission_name),
       LocalFrame::HasTransientUserActivation(local_frame),
       resolver->WrapCallbackInScriptScope(
-          WTF::Bind(&WakeLock::DidReceivePermissionResponse,
-                    WrapPersistent(this), type)));
+          WTF::BindOnce(&WakeLock::DidReceivePermissionResponse,
+                        WrapPersistent(this), type)));
 }
 
 void WakeLock::DidReceivePermissionResponse(V8WakeLockType::Enum type,

@@ -101,7 +101,7 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
 
   mojo_ptr_->GetFile(
       name, options->create(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle>
@@ -139,7 +139,7 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
 
   mojo_ptr_->GetDirectory(
       name, options->create(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
@@ -177,7 +177,7 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
 
   mojo_ptr_->RemoveEntry(
       name, options->recursive(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              FileSystemAccessErrorPtr result) {
             // Keep `this` alive so the handle will not be garbage-collected
@@ -204,7 +204,7 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
 
   mojo_ptr_->Resolve(
       possible_child->Transfer(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
              FileSystemAccessErrorPtr result,
              const absl::optional<Vector<String>>& path) {
@@ -310,7 +310,7 @@ void FileSystemDirectoryHandle::IsSameEntryImpl(
 
   mojo_ptr_->Resolve(
       std::move(other),
-      WTF::Bind(
+      WTF::BindOnce(
           [](base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                                      bool)> callback,
              FileSystemAccessErrorPtr result,

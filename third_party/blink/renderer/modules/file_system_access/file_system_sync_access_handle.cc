@@ -108,7 +108,7 @@ void FileSystemSyncAccessHandle::DispatchQueuedClose() {
   DCHECK(file_delegate_->IsValid())
       << "file I/O operation queued after file closed";
 
-  file_delegate_->CloseAsync(WTF::Bind(
+  file_delegate_->CloseAsync(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver,
          FileSystemSyncAccessHandle* access_handle) {
         ScriptState* script_state = resolver->GetScriptState();
@@ -116,7 +116,7 @@ void FileSystemSyncAccessHandle::DispatchQueuedClose() {
           return;
         ScriptState::Scope scope(script_state);
 
-        access_handle->access_handle_remote_->Close(WTF::Bind(
+        access_handle->access_handle_remote_->Close(WTF::BindOnce(
             [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
             WrapPersistent(resolver)));
       },
@@ -174,7 +174,7 @@ ScriptPromise FileSystemSyncAccessHandle::FlushAsync(
   DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
 
-  file_delegate()->FlushAsync(WTF::Bind(WTF::Bind(
+  file_delegate()->FlushAsync(WTF::BindOnce(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver,
          FileSystemSyncAccessHandle* access_handle, bool success) {
         ScriptState* script_state = resolver->GetScriptState();
@@ -252,7 +252,7 @@ ScriptPromise FileSystemSyncAccessHandle::GetSizeAsync(
   DCHECK(file_delegate()->IsValid())
       << "file I/O operation queued after file closed";
 
-  file_delegate()->GetLengthAsync(WTF::Bind(
+  file_delegate()->GetLengthAsync(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver,
          FileSystemSyncAccessHandle* access_handle,
          base::FileErrorOr<int64_t> error_or_length) {
@@ -356,7 +356,7 @@ ScriptPromise FileSystemSyncAccessHandle::TruncateAsync(
 
   file_delegate()->SetLengthAsync(
       size,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              FileSystemSyncAccessHandle* access_handle,
              base::File::Error file_error) {

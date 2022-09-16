@@ -26,7 +26,7 @@ void LockOrientationCallback::OnSuccess() {
   // resolving the promise.
   resolver_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(FROM_HERE, WTF::Bind(
+      ->PostTask(FROM_HERE, WTF::BindOnce(
                                 [](ScriptPromiseResolver* resolver) {
                                   resolver->Resolve();
                                 },

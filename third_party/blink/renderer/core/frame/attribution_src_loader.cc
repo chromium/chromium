@@ -282,9 +282,9 @@ AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
 
   if (document->IsPrerendering()) {
     document->AddPostPrerenderingActivationStep(
-        WTF::Bind(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
-                  WrapPersistentIfNeeded(this), src_url, src_type,
-                  associated_with_navigation));
+        WTF::BindOnce(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
+                      WrapPersistentIfNeeded(this), src_url, src_type,
+                      associated_with_navigation));
     return nullptr;
   }
 

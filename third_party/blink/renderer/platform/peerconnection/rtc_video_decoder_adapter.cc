@@ -638,7 +638,7 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
   // Send EOS frame for flush.
   video_decoder_->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FlushDoneCB flush_success, FlushDoneCB flush_fail,
              media::DecoderStatus status) {
             if (status.is_ok())

@@ -135,7 +135,7 @@ ScriptPromise FragmentDirective::createSelectorDirective(
   auto* generator = MakeGarbageCollected<TextFragmentSelectorGenerator>(frame);
   generator->Generate(
       *range_in_flat_tree,
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              TextFragmentSelectorGenerator* generator,
              const RangeInFlatTree* range, const TextFragmentSelector& selector,

@@ -225,8 +225,8 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
     // ImageLoader will be destroyed, leading to unresolved/unrejected Promise.
     frame->GetChromeClient().RequestDecode(
         frame, image->PaintImageForCurrentFrame(),
-        WTF::Bind(&ImageLoader::DecodeRequestFinished,
-                  WrapCrossThreadPersistent(this), request->request_id()));
+        WTF::BindOnce(&ImageLoader::DecodeRequestFinished,
+                      WrapCrossThreadPersistent(this), request->request_id()));
     request->NotifyDecodeDispatched();
     ++it;
   }
@@ -401,9 +401,10 @@ inline void ImageLoader::DispatchErrorEvent() {
   pending_error_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
-      WTF::Bind(&ImageLoader::DispatchPendingErrorEvent, WrapPersistent(this),
-                std::make_unique<IncrementLoadEventDelayCount>(
-                    GetElement()->GetDocument())));
+      WTF::BindOnce(&ImageLoader::DispatchPendingErrorEvent,
+                    WrapPersistent(this),
+                    std::make_unique<IncrementLoadEventDelayCount>(
+                        GetElement()->GetDocument())));
 }
 
 inline void ImageLoader::CrossSiteOrCSPViolationOccurred(
@@ -420,7 +421,7 @@ inline void ImageLoader::EnqueueImageLoadingMicroTask(
     network::mojom::ReferrerPolicy referrer_policy) {
   auto task = std::make_unique<Task>(this, update_behavior, referrer_policy);
   pending_task_ = task->GetWeakPtr();
-  Microtask::EnqueueMicrotask(WTF::Bind(&Task::Run, std::move(task)));
+  Microtask::EnqueueMicrotask(WTF::BindOnce(&Task::Run, std::move(task)));
   delay_until_do_update_from_element_ =
       std::make_unique<IncrementLoadEventDelayCount>(element_->GetDocument());
 }
@@ -838,9 +839,10 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   pending_load_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
-      WTF::Bind(&ImageLoader::DispatchPendingLoadEvent, WrapPersistent(this),
-                std::make_unique<IncrementLoadEventDelayCount>(
-                    GetElement()->GetDocument())));
+      WTF::BindOnce(&ImageLoader::DispatchPendingLoadEvent,
+                    WrapPersistent(this),
+                    std::make_unique<IncrementLoadEventDelayCount>(
+                        GetElement()->GetDocument())));
 }
 
 LayoutImageResource* ImageLoader::GetLayoutImageResource() {
@@ -937,8 +939,8 @@ ScriptPromise ImageLoader::Decode(ScriptState* script_state,
 
   auto* request = MakeGarbageCollected<DecodeRequest>(
       this, MakeGarbageCollected<ScriptPromiseResolver>(script_state));
-  Microtask::EnqueueMicrotask(
-      WTF::Bind(&DecodeRequest::ProcessForTask, WrapWeakPersistent(request)));
+  Microtask::EnqueueMicrotask(WTF::BindOnce(&DecodeRequest::ProcessForTask,
+                                            WrapWeakPersistent(request)));
   decode_requests_.push_back(request);
   return request->promise();
 }

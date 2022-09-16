@@ -401,8 +401,9 @@ void EncoderBase<Traits>::ScheduleDequeueEvent() {
   event->async_task_context()->Schedule(GetExecutionContext(), event->type());
 
   callback_runner_->PostTask(
-      FROM_HERE, WTF::Bind(&EncoderBase<Traits>::DispatchDequeueEvent,
-                           WrapWeakPersistent(this), WrapPersistent(event)));
+      FROM_HERE,
+      WTF::BindOnce(&EncoderBase<Traits>::DispatchDequeueEvent,
+                    WrapWeakPersistent(this), WrapPersistent(event)));
 }
 
 template <typename Traits>

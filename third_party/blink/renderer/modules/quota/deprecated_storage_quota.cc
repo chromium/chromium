@@ -121,10 +121,11 @@ void DeprecatedStorageQuota::EnqueueStorageErrorCallback(
 
   ExecutionContext::From(script_state)
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&V8StorageErrorCallback::InvokeAndReportException,
-                           WrapPersistent(error_callback), nullptr,
-                           WrapPersistent(DOMError::Create(exception_code))));
+      ->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(&V8StorageErrorCallback::InvokeAndReportException,
+                        WrapPersistent(error_callback), nullptr,
+                        WrapPersistent(DOMError::Create(exception_code))));
 }
 
 DeprecatedStorageQuota::DeprecatedStorageQuota(
@@ -160,9 +161,9 @@ void DeprecatedStorageQuota::queryUsageAndQuota(
     return;
   }
 
-  auto callback = WTF::Bind(&DeprecatedQueryStorageUsageAndQuotaCallback,
-                            WrapPersistent(success_callback),
-                            WrapPersistent(error_callback));
+  auto callback = WTF::BindOnce(&DeprecatedQueryStorageUsageAndQuotaCallback,
+                                WrapPersistent(success_callback),
+                                WrapPersistent(error_callback));
   GetQuotaHost(execution_context)
       ->QueryStorageUsageAndQuota(
           storage_type,
@@ -190,9 +191,9 @@ void DeprecatedStorageQuota::requestQuota(
     return;
   }
 
-  auto callback =
-      WTF::Bind(&RequestStorageQuotaCallback, WrapPersistent(success_callback),
-                WrapPersistent(error_callback));
+  auto callback = WTF::BindOnce(&RequestStorageQuotaCallback,
+                                WrapPersistent(success_callback),
+                                WrapPersistent(error_callback));
 
   if (execution_context->GetSecurityOrigin()->IsOpaque()) {
     // Unique origins cannot store persistent state.

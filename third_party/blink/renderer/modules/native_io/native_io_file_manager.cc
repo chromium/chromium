@@ -110,7 +110,7 @@ NativeIOFileManager::NativeIOFileManager(
       receiver_task_runner_(
           execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
       backend_(std::move(backend)) {
-  backend_.set_disconnect_handler(WTF::Bind(
+  backend_.set_disconnect_handler(WTF::BindOnce(
       &NativeIOFileManager::OnBackendDisconnect, WrapWeakPersistent(this)));
 }
 
@@ -140,8 +140,8 @@ ScriptPromise NativeIOFileManager::open(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::OpenImpl, WrapWeakPersistent(this), name,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::OpenImpl, WrapWeakPersistent(this),
+                    name, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -169,8 +169,8 @@ ScriptPromise NativeIOFileManager::Delete(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::DeleteImpl, WrapWeakPersistent(this),
-                name, WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::DeleteImpl, WrapWeakPersistent(this),
+                    name, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -192,8 +192,8 @@ ScriptPromise NativeIOFileManager::getAll(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::GetAllImpl, WrapWeakPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::GetAllImpl, WrapWeakPersistent(this),
+                    WrapPersistent(resolver)));
 
   return promise;
 }
@@ -222,8 +222,8 @@ ScriptPromise NativeIOFileManager::rename(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::RenameImpl, WrapWeakPersistent(this),
-                old_name, new_name, WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::RenameImpl, WrapWeakPersistent(this),
+                    old_name, new_name, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -407,9 +407,9 @@ ScriptPromise NativeIOFileManager::requestCapacity(
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::RequestCapacityImpl,
-                WrapWeakPersistent(this), requested_capacity,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::RequestCapacityImpl,
+                    WrapWeakPersistent(this), requested_capacity,
+                    WrapPersistent(resolver)));
 
   return promise;
 }
@@ -433,9 +433,9 @@ ScriptPromise NativeIOFileManager::releaseCapacity(
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::ReleaseCapacityImpl,
-                WrapWeakPersistent(this), requested_release,
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::ReleaseCapacityImpl,
+                    WrapWeakPersistent(this), requested_release,
+                    WrapPersistent(resolver)));
 
   return promise;
 }
@@ -456,8 +456,8 @@ ScriptPromise NativeIOFileManager::getRemainingCapacity(
 
   CheckStorageAccessAllowed(
       execution_context, resolver,
-      WTF::Bind(&NativeIOFileManager::GetRemainingCapacityImpl,
-                WrapWeakPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::GetRemainingCapacityImpl,
+                    WrapWeakPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
@@ -468,7 +468,7 @@ void NativeIOFileManager::CheckStorageAccessAllowed(
     base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
-  auto wrapped_callback = WTF::Bind(
+  auto wrapped_callback = WTF::BindOnce(
       &NativeIOFileManager::DidCheckStorageAccessAllowed,
       WrapWeakPersistent(this), WrapPersistent(resolver), std::move(callback));
 
@@ -749,9 +749,9 @@ void NativeIOFileManager::OpenImpl(String name,
 
   backend_->OpenFile(
       name, std::move(backend_file_receiver),
-      WTF::Bind(&NativeIOFileManager::OnOpenResult, WrapPersistent(this),
-                WrapPersistent(resolver),
-                WrapPersistent(WrapDisallowNew(std::move(backend_file)))));
+      WTF::BindOnce(&NativeIOFileManager::OnOpenResult, WrapPersistent(this),
+                    WrapPersistent(resolver),
+                    WrapPersistent(WrapDisallowNew(std::move(backend_file)))));
 }
 
 void NativeIOFileManager::DeleteImpl(String name,
@@ -774,8 +774,8 @@ void NativeIOFileManager::DeleteImpl(String name,
   }
 
   backend_->DeleteFile(
-      name, WTF::Bind(&NativeIOFileManager::OnDeleteResult,
-                      WrapPersistent(this), WrapPersistent(resolver)));
+      name, WTF::BindOnce(&NativeIOFileManager::OnDeleteResult,
+                          WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::GetAllImpl(ScriptPromiseResolver* resolver) {
@@ -797,7 +797,7 @@ void NativeIOFileManager::GetAllImpl(ScriptPromiseResolver* resolver) {
   }
 
   backend_->GetAllFileNames(
-      WTF::Bind(&OnGetAllResult, WrapPersistent(resolver)));
+      WTF::BindOnce(&OnGetAllResult, WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::RenameImpl(String old_name,
@@ -820,8 +820,9 @@ void NativeIOFileManager::RenameImpl(String old_name,
     return;
   }
 
-  backend_->RenameFile(old_name, new_name,
-                       WTF::Bind(&OnRenameResult, WrapPersistent(resolver)));
+  backend_->RenameFile(
+      old_name, new_name,
+      WTF::BindOnce(&OnRenameResult, WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::RequestCapacityImpl(uint64_t requested_capacity,
@@ -845,8 +846,8 @@ void NativeIOFileManager::RequestCapacityImpl(uint64_t requested_capacity,
 
   backend_->RequestCapacityChange(
       requested_capacity,
-      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::OnRequestCapacityChangeResult,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
@@ -890,8 +891,8 @@ void NativeIOFileManager::ReleaseCapacityImpl(uint64_t requested_release,
 
   backend_->RequestCapacityChange(
       requested_difference,
-      WTF::Bind(&NativeIOFileManager::OnRequestCapacityChangeResult,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&NativeIOFileManager::OnRequestCapacityChangeResult,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NativeIOFileManager::GetRemainingCapacityImpl(

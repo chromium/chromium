@@ -672,8 +672,8 @@ void WebMediaPlayerMSTest::InitializeWebMediaPlayerMS() {
       scheduler::GetSingleThreadTaskRunnerForTesting(),
       scheduler::GetSingleThreadTaskRunnerForTesting(), gpu_factories_.get(),
       WebString(),
-      WTF::Bind(&WebMediaPlayerMSTest::CreateMockSurfaceLayerBridge,
-                WTF::Unretained(this)),
+      WTF::BindOnce(&WebMediaPlayerMSTest::CreateMockSurfaceLayerBridge,
+                    WTF::Unretained(this)),
       std::move(submitter_), enable_surface_layer_for_video_);
   player_->SetMediaStreamRendererFactoryForTesting(
       std::unique_ptr<MediaStreamRendererFactory>(render_factory_));
@@ -755,8 +755,8 @@ void WebMediaPlayerMSTest::StartRendering() {
   if (!rendering_) {
     rendering_ = true;
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-        FROM_HERE, WTF::Bind(&WebMediaPlayerMSTest::RenderFrame,
-                             weak_factory_.GetWeakPtr()));
+        FROM_HERE, WTF::BindOnce(&WebMediaPlayerMSTest::RenderFrame,
+                                 weak_factory_.GetWeakPtr()));
   }
   DoStartRendering();
 }
@@ -789,7 +789,8 @@ void WebMediaPlayerMSTest::RenderFrame() {
   }
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
       FROM_HERE,
-      WTF::Bind(&WebMediaPlayerMSTest::RenderFrame, weak_factory_.GetWeakPtr()),
+      WTF::BindOnce(&WebMediaPlayerMSTest::RenderFrame,
+                    weak_factory_.GetWeakPtr()),
       base::Seconds(1.0 / 60.0));
 }
 

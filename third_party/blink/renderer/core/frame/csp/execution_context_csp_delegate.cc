@@ -153,7 +153,7 @@ void ExecutionContextCSPDelegate::DispatchViolationEvent(
   execution_context_->GetTaskRunner(TaskType::kNetworking)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind(
+          WTF::BindOnce(
               &ExecutionContextCSPDelegate::DispatchViolationEventInternal,
               WrapPersistent(this), WrapPersistent(&violation_data),
               WrapPersistent(element)));

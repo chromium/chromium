@@ -474,8 +474,8 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
         base::Milliseconds(virtual_time_budget_ms.fromJust());
     virtual_time_controller->GrantVirtualTimeBudget(
         budget_amount,
-        WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
+                      WrapWeakPersistent(this)));
     for (DocumentLoader* loader : pending_document_loaders_)
       loader->SetDefersLoading(LoaderFreezeMode::kNone);
     pending_document_loaders_.clear();

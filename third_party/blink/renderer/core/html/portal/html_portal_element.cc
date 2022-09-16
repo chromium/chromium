@@ -534,8 +534,8 @@ bool HTMLPortalElement::IsPortalCreationOrAdoptionAllowed(
 void HTMLPortalElement::CreatePortalAndNavigate(const ContainerNode* node) {
   if (GetDocument().IsPrerendering()) {
     GetDocument().AddPostPrerenderingActivationStep(
-        WTF::Bind(&HTMLPortalElement::CreatePortalAndNavigate,
-                  WrapWeakPersistent(this), WrapWeakPersistent(node)));
+        WTF::BindOnce(&HTMLPortalElement::CreatePortalAndNavigate,
+                      WrapWeakPersistent(this), WrapWeakPersistent(node)));
     return;
   }
 

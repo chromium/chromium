@@ -160,7 +160,7 @@ void ImageDownloaderImpl::CreateMojoService(
   receiver_.Bind(std::move(receiver),
                  GetSupplementable()->GetTaskRunner(TaskType::kNetworking));
   receiver_.set_disconnect_handler(
-      WTF::Bind(&ImageDownloaderImpl::Dispose, WrapWeakPersistent(this)));
+      WTF::BindOnce(&ImageDownloaderImpl::Dispose, WrapWeakPersistent(this)));
 }
 
 // ImageDownloader methods:
@@ -181,8 +181,8 @@ void ImageDownloaderImpl::DownloadImage(const KURL& image_url,
   }
 
   auto download_callback =
-      WTF::Bind(&ImageDownloaderImpl::DidDownloadImage, WrapPersistent(this),
-                max_bitmap_size, std::move(callback));
+      WTF::BindOnce(&ImageDownloaderImpl::DidDownloadImage,
+                    WrapPersistent(this), max_bitmap_size, std::move(callback));
 
   if (!image_url.ProtocolIsData()) {
     FetchImage(image_url, is_favicon, constrained_preferred_size, bypass_cache,
@@ -227,8 +227,9 @@ void ImageDownloaderImpl::FetchImage(const KURL& image_url,
           image_url, GetSupplementable(), is_favicon,
           bypass_cache ? blink::mojom::FetchCacheMode::kBypassCache
                        : blink::mojom::FetchCacheMode::kDefault,
-          WTF::Bind(&ImageDownloaderImpl::DidFetchImage, WrapPersistent(this),
-                    std::move(callback), preferred_size)));
+          WTF::BindOnce(&ImageDownloaderImpl::DidFetchImage,
+                        WrapPersistent(this), std::move(callback),
+                        preferred_size)));
 }
 
 void ImageDownloaderImpl::DidFetchImage(

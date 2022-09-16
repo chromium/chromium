@@ -154,7 +154,7 @@ void BodyStreamBuffer::Init() {
       Abort();
     } else {
       signal_->AddAlgorithm(
-          WTF::Bind(&BodyStreamBuffer::Abort, WrapWeakPersistent(this)));
+          WTF::BindOnce(&BodyStreamBuffer::Abort, WrapWeakPersistent(this)));
     }
   }
   OnStateChange();
@@ -236,8 +236,8 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
       client->Abort();
       return;
     }
-    signal_->AddAlgorithm(
-        WTF::Bind(&FetchDataLoader::Client::Abort, WrapWeakPersistent(client)));
+    signal_->AddAlgorithm(WTF::BindOnce(&FetchDataLoader::Client::Abort,
+                                        WrapWeakPersistent(client)));
   }
   loader_ = loader;
   auto* handle = ReleaseHandle(exception_state);

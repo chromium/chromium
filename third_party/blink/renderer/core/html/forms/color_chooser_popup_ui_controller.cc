@@ -280,11 +280,11 @@ void ColorChooserPopupUIController::OpenEyeDropper() {
   frame_->GetBrowserInterfaceBroker().GetInterface(
       eye_dropper_chooser_.BindNewPipeAndPassReceiver(
           frame_->GetTaskRunner(TaskType::kUserInteraction)));
-  eye_dropper_chooser_.set_disconnect_handler(WTF::Bind(
+  eye_dropper_chooser_.set_disconnect_handler(WTF::BindOnce(
       &ColorChooserPopupUIController::EndChooser, WrapWeakPersistent(this)));
   eye_dropper_chooser_->Choose(
-      WTF::Bind(&ColorChooserPopupUIController::EyeDropperResponseHandler,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&ColorChooserPopupUIController::EyeDropperResponseHandler,
+                    WrapWeakPersistent(this)));
 }
 
 void ColorChooserPopupUIController::OpenSystemColorChooser() {

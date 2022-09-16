@@ -90,8 +90,8 @@ ScriptPromise CrosHID::accessDevice(ScriptState* script_state,
 
       cros_hid->AccessDevices(
           std::move(mojo_filters),
-          WTF::Bind(&CrosHID::OnAccessDevicesResponse, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+          WTF::BindOnce(&CrosHID::OnAccessDevicesResponse, WrapPersistent(this),
+                        WrapPersistent(resolver)));
     }
   }
 

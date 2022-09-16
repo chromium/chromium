@@ -248,8 +248,9 @@ TEST(OutgoingStreamTest, WriteThenClose) {
     // This needs to happen asynchronously.
     scope.GetExecutionContext()
         ->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE, WTF::Bind(&OutgoingStream::OnOutgoingStreamClosed,
-                                        WrapWeakPersistent(outgoing_stream)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&OutgoingStream::OnOutgoingStreamClosed,
+                                 WrapWeakPersistent(outgoing_stream)));
   });
 
   ScriptPromise close_promise =

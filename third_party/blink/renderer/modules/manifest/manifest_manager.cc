@@ -63,7 +63,7 @@ ManifestManager::ManifestManager(LocalDOMWindow& window)
 ManifestManager::~ManifestManager() = default;
 
 void ManifestManager::RequestManifest(RequestManifestCallback callback) {
-  RequestManifestImpl(WTF::Bind(
+  RequestManifestImpl(WTF::BindOnce(
       [](RequestManifestCallback callback, const KURL& manifest_url,
          const mojom::blink::ManifestPtr& manifest,
          const mojom::blink::ManifestDebugInfo* debug_info) {
@@ -76,7 +76,7 @@ void ManifestManager::RequestManifest(RequestManifestCallback callback) {
 
 void ManifestManager::RequestManifestDebugInfo(
     RequestManifestDebugInfoCallback callback) {
-  RequestManifestImpl(WTF::Bind(
+  RequestManifestImpl(WTF::BindOnce(
       [](RequestManifestDebugInfoCallback callback, const KURL& manifest_url,
          const mojom::blink::ManifestPtr& manifest,
          const mojom::blink::ManifestDebugInfo* debug_info) {
@@ -91,7 +91,7 @@ void ManifestManager::RequestManifestDebugInfo(
 
 void ManifestManager::RequestManifestForTesting(
     WebManifestManager::Callback callback) {
-  RequestManifestImpl(WTF::Bind(
+  RequestManifestImpl(WTF::BindOnce(
       [](WebManifestManager::Callback callback, const KURL& manifest_url,
          const mojom::blink::ManifestPtr& manifest,
          const mojom::blink::ManifestDebugInfo* debug_info) {
@@ -159,8 +159,8 @@ void ManifestManager::FetchManifest() {
   ResourceFetcher* document_fetcher = window.document()->Fetcher();
   fetcher_ = MakeGarbageCollected<ManifestFetcher>(manifest_url_);
   fetcher_->Start(window, ManifestUseCredentials(), document_fetcher,
-                  WTF::Bind(&ManifestManager::OnManifestFetchComplete,
-                            WrapWeakPersistent(this), window.Url()));
+                  WTF::BindOnce(&ManifestManager::OnManifestFetchComplete,
+                                WrapWeakPersistent(this), window.Url()));
 }
 
 void ManifestManager::OnManifestFetchComplete(const KURL& document_url,

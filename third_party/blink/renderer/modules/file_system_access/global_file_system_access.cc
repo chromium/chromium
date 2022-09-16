@@ -258,7 +258,7 @@ ScriptPromise ShowFilePickerImpl(
   auto* raw_manager = manager.get();
   raw_manager->ChooseEntries(
       std::move(options), std::move(common_options),
-      WTF::Bind(
+      WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              mojo::Remote<mojom::blink::FileSystemAccessManager>,
              bool return_as_sequence, LocalFrame* local_frame,

@@ -138,7 +138,7 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
   MemoryUsageChecker checker(expected_isolate_count, expected_context_count);
   reporter.GetV8MemoryUsage(
       V8DetailedMemoryReporterImpl::Mode::EAGER,
-      WTF::Bind(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
+      WTF::BindOnce(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
 
   test::EnterRunLoop();
 
@@ -162,7 +162,7 @@ TEST_F(V8DetailedMemoryReporterImplWorkerTest, GetV8MemoryUsage) {
   MemoryUsageChecker checker(expected_isolate_count, expected_context_count);
   reporter.GetV8MemoryUsage(
       V8DetailedMemoryReporterImpl::Mode::EAGER,
-      WTF::Bind(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
+      WTF::BindOnce(&MemoryUsageChecker::Callback, WTF::Unretained(&checker)));
   test::EnterRunLoop();
   EXPECT_TRUE(checker.IsCalled());
 }
@@ -204,8 +204,8 @@ TEST_F(V8DetailedMemoryReporterImplTest, CanvasMemoryUsage) {
   V8DetailedMemoryReporterImpl reporter;
   CanvasMemoryUsageChecker checker(10, 10);
   reporter.GetV8MemoryUsage(V8DetailedMemoryReporterImpl::Mode::EAGER,
-                            WTF::Bind(&CanvasMemoryUsageChecker::Callback,
-                                      WTF::Unretained(&checker)));
+                            WTF::BindOnce(&CanvasMemoryUsageChecker::Callback,
+                                          WTF::Unretained(&checker)));
 
   test::EnterRunLoop();
 

@@ -199,8 +199,8 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
-      WTF::Bind(&NDEFReader::ReadOnRequestPermission, WrapPersistent(this),
-                WrapPersistent(options)));
+      WTF::BindOnce(&NDEFReader::ReadOnRequestPermission, WrapPersistent(this),
+                    WrapPersistent(options)));
   return scan_resolver_->Promise();
 }
 
@@ -231,7 +231,7 @@ void NDEFReader::ReadOnRequestPermission(const NDEFScanOptions* options,
 
   GetNfcProxy()->StartReading(
       this,
-      WTF::Bind(&NDEFReader::ReadOnRequestCompleted, WrapPersistent(this)));
+      WTF::BindOnce(&NDEFReader::ReadOnRequestCompleted, WrapPersistent(this)));
 }
 
 void NDEFReader::ReadOnRequestCompleted(
@@ -351,9 +351,9 @@ ScriptPromise NDEFReader::write(ScriptState* script_state,
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
-      WTF::Bind(&NDEFReader::WriteOnRequestPermission, WrapPersistent(this),
-                WrapPersistent(resolver), WrapPersistent(options),
-                std::move(message)));
+      WTF::BindOnce(&NDEFReader::WriteOnRequestPermission, WrapPersistent(this),
+                    WrapPersistent(resolver), WrapPersistent(options),
+                    std::move(message)));
 
   return resolver->Promise();
 }
@@ -386,9 +386,9 @@ void NDEFReader::WriteOnRequestPermission(
     return;
   }
 
-  auto callback =
-      WTF::Bind(&NDEFReader::WriteOnRequestCompleted, WrapPersistent(this),
-                WrapPersistent(resolver), WrapPersistent(write_signal_.Get()));
+  auto callback = WTF::BindOnce(&NDEFReader::WriteOnRequestCompleted,
+                                WrapPersistent(this), WrapPersistent(resolver),
+                                WrapPersistent(write_signal_.Get()));
   GetNfcProxy()->Push(std::move(message),
                       device::mojom::blink::NDEFWriteOptions::From(options),
                       std::move(callback));
@@ -464,9 +464,9 @@ ScriptPromise NDEFReader::makeReadOnly(ScriptState* script_state,
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
-      WTF::Bind(&NDEFReader::MakeReadOnlyOnRequestPermission,
-                WrapPersistent(this), WrapPersistent(resolver),
-                WrapPersistent(options)));
+      WTF::BindOnce(&NDEFReader::MakeReadOnlyOnRequestPermission,
+                    WrapPersistent(this), WrapPersistent(resolver),
+                    WrapPersistent(options)));
 
   return resolver->Promise();
 }
@@ -498,9 +498,9 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
     return;
   }
 
-  auto callback = WTF::Bind(&NDEFReader::MakeReadOnlyOnRequestCompleted,
-                            WrapPersistent(this), WrapPersistent(resolver),
-                            WrapPersistent(make_read_only_signal_.Get()));
+  auto callback = WTF::BindOnce(&NDEFReader::MakeReadOnlyOnRequestCompleted,
+                                WrapPersistent(this), WrapPersistent(resolver),
+                                WrapPersistent(make_read_only_signal_.Get()));
   GetNfcProxy()->MakeReadOnly(std::move(callback));
 }
 

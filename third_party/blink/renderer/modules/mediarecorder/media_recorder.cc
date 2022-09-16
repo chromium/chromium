@@ -477,8 +477,8 @@ void MediaRecorder::ScheduleDispatchEvent(Event* event) {
       // https://www.w3.org/TR/mediastream-recording/
       context->GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
-                     WTF::Bind(&MediaRecorder::DispatchScheduledEvent,
-                               WrapPersistent(this)));
+                     WTF::BindOnce(&MediaRecorder::DispatchScheduledEvent,
+                                   WrapPersistent(this)));
     }
   }
 }

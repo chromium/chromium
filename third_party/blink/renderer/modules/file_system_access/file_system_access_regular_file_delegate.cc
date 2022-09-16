@@ -217,8 +217,9 @@ void FileSystemAccessRegularFileDelegate::SetLengthAsync(
 
   capacity_tracker_->RequestFileCapacityChange(
       new_length,
-      WTF::Bind(&FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity,
-                WrapWeakPersistent(this), std::move(callback), new_length));
+      WTF::BindOnce(
+          &FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity,
+          WrapWeakPersistent(this), std::move(callback), new_length));
 }
 
 void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
@@ -228,8 +229,8 @@ void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!request_capacity_success) {
     task_runner_->PostTask(
-        FROM_HERE,
-        WTF::Bind(std::move(callback), base::File::Error::FILE_ERROR_NO_SPACE));
+        FROM_HERE, WTF::BindOnce(std::move(callback),
+                                 base::File::Error::FILE_ERROR_NO_SPACE));
     return;
   }
 
@@ -248,7 +249,7 @@ void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
     }
     file_utilities_host_->SetLength(
         std::move(backing_file_), new_length,
-        WTF::Bind(
+        WTF::BindOnce(
             [](base::OnceCallback<void(base::File, base::File::Error)> callback,
                base::File file, bool success) {
               // Unfortunately we don't have access to the error code when using
@@ -259,9 +260,9 @@ void FileSystemAccessRegularFileDelegate::DidCheckSetLengthCapacity(
                                        ? base::File::Error::FILE_OK
                                        : base::File::Error::FILE_ERROR_FAILED);
             },
-            WTF::Bind(&FileSystemAccessRegularFileDelegate::DidSetLength,
-                      WrapPersistent(this), std::move(wrapped_callback),
-                      new_length)));
+            WTF::BindOnce(&FileSystemAccessRegularFileDelegate::DidSetLength,
+                          WrapPersistent(this), std::move(wrapped_callback),
+                          new_length)));
     return;
   }
 #endif  // BUILDFLAG(IS_MAC)

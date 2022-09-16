@@ -223,7 +223,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
@@ -308,7 +308,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
@@ -402,7 +402,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest,
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);
@@ -457,7 +457,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::Bind([](Document& document) {
+  OnContentLoaded(WTF::BindOnce([](Document& document) {
     auto* svg_root = To<SVGSVGElement>(document.getElementById("container"));
     ASSERT_TRUE(svg_root);
     auto* rect = Traversal<SVGRectElement>::FirstChild(*svg_root);

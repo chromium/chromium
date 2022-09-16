@@ -215,9 +215,10 @@ void RejectedPromises::HandlerAdded(v8::PromiseRejectMessage data) {
       // a separate statement.
       ExecutionContext* context = message->GetContext();
       context->GetTaskRunner(TaskType::kDOMManipulation)
-          ->PostTask(FROM_HERE, WTF::Bind(&RejectedPromises::RevokeNow,
-                                          scoped_refptr<RejectedPromises>(this),
-                                          std::move(message)));
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(&RejectedPromises::RevokeNow,
+                                   scoped_refptr<RejectedPromises>(this),
+                                   std::move(message)));
       reported_as_errors_.EraseAt(i);
       return;
     }
@@ -245,9 +246,10 @@ void RejectedPromises::ProcessQueue() {
 
   for (auto& kv : queues) {
     kv.key->GetTaskRunner(blink::TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(&RejectedPromises::ProcessQueueNow,
-                                        scoped_refptr<RejectedPromises>(this),
-                                        std::move(kv.value)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&RejectedPromises::ProcessQueueNow,
+                                 scoped_refptr<RejectedPromises>(this),
+                                 std::move(kv.value)));
   }
 }
 

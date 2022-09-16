@@ -206,8 +206,8 @@ ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
   }
   service_requests_.insert(resolver);
 
-  auto resolver_cb = WTF::Bind(&ImageCapture::ResolveWithPhotoCapabilities,
-                               WrapPersistent(this));
+  auto resolver_cb = WTF::BindOnce(&ImageCapture::ResolveWithPhotoCapabilities,
+                                   WrapPersistent(this));
 
   // m_streamTrack->component()->source()->id() is the renderer "name" of the
   // camera;
@@ -215,9 +215,9 @@ ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
   // scriptState->getExecutionContext()->getSecurityOrigin()->toString()
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
-      WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), std::move(resolver_cb),
-                false /* trigger_take_photo */));
+      WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
+                    WrapPersistent(resolver), std::move(resolver_cb),
+                    false /* trigger_take_photo */));
   return promise;
 }
 
@@ -238,8 +238,8 @@ ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
   }
   service_requests_.insert(resolver);
 
-  auto resolver_cb =
-      WTF::Bind(&ImageCapture::ResolveWithPhotoSettings, WrapPersistent(this));
+  auto resolver_cb = WTF::BindOnce(&ImageCapture::ResolveWithPhotoSettings,
+                                   WrapPersistent(this));
 
   // m_streamTrack->component()->source()->id() is the renderer "name" of the
   // camera;
@@ -247,9 +247,9 @@ ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
   // scriptState->getExecutionContext()->getSecurityOrigin()->toString()
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
-      WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), std::move(resolver_cb),
-                false /* trigger_take_photo */));
+      WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
+                    WrapPersistent(resolver), std::move(resolver_cb),
+                    false /* trigger_take_photo */));
   return promise;
 }
 
@@ -332,8 +332,8 @@ ScriptPromise ImageCapture::setOptions(ScriptState* script_state,
 
   service_->SetOptions(
       stream_track_->Component()->Source()->Id(), std::move(settings),
-      WTF::Bind(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
-                WrapPersistent(resolver), trigger_take_photo));
+      WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
+                    WrapPersistent(resolver), trigger_take_photo));
   return promise;
 }
 
@@ -790,8 +790,8 @@ void ImageCapture::SetMediaTrackConstraints(
 
   service_->SetOptions(
       stream_track_->Component()->Source()->Id(), std::move(settings),
-      WTF::Bind(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
-                WrapPersistent(resolver), false /* trigger_take_photo */));
+      WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
+                    WrapPersistent(resolver), false /* trigger_take_photo */));
 }
 
 void ImageCapture::SetPanTiltZoomSettingsFromTrack(
@@ -848,8 +848,8 @@ void ImageCapture::SetPanTiltZoomSettingsFromTrack(
 
   service_->SetOptions(
       stream_track_->Component()->Source()->Id(), std::move(settings),
-      WTF::Bind(&ImageCapture::OnSetPanTiltZoomSettingsFromTrack,
-                WrapPersistent(this), std::move(initialized_callback)));
+      WTF::BindOnce(&ImageCapture::OnSetPanTiltZoomSettingsFromTrack,
+                    WrapPersistent(this), std::move(initialized_callback)));
 }
 
 void ImageCapture::OnSetPanTiltZoomSettingsFromTrack(
@@ -857,8 +857,8 @@ void ImageCapture::OnSetPanTiltZoomSettingsFromTrack(
     bool result) {
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
-      WTF::Bind(&ImageCapture::UpdateMediaTrackCapabilities,
-                WrapPersistent(this), std::move(done_callback)));
+      WTF::BindOnce(&ImageCapture::UpdateMediaTrackCapabilities,
+                    WrapPersistent(this), std::move(done_callback)));
 }
 
 const MediaTrackConstraintSet* ImageCapture::GetMediaTrackConstraints() const {
@@ -953,15 +953,15 @@ ImageCapture::ImageCapture(ExecutionContext* context,
       service_.BindNewPipeAndPassReceiver(
           context->GetTaskRunner(TaskType::kDOMManipulation)));
 
-  service_.set_disconnect_handler(WTF::Bind(
+  service_.set_disconnect_handler(WTF::BindOnce(
       &ImageCapture::OnServiceConnectionError, WrapWeakPersistent(this)));
 
   // Launch a retrieval of the current photo state, which arrive asynchronously
   // to avoid blocking the main UI thread.
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
-      WTF::Bind(&ImageCapture::SetPanTiltZoomSettingsFromTrack,
-                WrapPersistent(this), std::move(initialized_callback)));
+      WTF::BindOnce(&ImageCapture::SetPanTiltZoomSettingsFromTrack,
+                    WrapPersistent(this), std::move(initialized_callback)));
 
   ConnectToPermissionService(
       context, permission_service_.BindNewPipeAndPassReceiver(
@@ -1036,8 +1036,8 @@ void ImageCapture::OnMojoGetPhotoState(
   if (trigger_take_photo) {
     service_->TakePhoto(
         stream_track_->Component()->Source()->Id(),
-        WTF::Bind(&ImageCapture::OnMojoTakePhoto, WrapPersistent(this),
-                  WrapPersistent(resolver)));
+        WTF::BindOnce(&ImageCapture::OnMojoTakePhoto, WrapPersistent(this),
+                      WrapPersistent(resolver)));
     return;
   }
 
@@ -1061,14 +1061,14 @@ void ImageCapture::OnMojoSetOptions(ScriptPromiseResolver* resolver,
   }
 
   auto resolver_cb =
-      WTF::Bind(&ImageCapture::ResolveWithNothing, WrapPersistent(this));
+      WTF::BindOnce(&ImageCapture::ResolveWithNothing, WrapPersistent(this));
 
   // Retrieve the current device status after setting the options.
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
-      WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), std::move(resolver_cb),
-                trigger_take_photo));
+      WTF::BindOnce(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
+                    WrapPersistent(resolver), std::move(resolver_cb),
+                    trigger_take_photo));
 }
 
 void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolver* resolver,

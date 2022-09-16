@@ -40,9 +40,9 @@ void RemoteDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // further delaying postMessage forwarding until after the next BeginFrame.
   posted_message->source
       ->GetTaskRunner(TaskType::kInternalPostMessageForwarding)
-      ->PostTask(FROM_HERE, WTF::Bind(&RemoteDOMWindow::ForwardPostMessage,
-                                      WrapPersistent(this),
-                                      WrapPersistent(posted_message)));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&RemoteDOMWindow::ForwardPostMessage,
+                                          WrapPersistent(this),
+                                          WrapPersistent(posted_message)));
 }
 
 void RemoteDOMWindow::ForwardPostMessage(PostedMessage* posted_message) {

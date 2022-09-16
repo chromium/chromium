@@ -43,7 +43,7 @@ void SetSinkIdResolver::Start() {
     return;
   }
 
-  auto set_sink_id_completion_callback = WTF::Bind(
+  auto set_sink_id_completion_callback = WTF::BindOnce(
       &SetSinkIdResolver::OnSetSinkIdComplete, WrapWeakPersistent(this));
 
   audio_context_->destination()->SetSinkId(

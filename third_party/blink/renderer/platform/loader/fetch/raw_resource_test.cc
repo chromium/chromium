@@ -134,7 +134,7 @@ class AddingClient final : public GarbageCollected<AddingClient>,
     // a callback invocation task queued inside addClient() is scheduled.
     platform->test_task_runner()->PostTask(
         FROM_HERE,
-        WTF::Bind(&AddingClient::RemoveClient, WrapPersistent(this)));
+        WTF::BindOnce(&AddingClient::RemoveClient, WrapPersistent(this)));
     resource->AddClient(dummy_client_, platform->test_task_runner().get());
   }
   String DebugName() const override { return "AddingClient"; }

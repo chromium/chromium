@@ -156,13 +156,13 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
     base::WaitableEvent waitable_event;
     media_task_runner_->PostTask(
         FROM_HERE,
-        WTF::Bind(
+        WTF::BindOnce(
             &media::GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
             base::Unretained(gpu_memory_buffer_pool_.get()),
             base::RetainedRef(frame),
-            WTF::Bind(&WebGLWebCodecsVideoFrame::OnHardwareVideoFrameCreated,
-                      base::Unretained(this),
-                      base::Unretained(&waitable_event))));
+            WTF::BindOnce(
+                &WebGLWebCodecsVideoFrame::OnHardwareVideoFrameCreated,
+                WrapWeakPersistent(this), WTF::Unretained(&waitable_event))));
     waitable_event.Wait();
 
     if (frame == hardware_video_frame_) {

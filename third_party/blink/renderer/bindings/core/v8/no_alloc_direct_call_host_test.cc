@@ -26,7 +26,7 @@ TEST_F(NoAllocDirectCallHostTest, ActionsExecutedImmediatelyWhenAllocAllowed) {
   NoAllocDirectCallHost host;
   ASSERT_FALSE(host.IsInFastMode());
   bool change_me = false;
-  host.PostDeferrableAction(WTF::Bind(
+  host.PostDeferrableAction(WTF::BindOnce(
       [](bool* change_me) { *change_me = true; }, WTF::Unretained(&change_me)));
   ASSERT_TRUE(change_me);
   ASSERT_FALSE(host.HasDeferredActions());
@@ -40,8 +40,8 @@ TEST_F(NoAllocDirectCallHostTest, ActionsDeferredWhenAllocDisallowed) {
     NoAllocDirectCallScope scope(&host, callback_options());
     ASSERT_TRUE(host.IsInFastMode());
     host.PostDeferrableAction(
-        WTF::Bind([](bool* change_me) { *change_me = true; },
-                  WTF::Unretained(&change_me)));
+        WTF::BindOnce([](bool* change_me) { *change_me = true; },
+                      WTF::Unretained(&change_me)));
   }
   ASSERT_FALSE(host.IsInFastMode());
   ASSERT_FALSE(change_me);
@@ -55,8 +55,8 @@ TEST_F(NoAllocDirectCallHostTest, FlushDeferredActions) {
   {
     NoAllocDirectCallScope scope(&host, callback_options());
     host.PostDeferrableAction(
-        WTF::Bind([](bool* change_me) { *change_me = true; },
-                  WTF::Unretained(&change_me)));
+        WTF::BindOnce([](bool* change_me) { *change_me = true; },
+                      WTF::Unretained(&change_me)));
   }
   ASSERT_TRUE(IsFallbackRequested());
   if (host.HasDeferredActions()) {

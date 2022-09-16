@@ -111,7 +111,7 @@ HeapMojoRemote<mojom::blink::SubAppsService>& SubApps::GetService() {
     // In case the other endpoint gets disconnected, we want to reset our end of
     // the pipe as well so that we don't remain connected to a half-open pipe.
     service_.set_disconnect_handler(
-        WTF::Bind(&SubApps::OnConnectionError, WrapWeakPersistent(this)));
+        WTF::BindOnce(&SubApps::OnConnectionError, WrapWeakPersistent(this)));
   }
   return service_;
 }
@@ -155,8 +155,8 @@ ScriptPromise SubApps::add(
   GetService()->Add(
       InstallParamsToMojo(sub_apps),
       resolver->WrapCallbackInScriptScope(
-          WTF::Bind([](ScriptPromiseResolver* resolver,
-                       Vector<SubAppsServiceAddResultPtr> mojom_results) {
+          WTF::BindOnce([](ScriptPromiseResolver* resolver,
+                           Vector<SubAppsServiceAddResultPtr> mojom_results) {
             for (const SubAppsServiceAddResultPtr& add_result : mojom_results) {
               if (add_result->result_code !=
                       SubAppsServiceAddResultCode::kSuccessNewInstall &&
@@ -178,7 +178,7 @@ ScriptPromise SubApps::list(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetService()->List(resolver->WrapCallbackInScriptScope(WTF::Bind(
+  GetService()->List(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver, SubAppsServiceListResultPtr result) {
         if (result->code == SubAppsServiceResult::kSuccess) {
           resolver->Resolve(result->sub_app_ids);
@@ -204,7 +204,7 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->Remove(
       unhashed_app_id,
-      resolver->WrapCallbackInScriptScope(WTF::Bind(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
             if (result == SubAppsServiceResult::kSuccess) {
               resolver->Resolve();

@@ -98,10 +98,10 @@ void BroadcastChannel::postMessage(const ScriptValue& message,
   if (execution_context->IsWindow()) {
     Document* document = To<LocalDOMWindow>(execution_context)->document();
     if (document->IsPrerendering()) {
-      document->AddPostPrerenderingActivationStep(
-          WTF::Bind(&BroadcastChannel::PostMessageInternal,
-                    WrapWeakPersistent(this), std::move(value),
-                    execution_context->GetSecurityOrigin()->IsolatedCopy()));
+      document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+          &BroadcastChannel::PostMessageInternal, WrapWeakPersistent(this),
+          std::move(value),
+          execution_context->GetSecurityOrigin()->IsolatedCopy()));
       return;
     }
   }
@@ -246,9 +246,9 @@ BroadcastChannel::BroadcastChannel(ExecutionContext* execution_context,
   }
 
   receiver_.set_disconnect_handler(
-      WTF::Bind(&BroadcastChannel::OnError, WrapWeakPersistent(this)));
+      WTF::BindOnce(&BroadcastChannel::OnError, WrapWeakPersistent(this)));
   remote_client_.set_disconnect_handler(
-      WTF::Bind(&BroadcastChannel::OnError, WrapWeakPersistent(this)));
+      WTF::BindOnce(&BroadcastChannel::OnError, WrapWeakPersistent(this)));
 }
 
 }  // namespace blink

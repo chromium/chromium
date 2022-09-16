@@ -55,10 +55,10 @@ FileEntrySync* DirectoryEntrySync::getFile(const String& path,
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::Bind(&EntryCallbacksSyncHelper::OnSuccess,
-                WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                    WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->GetFile(
       this, path, options, std::move(success_callback_wrapper),
@@ -74,10 +74,10 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
   auto* sync_helper = MakeGarbageCollected<EntryCallbacksSyncHelper>();
 
   auto success_callback_wrapper =
-      WTF::Bind(&EntryCallbacksSyncHelper::OnSuccess,
-                WrapPersistentIfNeeded(sync_helper));
-  auto error_callback_wrapper = WTF::Bind(&EntryCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+      WTF::BindOnce(&EntryCallbacksSyncHelper::OnSuccess,
+                    WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &EntryCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->GetDirectory(
       this, path, options, std::move(success_callback_wrapper),
@@ -90,8 +90,8 @@ DirectoryEntrySync* DirectoryEntrySync::getDirectory(
 void DirectoryEntrySync::removeRecursively(ExceptionState& exception_state) {
   auto* sync_helper = MakeGarbageCollected<VoidCallbacksSyncHelper>();
 
-  auto error_callback_wrapper = WTF::Bind(&VoidCallbacksSyncHelper::OnError,
-                                          WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper = WTF::BindOnce(
+      &VoidCallbacksSyncHelper::OnError, WrapPersistentIfNeeded(sync_helper));
 
   file_system_->RemoveRecursively(this, VoidCallbacks::SuccessCallback(),
                                   std::move(error_callback_wrapper),

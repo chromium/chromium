@@ -231,8 +231,8 @@ static void TestResourcePruningLater(ResourceFetcher* fetcher,
   resource2->FinishForTest();
 
   platform->test_task_runner()->PostTask(
-      FROM_HERE, WTF::Bind(&RunTask, WrapPersistent(resource1),
-                           WrapPersistent(resource2)));
+      FROM_HERE, WTF::BindOnce(&RunTask, WrapPersistent(resource1),
+                               WrapPersistent(resource2)));
   platform->RunUntilIdle();
 
   // Now, the resources was pruned.

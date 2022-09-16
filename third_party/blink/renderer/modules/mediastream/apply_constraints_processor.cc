@@ -139,8 +139,8 @@ void ApplyConstraintsProcessor::ProcessVideoDeviceRequest() {
   // to know all the formats potentially supported by the source.
   GetMediaDevicesDispatcher()->GetAllVideoInputDeviceFormats(
       String(video_source_->device().id.data()),
-      WTF::Bind(&ApplyConstraintsProcessor::MaybeStopSourceForRestart,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&ApplyConstraintsProcessor::MaybeStopSourceForRestart,
+                    WrapWeakPersistent(this)));
 }
 
 void ApplyConstraintsProcessor::MaybeStopSourceForRestart(
@@ -165,8 +165,8 @@ void ApplyConstraintsProcessor::MaybeStopSourceForRestart(
       video_device_request_trace_->AddStep("StopForRestart");
 
     video_source_->StopForRestart(
-        WTF::Bind(&ApplyConstraintsProcessor::MaybeSourceStoppedForRestart,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&ApplyConstraintsProcessor::MaybeSourceStoppedForRestart,
+                      WrapWeakPersistent(this)));
   }
 }
 
@@ -188,8 +188,8 @@ void ApplyConstraintsProcessor::MaybeSourceStoppedForRestart(
   DCHECK_EQ(result, blink::MediaStreamVideoSource::RestartResult::IS_STOPPED);
   GetMediaDevicesDispatcher()->GetAvailableVideoInputDeviceFormats(
       String(video_source_->device().id.data()),
-      WTF::Bind(&ApplyConstraintsProcessor::FindNewFormatAndRestart,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&ApplyConstraintsProcessor::FindNewFormatAndRestart,
+                    WrapWeakPersistent(this)));
 }
 
 void ApplyConstraintsProcessor::FindNewFormatAndRestart(
@@ -210,8 +210,8 @@ void ApplyConstraintsProcessor::FindNewFormatAndRestart(
   video_source_->Restart(
       settings.HasValue() ? settings.Format()
                           : *video_source_->GetCurrentFormat(),
-      WTF::Bind(&ApplyConstraintsProcessor::MaybeSourceRestarted,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&ApplyConstraintsProcessor::MaybeSourceRestarted,
+                    WrapWeakPersistent(this)));
 }
 
 void ApplyConstraintsProcessor::MaybeSourceRestarted(
@@ -346,10 +346,11 @@ bool ApplyConstraintsProcessor::AbortIfVideoRequestStateInvalid() {
 void ApplyConstraintsProcessor::ApplyConstraintsSucceeded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   task_runner_->PostTask(
-      FROM_HERE, WTF::Bind(&ApplyConstraintsProcessor::CleanupRequest,
-                           WrapWeakPersistent(this),
-                           WTF::Bind(&RequestSucceeded,
-                                     WrapPersistent(current_request_.Get()))));
+      FROM_HERE,
+      WTF::BindOnce(&ApplyConstraintsProcessor::CleanupRequest,
+                    WrapWeakPersistent(this),
+                    WTF::BindOnce(&RequestSucceeded,
+                                  WrapPersistent(current_request_.Get()))));
 }
 
 void ApplyConstraintsProcessor::ApplyConstraintsFailed(
@@ -357,21 +358,21 @@ void ApplyConstraintsProcessor::ApplyConstraintsFailed(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   task_runner_->PostTask(
       FROM_HERE,
-      WTF::Bind(
+      WTF::BindOnce(
           &ApplyConstraintsProcessor::CleanupRequest, WrapWeakPersistent(this),
-          WTF::Bind(&RequestFailed, WrapPersistent(current_request_.Get()),
-                    String(failed_constraint_name),
-                    String("Cannot satisfy constraints"))));
+          WTF::BindOnce(&RequestFailed, WrapPersistent(current_request_.Get()),
+                        String(failed_constraint_name),
+                        String("Cannot satisfy constraints"))));
 }
 
 void ApplyConstraintsProcessor::CannotApplyConstraints(const String& message) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   task_runner_->PostTask(
       FROM_HERE,
-      WTF::Bind(
+      WTF::BindOnce(
           &ApplyConstraintsProcessor::CleanupRequest, WrapWeakPersistent(this),
-          WTF::Bind(&RequestFailed, WrapPersistent(current_request_.Get()),
-                    String(), message)));
+          WTF::BindOnce(&RequestFailed, WrapPersistent(current_request_.Get()),
+                        String(), message)));
 }
 
 void ApplyConstraintsProcessor::CleanupRequest(

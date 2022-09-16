@@ -113,8 +113,8 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
     loader_->icons_ = std::move(icons);
     loader_->DidGetIconDisplaySizeIfSoLoadIcon(
         GetContext(),
-        WTF::Bind(&BackgroundFetchIconLoaderTest::IconLoaded,
-                  WTF::Unretained(this), std::move(quit_closure)),
+        WTF::BindOnce(&BackgroundFetchIconLoaderTest::IconLoaded,
+                      WTF::Unretained(this), std::move(quit_closure)),
         maximum_size);
   }
 

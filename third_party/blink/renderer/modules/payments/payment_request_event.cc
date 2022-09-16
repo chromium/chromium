@@ -87,7 +87,7 @@ PaymentRequestEvent::PaymentRequestEvent(
     payment_handler_host_.Bind(
         std::move(host),
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-    payment_handler_host_.set_disconnect_handler(WTF::Bind(
+    payment_handler_host_.set_disconnect_handler(WTF::BindOnce(
         &PaymentRequestEvent::OnHostConnectionError, WrapWeakPersistent(this)));
   }
 }
@@ -217,8 +217,8 @@ ScriptPromise PaymentRequestEvent::changePaymentMethod(
   method_data->method_name = method_name;
   payment_handler_host_->ChangePaymentMethod(
       std::move(method_data),
-      WTF::Bind(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
+                    WrapWeakPersistent(this)));
   change_payment_request_details_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   return change_payment_request_details_resolver_->Promise();
@@ -259,8 +259,8 @@ ScriptPromise PaymentRequestEvent::changeShippingAddress(
 
   payment_handler_host_->ChangeShippingAddress(
       std::move(shipping_address_ptr),
-      WTF::Bind(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
+                    WrapWeakPersistent(this)));
   change_payment_request_details_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   return change_payment_request_details_resolver_->Promise();
@@ -299,8 +299,8 @@ ScriptPromise PaymentRequestEvent::changeShippingOption(
 
   payment_handler_host_->ChangeShippingOption(
       shipping_option_id,
-      WTF::Bind(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&PaymentRequestEvent::OnChangePaymentRequestDetailsResponse,
+                    WrapWeakPersistent(this)));
   change_payment_request_details_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   return change_payment_request_details_resolver_->Promise();

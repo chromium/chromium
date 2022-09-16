@@ -52,8 +52,8 @@ ScriptPromise MIDIAccessInitializer::Start() {
   permission_service_->RequestPermission(
       CreateMidiPermissionDescriptor(options_->hasSysex() && options_->sysex()),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
-      WTF::Bind(&MIDIAccessInitializer::OnPermissionsUpdated,
-                WrapPersistent(this)));
+      WTF::BindOnce(&MIDIAccessInitializer::OnPermissionsUpdated,
+                    WrapPersistent(this)));
 
   return promise;
 }

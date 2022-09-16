@@ -109,7 +109,7 @@ ScriptPromise DigitalGoodsService::getDetails(ScriptState* script_state,
   }
 
   mojo_service_->GetDetails(
-      item_ids, WTF::Bind(&OnGetDetailsResponse, WrapPersistent(resolver)));
+      item_ids, WTF::BindOnce(&OnGetDetailsResponse, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -117,8 +117,8 @@ ScriptPromise DigitalGoodsService::listPurchases(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  mojo_service_->ListPurchases(
-      WTF::Bind(&ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
+  mojo_service_->ListPurchases(WTF::BindOnce(&ResolveWithPurchaseReferenceList,
+                                             WrapPersistent(resolver)));
   return promise;
 }
 
@@ -127,8 +127,8 @@ ScriptPromise DigitalGoodsService::listPurchaseHistory(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  mojo_service_->ListPurchaseHistory(
-      WTF::Bind(&ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
+  mojo_service_->ListPurchaseHistory(WTF::BindOnce(
+      &ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -144,7 +144,8 @@ ScriptPromise DigitalGoodsService::consume(ScriptState* script_state,
   }
 
   mojo_service_->Consume(
-      purchase_token, WTF::Bind(&OnConsumeResponse, WrapPersistent(resolver)));
+      purchase_token,
+      WTF::BindOnce(&OnConsumeResponse, WrapPersistent(resolver)));
   return promise;
 }
 

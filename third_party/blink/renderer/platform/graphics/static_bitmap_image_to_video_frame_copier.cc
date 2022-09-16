@@ -193,9 +193,9 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin, info,
       temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
       temp_argb_frame->GetWritableVisibleData(media::VideoFrame::kARGBPlane),
-      WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
-                weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
-                std::move(callback)));
+      WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
+                    weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
+                    std::move(callback)));
 }
 
 void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
@@ -227,11 +227,11 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       output_frame->stride(media::VideoFrame::kVPlane),
       output_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
       gfx::Point(0, 0),
-      WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
-                weak_ptr_factory_.GetWeakPtr(), image),
-      WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync,
-                weak_ptr_factory_.GetWeakPtr(), output_frame,
-                std::move(callback)));
+      WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
+                    weak_ptr_factory_.GetWeakPtr(), image),
+      WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync,
+                    weak_ptr_factory_.GetWeakPtr(), output_frame,
+                    std::move(callback)));
 }
 
 void StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync(

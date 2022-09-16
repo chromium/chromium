@@ -274,8 +274,8 @@ ScriptPromise HIDDevice::open(ScriptState* script_state,
   device_state_change_in_progress_ = true;
   device_requests_.insert(resolver);
   parent_->Connect(device_info_->guid, std::move(client),
-                   WTF::Bind(&HIDDevice::FinishOpen, WrapPersistent(this),
-                             WrapPersistent(resolver)));
+                   WTF::BindOnce(&HIDDevice::FinishOpen, WrapPersistent(this),
+                                 WrapPersistent(resolver)));
   return promise;
 }
 
@@ -310,8 +310,8 @@ ScriptPromise HIDDevice::forget(ScriptState* script_state,
 
   device_state_change_in_progress_ = true;
   parent_->Forget(device_info_.Clone(),
-                  WTF::Bind(&HIDDevice::FinishForget, WrapPersistent(this),
-                            WrapPersistent(resolver)));
+                  WTF::BindOnce(&HIDDevice::FinishForget, WrapPersistent(this),
+                                WrapPersistent(resolver)));
   return promise;
 }
 
@@ -342,9 +342,10 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
   vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
 
   device_requests_.insert(resolver);
-  connection_->Write(report_id, vector,
-                     WTF::Bind(&HIDDevice::FinishSendReport,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+  connection_->Write(
+      report_id, vector,
+      WTF::BindOnce(&HIDDevice::FinishSendReport, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -377,8 +378,8 @@ ScriptPromise HIDDevice::sendFeatureReport(ScriptState* script_state,
   device_requests_.insert(resolver);
   connection_->SendFeatureReport(
       report_id, vector,
-      WTF::Bind(&HIDDevice::FinishSendFeatureReport, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&HIDDevice::FinishSendFeatureReport, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -400,8 +401,8 @@ ScriptPromise HIDDevice::receiveFeatureReport(ScriptState* script_state,
 
   device_requests_.insert(resolver);
   connection_->GetFeatureReport(
-      report_id, WTF::Bind(&HIDDevice::FinishReceiveFeatureReport,
-                           WrapPersistent(this), WrapPersistent(resolver)));
+      report_id, WTF::BindOnce(&HIDDevice::FinishReceiveFeatureReport,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -470,7 +471,7 @@ void HIDDevice::FinishOpen(
     connection_.Bind(
         std::move(connection),
         GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-    connection_.set_disconnect_handler(WTF::Bind(
+    connection_.set_disconnect_handler(WTF::BindOnce(
         &HIDDevice::OnServiceConnectionError, WrapWeakPersistent(this)));
     resolver->Resolve();
   } else {

@@ -907,8 +907,8 @@ ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
   DCHECK(document);
 
-  auto callback = WTF::Bind(&Internals::ResolveResourcePriority,
-                            WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&Internals::ResolveResourcePriority,
+                                WrapPersistent(this), WrapPersistent(resolver));
   ResourceFetcher::AddPriorityObserverForTesting(resource_url,
                                                  std::move(callback));
 

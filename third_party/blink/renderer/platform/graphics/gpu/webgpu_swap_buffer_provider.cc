@@ -314,9 +314,9 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).
   *out_release_callback =
-      WTF::Bind(&WebGPUSwapBufferProvider::MailboxReleased,
-                scoped_refptr<WebGPUSwapBufferProvider>(this),
-                std::move(current_swap_buffer_));
+      WTF::BindOnce(&WebGPUSwapBufferProvider::MailboxReleased,
+                    scoped_refptr<WebGPUSwapBufferProvider>(this),
+                    std::move(current_swap_buffer_));
 
   return true;
 }

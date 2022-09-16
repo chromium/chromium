@@ -97,7 +97,7 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
       callback_called = true;
     };
     auto callback =
-        WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
+        WTF::BindOnce(lambda, std::ref(callback_called), std::ref(selector));
     CreateGenerator()->Generate(*MakeGarbageCollected<RangeInFlatTree>(
                                     ToPositionInFlatTree(selected_start),
                                     ToPositionInFlatTree(selected_end)),
@@ -1815,7 +1815,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RemoveLayoutObjectAsync) {
     selector = generated_selector.ToString();
     callback_called = true;
   };
-  auto callback = WTF::Bind(lambda, std::ref(finished), std::ref(selector));
+  auto callback = WTF::BindOnce(lambda, std::ref(finished), std::ref(selector));
 
   TextFragmentSelectorGenerator* generator = CreateGenerator();
   generator->Generate(*MakeGarbageCollected<RangeInFlatTree>(
@@ -1836,7 +1836,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RemoveLayoutObjectAsync) {
   EXPECT_EQ(generator->state_,
             TextFragmentSelectorGenerator::SelectorState::kTestCandidate);
 
-  generator->did_find_match_callback_for_testing_ = WTF::Bind(
+  generator->did_find_match_callback_for_testing_ = WTF::BindOnce(
       [](Element* target, bool is_unique) {
         EXPECT_FALSE(is_unique);
 

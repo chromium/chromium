@@ -77,15 +77,15 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction::Callable {
     // extend lifetime promise at that time.
     if (resolve_type_ == kRejected) {
       event_loop->EnqueueMicrotask(
-          WTF::Bind(&WaitUntilObserver::OnPromiseRejected,
-                    WrapPersistent(observer_.Get())));
+          WTF::BindOnce(&WaitUntilObserver::OnPromiseRejected,
+                        WrapPersistent(observer_.Get())));
       observer_ = nullptr;
       return ScriptPromise::Reject(script_state, value).AsScriptValue();
     }
 
     event_loop->EnqueueMicrotask(
-        WTF::Bind(&WaitUntilObserver::OnPromiseFulfilled,
-                  WrapPersistent(observer_.Get())));
+        WTF::BindOnce(&WaitUntilObserver::OnPromiseFulfilled,
+                      WrapPersistent(observer_.Get())));
     observer_ = nullptr;
     return value;
   }

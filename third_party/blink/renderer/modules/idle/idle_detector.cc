@@ -156,15 +156,15 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
 
   mojo::PendingRemote<mojom::blink::IdleMonitor> remote;
   receiver_.Bind(remote.InitWithNewPipeAndPassReceiver(), task_runner_);
-  receiver_.set_disconnect_handler(WTF::Bind(
+  receiver_.set_disconnect_handler(WTF::BindOnce(
       &IdleDetector::OnMonitorDisconnected, WrapWeakPersistent(this)));
 
   resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver_->Promise();
   IdleManager::From(context)->AddMonitor(
       std::move(remote),
-      WTF::Bind(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this),
-                WrapPersistent(resolver_.Get())));
+      WTF::BindOnce(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this),
+                    WrapPersistent(resolver_.Get())));
   return promise;
 }
 

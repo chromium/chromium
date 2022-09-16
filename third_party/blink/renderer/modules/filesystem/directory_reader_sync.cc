@@ -56,7 +56,7 @@ EntrySyncHeapVector DirectoryReaderSync::readEntries(
         }
       },
       WrapPersistentIfNeeded(this));
-  auto error_callback_wrapper = WTF::Bind(
+  auto error_callback_wrapper = WTF::BindOnce(
       [](DirectoryReaderSync* persistent_reader, base::File::Error error) {
         persistent_reader->error_code_ = error;
       },

@@ -204,9 +204,9 @@ class Internal : public mojom::blink::ServiceWorkerInstalledScriptsManager {
     auto receivers = std::make_unique<BundledReceivers>(
         std::move(script_info->meta_data), script_info->meta_data_size,
         std::move(script_info->body), script_info->body_size, task_runner_);
-    receivers->Start(WTF::Bind(&Internal::OnScriptReceived,
-                               weak_factory_.GetWeakPtr(),
-                               std::move(script_info)));
+    receivers->Start(WTF::BindOnce(&Internal::OnScriptReceived,
+                                   weak_factory_.GetWeakPtr(),
+                                   std::move(script_info)));
     DCHECK(!running_receivers_.Contains(script_url));
     running_receivers_.insert(script_url, std::move(receivers));
   }

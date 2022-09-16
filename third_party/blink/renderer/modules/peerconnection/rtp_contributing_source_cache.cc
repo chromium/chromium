@@ -183,8 +183,8 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
           WTF::CrossThreadUnretained(&event)));
   event.Wait();
 
-  Microtask::EnqueueMicrotask(WTF::Bind(&RtpContributingSourceCache::ClearCache,
-                                        weak_factory_.GetWeakPtr()));
+  Microtask::EnqueueMicrotask(WTF::BindOnce(
+      &RtpContributingSourceCache::ClearCache, weak_factory_.GetWeakPtr()));
 }
 
 void RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread(

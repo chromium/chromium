@@ -2848,9 +2848,9 @@ void WebFrameWidgetImpl::AutoscrollEnd() {
 
 void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
   if (layout_type == blink::WebMeaningfulLayout::kVisuallyNonEmpty) {
-    NotifyPresentationTime(
-        WTF::Bind(&WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout,
-                  WrapWeakPersistent(this)));
+    NotifyPresentationTime(WTF::BindOnce(
+        &WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout,
+        WrapWeakPersistent(this)));
   }
 
   ForEachLocalFrameControlledByWidget(
@@ -3035,9 +3035,9 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
     if (widget && widget->widget_base_) {
       widget->widget_base_->AddPresentationCallback(
           frame_token,
-          WTF::Bind(&RunCallbackAfterPresentation,
-                    std::move(callbacks.presentation_time_callback),
-                    swap_time));
+          WTF::BindOnce(&RunCallbackAfterPresentation,
+                        std::move(callbacks.presentation_time_callback),
+                        swap_time));
       ReportTime(std::move(callbacks.swap_time_callback), swap_time);
 
 #if BUILDFLAG(IS_MAC)
@@ -4439,8 +4439,8 @@ void WebFrameWidgetImpl::SetWindowRect(const gfx::Rect& requested_rect,
   DCHECK(ForMainFrame());
   SetPendingWindowRect(adjusted_rect);
   View()->SendWindowRectToMainFrameHost(
-      requested_rect, WTF::Bind(&WebFrameWidgetImpl::AckPendingWindowRect,
-                                WrapWeakPersistent(this)));
+      requested_rect, WTF::BindOnce(&WebFrameWidgetImpl::AckPendingWindowRect,
+                                    WrapWeakPersistent(this)));
 }
 
 void WebFrameWidgetImpl::SetWindowRectSynchronouslyForTesting(

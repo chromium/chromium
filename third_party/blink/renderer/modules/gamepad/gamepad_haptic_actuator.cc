@@ -123,8 +123,8 @@ ScriptPromise GamepadHapticActuator::playEffect(
   // Avoid resetting vibration for a preempted effect.
   should_reset_ = false;
 
-  auto callback = WTF::Bind(&GamepadHapticActuator::OnPlayEffectCompleted,
-                            WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&GamepadHapticActuator::OnPlayEffectCompleted,
+                                WrapPersistent(this), WrapPersistent(resolver));
 
   gamepad_dispatcher_->PlayVibrationEffectOnce(
       pad_index_, EffectTypeFromString(type),
@@ -153,10 +153,10 @@ void GamepadHapticActuator::OnPlayEffectCompleted(
       // vibration if the user did not chain another vibration effect in the
       // Promise callback.
       context->GetTaskRunner(TaskType::kMiscPlatformAPI)
-          ->PostTask(
-              FROM_HERE,
-              WTF::Bind(&GamepadHapticActuator::ResetVibrationIfNotPreempted,
-                        WrapPersistent(this)));
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(
+                         &GamepadHapticActuator::ResetVibrationIfNotPreempted,
+                         WrapPersistent(this)));
     } else {
       // The execution context is gone, meaning no new effects can be issued by
       // the page. Stop vibration without waiting for Promise callbacks.
@@ -176,8 +176,8 @@ void GamepadHapticActuator::ResetVibrationIfNotPreempted() {
 ScriptPromise GamepadHapticActuator::reset(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-  auto callback = WTF::Bind(&GamepadHapticActuator::OnResetCompleted,
-                            WrapPersistent(this), WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&GamepadHapticActuator::OnResetCompleted,
+                                WrapPersistent(this), WrapPersistent(resolver));
 
   gamepad_dispatcher_->ResetVibrationActuator(pad_index_, std::move(callback));
 

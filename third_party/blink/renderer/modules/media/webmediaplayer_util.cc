@@ -148,7 +148,7 @@ void ReportMetrics(WebMediaPlayer::LoadType load_type,
 media::OutputDeviceStatusCB ConvertToOutputDeviceStatusCB(
     WebSetSinkIdCompleteCallback callback) {
   return media::BindToCurrentLoop(
-      WTF::Bind(RunSetSinkIdCallback, std::move(callback)));
+      WTF::BindOnce(RunSetSinkIdCallback, std::move(callback)));
 }
 
 }  // namespace blink

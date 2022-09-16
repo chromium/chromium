@@ -225,8 +225,9 @@ void FileWriter::DidFailImpl(base::File::Error error) {
 
 void FileWriter::DoTruncate(const KURL& path, int64_t offset) {
   FileSystemDispatcher::From(GetExecutionContext())
-      .Truncate(path, offset, &request_id_,
-                WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+      .Truncate(
+          path, offset, &request_id_,
+          WTF::BindOnce(&FileWriter::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriter::DoWrite(const KURL& path,
@@ -236,13 +237,13 @@ void FileWriter::DoWrite(const KURL& path,
       .Write(
           path, blob_id, offset, &request_id_,
           WTF::BindRepeating(&FileWriter::DidWrite, WrapWeakPersistent(this)),
-          WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+          WTF::BindOnce(&FileWriter::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriter::DoCancel() {
   FileSystemDispatcher::From(GetExecutionContext())
       .Cancel(request_id_,
-              WTF::Bind(&FileWriter::DidFinish, WrapWeakPersistent(this)));
+              WTF::BindOnce(&FileWriter::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriter::CompleteAbort() {

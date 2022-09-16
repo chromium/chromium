@@ -267,7 +267,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     window->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
         service_remote_.BindNewPipeAndPassReceiver(
             window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-    service_remote_.set_disconnect_handler(WTF::Bind(
+    service_remote_.set_disconnect_handler(WTF::BindOnce(
         &NavigatorShare::OnConnectionError, WrapWeakPersistent(this)));
     DCHECK(service_remote_.is_bound());
   }
@@ -335,7 +335,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   service_remote_->Share(
       data->hasTitle() ? data->title() : g_empty_string,
       data->hasText() ? data->text() : g_empty_string, url, std::move(files),
-      WTF::Bind(&ShareClientImpl::Callback, WrapPersistent(client)));
+      WTF::BindOnce(&ShareClientImpl::Callback, WrapPersistent(client)));
 
   return promise;
 }

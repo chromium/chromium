@@ -77,7 +77,7 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
   shared_storage_->GetSharedStorageDocumentService(execution_context)
       ->AddModuleOnWorklet(
           script_source_url,
-          WTF::Bind(
+          WTF::BindOnce(
               [](ScriptPromiseResolver* resolver,
                  SharedStorageWorklet* shared_storage_worklet,
                  base::TimeTicks start_time, bool success,

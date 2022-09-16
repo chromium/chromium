@@ -95,8 +95,8 @@ void SetSinkIdResolver::StartAsync() {
   if (!context)
     return;
   context->GetTaskRunner(TaskType::kInternalMedia)
-      ->PostTask(FROM_HERE, WTF::Bind(&SetSinkIdResolver::DoSetSinkId,
-                                      WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&SetSinkIdResolver::DoSetSinkId,
+                                          WrapWeakPersistent(this)));
 }
 
 void SetSinkIdResolver::Start() {
@@ -107,7 +107,7 @@ void SetSinkIdResolver::Start() {
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
     if (window->document()->IsPrerendering()) {
       window->document()->AddPostPrerenderingActivationStep(
-          WTF::Bind(&SetSinkIdResolver::Start, WrapWeakPersistent(this)));
+          WTF::BindOnce(&SetSinkIdResolver::Start, WrapWeakPersistent(this)));
       return;
     }
   }
@@ -119,8 +119,8 @@ void SetSinkIdResolver::Start() {
 }
 
 void SetSinkIdResolver::DoSetSinkId() {
-  auto set_sink_id_completion_callback =
-      WTF::Bind(&SetSinkIdResolver::OnSetSinkIdComplete, WrapPersistent(this));
+  auto set_sink_id_completion_callback = WTF::BindOnce(
+      &SetSinkIdResolver::OnSetSinkIdComplete, WrapPersistent(this));
   WebMediaPlayer* web_media_player = element_->GetWebMediaPlayer();
   if (web_media_player) {
     if (web_media_player->SetSinkId(

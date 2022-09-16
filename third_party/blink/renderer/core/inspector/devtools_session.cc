@@ -139,7 +139,7 @@ DevToolsSession::DevToolsSession(
 
   host_remote_.Bind(std::move(host_remote), mojo_task_runner);
   host_remote_.set_disconnect_handler(
-      WTF::Bind(&DevToolsSession::Detach, WrapWeakPersistent(this)));
+      WTF::BindOnce(&DevToolsSession::Detach, WrapWeakPersistent(this)));
 
   bool restore = !!session_state_.ReattachState();
   v8_session_state_.InitFrom(&session_state_);
@@ -318,7 +318,7 @@ void DevToolsSession::SendProtocolNotification(
     std::unique_ptr<protocol::Serializable> notification) {
   if (IsDetached())
     return;
-  notification_queue_.push_back(WTF::Bind(
+  notification_queue_.push_back(WTF::BindOnce(
       [](std::unique_ptr<protocol::Serializable> notification) {
         return notification->Serialize();
       },
@@ -329,7 +329,7 @@ void DevToolsSession::sendNotification(
     std::unique_ptr<v8_inspector::StringBuffer> notification) {
   if (IsDetached())
     return;
-  notification_queue_.push_back(WTF::Bind(
+  notification_queue_.push_back(WTF::BindOnce(
       [](std::unique_ptr<v8_inspector::StringBuffer> notification) {
         return Get8BitStringFrom(notification.get());
       },

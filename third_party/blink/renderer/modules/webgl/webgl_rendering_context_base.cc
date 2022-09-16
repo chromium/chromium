@@ -779,8 +779,8 @@ void WebGLRenderingContextBase::MakeXrCompatibleAsync() {
   if (XRSystem* xr = GetXrSystemFromHost(Host())) {
     // The promise will be completed on the callback.
     xr->MakeXrCompatibleAsync(
-        WTF::Bind(&WebGLRenderingContextBase::OnMakeXrCompatibleFinished,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&WebGLRenderingContextBase::OnMakeXrCompatibleFinished,
+                      WrapWeakPersistent(this)));
   } else {
     xr_compatible_ = false;
     CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
@@ -7170,8 +7170,9 @@ void WebGLRenderingContextBase::LoseContextImpl(
     // a reference to the DrawingBuffer until this function is done executing.
     task_runner_->PostTask(
         FROM_HERE,
-        WTF::Bind(&WebGLRenderingContextBase::HoldReferenceToDrawingBuffer,
-                  WrapWeakPersistent(this), WTF::RetainedRef(drawing_buffer_)));
+        WTF::BindOnce(&WebGLRenderingContextBase::HoldReferenceToDrawingBuffer,
+                      WrapWeakPersistent(this),
+                      WTF::RetainedRef(drawing_buffer_)));
   }
 
   // Always destroy the context, regardless of context loss mode. This will
@@ -8147,7 +8148,7 @@ void WebGLRenderingContextBase::PrintGLErrorToConsole(const String& message) {
 
 void WebGLRenderingContextBase::PrintWarningToConsole(const String& message) {
   blink::ExecutionContext* context = Host()->GetTopExecutionContext();
-  PostDeferrableAction(WTF::Bind(
+  PostDeferrableAction(WTF::BindOnce(
       [](blink::ExecutionContext* context, const String& message) {
         if (context && !context->IsContextDestroyed()) {
           context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -8160,7 +8161,7 @@ void WebGLRenderingContextBase::PrintWarningToConsole(const String& message) {
 
 void WebGLRenderingContextBase::NotifyWebGLErrorOrWarning(
     const String& message) {
-  PostDeferrableAction(WTF::Bind(
+  PostDeferrableAction(WTF::BindOnce(
       [](HTMLCanvasElement* canvas, const String& message) {
         probe::DidFireWebGLErrorOrWarning(canvas, message);
       },
@@ -8168,7 +8169,7 @@ void WebGLRenderingContextBase::NotifyWebGLErrorOrWarning(
 }
 
 void WebGLRenderingContextBase::NotifyWebGLError(const String& error_type) {
-  PostDeferrableAction(WTF::Bind(
+  PostDeferrableAction(WTF::BindOnce(
       [](HTMLCanvasElement* canvas, const String& error_type) {
         probe::DidFireWebGLError(canvas, error_type);
       },
@@ -8176,7 +8177,7 @@ void WebGLRenderingContextBase::NotifyWebGLError(const String& error_type) {
 }
 
 void WebGLRenderingContextBase::NotifyWebGLWarning() {
-  PostDeferrableAction(WTF::Bind(
+  PostDeferrableAction(WTF::BindOnce(
       [](HTMLCanvasElement* canvas) { probe::DidFireWebGLWarning(canvas); },
       WrapPersistent(canvas())));
 }

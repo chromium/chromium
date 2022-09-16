@@ -72,7 +72,7 @@ class ClipboardTextReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     system_clipboard()->ReadPlainText(
         mojom::blink::ClipboardBuffer::kStandard,
-        WTF::Bind(&ClipboardTextReader::OnRead, WrapPersistent(this)));
+        WTF::BindOnce(&ClipboardTextReader::OnRead, WrapPersistent(this)));
   }
 
  private:
@@ -132,7 +132,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     promise_->GetExecutionContext()->CountUse(
         WebFeature::kHtmlClipboardApiRead);
     system_clipboard()->ReadHTML(
-        WTF::Bind(&ClipboardHtmlReader::OnRead, WrapPersistent(this)));
+        WTF::BindOnce(&ClipboardHtmlReader::OnRead, WrapPersistent(this)));
   }
 
  private:
@@ -209,7 +209,7 @@ class ClipboardSvgReader final : public ClipboardReader {
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     system_clipboard()->ReadSvg(
-        WTF::Bind(&ClipboardSvgReader::OnRead, WrapPersistent(this)));
+        WTF::BindOnce(&ClipboardSvgReader::OnRead, WrapPersistent(this)));
   }
 
  private:
@@ -284,8 +284,9 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     system_clipboard()->ReadUnsanitizedCustomFormat(
-        mime_type_, WTF::Bind(&ClipboardCustomFormatReader::OnCustomFormatRead,
-                              WrapPersistent(this)));
+        mime_type_,
+        WTF::BindOnce(&ClipboardCustomFormatReader::OnCustomFormatRead,
+                      WrapPersistent(this)));
   }
 
   void OnCustomFormatRead(mojo_base::BigBuffer data) {

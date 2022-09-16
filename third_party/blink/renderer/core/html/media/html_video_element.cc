@@ -723,7 +723,7 @@ void HTMLVideoElement::OnIntersectionChangedForLazyLoad(
   GetDocument()
       .GetTaskRunner(TaskType::kInternalMedia)
       ->PostTask(FROM_HERE,
-                 WTF::Bind(notify_visible, WrapWeakPersistent(this)));
+                 WTF::BindOnce(notify_visible, WrapWeakPersistent(this)));
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCreated() {

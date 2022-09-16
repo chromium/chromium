@@ -47,10 +47,10 @@ void NFCProxy::StartReading(NDEFReader* reader,
   DCHECK(!readers_.Contains(reader));
 
   EnsureMojoConnection();
-  nfc_remote_->Watch(
-      next_watch_id_,
-      WTF::Bind(&NFCProxy::OnReaderRegistered, WrapPersistent(this),
-                WrapPersistent(reader), next_watch_id_, std::move(callback)));
+  nfc_remote_->Watch(next_watch_id_,
+                     WTF::BindOnce(&NFCProxy::OnReaderRegistered,
+                                   WrapPersistent(this), WrapPersistent(reader),
+                                   next_watch_id_, std::move(callback)));
   readers_.insert(reader, next_watch_id_);
   next_watch_id_++;
 }
@@ -162,8 +162,8 @@ void NFCProxy::EnsureMojoConnection() {
 
   GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
       nfc_remote_.BindNewPipeAndPassReceiver(task_runner));
-  nfc_remote_.set_disconnect_handler(
-      WTF::Bind(&NFCProxy::OnMojoConnectionError, WrapWeakPersistent(this)));
+  nfc_remote_.set_disconnect_handler(WTF::BindOnce(
+      &NFCProxy::OnMojoConnectionError, WrapWeakPersistent(this)));
 
   // Set client for OnWatch event.
   nfc_remote_->SetClient(

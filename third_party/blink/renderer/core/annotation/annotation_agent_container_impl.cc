@@ -150,8 +150,8 @@ void AnnotationAgentContainerImpl::CreateAgentFromSelection(
   DCHECK(annotation_agent_generator_);
   annotation_agent_generator_->GetForCurrentSelection(
       type,
-      WTF::Bind(&AnnotationAgentContainerImpl::DidFinishSelectorGeneration,
-                WrapWeakPersistent(this), std::move(callback)));
+      WTF::BindOnce(&AnnotationAgentContainerImpl::DidFinishSelectorGeneration,
+                    WrapWeakPersistent(this), std::move(callback)));
 }
 
 // TODO(cheickcisse@): Move shared highlighting enums, also used in user note to

@@ -39,8 +39,8 @@ ScriptPromise WorkerInternalsFetch::getInitialResourcePriority(
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
   DCHECK(worker_global);
 
-  auto callback = WTF::Bind(&WorkerInternalsFetch::ResolveResourcePriority,
-                            WrapPersistent(resolver));
+  auto callback = WTF::BindOnce(&WorkerInternalsFetch::ResolveResourcePriority,
+                                WrapPersistent(resolver));
   ResourceFetcher::AddPriorityObserverForTesting(resource_url,
                                                  std::move(callback));
 

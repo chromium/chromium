@@ -138,7 +138,8 @@ void HttpRefreshScheduler::MaybeStartTimer() {
   // task handle is destroyed on the dtor of this HttpRefreshScheduler.
   navigate_task_handle_ = PostDelayedCancellableTask(
       *document_->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-      WTF::Bind(&HttpRefreshScheduler::NavigateTask, WrapWeakPersistent(this)),
+      WTF::BindOnce(&HttpRefreshScheduler::NavigateTask,
+                    WrapWeakPersistent(this)),
       refresh_->delay);
 
   probe::FrameScheduledNavigation(document_->GetFrame(), refresh_->url,

@@ -478,8 +478,9 @@ void PreloadHelper::ModulePreloadIfNeeded(
     // the error event.
     if (client) {
       modulator->TaskRunner()->PostTask(
-          FROM_HERE, WTF::Bind(&SingleModuleClient::NotifyModuleLoadFinished,
-                               WrapPersistent(client), nullptr));
+          FROM_HERE,
+          WTF::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
+                        WrapPersistent(client), nullptr));
     }
     return;
   }

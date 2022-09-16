@@ -95,8 +95,8 @@ ScriptPromise NotificationManager::RequestPermission(
         context,
         permission_service_.BindNewPipeAndPassReceiver(std::move(task_runner)));
     permission_service_.set_disconnect_handler(
-        WTF::Bind(&NotificationManager::OnPermissionServiceConnectionError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&NotificationManager::OnPermissionServiceConnectionError,
+                      WrapWeakPersistent(this)));
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -106,9 +106,9 @@ ScriptPromise NotificationManager::RequestPermission(
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::NOTIFICATIONS),
       LocalFrame::HasTransientUserActivation(win ? win->GetFrame() : nullptr),
-      WTF::Bind(&NotificationManager::OnPermissionRequestComplete,
-                WrapPersistent(this), WrapPersistent(resolver),
-                WrapPersistent(deprecated_callback)));
+      WTF::BindOnce(&NotificationManager::OnPermissionRequestComplete,
+                    WrapPersistent(this), WrapPersistent(resolver),
+                    WrapPersistent(deprecated_callback)));
 
   return promise;
 }
@@ -192,8 +192,8 @@ void NotificationManager::DisplayPersistentNotification(
   GetNotificationService()->DisplayPersistentNotification(
       service_worker_registration_id, std::move(notification_data),
       std::move(notification_resources),
-      WTF::Bind(&NotificationManager::DidDisplayPersistentNotification,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&NotificationManager::DidDisplayPersistentNotification,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NotificationManager::DidDisplayPersistentNotification(
@@ -232,8 +232,8 @@ void NotificationManager::GetNotifications(
     ScriptPromiseResolver* resolver) {
   GetNotificationService()->GetNotifications(
       service_worker_registration_id, filter_tag, include_triggered,
-      WTF::Bind(&NotificationManager::DidGetNotifications, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&NotificationManager::DidGetNotifications,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void NotificationManager::DidGetNotifications(
@@ -266,9 +266,9 @@ NotificationManager::GetNotificationService() {
     GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
         notification_service_.BindNewPipeAndPassReceiver(task_runner));
 
-    notification_service_.set_disconnect_handler(
-        WTF::Bind(&NotificationManager::OnNotificationServiceConnectionError,
-                  WrapWeakPersistent(this)));
+    notification_service_.set_disconnect_handler(WTF::BindOnce(
+        &NotificationManager::OnNotificationServiceConnectionError,
+        WrapWeakPersistent(this)));
   }
 
   return notification_service_.get();

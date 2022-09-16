@@ -291,8 +291,9 @@ void Resource::TriggerNotificationForFinishObservers(
           std::move(finish_observers_));
   finish_observers_.clear();
 
-  task_runner->PostTask(FROM_HERE, WTF::Bind(&NotifyFinishObservers,
-                                             WrapPersistent(new_collections)));
+  task_runner->PostTask(
+      FROM_HERE,
+      WTF::BindOnce(&NotifyFinishObservers, WrapPersistent(new_collections)));
 
   DidRemoveClientOrObserver();
 }
@@ -356,8 +357,8 @@ void Resource::FinishAsError(const ResourceError& error,
   // So if this is an immediate failure (i.e., before NotifyStartLoad()),
   // post a task if the Resource::Type supports it.
   if (failed_during_start && !NeedsSynchronousCacheHit(GetType(), options_)) {
-    task_runner->PostTask(FROM_HERE, WTF::Bind(&Resource::NotifyFinished,
-                                               WrapWeakPersistent(this)));
+    task_runner->PostTask(FROM_HERE, WTF::BindOnce(&Resource::NotifyFinished,
+                                                   WrapWeakPersistent(this)));
   } else {
     NotifyFinished();
   }
@@ -603,9 +604,10 @@ void Resource::AddClient(ResourceClient* client,
       !NeedsSynchronousCacheHit(GetType(), options_)) {
     clients_awaiting_callback_.insert(client);
     if (!async_finish_pending_clients_task_.IsActive()) {
-      async_finish_pending_clients_task_ = PostCancellableTask(
-          *task_runner, FROM_HERE,
-          WTF::Bind(&Resource::FinishPendingClients, WrapWeakPersistent(this)));
+      async_finish_pending_clients_task_ =
+          PostCancellableTask(*task_runner, FROM_HERE,
+                              WTF::BindOnce(&Resource::FinishPendingClients,
+                                            WrapWeakPersistent(this)));
     }
     return;
   }

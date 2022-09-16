@@ -82,8 +82,8 @@ class VirtualTimeTest : public SimTest {
   void RunTasksForPeriod(double delay_ms) {
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
         FROM_HERE,
-        WTF::Bind(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
-                  WTF::Unretained(this)),
+        WTF::BindOnce(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
+                      WTF::Unretained(this)),
         base::Milliseconds(delay_ms));
     test::EnterRunLoop();
   }

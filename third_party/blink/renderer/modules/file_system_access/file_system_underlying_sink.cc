@@ -74,8 +74,8 @@ ScriptPromise FileSystemUnderlyingSink::close(ScriptState* script_state,
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = pending_operation_->Promise();
-  writer_remote_->Close(WTF::Bind(&FileSystemUnderlyingSink::CloseComplete,
-                                  WrapPersistent(this)));
+  writer_remote_->Close(WTF::BindOnce(&FileSystemUnderlyingSink::CloseComplete,
+                                      WrapPersistent(this)));
 
   return result;
 }
@@ -260,7 +260,7 @@ class BlobWriterHelper : public mojom::blink::BlobReaderClient,
       : WriterHelper(std::move(callback)),
         receiver_(this, std::move(receiver)) {
     receiver_.set_disconnect_handler(
-        WTF::Bind(&BlobWriterHelper::OnDisconnect, WTF::Unretained(this)));
+        WTF::BindOnce(&BlobWriterHelper::OnDisconnect, WTF::Unretained(this)));
   }
 
   // BlobReaderClient:
@@ -386,10 +386,10 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
   WriterHelper* helper;
   if (data->IsBlob()) {
     mojo::PendingRemote<mojom::blink::BlobReaderClient> reader_client;
-    helper =
-        new BlobWriterHelper(reader_client.InitWithNewPipeAndPassReceiver(),
-                             WTF::Bind(&FileSystemUnderlyingSink::WriteComplete,
-                                       WrapPersistent(this)));
+    helper = new BlobWriterHelper(
+        reader_client.InitWithNewPipeAndPassReceiver(),
+        WTF::BindOnce(&FileSystemUnderlyingSink::WriteComplete,
+                      WrapPersistent(this)));
     data->GetAsBlob()->GetBlobDataHandle()->ReadAll(std::move(producer_handle),
                                                     std::move(reader_client));
   } else {
@@ -397,18 +397,20 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
     auto* producer_ptr = producer.get();
     helper = new StreamWriterHelper(
-        std::move(producer), WTF::Bind(&FileSystemUnderlyingSink::WriteComplete,
-                                       WrapPersistent(this)));
+        std::move(producer),
+        WTF::BindOnce(&FileSystemUnderlyingSink::WriteComplete,
+                      WrapPersistent(this)));
     // Unretained is safe because the producer is owned by `helper`.
     producer_ptr->Write(
         std::move(data_source),
-        WTF::Bind(&StreamWriterHelper::DataProducerComplete,
-                  WTF::Unretained(static_cast<StreamWriterHelper*>(helper))));
+        WTF::BindOnce(
+            &StreamWriterHelper::DataProducerComplete,
+            WTF::Unretained(static_cast<StreamWriterHelper*>(helper))));
   }
 
   writer_remote_->Write(
       position, std::move(consumer_handle),
-      WTF::Bind(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
+      WTF::BindOnce(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
 
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -428,8 +430,8 @@ ScriptPromise FileSystemUnderlyingSink::Truncate(
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = pending_operation_->Promise();
   writer_remote_->Truncate(
-      size, WTF::Bind(&FileSystemUnderlyingSink::TruncateComplete,
-                      WrapPersistent(this), size));
+      size, WTF::BindOnce(&FileSystemUnderlyingSink::TruncateComplete,
+                          WrapPersistent(this), size));
   return result;
 }
 

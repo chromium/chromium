@@ -95,8 +95,9 @@ ScriptPromise UDPWritableStreamWrapper::Write(ScriptValue chunk,
   // write_promise_resolver_->Promise(), and the resulting promise will be dummy
   // (i.e. fulfilled by default).
   ScriptPromise promise = write_promise_resolver_->Promise();
-  udp_socket_->get()->Send(data, WTF::Bind(&UDPWritableStreamWrapper::OnSend,
-                                           WrapWeakPersistent(this)));
+  udp_socket_->get()->Send(data,
+                           WTF::BindOnce(&UDPWritableStreamWrapper::OnSend,
+                                         WrapWeakPersistent(this)));
   return promise;
 }
 

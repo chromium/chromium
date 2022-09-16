@@ -153,8 +153,8 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
 void ScriptPromiseResolver::ScheduleResolveOrReject() {
   deferred_resolve_task_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMicrotask), FROM_HERE,
-      WTF::Bind(&ScriptPromiseResolver::ResolveOrRejectDeferred,
-                WrapPersistent(this)));
+      WTF::BindOnce(&ScriptPromiseResolver::ResolveOrRejectDeferred,
+                    WrapPersistent(this)));
 }
 
 void ScriptPromiseResolver::ResolveOrRejectDeferred() {

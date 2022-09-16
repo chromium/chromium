@@ -60,7 +60,7 @@ ScriptPromise FileSystemHandle::queryPermission(
 
   QueryPermissionImpl(
       descriptor->mode() == "readwrite",
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemHandle* handle, ScriptPromiseResolver* resolver,
              mojom::blink::PermissionStatus result) {
             // Keep `this` alive so the handle will not be garbage-collected
@@ -80,7 +80,7 @@ ScriptPromise FileSystemHandle::requestPermission(
 
   RequestPermissionImpl(
       descriptor->mode() == "readwrite",
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemHandle*, ScriptPromiseResolver* resolver,
              FileSystemAccessErrorPtr result,
              mojom::blink::PermissionStatus status) {
@@ -104,7 +104,7 @@ ScriptPromise FileSystemHandle::move(ScriptState* script_state,
 
   MoveImpl(
       mojo::NullRemote(), new_entry_name,
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemHandle* handle, const String& new_name,
              ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
             if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
@@ -124,7 +124,7 @@ ScriptPromise FileSystemHandle::move(
   ScriptPromise result = resolver->Promise();
 
   MoveImpl(destination_directory->Transfer(), name_,
-           WTF::Bind(
+           WTF::BindOnce(
                [](FileSystemHandle*, ScriptPromiseResolver* resolver,
                   FileSystemAccessErrorPtr result) {
                  // Keep `this` alive so the handle will not be
@@ -147,7 +147,7 @@ ScriptPromise FileSystemHandle::move(
 
   MoveImpl(
       destination_directory->Transfer(), dest_name,
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemHandle* handle, const String& new_name,
              ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
             if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
@@ -165,7 +165,7 @@ ScriptPromise FileSystemHandle::remove(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  RemoveImpl(options, WTF::Bind(
+  RemoveImpl(options, WTF::BindOnce(
                           [](FileSystemHandle*, ScriptPromiseResolver* resolver,
                              FileSystemAccessErrorPtr result) {
                             // Keep `this` alive so the handle will not be
@@ -185,7 +185,7 @@ ScriptPromise FileSystemHandle::isSameEntry(ScriptState* script_state,
 
   IsSameEntryImpl(
       other->Transfer(),
-      WTF::Bind(
+      WTF::BindOnce(
           [](FileSystemHandle*, ScriptPromiseResolver* resolver,
              FileSystemAccessErrorPtr result, bool same) {
             // Keep `this` alive so the handle will not be garbage-collected

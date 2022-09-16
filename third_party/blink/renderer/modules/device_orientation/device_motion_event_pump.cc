@@ -78,8 +78,8 @@ void DeviceMotionEventPump::SendStartMessage(LocalFrame& frame) {
         sensor_provider_.BindNewPipeAndPassReceiver(
             frame.GetTaskRunner(TaskType::kSensor)));
     sensor_provider_.set_disconnect_handler(
-        WTF::Bind(&DeviceSensorEventPump::HandleSensorProviderError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&DeviceSensorEventPump::HandleSensorProviderError,
+                      WrapWeakPersistent(this)));
   }
 
   accelerometer_->Start(sensor_provider_.get());

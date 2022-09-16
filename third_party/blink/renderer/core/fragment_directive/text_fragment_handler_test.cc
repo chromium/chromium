@@ -49,7 +49,7 @@ class TextFragmentHandlerTest : public SimTest {
     // When the beforematch event is not scheduled, a DCHECK will fail on
     // BeginFrame() because no event was scheduled, so we schedule an empty task
     // here.
-    GetDocument().EnqueueAnimationFrameTask(WTF::Bind([]() {}));
+    GetDocument().EnqueueAnimationFrameTask(WTF::BindOnce([]() {}));
     Compositor().BeginFrame();
   }
 
@@ -93,7 +93,7 @@ class TextFragmentHandlerTest : public SimTest {
           callback_called = true;
         };
     auto callback =
-        WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
+        WTF::BindOnce(lambda, std::ref(callback_called), std::ref(selector));
     GetTextFragmentHandler().RequestSelector(std::move(callback));
     base::RunLoop().RunUntilIdle();
 
@@ -109,8 +109,8 @@ class TextFragmentHandlerTest : public SimTest {
       target_texts = fetched_target_texts;
       callback_called = true;
     };
-    auto callback =
-        WTF::Bind(lambda, std::ref(callback_called), std::ref(target_texts));
+    auto callback = WTF::BindOnce(lambda, std::ref(callback_called),
+                                  std::ref(target_texts));
 
     GetTextFragmentHandler().ExtractTextFragmentsMatches(std::move(callback));
 
@@ -126,8 +126,8 @@ class TextFragmentHandlerTest : public SimTest {
       text_fragment_rect = fetched_text_fragment_rect;
       callback_called = true;
     };
-    auto callback = WTF::Bind(lambda, std::ref(callback_called),
-                              std::ref(text_fragment_rect));
+    auto callback = WTF::BindOnce(lambda, std::ref(callback_called),
+                                  std::ref(text_fragment_rect));
 
     GetTextFragmentHandler().ExtractFirstFragmentRect(std::move(callback));
 
@@ -666,8 +666,8 @@ TEST_F(TextFragmentHandlerTest, SecondGenerationCrash) {
   SetSelection(start, end);
 
   auto callback =
-      WTF::Bind([](const TextFragmentSelector& selector,
-                   shared_highlighting::LinkGenerationError error) {});
+      WTF::BindOnce([](const TextFragmentSelector& selector,
+                       shared_highlighting::LinkGenerationError error) {});
   MakeGarbageCollected<TextFragmentSelectorGenerator>(GetDocument().GetFrame())
       ->SetCallbackForTesting(std::move(callback));
 
@@ -918,7 +918,7 @@ TEST_F(TextFragmentHandlerTest,
         callback_called = true;
       };
   auto callback =
-      WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
+      WTF::BindOnce(lambda, std::ref(callback_called), std::ref(selector));
   remote->RequestSelector(std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_called);

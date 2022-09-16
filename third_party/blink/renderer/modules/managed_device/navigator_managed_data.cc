@@ -77,8 +77,8 @@ mojom::blink::DeviceAPIService* NavigatorManagedData::GetService() {
     // The access status of Device API can change dynamically. Hence, we have to
     // properly handle cases when we are losing this access.
     device_api_service_.set_disconnect_handler(
-        WTF::Bind(&NavigatorManagedData::OnServiceConnectionError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&NavigatorManagedData::OnServiceConnectionError,
+                      WrapWeakPersistent(this)));
   }
 
   return device_api_service_.get();
@@ -93,8 +93,8 @@ NavigatorManagedData::GetManagedConfigurationService() {
     // The access status of Device API can change dynamically. Hence, we have to
     // properly handle cases when we are losing this access.
     managed_configuration_service_.set_disconnect_handler(
-        WTF::Bind(&NavigatorManagedData::OnServiceConnectionError,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&NavigatorManagedData::OnServiceConnectionError,
+                      WrapWeakPersistent(this)));
   }
 
   return managed_configuration_service_.get();
@@ -129,8 +129,8 @@ ScriptPromise NavigatorManagedData::getManagedConfiguration(
     return promise;
   }
   GetManagedConfigurationService()->GetManagedConfiguration(
-      keys, WTF::Bind(&NavigatorManagedData::OnConfigurationReceived,
-                      WrapWeakPersistent(this), WrapPersistent(resolver)));
+      keys, WTF::BindOnce(&NavigatorManagedData::OnConfigurationReceived,
+                          WrapWeakPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -142,7 +142,7 @@ ScriptPromise NavigatorManagedData::getDirectoryId(ScriptState* script_state) {
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetDirectoryId(WTF::Bind(
+  GetService()->GetDirectoryId(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -156,7 +156,7 @@ ScriptPromise NavigatorManagedData::getHostname(ScriptState* script_state) {
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetHostname(WTF::Bind(
+  GetService()->GetHostname(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -170,7 +170,7 @@ ScriptPromise NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetSerialNumber(WTF::Bind(
+  GetService()->GetSerialNumber(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -185,7 +185,7 @@ ScriptPromise NavigatorManagedData::getAnnotatedAssetId(
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetAnnotatedAssetId(WTF::Bind(
+  GetService()->GetAnnotatedAssetId(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
@@ -200,7 +200,7 @@ ScriptPromise NavigatorManagedData::getAnnotatedLocation(
   if (!GetExecutionContext()) {
     return promise;
   }
-  GetService()->GetAnnotatedLocation(WTF::Bind(
+  GetService()->GetAnnotatedLocation(WTF::BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;

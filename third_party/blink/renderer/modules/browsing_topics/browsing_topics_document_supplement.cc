@@ -131,7 +131,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
             execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
-  document_host_->GetBrowsingTopics(WTF::Bind(
+  document_host_->GetBrowsingTopics(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver,
          BrowsingTopicsDocumentSupplement* supplement,
          base::TimeTicks start_time,

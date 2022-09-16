@@ -126,8 +126,8 @@ class MediaAudioTaskWrapper {
 
     selector_->SelectDecoder(
         config, /*low_delay=*/false,
-        WTF::Bind(&MediaAudioTaskWrapper::OnDecoderSelected,
-                  weak_factory_.GetWeakPtr()));
+        WTF::BindOnce(&MediaAudioTaskWrapper::OnDecoderSelected,
+                      weak_factory_.GetWeakPtr()));
   }
 
   void Decode(scoped_refptr<media::DecoderBuffer> buffer, int cb_id) {
@@ -140,8 +140,8 @@ class MediaAudioTaskWrapper {
     }
 
     decoder_->Decode(std::move(buffer),
-                     WTF::Bind(&MediaAudioTaskWrapper::OnDecodeDone,
-                               weak_factory_.GetWeakPtr(), cb_id));
+                     WTF::BindOnce(&MediaAudioTaskWrapper::OnDecodeDone,
+                                   weak_factory_.GetWeakPtr(), cb_id));
   }
 
   void Reset(int cb_id) {
@@ -153,8 +153,8 @@ class MediaAudioTaskWrapper {
       return;
     }
 
-    decoder_->Reset(WTF::Bind(&MediaAudioTaskWrapper::OnReset,
-                              weak_factory_.GetWeakPtr(), cb_id));
+    decoder_->Reset(WTF::BindOnce(&MediaAudioTaskWrapper::OnReset,
+                                  weak_factory_.GetWeakPtr(), cb_id));
   }
 
  private:

@@ -107,8 +107,8 @@ void DecoderSelector<StreamType>::SelectDecoder(
   // media::DecoderSelector will call back with a DecoderStatus if selection is
   // in progress when it is destructed.
   impl_.BeginDecoderSelection(
-      WTF::Bind(&DecoderSelector<StreamType>::OnDecoderSelected,
-                weak_factory_.GetWeakPtr(), std::move(select_decoder_cb)),
+      WTF::BindOnce(&DecoderSelector<StreamType>::OnDecoderSelected,
+                    weak_factory_.GetWeakPtr(), std::move(select_decoder_cb)),
       output_cb_);
 }
 

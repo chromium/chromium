@@ -78,8 +78,8 @@ PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
-      WTF::Bind(&OnIsUserVerifyingComplete,
-                std::make_unique<ScopedPromiseResolver>(resolver)));
+      WTF::BindOnce(&OnIsUserVerifyingComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 
@@ -107,10 +107,11 @@ ScriptPromise PublicKeyCredential::isConditionalMediationAvailable(
       WebFeature::kCredentialManagerIsConditionalMediationAvailable);
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
-  authenticator->IsConditionalMediationAvailable(
-      WTF::Bind([](std::unique_ptr<ScopedPromiseResolver> resolver,
-                   bool available) { resolver->Release()->Resolve(available); },
-                std::make_unique<ScopedPromiseResolver>(resolver)));
+  authenticator->IsConditionalMediationAvailable(WTF::BindOnce(
+      [](std::unique_ptr<ScopedPromiseResolver> resolver, bool available) {
+        resolver->Release()->Resolve(available);
+      },
+      std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
 }
 

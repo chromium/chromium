@@ -103,9 +103,9 @@ TEST_F(ScriptedAnimationControllerTest, EnqueueWithinTask) {
   TaskOrderObserver observer;
 
   Controller().EnqueueTask(observer.CreateTask(1));
-  Controller().EnqueueTask(WTF::Bind(&EnqueueTask,
-                                     WrapPersistent(&Controller()),
-                                     WTF::Unretained(&observer), 2));
+  Controller().EnqueueTask(WTF::BindOnce(&EnqueueTask,
+                                         WrapPersistent(&Controller()),
+                                         WTF::Unretained(&observer), 2));
   Controller().EnqueueTask(observer.CreateTask(3));
   EXPECT_EQ(0u, observer.Order().size());
 

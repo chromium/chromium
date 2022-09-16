@@ -62,8 +62,8 @@ void DeferredShapingController::PerformPostLayoutTask() {
   UseCounter::Count(*document_, WebFeature::kDeferredShapingWorked);
   reshaping_task_handle_ = PostDelayedCancellableTask(
       *document_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      WTF::Bind(&DeferredShapingController::ReshapeAllDeferred,
-                WrapWeakPersistent(this), ReshapeReason::kLastResort),
+      WTF::BindOnce(&DeferredShapingController::ReshapeAllDeferred,
+                    WrapWeakPersistent(this), ReshapeReason::kLastResort),
       kMaximumDeferDuration);
 }
 
@@ -79,8 +79,8 @@ void DeferredShapingController::OnFirstContentfulPaint() {
   reshaping_task_handle_.Cancel();
   reshaping_task_handle_ = PostCancellableTask(
       *document_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      WTF::Bind(&DeferredShapingController::ReshapeAllDeferred,
-                WrapWeakPersistent(this), ReshapeReason::kFcp));
+      WTF::BindOnce(&DeferredShapingController::ReshapeAllDeferred,
+                    WrapWeakPersistent(this), ReshapeReason::kFcp));
 }
 
 size_t DeferredShapingController::ReshapeAllDeferredInternal() {

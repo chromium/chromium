@@ -394,8 +394,8 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     }
   }
   frame->AddDestructionObserver(media::BindToCurrentLoop(
-      WTF::Bind(&VideoTrackRecorderImpl::Counter::DecreaseCount,
-                num_frames_in_encode_->GetWeakPtr())));
+      WTF::BindOnce(&VideoTrackRecorderImpl::Counter::DecreaseCount,
+                    num_frames_in_encode_->GetWeakPtr())));
   num_frames_in_encode_->IncreaseCount();
 
   PostCrossThreadTask(
@@ -685,7 +685,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   // Scaled video frames are currently ignored.
-  auto on_encoder_support_known_cb = WTF::Bind(
+  auto on_encoder_support_known_cb = WTF::BindOnce(
       &VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown,
       weak_factory_.GetWeakPtr(), codec_profile, on_encoded_video_cb,
       bits_per_second, allow_vea_encoder, std::move(video_frame), capture_time);

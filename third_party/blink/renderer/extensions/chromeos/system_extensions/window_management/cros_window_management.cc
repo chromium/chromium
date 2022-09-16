@@ -94,8 +94,8 @@ ScriptPromise CrosWindowManagement::getWindows(ScriptState* script_state) {
   auto* window_management = GetCrosWindowManagementOrNull();
   if (window_management) {
     window_management->GetAllWindows(
-        WTF::Bind(&CrosWindowManagement::WindowsCallback, WrapPersistent(this),
-                  WrapPersistent(resolver)));
+        WTF::BindOnce(&CrosWindowManagement::WindowsCallback,
+                      WrapPersistent(this), WrapPersistent(resolver)));
   }
   return resolver->Promise();
 }
@@ -123,8 +123,8 @@ ScriptPromise CrosWindowManagement::getScreens(ScriptState* script_state) {
   auto* window_management = GetCrosWindowManagementOrNull();
   if (window_management) {
     window_management->GetAllScreens(
-        WTF::Bind(&CrosWindowManagement::ScreensCallback, WrapPersistent(this),
-                  WrapPersistent(resolver)));
+        WTF::BindOnce(&CrosWindowManagement::ScreensCallback,
+                      WrapPersistent(this), WrapPersistent(resolver)));
   }
   return resolver->Promise();
 }

@@ -39,8 +39,8 @@ PortalContents::PortalContents(
       portal_token_(portal_token),
       remote_portal_(std::move(remote_portal)),
       portal_client_receiver_(this, std::move(portal_client_receiver)) {
-  remote_portal_.set_disconnect_handler(
-      WTF::Bind(&PortalContents::DisconnectHandler, WrapWeakPersistent(this)));
+  remote_portal_.set_disconnect_handler(WTF::BindOnce(
+      &PortalContents::DisconnectHandler, WrapWeakPersistent(this)));
   DocumentPortals::GetOrCreate(GetDocument()).RegisterPortalContents(this);
 }
 
@@ -72,7 +72,7 @@ void PortalContents::Activate(BlinkTransferableMessage data,
   // renderer awaits the response.
   remote_portal_->Activate(
       std::move(data), base::TimeTicks::Now(), trace_id,
-      WTF::Bind(&PortalContents::OnActivateResponse, WrapPersistent(this)));
+      WTF::BindOnce(&PortalContents::OnActivateResponse, WrapPersistent(this)));
 
   // Dissociate from the element. The element is expected to do the same.
   portal_element_ = nullptr;
@@ -169,9 +169,9 @@ void PortalContents::Navigate(
           std::make_unique<IncrementLoadEventDelayCount>(GetDocument());
   remote_portal_->Navigate(
       url, std::move(mojo_referrer),
-      WTF::Bind([](std::unique_ptr<IncrementLoadEventDelayCount>
-                       increment_load_event_delay_count) {},
-                std::move(increment_load_event_delay_count)));
+      WTF::BindOnce([](std::unique_ptr<IncrementLoadEventDelayCount>
+                           increment_load_event_delay_count) {},
+                    std::move(increment_load_event_delay_count)));
 }
 
 void PortalContents::Destroy() {

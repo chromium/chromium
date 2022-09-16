@@ -141,8 +141,8 @@ class MediaVideoTaskWrapper {
 
     selector_->SelectDecoder(
         config, low_delay,
-        WTF::Bind(&MediaVideoTaskWrapper::OnDecoderSelected,
-                  weak_factory_.GetWeakPtr()));
+        WTF::BindOnce(&MediaVideoTaskWrapper::OnDecoderSelected,
+                      weak_factory_.GetWeakPtr()));
   }
 
   void Decode(scoped_refptr<media::DecoderBuffer> buffer, int cb_id) {
@@ -155,8 +155,8 @@ class MediaVideoTaskWrapper {
     }
 
     decoder_->Decode(std::move(buffer),
-                     WTF::Bind(&MediaVideoTaskWrapper::OnDecodeDone,
-                               weak_factory_.GetWeakPtr(), cb_id));
+                     WTF::BindOnce(&MediaVideoTaskWrapper::OnDecodeDone,
+                                   weak_factory_.GetWeakPtr(), cb_id));
   }
 
   void Reset(int cb_id) {
@@ -168,8 +168,8 @@ class MediaVideoTaskWrapper {
       return;
     }
 
-    decoder_->Reset(WTF::Bind(&MediaVideoTaskWrapper::OnReset,
-                              weak_factory_.GetWeakPtr(), cb_id));
+    decoder_->Reset(WTF::BindOnce(&MediaVideoTaskWrapper::OnReset,
+                                  weak_factory_.GetWeakPtr(), cb_id));
   }
 
   void UpdateHardwarePreference(HardwarePreference preference) {

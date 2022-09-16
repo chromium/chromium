@@ -1968,7 +1968,7 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     void (AXObjectCacheImpl::*method)(const Node*),
     const Node* node) {
   base::OnceClosure callback =
-      WTF::Bind(method, WrapWeakPersistent(this), WrapWeakPersistent(node));
+      WTF::BindOnce(method, WrapWeakPersistent(this), WrapWeakPersistent(node));
   DeferTreeUpdateInternal(std::move(callback), node);
 }
 
@@ -1976,7 +1976,7 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     void (AXObjectCacheImpl::*method)(Node*),
     Node* node) {
   base::OnceClosure callback =
-      WTF::Bind(method, WrapWeakPersistent(this), WrapWeakPersistent(node));
+      WTF::BindOnce(method, WrapWeakPersistent(this), WrapWeakPersistent(node));
   DeferTreeUpdateInternal(std::move(callback), node);
 }
 
@@ -1985,8 +1985,8 @@ void AXObjectCacheImpl::DeferTreeUpdate(
                                       ax::mojom::blink::Event event),
     Node* node,
     ax::mojom::blink::Event event) {
-  base::OnceClosure callback = WTF::Bind(method, WrapWeakPersistent(this),
-                                         WrapWeakPersistent(node), event);
+  base::OnceClosure callback = WTF::BindOnce(method, WrapWeakPersistent(this),
+                                             WrapWeakPersistent(node), event);
   DeferTreeUpdateInternal(std::move(callback), node);
 }
 
@@ -1994,7 +1994,7 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     void (AXObjectCacheImpl::*method)(const QualifiedName&, Element* element),
     const QualifiedName& attr_name,
     Element* element) {
-  base::OnceClosure callback = WTF::Bind(
+  base::OnceClosure callback = WTF::BindOnce(
       method, WrapWeakPersistent(this), attr_name, WrapWeakPersistent(element));
   DeferTreeUpdateInternal(std::move(callback), element);
 }
@@ -2004,8 +2004,8 @@ void AXObjectCacheImpl::DeferTreeUpdate(
     AXObject* obj) {
   Node* node = obj ? obj->GetNode() : nullptr;
   base::OnceClosure callback =
-      WTF::Bind(method, WrapWeakPersistent(this), WrapWeakPersistent(node),
-                WrapWeakPersistent(obj));
+      WTF::BindOnce(method, WrapWeakPersistent(this), WrapWeakPersistent(node),
+                    WrapWeakPersistent(obj));
   if (obj) {
     DeferTreeUpdateInternal(std::move(callback), obj);
   } else {
@@ -3674,8 +3674,8 @@ void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
   if (!obj)
     return;
   base::OnceClosure callback =
-      WTF::Bind(&AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout,
-                WrapWeakPersistent(this), WrapWeakPersistent(obj));
+      WTF::BindOnce(&AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout,
+                    WrapWeakPersistent(this), WrapWeakPersistent(obj));
   DeferTreeUpdateInternal(std::move(callback), obj);
 }
 
@@ -3683,8 +3683,8 @@ void AXObjectCacheImpl::MarkAXSubtreeDirty(AXObject* obj) {
   if (!obj)
     return;
   base::OnceClosure callback =
-      WTF::Bind(&AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout,
-                WrapWeakPersistent(this), WrapWeakPersistent(obj));
+      WTF::BindOnce(&AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout,
+                    WrapWeakPersistent(this), WrapWeakPersistent(obj));
   DeferTreeUpdateInternal(std::move(callback), obj);
 }
 
@@ -4271,8 +4271,8 @@ void AXObjectCacheImpl::RequestAOMEventListenerPermission() {
       CreatePermissionDescriptor(
           mojom::blink::PermissionName::ACCESSIBILITY_EVENTS),
       LocalFrame::HasTransientUserActivation(document_->GetFrame()),
-      WTF::Bind(&AXObjectCacheImpl::OnPermissionStatusChange,
-                WrapPersistent(this)));
+      WTF::BindOnce(&AXObjectCacheImpl::OnPermissionStatusChange,
+                    WrapPersistent(this)));
 }
 
 void AXObjectCacheImpl::Trace(Visitor* visitor) const {

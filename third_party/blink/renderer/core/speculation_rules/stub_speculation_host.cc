@@ -15,8 +15,8 @@ void StubSpeculationHost::BindUnsafe(mojo::ScopedMessagePipeHandle handle) {
 void StubSpeculationHost::Bind(
     mojo::PendingReceiver<SpeculationHost> receiver) {
   receiver_.Bind(std::move(receiver));
-  receiver_.set_disconnect_handler(
-      WTF::Bind(&StubSpeculationHost::OnConnectionLost, WTF::Unretained(this)));
+  receiver_.set_disconnect_handler(WTF::BindOnce(
+      &StubSpeculationHost::OnConnectionLost, WTF::Unretained(this)));
 }
 
 void StubSpeculationHost::UpdateSpeculationCandidates(Candidates candidates) {

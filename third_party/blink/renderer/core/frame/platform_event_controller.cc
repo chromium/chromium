@@ -30,8 +30,8 @@ void PlatformEventController::StartUpdating() {
   if (HasLastData() && !update_callback_handle_.IsActive()) {
     update_callback_handle_ = PostCancellableTask(
         *window_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-        WTF::Bind(&PlatformEventController::UpdateCallback,
-                  WrapWeakPersistent(this)));
+        WTF::BindOnce(&PlatformEventController::UpdateCallback,
+                      WrapWeakPersistent(this)));
   }
 
   RegisterWithDispatcher();

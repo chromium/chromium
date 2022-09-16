@@ -181,8 +181,8 @@ void VideoWakeLock::EnsureWakeLockService() {
                        device::mojom::blink::WakeLockReason::kVideoPlayback,
                        "Video Wake Lock",
                        wake_lock_service_.BindNewPipeAndPassReceiver());
-  wake_lock_service_.set_disconnect_handler(
-      WTF::Bind(&VideoWakeLock::OnConnectionError, WrapWeakPersistent(this)));
+  wake_lock_service_.set_disconnect_handler(WTF::BindOnce(
+      &VideoWakeLock::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 void VideoWakeLock::OnConnectionError() {

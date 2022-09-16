@@ -545,8 +545,8 @@ void DocumentTransition::PauseRendering() {
   document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
       ->PostDelayedTask(
           FROM_HERE,
-          WTF::Bind(&DocumentTransition::OnRenderingPausedTimeout,
-                    WrapWeakPersistent(this), last_prepare_sequence_id_),
+          WTF::BindOnce(&DocumentTransition::OnRenderingPausedTimeout,
+                        WrapWeakPersistent(this), last_prepare_sequence_id_),
           kTimeout);
 }
 

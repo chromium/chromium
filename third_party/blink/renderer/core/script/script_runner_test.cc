@@ -571,8 +571,8 @@ class PostTaskWithLowPriorityUntilTimeoutTest : public testing::Test {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
   int counter = 0;
-  base::OnceClosure task =
-      WTF::Bind([](int* counter) { (*counter)++; }, WTF::Unretained(&counter));
+  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
+                                         WTF::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -589,8 +589,8 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task =
-      WTF::Bind([](int* counter) { (*counter)++; }, WTF::Unretained(&counter));
+  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
+                                         WTF::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -606,8 +606,8 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnNormalPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task =
-      WTF::Bind([](int* counter) { (*counter)++; }, WTF::Unretained(&counter));
+  base::OnceClosure task = WTF::BindOnce([](int* counter) { (*counter)++; },
+                                         WTF::Unretained(&counter));
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
