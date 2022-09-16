@@ -41,7 +41,8 @@ SUBMITTED_BUILDS_TEMPLATE = """\
 
 
 class BigQueryQuerier():
-  def __init__(self, sample_period: int, billing_project: str):
+  def __init__(self, sample_period: int, billing_project: str,
+               result_processor: results_module.ResultProcessor):
     """Class for making calls to BigQuery.
 
     Args:
@@ -52,6 +53,7 @@ class BigQueryQuerier():
     """
     self._sample_period = sample_period
     self._billing_project = billing_project
+    self._result_processor = result_processor
 
   def GetFlakyOrFailingCiTests(self) -> ct.QueryJsonType:
     """Gets all flaky or failing GPU tests from CI.
@@ -165,7 +167,7 @@ class BigQueryQuerier():
     for r in json_results:
       typ_tags = tuple(tag_utils.TagUtils.RemoveMostIgnoredTags(r['typ_tags']))
       test_name = r['test_name']
-      _, test_name = results_module.GetTestSuiteAndNameFromResultDbName(
+      _, test_name = self._result_processor.GetTestSuiteAndNameFromResultDbName(
           test_name)
       count = int(r['result_count'])
       result_counts[typ_tags][test_name] += count

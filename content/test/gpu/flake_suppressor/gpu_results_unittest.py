@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2021 The Chromium Authors
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 import unittest
 import unittest.mock as mock
 
-from typing import List, Tuple
+from flake_suppressor import gpu_results
+from flake_suppressor import gpu_tag_utils as tag_utils
 
 from flake_suppressor_common import data_types
-from flake_suppressor_common import results
 from flake_suppressor_common import tag_utils as common_tag_utils
-from flake_suppressor_common import unittest_utils as uu
 
 GENERIC_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win ]
@@ -29,10 +28,10 @@ crbug.com/1111 [ win nvidia ] conformance/textures/misc/video-rotation.html [ Fa
 """
 
 
-class BaseResultsUnittest(unittest.TestCase):
+class GPUResultsUnittest(unittest.TestCase):
   def setUp(self) -> None:
-    common_tag_utils.SetTagUtilsImplementation(uu.UnitTestTagUtils)
-    self._results = uu.UnitTestResultProcessor()
+    common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
+    self._results = gpu_results.GpuResultProcessor()
     self._local_patcher = mock.patch(
         'flake_suppressor_common.results.expectations.'
         'GetExpectationFilesFromLocalCheckout')
@@ -41,20 +40,23 @@ class BaseResultsUnittest(unittest.TestCase):
     self.addCleanup(self._local_patcher.stop)
 
 
-class AggregateResultsUnittest(BaseResultsUnittest):
-  def testBasic(self) -> None:
-    """Basic functionality test."""
+class AggregateResultsUnittest(GPUResultsUnittest):
+  def testWithFiltering(self) -> None:
+    """Tests that results are properly filtered out."""
+    self._local_mock.return_value = {
+        'webgl_conformance_expectations.txt': GPU_EXPECTATION_FILE_CONTENTS,
+    }
     query_results = [
+        # Expected to be removed.
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
                      'WebGLConformanceIntegrationTest.'
                      'conformance/textures/misc/video-rotation.html'),
             'id':
             'build-1111',
-            # The win-laptop tag is ignored, and thus should be removed in the
-            # output.
-            'typ_tags': ['win', 'nvidia', 'win-laptop'],
+            'typ_tags': ['win', 'nvidia'],
         },
+        # Expected to be removed.
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
                      'WebGLConformanceIntegrationTest.'
@@ -87,13 +89,10 @@ class AggregateResultsUnittest(BaseResultsUnittest):
             'typ_tags': ['win', 'nvidia'],
         },
     ]
+
     expected_output = {
         'webgl_conformance_integration_test': {
             'conformance/textures/misc/video-rotation.html': {
-                ('nvidia', 'win'): [
-                    'http://ci.chromium.org/b/1111',
-                    'http://ci.chromium.org/b/2222',
-                ],
                 ('amd', 'win'): ['http://ci.chromium.org/b/3333'],
             },
             'conformance/textures/misc/texture-npot-video.html': {
@@ -106,13 +105,14 @@ class AggregateResultsUnittest(BaseResultsUnittest):
             },
         },
     }
+
     self.assertEqual(self._results.AggregateResults(query_results),
                      expected_output)
 
 
-class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
-  def testBasic(self) -> None:
-    """Basic functionality test."""
+class ConvertJsonResultsToResultObjectsUnittest(GPUResultsUnittest):
+  def testDuplicateResults(self) -> None:
+    """Tests that duplicate results are not merged."""
     r = [
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -120,73 +120,27 @@ class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
                      'conformance/textures/misc/video-rotation.html'),
             'id':
             'build-1111',
-            # The win-laptop tag is ignored, and thus should be removed in the
-            # output.
-            'typ_tags': ['win', 'nvidia', 'win-laptop'],
+            'typ_tags': ['win', 'nvidia'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
                      'WebGLConformanceIntegrationTest.'
                      'conformance/textures/misc/video-rotation.html'),
             'id':
-            'build-2222',
-            'typ_tags': ['nvidia', 'win'],
+            'build-1111',
+            'typ_tags': ['win', 'nvidia'],
         },
     ]
     expected_results = [
         data_types.Result('webgl_conformance_integration_test',
                           'conformance/textures/misc/video-rotation.html',
                           ('nvidia', 'win'), '1111'),
-        data_types.Result(
-            'webgl_conformance_integration_test',
-            'conformance/textures/misc/video-rotation.html',
-            ('nvidia', 'win'),
-            '2222',
-        ),
+        data_types.Result('webgl_conformance_integration_test',
+                          'conformance/textures/misc/video-rotation.html',
+                          ('nvidia', 'win'), '1111'),
     ]
     self.assertEqual(self._results._ConvertJsonResultsToResultObjects(r),
                      expected_results)
-
-
-class FilterOutSuppressedResultsUnittest(BaseResultsUnittest):
-  def testNoSuppressedResults(self) -> None:
-    """Tests functionality when no expectations apply to the given results."""
-    self._local_mock.return_value = {
-        'foo_expectations.txt': GENERIC_EXPECTATION_FILE_CONTENTS,
-    }
-
-    r = [
-        data_types.Result('foo_integration_test', 'foo_test', tuple(['linux']),
-                          'id'),
-        data_types.Result('foo_integration_test', 'bar_test', tuple(['win']),
-                          'id'),
-        data_types.Result('bar_integration_test', 'foo_test', tuple(['win']),
-                          'id')
-    ]
-    self.assertEqual(self._results._FilterOutSuppressedResults(r), r)
-
-  def testSuppressedResults(self) -> None:
-    """Tests functionality when expectations apply to the given results."""
-    self._local_mock.return_value = {
-        'foo_expectations.txt': GENERIC_EXPECTATION_FILE_CONTENTS,
-    }
-
-    r = [
-        data_types.Result('foo_integration_test', 'foo_test', ('win', 'nvidia'),
-                          'id'),
-        data_types.Result('foo_integration_test', 'foo_test', tuple(['win']),
-                          'id'),
-        data_types.Result('foo_integration_test', 'bar_test', tuple(['win']),
-                          'id'),
-    ]
-
-    expected_filtered_results = [
-        data_types.Result('foo_integration_test', 'bar_test', tuple(['win']),
-                          'id'),
-    ]
-
-    self.assertEqual(self._results._FilterOutSuppressedResults(r),
-                     expected_filtered_results)
 
 
 if __name__ == '__main__':

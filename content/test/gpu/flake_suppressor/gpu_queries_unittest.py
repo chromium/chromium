@@ -11,6 +11,7 @@ import unittest.mock as mock
 
 from flake_suppressor import gpu_queries as queries
 from flake_suppressor import gpu_tag_utils as tag_utils
+from flake_suppressor import gpu_results as results_module
 from flake_suppressor_common import unittest_utils as uu
 from flake_suppressor_common import tag_utils as common_tag_utils
 
@@ -18,7 +19,9 @@ from flake_suppressor_common import tag_utils as common_tag_utils
 class GpuQueriesUnittest(unittest.TestCase):
   def setUp(self) -> None:
     common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
-    self._querier_instance = queries.GpuBigQueryQuerier(1, 'project')
+    result_processor = results_module.GpuResultProcessor()
+    self._querier_instance = queries.GpuBigQueryQuerier(1, 'project',
+                                                        result_processor)
     self._querier_instance._submitted_builds = set(['build-1234', 'build-2345'])
     self._subprocess_patcher = mock.patch(
         'flake_suppressor_common.queries.subprocess.run')

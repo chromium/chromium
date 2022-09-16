@@ -30,6 +30,7 @@ from flake_suppressor_common import results as results_module
 from flake_suppressor_common import tag_utils as common_tag_utils
 from flake_suppressor import gpu_queries
 from flake_suppressor import gpu_tag_utils as tag_utils
+from flake_suppressor import gpu_results as results_module
 # pylint: enable=wrong-import-position
 
 
@@ -113,11 +114,15 @@ def main():
   common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
   if not args.bypass_up_to_date_check:
     expectations.AssertCheckoutIsUpToDate()
+
+  results_processor = results_module.GpuResultProcessor()
   querier_instance = gpu_queries.GpuBigQueryQuerier(args.sample_period,
-                                                    args.project)
+                                                    args.project,
+                                                    results_processor)
+
   results = querier_instance.GetFlakyOrFailingCiTests()
   results.extend(querier_instance.GetFlakyOrFailingTryTests())
-  aggregated_results = results_module.AggregateResults(results)
+  aggregated_results = results_processor.AggregateResults(results)
   if args.result_output_file:
     with open(args.result_output_file, 'w') as outfile:
       result_output.GenerateHtmlOutputFile(aggregated_results, outfile)

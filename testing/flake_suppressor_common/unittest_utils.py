@@ -3,7 +3,12 @@
 # found in the LICENSE file.
 
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from typing import Tuple, Iterable
+
+from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import queries
+from flake_suppressor_common import results as results_module
+from flake_suppressor_common import tag_utils
 
 
 def CreateFile(test: fake_filesystem_unittest.TestCase, *args,
@@ -28,3 +33,17 @@ class UnitTest_BigQueryQuerier(queries.BigQueryQuerier):
 
   def GetResultCountTryQuery(self) -> str:
     return """submitted_builds SELECT * FROM bar"""
+
+
+class UnitTestResultProcessor(results_module.ResultProcessor):
+  def GetTestSuiteAndNameFromResultDbName(self, result_db_name: str
+                                          ) -> Tuple[str, str]:
+    _, suite, __, test_name = result_db_name.split('.', 3)
+    return suite, test_name
+
+
+class UnitTestTagUtils(tag_utils.BaseTagUtils):
+  def RemoveMostIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
+    tags = list(set(tags) - set(['win-laptop']))
+    tags.sort()
+    return tuple(tags)
