@@ -14,6 +14,10 @@ namespace app_restore {
 struct AppRestoreData;
 }  // namespace app_restore
 
+namespace arc {
+enum class GhostWindowType;
+}
+
 namespace ash::full_restore {
 
 // Explicitly identifies ARC ghost surface.
@@ -30,6 +34,7 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
 
   static std::unique_ptr<ArcGhostWindowShellSurface> Create(
       const std::string& app_id,
+      arc::GhostWindowType type,
       int window_id,
       const gfx::Rect& bounds,
       app_restore::AppRestoreData* restore_data,
@@ -43,13 +48,15 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   ArcGhostWindowShellSurface(std::unique_ptr<exo::Surface> surface,
                              int container,
                              double scale_factor,
-                             const std::string& application_id);
+                             const std::string& application_id,
+                             arc::GhostWindowType type);
 
   void InitContentOverlay(const std::string& app_id, uint32_t theme_color);
   void SetAppId(const absl::optional<std::string>& id);
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const absl::optional<std::string>& id);
 
+  arc::GhostWindowType type_;
   absl::optional<std::string> app_id_;
 
   std::unique_ptr<exo::Surface> controller_surface_;

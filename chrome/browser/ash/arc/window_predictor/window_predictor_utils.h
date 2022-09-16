@@ -17,6 +17,20 @@ struct AppRestoreData;
 
 namespace arc {
 
+// This is use for indecating the launch source of ghost window.
+enum class GhostWindowType {
+  // App Restore.
+  kFullRestore = 0,
+  // User launch action (e.g. user launch app).
+  kAppLaunch = 1,
+  // launch ARC app which need fixup.
+  kFixup = 2,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kFixup,
+};
+
 // Create ARC app ghost window and add the corresponding to the launching list,
 // it will be launched after ARC ready.
 bool LaunchArcAppWithGhostWindow(Profile* profile,

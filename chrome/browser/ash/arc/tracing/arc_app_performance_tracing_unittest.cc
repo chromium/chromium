@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -331,7 +332,7 @@ TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
   app_restore::AppRestoreData restore_data;
   restore_data.display_id = display.id();
   auto ghost_window = ash::full_restore::ArcGhostWindowShellSurface::Create(
-      "app_id" /* app_id */, 1 /* window_id */,
+      "app_id" /* app_id */, GhostWindowType::kFullRestore, 1 /* window_id */,
       gfx::Rect(10, 10, 100, 100) /* bounds */, &restore_data,
       base::BindRepeating([]() {}));
   ASSERT_TRUE(ghost_window);

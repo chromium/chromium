@@ -13,7 +13,12 @@
 
 namespace views {
 class ImageView;
+class Label;
 }  // namespace views
+
+namespace arc {
+enum class GhostWindowType;
+}
 
 namespace ash::full_restore {
 
@@ -24,7 +29,9 @@ class ArcGhostWindowView : public views::View {
  public:
   METADATA_HEADER(ArcGhostWindowView);
 
-  explicit ArcGhostWindowView(int throbber_diameter, uint32_t theme_color);
+  ArcGhostWindowView(arc::GhostWindowType type,
+                     int throbber_diameter,
+                     uint32_t theme_color);
   ArcGhostWindowView(const ArcGhostWindowView&) = delete;
   ArcGhostWindowView operator=(const ArcGhostWindowView&) = delete;
   ~ArcGhostWindowView() override;
@@ -33,11 +40,15 @@ class ArcGhostWindowView : public views::View {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);
+  FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, FixupMessageTest);
 
-  void InitLayout(uint32_t theme_color, int diameter);
+  void InitLayout(arc::GhostWindowType type,
+                  uint32_t theme_color,
+                  int diameter);
   void OnIconLoaded(apps::IconValuePtr icon_value);
 
   views::ImageView* icon_view_;
+  views::Label* message_label_;
   base::OnceCallback<void(apps::IconValuePtr icon_value)>
       icon_loaded_cb_for_testing_;
 

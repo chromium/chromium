@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -19,6 +20,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -60,14 +62,18 @@ class Throbber : public views::View {
 
 namespace ash::full_restore {
 
-ArcGhostWindowView::ArcGhostWindowView(int throbber_diameter,
+ArcGhostWindowView::ArcGhostWindowView(arc::GhostWindowType type,
+                                       int throbber_diameter,
                                        uint32_t theme_color) {
-  InitLayout(theme_color, throbber_diameter);
+  // TODO(sstan): Show different content for different type.
+  InitLayout(type, theme_color, throbber_diameter);
 }
 
 ArcGhostWindowView::~ArcGhostWindowView() = default;
 
-void ArcGhostWindowView::InitLayout(uint32_t theme_color, int diameter) {
+void ArcGhostWindowView::InitLayout(arc::GhostWindowType type,
+                                    uint32_t theme_color,
+                                    int diameter) {
   SetBackground(views::CreateSolidBackground(theme_color));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -86,6 +92,14 @@ void ArcGhostWindowView::InitLayout(uint32_t theme_color, int diameter) {
   throbber->SetPreferredSize(gfx::Size(diameter, diameter));
   throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
 
+  if (type == arc::GhostWindowType::kFixup) {
+    auto label = std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
+    // TODO(sstan): Set font size or height, according to future UI update.
+    label->SetMultiLine(true);
+    message_label_ = label.get();
+    AddChildView(std::move(label));
+  }
   // TODO(sstan): Set window title and accessible name from saved data.
 }
 

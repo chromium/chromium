@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_restore_data.h"
@@ -116,7 +117,8 @@ bool ArcGhostWindowHandler::LaunchArcGhostWindow(
   }
 
   auto shell_surface = ArcGhostWindowShellSurface::Create(
-      app_id, session_id, adjust_bounds, restore_data,
+      app_id, ::arc::GhostWindowType::kFullRestore, session_id, adjust_bounds,
+      restore_data,
       base::BindRepeating(&ArcGhostWindowHandler::CloseWindow,
                           weak_ptr_factory_.GetWeakPtr(), session_id));
   if (!shell_surface)
