@@ -127,7 +127,11 @@ class DiskMountManagerImpl : public DiskMountManager,
     // Record the access mode option passed to CrosDisks.
     // This is needed because CrosDisks service methods doesn't return the info
     // via DBus.
-    access_modes_.emplace(source_path, access_mode);
+    if (const auto [_, ok] =
+            access_modes_.insert_or_assign(source_path, access_mode);
+        !ok) {
+      LOG(ERROR) << "Replaced access mode for '" << source_path << "'";
+    }
   }
 
   // DiskMountManager override.
@@ -410,7 +414,11 @@ class DiskMountManagerImpl : public DiskMountManager,
     // This is needed because CrosDisks service methods doesn't return the info
     // via DBus, and must be updated before issuing Mount command as it'll be
     // read by the handler of MountCompleted signal.
-    access_modes_[source_path] = access_mode;
+    if (const auto [_, ok] =
+            access_modes_.insert_or_assign(source_path, access_mode);
+        !ok) {
+      LOG(ERROR) << "Replaced access mode for '" << source_path << "'";
+    }
 
     cros_disks_client_->Mount(
         source_path, std::string(), std::string(), {}, access_mode,
@@ -516,6 +524,9 @@ class DiskMountManagerImpl : public DiskMountManager,
     const Disks::const_iterator disk_it = disks_.find(mount_info.source_path);
     Disk* const disk = disk_it != disks_.end() ? disk_it->get() : nullptr;
 
+    const AccessModeMap::node_type access_mode =
+        access_modes_.extract(entry.source_path);
+
     if (want_to_keep && mount_info.mount_type == MountType::kDevice &&
         !mount_info.source_path.empty() && !mount_info.mount_path.empty() &&
         disk) {
@@ -525,13 +536,10 @@ class DiskMountManagerImpl : public DiskMountManager,
       // |source_path| should be same as |disk->device_path| because
       // |VolumeManager::OnDiskEvent()| passes the latter to cros-disks as a
       // source path when mounting a device.
-      const AccessModeMap::const_iterator access_it =
-          access_modes_.find(entry.source_path);
-
       // Store whether the disk was mounted in read-only mode due to a policy.
       disk->set_write_disabled_by_policy(
-          access_it != access_modes_.end() && !disk->is_read_only_hardware() &&
-          access_it->second == MountAccessMode::kReadOnly);
+          !disk->is_read_only_hardware() && access_mode &&
+          access_mode.mapped() == MountAccessMode::kReadOnly);
 
       // Right now, a number of operations (format, rename, unmount) rely on the
       // mount path being set even if the disk isn't mounted. cros-disks also
