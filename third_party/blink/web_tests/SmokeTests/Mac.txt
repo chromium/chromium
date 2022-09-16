@@ -410,7 +410,7 @@ external/wpt/html/semantics/scripting-1/the-script-element/moving-between-docume
 external/wpt/html/syntax/charset/after-head-after-1kb-crlf.html
 external/wpt/html/syntax/speculative-parsing/generated/document-write/meta-viewport-link-stylesheet-media.tentative.sub.html
 external/wpt/html/syntax/speculative-parsing/generated/document-write/svg-script-src.tentative.sub.html
-external/wpt/html/user-activation/propagation-crossorigin.sub.tentative.html
+external/wpt/html/user-activation/propagation-crossorigin.sub.html
 external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html
 external/wpt/html/webappapis/update-rendering/child-document-raf-order.html
 external/wpt/idle-detection/interceptor.https.html

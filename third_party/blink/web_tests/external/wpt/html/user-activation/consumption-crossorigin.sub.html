@@ -1,20 +1,18 @@
 <!DOCTYPE html>
-<!--
-   Tentative due to:
-   https://github.com/whatwg/html/issues/4008
--->
 <html>
 <head>
+  <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
+  <script src="resources/utils.js"></script>
   <script>
     // Frame layout:
-    // top=this-file [
-    //   child1=child-one.html,
-    //   child-so=consumption-sameorigin-child.html [
-    //     gchild=child-two.html
+    // top=origin0:this-file [
+    //   child1=origin1:child-one.html,
+    //   child-xo=origin2:consumption-crossorigin-child.html [
+    //     gchild=origin3:child-two.html
     //   ]
     // ]
     let consumption_test = async_test("Consumption test");
@@ -30,7 +28,8 @@
             assert_false(navigator.userActivation.hasBeenActive);
         }, "Parent frame initial state");
 
-        test_driver.click(document.getElementById("child-so"));
+        delayByFrames(() => test_driver.click(document.getElementById("child1")), 5);
+        // The click at "child-xo" happens after receiving "child-one-clicked" msg.
     }
 
     function finishReportPhase() {
@@ -52,7 +51,7 @@
                 assert_false(msg.isActive);
                 assert_false(msg.hasBeenActive);
             }, "Child1 frame initial state");
-        } else if (msg.type == 'child-sameorigin-loaded') {
+        } else if (msg.type == 'child-crossorigin-loaded') {
             test(() => {
                 assert_false(msg.isActive);
                 assert_false(msg.hasBeenActive);
@@ -62,12 +61,14 @@
                 assert_false(msg.isActive);
                 assert_false(msg.hasBeenActive);
             }, "Grandchild frame initial state");
+        } else if (msg.type == 'child-one-clicked') {
+            test_driver.click(document.getElementById("child-xo"));
         } else if (msg.type == 'child-one-report') {
             test(() => {
                 assert_false(msg.isActive);
                 assert_true(msg.hasBeenActive);
             }, "Child1 frame final state");
-        } else if (msg.type == 'child-sameorigin-report') {
+        } else if (msg.type == 'child-crossorigin-report') {
             // This msg was triggered by a user click followed by a window.open().
             test(() => {
                 assert_false(msg.isActive);
@@ -81,7 +82,7 @@
         } else if (msg.type == 'child-two-report') {
             test(() => {
                 assert_false(msg.isActive);
-                assert_true(msg.hasBeenActive);
+                assert_false(msg.hasBeenActive);
             }, "Grand child frame final state");
         }
 
@@ -97,16 +98,17 @@
   </script>
 </head>
 <body>
-  <h1>User activation consumption across same-origin frame boundary</h1>
-  <p>Tests that user activation consumption resets the transient states in all same-origin frames.</p>
+  <h1>User activation consumption across cross-origin frame boundary</h1>
+  <p>Tests that user activation consumption resets the transient states in all cross-origin frames.</p>
   <ol id="instructions">
+    <li>Click anywhere on the yellow area.
     <li>Click anywhere on the green area (child frame).
   </ol>
   <iframe id="child1" width="300px" height="40px"
-          src="resources/child-one.html">
+          src="http://{{domains[www1]}}:{{ports[http][0]}}/html/user-activation/resources/child-one.html">
   </iframe>
-  <iframe id="child-so" width="300px" height="140px"
-          src="resources/consumption-sameorigin-child.html">
+  <iframe id="child-xo" width="300px" height="140px"
+          src="http://{{domains[www2]}}:{{ports[http][0]}}/html/user-activation/resources/consumption-crossorigin-child.sub.html">
   </iframe>
 </body>
 </html>
