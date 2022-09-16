@@ -920,12 +920,26 @@ void AXEventGenerator::FireActiveDescendantEvents() {
   active_descendant_changed_.clear();
 }
 
+bool CanContributeToValueOfTextfield(AXNode* target_node) {
+  // TODO(accessibility) Changes to inline text boxes should be redundant with
+  // changes in their parent static text containers. We should probably return
+  // false for those in order to save on performance.
+
+  // Text and line breaks contribute.
+  if (ui::IsText(target_node->GetRole()))
+    return true;
+
+  // Non-text leaf nodes contribute, e.g. images.
+  if (target_node->GetChildCount() == 0)
+    return true;
+
+  return false;
+}
+
 void AXEventGenerator::FireValueInTextFieldChangedEventIfNecessary(
     AXTree* tree,
     AXNode* target_node) {
-  // Text is only found on leaf nodes, so the text in a text field would change
-  // if any of the leaf nodes in it have changed their names.
-  if (target_node->GetChildCount())
+  if (!CanContributeToValueOfTextfield(target_node))
     return;
 
   AXNode* text_field_ancestor = target_node->GetTextFieldAncestor();
