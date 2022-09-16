@@ -1,17 +1,17 @@
 # Page Unload Beacon API
 
 Contact: pending-beacon-experiment@chromium.org
+API Feedback: https://github.com/WICG/unload-beacon/issues
 
 This document describes the status of the current implementation of the
 [Page Unload Beacon API](https://wicg.github.io/unload-beacon/)
 (a.k.a. PendingBeacon API) in Chrome, and how to enable it manually.
 
-Starting from version 106 Beta, Chrome experimentally supports the
+Starting from version 107 , Chrome experimentally supports the
 Page Unload Beacon API,
 which allows website authors to specify one or more beacons (HTTP requests) that should be sent reliably when the page is being unloaded.
 
-See the [public explainer](https://github.com/WICG/unload-beacon#readme) about
-how it works.
+See the [public explainer](https://github.com/WICG/unload-beacon#readme) to learn more about how it works.
 
 Note that this API is not enabled by default. Instead, Chrome plans to run A/B testing to evaluate its impact. But Chrome also provides some ways to opt-in to the API for web developers who what to try the features.
 
@@ -27,14 +27,14 @@ Chrome supports all the JavaScript APIs described in the explainer, specifically
 
 The following features are not yet supported in Chrome:
 
-- Crash recovery from disk upon next launching Chrome: not yet supported. Chrome currently doesn't store any PendingBeacon on disk.
+- Crash recovery related behaviors and privacy requirements: not yet supported. Chrome currently doesn't store any PendingBeacon on disk.
 - Delete pending beacons for a site if a user clears site data: not supported yet, as crash recovery from disk is not yet supported.
-- Beacons are only sent over the same network that was active when the beacon was registered: not supported yet.
-- Post-unload beacons are not sent if background sync is disabled for a site: not supported yet.
 - Beacon requests are not yet observable in Chrome DevTools.
 
 The following features work differently than the one described in explainer:
 
+- Beacons must not leak navigation history to the network provider that it should not know:
+  supported by forcing to send out all beacons on navigating away from a document.
 - The beacon destination URL should be modifiable: only `PendingGetBeacon` can
   update its URL via `setURL()` method.
 - Beacon Sending behavior: the Chrome implementation currently queues all
@@ -57,7 +57,19 @@ to Chrome enables PendingBeacon API support.
 
 ### Using Origin Trial
 
-TODO: Add tutorial once Origin Trial is approved.
+[Trial for Page Unload Beacon](https://developer.chrome.com/origintrials/#/view_trial/1581889369113886721).
+
+You can opt any page on your origin into PendingBeacon API Origin Trial by [requesting a token][ot-tutorial] for your origin. Include the token in both your page so that Chrome can recognize your pages are opted in.
+
+The simplest way is to include the following line in your page:
+
+```html
+<meta http-equiv="origin-trial" content="**your token**">
+```
+
+Or you can also include the token in your HTTP request.
+
+[ot-tutorial]: https://developer.chrome.com/docs/web-platform/origin-trials/#take-part-in-an-origin-trial
 
 ### Verifying the API is working
 
