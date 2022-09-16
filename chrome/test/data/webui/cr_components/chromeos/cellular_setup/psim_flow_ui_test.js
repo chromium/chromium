@@ -8,7 +8,6 @@ import 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.js
 import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.js';
 import {setCellularSetupRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {FAILED_PSIM_SETUP_DURATION_METRIC_NAME, PSimPageName, PSimSetupFlowResult, PSimUIState, SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.js';
-import {ActivationDelegateReceiver, ActivationResult, CarrierPortalStatus, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://test/test_util.js';
 
@@ -21,13 +20,13 @@ import {MockMetricsPrivate} from './mock_metrics_private.js';
 suite('CrComponentsPsimFlowUiTest', function() {
   let pSimPage;
 
-  /** @type {?CellularSetupRemote} */
+  /** @type {?ash.cellularSetup.mojom.CellularSetupRemote} */
   let cellularSetupRemote = null;
 
   /** @type {?FakeCarrierPortalHandlerRemote} */
   let cellularCarrierHandler = null;
 
-  /** @type {?ActivationDelegateReceiver} */
+  /** @type {?ash.cellularSetup.mojom.ActivationDelegateReceiver} */
   let cellularActivationDelegate = null;
 
   /** @type {function(Function, number)} */
@@ -104,7 +103,8 @@ suite('CrComponentsPsimFlowUiTest', function() {
         pSimPage.selectedPSimPageName_ === PSimPageName.provisioningPage);
 
     cellularActivationDelegate.onActivationFinished(
-        ActivationResult.kSuccessfullyStartedActivation);
+        ash.cellularSetup.mojom.ActivationResult
+            .kSuccessfullyStartedActivation);
 
     await flushAsync();
 
@@ -168,7 +168,8 @@ suite('CrComponentsPsimFlowUiTest', function() {
     });
 
     cellularCarrierHandler.onCarrierPortalStatusChange(
-        CarrierPortalStatus.kPortalLoadedWithoutPaidUser);
+        ash.cellularSetup.mojom.CarrierPortalStatus
+            .kPortalLoadedWithoutPaidUser);
 
     await flushAsync();
     assertTrue(pSimPage.nameOfCarrierPendingSetup === 'Verizon wireless');
@@ -201,7 +202,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     cellularActivationDelegate =
         cellularSetupRemote.getLastActivationDelegate();
     cellularActivationDelegate.onActivationFinished(
-        ActivationResult.kAlreadyActivated);
+        ash.cellularSetup.mojom.ActivationResult.kAlreadyActivated);
 
     await flushAsync();
 
@@ -228,7 +229,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
         pSimPage.selectedPSimPageName_ === PSimPageName.provisioningPage);
 
     cellularActivationDelegate.onActivationFinished(
-        ActivationResult.kFailedToActivate);
+        ash.cellularSetup.mojom.ActivationResult.kFailedToActivate);
 
     await flushAsync();
     endFlowAndVerifyResult(PSimSetupFlowResult.NETWORK_ERROR);

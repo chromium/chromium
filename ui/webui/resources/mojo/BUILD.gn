@@ -52,8 +52,6 @@ ts_library("library") {
       "ui/gfx/range/mojom/range.mojom-webui.js",
       "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
       "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
-      "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js",
-      "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js",
       "chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
       "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js",
       "chromeos/services/network_health/public/mojom/network_health.mojom-webui.js",
@@ -61,7 +59,6 @@ ts_library("library") {
     extra_deps += [
       "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js__generator",
-      "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js__generator",
       "//chromeos/services/network_config/public/mojom:network_types_js__generator",
       "//chromeos/services/network_health/public/mojom:mojom_js__generator",
       "//ui/gfx/range/mojom:mojom_js__generator",

@@ -8,7 +8,6 @@ import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/c
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {CrosNetworkConfigRemote, InhibitReason, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,7 +25,7 @@ suite('InternetPage', function() {
   /** @type {?CrosNetworkConfigRemote} */
   let mojoApi_ = null;
 
-  /** @type {?ESimManagerRemote} */
+  /** @type {?ash.cellularSetup.mojom.ESimManagerRemote} */
   let eSimManagerRemote;
 
   suiteSetup(function() {

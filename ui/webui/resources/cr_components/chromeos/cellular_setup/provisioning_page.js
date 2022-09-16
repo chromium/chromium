@@ -14,10 +14,9 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CellularMetadata} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 import {assert} from '../../../js/assert.m.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {postDeviceDataToWebview} from './webview_post_util.js';
@@ -45,7 +44,7 @@ Polymer({
     /**
      * Metadata used to open carrier provisioning portal. Expected to start as
      * null, then change to a valid object.
-     * @type {?CellularMetadata}
+     * @type {?ash.cellularSetup.mojom.CellularMetadata}
      */
     cellularMetadata: {
       type: Object,

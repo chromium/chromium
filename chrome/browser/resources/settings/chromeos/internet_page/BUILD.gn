@@ -70,7 +70,6 @@ js_library("internet_detail_menu") {
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_listener_behavior",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
@@ -306,7 +305,6 @@ js_library("cellular_networks_list") {
     ":esim_install_error_dialog",
     "../multidevice_page:multidevice_browser_proxy",
     "../multidevice_page:multidevice_constants",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_types",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_listener_behavior",
@@ -343,7 +341,6 @@ js_library("cellular_roaming_toggle_button") {
 
 js_library("esim_install_error_dialog") {
   deps = [
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils",
     "//ui/webui/resources/cr_elements:i18n_behavior",
@@ -356,7 +353,6 @@ js_library("esim_install_error_dialog") {
 
 js_library("esim_rename_dialog") {
   deps = [
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils",
     "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
@@ -371,7 +367,6 @@ js_library("esim_remove_profile_dialog") {
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/cr_elements:i18n_behavior",

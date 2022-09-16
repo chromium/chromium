@@ -13,7 +13,6 @@ import './base_page.js';
 import './profile_discovery_list_item.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -25,7 +24,7 @@ Polymer({
 
   properties: {
     /**
-     * @type {Array<!ESimProfileRemote>}
+     * @type {Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
      * @private
      */
     pendingProfiles: {
@@ -33,7 +32,7 @@ Polymer({
     },
 
     /**
-     * @type {?ESimProfileRemote}
+     * @type {?ash.cellularSetup.mojom.ESimProfileRemote}
      * @private
      */
     selectedProfile: {
@@ -51,7 +50,7 @@ Polymer({
   },
 
   /**
-   * @param {ESimProfileRemote} profile
+   * @param {ash.cellularSetup.mojom.ESimProfileRemote} profile
    * @private
    */
   isProfileSelected_(profile) {

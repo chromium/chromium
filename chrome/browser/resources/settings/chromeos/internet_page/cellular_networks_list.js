@@ -28,7 +28,6 @@ import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_moj
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {CrosNetworkConfigRemote, GlobalPolicy, InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -120,7 +119,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       /**
        * Dictionary mapping pending eSIM profile iccids to pending eSIM
        * profiles.
-       * @type {!Map<string, ESimProfileRemote>}
+       * @type {!Map<string, ash.cellularSetup.mojom.ESimProfileRemote>}
        * @private
        */
       profilesMap_: {
@@ -181,7 +180,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * Euicc object representing the active euicc_ module on the device
-       * @private {?EuiccRemote}
+       * @private {?ash.cellularSetup.mojom.EuiccRemote}
        */
       euicc_: {
         type: Object,
@@ -190,7 +189,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * The current eSIM profile being installed.
-       * @type {?ESimProfileRemote}
+       * @type {?ash.cellularSetup.mojom.ESimProfileRemote}
        * @private
        */
       installingESimProfile_: {
@@ -200,7 +199,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * The error code returned when eSIM profile install attempt was made.
-       * @type {?ProfileInstallResult}
+       * @type {?ash.cellularSetup.mojom.ProfileInstallResult}
        * @private
        */
       eSimProfileInstallError_: {
@@ -254,7 +253,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   /**
-   * @param {!EuiccRemote} euicc
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
    * ESimManagerListenerBehavior override
    */
   onProfileListChanged(euicc) {
@@ -269,7 +268,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   /**
-   * @param {!ESimProfileRemote} profile
+   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
    * ESimManagerListenerBehavior override
    */
   onProfileChanged(profile) {
@@ -281,8 +280,8 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       if (!eSimPendingProfileItem) {
         return;
       }
-      eSimPendingProfileItem.customItemType =
-          response.properties.state === ProfileState.kInstalling ?
+      eSimPendingProfileItem.customItemType = response.properties.state ===
+              ash.cellularSetup.mojom.ProfileState.kInstalling ?
           NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
           NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
     });
@@ -325,7 +324,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   /**
-   * @param {!EuiccRemote} euicc
+   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
    * @private
    */
   fetchESimPendingProfileListForEuicc_(euicc) {
@@ -334,7 +333,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   /**
-   * @param {Array<!ESimProfileRemote>} profiles
+   * @param {Array<!ash.cellularSetup.mojom.ESimProfileRemote>} profiles
    * @private
    */
   processESimPendingProfiles_(profiles) {
@@ -347,7 +346,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   /**
-   * @param {!ESimProfileRemote} profile
+   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
    * @return {!Promise<NetworkList.CustomItemState>}
    * @private
    */
@@ -359,12 +358,13 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   /**
-   * @param {!ESimProfileProperties} properties
+   * @param {!ash.cellularSetup.mojom.ESimProfileProperties} properties
    * @return {NetworkList.CustomItemState}
    */
   createESimPendingProfileItem_(properties) {
     return {
-      customItemType: properties.state === ProfileState.kInstalling ?
+      customItemType: properties.state ===
+              ash.cellularSetup.mojom.ProfileState.kInstalling ?
           NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
           NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
       customItemName: String.fromCharCode(...properties.name.data),
@@ -509,7 +509,8 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     }
     this.installingESimProfile_ = this.profilesMap_.get(event.detail.iccid);
     this.installingESimProfile_.installProfile('').then((response) => {
-      if (response.result === ProfileInstallResult.kSuccess) {
+      if (response.result ===
+          ash.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
         this.eSimProfileInstallError_ = null;
         this.installingESimProfile_ = null;
       } else {

@@ -12,7 +12,6 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EuiccProperties, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 // The size of each tile in pixels.
 const QR_CODE_TILE_SIZE = 5;
@@ -64,7 +63,7 @@ Polymer({
 
   /**
    * @private
-   * @param {{qrCode: QRCode} | null} response
+   * @param {{qrCode: ash.cellularSetup.mojom.QRCode} | null} response
    */
   updateQRCode_(response) {
     if (!response || !response.qrCode) {
@@ -90,7 +89,7 @@ Polymer({
 
   /**
    * @private
-   * @param {{properties: EuiccProperties}} response
+   * @param {{properties: ash.cellularSetup.mojom.EuiccProperties}} response
    */
   updateEid_(response) {
     if (!response || !response.properties) {

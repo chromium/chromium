@@ -13,7 +13,6 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {getESimProfile} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {ESimOperationResult, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -64,7 +63,7 @@ class EsimRemoveProfileDialogElement extends
   constructor() {
     super();
 
-    /** @private {?ESimProfileRemote} */
+    /** @private {?ash.cellularSetup.mojom.ESimProfileRemote} */
     this.esimProfileRemote_ = null;
   }
 
@@ -120,7 +119,8 @@ class EsimRemoveProfileDialogElement extends
    */
   onRemoveProfileTap_(event) {
     this.esimProfileRemote_.uninstallProfile().then((response) => {
-      if (response.result === ESimOperationResult.kFailure) {
+      if (response.result ===
+          ash.cellularSetup.mojom.ESimOperationResult.kFailure) {
         this.fireShowErrorToastEvent_();
       }
     });

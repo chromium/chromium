@@ -9,7 +9,6 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ActivationDelegateInterface, ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetup_StartActivation_ResponseParams, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -172,7 +171,7 @@ Polymer({
     /**
      * Cellular metadata received via the onActivationStarted() callback. If
      * that callback has not occurred, this field is null.
-     * @private {?CellularMetadata}
+     * @private {?ash.cellularSetup.mojom.CellularMetadata}
      */
     cellularMetadata_: {
       type: Object,
@@ -198,13 +197,13 @@ Polymer({
 
   /**
    * Provides an interface to the CellularSetup Mojo service.
-   * @private {?CellularSetupRemote}
+   * @private {?ash.cellularSetup.mojom.CellularSetupRemote}
    */
   cellularSetupRemote_: null,
 
   /**
    * Delegate responsible for routing activation started/finished events.
-   * @private {?ActivationDelegateReceiver}
+   * @private {?ash.cellularSetup.mojom.ActivationDelegateReceiver}
    */
   activationDelegateReceiver_: null,
 
@@ -218,7 +217,7 @@ Polymer({
   /**
    * Handler used to communicate state updates back to the CellularSetup
    * service.
-   * @private {?CarrierPortalHandlerRemote}
+   * @private {?ash.cellularSetup.mojom.CarrierPortalHandlerRemote}
    */
   carrierPortalHandler_: null,
 
@@ -306,8 +305,8 @@ Polymer({
   },
 
   /**
-   * Overrides ActivationDelegateInterface.
-   * @param {!CellularMetadata} metadata
+   * Overrides ash.cellularSetup.mojom.ActivationDelegateInterface.
+   * @param {!ash.cellularSetup.mojom.CellularMetadata} metadata
    * @private
    */
   onActivationStarted(metadata) {
@@ -414,13 +413,14 @@ Polymer({
   },
 
   /**
-   * Overrides ActivationDelegateInterface.
-   * @param {!ActivationResult} result
+   * Overrides ash.cellularSetup.mojom.ActivationDelegateInterface.
+   * @param {!ash.cellularSetup.mojom.ActivationResult} result
    * @private
    */
   onActivationFinished(result) {
     this.closeActivationConnection_();
 
+    const ActivationResult = ash.cellularSetup.mojom.ActivationResult;
     switch (result) {
       case ActivationResult.kSuccessfullyStartedActivation:
         this.state_ = PSimUIState.ACTIVATION_SUCCESS;
@@ -534,18 +534,21 @@ Polymer({
   /** @private */
   startActivation_() {
     assert(!this.activationDelegateReceiver_);
-    this.activationDelegateReceiver_ = new ActivationDelegateReceiver(
-        /**
-         * @type {!ActivationDelegateInterface}
-         */
-        (this));
+    this.activationDelegateReceiver_ =
+        new ash.cellularSetup.mojom.ActivationDelegateReceiver(
+            /**
+             * @type {!ash.cellularSetup.mojom.ActivationDelegateInterface}
+             */
+            (this));
 
     this.cellularSetupRemote_
         .startActivation(
             this.activationDelegateReceiver_.$.bindNewPipeAndPassRemote())
         .then(
             /**
-             * @param {!CellularSetup_StartActivation_ResponseParams} params
+             * @param {!ash.cellularSetup.
+             *             mojom.CellularSetup_StartActivation_ResponseParams}
+             *                 params
              */
             (params) => {
               this.carrierPortalHandler_ = params.observer;
@@ -573,7 +576,8 @@ Polymer({
   onCarrierPortalLoaded_() {
     this.state_ = PSimUIState.WAITING_FOR_USER_PAYMENT;
     this.carrierPortalHandler_.onCarrierPortalStatusChange(
-        CarrierPortalStatus.kPortalLoadedWithoutPaidUser);
+        ash.cellularSetup.mojom.CarrierPortalStatus
+            .kPortalLoadedWithoutPaidUser);
   },
 
   /**
