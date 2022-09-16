@@ -38,6 +38,7 @@ TEST(FunctionRefTest, Lambda) {
   [](FunctionRef<int()> ref) { EXPECT_EQ(3, ref()); }(lambda);
 }
 
+// Tests for passing a `base::FunctionRef` as an `absl::FunctionRef`.
 TEST(FunctionRefTest, AbslConversion) {
   // Matching signatures should work.
   {
@@ -65,6 +66,24 @@ TEST(FunctionRefTest, AbslConversion) {
       absl_ref(1.0);
     }(ref.ToAbsl());
     EXPECT_TRUE(called);
+  }
+}
+
+// base::FunctionRef allows functors with convertible return types to be
+// adapted.
+TEST(FunctionRefTest, ConvertibleReturnTypes) {
+  // Hopefully this never results in a postmorterm-worthy bug...
+  {
+    auto lambda = []() -> bool { return true; };
+    [](FunctionRef<int()> ref) { EXPECT_EQ(1, ref()); }(lambda);
+  }
+
+  {
+    class Base {};
+    class Derived : public Base {};
+
+    auto lambda = []() -> Derived* { return nullptr; };
+    [](FunctionRef<Base*()> ref) { EXPECT_EQ(nullptr, ref()); }(lambda);
   }
 }
 

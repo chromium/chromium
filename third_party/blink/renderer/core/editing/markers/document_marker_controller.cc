@@ -305,7 +305,7 @@ void DocumentMarkerController::RemoveMarkersInRange(
 
 void DocumentMarkerController::AddMarkerInternal(
     const EphemeralRange& range,
-    std::function<DocumentMarker*(int, int)> create_marker_from_offsets,
+    base::FunctionRef<DocumentMarker*(int, int)> create_marker_from_offsets,
     const TextIteratorBehavior& iterator_behavior) {
   DocumentMarkerGroup* new_marker_group =
       MakeGarbageCollected<DocumentMarkerGroup>();

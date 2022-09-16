@@ -12,21 +12,11 @@
 
 namespace base {
 
-#if defined(NCTEST_NO_IMPLICIT_RETURN_TYPE_CONVERSIONS)  // [r"note: candidate template ignored: requirement 'std::is_same_v<void \(\), int \(\)>' was not satisfied \[with Functor = \(lambda at [^)]+\)\]"]
+#if defined(NCTEST_NO_IMPLICIT_VOIDIFY)  // [r"note: candidate template ignored: requirement '[^']+' was not satisfied \[with Functor = \(lambda at [^)]+\)\]"]
 
 void WontCompile() {
   auto returns_int = [] () { return 42; };
   FunctionRef<void()> ref(returns_int);
-}
-
-#elif defined(NCTEST_NO_IMPLICIT_DERIVED_TO_BASE_CONVERSIONS)  // [r"note: candidate template ignored: requirement 'std::is_same_v<void \(base::Derived \*\), void \(base::Base \*\)>' was not satisfied \[with Functor = \(lambda at [^)]+\)\]"]
-
-class Base { };
-class Derived : public Base { };
-
-void WontCompile() {
-  auto takes_base = [] (Base*) { };
-  FunctionRef<void(Derived*)> ref(takes_base);
 }
 
 #elif defined(NCTEST_BIND_ONCE_TO_ABSL_FUNCTION_REF)  // [r"fatal error: static assertion failed due to requirement 'AlwaysFalse<void \(\)>': base::Bind{Once,Repeating} require strong ownership: non-owning function references may not bound as the functor due to potential lifetime issues\."]

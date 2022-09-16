@@ -32,6 +32,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -204,7 +205,7 @@ class CORE_EXPORT DocumentMarkerController final
  private:
   void AddMarkerInternal(
       const EphemeralRange&,
-      std::function<DocumentMarker*(int, int)> create_marker_from_offsets,
+      base::FunctionRef<DocumentMarker*(int, int)> create_marker_from_offsets,
       const TextIteratorBehavior& iterator_behavior = {});
   void AddMarkerToNode(const Text&, DocumentMarker*);
   DocumentMarkerGroup* GetMarkerGroupForMarker(const DocumentMarker* marker);

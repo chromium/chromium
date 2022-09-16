@@ -42,35 +42,39 @@ class FunctionRef;
 // ownership requirements (e.g. partial application of arguments to a function
 // stored for asynchronous execution).
 //
-// Note: this class is very similar to `absl::FunctionRef<R(Args...)>`, but
-// disallows implicit conversions between function types, e.g. functors that
-// return non-void values may bind to `absl::FunctionRef<void(...)>`:
+// Note: `base::FunctionRef` is similar to `absl::FunctionRef<R(Args...)>`, but
+// with stricter conversions between function types. Return type conversions are
+// allowed (e.g. `int` -> `bool`, `Derived*` -> `Base*`); other than that,
+// function parameter types must match exactly, and return values may not be
+// silently discarded, e.g. `absl::FunctionRef` allows the following:
 //
-// ```
-// void F(absl::FunctionRef<void()>);
-// ...
-//   F([] { return 42; });
-// ```
+//   // Silently discards `42`.
+//   [] (absl::FunctionRef<void()> r) {
+//     r();
+//   }([] { return 42; });
 //
-// This compiles and silently discards the return value, but with the base
-// version, the equivalent snippet:
+// But with `base::FunctionRef`:
 //
-// ```
-// void F(base::FunctionRef<void()>);
-// ...
-//   F([] { return 42;});
-// ```
-//
-// will not compile at all.
+//   // Does not compile!
+//   [] (base::FunctionRef<void()> r) {
+//     r();
+//   }([] { return 42; });
 template <typename R, typename... Args>
 class FunctionRef<R(Args...)> {
+ private:
+  template <typename Functor,
+            typename FunctorReturnType =
+                typename internal::BindTypeHelper<Functor>::ReturnType,
+            typename FunctorArgsAsTypeList =
+                typename internal::BindTypeHelper<Functor>::RunParamsList>
+  using EnableIfCompatible = std::enable_if_t<
+      std::is_convertible_v<FunctorReturnType, R> &&
+      std::is_same_v<FunctorArgsAsTypeList, internal::TypeList<Args...>>>;
+
  public:
   // `ABSL_ATTRIBUTE_LIFETIME_BOUND` is important since `FunctionRef` retains
   // only a reference to `functor`, `functor` must outlive `this`.
-  template <typename Functor,
-            typename = std::enable_if_t<std::is_same_v<
-                R(Args...),
-                typename internal::MakeFunctorTraits<Functor>::RunType>>>
+  template <typename Functor, typename = EnableIfCompatible<Functor>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   FunctionRef(const Functor& functor ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : wrapped_func_ref_(functor) {}
