@@ -6,22 +6,6 @@
 
 namespace autofill {
 
-// static
-void AutofillDriverIOSWebFrameFactory::CreateForWebStateAndDelegate(
-    web::WebState* web_state,
-    AutofillClient* client,
-    id<AutofillDriverIOSBridge> bridge,
-    const std::string& app_locale,
-    AutofillManager::EnableDownloadManager enable_download_manager) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(
-      UserDataKey(),
-      std::make_unique<AutofillDriverIOSWebFrameFactory>(
-          web_state, client, bridge, app_locale, enable_download_manager));
-}
-
 AutofillDriverIOSWebFrameFactory::AutofillDriverIOSWebFrameFactory(
     web::WebState* web_state,
     AutofillClient* client,

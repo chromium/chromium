@@ -32,7 +32,7 @@ void AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
   // By the time this method is called, no web_frame is available. This method
   // only prepares the factory and the AutofillDriverIOS will be created in the
   // first call to FromWebStateAndWebFrame.
-  AutofillDriverIOSWebFrameFactory::CreateForWebStateAndDelegate(
+  AutofillDriverIOSWebFrameFactory::CreateForWebState(
       web_state, client, bridge, app_locale, enable_download_manager);
 }
 
