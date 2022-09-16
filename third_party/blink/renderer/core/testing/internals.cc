@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/function_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "cc/layers/picture_layer.h"
@@ -1502,19 +1503,19 @@ static absl::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
 
 namespace {
 
-void addStyleableMarkerHelper(const Range* range,
+void AddStyleableMarkerHelper(const Range* range,
                               const String& underline_color_value,
                               const String& thickness_value,
                               const String& underline_style_value,
                               const String& text_color_value,
                               const String& background_color_value,
                               ExceptionState& exception_state,
-                              std::function<void(const EphemeralRange&,
-                                                 Color,
-                                                 ImeTextSpanThickness,
-                                                 ImeTextSpanUnderlineStyle,
-                                                 Color,
-                                                 Color)> create_marker) {
+                              base::FunctionRef<void(const EphemeralRange&,
+                                                     Color,
+                                                     ImeTextSpanThickness,
+                                                     ImeTextSpanUnderlineStyle,
+                                                     Color,
+                                                     Color)> create_marker) {
   DCHECK(range);
   range->OwnerDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
@@ -1562,7 +1563,7 @@ void Internals::addCompositionMarker(const Range* range,
                                      ExceptionState& exception_state) {
   DocumentMarkerController& document_marker_controller =
       range->OwnerDocument().Markers();
-  addStyleableMarkerHelper(
+  AddStyleableMarkerHelper(
       range, underline_color_value, thickness_value, underline_style_value,
       text_color_value, background_color_value, exception_state,
       [&document_marker_controller](const EphemeralRange& range,
@@ -1587,7 +1588,7 @@ void Internals::addActiveSuggestionMarker(const Range* range,
   String text_color_value = "transparent";
   DocumentMarkerController& document_marker_controller =
       range->OwnerDocument().Markers();
-  addStyleableMarkerHelper(
+  AddStyleableMarkerHelper(
       range, underline_color_value, thickness_value, underline_style_value,
       text_color_value, background_color_value, exception_state,
       [&document_marker_controller](const EphemeralRange& range,
@@ -1620,7 +1621,7 @@ void Internals::addSuggestionMarker(
 
   DocumentMarkerController& document_marker_controller =
       range->OwnerDocument().Markers();
-  addStyleableMarkerHelper(
+  AddStyleableMarkerHelper(
       range, underline_color_value, thickness_value, underline_style_value,
       text_color_value, background_color_value, exception_state,
       [&document_marker_controller, &suggestions, &suggestion_highlight_color](
