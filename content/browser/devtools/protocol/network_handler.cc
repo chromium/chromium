@@ -1327,8 +1327,7 @@ NetworkHandler::BuildProtocolReport(const net::ReportingReport& report) {
             (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
         .SetDepth(report.depth)
         .SetCompletedAttempts(report.attempts)
-        .SetBody(
-            std::make_unique<base::Value::Dict>(report.body->GetDict().Clone()))
+        .SetBody(std::make_unique<base::Value::Dict>(report.body.Clone()))
         .SetStatus(BuildReportStatus(report.status))
         .Build();
   }

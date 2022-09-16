@@ -56,8 +56,8 @@ struct StructTraits<network::mojom::ReportingApiReportDataView,
     return report.attempts;
   }
 
-  static const base::Value& body(const net::ReportingReport& report) {
-    return *report.body;
+  static const base::Value::Dict& body(const net::ReportingReport& report) {
+    return report.body;
   }
 
   static net::ReportingReport::Status status(

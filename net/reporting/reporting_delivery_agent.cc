@@ -57,7 +57,7 @@ std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
     report_value.Set("type", report->type);
     report_value.Set("url", report->url.spec());
     report_value.Set("user_agent", report->user_agent);
-    report_value.Set("body", report->body->Clone());
+    report_value.Set("body", report->body.Clone());
 
     reports_value.Append(std::move(report_value));
   }

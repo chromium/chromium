@@ -114,7 +114,7 @@ class ReportingCacheTest : public ReportingTestBase,
       int depth,
       base::TimeTicks queued,
       int attempts) {
-    const base::Value body_clone(body.Clone());
+    const base::Value::Dict body_clone(body.Clone());
 
     // The public API will only give us the (unordered) full list of reports in
     // the cache.  So we need to grab the list before we add, and the list after
@@ -135,7 +135,7 @@ class ReportingCacheTest : public ReportingTestBase,
         EXPECT_EQ(user_agent, report->user_agent);
         EXPECT_EQ(group, report->group);
         EXPECT_EQ(type, report->type);
-        EXPECT_EQ(body_clone, *report->body);
+        EXPECT_EQ(body_clone, report->body);
         EXPECT_EQ(depth, report->depth);
         EXPECT_EQ(queued, report->queued);
         EXPECT_EQ(attempts, report->attempts);

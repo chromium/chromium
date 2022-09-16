@@ -51,8 +51,7 @@ void ReportingCacheImpl::AddReport(
 
   auto report = std::make_unique<ReportingReport>(
       reporting_source, network_isolation_key, url, user_agent, group_name,
-      type, std::make_unique<base::Value>(std::move(body)), depth, queued,
-      attempts);
+      type, std::move(body), depth, queued, attempts);
 
   auto inserted = reports_.insert(std::move(report));
   DCHECK(inserted.second);
@@ -111,9 +110,7 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
     report_dict.Set("depth", report->depth);
     report_dict.Set("queued", NetLog::TickCountToString(report->queued));
     report_dict.Set("attempts", report->attempts);
-    if (report->body) {
-      report_dict.Set("body", report->body->Clone());
-    }
+    report_dict.Set("body", report->body.Clone());
     switch (report->status) {
       case ReportingReport::Status::DOOMED:
         report_dict.Set("status", "doomed");

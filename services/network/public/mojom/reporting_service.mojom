@@ -37,7 +37,7 @@ struct ReportingApiReport {
   // attempt.
   int32 attempts;
   // The body of the report.
-  mojo_base.mojom.DeprecatedDictionaryValue body;
+  mojo_base.mojom.DictionaryValue body;
   // The status of the report.
   ReportingApiReportStatus status;
 };
