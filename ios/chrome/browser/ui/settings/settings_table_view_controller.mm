@@ -774,13 +774,23 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     return _syncItem;
   }
 
-  TableViewDetailIconItem* syncItem =
-      [self detailItemWithType:SettingsItemTypeGoogleSync
-                             text:l10n_util::GetNSString(
-                                      IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE)
-                       detailText:nil
-                    iconImageName:nil
-          accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
+  TableViewDetailIconItem* syncItem = nil;
+  if (UseSymbols()) {
+    syncItem = [self detailItemWithType:SettingsItemTypeGoogleSync
+                                   text:l10n_util::GetNSString(
+                                            IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE)
+                             detailText:nil
+                                 symbol:nil
+                  symbolBackgroundColor:nil
+                accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
+  } else {
+    syncItem = [self detailItemWithType:SettingsItemTypeGoogleSync
+                                   text:l10n_util::GetNSString(
+                                            IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE)
+                             detailText:nil
+                          iconImageName:nil
+                accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
+  }
   [self updateSyncItem:syncItem];
   _syncItem = syncItem;
 
