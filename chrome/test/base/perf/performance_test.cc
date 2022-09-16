@@ -69,9 +69,9 @@ void CreateAndSetWallpaper() {
 
   base::RunLoop run_loop;
   TestWallpaperObserver observer(run_loop.QuitClosure());
-  WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
+  WallpaperControllerClientImpl::Get()->SetThirdPartyWallpaper(
       user_manager::StubAccountId(), /*file_name=*/"dummyfilename",
-      ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image, /*preview_mode=*/false);
+      ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image);
   run_loop.Run();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

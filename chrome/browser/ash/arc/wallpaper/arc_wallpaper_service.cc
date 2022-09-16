@@ -172,9 +172,6 @@ void ArcWallpaperService::OnWallpaperDecoded(const gfx::ImageSkia& image,
   const AccountId account_id =
       UserManager::Get()->GetPrimaryUser()->GetAccountId();
 
-  WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
-      ash::WallpaperType::kThirdParty);
-
   const bool result =
       WallpaperControllerClientImpl::Get()->SetThirdPartyWallpaper(
           account_id, kAndroidWallpaperFilename,

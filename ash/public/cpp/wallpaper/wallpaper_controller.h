@@ -194,7 +194,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
       const base::FilePath& device_policy_wallpaper_path) = 0;
 
   // Sets wallpaper from a third-party app (as opposed to the Chrome OS
-  // wallpaper picker).
+  // wallpaper picker). Chrome extensions and Arc++ call this function.
   // |account_id|: The user's account id.
   // |wallpaper_files_id|: The file id for |account_id|.
   // |file_name|: The name of the wallpaper file.
@@ -344,7 +344,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void UpdateDailyRefreshWallpaper(
       RefreshWallpaperCallback callback = base::DoNothing()) = 0;
 
-  // Sync wallpaper infos and images..
+  // Sync wallpaper infos and images.
   // |account_id|: The account id of the user.
   virtual void SyncLocalAndRemotePrefs(const AccountId& account_id) = 0;
 

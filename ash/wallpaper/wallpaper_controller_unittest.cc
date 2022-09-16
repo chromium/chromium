@@ -1470,6 +1470,7 @@ TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
   ClearWallpaperCount();
   EXPECT_TRUE(controller_->SetThirdPartyWallpaper(
       account_id_1, file_name_1, layout, third_party_wallpaper));
+  RunAllTasksUntilIdle();
   // Verify the wallpaper is shown.
   EXPECT_EQ(1, GetWallpaperCount());
   // Verify the user wallpaper info is updated.
@@ -1479,6 +1480,7 @@ TEST_F(WallpaperControllerTest, SetThirdPartyWallpaper) {
       base::FilePath(wallpaper_files_id_1).Append(file_name_1).value(), layout,
       WallpaperType::kCustomized, base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
+  EXPECT_EQ(account_id_1, client_.get_save_wallpaper_to_drive_fs_account_id());
 
   // Switch active user to |kUser2|, but set another third-party wallpaper for
   // |kUser1|; the operation should not be allowed, because |kUser1| is not the

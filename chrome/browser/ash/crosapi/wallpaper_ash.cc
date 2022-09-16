@@ -139,18 +139,14 @@ void WallpaperAsh::OnWallpaperDecoded(
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(immutable_bitmap);
   image.MakeThreadSafe();
 
-  WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
-      account_id, file_name, layout, image,
-      /*preview_mode=*/false);
+  WallpaperControllerClientImpl::Get()->SetThirdPartyWallpaper(
+      account_id, file_name, layout, image);
 
   // We need to generate thumbnail image anyway to make the current third party
   // wallpaper syncable through different devices.
   image.EnsureRepsForSupportedScales();
   std::vector<uint8_t> thumbnail_data = GenerateThumbnail(
       image, gfx::Size(kWallpaperThumbnailWidth, kWallpaperThumbnailHeight));
-
-  WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
-      ash::WallpaperType::kThirdParty);
 
   DCHECK(pending_callback_);
   std::move(pending_callback_).Run(thumbnail_data);

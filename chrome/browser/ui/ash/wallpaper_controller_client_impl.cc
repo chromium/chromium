@@ -321,19 +321,6 @@ WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
   return g_wallpaper_controller_client_instance;
 }
 
-void WallpaperControllerClientImpl::SetCustomWallpaper(
-    const AccountId& account_id,
-    const std::string& file_name,
-    ash::WallpaperLayout layout,
-    const gfx::ImageSkia& image,
-    bool preview_mode,
-    const std::string& file_path) {
-  if (!IsKnownUser(account_id))
-    return;
-  wallpaper_controller_->SetCustomWallpaper(account_id, file_name, layout,
-                                            image, preview_mode, file_path);
-}
-
 void WallpaperControllerClientImpl::SetOnlineWallpaper(
     const ash::OnlineWallpaperParams& params,
     ash::WallpaperController::SetWallpaperCallback callback) {
@@ -393,6 +380,7 @@ bool WallpaperControllerClientImpl::SetThirdPartyWallpaper(
     const std::string& file_name,
     ash::WallpaperLayout layout,
     const gfx::ImageSkia& image) {
+  RecordWallpaperSourceUMA(ash::WallpaperType::kThirdParty);
   return IsKnownUser(account_id) &&
          wallpaper_controller_->SetThirdPartyWallpaper(account_id, file_name,
                                                        layout, image);
