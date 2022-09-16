@@ -515,7 +515,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             mShadowOffset = mActivity.getResources().getDimensionPixelSize(
                     R.dimen.custom_tabs_shadow_offset);
         }
-        setTopMargins(mShadowOffset, getHandleHeight());
+        setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
         mToolbarCoordinator.requestLayout();
     }
 
@@ -673,7 +673,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
             // Toolbar should not be hidden by spinner screen.
             ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(MATCH_PARENT, 0);
-            int topMargin = mToolbarView.getHeight() + mShadowOffset;
+            int topMargin = mToolbarView.getHeight();
             // See the comment below for why we add handle height.
             if (!mWindowAboveNavbar) topMargin += getHandleHeight();
             lp.setMargins(0, topMargin, 0, 0);
@@ -998,7 +998,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (mPreFullscreenAttrs == null || !mWindowAboveNavbar) return;
         mActivity.getWindow().setAttributes(mPreFullscreenAttrs);
         mPreFullscreenAttrs = null;
-        setTopMargins(mShadowOffset, getHandleHeight());
+        setTopMargins(mShadowOffset, getHandleHeight() + mShadowOffset);
     }
 
     @Override
