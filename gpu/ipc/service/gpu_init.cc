@@ -384,20 +384,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     watchdog_thread_ = GpuWatchdogThread::Create(
         gpu_preferences_.watchdog_starts_backgrounded, "GpuWatchdog");
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
-
-#if BUILDFLAG(IS_WIN)
-    // This is a workaround for an occasional deadlock between watchdog and
-    // current thread. Watchdog hangs at thread initialization in
-    // __acrt_thread_attach() and current thread in std::setlocale(...)
-    // (during InitializeGLOneOff()). Source of the deadlock looks like an old
-    // UCRT bug that was supposed to be fixed in 10.0.10586 release of UCRT,
-    // but we might have come accross a not-yet-covered scenario.
-    // References:
-    // https://bugs.python.org/issue26624
-    // http://stackoverflow.com/questions/35572792/setlocale-stuck-on-windows
-    bool watchdog_started = watchdog_thread_->WaitUntilThreadStarted();
-    DCHECK(watchdog_started);
-#endif  // BUILDFLAG(IS_WIN)
   }
 
   bool attempted_startsandbox = false;
