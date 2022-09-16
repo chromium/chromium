@@ -311,7 +311,7 @@ void SanitizedImageSource::EncodeAndReplyAnimatedImage(
           [](const std::vector<gfx::WebpCodec::Frame>& frames) {
             SkWebpEncoder::Options options;
             options.fCompression = SkWebpEncoder::Compression::kLossless;
-            // Lower quality under kLosless compression means compress faster
+            // Lower quality under kLossless compression means compress faster
             // into larger files.
             options.fQuality = 0;
 
