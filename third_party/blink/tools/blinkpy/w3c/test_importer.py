@@ -671,6 +671,11 @@ class TestImporter(object):
                 'disable-site-isolation-trials'))
         tests_to_rebaseline.update(to_rebaseline)
 
+        # commit local changes so that rebaseline tool will be happy
+        if self.chromium_git.has_working_directory_changes():
+            message = 'Update test expectations'
+            self._commit_changes(message)
+
         self._expectations_updater.download_text_baselines(
             list(tests_to_rebaseline))
 
