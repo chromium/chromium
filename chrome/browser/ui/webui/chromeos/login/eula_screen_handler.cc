@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/eula_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/browser_process.h"
@@ -29,44 +28,18 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId EulaView::kScreenId;
+EulaScreenHandler::EulaScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-EulaScreenHandler::EulaScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.EulaScreen.userActed");
-}
+EulaScreenHandler::~EulaScreenHandler() = default;
 
-EulaScreenHandler::~EulaScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void EulaScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-  // TODO(https://crbug.com/1309022): pass variables below directly to
-  //                                  EulaScreenHandler::Show once show_on_init_
-  //                                  is gone.
+void EulaScreenHandler::Show(const bool is_cloud_ready_update_flow) {
   base::Value::Dict data;
-  data.Set("backButtonHidden", back_button_hidden_);
-  data.Set("securitySettingsShown", security_settings_hidden_);
+  data.Set("backButtonHidden", is_cloud_ready_update_flow);
+  data.Set("securitySettingsShown", is_cloud_ready_update_flow);
   ShowInWebUI(std::move(data));
 }
 
 void EulaScreenHandler::Hide() {
-}
-
-void EulaScreenHandler::Bind(EulaScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-  if (IsJavascriptAllowed())
-    InitializeDeprecated();
-}
-
-void EulaScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 std::string EulaScreenHandler::GetEulaOnlineUrl() {
@@ -127,16 +100,8 @@ void EulaScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
 #endif
 }
 
-void EulaScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed() || !screen_)
-    return;
-
-  CallJS("login.EulaScreen.setUsageStats", screen_->IsUsageStatsEnabled());
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
+void EulaScreenHandler::SetUsageStatsEnabled(bool enabled) {
+  CallExternalAPI("setUsageStats", enabled);
 }
 
 void EulaScreenHandler::ShowStatsUsageLearnMore() {
@@ -147,19 +112,11 @@ void EulaScreenHandler::ShowStatsUsageLearnMore() {
 }
 
 void EulaScreenHandler::ShowAdditionalTosDialog() {
-  CallJS("login.EulaScreen.showAdditionalTosDialog");
+  CallExternalAPI("showAdditionalTosDialog");
 }
 
 void EulaScreenHandler::ShowSecuritySettingsDialog() {
-  CallJS("login.EulaScreen.showSecuritySettingsDialog");
-}
-
-void EulaScreenHandler::HideSecuritySettingsInfo() {
-  security_settings_hidden_ = true;
-}
-
-void EulaScreenHandler::HideBackButton() {
-  back_button_hidden_ = true;
+  CallExternalAPI("showSecuritySettingsDialog");
 }
 
 void EulaScreenHandler::UpdateTpmDesc(
@@ -168,7 +125,7 @@ void EulaScreenHandler::UpdateTpmDesc(
       secure_module_used == ::login::SecureModuleUsed::TPM
           ? l10n_util::GetStringUTF16(IDS_EULA_TPM_DESCRIPTION)
           : l10n_util::GetStringUTF16(IDS_EULA_SECURE_MODULE_DESCRIPTION);
-  CallJS("login.EulaScreen.setTpmDesc", tpm_desc);
+  CallExternalAPI("setTpmDesc", tpm_desc);
 }
 
 }  // namespace chromeos

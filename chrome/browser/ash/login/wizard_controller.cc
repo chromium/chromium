@@ -591,7 +591,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnNetworkScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EulaScreen>(
-      oobe_ui->GetView<EulaScreenHandler>(),
+      oobe_ui->GetView<EulaScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnEulaScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateScreen>(

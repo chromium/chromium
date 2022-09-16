@@ -55,7 +55,8 @@ class EulaScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback);
+  EulaScreen(base::WeakPtr<EulaView> view,
+             const ScreenExitCallback& exit_callback);
 
   EulaScreen(const EulaScreen&) = delete;
   EulaScreen& operator=(const EulaScreen&) = delete;
@@ -71,10 +72,6 @@ class EulaScreen : public BaseScreen {
   // Returns true if usage statistics reporting is enabled.
   bool IsUsageStatsEnabled() const;
 
-  // This method is called, when view is being destroyed. Note, if model
-  // is destroyed earlier then it has to call SetModel(NULL).
-  void OnViewDestroyed(EulaView* view);
-
  protected:
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
@@ -83,7 +80,7 @@ class EulaScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // EulaView:
@@ -101,7 +98,7 @@ class EulaScreen : public BaseScreen {
   // it's destroyed.
   std::string tpm_password_;
 
-  EulaView* view_;
+  base::WeakPtr<EulaView> view_;
 
   ScreenExitCallback exit_callback_;
 };

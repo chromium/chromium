@@ -102,19 +102,15 @@ std::string EulaScreen::GetResultString(Result result) {
   }
 }
 
-EulaScreen::EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback)
+EulaScreen::EulaScreen(base::WeakPtr<EulaView> view,
+                       const ScreenExitCallback& exit_callback)
     : BaseScreen(EulaView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
 }
 
-EulaScreen::~EulaScreen() {
-  if (view_)
-    view_->Unbind();
-}
+EulaScreen::~EulaScreen() = default;
 
 bool EulaScreen::MaybeSkip(WizardContext& context) {
   // This should be kept in sync with `testapi_shouldSkipEula`. If the logic
@@ -154,11 +150,6 @@ bool EulaScreen::IsUsageStatsEnabled() const {
   return g_usage_statistics_reporting_enabled;
 }
 
-void EulaScreen::OnViewDestroyed(EulaView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
 void EulaScreen::ShowImpl() {
   // Command to own the TPM.
   // When --tpm-is-dynamic switch is set pre-enrollment TPM check relies on the
@@ -168,13 +159,12 @@ void EulaScreen::ShowImpl() {
         ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
   }
   if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
-    OnUserActionDeprecated(kUserActionAcceptButtonClicked);
+    base::Value::List args;
+    args.Append(kUserActionAcceptButtonClicked);
+    OnUserAction(args);
   } else if (view_) {
-    if (context()->is_cloud_ready_update_flow) {
-      view_->HideSecuritySettingsInfo();
-      view_->HideBackButton();
-    }
-    view_->Show();
+    view_->SetUsageStatsEnabled(IsUsageStatsEnabled());
+    view_->Show(context()->is_cloud_ready_update_flow);
   }
 }
 
@@ -183,9 +173,10 @@ void EulaScreen::HideImpl() {
     view_->Hide();
 }
 
-void EulaScreen::OnUserActionDeprecated(const std::string& action_id) {
+void EulaScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (!IsEulaUserAction(action_id)) {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
     return;
   }
   RecordUserAction(action_id);

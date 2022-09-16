@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/help_app_launcher.h"
@@ -23,21 +24,19 @@ namespace chromeos {
 // Interface between eula screen and its representation, either WebUI
 // or Views one. Note, do not forget to call OnViewDestroyed in the
 // dtor.
-class EulaView {
+class EulaView : public base::SupportsWeakPtr<EulaView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"oobe-eula-md"};
+  inline constexpr static StaticOobeScreenId kScreenId{"oobe-eula-md",
+                                                       "EulaScreen"};
 
-  virtual ~EulaView() {}
+  virtual ~EulaView() = default;
 
-  virtual void Show() = 0;
+  virtual void Show(const bool is_cloud_ready_update_flow) = 0;
   virtual void Hide() = 0;
-  virtual void Bind(ash::EulaScreen* screen) = 0;
-  virtual void Unbind() = 0;
+  virtual void SetUsageStatsEnabled(bool) = 0;
   virtual void ShowStatsUsageLearnMore() = 0;
   virtual void ShowAdditionalTosDialog() = 0;
   virtual void ShowSecuritySettingsDialog() = 0;
-  virtual void HideSecuritySettingsInfo() = 0;
-  virtual void HideBackButton() = 0;
 };
 
 // WebUI implementation of EulaScreenView. It is used to interact
@@ -54,21 +53,17 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   ~EulaScreenHandler() override;
 
   // EulaView implementation:
-  void Show() override;
+  void Show(const bool is_cloud_ready_update_flow) override;
   void Hide() override;
-  void Bind(ash::EulaScreen* screen) override;
-  void Unbind() override;
+  void SetUsageStatsEnabled(bool) override;
   void ShowStatsUsageLearnMore() override;
   void ShowAdditionalTosDialog() override;
   void ShowSecuritySettingsDialog() override;
-  void HideSecuritySettingsInfo() override;
-  void HideBackButton() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
-  void InitializeDeprecated() override;
 
  private:
   // Determines the online URL to use.
@@ -76,15 +71,6 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   std::string GetAdditionalToSUrl();
 
   void UpdateTpmDesc(::login::SecureModuleUsed secure_module_used);
-
-  ash::EulaScreen* screen_ = nullptr;
-
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
-
-  // Booleans to control parts of UI for different flows.
-  bool security_settings_hidden_ = false;
-  bool back_button_hidden_ = false;
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;

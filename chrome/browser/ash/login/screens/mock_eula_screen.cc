@@ -9,9 +9,9 @@ namespace ash {
 using ::testing::AtLeast;
 using ::testing::_;
 
-MockEulaScreen::MockEulaScreen(EulaView* view,
+MockEulaScreen::MockEulaScreen(base::WeakPtr<EulaView> view,
                                const ScreenExitCallback& exit_callback)
-    : EulaScreen(view, exit_callback) {}
+    : EulaScreen(std::move(view), exit_callback) {}
 
 MockEulaScreen::~MockEulaScreen() {}
 
@@ -19,23 +19,8 @@ void MockEulaScreen::ExitScreen(Result result) {
   exit_callback()->Run(result);
 }
 
-MockEulaView::MockEulaView() {
-  EXPECT_CALL(*this, MockBind(_)).Times(AtLeast(1));
-}
+MockEulaView::MockEulaView() = default;
 
-MockEulaView::~MockEulaView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockEulaView::Bind(EulaScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-void MockEulaView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
+MockEulaView::~MockEulaView() = default;
 
 }  // namespace ash

@@ -13,7 +13,8 @@ namespace ash {
 
 class MockEulaScreen : public EulaScreen {
  public:
-  MockEulaScreen(EulaView* view, const ScreenExitCallback& exit_callback);
+  MockEulaScreen(base::WeakPtr<EulaView> view,
+                 const ScreenExitCallback& exit_callback);
   ~MockEulaScreen() override;
 
   MOCK_METHOD(void, ShowImpl, ());
@@ -27,22 +28,13 @@ class MockEulaView : public EulaView {
   MockEulaView();
   ~MockEulaView() override;
 
-  void Bind(EulaScreen* screen) override;
-  void Unbind() override;
-
-  MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, Show, (const bool is_cloud_ready_update_flow), (override));
   MOCK_METHOD(void, Hide, (), (override));
 
-  MOCK_METHOD(void, MockBind, (EulaScreen * screen));
-  MOCK_METHOD(void, MockUnbind, ());
+  MOCK_METHOD(void, SetUsageStatsEnabled, (bool enabled), (override));
   MOCK_METHOD(void, ShowStatsUsageLearnMore, (), (override));
   MOCK_METHOD(void, ShowAdditionalTosDialog, (), (override));
   MOCK_METHOD(void, ShowSecuritySettingsDialog, (), (override));
-  MOCK_METHOD(void, HideSecuritySettingsInfo, (), (override));
-  MOCK_METHOD(void, HideBackButton, (), (override));
-
- private:
-  EulaScreen* screen_ = nullptr;
 };
 
 }  // namespace ash
