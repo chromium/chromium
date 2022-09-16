@@ -141,6 +141,8 @@ DlpFilesController::DlpFileDestination::DlpFileDestination(
     const DlpRulesManager::Component component)
     : component(component) {}
 
+DlpFilesController::DlpFileDestination::DlpFileDestination(
+    const DlpFileDestination&) = default;
 DlpFilesController::DlpFileDestination&
 DlpFilesController::DlpFileDestination::operator=(const DlpFileDestination&) =
     default;

@@ -111,6 +111,7 @@ class DlpFilesController {
     explicit DlpFileDestination(const dlp::DlpComponent component);
     explicit DlpFileDestination(const DlpRulesManager::Component component);
 
+    DlpFileDestination(const DlpFileDestination&);
     DlpFileDestination& operator=(const DlpFileDestination&);
     DlpFileDestination(DlpFileDestination&&);
     DlpFileDestination& operator=(DlpFileDestination&&);
