@@ -9,6 +9,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 
@@ -35,11 +36,11 @@ class USER_MANAGER_EXPORT UserDirectoryIntegrityManager {
 
   // Remove the mark previously placed in local state, meaning an auth factor
   // has been added.
-  void RecordAuthFactorAdded(const AccountId&);
+  void ClearPrefs();
 
-  // Check if the user has been incompletely created. i.e: if the local state
-  // has the given user marked in it.
-  std::string GetIncompleteUser();
+  // Check if a user has been incompletely created by looking for the
+  // presence of a mark associated with the user's email.
+  absl::optional<AccountId> GetIncompleteUser();
 
  private:
   PrefService* const local_state_;

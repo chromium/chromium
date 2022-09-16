@@ -700,7 +700,8 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
                    ash::features::kUseAuthsessionAuthentication)) {
       authenticator_ = new AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>(),
-          base::BindRepeating(&RecordKnownUser), IsEphemeralMountForced());
+          base::BindRepeating(&RecordKnownUser), IsEphemeralMountForced(),
+          g_browser_process->local_state());
     } else {
       authenticator_ =
           base::MakeRefCounted<ChromeCryptohomeAuthenticator>(consumer);

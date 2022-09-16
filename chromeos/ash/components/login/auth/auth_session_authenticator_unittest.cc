@@ -29,6 +29,10 @@
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service_factory.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/prefs/testing_pref_store.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -164,12 +168,19 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
     CryptohomeMiscClient::Shutdown();
   }
 
+  void RegisterPrefs() {
+    user_manager::UserDirectoryIntegrityManager::RegisterLocalStatePrefs(
+        local_state_.registry());
+  }
+
   void CreateAuthenticator(bool is_ephemeral_mount_enforced) {
     auto owned_safe_mode_delegate = std::make_unique<MockSafeModeDelegate>();
     safe_mode_delegate_ = owned_safe_mode_delegate.get();
+    RegisterPrefs();
     authenticator_ = base::MakeRefCounted<AuthSessionAuthenticator>(
         &auth_status_consumer_, std::move(owned_safe_mode_delegate),
-        /*user_recorder=*/base::DoNothing(), is_ephemeral_mount_enforced);
+        /*user_recorder=*/base::DoNothing(), is_ephemeral_mount_enforced,
+        &local_state_);
   }
 
   MockUserDataAuthClient& userdataauth() { return userdataauth_; }
@@ -204,6 +215,7 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
   scoped_refptr<AuthSessionAuthenticator> authenticator_;
   // Unowned (points to the object owned by `authenticator_`).
   MockSafeModeDelegate* safe_mode_delegate_ = nullptr;
+  TestingPrefServiceSimple local_state_;
 };
 
 // Test the `CompleteLogin()` method in the new regular user scenario.

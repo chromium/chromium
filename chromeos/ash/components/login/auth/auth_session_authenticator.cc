@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_names.h"
 
 namespace ash {
@@ -35,7 +36,8 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
     AuthStatusConsumer* consumer,
     std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
     base::RepeatingCallback<void(const AccountId&)> user_recorder,
-    bool is_ephemeral_mount_enforced)
+    bool is_ephemeral_mount_enforced,
+    PrefService* local_state)
     : Authenticator(consumer),
       is_ephemeral_mount_enforced_(is_ephemeral_mount_enforced),
       user_recorder_(std::move(user_recorder)),
@@ -44,7 +46,8 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
       auth_performer_(
           std::make_unique<AuthPerformer>(UserDataAuthClient::Get())),
       hibernate_manager_(std::make_unique<HibernateManager>()),
-      mount_performer_(std::make_unique<MountPerformer>()) {
+      mount_performer_(std::make_unique<MountPerformer>()),
+      local_state_(local_state) {
   DCHECK(safe_mode_delegate_);
   DCHECK(!user_recorder_.is_null());
 }
@@ -184,6 +187,24 @@ void AuthSessionAuthenticator::OnStartAuthSessionAfterStaleRemoval(
                           /*error=*/absl::nullopt);
 }
 
+void AuthSessionAuthenticator::RecordCreatingNewUser(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  user_manager::UserDirectoryIntegrityManager integrity_manager(local_state_);
+  integrity_manager.RecordCreatingNewUser(context->GetAccountId());
+  std::move(callback).Run(std::move(context),
+                          /*authentication_error=*/absl::nullopt);
+}
+
+void AuthSessionAuthenticator::RecordFirstAuthFactorAdded(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  user_manager::UserDirectoryIntegrityManager integrity_manager(local_state_);
+  integrity_manager.ClearPrefs();
+  std::move(callback).Run(std::move(context),
+                          /*authentication_error=*/absl::nullopt);
+}
+
 void AuthSessionAuthenticator::DoCompleteLogin(
     bool user_exists,
     std::unique_ptr<UserContext> context,
@@ -214,6 +235,9 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(base::BindOnce(&MountPerformer::MountEphemeralDirectory,
                                      mount_performer_->AsWeakPtr()));
     } else {  // New persistent user
+      steps.push_back(
+          base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
+                         weak_factory_.GetWeakPtr()));
       steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                      mount_performer_->AsWeakPtr()));
       steps.push_back(base::BindOnce(
@@ -237,6 +261,9 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
                                      auth_factor_editor_->AsWeakPtr()));
     }
+    steps.push_back(
+        base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
+                       weak_factory_.GetWeakPtr()));
   } else {  // existing user
     if (!challenge_response_auth) {
       // We are sure that password is correct, so intercept authentication

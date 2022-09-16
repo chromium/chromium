@@ -5,12 +5,14 @@
 #include "components/user_manager/user_directory_integrity_manager.h"
 
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_manager {
 
 namespace {
 
-const char kUserDirectoryIntegrityPref[] = "incomplete_login_user";
+const char kUserDirectoryIntegrityAccountPref[] =
+    "incomplete_login_user_account";
 
 }  // namespace
 
@@ -22,24 +24,28 @@ UserDirectoryIntegrityManager::~UserDirectoryIntegrityManager() = default;
 // static
 void UserDirectoryIntegrityManager::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kUserDirectoryIntegrityPref, {});
+  registry->RegisterStringPref(kUserDirectoryIntegrityAccountPref, {});
 }
 
 void UserDirectoryIntegrityManager::RecordCreatingNewUser(
     const AccountId& account_id) {
-  local_state_->SetString(kUserDirectoryIntegrityPref,
+  local_state_->SetString(kUserDirectoryIntegrityAccountPref,
                           account_id.GetUserEmail());
   local_state_->CommitPendingWrite();
 }
 
-void UserDirectoryIntegrityManager::RecordAuthFactorAdded(
-    const AccountId& account_id) {
-  local_state_->ClearPref(kUserDirectoryIntegrityPref);
+void UserDirectoryIntegrityManager::ClearPrefs() {
+  local_state_->ClearPref(kUserDirectoryIntegrityAccountPref);
   local_state_->CommitPendingWrite();
 }
 
-std::string UserDirectoryIntegrityManager::GetIncompleteUser() {
-  return local_state_->GetString(kUserDirectoryIntegrityPref);
+absl::optional<AccountId> UserDirectoryIntegrityManager::GetIncompleteUser() {
+  auto incomplete_user_email =
+      local_state_->GetString(kUserDirectoryIntegrityAccountPref);
+  return incomplete_user_email.empty()
+             ? absl::nullopt
+             : absl::optional<AccountId>(
+                   AccountId::FromUserEmail(incomplete_user_email));
 }
 
 }  // namespace user_manager
