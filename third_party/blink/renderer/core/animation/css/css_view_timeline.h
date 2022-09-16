@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/timeline_inset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
@@ -24,13 +25,14 @@ class CORE_EXPORT CSSViewTimeline : public ViewTimeline {
     STACK_ALLOCATED();
 
    public:
-    Options(Element* subject, TimelineAxis);
+    Options(Element* subject, TimelineAxis, TimelineInset);
 
    private:
     friend class CSSViewTimeline;
 
     Element* subject_;
     ScrollTimeline::ScrollDirection direction_;
+    ViewTimeline::Inset inset_;
   };
 
   CSSViewTimeline(Document*, Options&&);

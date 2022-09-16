@@ -1220,6 +1220,9 @@ crbug.com/1145970 inspector-protocol/css/container-queries/* [ Skip ]
 crbug.com/1145970 inspector-protocol/dom/container-queries/* [ Skip ]
 crbug.com/1145970 inspector-protocol/overlay/overlay-container-query.js [ Skip ]
 
+### scroll-animations
+crbug.com/1317765 external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Skip ]
+
 ### virtual/controls-refresh-hc/
 virtual/controls-refresh-hc/* [ Skip ]
 

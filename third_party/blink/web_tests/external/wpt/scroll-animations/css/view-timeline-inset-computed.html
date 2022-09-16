@@ -18,6 +18,8 @@ test_computed_value('view-timeline-inset', 'inherit', '1px 2px, auto 3px');
 test_computed_value('view-timeline-inset', 'unset', '0px');
 test_computed_value('view-timeline-inset', 'revert', '0px');
 test_computed_value('view-timeline-inset', '1px');
+test_computed_value('view-timeline-inset', '1%');
+test_computed_value('view-timeline-inset', 'calc(1% + 1px)');
 test_computed_value('view-timeline-inset', '1px 2px');
 test_computed_value('view-timeline-inset', '1px 2em', '1px 20px');
 test_computed_value('view-timeline-inset', 'calc(1px + 1em) 2px', '11px 2px');

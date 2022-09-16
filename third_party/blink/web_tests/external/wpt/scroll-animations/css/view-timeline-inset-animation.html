@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<title>Animations using view-timeline-inset</title>
+<link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#propdef-view-timeline-inset">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+<style>
+  @keyframes anim {
+    from { z-index: 0; }
+    to { z-index: 100; }
+  }
+  #scroller {
+    overflow: hidden;
+    width: 80px;
+    height: 100px;
+  }
+  #target {
+    margin: 150px;
+    width: 50px;
+    height: 50px;
+    z-index: -1;
+  }
+</style>
+<main id=main></main>
+<script>
+  function inflate(t, template) {
+    t.add_cleanup(() => main.replaceChildren());
+    main.append(template.content.cloneNode(true));
+  }
+  async function scrollTop(e, value) {
+    e.scrollTop = value;
+    await waitForNextFrame();
+  }
+  async function scrollLeft(e, value) {
+    e.scrollLeft = value;
+    await waitForNextFrame();
+  }
+  async function assertValueAt(scroller, target, args) {
+    if (args.scrollTop !== undefined)
+      await scrollTop(scroller, args.scrollTop);
+    if (args.scrollLeft !== undefined)
+      await scrollLeft(scroller, args.scrollLeft);
+    assert_equals(getComputedStyle(target).zIndex, args.expected.toString());
+  }
+</script>
+
+<!--
+  The scroller is 80x100px.
+  The target is 50x50px with a 150px margin.
+-->
+
+<template id=test_one_value>
+  <style>
+    #target {
+      view-timeline: t1;
+      view-timeline-inset: 10px;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller class=vertical>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_one_value);
+    await assertValueAt(scroller, target, { scrollTop:50, expected:-1 });
+    await assertValueAt(scroller, target, { scrollTop:50 + 10, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollTop:125, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollTop:200 - 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollTop:200, expected:-1 });
+  }, 'view-timeline-inset with one value');
+</script>
+
+<template id=test_two_values>
+  <style>
+    #target {
+      view-timeline: t1;
+      view-timeline-inset: 10px 20px;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller class=vertical>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_two_values);
+    await assertValueAt(scroller, target, { scrollTop:50, expected:-1 });
+    await assertValueAt(scroller, target, { scrollTop:50 + 20, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollTop:130, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollTop:200 - 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollTop:200, expected:-1 });
+  }, 'view-timeline-inset with two values');
+</script>
+
+<template id=test_em_values>
+  <style>
+    #target {
+      font-size: 10px;
+      view-timeline: t1;
+      view-timeline-inset: 10px 2em;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller class=vertical>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_em_values);
+    await assertValueAt(scroller, target, { scrollTop:50, expected:-1 });
+    await assertValueAt(scroller, target, { scrollTop:50 + 20, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollTop:130, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollTop:200 - 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollTop:200, expected:-1 });
+  }, 'view-timeline-inset with em values');
+</script>
+
+<template id=test_percentage_values>
+  <style>
+    #target {
+      font-size: 10px;
+      view-timeline: t1;
+      view-timeline-inset: calc(5px + max(1%, 5%)) 20%;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller class=vertical>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_percentage_values);
+    await assertValueAt(scroller, target, { scrollTop:50, expected:-1 });
+    await assertValueAt(scroller, target, { scrollTop:50 + 20, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollTop:130, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollTop:200 - 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollTop:200, expected:-1 });
+  }, 'view-timeline-inset with percentage values');
+</script>
+
+<template id=test_outset>
+  <style>
+    #target {
+      view-timeline: t1;
+      view-timeline-inset: -10px -20px;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller class=vertical>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_outset);
+    await assertValueAt(scroller, target, { scrollTop:20, expected:-1 });
+    await assertValueAt(scroller, target, { scrollTop:50 - 20, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollTop:120, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollTop:200 + 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollTop:220, expected:-1 });
+  }, 'view-timeline-inset with negative values');
+</script>
+
+<template id=test_horizontal>
+  <style>
+    #target {
+      view-timeline: t1 horizontal;
+      view-timeline-inset: 10px 20px;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_horizontal);
+    await assertValueAt(scroller, target, { scrollLeft:20, expected:-1 });
+    await assertValueAt(scroller, target, { scrollLeft:70 + 20, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollLeft:140, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollLeft:200 - 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollLeft:200, expected:-1 });
+  }, 'view-timeline-inset with horizontal scroller');
+</script>
+
+<template id=test_block>
+  <style>
+    #target {
+      view-timeline: t1 block;
+      view-timeline-inset: 10px 20px;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_block);
+    await assertValueAt(scroller, target, { scrollTop:50, expected:-1 });
+    await assertValueAt(scroller, target, { scrollTop:50 + 20, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollTop:130, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollTop:200 - 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollTop:200, expected:-1 });
+  }, 'view-timeline-inset with block scroller');
+</script>
+
+<template id=test_inline>
+  <style>
+    #target {
+      view-timeline: t1 inline;
+      view-timeline-inset: 10px 20px;
+      animation: anim 1s linear t1;
+    }
+  </style>
+  <div id=scroller>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, test_inline);
+    await assertValueAt(scroller, target, { scrollLeft:20, expected:-1 });
+    await assertValueAt(scroller, target, { scrollLeft:70 + 20, expected:0 }); // 0%
+    await assertValueAt(scroller, target, { scrollLeft:140, expected:50 }); // 50%
+    await assertValueAt(scroller, target, { scrollLeft:200 - 10, expected:100 }); // 100%
+    await assertValueAt(scroller, target, { scrollLeft:200, expected:-1 });
+  }, 'view-timeline-inset with inline scroller');
+</script>

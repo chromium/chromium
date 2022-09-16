@@ -27,9 +27,26 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // https://drafts.csswg.org/scroll-animations-1/#view-timeline-inset
+  struct Inset {
+   public:
+    Inset() = default;
+    Inset(const Length& start_side, const Length& end_side)
+        : start_side(start_side), end_side(end_side) {}
+    bool operator==(const Inset& o) const {
+      return start_side == o.start_side && end_side == o.end_side;
+    }
+    bool operator!=(const Inset& o) const { return !(*this == o); }
+    // Note these represent the logical start/end sides of the source scroller,
+    // not the start/end of the timeline.
+    // https://drafts.csswg.org/css-writing-modes-4/#css-start
+    Length start_side;
+    Length end_side;
+  };
+
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
 
-  ViewTimeline(Document*, Element* subject, ScrollDirection orientation);
+  ViewTimeline(Document*, Element* subject, ScrollDirection orientation, Inset);
 
   bool IsViewTimeline() const override { return true; }
 
@@ -37,9 +54,14 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   Element* subject() const { return ReferenceElement(); }
 
  protected:
+  const Inset& GetInset() const { return inset_; }
+
   absl::optional<ScrollOffsets> CalculateOffsets(
       PaintLayerScrollableArea* scrollable_area,
       ScrollOrientation physical_orientation) const override;
+
+ private:
+  Inset inset_;
 };
 
 template <>

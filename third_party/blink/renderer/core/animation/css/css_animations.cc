@@ -499,7 +499,7 @@ void CSSAnimations::CalculateViewTimelineUpdate(CSSAnimationUpdate& update,
                                                 const ComputedStyle& style) {
   const Vector<AtomicString>& names = style.ViewTimelineName();
   const Vector<TimelineAxis>& axes = style.ViewTimelineAxis();
-  // TODO(crbug.com/1344151): view-timeline-inset
+  const Vector<TimelineInset>& insets = style.ViewTimelineInset();
 
   const CSSAnimations::TimelineData* timeline_data =
       GetTimelineData(animating_element);
@@ -523,9 +523,12 @@ void CSSAnimations::CalculateViewTimelineUpdate(CSSAnimationUpdate& update,
       continue;
     TimelineAxis axis = axes.IsEmpty() ? TimelineAxis::kBlock
                                        : axes[std::min(i, axes.size() - 1)];
+    const TimelineInset& inset = insets.IsEmpty()
+                                     ? TimelineInset()
+                                     : insets[std::min(i, insets.size() - 1)];
     CSSViewTimeline* existing_timeline =
         timeline_data ? timeline_data->GetViewTimeline(name) : nullptr;
-    CSSViewTimeline::Options options(&animating_element, axis);
+    CSSViewTimeline::Options options(&animating_element, axis, inset);
     if (existing_timeline && existing_timeline->Matches(options)) {
       // Don't clear this timeline after all.
       changed_timelines.erase(name);

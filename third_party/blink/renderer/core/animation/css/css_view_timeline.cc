@@ -9,18 +9,25 @@
 
 namespace blink {
 
-CSSViewTimeline::Options::Options(Element* subject, TimelineAxis axis)
+CSSViewTimeline::Options::Options(Element* subject,
+                                  TimelineAxis axis,
+                                  TimelineInset inset)
     : subject_(subject),
-      direction_(CSSScrollTimeline::Options::ComputeScrollDirection(axis)) {}
+      direction_(CSSScrollTimeline::Options::ComputeScrollDirection(axis)),
+      inset_(inset.GetStart(), inset.GetEnd()) {}
 
 CSSViewTimeline::CSSViewTimeline(Document* document, Options&& options)
-    : ViewTimeline(document, options.subject_, options.direction_) {
+    : ViewTimeline(document,
+                   options.subject_,
+                   options.direction_,
+                   options.inset_) {
   SnapshotState();
 }
 
 bool CSSViewTimeline::Matches(const Options& options) const {
   return (subject() == options.subject_) &&
-         (GetOrientation() == options.direction_);
+         (GetOrientation() == options.direction_) &&
+         (GetInset() == options.inset_);
 }
 
 }  // namespace blink

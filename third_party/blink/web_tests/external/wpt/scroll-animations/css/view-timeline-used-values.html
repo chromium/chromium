@@ -68,3 +68,32 @@
     assert_equals(getComputedStyle(target).zIndex, '35');
   }, 'Use the last value from view-timeline-axis if omitted');
 </script>
+
+<template id=omitted_inset>
+  <style>
+    #target {
+      view-timeline-name: t1, t2; /* Two items */
+      view-timeline-inset: 100px; /* One item */
+      animation: anim 1s linear t2;
+    }
+  </style>
+  <div id=scroller class=scroller>
+    <div id=target></div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, omitted_inset);
+    assert_equals(getComputedStyle(target).zIndex, '-1');
+
+    // 0% is normally at at scrollTop = -100
+    // 100% is normally at scrollTop/Left = 300
+    // However, we have a 100px inset in both ends, which makes the
+    // range [0, 200].
+
+    await scrollTop(scroller, 0);
+    assert_equals(getComputedStyle(target).zIndex, '0');
+    await scrollTop(scroller, 100); // 50%
+    assert_equals(getComputedStyle(target).zIndex, '50');
+  }, 'Use the last value from view-timeline-inset if omitted');
+</script>

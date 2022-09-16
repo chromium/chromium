@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
 namespace blink {
 
@@ -31,6 +32,18 @@ double ComputeOffset(LayoutBox* subject,
     return point.y() - source_element->ClientTopNoLayout();
 }
 
+double ComputeInset(const Length& inset, double viewport_size) {
+  if (inset.IsFixed())
+    return inset.Pixels();
+  if (inset.IsPercent())
+    return (viewport_size * (inset.Percent() / 100.0));
+  if (inset.IsCalculated())
+    return inset.GetCalculationValue().Evaluate(ClampTo<float>(viewport_size));
+  // TODO(crbug.com/1344151): Support 'auto'.
+  DCHECK(inset.IsAuto());
+  return 0;
+}
+
 }  // end namespace
 
 ViewTimeline* ViewTimeline::Create(Document& document,
@@ -50,19 +63,21 @@ ViewTimeline* ViewTimeline::Create(Document& document,
     document.UpdateStyleAndLayoutForNode(subject,
                                          DocumentUpdateReason::kJavaScript);
   }
-  ViewTimeline* view_timeline =
-      MakeGarbageCollected<ViewTimeline>(&document, subject, orientation);
+  ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
+      &document, subject, orientation, Inset());
   view_timeline->SnapshotState();
   return view_timeline;
 }
 
 ViewTimeline::ViewTimeline(Document* document,
                            Element* subject,
-                           ScrollDirection orientation)
+                           ScrollDirection orientation,
+                           Inset inset)
     : ScrollTimeline(document,
                      ReferenceType::kNearestAncestor,
                      subject,
-                     orientation) {
+                     orientation),
+      inset_(inset) {
   // Ensure that the timeline stays alive as long as the subject.
   if (subject)
     subject->RegisterScrollTimeline(this);
@@ -91,8 +106,17 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
     viewport_size = scrollable_area->VisibleScrollSnapportRect().Height();
   }
 
-  double start_offset = target_offset - viewport_size;
-  double end_offset = target_offset + target_size;
+  // Note that the end_side_inset is used to adjust the start offset,
+  // and the start_side_inset is used to adjust the end offset.
+  // This is because "start side" refers to logical start side [1] of the
+  // source box, where as "start offset" refers to the start of the timeline,
+  // and similarly for end side/offset.
+  // [1] https://drafts.csswg.org/css-writing-modes-4/#css-start
+  double end_side_inset = ComputeInset(inset_.end_side, viewport_size);
+  double start_side_inset = ComputeInset(inset_.start_side, viewport_size);
+
+  double start_offset = target_offset - viewport_size + end_side_inset;
+  double end_offset = target_offset + target_size - start_side_inset;
   return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
 }
 
