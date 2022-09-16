@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/session/chrome_session_manager.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -13,9 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/ash/login/session/chrome_session_manager.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -24,23 +23,23 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/google/google_brand_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chrome/common/chrome_switches.h"
-#include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
-#include "chromeos/ash/components/dbus/rmad/rmad_client.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+
+#if BUILDFLAG(ENABLE_RLZ)
+#include "chrome/browser/ash/login/session/user_session_initializer.h"
+#include "chrome/browser/google/google_brand_chromeos.h"
+#include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/user_manager/user_names.h"
+#endif  // BUILDFLAG(ENABLE_RLZ)
 
 namespace ash {
 namespace system {
