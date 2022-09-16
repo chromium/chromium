@@ -116,6 +116,12 @@ class DataPipeProducer::SequenceState
       DCHECK_LE(bytes_transferred_, data_source_->GetLength());
       const uint64_t max_data_size =
           data_source_->GetLength() - bytes_transferred_;
+      if (max_data_size == 0) {
+        // There's no more data to transfer.
+        Finish(MOJO_RESULT_OK);
+        return;
+      }
+
       if (static_cast<uint64_t>(size) > max_data_size)
         size = static_cast<uint32_t>(max_data_size);
 
@@ -140,13 +146,6 @@ class DataPipeProducer::SequenceState
       }
 
       bytes_transferred_ += result.bytes_read;
-
-      if (result.bytes_read < read_buffer.size()) {
-        // DataSource::Read makes a best effort to read all requested bytes. We
-        // reasonably assume if it fails to read what we ask for, we've hit EOF.
-        Finish(MOJO_RESULT_OK);
-        return;
-      }
     }
   }
 
