@@ -6,19 +6,20 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <iterator>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/string_matching/acronym_matcher.h"
 #include "chromeos/ash/components/string_matching/diacritic_utils.h"
 #include "chromeos/ash/components/string_matching/prefix_matcher.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::string_matching {
 
@@ -41,8 +42,8 @@ std::vector<std::u16string> ProcessAndSort(const TokenizedString& text) {
 
 }  // namespace
 
-FuzzyTokenizedStringMatch::~FuzzyTokenizedStringMatch() {}
-FuzzyTokenizedStringMatch::FuzzyTokenizedStringMatch() {}
+FuzzyTokenizedStringMatch::~FuzzyTokenizedStringMatch() = default;
+FuzzyTokenizedStringMatch::FuzzyTokenizedStringMatch() = default;
 
 double FuzzyTokenizedStringMatch::TokenSetRatio(const TokenizedString& query,
                                                 const TokenizedString& text,
@@ -206,16 +207,34 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
 }
 
 double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
-                                                const TokenizedString& text) {
+                                                const TokenizedString& text,
+                                                bool use_acronym_matcher) {
   string_matching::PrefixMatcher match(query, text);
   match.Match();
-  return 1.0 - std::pow(0.5, match.relevance());
+  double relevance = 0.0;
+
+  // TODO(crbug.com/1336160): Acronym matching still exists in prefix matcher,
+  // and it is redundant to calculate it twice. Acronym matcher is added here
+  // and we should still get the same relevance score as before. The acronym
+  // matching will be removed from prefix matcher in the following CL.
+
+  // TODO(crbug.com/1336160): Consider refactoring acronym matching to be
+  // separate from FuzzyTokenizedStringMatch.
+  if (use_acronym_matcher) {
+    AcronymMatcher acronym_match = AcronymMatcher(query, text);
+    relevance = std::max(match.relevance(), acronym_match.CalculateRelevance());
+  } else {
+    relevance = match.relevance();
+  }
+
+  return 1.0 - std::pow(0.5, relevance);
 }
 
 double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
                                             const TokenizedString& text_input,
                                             bool use_weighted_ratio,
-                                            bool strip_diacritics) {
+                                            bool strip_diacritics,
+                                            bool use_acronym_matcher) {
   absl::optional<TokenizedString> stripped_query;
   absl::optional<TokenizedString> stripped_text;
   if (strip_diacritics) {
@@ -255,7 +274,7 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
     return false;
   }
 
-  const double prefix_score = PrefixMatcher(query, text);
+  const double prefix_score = PrefixMatcher(query, text, use_acronym_matcher);
 
   if (use_weighted_ratio) {
     // If WeightedRatio is used, |relevance_| is the average of WeightedRatio

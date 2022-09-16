@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 
-#include "base/gtest_prod_util.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "ui/gfx/range/range.h"
 
@@ -73,16 +72,18 @@ class FuzzyTokenizedStringMatch {
   // Since prefix match should always be favored over other matches, this
   // function is dedicated to calculate a prefix match score in range of [0, 1]
   // using PrefixMatcher class.
-  // This score has two components: first character match and whole prefix
-  // match.
+  // This score has two components: first character match (aka acronym match)
+  // and whole prefix match.
   static double PrefixMatcher(const TokenizedString& query,
-                              const TokenizedString& text);
+                              const TokenizedString& text,
+                              bool use_acronym_matcher = false);
 
   // Calculates and returns the relevance score of |query| relative to |text|.
   double Relevance(const TokenizedString& query,
                    const TokenizedString& text,
                    bool use_weighted_ratio,
-                   bool strip_diacritics = false);
+                   bool strip_diacritics = false,
+                   bool use_acronym_matcher = false);
   const Hits& hits() const { return hits_; }
 
  private:
