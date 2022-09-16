@@ -14,7 +14,6 @@ group("closure_compile") {
     "network_health:closure_compile_module",
     "quick_unlock:closure_compile_module",
     "smb_shares:closure_compile_module",
-    "traffic_counters:closure_compile_module",
   ]
 }
 
@@ -26,6 +25,5 @@ group("web_components") {
     "network_health:web_components",
     "quick_unlock:web_components",
     "smb_shares:web_components",
-    "traffic_counters:web_components",
   ]
 }

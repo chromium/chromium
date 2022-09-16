@@ -32,6 +32,7 @@ web_component_files = [
   "multidevice_setup/setup_succeeded_page.js",
   "multidevice_setup/start_setup_page.js",
   "multidevice_setup/ui_page.js",
+  "traffic_counters/traffic_counters.js",
 ]
 
 non_web_component_files = [
@@ -47,6 +48,7 @@ non_web_component_files = [
   "post_message_api/post_message_api_client.js",
   "post_message_api/post_message_api_request_handler.js",
   "post_message_api/post_message_api_server.js",
+  "traffic_counters/traffic_counters_adapter.js",
 ]
 
 icons_html_files = [
@@ -161,12 +163,15 @@ ts_definitions("generate_definitions") {
 }
 
 checked_in_dts_files = [
-  "cr_picture/cr_camera.d.ts",
-  "cr_picture/cr_picture_pane.d.ts",
   "fake_method_resolver.d.ts",
   "page_toolbar.d.ts",
   "navigation_view_panel.d.ts",
   "navigation_selector.d.ts",
+
+  "cr_picture/cr_camera.d.ts",
+  "cr_picture/cr_picture_pane.d.ts",
+  "traffic_counters/traffic_counters_adapter.d.ts",
+  "traffic_counters/traffic_counters.d.ts",
 ]
 
 copy("copy_checked_in_dts_files") {
@@ -180,6 +185,7 @@ group("closure_compile") {
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",
     "post_message_api:closure_compile",
+    "traffic_counters:closure_compile_module",
   ]
 }
 
