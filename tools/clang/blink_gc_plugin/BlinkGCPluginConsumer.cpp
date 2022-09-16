@@ -427,7 +427,7 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
   // If this is a non-abstract class check that it is dispatched to.
   // TODO: Create a global variant of this local check. We can only check if
   // the dispatch body is known in this compilation unit.
-  if (info->IsConsideredAbstract(options_.fix_bugs_of_is_considered_abstract))
+  if (info->IsConsideredAbstract())
     return;
 
   const FunctionDecl* defn;

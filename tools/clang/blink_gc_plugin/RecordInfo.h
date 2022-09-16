@@ -114,7 +114,7 @@ class RecordInfo {
   bool DeclaresLocalTraceMethod();
   TracingStatus NeedsTracing(Edge::NeedsTracingOption);
   clang::CXXMethodDecl* InheritsNonVirtualTrace();
-  bool IsConsideredAbstract(bool fix_bugs);
+  bool IsConsideredAbstract();
 
   static clang::CXXRecordDecl* GetDependentTemplatedDecl(const clang::Type&);
 

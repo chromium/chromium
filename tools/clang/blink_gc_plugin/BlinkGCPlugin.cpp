@@ -44,7 +44,7 @@ class BlinkGCPluginAction : public PluginASTAction {
       } else if (arg == "enable-members-on-stack-check") {
         options_.enable_members_on_stack_check = true;
       } else if (arg == "fix-bugs-of-is-considered-abstract") {
-        options_.fix_bugs_of_is_considered_abstract = true;
+        // This flag is now always enabled. TODO(wangxianzhu): Remove this flag.
       } else {
         llvm::errs() << "Unknown blink-gc-plugin argument: " << arg << "\n";
         return false;

@@ -382,8 +382,8 @@ bool RecordInfo::DeclaresLocalTraceMethod() {
 
 // A (non-virtual) class is considered abstract in Blink if it has no implicit
 // default constructor, no public constructors and no public create methods.
-bool RecordInfo::IsConsideredAbstract(bool fix_bugs) {
-  if (fix_bugs && record()->needsImplicitDefaultConstructor())
+bool RecordInfo::IsConsideredAbstract() {
+  if (record()->needsImplicitDefaultConstructor())
     return false;
   for (CXXRecordDecl::ctor_iterator it = record_->ctor_begin();
        it != record_->ctor_end();
@@ -394,10 +394,8 @@ bool RecordInfo::IsConsideredAbstract(bool fix_bugs) {
   for (CXXRecordDecl::method_iterator it = record_->method_begin();
        it != record_->method_end();
        ++it) {
-    if (it->getNameAsString() == kCreateName &&
-        (!fix_bugs || it->getAccess() == AS_public)) {
+    if (it->getNameAsString() == kCreateName && it->getAccess() == AS_public)
       return false;
-    }
   }
   return true;
 }
