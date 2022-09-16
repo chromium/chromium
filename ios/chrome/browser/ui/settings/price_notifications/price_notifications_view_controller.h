@@ -24,6 +24,7 @@
 
 @end
 
+// View controller for Price Notifications setting.
 @interface PriceNotificationsViewController
     : SettingsRootTableViewController <PriceNotificationsConsumer,
                                        SettingsControllerProtocol>
