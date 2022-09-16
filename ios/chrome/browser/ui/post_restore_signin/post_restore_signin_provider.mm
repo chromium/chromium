@@ -18,7 +18,9 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation PostRestoreSignInProvider
+@implementation PostRestoreSignInProvider {
+  PromoStyleViewController* _viewController;
+}
 
 #pragma mark - PromoProtocol
 
@@ -88,8 +90,13 @@
   // instead pass `userGivenName` off ChromeIdentity.
   NSString* userGivenName = @"Elisa";
 
-  return [[PostRestoreSignInViewController alloc]
+  if (_viewController)
+    return _viewController;
+
+  _viewController = [[PostRestoreSignInViewController alloc]
       initWithUserGivenName:userGivenName];
+
+  return _viewController;
 }
 
 #pragma mark - StandardPromoActionHandler
