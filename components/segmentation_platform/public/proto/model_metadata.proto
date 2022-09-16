@@ -19,8 +19,9 @@ import "components/segmentation_platform/public/proto/types.proto";
 // |input_features| field.
 // Version 2 supports training data output collection in |training_outputs|
 // field.
+// Version 3 supports trigger configurations for training data collection.
 enum CurrentVersion {
-  METADATA_VERSION = 1;
+  METADATA_VERSION = 2;
 }
 
 // Version information for segmentation models.
@@ -206,6 +207,42 @@ message InputFeature {
 // iterate on different output candidates and select the final output generator.
 message TrainingOutputs {
   repeated TrainingOutput outputs = 1;
+
+  // Config for triggering the training outputs data collection for the current
+  // model.
+  message TriggerConfig {
+    // Describes how the training outputs are collected.
+    enum DecisionType {
+      UNKNOWN = 0;
+      // The on demand scheduler will trigger training data collection when the
+      // client asks for a model execution with input context.
+      ONDEMAND = 1;
+      // The periodic scheduler will trigger training data collection everyday.
+      // Currently this period is fixed on the client to 1 day.
+      PERIODIC = 2;
+    }
+    optional DecisionType decision_type = 1;
+
+    message ObservationTrigger {
+      oneof trigger {
+        // The delay, in seconds, to collect output tensors after input tensors
+        // are collected. For example, output labels can be collected one week
+        // after input tensors are collected. Set to 0 if output tensors need to
+        // be collected in the same time period as input tensors.
+        uint64 delay_sec = 1;
+        // The user action or histogram to trigger a training data output
+        // collection. Note: Only the name and type should be used with
+        // bucket_duration = 0.
+        // TODO(crbug.com/1364292): Figure out how to include the trigger as one
+        // of the outputs automatically.
+        UMAOutput uma_trigger = 2;
+      }
+    }
+    // List of triggers, whichever is hit first is used to upload the training
+    // data.
+    repeated ObservationTrigger observation_trigger = 2;
+  }
+  optional TriggerConfig trigger_config = 2;
 }
 
 // Generic type to define how to generate the training data output.
@@ -295,7 +332,8 @@ message SegmentationModelMetadata {
   // collected. For example, output labels can be collected one week after input
   // tensors are collected. If not specified, output tensors are collected in
   // the same time period as input tensors.
-  optional int64 output_collection_delay_sec = 12;
+  // DEPRECATED: optional int64 output_collection_delay_sec = 12;
+  reserved 12;
 
   // Whether the client should upload the input and output tensors through UKM.
   optional bool upload_tensors = 13;

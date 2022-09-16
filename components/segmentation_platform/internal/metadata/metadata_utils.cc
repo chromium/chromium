@@ -367,11 +367,6 @@ std::string SegmetationModelMetadataToString(
     result.append(base::StringPrintf("result_time_to_live:%" PRId64 ", ",
                                      model_metadata.result_time_to_live()));
   }
-  if (model_metadata.has_output_collection_delay_sec()) {
-    result.append(
-        base::StringPrintf("output_collection_delay_sec:%" PRId64 ", ",
-                           model_metadata.output_collection_delay_sec()));
-  }
   if (model_metadata.has_upload_tensors()) {
     result.append(
         base::StringPrintf("upload_tensors: %s",
