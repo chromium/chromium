@@ -1177,8 +1177,9 @@ const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// TODO(https://crbug.com/1276864): Delete this flag.
 const base::Feature kBackForwardCacheAppBanner{
-    "BackForwardCacheAppBanner", base::FEATURE_DISABLED_BY_DEFAULT};
+    "BackForwardCacheAppBanner", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kBackForwardCacheEnabledForNonPluginEmbed{
     "BackForwardCacheEnabledForNonPluginEmbed",
