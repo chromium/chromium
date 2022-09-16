@@ -314,9 +314,14 @@ StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
   return StringView(uchar, length);
 }
 
-String ToBlinkString(int value) {
-  // Cache of small strings. Most numbers used are <= 100. Even if they aren't
-  // used there's very little cost in using the space.
+// Fast but non thread-safe version.
+static String ToBlinkStringFast(int value) {
+  // Caching of small strings below is not thread safe: newly constructed
+  // AtomicString are not safely published.
+  DCHECK(IsMainThread());
+
+  // Most numbers used are <= 100. Even if they aren't used there's very little
+  // cost in using the space.
   const int kLowNumbers = 100;
   DEFINE_STATIC_LOCAL(Vector<AtomicString>, low_numbers, (kLowNumbers + 1));
   String web_core_string;
@@ -330,6 +335,14 @@ String ToBlinkString(int value) {
     web_core_string = String::Number(value);
   }
   return web_core_string;
+}
+
+String ToBlinkString(int value) {
+  // If we are on the main thread (this should always true for non-workers),
+  // call the faster one.
+  if (IsMainThread())
+    return ToBlinkStringFast(value);
+  return String::Number(value);
 }
 
 }  // namespace blink
