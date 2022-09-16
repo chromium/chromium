@@ -1654,17 +1654,15 @@ IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
   ExpectEagerlyReadCacheResponse(std::move(response));
 }
 
-// TODO(crbug.com/1364167): Test is failing on various builders.
 IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
-                       DISABLED_CacheMatchInUnrelatedFetchEvent) {
+                       CacheMatchInUnrelatedFetchEvent) {
   blink::mojom::FetchAPIResponsePtr response;
   SetupServiceWorkerAndDoFetch(kOtherURL, &response);
   ExpectNormalCacheResponse(std::move(response));
 }
 
-// TODO(crbug.com/1364167): Test is failing on various builders.
 IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
-                       DISABLED_CacheMatchInRelatedFetchEventWithRangeRequest) {
+                       CacheMatchInRelatedFetchEventWithRangeRequest) {
   blink::mojom::FetchAPIResponsePtr response;
   SetupServiceWorkerAndDoFetch(kCacheMatchURL, "bytes=0-8", &response);
   EXPECT_TRUE(response);

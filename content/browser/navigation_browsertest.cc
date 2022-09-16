@@ -6128,9 +6128,8 @@ class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/1364167): Test is failing on various builders.
 IN_PROC_BROWSER_TEST_F(CacheTransparencyNavigationBrowserTest,
-                       DISABLED_SuccessfulPervasivePayload) {
+                       SuccessfulPervasivePayload) {
   GURL url_main_document =
       embedded_test_server()->GetURL("/cache_transparency/pervasive.html");
 
