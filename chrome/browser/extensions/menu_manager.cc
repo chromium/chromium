@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/menu_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -15,6 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -462,10 +462,8 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
       return false;
     }
     MenuItem::OwnedList& list = i->second;
-    auto j = std::find_if(list.begin(), list.end(),
-                          [child_ptr](const std::unique_ptr<MenuItem>& item) {
-                            return item.get() == child_ptr;
-                          });
+    auto j =
+        base::ranges::find(list, child_ptr, &std::unique_ptr<MenuItem>::get);
     if (j == list.end()) {
       NOTREACHED();
       return false;

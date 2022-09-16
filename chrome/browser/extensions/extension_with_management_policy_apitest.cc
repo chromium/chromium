@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
+
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -45,10 +47,8 @@ void ExtensionApiTestWithManagementPolicy::MonitorRequestHandler(
 
 bool ExtensionApiTestWithManagementPolicy::BrowsedTo(
     const std::string& test_host) {
-  return std::find_if(request_log_.begin(), request_log_.end(),
-                      [test_host](const ManagementPolicyRequestLog& log) {
-                        return log.host == test_host;
-                      }) != request_log_.end();
+  return base::Contains(request_log_, test_host,
+                        &ManagementPolicyRequestLog::host);
 }
 
 void ExtensionApiTestWithManagementPolicy::ClearRequestLog() {

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -92,11 +93,7 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
     absl::optional<std::string> gaia_id = GetGaiaIdForExtension(extension_id);
     if (!gaia_id)
       continue;
-    auto account_it = std::find_if(accounts.begin(), accounts.end(),
-                                   [&](const CoreAccountInfo& account) {
-                                     return account.gaia == *gaia_id;
-                                   });
-    if (account_it == accounts.end()) {
+    if (!base::Contains(accounts, *gaia_id, &CoreAccountInfo::gaia)) {
       EraseGaiaIdForExtension(extension_id);
     }
   }

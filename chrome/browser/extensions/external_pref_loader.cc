@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -252,10 +253,8 @@ void ExternalPrefLoader::OnPrioritySyncReady(
     ExternalPrefLoader::PrioritySyncReadyWaiter* waiter) {
   // Delete |waiter| from |pending_waiter_list_|.
   pending_waiter_list_.erase(
-      std::find_if(pending_waiter_list_.begin(), pending_waiter_list_.end(),
-                   [waiter](const std::unique_ptr<PrioritySyncReadyWaiter>& w) {
-                     return w.get() == waiter;
-                   }));
+      base::ranges::find(pending_waiter_list_, waiter,
+                         &std::unique_ptr<PrioritySyncReadyWaiter>::get));
   // Continue loading.
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadOnFileThread, this));

@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
@@ -593,9 +594,8 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
       // Re-use existing browser agent hosts.
       const std::string& extension_id = extension()->id();
       AttachedClientHosts& hosts = g_attached_client_hosts.Get();
-      auto it = std::find_if(
-          hosts.begin(), hosts.end(),
-          [&extension_id](ExtensionDevToolsClientHost* client_host) {
+      auto it = base::ranges::find_if(
+          hosts, [&extension_id](ExtensionDevToolsClientHost* client_host) {
             return client_host->extension_id() == extension_id &&
                    client_host->agent_host() &&
                    client_host->agent_host()->GetType() ==
@@ -639,8 +639,8 @@ ExtensionDevToolsClientHost* DebuggerFunction::FindClientHost() {
   const std::string& extension_id = extension()->id();
   DevToolsAgentHost* agent_host = agent_host_.get();
   AttachedClientHosts& hosts = g_attached_client_hosts.Get();
-  auto it = std::find_if(
-      hosts.begin(), hosts.end(),
+  auto it = base::ranges::find_if(
+      hosts,
       [&agent_host, &extension_id](ExtensionDevToolsClientHost* client_host) {
         return client_host->agent_host() == agent_host &&
                client_host->extension_id() == extension_id;

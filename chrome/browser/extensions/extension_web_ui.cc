@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -203,14 +204,13 @@ enum UpdateBehavior {
 bool UpdateOverridesList(base::Value::List& overrides_list,
                          const std::string& override_url,
                          UpdateBehavior behavior) {
-  auto iter = std::find_if(overrides_list.begin(), overrides_list.end(),
-                           [&override_url](const base::Value& value) {
-                             if (!value.is_dict())
-                               return false;
-                             const std::string* entry =
-                                 value.GetDict().FindString(kEntry);
-                             return entry && *entry == override_url;
-                           });
+  auto iter = base::ranges::find_if(
+      overrides_list, [&override_url](const base::Value& value) {
+        if (!value.is_dict())
+          return false;
+        const std::string* entry = value.GetDict().FindString(kEntry);
+        return entry && *entry == override_url;
+      });
   if (iter != overrides_list.end()) {
     switch (behavior) {
       case UPDATE_DEACTIVATE: {

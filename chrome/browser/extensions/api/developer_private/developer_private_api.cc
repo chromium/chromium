@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -12,10 +13,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -313,13 +316,9 @@ void AddSiteToSiteGroups(
   if (inserted) {
     it->second.etld_plus_one = etld_plus_one;
     it->second.sites.push_back(CreateSiteInfo(site, site_set));
-  } else {
-    auto site_info = std::find_if(
-        it->second.sites.begin(), it->second.sites.end(),
-        [site](const developer::SiteInfo& info) { return info.site == site; });
-
-    if (site_info == it->second.sites.end())
-      it->second.sites.push_back(CreateSiteInfo(site, site_set));
+  } else if (!base::Contains(it->second.sites, site,
+                             &developer::SiteInfo::site)) {
+    it->second.sites.push_back(CreateSiteInfo(site, site_set));
   }
 }
 
@@ -758,10 +757,7 @@ DeveloperPrivateAPI::UnpackedRetryId DeveloperPrivateAPI::AddUnpackedPath(
   WebContentsData* data = GetOrCreateWebContentsData(web_contents);
   IdToPathMap& paths = data->allowed_unpacked_paths;
   auto existing =
-      std::find_if(paths.begin(), paths.end(),
-                   [path](const std::pair<std::string, base::FilePath>& entry) {
-                     return entry.second == path;
-                   });
+      base::ranges::find(paths, path, &IdToPathMap::value_type::second);
   if (existing != paths.end())
     return existing->first;
 

@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -17,6 +16,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
@@ -25,6 +25,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/one_shot_event.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -251,14 +252,9 @@ bool HasExternalInstallErrors(ExtensionService* service) {
 }
 
 bool HasExternalInstallBubble(ExtensionService* service) {
-  std::vector<ExternalInstallError*> errors =
-      service->external_install_manager()->GetErrorsForTesting();
-  auto found = std::find_if(
-      errors.begin(), errors.end(),
-      [](const ExternalInstallError* error) {
-    return error->alert_type() == ExternalInstallError::BUBBLE_ALERT;
-  });
-  return found != errors.end();
+  return base::Contains(
+      service->external_install_manager()->GetErrorsForTesting(),
+      ExternalInstallError::BUBBLE_ALERT, &ExternalInstallError::alert_type);
 }
 
 size_t GetExternalInstallBubbleCount(ExtensionService* service) {
@@ -796,11 +792,8 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   ExternalInstallError* GetError(const std::string& extension_id) {
     std::vector<ExternalInstallError*> errors =
         service_->external_install_manager()->GetErrorsForTesting();
-    auto found = std::find_if(
-        errors.begin(), errors.end(),
-        [&extension_id](const ExternalInstallError* error) {
-      return error->extension_id() == extension_id;
-    });
+    auto found = base::ranges::find(errors, extension_id,
+                                    &ExternalInstallError::extension_id);
     return found == errors.end() ? nullptr : *found;
   }
 
