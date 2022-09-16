@@ -259,8 +259,7 @@ class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
     NewTabPageTabHelper::CreateForWebState(web_state);
     NewTabPageTabHelper::FromWebState(web_state)->SetDelegate(delegate);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
-    NSString* identifier = web_state->GetStableIdentifier();
-    SnapshotTabHelper::CreateForWebState(web_state, identifier);
+    SnapshotTabHelper::CreateForWebState(web_state);
     WebSessionStateTabHelper::CreateForWebState(web_state);
   }
 };
@@ -344,8 +343,7 @@ class TabGridMediatorTest : public PlatformTest {
     web_state->SetBrowserState(browser_state_.get());
     web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
-    SnapshotTabHelper::CreateForWebState(web_state.get(),
-                                         [[NSUUID UUID] UUIDString]);
+    SnapshotTabHelper::CreateForWebState(web_state.get());
     return web_state;
   }
 

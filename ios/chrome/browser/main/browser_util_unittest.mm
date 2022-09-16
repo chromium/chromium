@@ -59,8 +59,7 @@ class BrowserUtilTest : public PlatformTest {
   web::FakeWebState* AppendNewWebState(Browser* browser) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* inserted_web_state = fake_web_state.get();
-    NSString* tab_id = inserted_web_state->GetStableIdentifier();
-    SnapshotTabHelper::CreateForWebState(inserted_web_state, tab_id);
+    SnapshotTabHelper::CreateForWebState(inserted_web_state);
     browser->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(fake_web_state),
         WebStateList::INSERT_ACTIVATE, WebStateOpener());

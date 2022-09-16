@@ -53,8 +53,7 @@ class ShareToDataBuilderTest : public PlatformTest {
     web_state_->SetVisibleURL(GURL(kExpectedUrl));
 
     // Attach SnapshotTabHelper to allow snapshot generation.
-    SnapshotTabHelper::CreateForWebState(web_state_.get(),
-                                         [[NSUUID UUID] UUIDString]);
+    SnapshotTabHelper::CreateForWebState(web_state_.get());
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
     // Needed by the ShareToDataForWebState to get the tab title.

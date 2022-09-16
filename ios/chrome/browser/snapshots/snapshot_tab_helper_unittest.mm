@@ -85,9 +85,8 @@ class SnapshotTabHelperTest : public PlatformTest {
  public:
   SnapshotTabHelperTest() {
     // Create the SnapshotTabHelper with a fake delegate.
-    snapshot_id_ = [[NSUUID UUID] UUIDString];
     delegate_ = [[TabHelperSnapshotGeneratorDelegate alloc] init];
-    SnapshotTabHelper::CreateForWebState(&web_state_, snapshot_id_);
+    SnapshotTabHelper::CreateForWebState(&web_state_);
     SnapshotTabHelper::FromWebState(&web_state_)->SetDelegate(delegate_);
 
     // Set custom snapshot cache.
@@ -112,7 +111,8 @@ class SnapshotTabHelperTest : public PlatformTest {
   ~SnapshotTabHelperTest() override { [snapshot_cache_ shutdown]; }
 
   void SetCachedSnapshot(UIImage* image) {
-    [snapshot_cache_ setImage:image withSnapshotID:snapshot_id_];
+    [snapshot_cache_ setImage:image
+               withSnapshotID:web_state_.GetStableIdentifier()];
   }
 
   UIImage* GetCachedSnapshot() {
@@ -120,7 +120,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     base::RunLoop* run_loop_ptr = &run_loop;
 
     __block UIImage* snapshot = nil;
-    [snapshot_cache_ retrieveImageForSnapshotID:snapshot_id_
+    [snapshot_cache_ retrieveImageForSnapshotID:web_state_.GetStableIdentifier()
                                        callback:^(UIImage* cached_snapshot) {
                                          snapshot = cached_snapshot;
                                          run_loop_ptr->Quit();
@@ -135,7 +135,6 @@ class SnapshotTabHelperTest : public PlatformTest {
   base::ScopedTempDir scoped_temp_directory_;
   TabHelperSnapshotGeneratorDelegate* delegate_ = nil;
   SnapshotCache* snapshot_cache_ = nil;
-  NSString* snapshot_id_ = nil;
   web::FakeWebState web_state_;
 };
 
@@ -351,9 +350,9 @@ TEST_F(SnapshotTabHelperTest, ClosingWebStateDoesNotRemoveSnapshot) {
   id partialMock = OCMPartialMock(snapshot_cache_);
   auto web_state = std::make_unique<web::FakeWebState>();
 
-  NSString* tab_id = web_state.get()->GetStableIdentifier();
-  SnapshotTabHelper::CreateForWebState(web_state.get(), tab_id);
-  [[partialMock reject] removeImageWithSnapshotID:tab_id];
+  SnapshotTabHelper::CreateForWebState(web_state.get());
+  [[partialMock reject]
+      removeImageWithSnapshotID:web_state.get()->GetStableIdentifier()];
 
   // Use @try/@catch as -reject raises an exception.
   @try {

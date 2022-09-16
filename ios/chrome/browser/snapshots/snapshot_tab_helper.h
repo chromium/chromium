@@ -29,11 +29,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   ~SnapshotTabHelper() override;
 
-  // Creates the tab helper for `web_state` if it does not exists. The
-  // unique identifier `tab_id` is used when interacting with the
-  // cache to save or fetch snapshots.
-  static void CreateForWebState(web::WebState* web_state, NSString* tab_id);
-
   // Sets the delegate. Capturing snapshot before setting a delegate will
   // results in failures. The delegate is not owned by the tab helper.
   void SetDelegate(id<SnapshotGeneratorDelegate> delegate);
@@ -84,7 +79,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<SnapshotTabHelper>;
 
-  SnapshotTabHelper(web::WebState* web_state, NSString* tab_id);
+  explicit SnapshotTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
   void PageLoaded(
@@ -93,7 +88,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   web::WebState* web_state_ = nullptr;
-  NSString* tab_id_ = nil;
   SnapshotGenerator* snapshot_generator_ = nil;
 
   // Manages this object as an observer of `web_state_`.

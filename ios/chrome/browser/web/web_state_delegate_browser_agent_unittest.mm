@@ -61,7 +61,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     std::unique_ptr<web::WebState> web_state =
         web::WebState::Create(create_params);
     BlockedPopupTabHelper::CreateForWebState(web_state.get());
-    SnapshotTabHelper::CreateForWebState(web_state.get(), @"tab1");
+    SnapshotTabHelper::CreateForWebState(web_state.get());
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
 
     WebStateOpener opener;

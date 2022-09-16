@@ -219,8 +219,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   // condition can be removed.
   if (!for_prerender) {
     SadTabTabHelper::CreateForWebState(web_state);
-    SnapshotTabHelper::CreateForWebState(web_state,
-                                         web_state->GetStableIdentifier());
+    SnapshotTabHelper::CreateForWebState(web_state);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     PrintTabHelper::CreateForWebState(web_state);
   }

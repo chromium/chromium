@@ -46,8 +46,7 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
 
     // PagePlaceholderTabHelper uses SnapshotTabHelper, so ensure it has been
     // created.
-    SnapshotTabHelper::CreateForWebState(web_state_.get(),
-                                         [[NSUUID UUID] UUIDString]);
+    SnapshotTabHelper::CreateForWebState(web_state_.get());
     PagePlaceholderTabHelper::CreateForWebState(web_state_.get());
   }
 

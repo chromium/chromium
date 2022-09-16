@@ -25,8 +25,7 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor redColor];
-    SnapshotTabHelper::CreateForWebState(&fake_web_state_,
-                                         [[NSUUID UUID] UUIDString]);
+    SnapshotTabHelper::CreateForWebState(&fake_web_state_);
     SnapshotTabHelper::FromWebState(&fake_web_state_)->SetDelegate(delegate_);
   }
 

@@ -7,11 +7,11 @@
 #import "base/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/threading/sequenced_task_runner_handle.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 
@@ -39,17 +39,6 @@ enum class PageLoadedSnapshotResult {
 
 SnapshotTabHelper::~SnapshotTabHelper() {
   DCHECK(!web_state_);
-}
-
-// static
-void SnapshotTabHelper::CreateForWebState(web::WebState* web_state,
-                                          NSString* tab_id) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new SnapshotTabHelper(web_state, tab_id)));
-  }
 }
 
 void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
@@ -101,21 +90,22 @@ void SnapshotTabHelper::IgnoreNextLoad() {
 }
 
 void SnapshotTabHelper::WillBeSavedGreyWhenBackgrounding() {
-  [snapshot_generator_.snapshotCache willBeSavedGreyWhenBackgrounding:tab_id_];
+  [snapshot_generator_.snapshotCache
+      willBeSavedGreyWhenBackgrounding:web_state_->GetStableIdentifier()];
 }
 
 void SnapshotTabHelper::SaveGreyInBackground() {
-  [snapshot_generator_.snapshotCache saveGreyInBackgroundForSnapshotID:tab_id_];
+  [snapshot_generator_.snapshotCache
+      saveGreyInBackgroundForSnapshotID:web_state_->GetStableIdentifier()];
 }
 
-SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state, NSString* tab_id)
-    : web_state_(web_state),
-      tab_id_([tab_id copy]),
-      weak_ptr_factory_(this) {
+SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
+    : web_state_(web_state), weak_ptr_factory_(this) {
   DCHECK(web_state_);
-  DCHECK(tab_id_.length > 0);
-  snapshot_generator_ = [[SnapshotGenerator alloc] initWithWebState:web_state_
-                                                              tabID:tab_id_];
+  DCHECK(web_state_->GetStableIdentifier().length > 0);
+  snapshot_generator_ = [[SnapshotGenerator alloc]
+      initWithWebState:web_state_
+                 tabID:web_state_->GetStableIdentifier()];
   web_state_observation_.Observe(web_state_);
 }
 
@@ -144,7 +134,7 @@ void SnapshotTabHelper::PageLoaded(
         break;
 
       bool was_loading = was_loading_during_last_snapshot_;
-      web::GetUIThreadTaskRunner({})->PostDelayedTask(
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &SnapshotTabHelper::UpdateSnapshotWithCallback,
@@ -175,7 +165,6 @@ void SnapshotTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK(web_state_observation_.IsObservingSource(web_state));
   web_state_observation_.Reset();
   web_state_ = nullptr;
-  tab_id_ = nil;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SnapshotTabHelper)
