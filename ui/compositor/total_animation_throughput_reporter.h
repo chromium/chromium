@@ -61,7 +61,7 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
 
   // CompositorObserver:
   void OnFirstAnimationStarted(Compositor* compositor) override;
-  void OnLastAnimationEnded(Compositor* compositor) override;
+  void OnFirstNonAnimatedFrameStarted(Compositor* compositor) override;
   void OnCompositingShuttingDown(Compositor* compositor) override;
 
   bool IsMeasuringForTesting() const { return bool{throughput_tracker_}; }

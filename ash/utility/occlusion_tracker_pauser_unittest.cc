@@ -27,6 +27,39 @@ class TestObserver final : public ui::CompositorAnimationObserver {
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {}
 };
 
+class BeginMainFrameWaiter : public ui::CompositorObserver {
+ public:
+  explicit BeginMainFrameWaiter(ui::Compositor* compositor)
+      : compositor_(compositor) {
+    compositor->AddObserver(this);
+  }
+
+  ~BeginMainFrameWaiter() override { compositor_->RemoveObserver(this); }
+
+  // ui::CompositorObserver
+  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
+    DCHECK_EQ(compositor_, compositor);
+    done_ = true;
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  void Wait() {
+    if (done_)
+      return;
+
+    run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
+ private:
+  ui::Compositor* compositor_;
+  bool done_ = false;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
 }  // namespace
 
 class OcclusionTrackerPauserTest : public AshTestBase {
@@ -52,6 +85,10 @@ TEST_F(OcclusionTrackerPauserTest, Basic) {
   compositor->AddAnimationObserver(&observer1);
   EXPECT_TRUE(tracker->IsPaused());
   compositor->RemoveAnimationObserver(&observer1);
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter(compositor).Wait();
   EXPECT_FALSE(tracker->IsPaused());
 
   compositor->AddAnimationObserver(&observer1);
@@ -64,6 +101,10 @@ TEST_F(OcclusionTrackerPauserTest, Basic) {
   compositor->RemoveAnimationObserver(&observer2);
   EXPECT_TRUE(tracker->IsPaused());
   compositor->RemoveAnimationObserver(&observer1);
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter(compositor).Wait();
   EXPECT_FALSE(tracker->IsPaused());
 }
 
@@ -84,8 +125,19 @@ TEST_F(OcclusionTrackerPauserTest, MultiDisplay) {
   compositor2->AddAnimationObserver(&observer2);
   EXPECT_TRUE(tracker->IsPaused());
   compositor1->RemoveAnimationObserver(&observer1);
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter(compositor1).Wait();
+
+  // Tracker should still be paused.
   EXPECT_TRUE(tracker->IsPaused());
+
   compositor2->RemoveAnimationObserver(&observer2);
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter(compositor2).Wait();
   EXPECT_FALSE(tracker->IsPaused());
 
   // Disconnect display.
@@ -95,10 +147,27 @@ TEST_F(OcclusionTrackerPauserTest, MultiDisplay) {
   compositor1->AddAnimationObserver(&observer1);
   compositor2->AddAnimationObserver(&observer2);
   EXPECT_TRUE(tracker->IsPaused());
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter(compositor1).Wait();
+  // Tracker should still be paused.
+  EXPECT_TRUE(tracker->IsPaused());
+
   compositor1->RemoveAnimationObserver(&observer1);
   EXPECT_TRUE(tracker->IsPaused());
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter(compositor1).Wait();
+  EXPECT_TRUE(tracker->IsPaused());
+
   UpdateDisplay("800x1000");
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(tracker->IsPaused());
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter(compositor1).Wait();
   EXPECT_FALSE(tracker->IsPaused());
 }
 
@@ -119,6 +188,13 @@ TEST_F(OcclusionTrackerPauserTest, Timeout) {
   compositor1->AddAnimationObserver(&observer1);
   compositor2->AddAnimationObserver(&observer2);
   EXPECT_TRUE(tracker->IsPaused());
+
+  // Wait for BeginFrame since compositor animation notifications happen
+  // on BeginFrame.
+  BeginMainFrameWaiter waiter1(compositor1);
+  BeginMainFrameWaiter waiter2(compositor2);
+  waiter1.Wait();
+  waiter2.Wait();
 
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(tracker->IsPaused());

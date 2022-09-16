@@ -36,12 +36,14 @@ TotalAnimationThroughputReporter::~TotalAnimationThroughputReporter() {
 
 void TotalAnimationThroughputReporter::OnFirstAnimationStarted(
     ui::Compositor* compositor) {
-  throughput_tracker_ = compositor->RequestNewThroughputTracker();
-  throughput_tracker_->Start(base::BindRepeating(
-      &TotalAnimationThroughputReporter::Report, ptr_factory_.GetWeakPtr()));
+  if (!throughput_tracker_) {
+    throughput_tracker_ = compositor->RequestNewThroughputTracker();
+    throughput_tracker_->Start(base::BindRepeating(
+        &TotalAnimationThroughputReporter::Report, ptr_factory_.GetWeakPtr()));
+  }
 }
 
-void TotalAnimationThroughputReporter::OnLastAnimationEnded(
+void TotalAnimationThroughputReporter::OnFirstNonAnimatedFrameStarted(
     ui::Compositor* compositor) {
   throughput_tracker_->Stop();
   throughput_tracker_.reset();

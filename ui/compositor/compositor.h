@@ -353,7 +353,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   // LayerTreeHostClient implementation.
   void WillBeginMainFrame() override {}
-  void DidBeginMainFrame() override {}
+  void DidBeginMainFrame() override;
   void OnDeferMainFrameUpdatesChanged(bool) override {}
   void OnDeferCommitsChanged(
       bool,
@@ -545,6 +545,13 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   bool disabled_swap_until_resize_ = false;
 
   bool animations_are_enabled_ = true;
+
+  // This together with the animatinos observer list carries the "last
+  // animation finished" state to the next BeginMainFrame so that it could
+  // notify observers if needed. It is set in AddAnimationObserver and
+  // Cleared in BeginMainFrame when there are no animation observers.
+  // See go/report-ux-metrics-at-painting for details.
+  bool animation_started_ = false;
 
   TrackerId next_throughput_tracker_id_ = 1u;
   struct TrackerState {

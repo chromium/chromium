@@ -63,11 +63,24 @@ class COMPOSITOR_EXPORT CompositorObserver {
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) {}
 
+  // Called when first AnimationObserver was added to the compositor.
   virtual void OnFirstAnimationStarted(Compositor* compositor) {}
-  virtual void OnLastAnimationEnded(Compositor* compositor) {}
+
+  // Called on first BeginMainFrame after the last animation has finished.
+  // This presents "animations finished" event from user point of view.
+  // When animations are temporary stopped and restarted in between painting
+  // two frames technically animations have stopped, but users will never
+  // notice it because animations are immediately restarted. This way we delay
+  // "Last Animation Ended" notification to the BeginMainFrame stage so that it
+  // only fires if there was a frame painted without animations.
+  // See go/report-ux-metrics-at-painting for details.
+  virtual void OnFirstNonAnimatedFrameStarted(Compositor* compositor) {}
 
   virtual void OnFrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) {}
+
+  // Called at the end of the BeginMainFrame.
+  virtual void OnDidBeginMainFrame(Compositor* compositor) {}
 };
 
 }  // namespace ui

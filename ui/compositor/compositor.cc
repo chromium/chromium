@@ -613,6 +613,7 @@ bool Compositor::HasObserver(const CompositorObserver* observer) const {
 }
 
 void Compositor::AddAnimationObserver(CompositorAnimationObserver* observer) {
+  animation_started_ = true;
   if (animation_observer_list_.empty()) {
     for (auto& obs : observer_list_)
       obs.OnFirstAnimationStarted(this);
@@ -632,8 +633,11 @@ void Compositor::RemoveAnimationObserver(
 
   animation_observer_list_.RemoveObserver(observer);
   if (animation_observer_list_.empty()) {
-    for (auto& obs : observer_list_)
-      obs.OnLastAnimationEnded(this);
+    // The only way to get here should be through the AddAnimationObserver.
+    DCHECK(animation_started_);
+
+    // Request one more frame so that BeginMainFrame could notify the observers.
+    host_->SetNeedsAnimate();
   }
 }
 
@@ -673,6 +677,11 @@ Compositor::GetScopedEventMetricsMonitor(
   return host_->GetScopedEventMetricsMonitor(std::move(done_callback));
 }
 
+void Compositor::DidBeginMainFrame() {
+  for (auto& obs : observer_list_)
+    obs.OnDidBeginMainFrame(this);
+}
+
 void Compositor::DidUpdateLayers() {
   // Dump property trees and layers if run with:
   //   --vmodule=*ui/compositor*=3
@@ -687,8 +696,15 @@ void Compositor::BeginMainFrame(const viz::BeginFrameArgs& args) {
   DCHECK(!IsLocked());
   for (auto& observer : animation_observer_list_)
     observer.OnAnimationStep(args.frame_time);
-  if (!animation_observer_list_.empty())
+  if (!animation_observer_list_.empty()) {
     host_->SetNeedsAnimate();
+  } else if (animation_started_) {
+    // When |animation_started_| is true but there are no animations observers
+    // notify the compositor observers.
+    animation_started_ = false;
+    for (auto& obs : observer_list_)
+      obs.OnFirstNonAnimatedFrameStarted(this);
+  }
 }
 
 void Compositor::BeginMainFrameNotExpectedSoon() {}

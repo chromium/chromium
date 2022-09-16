@@ -34,7 +34,8 @@ void OcclusionTrackerPauser::PauseUntilAnimationsEnd(base::TimeDelta timeout) {
   }
 }
 
-void OcclusionTrackerPauser::OnLastAnimationEnded(ui::Compositor* compositor) {
+void OcclusionTrackerPauser::OnFirstNonAnimatedFrameStarted(
+    ui::Compositor* compositor) {
   OnFinish(compositor);
 }
 
