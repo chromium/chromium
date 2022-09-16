@@ -22,8 +22,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -351,10 +353,39 @@ class SaveCardOfferObserver
   base::RunLoop run_loop_;
 };
 
+namespace {
+
+class TestAutofillManager : public autofill::BrowserAutofillManager {
+ public:
+  TestAutofillManager(autofill::ContentAutofillDriver* driver,
+                      autofill::AutofillClient* client)
+      : BrowserAutofillManager(driver,
+                               client,
+                               "en-US",
+                               EnableDownloadManager(false)) {}
+
+  [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
+      int min_num_awaited_calls) {
+    return forms_seen_waiter_.Wait(min_num_awaited_calls);
+  }
+
+ private:
+  autofill::TestAutofillManagerWaiter forms_seen_waiter_{
+      *this,
+      {&AutofillManager::Observer::OnAfterFormsSeen}};
+};
+
+}  // namespace
+
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
+  autofill::TestAutofillManagerFutureInjectors<TestAutofillManager>
+      autofill_manager_injectors;
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
+  ASSERT_TRUE(
+      autofill_manager_injectors[0].GetForPrimaryMainFrame()->WaitForFormsSeen(
+          1));
   ASSERT_TRUE(content::ExecJs(web_contents_.get(), "fill_form.click();"));
 
   content::TestNavigationObserver nav_observer(web_contents_);
