@@ -35,12 +35,6 @@ bool IsOpenInIncognito(web::WebState* web_state,
 
 }  // namespace
 
-// static
-void CrossOtrTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  WebStateUserData<CrossOtrTabHelper>::CreateForWebState(web_state);
-}
-
 CrossOtrTabHelper::CrossOtrTabHelper(web::WebState* web_state)
     : CrossOtrObserver(ObserverType::kIos) {
   DCHECK(web_state);
