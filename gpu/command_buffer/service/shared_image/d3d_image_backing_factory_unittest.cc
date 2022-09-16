@@ -1330,7 +1330,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
     hr = d3d11_texture.As(&dxgi_resource);
     DCHECK_EQ(hr, S_OK);
 
-    HANDLE handle;
+    HANDLE handle = nullptr;
     hr = dxgi_resource->CreateSharedHandle(
         nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
         nullptr, &handle);
@@ -1338,7 +1338,7 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
       return {};
 
     shared_handle.Set(handle);
-    DCHECK(shared_handle.IsValid());
+    DCHECK(shared_handle.is_valid());
 
     usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
   }
@@ -1347,15 +1347,42 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
   const gpu::Mailbox mailboxes[kNumPlanes] = {
       gpu::Mailbox::GenerateForSharedImage(),
       gpu::Mailbox::GenerateForSharedImage()};
+  const gfx::BufferPlane planes[kNumPlanes] = {gfx::BufferPlane::Y,
+                                               gfx::BufferPlane::UV};
+
   std::vector<std::unique_ptr<SharedImageBacking>> shared_image_backings;
   if (use_factory) {
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
-    gmb_handle.dxgi_handle = std::move(shared_handle);
-    gmb_handle.dxgi_token = gfx::DXGIHandleToken();
-    shared_image_backings = shared_image_factory_->CreateSharedImageVideoPlanes(
-        mailboxes, std::move(gmb_handle), gfx::BufferFormat::YUV_420_BIPLANAR,
-        size, usage);
+    HANDLE dup_handle = nullptr;
+    if (!::DuplicateHandle(::GetCurrentProcess(), shared_handle.get(),
+                           ::GetCurrentProcess(), &dup_handle, 0, false,
+                           DUPLICATE_SAME_ACCESS)) {
+      return {};
+    }
+
+    gfx::GpuMemoryBufferHandle gmb_handles[kNumPlanes];
+
+    gmb_handles[0].type = gfx::DXGI_SHARED_HANDLE;
+    gmb_handles[1].type = gfx::DXGI_SHARED_HANDLE;
+
+    gmb_handles[0].dxgi_handle = std::move(shared_handle);
+    DCHECK(gmb_handles[0].dxgi_handle.IsValid());
+
+    gmb_handles[1].dxgi_handle.Set(dup_handle);
+    DCHECK(gmb_handles[1].dxgi_handle.IsValid());
+
+    gmb_handles[0].dxgi_token = gfx::DXGIHandleToken();
+    gmb_handles[1].dxgi_token = gmb_handles[0].dxgi_token;
+
+    for (size_t plane = 0; plane < kNumPlanes; plane++) {
+      auto backing = shared_image_factory_->CreateSharedImage(
+          mailboxes[plane], 0, std::move(gmb_handles[plane]),
+          gfx::BufferFormat::YUV_420_BIPLANAR, planes[plane],
+          kNullSurfaceHandle, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, usage);
+      if (!backing)
+        return {};
+      shared_image_backings.push_back(std::move(backing));
+    }
   } else {
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state;
     if (use_shared_handle) {

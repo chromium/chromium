@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/trace_util.h"
 
@@ -133,10 +134,10 @@ scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
     GLenum texture_target = GL_TEXTURE_2D,
     unsigned array_slice = 0u,
-    unsigned plane_index = 0u) {
+    unsigned plane_index = 0u,
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr) {
   gl::GLApi* const api = gl::g_current_gl_context;
   ScopedRestoreTexture scoped_restore(api, texture_target);
 
@@ -210,7 +211,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer) {
   auto gl_texture =
-      CreateGLTexture(format, size, color_space, d3d11_texture, swap_chain);
+      CreateGLTexture(format, size, color_space, d3d11_texture, GL_TEXTURE_2D,
+                      /*array_slice=*/0u, /*plane_index=*/0u, swap_chain);
   if (!gl_texture) {
     LOG(ERROR) << "Failed to create GL texture";
     return nullptr;
@@ -218,11 +220,12 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
   return base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      /*dxgi_shared_handle_state=*/{}, std::move(swap_chain), is_back_buffer));
+      /*dxgi_shared_handle_state=*/nullptr, GL_TEXTURE_2D, /*array_slice=*/0u,
+      /*plane_index=*/0u, std::move(swap_chain), is_back_buffer));
 }
 
 // static
-std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromDXGISharedHandle(
+std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -231,13 +234,15 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromDXGISharedHandle(
     SkAlphaType alpha_type,
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
-  DCHECK(dxgi_shared_handle_state);
-
+    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+    GLenum texture_target,
+    size_t array_slice,
+    size_t plane_index) {
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
   // Keyed mutexes are required for Dawn interop but are not used for XR
   // composition where fences are used instead.
-  DCHECK(!has_webgpu_usage || dxgi_shared_handle_state->has_keyed_mutex());
+  DCHECK(!has_webgpu_usage || (dxgi_shared_handle_state &&
+                               dxgi_shared_handle_state->has_keyed_mutex()));
 
   // Do not cache a GL texture in the backing if it could be owned by WebGPU
   // since there's no GL context to MakeCurrent in the destructor.
@@ -245,7 +250,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromDXGISharedHandle(
   if (!has_webgpu_usage) {
     // Creating the GL texture doesn't require exclusive access to the
     // underlying D3D11 texture.
-    gl_texture = CreateGLTexture(format, size, color_space, d3d11_texture);
+    gl_texture = CreateGLTexture(format, size, color_space, d3d11_texture,
+                                 texture_target, array_slice, plane_index);
     if (!gl_texture) {
       LOG(ERROR) << "Failed to create GL texture";
       return nullptr;
@@ -254,7 +260,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromDXGISharedHandle(
   auto backing = base::WrapUnique(new D3DImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
-      std::move(dxgi_shared_handle_state)));
+      std::move(dxgi_shared_handle_state), texture_target, array_slice,
+      plane_index));
   return backing;
 }
 
@@ -308,45 +315,35 @@ D3DImageBacking::CreateFromVideoTexture(
     // value from default-construction.
     constexpr gfx::ColorSpace kInvalidColorSpace;
 
-    auto gl_texture = CreateGLTexture(
-        plane_format, plane_size, kInvalidColorSpace, d3d11_texture,
-        /*swap_chain=*/nullptr, GL_TEXTURE_EXTERNAL_OES, array_slice,
-        plane_index);
-    if (!gl_texture) {
-      LOG(ERROR) << "Failed to create GL texture";
-      return {};
+    // TODO(sunnyps): Switch to GL_TEXTURE_2D since it's now supported by ANGLE.
+    constexpr GLenum kTextureTarget = GL_TEXTURE_EXTERNAL_OES;
+
+    // Do not cache a GL texture in the backing if it could be owned by WebGPU
+    // since there's no GL context to MakeCurrent in the destructor.
+    scoped_refptr<gles2::TexturePassthrough> gl_texture;
+    if (!has_webgpu_usage) {
+      // Creating the GL texture doesn't require exclusive access to the
+      // underlying D3D11 texture.
+      gl_texture = CreateGLTexture(plane_format, plane_size, kInvalidColorSpace,
+                                   d3d11_texture, kTextureTarget, array_slice,
+                                   plane_index);
+      if (!gl_texture) {
+        LOG(ERROR) << "Failed to create GL texture";
+        return {};
+      }
     }
 
     shared_images[plane_index] = base::WrapUnique(new D3DImageBacking(
         mailbox, plane_format, plane_size, kInvalidColorSpace,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, d3d11_texture,
-        std::move(gl_texture), dxgi_shared_handle_state));
+        std::move(gl_texture), dxgi_shared_handle_state, kTextureTarget,
+        array_slice, plane_index));
+    if (!shared_images[plane_index])
+      return {};
     shared_images[plane_index]->SetCleared();
   }
 
   return shared_images;
-}
-
-// static
-std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateForSharedMemory(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture) {
-  auto gl_texture = CreateGLTexture(format, size, color_space, d3d11_texture);
-  if (!gl_texture) {
-    LOG(ERROR) << "Failed to create GL texture";
-    return nullptr;
-  }
-  auto backing = base::WrapUnique(new D3DImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture),
-      /*dxgi_shared_handle_state=*/{}));
-  return backing;
 }
 
 D3DImageBacking::D3DImageBacking(
@@ -360,6 +357,9 @@ D3DImageBacking::D3DImageBacking(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<gles2::TexturePassthrough> gl_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+    GLenum texture_target,
+    size_t array_slice,
+    size_t plane_index,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer)
     : ClearTrackingSharedImageBacking(
@@ -377,6 +377,9 @@ D3DImageBacking::D3DImageBacking(
       d3d11_texture_(std::move(d3d11_texture)),
       gl_texture_(std::move(gl_texture)),
       dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
+      texture_target_(texture_target),
+      array_slice_(array_slice),
+      plane_index_(plane_index),
       swap_chain_(std::move(swap_chain)),
       is_back_buffer_(is_back_buffer) {
   const bool has_webgpu_usage = !!(usage & SHARED_IMAGE_USAGE_WEBGPU);
@@ -660,7 +663,8 @@ void D3DImageBacking::OnMemoryDump(
   pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
 
   // Swap chain textures only have one level backed by an image.
-  GetGLImage()->OnMemoryDump(pmd, client_tracing_id, dump_name);
+  if (auto* gl_image = GetGLImage())
+    gl_image->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
 bool D3DImageBacking::BeginAccessD3D12() {
@@ -688,7 +692,8 @@ void D3DImageBacking::EndAccessD3D11() {
 }
 
 gl::GLImage* D3DImageBacking::GetGLImage() const {
-  return gl_texture_->GetLevelImage(gl_texture_->target(), 0u);
+  return gl_texture_ ? gl_texture_->GetLevelImage(gl_texture_->target(), 0u)
+                     : nullptr;
 }
 
 bool D3DImageBacking::PresentSwapChain() {
@@ -716,6 +721,7 @@ bool D3DImageBacking::PresentSwapChain() {
   ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
 
   api->glBindTextureFn(GL_TEXTURE_2D, gl_texture_->service_id());
+  DCHECK(GetGLImage());
   if (!GetGLImage()->BindTexImage(GL_TEXTURE_2D)) {
     LOG(ERROR) << "GLImage::BindTexImage failed";
     return false;
@@ -734,8 +740,9 @@ D3DImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
   // Lazily create a GL texture if it wasn't provided on initialization.
   auto gl_texture = gl_texture_;
   if (!gl_texture) {
-    gl_texture =
-        CreateGLTexture(format(), size(), color_space(), d3d11_texture_);
+    gl_texture = CreateGLTexture(format(), size(), color_space(),
+                                 d3d11_texture_, texture_target_, array_slice_,
+                                 plane_index_, swap_chain_);
     if (!gl_texture) {
       LOG(ERROR) << "Failed to create GL texture";
       return nullptr;
@@ -758,8 +765,18 @@ std::unique_ptr<OverlayImageRepresentation> D3DImageBacking::ProduceOverlay(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "D3DImageBacking::ProduceOverlay");
+  scoped_refptr<gl::GLImage> gl_image = GetGLImage();
+  // Lazily create a GL image if it wasn't provided on initialization. There's
+  // no need to bind to a GL texture since the image is only used for overlay.
+  if (!gl_image) {
+    const auto internal_format = viz::GLInternalFormat(format());
+    const auto data_type = viz::GLDataType(format());
+    gl_image = base::MakeRefCounted<gl::GLImageD3D>(
+        size(), internal_format, data_type, color_space(), d3d11_texture_,
+        array_slice_, plane_index_, swap_chain_);
+  }
   return std::make_unique<OverlayD3DImageRepresentation>(manager, this, tracker,
-                                                         GetGLImage());
+                                                         std::move(gl_image));
 }
 
 }  // namespace gpu

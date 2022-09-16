@@ -42,6 +42,24 @@ struct Mailbox;
 class GPU_GLES2_EXPORT D3DImageBacking
     : public ClearTrackingSharedImageBacking {
  public:
+  // Create a backing wrapping given D3D11 texture, optionally with a shared
+  // handle and keyed mutex state. Array slice is used to specify index in
+  // texture array used by video decoder and plane index is used to specify the
+  // plane (Y/0 or UV/1) in NV12/P010 video textures.
+  static std::unique_ptr<D3DImageBacking> Create(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr,
+      GLenum texture_target = GL_TEXTURE_2D,
+      size_t array_slice = 0u,
+      size_t plane_index = 0u);
+
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -53,17 +71,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
       bool is_back_buffer);
-
-  static std::unique_ptr<D3DImageBacking> CreateFromDXGISharedHandle(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state);
 
   // TODO(sunnyps): Remove this after migrating DXVA decoder to EGLImage.
   static std::unique_ptr<D3DImageBacking> CreateFromGLTexture(
@@ -77,6 +84,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       scoped_refptr<gles2::TexturePassthrough> gl_texture);
 
+  // Helper used by D3D11VideoDecoder to create backings directly.
   static std::vector<std::unique_ptr<SharedImageBacking>>
   CreateFromVideoTexture(
       base::span<const Mailbox> mailboxes,
@@ -86,16 +94,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       unsigned array_slice,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr);
-
-  static std::unique_ptr<D3DImageBacking> CreateForSharedMemory(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
 
   D3DImageBacking(const D3DImageBacking&) = delete;
   D3DImageBacking& operator=(const D3DImageBacking&) = delete;
@@ -158,7 +156,10 @@ class GPU_GLES2_EXPORT D3DImageBacking
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       scoped_refptr<gles2::TexturePassthrough> gl_texture,
-      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = {},
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr,
+      GLenum texture_target = GL_TEXTURE_2D,
+      size_t array_slice = 0u,
+      size_t plane_index = 0u,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
       bool is_back_buffer = false);
 
@@ -179,6 +180,16 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // between plane shared image backings of a multi-plane texture, or between
   // backings created from duplicated handles that refer to the same texture.
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_;
+
+  // GL texture target. Can be GL_TEXTURE_2D or GL_TEXTURE_EXTERNAL_OES.
+  // TODO(sunnyps): Switch to GL_TEXTURE_2D for all cases.
+  GLenum texture_target_;
+
+  // Index of texture slice in texture array e.g. those used by video decoder.
+  const size_t array_slice_;
+
+  // Texture plane index corresponding to this image.
+  const size_t plane_index_;
 
   // Swap chain corresponding to this backing.
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;

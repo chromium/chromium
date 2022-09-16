@@ -523,51 +523,38 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
           gpu_memory_buffer_->GetFormat());
 
 #if BUILDFLAG(IS_WIN)
+  // Explicitly set GL_TEXTURE_EXTERNAL_OES since ImageTextureTarget() will
+  // return GL_TEXTURE_2D due to GMB factory not supporting NV12 DXGI GMBs.
+  // See https://crbug.com/1253791#c17
+  // TODO(sunnyps): This shouldn't be needed after
+  // https://chromium-review.googlesource.com/c/angle/angle/+/3856660
+  texture_target = GL_TEXTURE_EXTERNAL_OES;
+#endif  // BUILDFLAG(IS_WIN)
+
+  // TODO(sunnyps): Get rid of NV12_DUAL_GMB format and instead rely on enabled
+  // by default multi plane shared images on Windows.
   if (output_format ==
-      media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB) {
+          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB ||
+      base::FeatureList::IsEnabled(
+          media::kMultiPlaneVideoCaptureSharedImages)) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
-
-    // Explicitly set GL_TEXTURE_EXTERNAL_OES since ImageTextureTarget() will
-    // return GL_TEXTURE_2D due to GMB factory not supporting NV12 DXGI GMBs.
-    // See https://crbug.com/1253791#c17
-    texture_target = GL_TEXTURE_EXTERNAL_OES;
-
-    if (should_recreate_shared_image ||
-        buffer_context_->gmb_resources()->mailboxes[0].IsZero()) {
-      auto plane_mailboxes = sii->CreateSharedImageVideoPlanes(
-          gpu_memory_buffer_.get(),
-          buffer_context_->gpu_factories()->GpuMemoryBufferManager(), usage);
-      DCHECK_EQ(plane_mailboxes.size(), planes.size());
-      for (size_t plane = 0; plane < planes.size(); ++plane) {
-        buffer_context_->gmb_resources()->mailboxes[plane] =
-            plane_mailboxes[plane];
-      }
-    }
+  } else {
+    planes.push_back(gfx::BufferPlane::DEFAULT);
   }
-#endif  // BUILDFLAG(IS_WIN)
-  if (planes.empty()) {
-    if (base::FeatureList::IsEnabled(
-            media::kMultiPlaneVideoCaptureSharedImages)) {
-      planes.push_back(gfx::BufferPlane::Y);
-      planes.push_back(gfx::BufferPlane::UV);
+  for (size_t plane = 0; plane < planes.size(); ++plane) {
+    if (should_recreate_shared_image ||
+        buffer_context_->gmb_resources()->mailboxes[plane].IsZero()) {
+      buffer_context_->gmb_resources()->mailboxes[plane] =
+          sii->CreateSharedImage(
+              gpu_memory_buffer_.get(),
+              buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
+              planes[plane], *(frame_info_->color_space),
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
     } else {
-      planes.push_back(gfx::BufferPlane::DEFAULT);
-    }
-    for (size_t plane = 0; plane < planes.size(); ++plane) {
-      if (should_recreate_shared_image ||
-          buffer_context_->gmb_resources()->mailboxes[plane].IsZero()) {
-        buffer_context_->gmb_resources()->mailboxes[plane] =
-            sii->CreateSharedImage(
-                gpu_memory_buffer_.get(),
-                buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
-                planes[plane], *(frame_info_->color_space),
-                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
-      } else {
-        sii->UpdateSharedImage(
-            buffer_context_->gmb_resources()->release_sync_token,
-            buffer_context_->gmb_resources()->mailboxes[plane]);
-      }
+      sii->UpdateSharedImage(
+          buffer_context_->gmb_resources()->release_sync_token,
+          buffer_context_->gmb_resources()->mailboxes[plane]);
     }
   }
 

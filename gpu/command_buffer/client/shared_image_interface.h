@@ -111,6 +111,7 @@ class GPU_EXPORT SharedImageInterface {
                             SkAlphaType alpha_type,
                             uint32_t usage);
 
+  // TODO(sunnyps): DEPRECATED - remove after migrating all uses.
   // Similar to above, but creates backings for all planes in one shot. Needed
   // on platforms where the planes need to share some state on initialization.
   // Only implemented on Windows.

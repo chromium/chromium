@@ -9,10 +9,12 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/win/scoped_handle.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
@@ -82,7 +84,6 @@ DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return DXGI_FORMAT_NV12;
     default:
-      NOTREACHED();
       return DXGI_FORMAT_UNKNOWN;
   }
 }
@@ -370,9 +371,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   if (is_shm_gmb) {
     // Early return before creating DXGI keyed mutex.
-    return D3DImageBacking::CreateForSharedMemory(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(d3d11_texture));
+    return D3DImageBacking::Create(mailbox, format, size, color_space,
+                                   surface_origin, alpha_type, usage,
+                                   std::move(d3d11_texture));
   }
 
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
@@ -397,7 +398,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       dxgi_shared_handle_manager_->CreateAnonymousSharedHandleState(
           base::win::ScopedHandle(shared_handle), d3d11_texture);
 
-  return D3DImageBacking::CreateFromDXGISharedHandle(
+  return D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(dxgi_shared_handle_state));
 }
@@ -428,11 +429,16 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage) {
   DCHECK_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
+  DCHECK_NE(GetDXGIFormat(format), DXGI_FORMAT_UNKNOWN);
 
-  if (plane != gfx::BufferPlane::DEFAULT) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
+  if (!IsPlaneValidForGpuMemoryBufferFormat(plane, format)) {
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane)
+               << " for format " << gfx::BufferFormatToString(format);
     return nullptr;
   }
+
+  DCHECK(plane == gfx::BufferPlane::DEFAULT || plane == gfx::BufferPlane::Y ||
+         plane == gfx::BufferPlane::UV);
 
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
       ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
@@ -442,39 +448,23 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
 
-  auto backing = D3DImageBacking::CreateFromDXGISharedHandle(
-      mailbox, viz::GetResourceFormat(format), size, color_space,
-      surface_origin, alpha_type, usage, std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state));
+  const gfx::Size plane_size = GetPlaneSize(plane, size);
+  const viz::ResourceFormat plane_format =
+      viz::GetResourceFormat(GetPlaneBufferFormat(plane, format));
+  // TODO(sunnyps): Use GL_TEXTURE_2D for all cases since it's allowed by ANGLE.
+  const GLenum texture_target = plane == gfx::BufferPlane::DEFAULT
+                                    ? GL_TEXTURE_2D
+                                    : GL_TEXTURE_EXTERNAL_OES;
+  const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
+
+  auto backing = D3DImageBacking::Create(
+      mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, usage, std::move(d3d11_texture),
+      std::move(dxgi_shared_handle_state), texture_target, /*array_slice=*/0u,
+      /*plane_index=*/plane_index);
   if (backing)
     backing->SetCleared();
   return backing;
-}
-
-std::vector<std::unique_ptr<SharedImageBacking>>
-D3DImageBackingFactory::CreateSharedImageVideoPlanes(
-    base::span<const Mailbox> mailboxes,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    const gfx::Size& size,
-    uint32_t usage) {
-  // Only supports NV12 for now.
-  if (format != gfx::BufferFormat::YUV_420_BIPLANAR) {
-    LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format);
-    return {};
-  }
-
-  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
-      ValidateAndOpenSharedHandle(dxgi_shared_handle_manager_.get(),
-                                  std::move(handle), format, size);
-  if (!dxgi_shared_handle_state)
-    return {};
-
-  auto d3d11_texture = dxgi_shared_handle_state->d3d11_texture();
-
-  return D3DImageBacking::CreateFromVideoTexture(
-      mailboxes, GetDXGIFormat(format), size, usage, std::move(d3d11_texture),
-      /*array_slice=*/0, std::move(dxgi_shared_handle_state));
 }
 
 bool D3DImageBackingFactory::UseMapOnDefaultTextures() {

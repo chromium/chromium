@@ -103,12 +103,6 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage) override;
-  std::vector<std::unique_ptr<SharedImageBacking>> CreateSharedImageVideoPlanes(
-      base::span<const Mailbox> mailboxes,
-      gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat format,
-      const gfx::Size& size,
-      uint32_t usage) override;
 
   bool IsSupported(uint32_t usage,
                    viz::ResourceFormat format,
