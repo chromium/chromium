@@ -8,27 +8,22 @@
 <script src="resources/session-history-test-util.js"></script>
 <body>
   <script>
+    setup(() => assertSpeculationRulesIsSupported());
+
     const uid = token();
 
     promise_test(async () => {
       assert_equals(
-        await runTestInPrerender("testLocationAssignInPrerender", uid),
+        await runTestInPrerender("testHistoryPushStateInPrerender", uid),
         "Passed"
       );
-    }, "location.assign navigates independently with replacement in a prerender");
+    }, "history.pushState navigates independently with replacement in a prerender");
 
     promise_test(async () => {
       assert_equals(
-        await runTestInPrerender("testLocationReplaceInPrerender", uid),
+        await runTestInPrerender("testHistoryReplaceStateInPrerender", uid),
         "Passed"
       );
-    }, "location.replace navigates independently in a prerender");
-
-    promise_test(async () => {
-      assert_equals(
-        await runTestInPrerender("testSetLocationHrefInPrerender", uid),
-        "Passed"
-      );
-    }, "Setting location.href navigates independently with replacement in a prerender");
+    }, "history.replaceState navigates independently in a prerender");
   </script>
 </body>

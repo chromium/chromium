@@ -8,6 +8,8 @@
 <script src="resources/session-history-test-util.js"></script>
 <body>
   <script>
+    setup(() => assertSpeculationRulesIsSupported());
+
     const uid = token();
 
     promise_test(async () => {

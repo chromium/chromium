@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test history.length</title>
+<title>Test history.length during a subframe navigation</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -8,19 +8,15 @@
 <script src="resources/session-history-test-util.js"></script>
 <body>
   <script>
+    setup(() => assertSpeculationRulesIsSupported());
+
     const uid = token();
 
     promise_test(async () => {
       assert_equals(
-        await runTestInPrerender("testHistoryLengthInPrerender", uid),
-        "Passed",
-        "test in prerender"
+        await runTestInPrerender("testSubframeNavigationInPrerender", uid),
+        "Passed"
       );
-      assert_equals(
-        await runTestInActivatedPage("testHistoryLengthInPrerender", uid),
-        "Passed",
-        "test in activated page"
-      );
-    }, "history.length should be updated after activation");
+    }, "Subframe navigation in prerender replaces the session entry");
   </script>
 </body>
