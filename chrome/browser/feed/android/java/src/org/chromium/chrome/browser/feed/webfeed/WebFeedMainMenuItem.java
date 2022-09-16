@@ -20,6 +20,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.S
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
@@ -50,6 +52,7 @@ import org.chromium.url.GURL;
  * Specific {@link FrameLayout} that displays the Web Feed footer in the main menu.
  */
 public class WebFeedMainMenuItem extends FrameLayout {
+    private static final String TAG = "WebFeedMainMenuItem";
     private static final int LOADING_REFRESH_TIME_MS = 400;
 
     private final Context mContext;
@@ -151,6 +154,12 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
         }
         mItemText.setText(mTitle);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
+            // This will act as a Cormorant Activity entry point
+            // TODO(crbug/1362743): Configure the Cormorant Activity to launch on click once ready
+            mItemText.setOnClickListener(
+                    (view) -> { Log.d(TAG, "Cormorant entry point click caught."); });
+        }
     }
 
     private void initializeChipView(WebFeedMetadata webFeedMetadata) {

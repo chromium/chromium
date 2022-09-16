@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -41,10 +42,12 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -63,6 +66,7 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
+@Features.DisableFeatures({ChromeFeatureList.CORMORANT})
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -73,6 +77,8 @@ public final class WebFeedMainMenuItemTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private Activity mActivity;
     @Mock
