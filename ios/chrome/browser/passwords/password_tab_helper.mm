@@ -20,15 +20,6 @@
 
 PasswordTabHelper::~PasswordTabHelper() = default;
 
-// static
-void PasswordTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new PasswordTabHelper(web_state)));
-  }
-}
-
 void PasswordTabHelper::SetBaseViewController(
     UIViewController* baseViewController) {
   controller_.baseViewController = baseViewController;
