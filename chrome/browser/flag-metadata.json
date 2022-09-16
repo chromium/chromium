@@ -178,6 +178,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "apn-revamp",
+    "owners": [ "gordonseto@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "app-management-app-details",
     "owners": [ "ajlinker" ],
     "expiry_milestone": 112
@@ -909,11 +914,6 @@
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server
     // on a network without an external connection to the internet to be able to install eSIM.
     "expiry_milestone": -1
-  },
-  {
-    "name": "cellular-custom-apn-profiles",
-    "owners": [ "eariassoto@google.com", "gordonseto@google.com", "cros-connectivity@google.com" ],
-    "expiry_milestone": 110
   },
   {
     "name": "cellular-use-second-euicc",

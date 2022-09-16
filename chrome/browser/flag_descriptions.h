@@ -2810,8 +2810,8 @@ extern const char kCategoricalSearchDescription[];
 extern const char kCellularBypassESimInstallationConnectivityCheckName[];
 extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 
-extern const char kCellularCustomAPNProfilesName[];
-extern const char kCellularCustomAPNProfilesDescription[];
+extern const char kApnRevampName[];
+extern const char kApnRevampDescription[];
 
 extern const char kCellularUseSecondEuiccName[];
 extern const char kCellularUseSecondEuiccDescription[];

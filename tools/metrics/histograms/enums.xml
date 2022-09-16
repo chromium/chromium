@@ -58334,7 +58334,6 @@ from previous Chrome versions.
   <int value="-947643308" label="EnableTouchscreensInDiagnosticsApp:disabled"/>
   <int value="-946366838" label="MetricsSettingsAndroid:enabled"/>
   <int value="-945806012" label="DownloadsUi:enabled"/>
-  <int value="-944533097" label="CellularCustomAPNProfiles:disabled"/>
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
@@ -60389,7 +60388,6 @@ from previous Chrome versions.
   <int value="331845034" label="enable-webgl-developer-extensions"/>
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
   <int value="332960119" label="PdfXfaSupport:disabled"/>
-  <int value="333032941" label="CellularCustomAPNProfiles:enabled"/>
   <int value="334330083" label="WebAuthenticationConditionalUI:disabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>
   <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
@@ -63172,6 +63170,7 @@ from previous Chrome versions.
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>
   <int value="2058439723" label="CalculateNativeWinOcclusion:disabled"/>
   <int value="2059322877" label="new-avatar-menu"/>
+  <int value="2062752242" label="ApnRevamp:enabled"/>
   <int value="2063091429" label="OfflinePagesSharing:enabled"/>
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
   <int value="2065833330" label="CanvasContextLostInBackground:enabled"/>
@@ -63255,6 +63254,7 @@ from previous Chrome versions.
   <int value="2106798283" label="SafetyTip:disabled"/>
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
   <int value="2107406401" label="UseDnsHttpsSvcb:disabled"/>
+  <int value="2107942975" label="ApnRevamp:disabled"/>
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
   <int value="2112312086" label="EditContext:disabled"/>
   <int value="2113804526" label="EnableAppShortcutSearch:enabled"/>

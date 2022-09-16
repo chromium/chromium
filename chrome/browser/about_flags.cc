@@ -3845,10 +3845,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kCellularBypassESimInstallationConnectivityCheck)},
-    {"cellular-custom-apn-profiles",
-     flag_descriptions::kCellularCustomAPNProfilesName,
-     flag_descriptions::kCellularCustomAPNProfilesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCellularCustomAPNProfiles)},
+    {"apn-revamp", flag_descriptions::kApnRevampName,
+     flag_descriptions::kApnRevampDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kApnRevamp)},
     {"cellular-use-second-euicc",
      flag_descriptions::kCellularUseSecondEuiccName,
      flag_descriptions::kCellularUseSecondEuiccDescription, kOsCrOS,

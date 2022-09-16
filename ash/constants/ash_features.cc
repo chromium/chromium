@@ -333,8 +333,7 @@ const base::Feature kCellularBypassESimInstallationConnectivityCheck{
     "CellularBypassESimInstallationConnectivityCheck",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kCellularCustomAPNProfiles{
-    "CellularCustomAPNProfiles", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kApnRevamp{"ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, use second the Euicc that is exposed by Hermes in Cellular Setup
 // and Settings.
@@ -1840,6 +1839,10 @@ bool IsAmbientModePhotoPreviewEnabled() {
 
 bool IsAppNotificationsPageEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppNotificationsPage);
+}
+
+bool IsApnRevampEnabled() {
+  return base::FeatureList::IsEnabled(kApnRevamp);
 }
 
 bool IsArcFuseBoxFileSharingEnabled() {

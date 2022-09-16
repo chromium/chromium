@@ -4914,10 +4914,11 @@ const char kCellularBypassESimInstallationConnectivityCheckDescription[] =
     "Bypass the non-cellular internet connectivity check during eSIM "
     "installation.";
 
-const char kCellularCustomAPNProfilesName[] = "Register Custom APN Profiles";
-const char kCellularCustomAPNProfilesDescription[] =
-    "If enabled, the Settings UI will allow the user to create, edit, and "
-    "delete custom APN profiles for a Cellular network.";
+const char kApnRevampName[] = "APN Revamp";
+const char kApnRevampDescription[] =
+    "Enables the ChromeOS APN Revamp, which updates cellular network APN "
+    "system UI and related "
+    "infrastructure.";
 
 const char kCellularUseSecondEuiccName[] = "Use second Euicc";
 const char kCellularUseSecondEuiccDescription[] =
