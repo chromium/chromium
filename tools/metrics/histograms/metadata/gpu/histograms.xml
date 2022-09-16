@@ -1426,19 +1426,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.SharedImage.DmaBufSupportedType"
-    enum="DmaBufSupportedType" expires_after="2023-02-12">
-  <owner>vasilyt@chromium.org</owner>
-  <owner>hitawala@chromium.org</owner>
-  <summary>
-    Tracks which extensions are supported for creating shared images using DMA
-    buffers. Result is an enum that represents three flags - are native pixmaps
-    supported for the ozone platform, are Vulkan extensions supported and are GL
-    extensions supported. This is logged once per gpu process launch through
-    SharedImageFactory constructor call.
-  </summary>
-</histogram>
-
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
     expires_after="2023-03-05">
   <owner>zmo@chromium.org</owner>

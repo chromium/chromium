@@ -26579,21 +26579,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2132270559" label="libsvn_tsvn32.dll"/>
 </enum>
 
-<enum name="DmaBufSupportedType">
-  <int value="0" label="No Native Pixmaps + No Vulkan Ext + No GL Ext"/>
-  <int value="1" label="EGL Ext"/>
-  <int value="2" label="Vulkan Ext"/>
-  <int value="3" label="Vulkan Ext + EGL Ext"/>
-  <int value="4" label="Native Pixmaps"/>
-  <int value="5" label="Native Pixmaps + EGL Ext"/>
-  <int value="6" label="Native Pixmaps + Vulkan Ext"/>
-  <int value="7" label="Native Pixmaps + Vulkan Ext + EGL Ext"/>
-  <int value="8" label="GLX Ext"/>
-  <int value="9" label="Vulkan Ext + GLX Ext"/>
-  <int value="10" label="Native Pixmaps + GLX Ext"/>
-  <int value="11" label="Native Pixmaps + Vulkan Ext + GLX Ext"/>
-</enum>
-
 <enum name="DNS.AddressListDeltaType">
   <int value="0" label="Same addresses in the same order"/>
   <int value="1" label="Same addresses in a different order"/>

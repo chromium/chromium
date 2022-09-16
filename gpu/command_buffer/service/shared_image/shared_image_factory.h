@@ -133,8 +133,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   void RegisterSharedImageBackingFactoryForTesting(
       SharedImageBackingFactory* factory);
 
-  static bool set_dmabuf_supported_metric_;
-
  private:
   bool IsSharedBetweenThreads(uint32_t usage);
 

@@ -7,7 +7,6 @@
 #include <inttypes.h>
 #include <memory>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -34,7 +33,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/trace_util.h"
 
@@ -45,7 +43,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -98,17 +95,13 @@ bool ShouldUseExternalVulkanImageFactory() {
 #endif
 }
 
-#endif  // defined(USE_OZONE) && BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-
 bool ShouldUseOzoneImageBackingFactory() {
-#if defined(USE_OZONE)
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformRuntimeProperties()
       .supports_native_pixmaps;
-#else
-  return false;
-#endif
 }
+
+#endif  // defined(USE_OZONE) && BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 
 const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   switch (type) {
@@ -123,80 +116,6 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
       return "platform";
   }
   NOTREACHED();
-}
-
-enum DmaBufSupportedType {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  kNoPixmapNoVulkanExtNoGlExt = 0,
-  kNoPixmapNoVulkanExtYesGlExt = 1,
-  kNoPixmapYesVulkanExtNoGlExt = 2,
-  kNoPixmapYesVulkanExtYesGlExt = 3,
-  kYesPixmapNoVulkanExtNoGlExt = 4,
-  kYesPixmapNoVulkanExtYesGlExt = 5,
-  kYesPixmapYesVulkanExtNoGlExt = 6,
-  kYesPixmapYesVulkanExtYesGlExt = 7,
-  kNoPixmapNoVulkanExtYesGlxExt = 8,
-  kNoPixmapYesVulkanExtYesGlxExt = 9,
-  kYesPixmapNoVulkanExtYesGlxExt = 10,
-  kYesPixmapYesVulkanExtYesGlxExt = 11,
-  kMaxValue = kYesPixmapYesVulkanExtYesGlxExt
-};
-
-enum class GLExtType { kNone, kEGL, kGLX };
-
-DmaBufSupportedType GetDmaBufSupportedType(bool pixmap_supported,
-                                           bool vulkan_ext_supported,
-                                           GLExtType gl_ext_supported) {
-  if (pixmap_supported) {
-    if (vulkan_ext_supported) {
-      switch (gl_ext_supported) {
-        case GLExtType::kNone:
-          return kYesPixmapYesVulkanExtNoGlExt;
-        case GLExtType::kEGL:
-          return kYesPixmapYesVulkanExtYesGlExt;
-        case GLExtType::kGLX:
-          return kYesPixmapYesVulkanExtYesGlxExt;
-      }
-    } else {
-      switch (gl_ext_supported) {
-        case GLExtType::kNone:
-          return kYesPixmapNoVulkanExtNoGlExt;
-        case GLExtType::kEGL:
-          return kYesPixmapNoVulkanExtYesGlExt;
-        case GLExtType::kGLX:
-          return kYesPixmapNoVulkanExtYesGlxExt;
-      }
-    }
-  } else {
-    if (vulkan_ext_supported) {
-      switch (gl_ext_supported) {
-        case GLExtType::kNone:
-          return kNoPixmapYesVulkanExtNoGlExt;
-        case GLExtType::kEGL:
-          return kNoPixmapYesVulkanExtYesGlExt;
-        case GLExtType::kGLX:
-          return kNoPixmapYesVulkanExtYesGlxExt;
-      }
-    } else {
-      switch (gl_ext_supported) {
-        case GLExtType::kNone:
-          return kNoPixmapNoVulkanExtNoGlExt;
-        case GLExtType::kEGL:
-          return kNoPixmapNoVulkanExtYesGlExt;
-        case GLExtType::kGLX:
-          return kNoPixmapNoVulkanExtYesGlxExt;
-      }
-    }
-  }
-}
-
-void ReportDmaBufSupportMetric(bool pixmap_supported,
-                               bool vulkan_ext_supported,
-                               GLExtType gl_ext_supported) {
-  DmaBufSupportedType type = GetDmaBufSupportedType(
-      pixmap_supported, vulkan_ext_supported, gl_ext_supported);
-  UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.DmaBufSupportedType", type);
 }
 
 }  // namespace
@@ -218,8 +137,6 @@ bool operator<(const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
                const Mailbox& rhs) {
   return lhs->mailbox() < rhs;
 }
-
-bool SharedImageFactory::set_dmabuf_supported_metric_ = false;
 
 SharedImageFactory::SharedImageFactory(
     const GpuPreferences& gpu_preferences,
@@ -255,47 +172,6 @@ SharedImageFactory::SharedImageFactory(
     feature_info = new gles2::FeatureInfo(workarounds, gpu_feature_info);
     feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
                              use_passthrough, gles2::DisallowedFeatures());
-  }
-
-  if (!set_dmabuf_supported_metric_) {
-    bool pixmap_supported = ShouldUseOzoneImageBackingFactory();
-    bool vulkan_ext_supported = false;
-    GLExtType gl_ext_type = GLExtType::kNone;
-
-#if BUILDFLAG(ENABLE_VULKAN)
-    if (gr_context_type_ == GrContextType::kVulkan && context_state) {
-      const auto& enabled_extensions = context_state->vk_context_provider()
-                                           ->GetDeviceQueue()
-                                           ->enabled_extensions();
-      vulkan_ext_supported =
-          gfx::HasExtension(enabled_extensions,
-                            VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME) &&
-          gfx::HasExtension(enabled_extensions,
-                            VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);
-    }
-#endif  // BUILDFLAG(ENABLE_VULKAN)
-
-    bool egl_ext_supported =
-        gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_KHR_image;
-    bool glx_ext_supported = false;
-#if defined(USE_OZONE)
-#if BUILDFLAG(OZONE_PLATFORM_X11)
-    ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
-                                ->GetSurfaceFactoryOzone()
-                                ->GetCurrentGLOzone();
-    // This checks for extension support on both GLOzoneEGLX11 and GLOzoneGLX.
-    glx_ext_supported = gl_ozone && gl_ozone->CanImportNativePixmap();
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // defined(USE_OZONE)
-    if (egl_ext_supported) {
-      gl_ext_type = GLExtType::kEGL;
-    } else if (glx_ext_supported) {
-      gl_ext_type = GLExtType::kGLX;
-    }
-
-    ReportDmaBufSupportMetric(pixmap_supported, vulkan_ext_supported,
-                              gl_ext_type);
-    set_dmabuf_supported_metric_ = true;
   }
 
   auto shared_memory_backing_factory =
