@@ -134,6 +134,16 @@ AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
   return nullptr;
 }
 
+ZeroSuggestCacheService*
+AutocompleteProviderClientImpl::GetZeroSuggestCacheService() {
+  return nullptr;
+}
+
+const ZeroSuggestCacheService*
+AutocompleteProviderClientImpl::GetZeroSuggestCacheService() const {
+  return nullptr;
+}
+
 OmniboxPedalProvider* AutocompleteProviderClientImpl::GetPedalProvider() const {
   return pedal_provider_.get();
 }

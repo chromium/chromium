@@ -100,11 +100,14 @@ void SetUserPreferenceForZeroSuggestCachedResponse(
     const std::string& response) {
   DCHECK(prefs);
 
-  // Constrain the ZPS cache to a single entry by overwriting the existing
-  // value.
-  base::Value::Dict new_dict;
-  new_dict.Set(page_url, response);
-  prefs->SetDict(kZeroSuggestCachedResultsWithURL, std::move(new_dict));
+  if (page_url.empty()) {
+    prefs->SetString(kZeroSuggestCachedResults, response);
+  } else {
+    // Constrain the cache to a single entry by overwriting the existing value.
+    base::Value::Dict new_dict;
+    new_dict.Set(page_url, response);
+    prefs->SetDict(kZeroSuggestCachedResultsWithURL, std::move(new_dict));
+  }
 }
 
 std::string GetUserPreferenceForZeroSuggestCachedResponse(
@@ -112,10 +115,14 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
     const std::string& page_url) {
   DCHECK(prefs);
 
+  if (page_url.empty()) {
+    return prefs->GetString(omnibox::kZeroSuggestCachedResults);
+  }
+
   const base::Value::Dict& dictionary =
       prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
   auto* value_ptr = dictionary.FindString(page_url);
-  return (value_ptr ? *value_ptr : std::string());
+  return value_ptr ? *value_ptr : std::string();
 }
 
 }  // namespace omnibox

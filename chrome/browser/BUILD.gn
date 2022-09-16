@@ -173,6 +173,8 @@ static_library("browser") {
     "autocomplete/remote_suggestions_service_factory.h",
     "autocomplete/shortcuts_backend_factory.cc",
     "autocomplete/shortcuts_backend_factory.h",
+    "autocomplete/zero_suggest_cache_service_factory.cc",
+    "autocomplete/zero_suggest_cache_service_factory.h",
     "autofill/address_normalizer_factory.cc",
     "autofill/address_normalizer_factory.h",
     "autofill/autocomplete_history_manager_factory.cc",

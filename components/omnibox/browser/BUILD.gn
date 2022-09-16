@@ -236,6 +236,8 @@ static_library("browser") {
     "verbatim_match.h",
     "voice_suggest_provider.cc",
     "voice_suggest_provider.h",
+    "zero_suggest_cache_service.cc",
+    "zero_suggest_cache_service.h",
     "zero_suggest_prefetcher.cc",
     "zero_suggest_prefetcher.h",
     "zero_suggest_provider.cc",
@@ -637,6 +639,7 @@ source_set("unit_tests") {
     "titled_url_match_utils_unittest.cc",
     "url_prefix_unittest.cc",
     "voice_suggest_provider_unittest.cc",
+    "zero_suggest_cache_service_unittest.cc",
     "zero_suggest_provider_unittest.cc",
     "zero_suggest_verbatim_match_provider_unittest.cc",
   ]

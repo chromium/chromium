@@ -51,6 +51,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       bool create_if_necessary) const override;
   DocumentSuggestionsService* GetDocumentSuggestionsService(
       bool create_if_necessary) const override;
+  ZeroSuggestCacheService* GetZeroSuggestCacheService() override;
+  const ZeroSuggestCacheService* GetZeroSuggestCacheService() const override;
   OmniboxPedalProvider* GetPedalProvider() const override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;

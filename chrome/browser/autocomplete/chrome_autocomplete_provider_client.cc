@@ -18,6 +18,7 @@
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -202,6 +203,16 @@ ChromeAutocompleteProviderClient::GetDocumentSuggestionsService(
     bool create_if_necessary) const {
   return DocumentSuggestionsServiceFactory::GetForProfile(profile_,
                                                           create_if_necessary);
+}
+
+ZeroSuggestCacheService*
+ChromeAutocompleteProviderClient::GetZeroSuggestCacheService() {
+  return ZeroSuggestCacheServiceFactory::GetForProfile(profile_);
+}
+
+const ZeroSuggestCacheService*
+ChromeAutocompleteProviderClient::GetZeroSuggestCacheService() const {
+  return ZeroSuggestCacheServiceFactory::GetForProfile(profile_);
 }
 
 OmniboxPedalProvider* ChromeAutocompleteProviderClient::GetPedalProvider()
