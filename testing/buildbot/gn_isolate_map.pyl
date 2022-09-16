@@ -294,11 +294,12 @@
     "label": "//chrome/test:browser_tests",
     "type": "windowed_test_launcher",
   },
-  "browser_tests_apprtc": {
-    "label": "//chrome/test:browser_tests_apprtc",
-    "type": "windowed_test_launcher",
-    "executable": "browser_tests",
-  },
+  # TODO(b/246519185) - Py3 incompatible, decide if to keep test.
+  #"browser_tests_apprtc": {
+  #  "label": "//chrome/test:browser_tests_apprtc",
+  #  "type": "windowed_test_launcher",
+  #  "executable": "browser_tests",
+  # },
   "build_junit_tests": {
     "label": "//build/android:build_junit_tests",
     "type": "junit_test",

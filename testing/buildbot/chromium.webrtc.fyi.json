@@ -138,29 +138,6 @@
       },
       {
         "args": [
-          "--gtest_filter=WebRtcApprtcBrowserTest.*",
-          "--run-manual",
-          "--test-launcher-jobs=1"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "browser_tests_apprtc",
-        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
-      },
-      {
-        "args": [
           "--gtest_filter=WebRtc*"
         ],
         "merge": {
@@ -286,29 +263,6 @@
       },
       {
         "args": [
-          "--gtest_filter=WebRtcApprtcBrowserTest.*",
-          "--run-manual",
-          "--test-launcher-jobs=1"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-12"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "browser_tests_apprtc",
-        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
-      },
-      {
-        "args": [
           "--gtest_filter=WebRtc*"
         ],
         "merge": {
@@ -431,29 +385,6 @@
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=WebRtcApprtcBrowserTest.*",
-          "--run-manual",
-          "--test-launcher-jobs=1"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19042"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "browser_tests_apprtc",
-        "test_id_prefix": "ninja://chrome/test:browser_tests_apprtc/"
       },
       {
         "args": [

@@ -4941,10 +4941,11 @@
     },
 
     'webrtc_chromium_gtests': {
-      'browser_tests_apprtc': {
-        'args': ['--gtest_filter=WebRtcApprtcBrowserTest.*',
-                 '--run-manual', '--test-launcher-jobs=1'],
-      },
+      # TODO(b/246519185) - Py3 incompatible, decide if to keep test.:
+      #'browser_tests_apprtc': {
+      #  'args': ['--gtest_filter=WebRtcApprtcBrowserTest.*',
+      #           '--run-manual', '--test-launcher-jobs=1'],
+      #},
       'browser_tests_functional': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter',
