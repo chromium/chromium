@@ -21,6 +21,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -83,6 +84,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "crypto/crypto_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -173,13 +175,7 @@ void SettingsUI::RegisterProfilePrefs(
 }
 
 SettingsUI::SettingsUI(content::WebUI* web_ui)
-    :
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-      ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      customize_themes_factory_receiver_(this),
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-      content::WebUIController(web_ui),
-#endif
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       webui_load_timer_(web_ui->GetWebContents(),
                         "Settings.LoadDocumentTime.MD",
                         "Settings.LoadCompletedTime.MD") {
@@ -341,7 +337,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // This is the browser settings page.
   html_source->AddBoolean("isOSSettings", false);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lacros has no access to AccountHasUserFacingPassword() (Ash only). Assign
@@ -515,6 +511,14 @@ void SettingsUI::BindInterface(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+void SettingsUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        pending_receiver) {
+  if (help_bubble_handler_factory_receiver_.is_bound())
+    help_bubble_handler_factory_receiver_.reset();
+  help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
 void SettingsUI::AddSettingsPageUIHandler(
     std::unique_ptr<content::WebUIMessageHandler> handler) {
   DCHECK(handler);
@@ -542,6 +546,14 @@ void SettingsUI::CreateCustomizeThemesHandler(
       web_ui()->GetWebContents(), Profile::FromWebUI(web_ui()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+void SettingsUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(handler), std::move(client), web_ui()->GetWebContents(),
+      std::vector<ui::ElementIdentifier>{kEnhancedProtectionSettingElementId});
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SettingsUI)
 
