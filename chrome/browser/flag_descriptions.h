@@ -1323,6 +1323,12 @@ extern const char kOmniboxTriggerForPrerender2Description[];
 extern const char kSupportSearchSuggestionForPrerender2Name[];
 extern const char kSupportSearchSuggestionForPrerender2Description[];
 
+extern const char kEnableOmniboxSearchPrefetchName[];
+extern const char kEnableOmniboxSearchPrefetchDescription[];
+
+extern const char kEnableOmniboxClientSearchPrefetchName[];
+extern const char kEnableOmniboxClientSearchPrefetchDescription[];
+
 extern const char kPrivacyGuide2Name[];
 extern const char kPrivacyGuide2Description[];
 

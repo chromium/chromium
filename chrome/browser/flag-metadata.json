@@ -5025,6 +5025,16 @@
     "expiry_milestone": 115
   },
   {
+    "name": "omnibox-search-client-prefetch",
+    "owners": ["ryansturm", "chrome-brapp-loading@google.com"],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "omnibox-search-prefetch",
+    "owners": ["ryansturm", "chrome-brapp-loading@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-short-bookmark-suggestions",
     "owners": [ "orinj", "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 115

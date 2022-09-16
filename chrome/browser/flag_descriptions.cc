@@ -2372,6 +2372,18 @@ const char kSupportSearchSuggestionForPrerender2Description[] =
     "Allows Prerender2 to prerender search suggestions provided by the default "
     "search engine. Requires chrome://flags/#enable-prerender2 to be enabled";
 
+const char kEnableOmniboxSearchPrefetchName[] = "Omnibox prefetch Search";
+const char kEnableOmniboxSearchPrefetchDescription[] =
+    "Allows omnibox to prefetch likely search suggestions provided by the "
+    "Default Search Engine";
+
+const char kEnableOmniboxClientSearchPrefetchName[] =
+    "Omnibox client prefetch Search";
+const char kEnableOmniboxClientSearchPrefetchDescription[] =
+    "Allows omnibox to prefetch search suggestions provided by the Default "
+    "Search Engine that the client thinks are likely to be navigated. Requires "
+    "chrome://flags/#omnibox-search-prefetch";
+
 const char kPrivacyGuide2Name[] = "Privacy Guide V2";
 const char kPrivacyGuide2Description[] =
     "Enables UI updates for Privacy Guide.";

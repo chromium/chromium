@@ -50,6 +50,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_params.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/sharing/features.h"
@@ -728,6 +729,18 @@ const FeatureEntry::FeatureVariation
         {"ignore prefetched request",
          kSearchSuggestionPrerenderIgnoringPrefetch,
          std::size(kSearchSuggestionPrerenderIgnoringPrefetch), nullptr}};
+
+const FeatureEntry::FeatureParam kSearchPrefetchWithoutHoldback[] = {
+    {"prefetch_holdback", "false"}};
+const FeatureEntry::FeatureParam kSearchPrefetchWithHoldback[] = {
+    {"prefetch_holdback", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kSearchPrefetchServicePrefetchingVariations[] = {
+        {"without holdback", kSearchPrefetchWithoutHoldback,
+         std::size(kSearchPrefetchWithoutHoldback), nullptr},
+        {"with holdback", kSearchPrefetchWithHoldback,
+         std::size(kSearchPrefetchWithHoldback), nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_Immediate[] = {
@@ -7999,6 +8012,17 @@ const FeatureEntry kFeatureEntries[] = {
          features::kSupportSearchSuggestionForPrerender2,
          kSearchSuggsetionPrerenderTypeVariations,
          "SearchSuggestionPrerender")},
+
+    {"omnibox-search-prefetch",
+     flag_descriptions::kEnableOmniboxSearchPrefetchName,
+     flag_descriptions::kEnableOmniboxSearchPrefetchDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kSearchPrefetchServicePrefetching,
+                                    kSearchPrefetchServicePrefetchingVariations,
+                                    "SearchSuggestionPrefetch")},
+    {"omnibox-search-client-prefetch",
+     flag_descriptions::kEnableOmniboxClientSearchPrefetchName,
+     flag_descriptions::kEnableOmniboxClientSearchPrefetchDescription, kOsAll,
+     FEATURE_VALUE_TYPE(kSearchNavigationPrefetch)},
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,
      flag_descriptions::kChromeLabsDescription, kOsDesktop,

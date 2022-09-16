@@ -57160,6 +57160,7 @@ from previous Chrome versions.
   <int value="-1623394051" label="NtpRealboxTailSuggest:disabled"/>
   <int value="-1623003151"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
+  <int value="-1621969940" label="SearchPrefetchServicePrefetching:enabled"/>
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
   <int value="-1620942609" label="MuteCompromisedPasswords:enabled"/>
   <int value="-1620860283" label="KioskEnableAppService:disabled"/>
@@ -58569,6 +58570,7 @@ from previous Chrome versions.
   <int value="-800464360" label="ContextualPageActions:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
+  <int value="-799395788" label="SearchPrefetchServicePrefetching:disabled"/>
   <int value="-798521418" label="ArcInputOverlayBeta:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
@@ -61464,6 +61466,7 @@ from previous Chrome versions.
   <int value="996637686" label="NativeFileSystemAPI:enabled"/>
   <int value="996643125" label="EnableAppShortcutSearch:disabled"/>
   <int value="996701528" label="SystemKeyboardLock:enabled"/>
+  <int value="996987392" label="SearchNavigationPrefetch:disabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
   <int value="1000587036" label="OfflinePagesDescriptiveFailStatus:disabled"/>
@@ -61617,6 +61620,7 @@ from previous Chrome versions.
   <int value="1089913432" label="VirtualDesksGestures:disabled"/>
   <int value="1090377940" label="enable-quic-https"/>
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>
+  <int value="1091157601" label="SearchNavigationPrefetch:enabled"/>
   <int value="1091624595" label="BluetoothAdvertisementMonitoring:enabled"/>
   <int value="1091631619" label="disable-accelerated-video-encode"/>
   <int value="1092296990" label="EnableMultiMonitorsInCrd:disabled"/>
