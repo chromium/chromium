@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_HTML_FENCED_FRAME_ELEMENT_H_
 
 #include "base/notreached.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -102,20 +103,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // respond to the size change requests from the containing layout algorithm,
   // while keeping the inner frame size unchanged.
   HTMLIFrameElement* InnerIFrameElement() const;
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class CreationOutcome {
-    kSuccessDefault = 0,  // creates/navigates in default mode
-    kSuccessOpaque = 1,   // creates/navigates in opaque ads mode
-    kSandboxFlagsNotSet = 2,
-    kIncompatibleMode = 3,
-    kInsecureContext = 4,
-    kIncompatibleURLDefault = 5,
-    kIncompatibleURLOpaque = 6,
-    kResponseHeaderNotOptIn = 7,
-    kMaxValue = kResponseHeaderNotOptIn
-  };
 
   // Web-exposed API that returns whether an opaque-ads fenced frame would be
   // allowed to be created in the current active document of this node.

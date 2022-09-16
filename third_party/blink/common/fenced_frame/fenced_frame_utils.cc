@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "base/guid.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -32,6 +33,20 @@ bool IsValidUrnUuidURL(const GURL& url) {
          base::GUID::ParseCaseInsensitive(
              base::StringPiece(spec).substr(std::strlen(kURNUUIDprefix)))
              .is_valid();
+}
+
+void RecordFencedFrameCreationOutcome(
+    const FencedFrameCreationOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION(kFencedFrameCreationOrNavigationOutcomeHistogram,
+                            outcome);
+}
+
+void RecordOpaqueFencedFrameSizeCoercion(bool did_coerce) {
+  UMA_HISTOGRAM_BOOLEAN(kIsOpaqueFencedFrameSizeCoercedHistogram, did_coerce);
+}
+
+void RecordFencedFrameResizedAfterSizeFrozen() {
+  UMA_HISTOGRAM_BOOLEAN(kIsFencedFrameResizedAfterSizeFrozen, true);
 }
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -85,8 +86,8 @@ TEST_P(HTMLFencedFrameElementTest, CoerceFrameSizeTest) {
   }
 
   // Check that all of the coercion calls were logged properly.
-  histogram_tester_.ExpectBucketCount(
-      "Blink.FencedFrame.IsOpaqueFrameSizeCoerced", 0, kAllowedAdSizes.size());
+  histogram_tester_.ExpectBucketCount(kIsOpaqueFencedFrameSizeCoercedHistogram,
+                                      0, kAllowedAdSizes.size());
 
   // Check that for all additional test cases, the coerced size is one of the
   // allowed sizes.
@@ -165,8 +166,8 @@ TEST_P(HTMLFencedFrameElementTest, CoerceFrameSizeTest) {
 
   // Check that all of the coercion calls were logged properly that we expect
   // to be logged.
-  histogram_tester_.ExpectBucketCount(
-      "Blink.FencedFrame.IsOpaqueFrameSizeCoerced", 1, expected_coercion_count);
+  histogram_tester_.ExpectBucketCount(kIsOpaqueFencedFrameSizeCoercedHistogram,
+                                      1, expected_coercion_count);
 }
 
 TEST_P(HTMLFencedFrameElementTest, HistogramTestInsecureContext) {
@@ -185,8 +186,8 @@ TEST_P(HTMLFencedFrameElementTest, HistogramTestInsecureContext) {
   doc.body()->AppendChild(fenced_frame);
 
   histogram_tester_.ExpectUniqueSample(
-      "Blink.FencedFrame.CreationOrNavigationOutcome",
-      HTMLFencedFrameElement::CreationOutcome::kInsecureContext, 1);
+      kFencedFrameCreationOrNavigationOutcomeHistogram,
+      FencedFrameCreationOutcome::kInsecureContext, 1);
 }
 
 TEST_P(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
@@ -199,8 +200,8 @@ TEST_P(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
       html_names::kSrcAttr, String("http://example.com/"), ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
-      "Blink.FencedFrame.CreationOrNavigationOutcome",
-      HTMLFencedFrameElement::CreationOutcome::kIncompatibleURLDefault, 1);
+      kFencedFrameCreationOrNavigationOutcomeHistogram,
+      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
 }
 
 TEST_P(HTMLFencedFrameElementTest, HistogramTestIncompatibleURNDefault) {
@@ -215,8 +216,8 @@ TEST_P(HTMLFencedFrameElementTest, HistogramTestIncompatibleURNDefault) {
       ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
-      "Blink.FencedFrame.CreationOrNavigationOutcome",
-      HTMLFencedFrameElement::CreationOutcome::kIncompatibleURLDefault, 1);
+      kFencedFrameCreationOrNavigationOutcomeHistogram,
+      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
 }
 
 TEST_P(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlOpaque) {
@@ -229,8 +230,8 @@ TEST_P(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlOpaque) {
       html_names::kSrcAttr, String("http://example.com/"), ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
-      "Blink.FencedFrame.CreationOrNavigationOutcome",
-      HTMLFencedFrameElement::CreationOutcome::kIncompatibleURLOpaque, 1);
+      kFencedFrameCreationOrNavigationOutcomeHistogram,
+      FencedFrameCreationOutcome::kIncompatibleURLOpaque, 1);
 }
 
 TEST_P(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {
@@ -251,8 +252,7 @@ TEST_P(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {
   // histogram to log.
   fenced_frame_opaque->OnResize(PhysicalRect(20, 30, 40, 50));
 
-  histogram_tester_.ExpectTotalCount(
-      "Blink.FencedFrame.IsFrameResizedAfterSizeFrozen", 1);
+  histogram_tester_.ExpectTotalCount(kIsFencedFrameResizedAfterSizeFrozen, 1);
 }
 
 TEST_P(HTMLFencedFrameElementTest, HistogramTestSandboxFlags) {
@@ -266,8 +266,8 @@ TEST_P(HTMLFencedFrameElementTest, HistogramTestSandboxFlags) {
                              ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
-      "Blink.FencedFrame.CreationOrNavigationOutcome",
-      HTMLFencedFrameElement::CreationOutcome::kSandboxFlagsNotSet, 1);
+      kFencedFrameCreationOrNavigationOutcomeHistogram,
+      FencedFrameCreationOutcome::kSandboxFlagsNotSet, 1);
 }
 
 }  // namespace blink

@@ -47,6 +47,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
@@ -1914,24 +1915,24 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
     // Child fenced frame creation should have failed based on its mode.
     EXPECT_EQ(0u, parent_fenced_frame_rfh->child_count());
     histogram_tester_.ExpectTotalCount(
-        "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
-    // kIncompatibleMode
+        blink::kFencedFrameCreationOrNavigationOutcomeHistogram, 2);
     histogram_tester_.ExpectBucketCount(
-        "Blink.FencedFrame.CreationOrNavigationOutcome", 3, 1);
+        blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+        blink::FencedFrameCreationOutcome::kIncompatibleMode, 1);
   } else {
     // Child fenced frame creation should have succeeded because its mode is the
     // same as its parent.
     EXPECT_EQ(1u, parent_fenced_frame_rfh->child_count());
     histogram_tester_.ExpectTotalCount(
-        "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+        blink::kFencedFrameCreationOrNavigationOutcomeHistogram, 2);
     if (GetChildMode() == "default") {
-      // kSuccessDefault
       histogram_tester_.ExpectBucketCount(
-          "Blink.FencedFrame.CreationOrNavigationOutcome", 0, 2);
+          blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+          blink::FencedFrameCreationOutcome::kSuccessDefault, 2);
     } else {
-      // kSuccessOpaque
       histogram_tester_.ExpectBucketCount(
-          "Blink.FencedFrame.CreationOrNavigationOutcome", 1, 2);
+          blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+          blink::FencedFrameCreationOutcome::kSuccessOpaque, 2);
     }
   }
 }
@@ -2254,13 +2255,15 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 1);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram, 1);
   // Fenced frame creation succeeded (opaque ads mode)
   histogram_tester.ExpectBucketCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 1, 1);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+      blink::FencedFrameCreationOutcome::kSuccessOpaque, 1);
   // Fenced frame navigation succeeded, no response header opted-in error
   histogram_tester.ExpectBucketCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 7, 0);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+      blink::FencedFrameCreationOutcome::kResponseHeaderNotOptIn, 0);
   histogram_tester.ExpectBucketCount(
       "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 0, 1);
   EXPECT_EQ(
@@ -3040,14 +3043,16 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       "to load the fenced frame root and its nested iframes.");
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram, 2);
   // Fenced frame creation succeeded (opaque ads mode)
   histogram_tester.ExpectBucketCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 1, 1);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+      blink::FencedFrameCreationOutcome::kSuccessOpaque, 1);
   // Fenced frame navigation failed (Supports-Loading-Mode response header
   // 'fenced-frame' not opted-in)
   histogram_tester.ExpectBucketCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 7, 1);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+      blink::FencedFrameCreationOutcome::kResponseHeaderNotOptIn, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
@@ -3100,14 +3105,16 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       "to load the fenced frame root and its nested iframes.");
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram, 2);
   // Fenced frame creation succeeded (default mode)
   histogram_tester.ExpectBucketCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 0, 1);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+      blink::FencedFrameCreationOutcome::kSuccessDefault, 1);
   // Fenced frame navigation failed (Supports-Loading-Mode response header
   // 'fenced-frame' not opted-in)
   histogram_tester.ExpectBucketCount(
-      "Blink.FencedFrame.CreationOrNavigationOutcome", 7, 1);
+      blink::kFencedFrameCreationOrNavigationOutcomeHistogram,
+      blink::FencedFrameCreationOutcome::kResponseHeaderNotOptIn, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,

@@ -11,6 +11,33 @@ class GURL;
 
 namespace blink {
 
+// Histogram names for fenced frame.
+inline constexpr char kFencedFrameCreationOrNavigationOutcomeHistogram[] =
+    "Blink.FencedFrame.CreationOrNavigationOutcome";
+
+inline constexpr char kIsOpaqueFencedFrameSizeCoercedHistogram[] =
+    "Blink.FencedFrame.IsOpaqueFrameSizeCoerced";
+
+inline constexpr char kIsFencedFrameResizedAfterSizeFrozen[] =
+    "Blink.FencedFrame.IsFrameResizedAfterSizeFrozen";
+
+// Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
+// tools/metrics/histograms/enums.xml.
+//
+// PLEASE DO NOT REORDER, REMOVE, OR CHANGE THE MEANING OF THESE VALUES.
+enum class FencedFrameCreationOutcome {
+  kSuccessDefault = 0,  // creates/navigates in default mode
+  kSuccessOpaque = 1,   // creates/navigates in opaque ads mode
+  kSandboxFlagsNotSet = 2,
+  kIncompatibleMode = 3,
+  kInsecureContext = 4,
+  kIncompatibleURLDefault = 5,
+  kIncompatibleURLOpaque = 6,
+  kResponseHeaderNotOptIn = 7,  // HTTP response header Supports-Loading-Mode
+                                // is not opted-in with 'fenced-frame'
+  kMaxValue = kResponseHeaderNotOptIn
+};
+
 // Whether or not a fenced frame is allowed to be navigated to `url`. For now
 // this is described by
 // https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md.
@@ -19,6 +46,12 @@ BLINK_COMMON_EXPORT bool IsValidFencedFrameURL(const GURL& url);
 // Whether or not a URL is a valid "urn uuid URL" depends not only on just the
 // scheme being "urn", but that the URL's prefix is "urn:uuid".
 BLINK_COMMON_EXPORT bool IsValidUrnUuidURL(const GURL& url);
+
+// Record fenced frame related UMAs.
+BLINK_COMMON_EXPORT void RecordFencedFrameCreationOutcome(
+    const FencedFrameCreationOutcome outcome);
+BLINK_COMMON_EXPORT void RecordOpaqueFencedFrameSizeCoercion(bool did_coerce);
+BLINK_COMMON_EXPORT void RecordFencedFrameResizedAfterSizeFrozen();
 
 }  // namespace blink
 
