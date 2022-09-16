@@ -4,6 +4,7 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -161,6 +163,7 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
     if (browser_managed()) {
       SetupDMToken();
     }
+    feature_list_.InitAndEnableFeature(features::kAsyncDns);
   }
 
   bool browser_managed() const { return testing::get<0>(GetParam()); }
@@ -208,6 +211,9 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
           std::move(profile_policy_data));
     }
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class EnterpriseReportingPrivateGetContextInfoSiteIsolationTest
@@ -396,12 +402,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
   EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
             info.safe_browsing_protection_level);
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
-    (BUILDFLAG(IS_WIN) && !BUILDFLAG(GOOGLE_CHROME_BRANDING))
   EXPECT_TRUE(info.built_in_dns_client_enabled);
-#else
-  EXPECT_FALSE(info.built_in_dns_client_enabled);
-#endif
   EXPECT_EQ(
       enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
       info.password_protection_warning_trigger);
