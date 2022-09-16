@@ -4,6 +4,7 @@
 
 module ash.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
 
 // AcceleratorInfo is a representation of an Accelerator with more information
@@ -53,6 +54,12 @@ enum AcceleratorState {
   kDisabledByUser,
 };
 
+// Represents the style of layout for an accelerator.
+// TODO(jimmyxgong): Add alternate layout styles.
+enum AcceleratorLayoutStyle {
+  kDefault = 0,
+};
+
 // Represents an accelerator in its entirety. Includes the keys, state, type,
 // and whether the accelerator is locked.
 struct AcceleratorInfo {
@@ -63,4 +70,24 @@ struct AcceleratorInfo {
   // True if the accelerator can not be customized by the user.
   // False if the accelerator can be customized by the user.
   bool locked;
+};
+
+// Represents layout styling descriptors of an accelerator. Includes the
+// description of the accelerator along with its category identifiers.
+struct AcceleratorLayoutInfo {
+  // Translated string for category.
+  mojo_base.mojom.String16 category;
+  // Translated string for sub-category.
+  mojo_base.mojom.String16 sub_category;
+  // Translated string for the action description.
+  mojo_base.mojom.String16 description;
+  // The way the AcceleratorRow should be styled.
+  AcceleratorLayoutStyle style;
+
+  // The accelerator source, which help differentiate same action id's from
+  // different sources.
+  AcceleratorSource source;
+  // The accelerator id, used as part of the identifier to map
+  // `AcceleratorLayoutInfo` to an `AcceleratorInfo`.
+  uint32 action;
 };
