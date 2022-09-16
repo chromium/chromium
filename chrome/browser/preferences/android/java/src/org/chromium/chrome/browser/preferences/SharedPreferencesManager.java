@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.build.BuildConfig;
 
 import java.util.Collections;
@@ -32,6 +33,7 @@ public class SharedPreferencesManager {
     /**
      * @return The SharedPreferencesManager singleton.
      */
+    @CalledByNative
     public static SharedPreferencesManager getInstance() {
         return LazyHolder.INSTANCE;
     }
@@ -529,6 +531,7 @@ public class SharedPreferencesManager {
      * @param defaultValue The default value to return if there's no value stored.
      * @return The value of the preference if stored; defaultValue otherwise.
      */
+    @CalledByNative
     public boolean readBoolean(String key, boolean defaultValue) {
         mKeyChecker.checkIsKeyInUse(key);
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -618,6 +621,7 @@ public class SharedPreferencesManager {
      *
      * @param key The key of the preference to remove.
      */
+    @CalledByNative
     public void removeKey(String key) {
         mKeyChecker.checkIsKeyInUse(key);
         SharedPreferences.Editor ed = ContextUtils.getAppSharedPreferences().edit();
@@ -656,6 +660,7 @@ public class SharedPreferencesManager {
      * @param key The key of the preference to check.
      * @return Whether any value was written for that key.
      */
+    @CalledByNative
     public boolean contains(String key) {
         mKeyChecker.checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().contains(key);

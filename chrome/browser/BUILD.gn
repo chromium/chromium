@@ -2808,6 +2808,8 @@ static_library("browser") {
       "android/preferences/pref_change_registrar_android.cc",
       "android/preferences/pref_change_registrar_android.h",
       "android/preferences/privacy_preferences_manager_impl.cc",
+      "android/preferences/shared_preferences_migrator_android.cc",
+      "android/preferences/shared_preferences_migrator_android.h",
       "android/profile_key_startup_accessor.cc",
       "android/profile_key_startup_accessor.h",
       "android/profile_key_util.cc",

@@ -51,7 +51,10 @@ java_cpp_strings("java_pref_names_srcjar") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java",
+  ]
 }
 
 robolectric_library("preferences_junit_tests") {
