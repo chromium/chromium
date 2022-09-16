@@ -215,13 +215,6 @@ void FocusFakebox() {
 // Tests that the XClientData header is sent when navigating to
 // https://google.com through the omnibox.
 - (void)testXClientData {
-// TODO(crbug.com/1067815): Test doesn't pass on iPad device.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"testXClientData doesn't pass on iPad device.");
-  }
-#endif
-
   // TODO(crbug.com/1120723) This test is flakily because of a DCHECK in
   // ios/web.  Clearing browser history first works around the problem, but
   // shouldn't be necessary otherwise.  Remove once the bug is fixed.
@@ -971,7 +964,6 @@ void FocusFakebox() {
       assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/1067815): Test can't pass on devices.
 // TODO(crbug.com/1253345) Re-enable this test
 - (void)DISABLED_testNoDefaultMatch {
   NSString* copiedText = @"test no default match1";
