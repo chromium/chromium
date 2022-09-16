@@ -42,6 +42,11 @@ void Vector2dF::Scale(float x_scale, float y_scale) {
   y_ *= y_scale;
 }
 
+void Vector2dF::InvScale(float inv_x_scale, float inv_y_scale) {
+  x_ /= inv_x_scale;
+  y_ /= inv_y_scale;
+}
+
 double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs) {
   return static_cast<double>(lhs.x()) * rhs.y() -
       static_cast<double>(lhs.y()) * rhs.x();

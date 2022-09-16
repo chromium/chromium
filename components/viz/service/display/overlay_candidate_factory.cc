@@ -99,8 +99,8 @@ OverlayCandidate::CandidateStatus GetReasonForTransformNotAxisAligned(
   gfx::Vector2dF x_part(matrix.rc(0, 0), matrix.rc(1, 0));
   gfx::Vector2dF y_part(matrix.rc(0, 1), matrix.rc(1, 1));
   // Normalize to avoid numerical issues.
-  x_part.Scale(1.f / x_part.Length());
-  y_part.Scale(1.f / y_part.Length());
+  x_part.InvScale(x_part.Length());
+  y_part.InvScale(y_part.Length());
   if (std::abs(gfx::DotProduct(x_part, y_part)) > kEpsilon)
     return OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dShear;
 
@@ -575,8 +575,7 @@ void OverlayCandidateFactory::AssignDamage(const DrawQuad* quad,
 
     if (!quad->rect.IsEmpty()) {
       // Normalize damage to be in UVs.
-      transformed_damage.Scale(1.0f / quad->rect.width(),
-                               1.0f / quad->rect.height());
+      transformed_damage.InvScale(quad->rect.width(), quad->rect.height());
     }
 
     // The normalization above is not enough if the |uv_rect| is not 0,0-1x1.

@@ -276,8 +276,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     if (high_res) {
       const float epsilon = 1.f;
       gfx::SizeF scaled_tiling_size(high_res->tiling_size());
-      scaled_tiling_size.Scale(1 / raster_contents_scale_.x(),
-                               1 / raster_contents_scale_.y());
+      scaled_tiling_size.InvScale(raster_contents_scale_.x(),
+                                  raster_contents_scale_.y());
       if (raster_contents_scale_.x() >= 1.f)
         DCHECK(std::abs(bounds().width() - scaled_tiling_size.width()) <
                epsilon);
@@ -1156,7 +1156,7 @@ bool PictureLayerImpl::ShouldDirectlyCompositeImage(float raster_scale) const {
   // this is the same set of operations that will happen when using the tiling
   // at that raster scale.
   gfx::RectF content_rect(gfx::ToEnclosingRect(scaled_bounds_rect));
-  content_rect.Scale(1 / raster_scale);
+  content_rect.InvScale(raster_scale);
 
   return std::abs(layer_bounds.width() - content_rect.width()) < 1.f &&
          std::abs(layer_bounds.height() - content_rect.height()) < 1.f;

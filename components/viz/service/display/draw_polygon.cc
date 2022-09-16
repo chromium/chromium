@@ -154,7 +154,7 @@ void DrawPolygon::ApplyTransformToNormal(const gfx::Transform& transform) {
   normal_ = gfx::Vector3dF(new_normal.x(), new_normal.y(), new_normal.z());
   float normal_magnitude = normal_.Length();
   if (normal_magnitude != 0 && normal_magnitude != 1) {
-    normal_.Scale(1.0f / normal_magnitude);
+    normal_.InvScale(normal_magnitude);
   }
 }
 

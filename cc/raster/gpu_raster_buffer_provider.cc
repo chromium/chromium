@@ -395,7 +395,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_settings.visible, color_space_, backing_->mailbox.name);
 
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
-  recording_to_raster_scale.Scale(1 / raster_source->recording_scale_factor());
+  recording_to_raster_scale.InvScale(raster_source->recording_scale_factor());
   gfx::Size content_size = raster_source->GetContentSize(transform.scale());
 
   // TODO(enne): could skip the clear on new textures, as the service side has

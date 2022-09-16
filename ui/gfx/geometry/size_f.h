@@ -81,6 +81,14 @@ class GEOMETRY_EXPORT SizeF {
     SetSize(width() * x_scale, height() * y_scale);
   }
 
+  // Scales the size by the inverse of the given scale (by dividing).
+  void InvScale(float inv_scale) { InvScale(inv_scale, inv_scale); }
+
+  void InvScale(float inv_x_scale, float inv_y_scale) {
+    width_ /= inv_x_scale;
+    height_ /= inv_y_scale;
+  }
+
   void Transpose() {
     using std::swap;
     swap(width_, height_);

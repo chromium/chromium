@@ -280,7 +280,7 @@ TEST(DrawPolygonSplitTest, NotClearlyInFront) {
   vertices_a.emplace_back(87.2f, 1196.0f, 0.9f);
   gfx::Vector3dF normal_a = gfx::CrossProduct(vertices_a[1] - vertices_a[0],
                                               vertices_a[1] - vertices_a[2]);
-  normal_a.Scale(1.0f / normal_a.Length());
+  normal_a.InvScale(normal_a.Length());
 
   std::vector<gfx::Point3F> vertices_b;
   vertices_b.emplace_back(62.1f, 1034.7f, 1.0f);
@@ -289,7 +289,7 @@ TEST(DrawPolygonSplitTest, NotClearlyInFront) {
   vertices_b.emplace_back(62.1f, 1196.0f, 1.0f);
   gfx::Vector3dF normal_b = gfx::CrossProduct(vertices_b[1] - vertices_b[0],
                                               vertices_b[1] - vertices_b[2]);
-  normal_b.Scale(1.0f / normal_b.Length());
+  normal_b.InvScale(normal_b.Length());
 
   CREATE_NEW_DRAW_POLYGON(polygon_a, vertices_a, normal_a, 0);
   CREATE_NEW_DRAW_POLYGON_PTR(polygon_b, vertices_b, normal_b, 1);

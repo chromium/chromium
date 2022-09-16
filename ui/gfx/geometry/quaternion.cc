@@ -26,7 +26,7 @@ Quaternion::Quaternion(const Vector3dF& axis, double theta) {
     return;
 
   Vector3dF normalized = axis;
-  normalized.Scale(1.0 / length);
+  normalized.InvScale(length);
 
   theta *= 0.5;
   double s = sin(theta);

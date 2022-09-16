@@ -69,6 +69,11 @@ class GEOMETRY_EXPORT Vector2dF {
   // respectively.
   void Scale(float x_scale, float y_scale);
 
+  // Divides all components of the vector by |scale|.
+  void InvScale(float inv_scale) { InvScale(inv_scale, inv_scale); }
+  // Divides each component of the vector by the given scale factors.
+  void InvScale(float inv_x_scale, float inv_y_scale);
+
   void Transpose() {
     using std::swap;
     swap(x_, y_);

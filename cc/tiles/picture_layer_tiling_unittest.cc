@@ -1218,7 +1218,7 @@ TEST_F(PictureLayerTilingIteratorTest, FractionalTranslatedTiling) {
     gfx::RectF texture_rect = iter.texture_rect();
     if (geometry_rect == gfx::Rect(0, 0, 351, 2)) {
       gfx::RectF expectation(geometry_rect);
-      expectation.Scale(1.f / 1.375f);
+      expectation.InvScale(1.375f);
       expectation.Offset(0.125f, 0.125f);
       EXPECT_FLOAT_EQ(expectation.x(), texture_rect.x());
       EXPECT_FLOAT_EQ(expectation.y(), texture_rect.y());
@@ -1226,15 +1226,15 @@ TEST_F(PictureLayerTilingIteratorTest, FractionalTranslatedTiling) {
       EXPECT_FLOAT_EQ(expectation.height(), texture_rect.height());
     } else if (geometry_rect == gfx::Rect(351, 0, 349, 2)) {
       gfx::RectF expectation(geometry_rect);
-      expectation.Scale(1.f / 1.375f);
+      expectation.InvScale(1.375f);
       expectation.Offset(0.125f - 254.f, 0.125f);
-      EXPECT_FLOAT_EQ(expectation.x(), texture_rect.x());
+      EXPECT_NEAR(expectation.x(), texture_rect.x(), 1e-4);
       EXPECT_FLOAT_EQ(expectation.y(), texture_rect.y());
       EXPECT_FLOAT_EQ(expectation.width(), texture_rect.width());
       EXPECT_FLOAT_EQ(expectation.height(), texture_rect.height());
     } else if (geometry_rect == gfx::Rect(700, 0, 349, 2)) {
       gfx::RectF expectation(geometry_rect);
-      expectation.Scale(1.f / 1.375f);
+      expectation.InvScale(1.375f);
       expectation.Offset(0.125f - 254.f * 2.f, 0.125f);
       EXPECT_FLOAT_EQ(expectation.x(), texture_rect.x());
       EXPECT_FLOAT_EQ(expectation.y(), texture_rect.y());
@@ -1243,7 +1243,7 @@ TEST_F(PictureLayerTilingIteratorTest, FractionalTranslatedTiling) {
     } else {
       EXPECT_EQ(gfx::Rect(1049, 0, 326, 2), geometry_rect);
       gfx::RectF expectation(geometry_rect);
-      expectation.Scale(1.f / 1.375f);
+      expectation.InvScale(1.375f);
       expectation.Offset(0.125f - 254.f * 3.f, 0.125f);
       EXPECT_FLOAT_EQ(expectation.x(), texture_rect.x());
       EXPECT_FLOAT_EQ(expectation.y(), texture_rect.y());

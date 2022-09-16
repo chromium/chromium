@@ -218,6 +218,14 @@ class GEOMETRY_EXPORT RectF {
     set_size(ScaleSize(size(), x_scale, y_scale));
   }
 
+  // Divides the rectangle by |inv_scale|.
+  void InvScale(float inv_scale) { InvScale(inv_scale, inv_scale); }
+
+  void InvScale(float x_scale, float y_scale) {
+    origin_.InvScale(x_scale, y_scale);
+    size_.InvScale(x_scale, y_scale);
+  }
+
   // This method reports if the RectF can be safely converted to an integer
   // Rect. When it is false, some dimension of the RectF is outside the bounds
   // of what an integer can represent, and converting it to a Rect will require

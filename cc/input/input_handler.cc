@@ -1298,7 +1298,7 @@ gfx::Vector2dF InputHandler::ResolveScrollGranularityToPixels(
 
     // Convert from physical pixels to screen coordinates (if --use-zoom-for-dsf
     // enabled, `DeviceScaleFactor()` returns 1).
-    viewport_size.Scale(1 / compositor_delegate_.DeviceScaleFactor());
+    viewport_size.InvScale(compositor_delegate_.DeviceScaleFactor());
 
     pixel_delta = ScrollUtils::ResolveScrollPercentageToPixels(
         pixel_delta, scroller_size, viewport_size);
@@ -1637,7 +1637,7 @@ gfx::Vector2dF InputHandler::ComputeScrollDelta(const ScrollNode& scroll_node,
   float scale_factor = compositor_delegate_.PageScaleFactor();
 
   gfx::Vector2dF adjusted_scroll(delta);
-  adjusted_scroll.Scale(1.f / scale_factor);
+  adjusted_scroll.InvScale(scale_factor);
   adjusted_scroll = UserScrollableDelta(scroll_node, adjusted_scroll);
 
   gfx::PointF old_offset =
@@ -1756,7 +1756,7 @@ gfx::Vector2dF InputHandler::ScrollNodeWithLocalDelta(
   gfx::PointF previous_offset =
       scroll_tree.current_scroll_offset(scroll_node.element_id);
   gfx::Vector2dF delta = local_delta;
-  delta.Scale(1.f / page_scale_factor);
+  delta.InvScale(page_scale_factor);
   scroll_tree.ScrollBy(scroll_node, delta, &ActiveTree());
   gfx::Vector2dF scrolled =
       scroll_tree.current_scroll_offset(scroll_node.element_id) -
@@ -1788,7 +1788,7 @@ gfx::Vector2dF InputHandler::ScrollSingleNode(const ScrollNode& scroll_node,
     // For touch-scroll we need to scale the delta here, as the transform tree
     // won't know anything about the external page scale factors used by OOPIFs.
     gfx::Vector2dF scaled_delta(adjusted_delta);
-    scaled_delta.Scale(1 / ActiveTree().external_page_scale_factor());
+    scaled_delta.InvScale(ActiveTree().external_page_scale_factor());
     return ScrollNodeWithViewportSpaceDelta(
         scroll_node, gfx::PointF(viewport_point), scaled_delta);
   }

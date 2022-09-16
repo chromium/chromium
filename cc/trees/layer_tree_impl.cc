@@ -316,7 +316,7 @@ void LayerTreeImpl::UpdateScrollbarGeometries() {
             scroll_tree.container_bounds(inner_scroll_node->id));
         viewport_bounds.SetToMin(inner_viewport_bounds);
       }
-      viewport_bounds.Scale(1 / current_page_scale_factor());
+      viewport_bounds.InvScale(current_page_scale_factor());
       bounds_size = ToCeiledSize(viewport_bounds);
     }
 

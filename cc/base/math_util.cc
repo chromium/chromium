@@ -467,7 +467,7 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
     bool clamp_by_points = false;
     float length = normal.Length();
     if (std::isnormal(length)) {  // exclude 0, denormals, +/- inf, NaN
-      normal.Scale(1.0f / length);
+      normal.InvScale(length);
 
       // Find the vector to the point in the plane closest to (0,0,0).
       gfx::Vector3dF shortest_from_zero(normal);

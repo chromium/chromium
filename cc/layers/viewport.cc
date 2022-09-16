@@ -32,7 +32,7 @@ void Viewport::Pan(const gfx::Vector2dF& delta) {
   DCHECK(InnerScrollNode());
   gfx::Vector2dF pending_delta = delta;
   float page_scale = host_impl_->active_tree()->current_page_scale_factor();
-  pending_delta.Scale(1 / page_scale);
+  pending_delta.InvScale(page_scale);
   scroll_tree().ScrollBy(*InnerScrollNode(), pending_delta,
                          host_impl_->active_tree());
 }
@@ -102,7 +102,7 @@ gfx::Vector2dF Viewport::ComputeClampedDelta(
 
   float page_scale = host_impl_->active_tree()->page_scale_factor_for_scroll();
   gfx::Vector2dF unscaled_delta = scroll_delta;
-  unscaled_delta.Scale(1.f / page_scale);
+  unscaled_delta.InvScale(page_scale);
 
   gfx::Vector2dF remaining_delta = unscaled_delta - inner_delta;
   remaining_delta.Scale(page_scale);
@@ -166,7 +166,7 @@ gfx::Vector2dF Viewport::ScrollAnimated(const gfx::Vector2dF& delta,
 
   float scale_factor = host_impl_->active_tree()->current_page_scale_factor();
   gfx::Vector2dF scaled_delta = delta;
-  scaled_delta.Scale(1.f / scale_factor);
+  scaled_delta.InvScale(scale_factor);
 
   ScrollNode* inner_node = InnerScrollNode();
   gfx::Vector2dF inner_delta =
