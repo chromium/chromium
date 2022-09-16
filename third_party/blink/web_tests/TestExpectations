@@ -6796,11 +6796,14 @@ crbug.com/1318561 [ Linux ] external/wpt/x-frame-options/get-decode-split.html [
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Skip ]
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Skip ]
+crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Skip ]
+crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Skip ]
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-transfer-video.https.html [ Skip ]
 crbug.com/1288839 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-transfer-video.https.html [ Skip ]
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-transfer.https.html [ Skip ]
 # Explicit PASS expectation for the virtual suite, to stop it inheriting "Skip".
 crbug.com/1288839 virtual/mediastreamtrack-transfer/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Pass ]
+crbug.com/1288839 virtual/mediastreamtrack-transfer/external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Pass ]
 
 # Sheriff 2022-04-22
 crbug.com/1318695 http/tests/devtools/elements/highlight/highlight-multiple-css-grid.js [ Failure Pass ]

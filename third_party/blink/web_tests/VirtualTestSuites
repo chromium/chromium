@@ -1151,7 +1151,10 @@
   {
     "prefix": "mediastreamtrack-transfer",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html" ],
+    "bases": [
+      "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html",
+      "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html"
+    ],
     "args": [
       "--enable-blink-features=MediaStreamTrackTransfer",
       "--enable-features=MediaStreamTrackTransfer",
