@@ -42,16 +42,6 @@
 #error "This file requires ARC support."
 #endif
 
-// static
-void ChromeIOSTranslateClient::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new ChromeIOSTranslateClient(web_state)));
-  }
-}
-
 ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
     : web_state_(web_state),
       translate_manager_(std::make_unique<translate::TranslateManager>(

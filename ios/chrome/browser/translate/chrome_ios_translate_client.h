@@ -43,9 +43,6 @@ class ChromeIOSTranslateClient
 
   ~ChromeIOSTranslateClient() override;
 
-  // Creates a translation client tab helper and attaches it to `web_state`
-  static void CreateForWebState(web::WebState* web_state);
-
   // Helper method to return a new TranslatePrefs instance.
   static std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs(
       PrefService* prefs);
@@ -71,7 +68,6 @@ class ChromeIOSTranslateClient
   bool IsAutofillAssistantRunning() const override;
 
  private:
-  ChromeIOSTranslateClient(web::WebState* web_state);
   friend class web::WebStateUserData<ChromeIOSTranslateClient>;
   FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
                            NewMetricsOnPageLoadCommits);
@@ -79,6 +75,8 @@ class ChromeIOSTranslateClient
                            NoNewMetricsOnErrorPage);
   FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
                            PageTranslationCorrectlyUpdatesMetrics);
+
+  explicit ChromeIOSTranslateClient(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
   void DidStartNavigation(web::WebState* web_state,
