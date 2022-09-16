@@ -49,9 +49,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_internal.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {

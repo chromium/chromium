@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_internal.h"
+#include "base/functional/callback_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -763,12 +763,8 @@ class CallbackOwner : public base::RefCounted<CallbackOwner> {
 
  private:
   friend class base::RefCounted<CallbackOwner>;
-  virtual ~CallbackOwner() {
-    *deleted_ = true;
-  }
-  void Unused() {
-    FAIL() << "Should never be called";
-  }
+  virtual ~CallbackOwner() { *deleted_ = true; }
+  void Unused() { FAIL() << "Should never be called"; }
 
   RepeatingClosure callback_;
   raw_ptr<bool> deleted_;

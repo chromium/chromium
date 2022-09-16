@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_BIND_INTERNAL_H_
-#define BASE_BIND_INTERNAL_H_
+#ifndef BASE_FUNCTIONAL_BIND_INTERNAL_H_
+#define BASE_FUNCTIONAL_BIND_INTERNAL_H_
 
 #include <stddef.h>
 
@@ -15,9 +15,9 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 #include "base/memory/raw_ptr_asan_service.h"
@@ -1602,4 +1602,4 @@ struct CallbackCancellationTraits<RepeatingCallback<Signature>,
 
 }  // namespace base
 
-#endif  // BASE_BIND_INTERNAL_H_
+#endif  // BASE_FUNCTIONAL_BIND_INTERNAL_H_

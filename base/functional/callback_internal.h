@@ -5,8 +5,8 @@
 // This file contains utility functions and classes that help the
 // implementation, and management of the Callback objects.
 
-#ifndef BASE_CALLBACK_INTERNAL_H_
-#define BASE_CALLBACK_INTERNAL_H_
+#ifndef BASE_FUNCTIONAL_CALLBACK_INTERNAL_H_
+#define BASE_FUNCTIONAL_CALLBACK_INTERNAL_H_
 
 #include <utility>
 
@@ -60,7 +60,7 @@ class BASE_EXPORT BindStateBase
     MAYBE_VALID,
   };
 
-  using InvokeFuncStorage = void(*)();
+  using InvokeFuncStorage = void (*)();
 
   BindStateBase(const BindStateBase&) = delete;
   BindStateBase& operator=(const BindStateBase&) = delete;
@@ -247,4 +247,4 @@ struct ThenHelper<OriginalCallback<OriginalR(OriginalArgs...)>,
 }  // namespace internal
 }  // namespace base
 
-#endif  // BASE_CALLBACK_INTERNAL_H_
+#endif  // BASE_FUNCTIONAL_CALLBACK_INTERNAL_H_

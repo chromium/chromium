@@ -14,8 +14,8 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"  // IWYU pragma: export
-#include "base/callback_internal.h"
 #include "base/check.h"
+#include "base/functional/callback_internal.h"
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/types/always_false.h"

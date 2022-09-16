@@ -16,7 +16,7 @@
 
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
-#include "base/bind_internal.h"
+#include "base/functional/bind_internal.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/startup_utils.h"

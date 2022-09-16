@@ -1047,7 +1047,11 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'See http://crbug.com/1326449 for context.'
       ),
       False,
-      (),
+      (
+        # False positive, but it is also fine to let bind internals reference
+        # base::Passed.
+        r'^base[\\/]functional[\\/]bind_internal\.h',
+      ),
     ),
     BanRule(
       r'/\babsl::FunctionRef\b',
@@ -1058,7 +1062,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [
         # base::Bind{Once,Repeating} references absl::FunctionRef to disallow
         # interoperability.
-        r'^base[\\/]bind_internal\.h',
+        r'^base[\\/]functional[\\/]bind_internal\.h',
         # base::FunctionRef is implemented on top of absl::FunctionRef.
         r'^base[\\/]functional[\\/]function_ref.*\..+',
         # Not an error in third_party folders.

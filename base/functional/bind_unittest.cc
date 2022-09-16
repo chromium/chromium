@@ -22,12 +22,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::ByMove;
 using ::testing::Mock;
 using ::testing::Return;
 using ::testing::StrictMock;
-using ::testing::_;
 
 namespace base {
 namespace {
@@ -49,7 +49,6 @@ class NoRef {
 
   MOCK_METHOD1(VoidMethodWithIntArg, void(int));
   MOCK_METHOD0(UniquePtrMethod0, std::unique_ptr<int>());
-
 };
 
 class HasRef : public NoRef {
@@ -185,9 +184,7 @@ class CopyMoveCounter {
     return *this;
   }
 
-  int copies() const {
-    return *copies_;
-  }
+  int copies() const { return *copies_; }
 
  private:
   raw_ptr<int> copies_;
@@ -234,13 +231,9 @@ class MoveCounter {
 
 class DeleteCounter {
  public:
-  explicit DeleteCounter(int* deletes)
-      : deletes_(deletes) {
-  }
+  explicit DeleteCounter(int* deletes) : deletes_(deletes) {}
 
-  ~DeleteCounter() {
-    (*deletes_)++;
-  }
+  ~DeleteCounter() { (*deletes_)++; }
 
   void VoidMethod0() {}
 
@@ -296,11 +289,11 @@ int UnwrapNoRefParentConstRef(const NoRefParent& p) {
   return p.value;
 }
 
-void RefArgSet(int &n) {
+void RefArgSet(int& n) {
   n = 2;
 }
 
-void PtrArgSet(int *n) {
+void PtrArgSet(int* n) {
   *n = 2;
 }
 
@@ -341,9 +334,7 @@ class BindTest : public ::testing::Test {
   BindTest& operator=(const BindTest&) = delete;
   ~BindTest() override = default;
 
-  static void VoidFunc0() {
-    static_func_mock_ptr->VoidMethod0();
-  }
+  static void VoidFunc0() { static_func_mock_ptr->VoidMethod0(); }
 
   static int IntFunc0() { return static_func_mock_ptr->IntMethod0(); }
   int NoexceptMethod() noexcept { return 42; }
@@ -391,8 +382,8 @@ TEST_F(BindTest, BasicTest) {
 //   - multiple runs of resulting RepeatingCallback remain valid.
 TEST_F(BindTest, CurryingRvalueResultOfBind) {
   int n = 0;
-  RepeatingClosure cb = BindRepeating(&TakesACallback,
-                                      BindRepeating(&PtrArgSet, &n));
+  RepeatingClosure cb =
+      BindRepeating(&TakesACallback, BindRepeating(&PtrArgSet, &n));
 
   // If we implement BindRepeating() such that the return value has
   // auto_ptr-like semantics, the second call here will fail because ownership
@@ -477,14 +468,12 @@ TEST_F(BindTest, IgnoreResultForRepeating) {
   WeakPtrFactory<NoRef> weak_factory(&no_ref_);
   WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_.get());
 
-  RepeatingClosure non_void_weak_method_cb  =
-      BindRepeating(IgnoreResult(&NoRef::IntMethod0),
-                    weak_factory.GetWeakPtr());
+  RepeatingClosure non_void_weak_method_cb = BindRepeating(
+      IgnoreResult(&NoRef::IntMethod0), weak_factory.GetWeakPtr());
   non_void_weak_method_cb.Run();
 
-  RepeatingClosure non_void_weak_const_method_cb =
-      BindRepeating(IgnoreResult(&NoRef::IntConstMethod0),
-                    weak_factory.GetWeakPtr());
+  RepeatingClosure non_void_weak_const_method_cb = BindRepeating(
+      IgnoreResult(&NoRef::IntConstMethod0), weak_factory.GetWeakPtr());
   non_void_weak_const_method_cb.Run();
 
   weak_factory.InvalidateWeakPtrs();
@@ -514,12 +503,10 @@ TEST_F(BindTest, IgnoreResultForOnce) {
   WeakPtrFactory<NoRef> weak_factory(&no_ref_);
   WeakPtrFactory<const NoRef> const_weak_factory(const_no_ref_ptr_.get());
 
-  OnceClosure non_void_weak_method_cb  =
-      BindOnce(IgnoreResult(&NoRef::IntMethod0),
-                  weak_factory.GetWeakPtr());
-  OnceClosure non_void_weak_const_method_cb =
-      BindOnce(IgnoreResult(&NoRef::IntConstMethod0),
-                  weak_factory.GetWeakPtr());
+  OnceClosure non_void_weak_method_cb =
+      BindOnce(IgnoreResult(&NoRef::IntMethod0), weak_factory.GetWeakPtr());
+  OnceClosure non_void_weak_const_method_cb = BindOnce(
+      IgnoreResult(&NoRef::IntConstMethod0), weak_factory.GetWeakPtr());
 
   weak_factory.InvalidateWeakPtrs();
   std::move(non_void_weak_const_method_cb).Run();
@@ -669,8 +656,7 @@ TEST_F(BindTest, ReferenceArgumentBindingForOnce) {
   n++;
   EXPECT_EQ(n - 1, std::move(ref_copies_cb).Run());
 
-  OnceCallback<int()> const_ref_copies_cb =
-      BindOnce(&Identity, const_ref_n);
+  OnceCallback<int()> const_ref_copies_cb = BindOnce(&Identity, const_ref_n);
   n++;
   EXPECT_EQ(n - 1, std::move(const_ref_copies_cb).Run());
 }
@@ -680,7 +666,7 @@ TEST_F(BindTest, ReferenceArgumentBindingForOnce) {
 //  - Array of const values stores a pointer.
 TEST_F(BindTest, ArrayArgumentBindingForRepeating) {
   int array[4] = {1, 1, 1, 1};
-  const int (*const_array_ptr)[4] = &array;
+  const int(*const_array_ptr)[4] = &array;
 
   RepeatingCallback<int()> array_cb = BindRepeating(&ArrayGet, array, 1);
   EXPECT_EQ(1, array_cb.Run());
@@ -696,11 +682,10 @@ TEST_F(BindTest, ArrayArgumentBindingForRepeating) {
 
 TEST_F(BindTest, ArrayArgumentBindingForOnce) {
   int array[4] = {1, 1, 1, 1};
-  const int (*const_array_ptr)[4] = &array;
+  const int(*const_array_ptr)[4] = &array;
 
   OnceCallback<int()> array_cb = BindOnce(&ArrayGet, array, 1);
-  OnceCallback<int()> const_array_cb =
-      BindOnce(&ArrayGet, *const_array_ptr, 1);
+  OnceCallback<int()> const_array_cb = BindOnce(&ArrayGet, *const_array_ptr, 1);
 
   array[1] = 3;
   EXPECT_EQ(3, std::move(array_cb).Run());
@@ -938,8 +923,7 @@ TEST_F(BindTest, OwnedRefForIgnoringArguments) {
 }
 
 template <typename T>
-class BindVariantsTest : public ::testing::Test {
-};
+class BindVariantsTest : public ::testing::Test {};
 
 struct RepeatingTestConfig {
   template <typename Signature>
@@ -967,8 +951,8 @@ struct OnceTestConfig {
   }
 };
 
-using BindVariantsTestConfig = ::testing::Types<
-  RepeatingTestConfig, OnceTestConfig>;
+using BindVariantsTestConfig =
+    ::testing::Types<RepeatingTestConfig, OnceTestConfig>;
 TYPED_TEST_SUITE(BindVariantsTest, BindVariantsTestConfig);
 
 template <typename TypeParam, typename Signature>
@@ -1094,9 +1078,10 @@ TYPED_TEST(BindVariantsTest, ArgumentBinding) {
   EXPECT_EQ(5, TypeParam::Bind(&UnwrapNoRefParent, p).Run());
 
   IncompleteType* incomplete_ptr = reinterpret_cast<IncompleteType*>(123);
-  EXPECT_EQ(incomplete_ptr,
-            TypeParam::Bind(&PolymorphicIdentity<IncompleteType*>,
-                            incomplete_ptr).Run());
+  EXPECT_EQ(
+      incomplete_ptr,
+      TypeParam::Bind(&PolymorphicIdentity<IncompleteType*>, incomplete_ptr)
+          .Run());
 
   NoRefChild c;
   c.value = 6;
@@ -1228,8 +1213,7 @@ TYPED_TEST(BindVariantsTest, UnretainedRawRefReceiver) {
 //   - Ownership is transferred from Callback to callee on the first Run().
 //   - Callback supports unbound arguments.
 template <typename T>
-class BindMoveOnlyTypeTest : public ::testing::Test {
-};
+class BindMoveOnlyTypeTest : public ::testing::Test {};
 
 struct CustomDeleter {
   void operator()(DeleteCounter* c) { delete c; }
@@ -1496,9 +1480,9 @@ TEST_F(BindTest, CapturelessLambda) {
   EXPECT_TRUE(internal::IsCallableObject<decltype(g)>::value);
 
   auto h = [](int, double) { return 'k'; };
-  EXPECT_TRUE((std::is_same<
-      char(int, double),
-      internal::ExtractCallableRunType<decltype(h)>>::value));
+  EXPECT_TRUE(
+      (std::is_same<char(int, double),
+                    internal::ExtractCallableRunType<decltype(h)>>::value));
 
   EXPECT_EQ(42, BindRepeating([] { return 42; }).Run());
   EXPECT_EQ(42, BindRepeating([](int i) { return i * 7; }, 6).Run());
@@ -1594,60 +1578,56 @@ TEST_F(BindTest, Cancellation) {
 TEST_F(BindTest, OnceCallback) {
   // Check if Callback variants have declarations of conversions as expected.
   // Copy constructor and assignment of RepeatingCallback.
-  static_assert(std::is_constructible<
-      RepeatingClosure, const RepeatingClosure&>::value,
+  static_assert(
+      std::is_constructible<RepeatingClosure, const RepeatingClosure&>::value,
       "RepeatingClosure should be copyable.");
   static_assert(
       std::is_assignable<RepeatingClosure, const RepeatingClosure&>::value,
       "RepeatingClosure should be copy-assignable.");
 
   // Move constructor and assignment of RepeatingCallback.
-  static_assert(std::is_constructible<
-      RepeatingClosure, RepeatingClosure&&>::value,
+  static_assert(
+      std::is_constructible<RepeatingClosure, RepeatingClosure&&>::value,
       "RepeatingClosure should be movable.");
   static_assert(std::is_assignable<RepeatingClosure, RepeatingClosure&&>::value,
                 "RepeatingClosure should be move-assignable");
 
   // Conversions from OnceCallback to RepeatingCallback.
-  static_assert(!std::is_constructible<
-      RepeatingClosure, const OnceClosure&>::value,
+  static_assert(
+      !std::is_constructible<RepeatingClosure, const OnceClosure&>::value,
       "OnceClosure should not be convertible to RepeatingClosure.");
   static_assert(
       !std::is_assignable<RepeatingClosure, const OnceClosure&>::value,
       "OnceClosure should not be convertible to RepeatingClosure.");
 
   // Destructive conversions from OnceCallback to RepeatingCallback.
-  static_assert(!std::is_constructible<
-      RepeatingClosure, OnceClosure&&>::value,
-      "OnceClosure should not be convertible to RepeatingClosure.");
+  static_assert(!std::is_constructible<RepeatingClosure, OnceClosure&&>::value,
+                "OnceClosure should not be convertible to RepeatingClosure.");
   static_assert(!std::is_assignable<RepeatingClosure, OnceClosure&&>::value,
                 "OnceClosure should not be convertible to RepeatingClosure.");
 
   // Copy constructor and assignment of OnceCallback.
-  static_assert(!std::is_constructible<
-      OnceClosure, const OnceClosure&>::value,
-      "OnceClosure should not be copyable.");
+  static_assert(!std::is_constructible<OnceClosure, const OnceClosure&>::value,
+                "OnceClosure should not be copyable.");
   static_assert(!std::is_assignable<OnceClosure, const OnceClosure&>::value,
                 "OnceClosure should not be copy-assignable");
 
   // Move constructor and assignment of OnceCallback.
-  static_assert(std::is_constructible<
-      OnceClosure, OnceClosure&&>::value,
-      "OnceClosure should be movable.");
+  static_assert(std::is_constructible<OnceClosure, OnceClosure&&>::value,
+                "OnceClosure should be movable.");
   static_assert(std::is_assignable<OnceClosure, OnceClosure&&>::value,
                 "OnceClosure should be move-assignable.");
 
   // Conversions from RepeatingCallback to OnceCallback.
-  static_assert(std::is_constructible<
-      OnceClosure, const RepeatingClosure&>::value,
+  static_assert(
+      std::is_constructible<OnceClosure, const RepeatingClosure&>::value,
       "RepeatingClosure should be convertible to OnceClosure.");
   static_assert(std::is_assignable<OnceClosure, const RepeatingClosure&>::value,
                 "RepeatingClosure should be convertible to OnceClosure.");
 
   // Destructive conversions from RepeatingCallback to OnceCallback.
-  static_assert(std::is_constructible<
-      OnceClosure, RepeatingClosure&&>::value,
-      "RepeatingClosure should be convertible to OnceClosure.");
+  static_assert(std::is_constructible<OnceClosure, RepeatingClosure&&>::value,
+                "RepeatingClosure should be convertible to OnceClosure.");
   static_assert(std::is_assignable<OnceClosure, RepeatingClosure&&>::value,
                 "RepeatingClosure should be covretible to OnceClosure.");
 

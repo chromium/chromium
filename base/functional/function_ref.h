@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/bind_internal.h"
+#include "base/functional/bind_internal.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"
 

@@ -10,8 +10,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/bind_internal.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -52,8 +52,8 @@
 // -----------------------------------------------------------------------------
 //
 // If you're reading the implementation, before proceeding further, you should
-// read the top comment of base/bind_internal.h for a definition of common
-// terms and concepts.
+// read the top comment of base/functional/bind_internal.h for a definition of
+// common terms and concepts.
 
 namespace base {
 
