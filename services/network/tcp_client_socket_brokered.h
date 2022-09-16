@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "net/base/address_list.h"
@@ -109,30 +110,36 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
                          int result);
 
   // The list of addresses we should try in order to establish a connection.
-  net::AddressList addresses_;
+  net::AddressList addresses_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Arguments for creating a new TCPClientSocket
-  std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher_;
+  std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  raw_ptr<net::NetworkQualityEstimator> network_quality_estimator_;
+  raw_ptr<net::NetworkQualityEstimator> network_quality_estimator_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  raw_ptr<net::NetLog> net_log_;
+  raw_ptr<net::NetLog> net_log_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const net::NetLogSource source_;
+  const net::NetLogSource source_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // State to track whether socket is currently attempting to connect.
-  bool is_connect_in_progress_ = false;
+  bool is_connect_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // Need to store the tag in case ApplySocketTag() is called before Connect().
-  net::SocketTag tag_;
+  net::SocketTag tag_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The underlying brokered socket. Created when the socket is created for
   // Connect().
-  std::unique_ptr<net::TransportClientSocket> brokered_socket_;
+  std::unique_ptr<net::TransportClientSocket> brokered_socket_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The ClientSocketFactory that created this socket. Used to send IPCs to the
   // remote SocketBroker.
-  const raw_ptr<BrokeredClientSocketFactory> client_socket_factory_;
+  const raw_ptr<BrokeredClientSocketFactory> client_socket_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<TCPClientSocketBrokered> brokered_weak_ptr_factory_{
       this};
