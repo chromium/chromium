@@ -114,13 +114,6 @@ TEST(TemplateUtil, RemoveCvRefT) {
       std::is_same<void (*)(int), remove_cvref_t<void (*)(int)>>::value, "");
 }
 
-TEST(TemplateUtil, IsConstantEvaluated) {
-  // base::is_constant_evaluated() should return whether it is evaluated as part
-  // of a constant expression.
-  static_assert(is_constant_evaluated(), "");
-  EXPECT_FALSE(is_constant_evaluated());
-}
-
 }  // namespace
 
 }  // namespace base

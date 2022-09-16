@@ -33,6 +33,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/cxx20_is_constant_evaluated.h"
 #include "base/strings/string_piece_forward.h"  // IWYU pragma: export
 #include "build/build_config.h"
 

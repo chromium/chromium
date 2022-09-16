@@ -93,15 +93,6 @@ struct remove_cvref {
 template <typename T>
 using remove_cvref_t = typename remove_cvref<T>::type;
 
-// Implementation of C++20's std::is_constant_evaluated.
-//
-// References:
-// - https://en.cppreference.com/w/cpp/types/is_constant_evaluated
-// - https://wg21.link/meta.const.eval
-constexpr bool is_constant_evaluated() noexcept {
-  return __builtin_is_constant_evaluated();
-}
-
 // Simplified implementation of C++20's std::iter_value_t.
 // As opposed to std::iter_value_t, this implementation does not restrict
 // the type of `Iter` and does not consider specializations of

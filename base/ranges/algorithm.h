@@ -13,11 +13,11 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/cxx20_is_constant_evaluated.h"
 #include "base/functional/identity.h"
 #include "base/functional/invoke.h"
 #include "base/ranges/functional.h"
 #include "base/ranges/ranges.h"
-#include "base/template_util.h"
 
 namespace base {
 
