@@ -330,12 +330,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, UpdateFields) {
 // be propagated.
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
                        UpdateVerificationStatus) {
-  // This test is only applicable for structured names.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForMoreStructureInNames)) {
-    return;
-  }
-
   ASSERT_TRUE(SetupSync());
 
   AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
