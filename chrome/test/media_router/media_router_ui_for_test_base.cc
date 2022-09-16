@@ -4,6 +4,7 @@
 
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -84,11 +85,10 @@ void MediaRouterUiForTestBase::StopCasting(CastDialogSinkButton* sink_button) {
 CastDialogSinkButton* MediaRouterUiForTestBase::GetSinkButtonWithName(
     const std::vector<CastDialogSinkButton*>& sink_buttons,
     const std::string& sink_name) {
-  auto it = std::find_if(sink_buttons.begin(), sink_buttons.end(),
-                         [sink_name](CastDialogSinkButton* sink_button) {
-                           return sink_button->sink().friendly_name ==
-                                  base::UTF8ToUTF16(sink_name);
-                         });
+  auto it = base::ranges::find(sink_buttons, base::UTF8ToUTF16(sink_name),
+                               [](CastDialogSinkButton* sink_button) {
+                                 return sink_button->sink().friendly_name;
+                               });
   if (it == sink_buttons.end()) {
     NOTREACHED() << "Sink button not found for sink: " << sink_name;
     return nullptr;

@@ -5,13 +5,14 @@
 #include "chrome/test/chromedriver/chrome/chrome_impl.h"
 
 #include <stddef.h>
-#include <algorithm>
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -701,9 +702,7 @@ Status ChromeImpl::CloseWebView(const std::string& id) {
     return status;
   }
 
-  auto it =
-      std::find_if(web_views_.begin(), web_views_.end(),
-                   [&id](const auto& view) { return view->GetId() == id; });
+  auto it = base::ranges::find(web_views_, id, &WebViewImpl::GetId);
   if (it != web_views_.end()) {
     web_views_.erase(it);
   }

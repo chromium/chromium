@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_local.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -197,10 +198,8 @@ void Session::AddBidiConnection(int connection_id,
 void Session::RemoveBidiConnection(int connection_id) {
   // Reallistically we will not have many connections, therefore linear search
   // is optimal.
-  auto it = std::find_if(bidi_connections_.begin(), bidi_connections_.end(),
-                         [connection_id](const auto& conn) {
-                           return conn.connection_id == connection_id;
-                         });
+  auto it = base::ranges::find(bidi_connections_, connection_id,
+                               &BidiConnection::connection_id);
   if (it != bidi_connections_.end()) {
     bidi_connections_.erase(it);
   }

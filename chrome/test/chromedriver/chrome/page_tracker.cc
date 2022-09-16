@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -33,11 +34,7 @@ Status PageTracker::OnEvent(DevToolsClient* client,
       // Some types of Target.detachedFromTarget events do not have targetId.
       // We are not interested in those types of targets.
       return Status(kOk);
-    auto it = std::find_if(
-        web_views_->begin(), web_views_->end(),
-        [id = *target_id](const std::unique_ptr<WebViewImpl>& view) {
-          return view->GetId() == id;
-        });
+    auto it = base::ranges::find(*web_views_, *target_id, &WebViewImpl::GetId);
     if (it == web_views_->end()) {
       // There are some target types that we're not keeping track of, thus not
       // finding the target in frame_to_target_map_ is OK.

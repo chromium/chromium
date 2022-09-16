@@ -5,6 +5,7 @@
 #include "chrome/test/media_router/media_router_cast_ui_for_test.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
@@ -139,29 +140,29 @@ void MediaRouterCastUiForTest::OnDialogModelUpdated(
 
   const std::vector<CastDialogSinkButton*>& sink_buttons =
       dialog_view->sink_buttons_for_test();
-  if (std::find_if(sink_buttons.begin(), sink_buttons.end(),
-                   [&, this](CastDialogSinkButton* sink_button) {
-                     switch (watch_type_) {
-                       case WatchType::kSink:
-                         return sink_button->sink().friendly_name ==
-                                base::UTF8ToUTF16(*watch_sink_name_);
-                       case WatchType::kSinkAvailable:
-                         return sink_button->sink().friendly_name ==
-                                    base::UTF8ToUTF16(*watch_sink_name_) &&
-                                sink_button->sink().state ==
-                                    UIMediaSinkState::AVAILABLE &&
-                                sink_button->GetEnabled();
-                       case WatchType::kAnyIssue:
-                         return sink_button->sink().issue.has_value();
-                       case WatchType::kAnyRoute:
-                         return sink_button->sink().route.has_value();
-                       case WatchType::kNone:
-                       case WatchType::kDialogShown:
-                       case WatchType::kDialogHidden:
-                         NOTREACHED() << "Invalid WatchType";
-                         return false;
-                     }
-                   }) != sink_buttons.end()) {
+  if (base::ranges::any_of(
+          sink_buttons, [&, this](CastDialogSinkButton* sink_button) {
+            switch (watch_type_) {
+              case WatchType::kSink:
+                return sink_button->sink().friendly_name ==
+                       base::UTF8ToUTF16(*watch_sink_name_);
+              case WatchType::kSinkAvailable:
+                return sink_button->sink().friendly_name ==
+                           base::UTF8ToUTF16(*watch_sink_name_) &&
+                       sink_button->sink().state ==
+                           UIMediaSinkState::AVAILABLE &&
+                       sink_button->GetEnabled();
+              case WatchType::kAnyIssue:
+                return sink_button->sink().issue.has_value();
+              case WatchType::kAnyRoute:
+                return sink_button->sink().route.has_value();
+              case WatchType::kNone:
+              case WatchType::kDialogShown:
+              case WatchType::kDialogHidden:
+                NOTREACHED() << "Invalid WatchType";
+                return false;
+            }
+          })) {
     std::move(*watch_callback_).Run();
     watch_callback_.reset();
     watch_sink_name_.reset();
