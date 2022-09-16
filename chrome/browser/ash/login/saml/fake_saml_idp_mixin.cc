@@ -331,12 +331,15 @@ FakeSamlIdpMixin::BuildResponseForLoginWithDeviceTrust(
   device_trust_header_recieved_ =
       base::Contains(request.headers, kDeviceTrustHeader);
 
-  GURL redirect_url =
-      net::AppendQueryParameter(GetSamlPageUrl(), kRelayState, relay_state);
+  GURL redirect_url = GetSamlWithCheckDeviceAnswerUrl();
+  redirect_url =
+      net::AppendQueryParameter(redirect_url, kRelayState, relay_state);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
   http_response->AddCustomHeader("Location", redirect_url.spec());
+  http_response->AddCustomHeader(kSamlVerifiedAccessChallengeHeader,
+                                 GetTpmChallengeBase64());
   return http_response;
 }
 

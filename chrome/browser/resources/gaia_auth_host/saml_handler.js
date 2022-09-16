@@ -47,6 +47,9 @@ cr.define('cr.login', function() {
   const SAML_HEADER = 'google-accounts-saml';
 
   /** @const */
+  const SAML_DEVICE_TRUST_HEADER = 'x-device-trust';
+
+  /** @const */
   const SAML_VERIFIED_ACCESS_CHALLENGE_HEADER = 'x-verified-access-challenge';
   /** @const */
   const SAML_VERIFIED_ACCESS_RESPONSE_HEADER =
@@ -148,6 +151,9 @@ cr.define('cr.login', function() {
         // original Redirect is being followed with the response included in a
         // HTTP header.
         NAVIGATING_TO_REDIRECT_PAGE: 4,
+        // The attestation flow belongs to Device Trust. It should be ignored by
+        // the Verified Access for SAML feature implemented in this file.
+        DEVICE_TRUST_FLOW: 5,
       };
 
       /**
@@ -709,7 +715,9 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Attaches challenge response during device attestation flow.
+     * Checks if the attestation flow belongs to Device Trust and if so skip
+     * Verified Access. Otherwise attaches challenge response during device
+     * attestation flow.
      * @param {Object} details The web-request details.
      * @return {BlockingResponse} Allows the event handler to modify network
      *     requests.
@@ -719,6 +727,22 @@ cr.define('cr.login', function() {
       // Default case without Verified Access.
       if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NONE) {
+        // Check if the attestation flow was initiated by device trust.
+        const headersRequest = details.requestHeaders;
+
+        if (!headersRequest) {
+          return {};
+        }
+
+        // TODO(b/246818937): Remove this for loop.
+        for (const headerRequest of headersRequest) {
+          const headerRequestName = headerRequest.name.toLowerCase();
+          if (headerRequestName === SAML_DEVICE_TRUST_HEADER) {
+            this.deviceAttestationStage_ =
+                SamlHandler.DeviceAttestationStage.DEVICE_TRUST_FLOW;
+            return {};
+          }
+        }
         return {};
       }
 
@@ -755,6 +779,11 @@ cr.define('cr.login', function() {
      * @private
      */
     onHeadersReceived_(details) {
+      if (this.deviceAttestationStage_ ===
+          SamlHandler.DeviceAttestationStage.DEVICE_TRUST_FLOW) {
+        return {};
+      }
+
       const headers = details.responseHeaders;
 
       // Check whether GAIA headers indicating the start or end of a SAML
