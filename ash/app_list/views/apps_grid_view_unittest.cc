@@ -5395,5 +5395,57 @@ TEST_P(AppsGridViewTabletTest, ChangeFolderNameShouldUpdateShadows) {
   EXPECT_EQ(shadow_with_keyboard, shadow_after_type);
 }
 
+// Test that root level item animations run correctly after quickly dragging and
+// dropping an item from a folder into the root level grid.
+TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
+  model_->PopulateApps(9);
+  model_->CreateAndPopulateFolderWithApps(2);
+  UpdateLayout();
+
+  AppListItemView* folder_item_view = GetItemViewInTopLevelGrid(9);
+
+  // Open the folder.
+  EXPECT_TRUE(folder_item_view->is_folder());
+  SimulateLeftClickOrTapAt(folder_item_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  ASSERT_EQ(2u, folder_apps_grid_view()->view_model()->view_size());
+
+  AppListItemView* item_in_folder = folder_apps_grid_view()->GetItemViewAt(0);
+
+  // Enable animation times once the folder is open, to test animations when
+  // dragging items out.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Begin dragging the first item in the folder.
+  GetEventGenerator()->MoveMouseTo(
+      item_in_folder->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+  item_in_folder->FireMouseDragTimerForTest();
+
+  // Drag item outside of the folder, to slot 0.
+  const gfx::Point to =
+      apps_grid_view_->GetItemViewAt(0)->GetIconBoundsInScreen().left_center();
+  GetEventGenerator()->MoveMouseTo(to);
+
+  ASSERT_TRUE(folder_apps_grid_view()->has_dragged_item());
+  ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+
+  // Release drag.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+  GetEventGenerator()->ReleaseLeftButton();
+  ASSERT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_EQ(folder_item_view->item()->ChildItemCount(), 1u);
+
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // After releasing drag, check that the root item views are still animating.
+  for (size_t i = 1; i < apps_grid_view_->view_model()->view_size(); i++) {
+    auto* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_TRUE(item_view->layer()->GetAnimator()->is_animating() ||
+                apps_grid_view_->IsAnimatingView(item_view));
+  }
+}
+
 }  // namespace test
 }  // namespace ash

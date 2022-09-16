@@ -1997,6 +1997,15 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
 
   UpdatePaging();
   ClearDragState();
+  if (GetWidget()) {
+    // Normally Layout() cancels any animations. At this point there may be a
+    // pending Layout(), force it now so that one isn't triggered part way
+    // through the animation. Further, ignore this layout so that the position
+    // isn't reset.
+    DCHECK(!ignore_layout_);
+    base::AutoReset<bool> auto_reset(&ignore_layout_, true);
+    GetWidget()->LayoutRootViewIfNecessary();
+  }
 
   if (cardified_state_)
     MaybeEndCardifiedView();
