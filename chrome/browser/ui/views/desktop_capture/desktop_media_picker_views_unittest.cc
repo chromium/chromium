@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -88,6 +89,58 @@ DesktopMediaID::Type GetSourceIdType(DesktopMediaList::Type type) {
   NOTREACHED();
   return DesktopMediaID::Type::TYPE_NONE;
 }
+
+std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
+  switch (type) {
+    case DesktopMediaList::Type::kScreen:
+      return "Screen";
+    case DesktopMediaList::Type::kWindow:
+      return "Window";
+    case DesktopMediaList::Type::kWebContents:
+      return "Tab";
+    case DesktopMediaList::Type::kCurrentTab:
+      return "CurrentTab";
+    case DesktopMediaList::Type::kNone:
+      return "None";
+  }
+  NOTREACHED();
+  return "None";
+}
+
+struct PickerConfiguration {
+  const bool prefer_current_tab;
+  const bool new_order;
+
+  // Overload the << operator so that gtest can pretty-print this struct.
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const PickerConfiguration& config) {
+    return os << config.DebugString();
+  }
+
+  std::string DebugString() const {
+    return base::StrCat({"Prefer Current Tab: ",
+                         // Intentionally put an extra space after true so that
+                         // the strings are the same length.
+                         prefer_current_tab ? "True,  " : "False, ",
+                         "New Order: ", new_order ? "True" : "False"});
+  }
+
+  std::string TestNameString() const {
+    return base::StrCat({new_order ? "NewOrder_" : "OldOrder_",
+                         prefer_current_tab ? "PreferCurrentTab" : "Standard"});
+  }
+
+  std::vector<DesktopMediaList::Type> GetSourceTypes() const {
+    return ::views::GetSourceTypes(prefer_current_tab, new_order);
+  }
+};
+
+namespace {
+constexpr std::array<PickerConfiguration, 3> kDefaultProductSourceConfigs = {
+    PickerConfiguration{.prefer_current_tab = false, .new_order = false},
+    PickerConfiguration{.prefer_current_tab = true, .new_order = false},
+    PickerConfiguration{.prefer_current_tab = false, .new_order = true}};
+}  // namespace
 
 class DesktopMediaPickerViewsTestBase : public testing::Test {
  public:
@@ -205,24 +258,21 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
 
 class DesktopMediaPickerViewsTest
     : public DesktopMediaPickerViewsTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<PickerConfiguration> {
  public:
   DesktopMediaPickerViewsTest()
-      : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(PreferCurrentTab(), NewOrder())) {}
+      : DesktopMediaPickerViewsTestBase(config().GetSourceTypes()) {}
   ~DesktopMediaPickerViewsTest() override = default;
 
-  bool PreferCurrentTab() const { return std::get<0>(GetParam()); }
-  bool NewOrder() const { return std::get<1>(GetParam()); }
+  PickerConfiguration config() const { return GetParam(); }
+
+  bool PreferCurrentTab() const { return config().prefer_current_tab; }
+  bool NewOrder() const { return config().new_order; }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DesktopMediaPickerViewsTest,
-    testing::Values(
-        std::make_tuple(/*PreferCurrentTab=*/false, /*NewOrder=*/false),
-        std::make_tuple(/*PreferCurrentTab=*/true, /*NewOrder=*/false),
-        std::make_tuple(/*PreferCurrentTab=*/false, /*NewOrder=*/true)));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DesktopMediaPickerViewsTest,
+                         testing::ValuesIn(kDefaultProductSourceConfigs));
 
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledWhenWindowClosed) {
   GetPickerDialogView()->GetWidget()->Close();
@@ -248,31 +298,6 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledOnOkButtonPressed) {
   EXPECT_EQ(kFakeId, WaitForPickerDone());
 }
 
-// Verifies that a MediaSourceView is selected with mouse left click and
-// original selected MediaSourceView gets unselected.
-TEST_P(DesktopMediaPickerViewsTest, SelectMediaSourceViewOnSingleClick) {
-  for (const DesktopMediaList::Type source_type : source_types()) {
-    const auto source_id_type = GetSourceIdType(source_type);
-
-    test_api_.SelectTabForSourceType(source_type);
-    media_lists_[source_type]->AddSourceByFullMediaID(
-        DesktopMediaID(source_id_type, 10));
-    media_lists_[source_type]->AddSourceByFullMediaID(
-        DesktopMediaID(source_id_type, 20));
-
-    // By default, nothing should be selected.
-    EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
-
-    test_api_.PressMouseOnSourceAtIndex(0);
-    ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-    EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
-
-    test_api_.PressMouseOnSourceAtIndex(1);
-    ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-    EXPECT_EQ(20, test_api_.GetSelectedSourceId().value());
-  }
-}
-
 // Regression test for https://crbug.com/1102153
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleTap) {
   const DesktopMediaID kFakeId(DesktopMediaID::TYPE_SCREEN, 222);
@@ -291,77 +316,6 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleTap) {
 TEST_P(DesktopMediaPickerViewsTest, CancelButtonAlwaysEnabled) {
   EXPECT_TRUE(
       GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL));
-}
-
-// Verifies that the MediaSourceView is added or removed when |media_list_| is
-// updated.
-TEST_P(DesktopMediaPickerViewsTest, AddAndRemoveMediaSource) {
-  for (const DesktopMediaList::Type source_type : source_types()) {
-    const auto source_id_type = GetSourceIdType(source_type);
-
-    test_api_.SelectTabForSourceType(source_type);
-    // No media source at first.
-    EXPECT_FALSE(test_api_.HasSourceAtIndex(0));
-
-    for (int i = 0; i < 3; ++i) {
-      media_lists_[source_type]->AddSourceByFullMediaID(
-          DesktopMediaID(source_id_type, i));
-      EXPECT_TRUE(test_api_.HasSourceAtIndex(i));
-    }
-
-    for (int i = 2; i >= 0; --i) {
-      media_lists_[source_type]->RemoveSource(i);
-      EXPECT_FALSE(test_api_.HasSourceAtIndex(i));
-    }
-  }
-}
-
-// Verifies that focusing the MediaSourceView marks it selected and the
-// original selected MediaSourceView gets unselected.
-TEST_P(DesktopMediaPickerViewsTest, FocusMediaSourceViewToSelect) {
-  for (const DesktopMediaList::Type source_type : source_types()) {
-    const auto source_id_type = GetSourceIdType(source_type);
-
-    test_api_.SelectTabForSourceType(source_type);
-    media_lists_[source_type]->AddSourceByFullMediaID(
-        DesktopMediaID(source_id_type, 10));
-    media_lists_[source_type]->AddSourceByFullMediaID(
-        DesktopMediaID(source_id_type, 20));
-
-    test_api_.FocusSourceAtIndex(0);
-    ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-    EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
-
-    if (test_api_.AudioSupported(source_type)) {
-      test_api_.FocusAudioCheckbox();
-      ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-      EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
-    }
-
-    test_api_.FocusSourceAtIndex(1);
-    ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-    EXPECT_EQ(20, test_api_.GetSelectedSourceId().value());
-  }
-}
-
-TEST_P(DesktopMediaPickerViewsTest, OkButtonDisabledWhenNoSelection) {
-  for (const DesktopMediaList::Type source_type : source_types()) {
-    const auto source_id_type = GetSourceIdType(source_type);
-
-    test_api_.SelectTabForSourceType(source_type);
-    media_lists_[source_type]->AddSourceByFullMediaID(
-        DesktopMediaID(source_id_type, 111));
-    EXPECT_FALSE(
-        GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
-
-    test_api_.FocusSourceAtIndex(0);
-    EXPECT_TRUE(
-        GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
-
-    media_lists_[source_type]->RemoveSource(0);
-    EXPECT_FALSE(
-        GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
-  }
 }
 
 TEST_P(DesktopMediaPickerViewsTest, AudioCheckboxDefaultStates) {
@@ -504,30 +458,152 @@ TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
   EXPECT_EQ(fake_id, WaitForPickerDone());
 }
 
-// Verifies that the controller can successfully clear the selection when asked
-// to do so.
-TEST_P(DesktopMediaPickerViewsTest, ClearSelection) {
-  for (const DesktopMediaList::Type source_type : source_types()) {
-    const auto source_id_type = GetSourceIdType(source_type);
+class DesktopMediaPickerViewsPerTypeTest
+    : public DesktopMediaPickerViewsTestBase,
+      public testing::WithParamInterface<
+          std::tuple<PickerConfiguration, DesktopMediaList::Type>> {
+ public:
+  DesktopMediaPickerViewsPerTypeTest()
+      : DesktopMediaPickerViewsTestBase(config().GetSourceTypes()),
+        source_id_type_(GetSourceIdType(type())) {}
+  ~DesktopMediaPickerViewsPerTypeTest() override = default;
 
-    test_api_.SelectTabForSourceType(source_type);
-    media_lists_[source_type]->AddSourceByFullMediaID(
-        DesktopMediaID(source_id_type, 10));
-    media_lists_[source_type]->AddSourceByFullMediaID(
-        DesktopMediaID(source_id_type, 20));
+  void SetUp() override {
+    // We must first call the base class SetUp, as if we skip without doing so,
+    // then teardown will fail.
+    DesktopMediaPickerViewsTestBase::SetUp();
 
-    // By default, nothing should be selected.
-    EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
+    if (!base::Contains(source_types(), type())) {
+      GTEST_SKIP();
+    }
 
-    // Select a Source ID.
-    test_api_.PressMouseOnSourceAtIndex(0);
+    test_api_.SelectTabForSourceType(type());
+  }
+
+  PickerConfiguration config() const { return std::get<0>(GetParam()); }
+  DesktopMediaList::Type type() const { return std::get<1>(GetParam()); }
+  DesktopMediaID::Type source_id_type() const { return source_id_type_; }
+
+  static std::string GetDescription(
+      const testing::TestParamInfo<
+          DesktopMediaPickerViewsPerTypeTest::ParamType>& info) {
+    const PickerConfiguration& config = std::get<0>(info.param);
+    const DesktopMediaList::Type& type = std::get<1>(info.param);
+
+    return base::StrCat({config.TestNameString(),
+                         "_",  // Ensure config and type strings are separated.
+                         GetTypeAsTestNameString(type)});
+  }
+
+ private:
+  const DesktopMediaID::Type source_id_type_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DesktopMediaPickerViewsPerTypeTest,
+    testing::Combine(testing::ValuesIn(kDefaultProductSourceConfigs),
+                     testing::Values(DesktopMediaList::Type::kCurrentTab,
+                                     DesktopMediaList::Type::kWebContents,
+                                     DesktopMediaList::Type::kWindow,
+                                     DesktopMediaList::Type::kScreen)),
+    &DesktopMediaPickerViewsPerTypeTest::GetDescription);
+
+// Verifies that a MediaSourceView is selected with mouse left click and
+// original selected MediaSourceView gets unselected.
+TEST_P(DesktopMediaPickerViewsPerTypeTest, SelectMediaSourceViewOnSingleClick) {
+  media_lists_[type()]->AddSourceByFullMediaID(
+      DesktopMediaID(source_id_type(), 10));
+  media_lists_[type()]->AddSourceByFullMediaID(
+      DesktopMediaID(source_id_type(), 20));
+
+  // By default, nothing should be selected.
+  EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
+
+  test_api_.PressMouseOnSourceAtIndex(0);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+
+  test_api_.PressMouseOnSourceAtIndex(1);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(20, test_api_.GetSelectedSourceId().value());
+}
+
+// Verifies that the MediaSourceView is added or removed when |media_list_| is
+// updated.
+TEST_P(DesktopMediaPickerViewsPerTypeTest, AddAndRemoveMediaSource) {
+  // No media source at first.
+  EXPECT_FALSE(test_api_.HasSourceAtIndex(0));
+
+  for (int i = 0; i < 3; ++i) {
+    media_lists_[type()]->AddSourceByFullMediaID(
+        DesktopMediaID(source_id_type(), i));
+    EXPECT_TRUE(test_api_.HasSourceAtIndex(i));
+  }
+
+  for (int i = 2; i >= 0; --i) {
+    media_lists_[type()]->RemoveSource(i);
+    EXPECT_FALSE(test_api_.HasSourceAtIndex(i));
+  }
+}
+
+// Verifies that focusing the MediaSourceView marks it selected and the
+// original selected MediaSourceView gets unselected.
+TEST_P(DesktopMediaPickerViewsPerTypeTest, FocusMediaSourceViewToSelect) {
+  media_lists_[type()]->AddSourceByFullMediaID(
+      DesktopMediaID(source_id_type(), 10));
+  media_lists_[type()]->AddSourceByFullMediaID(
+      DesktopMediaID(source_id_type(), 20));
+
+  test_api_.FocusSourceAtIndex(0);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+
+  if (test_api_.AudioSupported(type())) {
+    test_api_.FocusAudioCheckbox();
     ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
     EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
-
-    // Clear the selection and assert that nothing is selected.
-    test_api_.GetSelectedController()->ClearSelection();
-    EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
   }
+
+  test_api_.FocusSourceAtIndex(1);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(20, test_api_.GetSelectedSourceId().value());
+}
+
+TEST_P(DesktopMediaPickerViewsPerTypeTest, OkButtonDisabledWhenNoSelection) {
+  media_lists_[type()]->AddSourceByFullMediaID(
+      DesktopMediaID(source_id_type(), 111));
+  EXPECT_FALSE(
+      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  test_api_.FocusSourceAtIndex(0);
+  EXPECT_TRUE(
+      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  media_lists_[type()]->RemoveSource(0);
+  EXPECT_FALSE(
+      GetPickerDialogView()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+}
+
+// Verifies that the controller can successfully clear the selection when asked
+// to do so.
+TEST_P(DesktopMediaPickerViewsPerTypeTest, ClearSelection) {
+  media_lists_[type()]->AddSourceByFullMediaID(
+      DesktopMediaID(source_id_type(), 10));
+  media_lists_[type()]->AddSourceByFullMediaID(
+      DesktopMediaID(source_id_type(), 20));
+
+  // By default, nothing should be selected.
+  EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
+
+  // Select a Source ID.
+  test_api_.PressMouseOnSourceAtIndex(0);
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+
+  // Clear the selection and assert that nothing is selected.
+  test_api_.GetSelectedController()->ClearSelection();
+  EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
 }
 
 class DesktopMediaPickerViewsSystemAudioTest
