@@ -868,10 +868,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
       extensions::ProcessManager::Get(browser()->profile());
   std::set<content::RenderFrameHost*> hosts =
       manager->GetRenderFrameHostsForExtension(extension->id());
-  const auto& it =
-      base::ranges::find_if(hosts, [](content::RenderFrameHost* host) {
-        return host->IsInPrimaryMainFrame();
-      });
+  const auto& it = base::ranges::find_if(
+      hosts, &content::RenderFrameHost::IsInPrimaryMainFrame);
   content::RenderFrameHost* primary_rfh = (it != hosts.end()) ? *it : nullptr;
   ASSERT_TRUE(primary_rfh);
 

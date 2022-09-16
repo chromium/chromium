@@ -100,11 +100,9 @@ void ReadInstallCommandFromManifest(const base::FilePath& offline_dir,
   install_args = it->manifest.arguments;
 
   if (!install_data_index.empty()) {
-    auto data_iter = base::ranges::find_if(
-        it->data, [&install_data_index](
-                      const update_client::ProtocolParser::Result::Data& data) {
-          return install_data_index == data.install_data_index;
-        });
+    auto data_iter = base::ranges::find(
+        it->data, install_data_index,
+        &update_client::ProtocolParser::Result::Data::install_data_index);
     if (data_iter == std::end(it->data)) {
       VLOG(2) << "Install data index not found: " << install_data_index;
       return;

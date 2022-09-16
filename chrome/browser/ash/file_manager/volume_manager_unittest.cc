@@ -1103,9 +1103,8 @@ TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
   std::vector<base::WeakPtr<Volume>> volume_list =
       volume_manager()->GetVolumeList();
   ASSERT_GT(volume_list.size(), 0u);
-  auto volume = base::ranges::find_if(volume_list, [](auto& v) {
-    return v->volume_id() == "downloads:MyFiles";
-  });
+  auto volume =
+      base::ranges::find(volume_list, "downloads:MyFiles", &Volume::volume_id);
   EXPECT_FALSE(volume == volume_list.end());
   EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, (*volume)->type());
 }

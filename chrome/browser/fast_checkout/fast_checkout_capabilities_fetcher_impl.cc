@@ -138,10 +138,10 @@ void FastCheckoutCapabilitiesFetcherImpl::OnGetCapabilitiesInformationReceived(
   }
 
   std::vector<CapabilitiesInfo>::const_iterator request_capabilities =
-      base::ranges::find_if(
-          capabilities, [&origin](const CapabilitiesInfo& info) {
-            return url::Origin::Create(GURL(info.url)) == origin;
-          });
+      base::ranges::find(capabilities, origin,
+                         [](const CapabilitiesInfo& info) {
+                           return url::Origin::Create(GURL(info.url));
+                         });
 
   if (request_capabilities != capabilities.end() &&
       request_capabilities->bundle_capabilities_information.has_value()) {

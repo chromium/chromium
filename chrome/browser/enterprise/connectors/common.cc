@@ -384,8 +384,7 @@ Profile* GetMainProfileLacros() {
   if (!profile_manager)
     return nullptr;
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(
-      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
   if (main_it == profiles.end())
     return nullptr;
   return *main_it;

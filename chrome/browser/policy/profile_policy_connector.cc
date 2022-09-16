@@ -340,8 +340,7 @@ bool ProfilePolicyConnector::IsMainProfile() const {
     return true;
 
   auto profiles = profile_manager->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(
-      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
   if (main_it == profiles.end())
     return false;
   return (*main_it)->GetProfilePolicyConnector() == this;

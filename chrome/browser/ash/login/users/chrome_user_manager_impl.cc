@@ -870,11 +870,9 @@ void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
   // device-local account list here to extract the kiosk_app_id.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(cros_settings_);
-  const auto account = base::ranges::find_if(
-      device_local_accounts,
-      [&kiosk_app_account_id](const policy::DeviceLocalAccount& account) {
-        return account.user_id == kiosk_app_account_id.GetUserEmail();
-      });
+  const auto account = base::ranges::find(device_local_accounts,
+                                          kiosk_app_account_id.GetUserEmail(),
+                                          &policy::DeviceLocalAccount::user_id);
   std::string kiosk_app_id;
   if (account != device_local_accounts.end()) {
     kiosk_app_id = account->kiosk_app_id;

@@ -355,8 +355,7 @@ void BrowserSwitcherService::OnBrowserSwitcherPrefsChanged(
   // Record |BrowserSwitcher.AlternativeBrowser| when the
   // |BrowserSwitcherEnabled| or |AlternativeBrowserPath| policies change.
   bool should_record_metrics =
-      changed_prefs.end() !=
-      base::ranges::find_if(changed_prefs, [](const std::string& pref) {
+      base::ranges::any_of(changed_prefs, [](const std::string& pref) {
         return pref == prefs::kEnabled ||
                pref == prefs::kAlternativeBrowserPath;
       });

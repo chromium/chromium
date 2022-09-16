@@ -184,12 +184,8 @@ bool GetFileResources(const std::vector<std::string>& files,
     }
 
     // ExtensionResource doesn't implement an operator==.
-    auto existing = base::ranges::find_if(
-        resources, [&resource](const ExtensionResource& other) {
-          return resource.relative_path() == other.relative_path();
-        });
-
-    if (existing != resources.end()) {
+    if (base::Contains(resources, resource.relative_path(),
+                       &ExtensionResource::relative_path)) {
       // Disallow duplicates. Note that we could allow this, if we wanted (and
       // there *might* be reason to with JS injection, to perform an operation
       // twice?). However, this matches content script behavior, and injecting
