@@ -195,6 +195,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted"
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records charactersitics of original text and suggested text
+    for an accepted autocorrect suggestion on Virtual Keyboard. These
+    measurements highlight the changes applied by autocorrect on the original
+    text such as changing accent, lower casing, capitalizing or mutating
+    characters. It records everytime that an autocorrect suggestion is accepted
+    by user interactions.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Quality.PkRejected"
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records charactersitics of original text and suggested text
+    for a rejected autocorrect suggestion on Virtual Keyboard. These
+    measurements highlight the changes applied by autocorrect on the original
+    text such as changing accent, lower casing, capitalizing or mutating
+    characters. It records everytime that an autocorrect suggestion is rejected
+    or undone by user interactions.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Quality.VkAccepted"
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records charactersitics of original text and suggested text
+    for an accepted autocorrect suggestion on Virtual Keyboard. These
+    measurements highlight the changes applied by autocorrect on the original
+    text such as changing accent, lower casing, capitalizing or mutating
+    characters. It records everytime that an autocorrect suggestion is accepted
+    by user interactions.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Quality.VkRejected"
+    enum="IMEAutocorrectQualityBreakdown" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records charactersitics of original text and suggested text
+    for a rejected autocorrect suggestion on Virtual Keyboard. These
+    measurements highlight the changes applied by autocorrect on the original
+    text such as changing accent, lower casing, capitalizing or mutating
+    characters. It records everytime that an autocorrect suggestion is rejected
+    or undone by user interactions.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
     units="ms" expires_after="2022-10-04">
   <owner>curtismcmullan@google.com</owner>

@@ -96,6 +96,36 @@ enum class AutocorrectInternalStates {
   kMaxValue = kHandleSuggestionInDenylistedApp,
 };
 
+// Must match with IMEAutocorrectQualityBreakdown in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutocorrectQualityBreakdown {
+  // All the suggestions that resolved.
+  kSuggestionResolved = 0,
+  // Original text included only ascii letters.
+  kOriginalTextIsAscii = 1,
+  // Suggested text included only ascii letters.
+  kSuggestedTextIsAscii = 2,
+  // Suggestion splitted a word into more than one.
+  kSuggestionSplittedWord = 3,
+  // Suggestion capitalized first word.
+  kSuggestionCapitalizedWord = 4,
+  // Suggestion made word lower case.
+  kSuggestionLowerCasedWord = 5,
+  // Suggestion is equal to original text when compared case insensitive.
+  kSuggestionChangeLetterCases = 6,
+  // Suggestion was longer than the original text.
+  kSuggestionInsertedLetters = 7,
+  // Suggestion was shorter than the original text.
+  kSuggestionRemovedLetters = 8,
+  // Autocorrect suggestion had the same length as the original text.
+  kSuggestionMutatedLetters = 9,
+  // Autocorrect suggestion changed accents.
+  kSuggestionChangedAccent = 10,
+  kMaxValue = kSuggestionChangedAccent,
+};
+
 // Implements functionality for chrome.input.ime.autocorrect() extension API.
 // This function shows UI to indicate that autocorrect has happened and allows
 // it to be undone easily.
@@ -148,6 +178,8 @@ class AutocorrectManager {
 
  private:
   void LogAssistiveAutocorrectAction(AutocorrectActions action);
+  void MeasureAndLogAssistiveAutocorrectQualityBreakdown(
+      AutocorrectActions action);
 
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 

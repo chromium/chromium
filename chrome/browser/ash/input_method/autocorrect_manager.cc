@@ -7,9 +7,11 @@
 #include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
@@ -96,6 +98,37 @@ void LogAssistiveAutocorrectInternalState(
   } else {
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.AutocorrectV2.Internal.PkState", internal_state);
+  }
+}
+
+void LogAssistiveAutocorrectQualityBreakdown(
+    AutocorrectQualityBreakdown quality_breakdown,
+    bool suggestion_accepted,
+    bool virtual_keyboard_visible) {
+  std::string histogram_name = "InputMethod.Assistive.AutocorrectV2.Quality.";
+
+  // Explicitly use autocorrect histogram name so that this usage can be found
+  // using code search.
+  if (virtual_keyboard_visible) {
+    if (suggestion_accepted) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.Assistive.AutocorrectV2.Quality.VkAccepted",
+          quality_breakdown);
+    } else {
+      base::UmaHistogramEnumeration(
+          "InputMethod.Assistive.AutocorrectV2.Quality.VkRejected",
+          quality_breakdown);
+    }
+  } else {
+    if (suggestion_accepted) {
+      base::UmaHistogramEnumeration(
+          "InputMethod.Assistive.AutocorrectV2.Quality.PkAccepted",
+          quality_breakdown);
+    } else {
+      base::UmaHistogramEnumeration(
+          "InputMethod.Assistive.AutocorrectV2.Quality.PkRejected",
+          quality_breakdown);
+    }
   }
 }
 
@@ -254,6 +287,87 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
           "InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions",
           action);
     }
+  }
+}
+
+void AutocorrectManager::MeasureAndLogAssistiveAutocorrectQualityBreakdown(
+    AutocorrectActions action) {
+  if (!pending_autocorrect_.has_value() ||
+      pending_autocorrect_->suggested_text.empty() ||
+      pending_autocorrect_->original_text.empty() ||
+      (action != AutocorrectActions::kUserAcceptedAutocorrect &&
+       action != AutocorrectActions::kUserActionClearedUnderline &&
+       action != AutocorrectActions::kReverted)) {
+    return;
+  }
+
+  bool suggestion_accepted =
+      action == AutocorrectActions::kUserAcceptedAutocorrect;
+  bool virtual_keyboard_visible =
+      pending_autocorrect_->virtual_keyboard_visible;
+
+  const std::u16string& original_text = pending_autocorrect_->original_text;
+  const std::u16string& suggested_text = pending_autocorrect_->suggested_text;
+
+  LogAssistiveAutocorrectQualityBreakdown(
+      AutocorrectQualityBreakdown::kSuggestionResolved, suggestion_accepted,
+      virtual_keyboard_visible);
+
+  if (diacritics_insensitive_string_comparator_.Equal(original_text,
+                                                      suggested_text)) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionChangedAccent,
+        suggestion_accepted, virtual_keyboard_visible);
+  }
+
+  if (suggested_text.find(' ') != std::u16string::npos) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionSplittedWord,
+        suggestion_accepted, virtual_keyboard_visible);
+  }
+
+  if (original_text.size() < suggested_text.size()) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionInsertedLetters,
+        suggestion_accepted, virtual_keyboard_visible);
+  } else if (original_text.size() == suggested_text.size()) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionMutatedLetters,
+        suggestion_accepted, virtual_keyboard_visible);
+  } else {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionRemovedLetters,
+        suggestion_accepted, virtual_keyboard_visible);
+  }
+
+  if (base::i18n::ToLower(original_text) ==
+      base::i18n::ToLower(suggested_text)) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionChangeLetterCases,
+        suggestion_accepted, virtual_keyboard_visible);
+  }
+
+  if (base::IsAsciiLower(original_text[0]) &&
+      base::IsAsciiUpper(suggested_text[0])) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionCapitalizedWord,
+        suggestion_accepted, virtual_keyboard_visible);
+  } else if (base::IsAsciiUpper(original_text[0]) &&
+             base::IsAsciiLower(suggested_text[0])) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestionLowerCasedWord,
+        suggestion_accepted, virtual_keyboard_visible);
+  }
+
+  if (base::IsStringASCII(original_text)) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kOriginalTextIsAscii, suggestion_accepted,
+        virtual_keyboard_visible);
+  }
+  if (base::IsStringASCII(suggested_text)) {
+    LogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectQualityBreakdown::kSuggestedTextIsAscii, suggestion_accepted,
+        virtual_keyboard_visible);
   }
 }
 
@@ -468,6 +582,8 @@ void AutocorrectManager::UndoAutocorrect() {
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
 
+  MeasureAndLogAssistiveAutocorrectQualityBreakdown(
+      AutocorrectActions::kReverted);
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
@@ -601,6 +717,8 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
         AutocorrectActions::kUserActionClearedUnderline);
   } else if (input_context &&
              !input_context->GetAutocorrectRange().is_empty()) {
+    MeasureAndLogAssistiveAutocorrectQualityBreakdown(
+        AutocorrectActions::kUserAcceptedAutocorrect);
     LogAssistiveAutocorrectInternalState(
         AutocorrectInternalStates::kSuggestionAccepted);
     // Non-empty autocorrect range means that the user has not modified
@@ -612,6 +730,9 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
     if (!input_context) {
       LogAssistiveAutocorrectInternalState(
           AutocorrectInternalStates::kNoInputContext);
+    } else {
+      MeasureAndLogAssistiveAutocorrectQualityBreakdown(
+          AutocorrectActions::kUserActionClearedUnderline);
     }
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserActionClearedUnderline);
