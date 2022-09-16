@@ -17,6 +17,7 @@ from typing import Iterable, Optional
 from common import get_host_arch, run_ffx_command, run_continuous_ffx_command, \
                    SDK_ROOT
 
+_EMU_COMMAND_RETRIES = 3
 RUN_SUMMARY_SCHEMA = \
     'https://fuchsia.dev/schema/ffx_test/run_summary-8d1dd964.json'
 
@@ -194,7 +195,12 @@ class FfxEmulator(AbstractContextManager):
                 json.dump(ast.literal_eval(qemu_arm64_meta), f)
             emu_command.extend(['--engine', 'qemu'])
 
-        run_ffx_command(emu_command)
+        for retry_num in range(_EMU_COMMAND_RETRIES):
+            if retry_num == _EMU_COMMAND_RETRIES - 1:
+                run_ffx_command(emu_command)
+            else:
+                if run_ffx_command(emu_command, check=False).returncode == 0:
+                    break
         return self._node_name
 
     def __exit__(self, exc_type, exc_value, traceback) -> bool:
