@@ -242,7 +242,7 @@ public class CustomTabIntentDataProviderTest {
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     public void isAllowedThirdParty_noDefaultPolicy() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
@@ -265,7 +265,7 @@ public class CustomTabIntentDataProviderTest {
     public void
     isAllowedThirdParty_denylist() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-denylist");
@@ -288,7 +288,7 @@ public class CustomTabIntentDataProviderTest {
     public void
     isAllowedThirdParty_allowlist() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
         CustomTabIntentDataProvider provider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-allowlist");

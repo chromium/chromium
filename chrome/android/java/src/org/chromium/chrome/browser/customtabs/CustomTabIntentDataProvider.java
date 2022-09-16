@@ -165,9 +165,17 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /**
      * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
      * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
+     * TODO(jinsukkim): Deprecate this.
      */
-    public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL =
+    public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL_LEGACY =
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
+
+    /**
+     * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
+     * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
+     */
+    public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_PX =
+            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_PX";
 
     /**
      * Extra that, if set in combination with
@@ -180,9 +188,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /**
      * Extra that, if set, makes the toolbar's top corner radii to be x pixels. This will only have
      * effect if the custom tab is behaving as a bottom sheet. Currently, this is capped at 16dp.
+     * TODO(jinsukkim): Deprecate this.
      */
-    public static final String EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL =
+    public static final String EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY =
             "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL";
+
+    /** Extra that sets the toolbar's top corner radii in dp */
+    public static final String EXTRA_TOOLBAR_CORNER_RADIUS_DP =
+            "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_DP";
 
     /**
      * Extra that specifies the position of the close button on the toolbar. Default is
@@ -283,15 +296,23 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
-        final int height = IntentUtils.safeGetIntExtra(
-                intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 0);
-        if (height <= 0) {
+        if (getInitialActivityHeightFromIntent(intent) == 0) {
             // fallback to normal Custom Tab.
             return;
         }
         intent.setClassName(context, TranslucentCustomTabActivity.class.getName());
         // When scrolling up the web content, we don't want to hide the URL bar.
         intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
+    }
+
+    /** Returns the initial activity height in px. */
+    private static int getInitialActivityHeightFromIntent(Intent intent) {
+        int heightPx1 = IntentUtils.safeGetIntExtra(intent,
+                CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL_LEGACY, 0);
+        if (heightPx1 > 0) return heightPx1;
+        int heightPx2 = IntentUtils.safeGetIntExtra(
+                intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0);
+        return heightPx2 > 0 ? heightPx2 : 0;
     }
 
     /**
@@ -401,16 +422,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         mGsaExperimentIds = IntentUtils.safeGetIntArrayExtra(intent, EXPERIMENT_IDS);
 
-        mInitialActivityHeight =
-                IntentUtils.safeGetIntExtra(intent, EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 0);
-        int defaultToolbarCornerRadius = context.getResources().getDimensionPixelSize(
-                R.dimen.custom_tabs_default_corner_radius);
-        if (ChromeFeatureList.sCctToolbarCustomizations.isEnabled()) {
-            mPartialTabToolbarCornerRadius = IntentUtils.safeGetIntExtra(
-                    intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL, defaultToolbarCornerRadius);
-        } else {
-            mPartialTabToolbarCornerRadius = defaultToolbarCornerRadius;
-        }
+        mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
+        mPartialTabToolbarCornerRadius = getToolbarCornerRadiusFromIntent(context, intent);
 
         // The default behavior is that the pcct is resizable.
         @ActivityResizeBehavior
@@ -418,6 +431,22 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 intent, EXTRA_ACTIVITY_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
         mIsPartialCustomTabFixedHeight =
                 activityResizeBehavior == ACTIVITY_HEIGHT_FIXED ? true : false;
+    }
+
+    /** Returns the toolbar corner radius in px. */
+    private static int getToolbarCornerRadiusFromIntent(Context context, Intent intent) {
+        int defaultRadius = context.getResources().getDimensionPixelSize(
+                R.dimen.custom_tabs_default_corner_radius);
+        if (ChromeFeatureList.sCctToolbarCustomizations.isEnabled()) {
+            int radiusPx = IntentUtils.safeGetIntExtra(
+                    intent, EXTRA_TOOLBAR_CORNER_RADIUS_IN_PIXEL_LEGACY, 0);
+            if (radiusPx > 0) return radiusPx;
+            int radiusDp = IntentUtils.safeGetIntExtra(intent, EXTRA_TOOLBAR_CORNER_RADIUS_DP, 0);
+            if (radiusDp > 0) {
+                return Math.round(radiusDp * context.getResources().getDisplayMetrics().density);
+            }
+        }
+        return defaultRadius;
     }
 
     private void updateExtraMenuItems(List<Bundle> menuItems) {
