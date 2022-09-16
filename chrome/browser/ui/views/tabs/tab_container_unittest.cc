@@ -45,10 +45,15 @@ class FakeTabDragContext : public TabDragContextBase {
 
   void UpdateAnimationTarget(TabSlotView* tab_slot_view,
                              const gfx::Rect& target_bounds) override {}
-  bool IsDragSessionActive() const override { return false; }
+  bool IsDragSessionActive() const override { return drag_session_active_; }
   bool IsEndingDrag() const override { return false; }
   void FinishEndingDrag() override {}
   int GetTabDragAreaWidth() const override { return width(); }
+
+  void set_drag_session_active(bool active) { drag_session_active_ = active; }
+
+ private:
+  bool drag_session_active_ = false;
 };
 
 class FakeTabContainerController final : public TabContainerController {
@@ -120,7 +125,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_slot_controller_ =
         std::make_unique<FakeTabSlotController>(tab_strip_controller_.get());
 
-    std::unique_ptr<TabDragContextBase> drag_context =
+    std::unique_ptr<FakeTabDragContext> drag_context =
         std::make_unique<FakeTabDragContext>();
     std::unique_ptr<TabContainer> tab_container =
         std::make_unique<TabContainerImpl>(
@@ -315,7 +320,7 @@ class TabContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<FakeBaseTabStripController> tab_strip_controller_;
   std::unique_ptr<FakeTabContainerController> tab_container_controller_;
   std::unique_ptr<FakeTabSlotController> tab_slot_controller_;
-  raw_ptr<TabDragContextBase> drag_context_;
+  raw_ptr<FakeTabDragContext> drag_context_;
   raw_ptr<TabContainer> tab_container_;
   std::unique_ptr<views::Widget> widget_;
 
@@ -879,4 +884,30 @@ TEST_F(TabContainerTest, GroupHighlightBasics) {
             tab_container_->GetTabAtModelIndex(0)->bounds().right());
   EXPECT_EQ(bounds.height(),
             tab_container_->GetTabAtModelIndex(0)->bounds().height());
+}
+
+TEST_F(TabContainerTest, PreferredWidth) {
+  Tab* const tab = AddTab(0);
+  tab->SetBoundsRect(gfx::Rect());
+  tab_container_->StartBasicAnimation();
+
+  // During animations, container should prefer to match its child bounds.
+  const gfx::Rect initial_tab_bounds = tab->bounds();
+  ASSERT_TRUE(tab_container_->IsAnimating());
+
+  EXPECT_EQ(tab_container_->CalculatePreferredSize().width(),
+            initial_tab_bounds.right());
+
+  // Complete the animation and the preferred width should match ideal bounds.
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_NE(initial_tab_bounds, tab_container_->GetIdealBounds(0));
+  EXPECT_EQ(tab_container_->CalculatePreferredSize().width(),
+            tab_container_->GetIdealBounds(0).right());
+
+  // Emulate dragging the tab ten pixels to the right.
+  tab->SetBounds(tab->bounds().x() + 10, tab->bounds().y(),
+                 tab->bounds().width(), tab->bounds().height());
+  drag_context_->set_drag_session_active(true);
+  EXPECT_EQ(tab_container_->CalculatePreferredSize().width(),
+            tab->bounds().right());
 }

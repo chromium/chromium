@@ -557,8 +557,7 @@ void TabContainerImpl::InvalidateIdealBounds() {
 }
 
 bool TabContainerImpl::IsAnimating() const {
-  return bounds_animator_.IsAnimating() ||
-         (drag_context_ && drag_context_->IsEndingDrag());
+  return bounds_animator_.IsAnimating() || IsDragSessionEnding();
 }
 
 void TabContainerImpl::CancelAnimation() {
@@ -709,32 +708,38 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
 }
 
 gfx::Size TabContainerImpl::CalculatePreferredSize() const {
+  // The width spanned by all of the child views, with their current bounds.
+  int max_child_x = 0;
+  // The visual order of the tabs can be out of sync with the logical order,
+  // so we have to check all of them to find the visually trailing-most one.
+  for (views::View* child : children())
+    max_child_x = std::max(max_child_x, child->bounds().right());
+
+  // We also need to check each tab, in case the rightmost tab is currently
+  // being dragged. Group headers don't need such treatment, since any drag
+  // session including such a header must also include a tab to its right.
+  for (Tab* tab : layout_helper_->GetTabs())
+    max_child_x = std::max(max_child_x, tab->bounds().right());
+
+  // The width that would be spanned by our children after animations complete.
+  const int ideal_width = override_available_width_for_tabs_.value_or(
+      layout_helper_->CalculatePreferredWidth());
+
   int preferred_width;
-  // The tab container needs to always exactly fit the bounds of the tabs so
-  // that NTB can be laid out just to the right of the rightmost tab. When the
-  // tabs aren't at their ideal bounds (i.e. during animation or a drag), we
-  // need to size ourselves to exactly fit wherever the tabs *currently* are.
-  if (IsAnimating() || IsDragSessionActive()) {
-    // The visual order of the tabs can be out of sync with the logical order,
-    // so we have to check all of them to find the visually trailing-most one.
-    int max_x = 0;
-    for (views::View* child : children())
-      max_x = std::max(max_x, child->bounds().right());
-
-    // We also need to check each tab, in case the rightmost tab is currently
-    // being dragged. Group headers don't need such treatment, since any drag
-    // session including such a header must also include a tab to its right.
-    for (Tab* tab : layout_helper_->GetTabs())
-      max_x = std::max(max_x, tab->bounds().right());
-
-    // The tabs span from 0 to |max_x|, so |max_x| is the current width
-    // occupied by tabs. We report the current width as our preferred width so
-    // that the tab strip is sized to exactly fit the current position of the
-    // tabs.
-    preferred_width = max_x;
+  if (IsDragSessionActive() || IsDragSessionEnding()) {
+    // During a drag session (or while animating back to ideal bounds after
+    // finishing one), we want to cover both the current and ideal bounds of our
+    // children, so we behave predictably when dragging the rightmost tab.
+    preferred_width = std::max(max_child_x, ideal_width);
+  } else if (IsAnimating()) {
+    // During animations not related to a drag session, we want to tightly hug
+    // our tabs. This allows the NTB to slide smoothly as tabs are opened and
+    // closed.
+    preferred_width = max_child_x;
   } else {
-    preferred_width = override_available_width_for_tabs_.value_or(
-        layout_helper_->CalculatePreferredWidth());
+    // Otherwise, the tabstrip is in a steady state, so we want to use our ideal
+    // width.
+    preferred_width = ideal_width;
   }
 
   return gfx::Size(preferred_width, GetLayoutConstant(TAB_HEIGHT));
@@ -1074,7 +1079,7 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
       return;
     }
 
-    DCHECK(drag_context_->IsEndingDrag());
+    DCHECK(IsDragSessionEnding());
     // Notify |drag_context_| of the new animation target, since we can't
     // animate |tab| ourselves.
     drag_context_->UpdateAnimationTarget(tab, target_bounds);
@@ -1215,8 +1220,13 @@ void TabContainerImpl::StartResizeLayoutTabsFromTouchTimer() {
 }
 
 bool TabContainerImpl::IsDragSessionActive() const {
-  // |drag_context_| may be null in tests.
+  // `drag_context_` may be null in tests.
   return drag_context_ && drag_context_->IsDragSessionActive();
+}
+
+bool TabContainerImpl::IsDragSessionEnding() const {
+  // `drag_context_` may be null in tests.
+  return drag_context_ && drag_context_->IsEndingDrag();
 }
 
 void TabContainerImpl::AddMessageLoopObserver() {

@@ -250,6 +250,7 @@ class TabContainerImpl : public TabContainer,
   void StartResizeLayoutTabsFromTouchTimer();
 
   bool IsDragSessionActive() const;
+  bool IsDragSessionEnding() const;
 
   // Ensure that the message loop observer used for event spying is added and
   // removed appropriately so we can tell when to resize layout.
