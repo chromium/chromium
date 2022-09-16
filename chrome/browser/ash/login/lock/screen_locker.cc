@@ -275,12 +275,16 @@ void ScreenLocker::OnAuthFailure(const AuthFailure& error) {
 }
 
 void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
+  if (unlock_started_) {
+    VLOG(1) << "OnAuthSuccess called while unlock is already runing";
+    return;
+  }
+
+  unlock_started_ = true;
   CHECK(!IsAuthTemporarilyDisabledForUser(user_context.GetAccountId()))
       << "Authentication is disabled for this user.";
 
   incorrect_passwords_count_ = 0;
-  DCHECK(!unlock_started_);
-  unlock_started_ = true;
   if (authentication_start_time_.is_null()) {
     if (user_context.GetAccountId().is_valid())
       LOG(ERROR) << "Start time is not set at authentication success";
