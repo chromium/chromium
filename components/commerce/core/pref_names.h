@@ -7,6 +7,7 @@
 
 namespace commerce {
 
+extern const char kShoppingListBookmarkLastUpdateTime[];
 extern const char kWebAndAppActivityEnabledForShopping[];
 extern const char kPriceEmailNotificationsEnabled[];
 

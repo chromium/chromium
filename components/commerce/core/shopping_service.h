@@ -89,6 +89,7 @@ enum class ProductInfoFallback {
   kMaxValue = kPrice,
 };
 
+class BookmarkUpdateManager;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
@@ -354,6 +355,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       product_info_cache_;
 
   std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
+
+  std::unique_ptr<BookmarkUpdateManager> bookmark_update_manager_;
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);

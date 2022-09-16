@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_MOCK_SHOPPING_SERVICE_H_
 #define COMPONENTS_COMMERCE_CORE_MOCK_SHOPPING_SERVICE_H_
 
+#include <map>
 #include <memory>
 
 #include "components/commerce/core/shopping_service.h"
@@ -24,6 +25,9 @@ class MockShoppingService : public commerce::ShoppingService {
   // commerce::ShoppingService overrides.
   void GetProductInfoForUrl(const GURL& url,
                             commerce::ProductInfoCallback callback) override;
+  void GetUpdatedProductInfoForBookmarks(
+      const std::vector<int64_t>& bookmark_ids,
+      BookmarkProductInfoUpdatedCallback info_updated_callback) override;
   void GetMerchantInfoForUrl(const GURL& url,
                              MerchantInfoCallback callback) override;
   absl::optional<ProductInfo> GetAvailableProductInfoForUrl(
@@ -37,6 +41,8 @@ class MockShoppingService : public commerce::ShoppingService {
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
+  void SetResponsesForGetUpdatedProductInfoForBookmarks(
+      std::map<int64_t, ProductInfo> bookmark_updates);
   void SetResponseForGetMerchantInfoForUrl(
       absl::optional<commerce::MerchantInfo> merchant_info);
   void SetSubscribeCallbackValue(bool subscribe_should_succeed);
@@ -44,6 +50,7 @@ class MockShoppingService : public commerce::ShoppingService {
 
  private:
   absl::optional<commerce::ProductInfo> product_info_;
+  std::map<int64_t, ProductInfo> bookmark_updates_map_;
   absl::optional<commerce::MerchantInfo> merchant_info_;
   bool subscribe_callback_value_{true};
   bool unsubscribe_callback_value_{true};

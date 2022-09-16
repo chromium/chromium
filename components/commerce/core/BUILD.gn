@@ -147,6 +147,8 @@ source_set("heuristics_provider") {
 
 static_library("shopping_service") {
   sources = [
+    "bookmark_update_manager.cc",
+    "bookmark_update_manager.h",
     "price_tracking_utils.cc",
     "price_tracking_utils.h",
     "shopping_bookmark_model_observer.cc",
@@ -243,6 +245,7 @@ source_set("shopping_service_unit_tests") {
   testonly = true
 
   sources = [
+    "bookmark_update_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
     "price_tracking_utils_unittest.cc",
     "shopping_service_metrics_unittest.cc",
@@ -251,6 +254,7 @@ source_set("shopping_service_unit_tests") {
 
   deps = [
     ":metrics",
+    ":pref_names",
     ":shopping_service_test_support",
     "webui:unit_tests",
   ]

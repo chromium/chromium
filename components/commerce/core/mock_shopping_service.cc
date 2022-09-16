@@ -32,6 +32,21 @@ void MockShoppingService::GetProductInfoForUrl(
       FROM_HERE, base::BindOnce(std::move(callback), url, product_info_));
 }
 
+void MockShoppingService::GetUpdatedProductInfoForBookmarks(
+    const std::vector<int64_t>& bookmark_ids,
+    BookmarkProductInfoUpdatedCallback info_updated_callback) {
+  for (auto id : bookmark_ids) {
+    auto it = bookmark_updates_map_.find(id);
+
+    if (it == bookmark_updates_map_.end())
+      continue;
+
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(info_updated_callback, it->first, GURL(""), it->second));
+  }
+}
+
 absl::optional<ProductInfo> MockShoppingService::GetAvailableProductInfoForUrl(
     const GURL& url) {
   return product_info_;
@@ -40,6 +55,11 @@ absl::optional<ProductInfo> MockShoppingService::GetAvailableProductInfoForUrl(
 void MockShoppingService::SetResponseForGetProductInfoForUrl(
     absl::optional<commerce::ProductInfo> product_info) {
   product_info_ = product_info;
+}
+
+void MockShoppingService::SetResponsesForGetUpdatedProductInfoForBookmarks(
+    std::map<int64_t, ProductInfo> bookmark_updates) {
+  bookmark_updates_map_ = bookmark_updates;
 }
 
 void MockShoppingService::GetMerchantInfoForUrl(const GURL& url,

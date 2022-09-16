@@ -60,6 +60,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
          std::size(kCommercePriceTrackingNotifications), nullptr}};
 
 extern const base::Feature kCommerceAllowLocalImages;
+extern const base::Feature kCommerceAllowOnDemandBookmarkUpdates;
 extern const base::Feature kCommerceAllowServerImages;
 extern const base::Feature kCommerceCoupons;
 extern const base::Feature kCommerceMerchantViewer;
@@ -80,6 +81,13 @@ extern const base::Feature kCommerceHintAndroid;
 
 // Feature flag for Merchant Wide promotion.
 extern const base::Feature kMerchantWidePromotion;
+
+// Shopping list update interval.
+constexpr base::FeatureParam<base::TimeDelta>
+    kShoppingListBookmarkpdateIntervalParam(
+        &kShoppingList,
+        "shopping-list-bookmark-update-interval",
+        base::Hours(6));
 
 // Feature parameters for ChromeCart on Desktop.
 

@@ -6,6 +6,9 @@
 
 namespace commerce {
 
+const char kShoppingListBookmarkLastUpdateTime[] =
+    "shopping_list_bookmark_last_update_time";
+
 const char kWebAndAppActivityEnabledForShopping[] =
     "web_and_app_activity_enabled_for_shopping";
 const char kPriceEmailNotificationsEnabled[] =
