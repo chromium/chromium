@@ -5653,16 +5653,13 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
 // guests.
 class SitePerProcessWebViewTest : public WebViewTestBase {
  public:
-  SitePerProcessWebViewTest() = default;
+  SitePerProcessWebViewTest() {
+    feature_list_.InitAndEnableFeature(features::kSiteIsolationForGuests);
+  }
   ~SitePerProcessWebViewTest() override = default;
   SitePerProcessWebViewTest(const SitePerProcessWebViewTest&) = delete;
   SitePerProcessWebViewTest& operator=(const SitePerProcessWebViewTest&) =
       delete;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kSiteIsolationForGuests);
-    WebViewTestBase::SetUp();
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -6233,6 +6230,13 @@ class WebViewWithDefaultSiteInstanceTest : public SitePerProcessWebViewTest {
                                     "http://isolated.com");
     SitePerProcessWebViewTest::SetUpCommandLine(command_line);
   }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
 // Check that when strict site isolation is turned off (via a command-line flag
@@ -6367,22 +6371,78 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
             starting_instance->GetStoragePartitionConfig());
 }
 
-class WebViewFencedFrameTest : public WebViewTest {
+IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, FencedFrame) {
+  TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
+
+  auto* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  std::vector<content::RenderFrameHost*> rfhs =
+      content::CollectAllRenderFrameHosts(guest_rfh);
+  ASSERT_EQ(rfhs.size(), 2u);
+  ASSERT_EQ(rfhs[0], guest_rfh);
+  content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+
+  content::SiteInstance* fenced_frame_site_instance =
+      fenced_frame->GetSiteInstance();
+  EXPECT_FALSE(fenced_frame->IsErrorDocument());
+  EXPECT_NE(fenced_frame_site_instance, guest_rfh->GetSiteInstance());
+  EXPECT_TRUE(fenced_frame_site_instance->IsGuest());
+  EXPECT_EQ(fenced_frame_site_instance->GetStoragePartitionConfig(),
+            guest_rfh->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(fenced_frame->GetProcess(), guest_rfh->GetProcess());
+}
+
+class WebViewFencedFrameTest
+    : public WebViewTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
+  WebViewFencedFrameTest() {
+    bool should_enable_site_isolation_for_guests = std::get<0>(GetParam());
+    bool should_enable_process_isolation_for_fenced_frames =
+        std::get<1>(GetParam());
+    std::vector<base::Feature> enabled_features, disabled_features;
+
+    if (should_enable_site_isolation_for_guests) {
+      enabled_features.push_back(features::kSiteIsolationForGuests);
+    } else {
+      disabled_features.push_back(features::kSiteIsolationForGuests);
+    }
+
+    if (should_enable_process_isolation_for_fenced_frames) {
+      enabled_features.push_back(features::kIsolateFencedFrames);
+    } else {
+      disabled_features.push_back(features::kIsolateFencedFrames);
+    }
+
+    scoped_feature_list_.InitWithFeatures(std::move(enabled_features),
+                                          std::move(disabled_features));
+  }
   ~WebViewFencedFrameTest() override = default;
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_test_helper_;
   }
 
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return base::StringPrintf(
+        "%s_%s",
+        std::get<0>(info.param) ? "SiteIsolationForGuestsEnabled"
+                                : "SiteIsolationForGuestsDisabled",
+        std::get<1>(info.param) ? "IsolateFencedFramesEnabled"
+                                : "IsolateFencedFramesDisabled");
+  }
+
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          WebViewFencedFrameTest,
-                         testing::Bool(),
-                         WebViewTest::DescribeParams);
+                         testing::Combine(testing::Bool(), testing::Bool()),
+                         WebViewFencedFrameTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
                        FencedFrameInGuestHasGuestSiteInstance) {
@@ -6394,13 +6454,30 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
       content::CollectAllRenderFrameHosts(guest_rfh);
   ASSERT_EQ(rfhs.size(), 2u);
   ASSERT_EQ(rfhs[0], guest_rfh);
-  content::RenderFrameHostWrapper fenced_frame(rfhs[1]);
+  content::RenderFrameHostWrapper ff_rfh(rfhs[1]);
 
-  content::SiteInstance* fenced_frame_site_instance =
-      fenced_frame->GetSiteInstance();
-  EXPECT_TRUE(fenced_frame_site_instance->IsGuest());
-  EXPECT_EQ(fenced_frame_site_instance->GetStoragePartitionConfig(),
+  EXPECT_NE(ff_rfh->GetSiteInstance(), guest_rfh->GetSiteInstance());
+  EXPECT_TRUE(guest_rfh->GetSiteInstance()->IsGuest());
+  EXPECT_TRUE(ff_rfh->GetSiteInstance()->IsGuest());
+  EXPECT_EQ(ff_rfh->GetSiteInstance()->GetStoragePartitionConfig(),
             guest_rfh->GetSiteInstance()->GetStoragePartitionConfig());
+
+  // The fenced frame will be in a different process from the embedding guest
+  // only if both Site Isolation for Guests and Process Isolation for Fenced
+  // Frames are enabled.
+  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled() &&
+      content::SiteIsolationPolicy::
+          IsProcessIsolationForFencedFramesEnabled()) {
+    EXPECT_NE(ff_rfh->GetProcess(), guest_rfh->GetProcess());
+  } else {
+    EXPECT_EQ(ff_rfh->GetProcess(), guest_rfh->GetProcess());
+  }
+
+  // Add a second fenced frame (same-site with the first fenced frame).
+  auto* ff_rfh_2 = fenced_frame_test_helper().CreateFencedFrame(
+      guest_rfh, ff_rfh->GetLastCommittedURL());
+  EXPECT_NE(ff_rfh_2->GetSiteInstance(), ff_rfh->GetSiteInstance());
+  EXPECT_EQ(ff_rfh->GetProcess(), ff_rfh_2->GetProcess());
 }
 
 class WebViewPortalTest : public WebViewTest {

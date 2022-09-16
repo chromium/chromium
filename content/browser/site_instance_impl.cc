@@ -210,8 +210,6 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
   DCHECK(browser_context);
   DCHECK(!partition_config.is_default());
 
-  // TODO(crbug.com/1340662): Figure out if is_fenced needs to be set here for
-  // fenced frames inside guests.
   auto guest_site_info =
       SiteInfo::CreateForGuest(browser_context, partition_config);
   scoped_refptr<SiteInstanceImpl> site_instance =
@@ -229,12 +227,6 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
     SiteInstanceImpl* embedder_site_instance) {
   DCHECK(embedder_site_instance);
   BrowserContext* browser_context = embedder_site_instance->GetBrowserContext();
-
-  if (embedder_site_instance->IsGuest()) {
-    return CreateForGuest(browser_context,
-                          embedder_site_instance->GetStoragePartitionConfig());
-  }
-
   bool should_isolate_fenced_frames =
       SiteIsolationPolicy::IsProcessIsolationForFencedFramesEnabled();
   scoped_refptr<SiteInstanceImpl> site_instance =
@@ -255,7 +247,21 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
   // have a SiteInfo with is_fenced set to true).
   if (!embedder_site_instance->IsDefaultSiteInstance()) {
     site_instance->SetSite(embedder_site_instance->GetSiteInfo());
+  } else if (embedder_site_instance->IsGuest()) {
+    // For guests, in the case where the embedder is not a default SiteInstance,
+    // we reuse the embedder's SiteInfo above. When the embedder is
+    // a default SiteInstance, we explicitly create a SiteInfo through
+    // CreateForGuest.
+    // TODO(crbug.com/1340662): When we support fenced frame process isolation
+    // with partial or no site isolation modes, we will be able to reach this
+    // code path and will need to also set is_fenced for the SiteInfo created
+    // below.
+    DCHECK(!should_isolate_fenced_frames);
+    DCHECK(SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled());
+    site_instance->SetSite(SiteInfo::CreateForGuest(
+        browser_context, embedder_site_instance->GetStoragePartitionConfig()));
   }
+  DCHECK_EQ(embedder_site_instance->IsGuest(), site_instance->IsGuest());
   site_instance->ReuseCurrentProcessIfPossible(
       embedder_site_instance->GetProcess());
   return site_instance;
@@ -380,7 +386,6 @@ bool SiteInstanceImpl::ShouldUseProcessPerSite() const {
 
 void SiteInstanceImpl::ReuseCurrentProcessIfPossible(
     RenderProcessHost* current_process) {
-  DCHECK(!IsGuest());
   if (HasProcess())
     return;
 

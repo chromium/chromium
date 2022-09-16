@@ -234,8 +234,6 @@ SiteInfo SiteInfo::CreateForGuest(
           ? GURL()
           : GetSiteURLForGuestPartitionConfig(partition_config);
 
-  // TODO(crbug.com/1340662): Investigate whether we want fenced frames
-  // isolated within guests. If we do, we need to plumb the value for is_fenced.
   return SiteInfo(
       guest_site_url, guest_site_url, false /* requires_origin_keyed_process */,
       false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
