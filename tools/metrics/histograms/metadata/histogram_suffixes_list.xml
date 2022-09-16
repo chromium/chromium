@@ -1152,14 +1152,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Scheduler.CancelableTaskTracker.TaskDuration2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="CdmFileIOTimes" separator=".">
-  <suffix name="Incognito" label="Used from an incognito window."/>
-  <suffix name="Normal" label="Used from a non-incognito window."/>
-  <affected-histogram name="Media.EME.CdmFileIO.TimeTo.DeleteFile"/>
-  <affected-histogram name="Media.EME.CdmFileIO.TimeTo.ReadFile"/>
-  <affected-histogram name="Media.EME.CdmFileIO.TimeTo.WriteFile"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="CertificateTypeAlgorithms" separator=".">
   <owner>rsleevi@chromium.org</owner>
   <suffix name="DH" label="DH"/>
@@ -2616,13 +2608,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="TrialSecondary" label=""/>
   <affected-histogram name="Net.CertVerifier_First_Job_Latency"/>
   <affected-histogram name="Net.CertVerifier_Job_Latency"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EmeTimeToHandleFileOperation" separator=".">
-  <suffix base="true" name="DeleteFile" label="Delete File operations only."/>
-  <suffix base="true" name="ReadFile" label="Read File operations only."/>
-  <suffix base="true" name="WriteFile" label="Write File operations only."/>
-  <affected-histogram name="Media.EME.CdmFileIO.TimeTo"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="EncryptionLevel" separator=".">

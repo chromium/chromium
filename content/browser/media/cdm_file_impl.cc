@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "content/browser/media/media_license_storage_host.h"
 #include "media/cdm/cdm_type.h"
@@ -36,9 +35,10 @@ const int64_t kMaxFileSizeBytes = 512 * 1024;
 // Maximum length of a file name.
 const size_t kFileNameMaxLength = 256;
 
-const char kReadTimeUmaName[] = "Media.EME.CdmFileIO.TimeTo.ReadFile";
-const char kWriteTimeUmaName[] = "Media.EME.CdmFileIO.TimeTo.WriteFile";
-const char kDeleteTimeUmaName[] = "Media.EME.CdmFileIO.TimeTo.DeleteFile";
+// UMA suffices for CDM File IO operations.
+const char kReadFile[] = "ReadFile";
+const char kWriteFile[] = "WriteFile";
+const char kDeleteFile[] = "DeleteFile";
 
 }  // namespace
 
@@ -115,14 +115,15 @@ void CdmFileImpl::DidRead(absl::optional<std::vector<uint8_t>> data) {
   DCHECK(read_callback_);
   DCHECK(host_);
 
-  if (!data.has_value()) {
+  bool success = data.has_value();
+  ReportFileOperationUMA(success, kReadFile);
+
+  if (!success) {
     // Unable to read the contents of the file.
     std::move(read_callback_).Run(Status::kFailure, {});
     return;
   }
 
-  // Only report reading time for successful reads.
-  ReportFileOperationTimeUMA(kReadTimeUmaName);
   std::move(read_callback_).Run(Status::kSuccess, std::move(data.value()));
 }
 
@@ -163,22 +164,33 @@ void CdmFileImpl::Write(const std::vector<uint8_t>& data,
       base::BindOnce(&CdmFileImpl::DidWrite, weak_factory_.GetWeakPtr()));
 }
 
-void CdmFileImpl::ReportFileOperationTimeUMA(const std::string& uma_name) {
+void CdmFileImpl::ReportFileOperationUMA(bool success,
+                                         const std::string& operation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(host_);
 
-  static const char kIncognito[] = ".Incognito";
-  static const char kNormal[] = ".Normal";
+  // Strings for UMA names.
+  static const char kUmaPrefix[] = "Media.EME.CdmFileIO";
+  static const char kTimeTo[] = "TimeTo";
+  const std::string mode_suffix = host_->in_memory() ? "Incognito" : "Normal";
 
-  bool is_incognito = host_->in_memory();
+  // Records the result to the base histogram as well as splitting it out by
+  // incognito or normal mode.
+  auto result_uma_name = base::JoinString({kUmaPrefix, operation}, ".");
+  base::UmaHistogramBoolean(result_uma_name, success);
+  base::UmaHistogramBoolean(
+      base::JoinString({result_uma_name, mode_suffix}, "."), success);
 
-  // This records the time taken to the base histogram as well as splitting it
-  // out by incognito or normal mode.
-  auto time_taken = base::TimeTicks::Now() - start_time_;
-  base::UmaHistogramTimes(uma_name, time_taken);
-  base::UmaHistogramTimes(
-      base::StrCat({uma_name, is_incognito ? kIncognito : kNormal}),
-      time_taken);
+  // Records the time taken to the base histogram as well as splitting it out by
+  // incognito or normal mode. Only reported for successful operation.
+  if (success) {
+    auto time_taken = base::TimeTicks::Now() - start_time_;
+    auto time_taken_uma_name =
+        base::JoinString({kUmaPrefix, kTimeTo, operation}, ".");
+    base::UmaHistogramTimes(time_taken_uma_name, time_taken);
+    base::UmaHistogramTimes(
+        base::JoinString({time_taken_uma_name, mode_suffix}, "."), time_taken);
+  }
 }
 
 void CdmFileImpl::DidWrite(bool success) {
@@ -187,14 +199,14 @@ void CdmFileImpl::DidWrite(bool success) {
   DCHECK(write_callback_);
   DCHECK(host_);
 
+  ReportFileOperationUMA(success, kWriteFile);
+
   if (!success) {
     DLOG(WARNING) << "Unable to write to file " << file_name_;
     std::move(write_callback_).Run(Status::kFailure);
     return;
   }
 
-  // Only report writing time for successful writes.
-  ReportFileOperationTimeUMA(kWriteTimeUmaName);
   std::move(write_callback_).Run(Status::kSuccess);
 }
 
@@ -217,14 +229,14 @@ void CdmFileImpl::DidDeleteFile(bool success) {
   DCHECK(write_callback_);
   DCHECK(host_);
 
+  ReportFileOperationUMA(success, kDeleteFile);
+
   if (!success) {
     DLOG(WARNING) << "Unable to delete file " << file_name_;
     std::move(write_callback_).Run(Status::kFailure);
     return;
   }
 
-  // Only report writing time for successful deletions.
-  ReportFileOperationTimeUMA(kDeleteTimeUmaName);
   std::move(write_callback_).Run(Status::kSuccess);
 }
 

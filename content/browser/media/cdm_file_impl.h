@@ -55,8 +55,8 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   void DeleteFile();
   void DidDeleteFile(bool success);
 
-  // Report operation time to UMA.
-  void ReportFileOperationTimeUMA(const std::string& uma_name);
+  // Report file operation result and time to UMA.
+  void ReportFileOperationUMA(bool success, const std::string& operation);
 
   void OnReceiverDisconnect();
 

@@ -40,6 +40,18 @@ chromium-metrics-reviews@google.com.
   <variant name="UpdateSession"/>
 </variants>
 
+<variants name="FileOperation">
+  <variant name="DeleteFile"/>
+  <variant name="ReadFile"/>
+  <variant name="WriteFile"/>
+</variants>
+
+<variants name="IncognitoOrNormal">
+  <variant name="" summary="Normal or Incognito"/>
+  <variant name=".Incognito" summary="Incognito"/>
+  <variant name=".Normal" summary="Normal"/>
+</variants>
+
 <variants name="KeySystem">
   <variant name="ClearKey" summary="Clear Key key system"/>
   <variant name="Unknown" summary="Unknown key system"/>
@@ -2184,14 +2196,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.EME.CdmFileIO.TimeTo" units="ms"
-    expires_after="2023-05-07">
+<histogram name="Media.EME.CdmFileIO.TimeTo.{FileOperation}{IncognitoOrNormal}"
+    units="ms" expires_after="2023-05-07">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    The actual time spent by the CDM accessing a file. This is only recorded for
-    successful operations.
+    The actual time spent by the CDM FileIO {FileOperation} operation under
+    {IncognitoOrNormal} mode. Only recorded for successful operations.
   </summary>
+  <token key="FileOperation" variants="FileOperation"/>
+  <token key="IncognitoOrNormal" variants="IncognitoOrNormal"/>
+</histogram>
+
+<histogram name="Media.EME.CdmFileIO.{FileOperation}{IncognitoOrNormal}"
+    units="BooleanSuccess" expires_after="2023-05-07">
+  <owner>jrummell@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether a CDM FileIO {FileOperation} operation succeded or not under
+    {IncognitoOrNormal} mode.
+  </summary>
+  <token key="FileOperation" variants="FileOperation"/>
+  <token key="IncognitoOrNormal" variants="IncognitoOrNormal"/>
 </histogram>
 
 <histogram name="Media.EME.CdmHostVerificationStatus"
