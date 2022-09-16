@@ -635,6 +635,8 @@ static_library("browser") {
     "invalidation/profile_invalidation_provider_factory.h",
     "k_anonymity_service/k_anonymity_service_client.cc",
     "k_anonymity_service/k_anonymity_service_client.h",
+    "k_anonymity_service/k_anonymity_service_factory.cc",
+    "k_anonymity_service/k_anonymity_service_factory.h",
     "k_anonymity_service/k_anonymity_service_metrics.cc",
     "k_anonymity_service/k_anonymity_service_metrics.h",
     "k_anonymity_service/k_anonymity_service_urls.h",

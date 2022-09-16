@@ -67,7 +67,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       bool in_memory,
       ProcessMode process_mode,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<KAnonymityServiceDelegate> k_anonymity_service);
+      KAnonymityServiceDelegate* k_anonymity_service);
   ~InterestGroupManagerImpl() override;
   InterestGroupManagerImpl(const InterestGroupManagerImpl& other) = delete;
   InterestGroupManagerImpl& operator=(const InterestGroupManagerImpl& other) =

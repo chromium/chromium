@@ -27,9 +27,9 @@ std::string KAnonKeyFor(const url::Origin& owner, const std::string& name) {
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
     InterestGroupManagerImpl* interest_group_manager,
-    std::unique_ptr<KAnonymityServiceDelegate> k_anonymity_service)
+    KAnonymityServiceDelegate* k_anonymity_service)
     : interest_group_manager_(interest_group_manager),
-      k_anonymity_service_(std::move(k_anonymity_service)),
+      k_anonymity_service_(k_anonymity_service),
       weak_ptr_factory_(this) {}
 
 InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() = default;

@@ -131,6 +131,7 @@ class OffTheRecordProfileImpl : public Profile {
   GetFederatedIdentitySharingPermissionContext() override;
   content::FederatedIdentityApiPermissionContextDelegate*
   GetFederatedIdentityApiPermissionContext() override;
+  content::KAnonymityServiceDelegate* GetKAnonymityServiceDelegate() override;
 
  protected:
   // Profile implementation.

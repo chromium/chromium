@@ -444,10 +444,9 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual FederatedIdentitySharingPermissionContextDelegate*
   GetFederatedIdentitySharingPermissionContext();
 
-  // Creates and returns a KAnonymityServiceDelegate if supported. Returns
-  // nullptr if unavailable.
-  virtual std::unique_ptr<KAnonymityServiceDelegate>
-  CreateKAnonymityServiceDelegate();
+  // Gets the KAnonymityServiceDelegate if supported. Returns nullptr if
+  // unavailable.
+  virtual KAnonymityServiceDelegate* GetKAnonymityServiceDelegate();
 
  private:
   // Please don't add more fields to BrowserContext.

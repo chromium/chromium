@@ -25,7 +25,7 @@ class InterestGroupKAnonymityManager {
  public:
   InterestGroupKAnonymityManager(
       InterestGroupManagerImpl* interest_group_manager,
-      std::unique_ptr<KAnonymityServiceDelegate> k_anonymity_service);
+      KAnonymityServiceDelegate* k_anonymity_service);
   ~InterestGroupKAnonymityManager();
 
   // Requests the k-anonymity status of elements of the interest group that
@@ -70,7 +70,7 @@ class InterestGroupKAnonymityManager {
   // database.
   raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
-  std::unique_ptr<KAnonymityServiceDelegate> k_anonymity_service_;
+  raw_ptr<KAnonymityServiceDelegate> k_anonymity_service_;
   base::WeakPtrFactory<InterestGroupKAnonymityManager> weak_ptr_factory_;
 };
 

@@ -98,7 +98,7 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
     bool in_memory,
     ProcessMode process_mode,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<KAnonymityServiceDelegate> k_anonymity_service)
+    KAnonymityServiceDelegate* k_anonymity_service)
     : impl_(base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
@@ -111,7 +111,7 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
       update_manager_(this, std::move(url_loader_factory)),
       k_anonymity_manager_(std::make_unique<InterestGroupKAnonymityManager>(
           this,
-          std::move(k_anonymity_service))),
+          k_anonymity_service)),
       max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval),

@@ -62,7 +62,7 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
-#include "chrome/browser/k_anonymity_service/k_anonymity_service_client.h"
+#include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
 #include "chrome/browser/media/media_device_id_salt.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
@@ -114,7 +114,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -1386,15 +1385,9 @@ ProfileImpl::GetFederatedIdentitySharingPermissionContext() {
   return FederatedIdentitySharingPermissionContextFactory::GetForProfile(this);
 }
 
-std::unique_ptr<content::KAnonymityServiceDelegate>
-ProfileImpl::CreateKAnonymityServiceDelegate() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!base::FeatureList::IsEnabled(features::kKAnonymityService))
-    return nullptr;
-  return std::make_unique<KAnonymityServiceClient>(this);
-#else
-  return nullptr;
-#endif
+content::KAnonymityServiceDelegate*
+ProfileImpl::GetKAnonymityServiceDelegate() {
+  return KAnonymityServiceFactory::GetForProfile(this);
 }
 
 content::ReduceAcceptLanguageControllerDelegate*

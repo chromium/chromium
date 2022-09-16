@@ -33,7 +33,8 @@
 // simplify implementation. With only one request out at a time 1) it is clear
 // which request the responses are associated with and 2) the limit on the
 // number of outstanding requests can be handled by the caller.
-class KAnonymityServiceClient : public content::KAnonymityServiceDelegate {
+class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
+                                public KeyedService {
  public:
   // The profile must outlive the KAnonymityServiceClient.
   explicit KAnonymityServiceClient(Profile* profile);

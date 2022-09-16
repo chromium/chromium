@@ -104,10 +104,11 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
 
   std::unique_ptr<InterestGroupManagerImpl> CreateManager(
       bool has_error = false) {
+    delegate_ = std::make_unique<TestKAnonymityServiceDelegate>(has_error);
     return std::make_unique<InterestGroupManagerImpl>(
         temp_directory_.GetPath(), false,
         InterestGroupManagerImpl::ProcessMode::kDedicated, nullptr,
-        std::make_unique<TestKAnonymityServiceDelegate>(has_error));
+        delegate_.get());
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -116,6 +117,7 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestKAnonymityServiceDelegate> delegate_;
 };
 
 TEST_F(InterestGroupKAnonymityManagerTest,

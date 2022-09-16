@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_client.h"
-
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
@@ -15,6 +14,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -139,6 +139,7 @@ class KAnonymityServiceClientTest : public testing::Test {
 TEST_F(KAnonymityServiceClientTest, TryJoinSetFetchTokenFails) {
   InitializeIdentity(false);
   KAnonymityServiceClient k_service(profile());
+
   base::HistogramTester hist;
   base::RunLoop run_loop;
   k_service.JoinSet("1",
@@ -179,7 +180,7 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetRepeatedly) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   int callback_count = 0;
-  for (size_t i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     k_service.JoinSet("1",
                       base::OnceCallback<void(bool)>(base::BindLambdaForTesting(
                           [&callback_count, &run_loop, i](bool result) {
@@ -259,6 +260,7 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetFailureDropsAllRequests) {
 
 TEST_F(KAnonymityServiceClientTest, TryQuerySetAllNotKAnon) {
   KAnonymityServiceClient k_service(profile());
+
   base::HistogramTester hist;
   base::RunLoop run_loop;
   std::vector<std::string> sets;
