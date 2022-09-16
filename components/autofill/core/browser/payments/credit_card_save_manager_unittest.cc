@@ -168,6 +168,11 @@ class MockVirtualCardEnrollmentManager
 
 class CreditCardSaveManagerTest : public testing::Test {
  public:
+  CreditCardSaveManagerTest() {
+    scoped_feature_list_async_parse_form_.InitWithFeatureState(
+        features::kAutofillParseAsync, true);
+  }
+
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
@@ -418,6 +423,8 @@ class CreditCardSaveManagerTest : public testing::Test {
     NOTREACHED();
     return 0;
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
 };
 
 // Tests that credit card data are saved for forms on https

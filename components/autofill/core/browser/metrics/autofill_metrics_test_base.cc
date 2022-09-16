@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -30,7 +31,10 @@ MockAutofillClient::MockAutofillClient() = default;
 MockAutofillClient::~MockAutofillClient() = default;
 
 AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
-    : is_in_any_main_frame_(is_in_any_main_frame) {}
+    : is_in_any_main_frame_(is_in_any_main_frame) {
+  scoped_feature_list_async_parse_form_.InitAndEnableFeature(
+      features::kAutofillParseAsync);
+}
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
