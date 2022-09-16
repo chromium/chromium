@@ -21,7 +21,6 @@ class ReportingClient::TestEnvironment {
 
  private:
   ReportingClient::StorageModuleCreateCallback saved_storage_create_cb_;
-  std::unique_ptr<EncryptedReportingUploadProvider> saved_upload_provider_;
 };
 }  // namespace reporting
 

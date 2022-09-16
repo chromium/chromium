@@ -103,10 +103,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // the primary account.
   void TryInitializeForSignedInUser();
 
-  // Invoked when a policy registration request is complete.
-  void CallPolicyRegistrationCallback(std::unique_ptr<CloudPolicyClient> client,
-                                      PolicyRegistrationCallback callback);
-
   // Initializes the UserPolicySigninService once its owning Profile becomes
   // ready. If the Profile has a signed-in account associated with it at startup
   // then this initializes the cloud policy manager by calling

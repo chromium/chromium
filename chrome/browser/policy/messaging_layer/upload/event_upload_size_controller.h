@@ -75,8 +75,6 @@ class EventUploadSizeController {
   bool IsMaximumUploadSizeReached() const;
   // Bumps up by the size of the record to be uploaded.
   void AccountForRecord(const EncryptedRecord& record);
-  // Bumps up recorded already uploaded size.
-  void RecordUploadedSize(uint64_t uploaded_size);
 
   // The rate (bytes per seconds) at which new events are accepted by missive.
   const uint64_t new_events_rate_;

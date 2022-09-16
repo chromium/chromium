@@ -215,8 +215,6 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   base::Time creation_time_;
 
   base::ObserverList<CloudPolicyRefreshSchedulerObserver, true> observers_;
-
-  base::WeakPtrFactory<CloudPolicyRefreshScheduler> weak_factory_{this};
 };
 
 }  // namespace policy

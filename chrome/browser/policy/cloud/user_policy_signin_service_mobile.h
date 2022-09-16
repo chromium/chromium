@@ -5,13 +5,8 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_MOBILE_H_
 #define CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_MOBILE_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
@@ -28,8 +23,6 @@ class SharedURLLoaderFactory;
 }
 
 namespace policy {
-
-class CloudPolicyClientRegistrationHelper;
 
 // A specialization of UserPolicySigninServiceBase for Android.
 class UserPolicySigninService : public UserPolicySigninServiceBase,
@@ -84,15 +77,11 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // attributes entry.
   bool profile_can_be_managed_for_testing_ = false;
 
-  std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
-
   // The PrefService associated with the profile.
   raw_ptr<PrefService> profile_prefs_;
 
   // Parent profile for this service.
   raw_ptr<Profile> profile_;
-
-  base::WeakPtrFactory<UserPolicySigninService> weak_factory_{this};
 };
 
 }  // namespace policy

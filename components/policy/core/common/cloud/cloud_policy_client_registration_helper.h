@@ -24,10 +24,6 @@ namespace signin {
 class IdentityManager;
 }
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace policy {
 
 class ClientDataDelegate;
@@ -95,7 +91,6 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   // GAIA to get information about the signed in user.
   std::string oauth_access_token_;
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<CloudPolicyClient> client_;
   enterprise_management::DeviceRegisterRequest::Type registration_type_;
   base::OnceClosure callback_;

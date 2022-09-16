@@ -189,10 +189,6 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   raw_ptr<PolicyLoaderLacros> device_account_policy_loader_ = nullptr;
 #endif
 
-  // Holds a callback to |ChromeBrowserCloudManagementController::Init| so that
-  // its execution can be deferred until an enrollment token is available.
-  base::OnceClosure deferred_init_callback_;
-
   // Weak pointers needed for tasks that need to wait until it can be decided
   // if an enrollment token is available or not.
   base::WeakPtrFactory<ChromeBrowserPolicyConnector> weak_factory_{this};

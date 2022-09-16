@@ -84,8 +84,6 @@ class DeviceCloudPolicyInitializer
   void TryToStartConnection();
   void StartConnection(std::unique_ptr<CloudPolicyClient> client);
 
-  bool GetMachineFlag(const std::string& key, bool default_value) const;
-
   DeviceManagementService* enterprise_service_;
   ash::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;
