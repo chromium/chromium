@@ -108,7 +108,6 @@ if (is_chromeos_ash) {
       "chromeos/network_health/network_diagnostics_types.js",
       "chromeos/quick_unlock/lock_screen_constants.js",
       "chromeos/smb_shares/smb_browser_proxy.js",
-      "chromeos/traffic_counters/traffic_counters_adapter.js",
     ]
   }
 
@@ -177,7 +176,6 @@ if (is_chromeos_ash) {
       "chromeos/quick_unlock/pin_keyboard.js",
       "chromeos/quick_unlock/setup_pin_keyboard.js",
       "chromeos/smb_shares/add_smb_share_dialog.js",
-      "chromeos/traffic_counters/traffic_counters.js",
     ]
   }
 }
