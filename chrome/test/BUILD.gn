@@ -6000,7 +6000,6 @@ test("unit_tests") {
     "//third_party/leveldatabase",
     "//third_party/libaddressinput",
     "//third_party/libphonenumber",
-    "//third_party/lzma_sdk/google:unit_tests",
     "//third_party/metrics_proto",
     "//third_party/microsoft_webauthn",
     "//third_party/re2",
