@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/category_cluster_finalizer.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
@@ -364,6 +365,9 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   if (engagement_score_provider_is_valid &&
       GetConfig().should_filter_noisy_clusters) {
     cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
+  }
+  if (GetConfig().should_use_categories_to_filter_on_prominent_ui_surfaces) {
+    cluster_finalizers.push_back(std::make_unique<CategoryClusterFinalizer>());
   }
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>(
       human_readable_entity_name_to_entity_metadata_map));

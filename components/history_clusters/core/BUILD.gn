@@ -8,6 +8,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("core") {
   sources = [
+    "category_cluster_finalizer.cc",
+    "category_cluster_finalizer.h",
     "cluster_finalizer.h",
     "cluster_metrics_utils.cc",
     "cluster_metrics_utils.h",
@@ -90,6 +92,7 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "category_cluster_finalizer_unittest.cc",
     "clusterer_unittest.cc",
     "config_unittest.cc",
     "content_annotations_cluster_processor_unittest.cc",

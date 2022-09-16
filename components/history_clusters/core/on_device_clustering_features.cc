@@ -30,5 +30,8 @@ const base::Feature kOnDeviceClusteringBlocklists{
 const base::Feature kOnDeviceClusteringKeywordFiltering{
     "JourneysKeywordFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kOnDeviceClusteringCategoryFiltering{
+    "JourneysCategoryFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace history_clusters

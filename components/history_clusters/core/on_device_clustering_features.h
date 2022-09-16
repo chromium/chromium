@@ -29,6 +29,9 @@ extern const base::Feature kOnDeviceClusteringBlocklists;
 // Specifies how keywords get filtered and added to a cluster.
 extern const base::Feature kOnDeviceClusteringKeywordFiltering;
 
+// Specifies how categories get used for filtering.
+extern const base::Feature kOnDeviceClusteringCategoryFiltering;
+
 }  // namespace features
 }  // namespace history_clusters
 

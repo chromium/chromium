@@ -284,6 +284,15 @@ struct Config {
   // use when clustering based on intersection score.
   int cluster_interaction_threshold = 2;
 
+  // Whether to determine whether to show/hide clusters on prominent UI surfaces
+  // based on categories annotated for a visit.
+  bool should_use_categories_to_filter_on_prominent_ui_surfaces = false;
+
+  // The category IDs used for filtering. These should represent categories that
+  // are repesentatitive of Journeys that we think the user is likely to want to
+  // re-engage with.
+  base::flat_set<std::string> categories_for_filtering;
+
   // The `kUseEngagementScoreCache` feature and child params.
 
   // The max number of hosts that should be stored in the engagement score
@@ -327,6 +336,10 @@ struct Config {
   Config(const Config& other);
   ~Config();
 };
+
+// Returns the set of categories that should be used to filter for whether a
+// user is likely to re-engage with a cluster.
+base::flat_set<std::string> JourneysCategoryFilteringAllowlist();
 
 // Returns the set of mids that should be blocked from being used by the
 // clustering backend, particularly for potential keywords used for omnibox

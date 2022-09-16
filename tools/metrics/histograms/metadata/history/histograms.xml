@@ -944,6 +944,7 @@ chromium-metrics-reviews@google.com.
     clustering backend request.
   </summary>
   <token key="ClusterFilterReason">
+    <variant name="Category" summary="all non-complex categories"/>
     <variant name="NoisyCluster" summary="all noisy visits"/>
     <variant name="SingleVisit" summary="only a single visit"/>
     <variant name="VisibilityScore" summary="low visibility score"/>
