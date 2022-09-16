@@ -6,4 +6,4 @@ package: chromium/third_party/android_sdk/public/system-images/android-31/google
 description: system_images;android-31;google_apis;arm64-v8a
 root: ../../../../public/
 data:
-  - dir: system-images/android-31/google_apis/arm64
+  - dir: system-images/android-31/google_apis/arm64-v8a
