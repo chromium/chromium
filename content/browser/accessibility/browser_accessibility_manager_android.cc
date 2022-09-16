@@ -10,7 +10,6 @@
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
-#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_role_properties.h"
 
 namespace content {
@@ -222,10 +221,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
 
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
-
-  if (event_type == ui::AXEventGenerator::Event::CHILDREN_CHANGED) {
-    BrowserAccessibilityAndroid::ResetLeafCache();
-  }
 
   // Always send AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED to notify
   // the Android system that the accessibility hierarchy rooted at this

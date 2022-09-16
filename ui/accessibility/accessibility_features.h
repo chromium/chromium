@@ -167,11 +167,6 @@ AX_BASE_EXPORT extern const base::Feature kComputeAXMode;
 
 // Returns true if the IChromeAccessible COM API is enabled.
 AX_BASE_EXPORT bool IsComputeAXModeEnabled();
-
-AX_BASE_EXPORT extern const base::Feature kOptimizeAccessibilityUiThreadWork;
-
-bool IsOptimizeAccessibilityUiThreadWorkEnabled();
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

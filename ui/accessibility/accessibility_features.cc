@@ -190,14 +190,6 @@ const base::Feature kComputeAXMode{"ComputeAXMode",
 bool IsComputeAXModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kComputeAXMode);
 }
-
-const base::Feature kOptimizeAccessibilityUiThreadWork{
-    "OptimizeAccessibilityUiThreadWork", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsOptimizeAccessibilityUiThreadWorkEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kOptimizeAccessibilityUiThreadWork);
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

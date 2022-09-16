@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/break_iterator.h"
@@ -14,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/public/common/content_client.h"
 #include "skia/ext/skia_utils_base.h"
@@ -88,11 +86,6 @@ using UniqueIdMap = base::flat_map<int32_t, BrowserAccessibilityAndroid*>;
 base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
     LAZY_INSTANCE_INITIALIZER;
 
-// Map from BrowserAccessibilityAndroid nodes to whether they qualify as a
-// "leaf". Must be cleared on any tree mutation.
-base::LazyInstance<std::map<const BrowserAccessibilityAndroid*, bool>>::Leaky
-    g_leaf_map = LAZY_INSTANCE_INITIALIZER;
-
 // static
 BrowserAccessibilityAndroid* BrowserAccessibilityAndroid::GetFromUniqueId(
     int32_t unique_id) {
@@ -102,11 +95,6 @@ BrowserAccessibilityAndroid* BrowserAccessibilityAndroid::GetFromUniqueId(
     return iter->second;
 
   return nullptr;
-}
-
-// static
-void BrowserAccessibilityAndroid::ResetLeafCache() {
-  g_leaf_map.Get().clear();
 }
 
 BrowserAccessibilityAndroid::BrowserAccessibilityAndroid(
@@ -221,9 +209,7 @@ bool BrowserAccessibilityAndroid::IsContentInvalid() const {
       GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse) {
     // We will not report content as invalid until a certain number of
     // characters have been typed to prevent verbose announcements to the user.
-    return (GetSubstringTextContentUTF16(
-                LengthAtLeast(kMinimumCharacterCountForInvalid))
-                .length() > kMinimumCharacterCountForInvalid);
+    return (GetTextContentUTF16().length() > kMinimumCharacterCountForInvalid);
   }
 
   return false;
@@ -350,8 +336,7 @@ bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
 bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // The root is not interesting if it doesn't have a title, even
   // though it's focusable.
-  if (ui::IsPlatformDocument(GetRole()) &&
-      GetSubstringTextContentUTF16(NonEmptyPredicate()).empty())
+  if (ui::IsPlatformDocument(GetRole()) && GetTextContentUTF16().empty())
     return false;
 
   // The root inside a portal is not interesting.
@@ -528,16 +513,8 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 }
 
 bool BrowserAccessibilityAndroid::IsLeaf() const {
-  if (base::FeatureList::IsEnabled(
-          features::kOptimizeAccessibilityUiThreadWork)) {
-    if (g_leaf_map.Get().find(this) != g_leaf_map.Get().end()) {
-      return g_leaf_map.Get()[this];
-    }
-  }
-
-  if (BrowserAccessibility::IsLeaf()) {
+  if (BrowserAccessibility::IsLeaf())
     return true;
-  }
 
   // Document roots (e.g. kRootWebArea and kPdfRoot), and iframes are always
   // allowed to contain children.
@@ -568,28 +545,22 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     // and allow the child nodes to be set as a leaf.
 
     // Headings with text can drop their children (with exceptions).
-    std::u16string name = GetSubstringTextContentUTF16(NonEmptyPredicate());
+    std::u16string name = GetTextContentUTF16();
     if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
-      bool ret = IsLeafConsideringChildren();
-      g_leaf_map.Get()[this] = ret;
-      return ret;
+      return IsLeafConsideringChildren();
     }
 
     // Focusable nodes with text can drop their children (with exceptions).
     if (HasState(ax::mojom::State::kFocusable) && !name.empty()) {
-      bool ret = IsLeafConsideringChildren();
-      g_leaf_map.Get()[this] = ret;
-      return ret;
+      return IsLeafConsideringChildren();
     }
 
     // Nodes with only static text can drop their children, with the exception
     // that list markers have a different role and should not be dropped.
-    if (HasOnlyTextChildren() && !HasListMarkerChild()) {
-      g_leaf_map.Get()[this] = true;
+    if (HasOnlyTextChildren() && !HasListMarkerChild())
       return true;
-    }
   }
-  g_leaf_map.Get()[this] = false;
+
   return false;
 }
 
@@ -635,11 +606,6 @@ bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
-  return GetSubstringTextContentUTF16(absl::nullopt);
-}
-
-std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
-    absl::optional<EarlyExitPredicate> predicate) const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
 
@@ -724,12 +690,7 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
                        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
       text += static_cast<BrowserAccessibilityAndroid*>(it.get())
-                  ->GetSubstringTextContentUTF16(predicate);
-      if (base::FeatureList::IsEnabled(
-              features::kOptimizeAccessibilityUiThreadWork) &&
-          predicate && predicate.value().Run(text)) {
-        break;
-      }
+                  ->GetTextContentUTF16();
     }
   }
 
@@ -741,21 +702,6 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
   }
 
   return text;
-}
-
-BrowserAccessibilityAndroid::EarlyExitPredicate
-BrowserAccessibilityAndroid::NonEmptyPredicate() {
-  return base::BindRepeating(
-      [](const std::u16string& partial) { return partial.size() > 0; });
-}
-
-BrowserAccessibilityAndroid::EarlyExitPredicate
-BrowserAccessibilityAndroid::LengthAtLeast(size_t length) {
-  return base::BindRepeating(
-      [](size_t length, const std::u16string& partial) {
-        return partial.length() > length;
-      },
-      length);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
@@ -1703,8 +1649,7 @@ void BrowserAccessibilityAndroid::GetLineBoundaries(
     std::vector<int32_t>* line_ends,
     int offset) {
   // If this node has no children, treat it as all one line.
-  if (GetSubstringTextContentUTF16(NonEmptyPredicate()).size() > 0 &&
-      !InternalChildCount()) {
+  if (GetTextContentUTF16().size() > 0 && !InternalChildCount()) {
     line_starts->push_back(offset);
     line_ends->push_back(offset + GetTextContentUTF16().size());
   }
@@ -1764,6 +1709,7 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
   for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(it.get());
+    std::u16string child_text = child->GetTextContentUTF16();
     concatenated_text += child->GetTextContentUTF16();
   }
 
