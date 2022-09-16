@@ -117,10 +117,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            action:@selector(dismissInfobarModal)];
   cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
 
-  UIImage* gearImage =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(kGearShapeSymbol, kSymbolImagePointSize)
-          : [UIImage imageNamed:@"infobar_settings_icon"];
+  UIImage* gearImage = UseSymbols()
+                           ? DefaultSymbolWithPointSize(kSettingsFilledSymbol,
+                                                        kSymbolImagePointSize)
+                           : [UIImage imageNamed:@"infobar_settings_icon"];
   gearImage =
       [gearImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc]

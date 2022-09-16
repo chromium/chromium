@@ -35,13 +35,14 @@ extern NSString* const kPinFillSymbol;
 extern NSString* const kIPhoneSymbol;
 extern NSString* const kIPadSymbol;
 extern NSString* const kLaptopSymbol;
-extern NSString* const kGearShapeSymbol;
+extern NSString* const kSettingsSymbol;
+extern NSString* const kSettingsFilledSymbol;
 extern NSString* const kShareSymbol;
 extern NSString* const kXMarkSymbol;
 extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
 extern NSString* const kCheckmarkSymbol;
-extern NSString* const kArrowDownCircleFillSymbol;
+extern NSString* const kDownloadSymbol;
 extern NSString* const kSecureSymbol;
 extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
@@ -51,8 +52,9 @@ extern NSString* const kCheckMarkCircleFillSymbol;
 extern NSString* const kFailMarkCircleFillSymbol;
 extern NSString* const kTrashSymbol;
 extern NSString* const kInfoCircleSymbol;
-extern NSString* const kClockArrowSymbol;
+extern NSString* const kHistorySymbol;
 extern NSString* const kWifiSymbol;
+extern NSString* const kBookmarksSymbol;
 
 // The corner radius of the symbol with a colorful background.
 extern const CGFloat kColorfulBackgroundSymbolCornerRadius;

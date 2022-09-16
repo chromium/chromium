@@ -378,7 +378,7 @@ NSInteger kFeedSymbolPointSize = 17;
   } else {
     UIImage* menuIcon =
         UseSymbols()
-            ? DefaultSymbolTemplateWithPointSize(kGearShapeSymbol,
+            ? DefaultSymbolTemplateWithPointSize(kSettingsFilledSymbol,
                                                  kFeedSymbolPointSize)
             : [[UIImage imageNamed:kDiscoverMenuIcon]
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

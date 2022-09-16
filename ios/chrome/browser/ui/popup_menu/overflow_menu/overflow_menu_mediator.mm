@@ -90,7 +90,8 @@ using base::UserMetricsAction;
 namespace {
 
 // The size of overflow symbol images.
-NSInteger kOverflowSymbolPointSize = 22;
+NSInteger kOverflowActionSymbolPointSize = 18;
+NSInteger kOverflowDestinationSymbolPointSize = 26;
 
 typedef void (^Handler)(void);
 
@@ -114,7 +115,7 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                                              Handler handler) {
   DCHECK(UseSymbols());
   UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kOverflowSymbolPointSize
+      configurationWithPointSize:kOverflowActionSymbolPointSize
                           weight:UIImageSymbolWeightLight
                            scale:UIImageSymbolScaleMedium];
   NSString* name = l10n_util::GetNSString(nameID);
@@ -409,121 +410,229 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (OverflowMenuModel*)createModel {
   __weak __typeof(self) weakSelf = self;
 
-  // Bookmarks destination.
-  NSString* bookmarksIconName =
-      IsNewOverflowMenuSimpleDestinationIconsEnabled()
-          ? @"overflow_menu_destination_bookmarks_simple"
-          : @"overflow_menu_destination_bookmarks";
-  self.bookmarksDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
-                              destination:overflow_menu::Destination::Bookmarks
-                                imageName:bookmarksIconName
-                          accessibilityID:kToolsMenuBookmarksId
-                                  handler:^{
-                                    [weakSelf openBookmarks];
-                                  }];
+  if (UseSymbols()) {
+    // Bookmarks destination.
+    self.bookmarksDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
+                          destination:overflow_menu::Destination::Bookmarks
+                           symbolName:kBookmarksSymbol
+                         systemSymbol:YES
+                      accessibilityID:kToolsMenuBookmarksId
+                              handler:^{
+                                [weakSelf openBookmarks];
+                              }];
+  } else {
+    // Bookmarks destination.
+    NSString* bookmarksIconName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_bookmarks_simple"
+            : @"overflow_menu_destination_bookmarks";
+    self.bookmarksDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
+                          destination:overflow_menu::Destination::Bookmarks
+                            imageName:bookmarksIconName
+                      accessibilityID:kToolsMenuBookmarksId
+                              handler:^{
+                                [weakSelf openBookmarks];
+                              }];
+  }
 
-  // Downloads destination.
-  NSString* downloadsIconName =
-      IsNewOverflowMenuSimpleDestinationIconsEnabled()
-          ? @"overflow_menu_destination_downloads_simple"
-          : @"overflow_menu_destination_downloads";
-  self.downloadsDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
-                              destination:overflow_menu::Destination::Downloads
-                                imageName:downloadsIconName
-                          accessibilityID:kToolsMenuDownloadsId
-                                  handler:^{
-                                    [weakSelf openDownloads];
-                                  }];
+  if (UseSymbols()) {
+    // Downloads destination.
+    self.downloadsDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
+                          destination:overflow_menu::Destination::Downloads
+                           symbolName:kDownloadSymbol
+                         systemSymbol:YES
+                      accessibilityID:kToolsMenuDownloadsId
+                              handler:^{
+                                [weakSelf openDownloads];
+                              }];
+  } else {
+    // Downloads destination.
+    NSString* downloadsIconName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_downloads_simple"
+            : @"overflow_menu_destination_downloads";
+    self.downloadsDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
+                          destination:overflow_menu::Destination::Downloads
+                            imageName:downloadsIconName
+                      accessibilityID:kToolsMenuDownloadsId
+                              handler:^{
+                                [weakSelf openDownloads];
+                              }];
+  }
 
-  // History destination.
-  NSString* historyIconName = IsNewOverflowMenuSimpleDestinationIconsEnabled()
-                                  ? @"overflow_menu_destination_history_simple"
-                                  : @"overflow_menu_destination_history";
-  self.historyDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
-                              destination:overflow_menu::Destination::History
-                                imageName:historyIconName
-                          accessibilityID:kToolsMenuHistoryId
-                                  handler:^{
-                                    [weakSelf openHistory];
-                                  }];
+  if (UseSymbols()) {
+    // History destination.
+    self.historyDestination =
+        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
+                                destination:overflow_menu::Destination::History
+                                 symbolName:kHistorySymbol
+                               systemSymbol:YES
+                            accessibilityID:kToolsMenuHistoryId
+                                    handler:^{
+                                      [weakSelf openHistory];
+                                    }];
+  } else {
+    // History destination.
+    NSString* historyIconName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_history_simple"
+            : @"overflow_menu_destination_history";
+    self.historyDestination =
+        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
+                                destination:overflow_menu::Destination::History
+                                  imageName:historyIconName
+                            accessibilityID:kToolsMenuHistoryId
+                                    handler:^{
+                                      [weakSelf openHistory];
+                                    }];
+  }
 
-  // Passwords destination.
-  int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
-                            ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
-                            : IDS_IOS_TOOLS_MENU_PASSWORDS;
-  NSString* passwordIconImageName =
-      IsNewOverflowMenuSimpleDestinationIconsEnabled()
-          ? @"overflow_menu_destination_passwords_simple"
-          : (IsPasswordManagerBrandingUpdateEnabled()
-                 ? @"overflow_menu_destination_passwords_rebrand"
-                 : @"overflow_menu_destination_passwords");
-  self.passwordsDestination =
-      [self createOverflowMenuDestination:passwordTitleID
-                              destination:overflow_menu::Destination::Passwords
-                                imageName:passwordIconImageName
-                          accessibilityID:kToolsMenuPasswordsId
-                                  handler:^{
-                                    [weakSelf openPasswords];
-                                  }];
+  if (UseSymbols()) {
+    // Passwords destination.
+    int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
+                              ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
+                              : IDS_IOS_TOOLS_MENU_PASSWORDS;
+    self.passwordsDestination = [self
+        createOverflowMenuDestination:passwordTitleID
+                          destination:overflow_menu::Destination::Passwords
+                           symbolName:kPasswordSymbol
+                         systemSymbol:NO
+                      accessibilityID:kToolsMenuPasswordsId
+                              handler:^{
+                                [weakSelf openPasswords];
+                              }];
+  } else {
+    // Passwords destination.
+    int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
+                              ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
+                              : IDS_IOS_TOOLS_MENU_PASSWORDS;
+    NSString* passwordIconImageName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_passwords_simple"
+            : (IsPasswordManagerBrandingUpdateEnabled()
+                   ? @"overflow_menu_destination_passwords_rebrand"
+                   : @"overflow_menu_destination_passwords");
+    self.passwordsDestination = [self
+        createOverflowMenuDestination:passwordTitleID
+                          destination:overflow_menu::Destination::Passwords
+                            imageName:passwordIconImageName
+                      accessibilityID:kToolsMenuPasswordsId
+                              handler:^{
+                                [weakSelf openPasswords];
+                              }];
+  }
 
-  // Reading List destination.
-  NSString* readingListIconName =
-      IsNewOverflowMenuSimpleDestinationIconsEnabled()
-          ? @"overflow_menu_destination_reading_list_simple"
-          : @"overflow_menu_destination_reading_list";
-  self.readingListDestination = [self
-      createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
-                        destination:overflow_menu::Destination::ReadingList
-                          imageName:readingListIconName
-                    accessibilityID:kToolsMenuReadingListId
-                            handler:^{
-                              [weakSelf openReadingList];
-                            }];
+  if (UseSymbols()) {
+    // Reading List destination.
+    self.readingListDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
+                          destination:overflow_menu::Destination::ReadingList
+                           symbolName:kReadingListSymbol
+                         systemSymbol:NO
+                      accessibilityID:kToolsMenuReadingListId
+                              handler:^{
+                                [weakSelf openReadingList];
+                              }];
+  } else {
+    // Reading List destination.
+    NSString* readingListIconName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_reading_list_simple"
+            : @"overflow_menu_destination_reading_list";
+    self.readingListDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
+                          destination:overflow_menu::Destination::ReadingList
+                            imageName:readingListIconName
+                      accessibilityID:kToolsMenuReadingListId
+                              handler:^{
+                                [weakSelf openReadingList];
+                              }];
+  }
 
-  // Recent Tabs destination.
-  NSString* recentTabsIconName =
-      IsNewOverflowMenuSimpleDestinationIconsEnabled()
-          ? @"overflow_menu_destination_recent_tabs_simple"
-          : @"overflow_menu_destination_recent_tabs";
-  self.recentTabsDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
-                              destination:overflow_menu::Destination::RecentTabs
-                                imageName:recentTabsIconName
-                          accessibilityID:kToolsMenuOtherDevicesId
-                                  handler:^{
-                                    [weakSelf openRecentTabs];
-                                  }];
+  if (UseSymbols()) {
+    // Recent Tabs destination.
+    self.recentTabsDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
+                          destination:overflow_menu::Destination::RecentTabs
+                           symbolName:kRecentTabsSymbol
+                         systemSymbol:NO
+                      accessibilityID:kToolsMenuOtherDevicesId
+                              handler:^{
+                                [weakSelf openRecentTabs];
+                              }];
+  } else {
+    // Recent Tabs destination.
+    NSString* recentTabsIconName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_recent_tabs_simple"
+            : @"overflow_menu_destination_recent_tabs";
+    self.recentTabsDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
+                          destination:overflow_menu::Destination::RecentTabs
+                            imageName:recentTabsIconName
+                      accessibilityID:kToolsMenuOtherDevicesId
+                              handler:^{
+                                [weakSelf openRecentTabs];
+                              }];
+  }
 
-  // Settings destination.
-  NSString* settingsIconName =
-      IsNewOverflowMenuSimpleDestinationIconsEnabled()
-          ? @"overflow_menu_destination_settings_simple"
-          : @"overflow_menu_destination_settings";
-  self.settingsDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
-                              destination:overflow_menu::Destination::Settings
-                                imageName:settingsIconName
-                          accessibilityID:kToolsMenuSettingsId
-                                  handler:^{
-                                    [weakSelf openSettings];
-                                  }];
+  if (UseSymbols()) {
+    // Settings destination.
+    self.settingsDestination =
+        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
+                                destination:overflow_menu::Destination::Settings
+                                 symbolName:kSettingsSymbol
+                               systemSymbol:YES
+                            accessibilityID:kToolsMenuSettingsId
+                                    handler:^{
+                                      [weakSelf openSettings];
+                                    }];
+  } else {
+    // Settings destination.
+    NSString* settingsIconName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_settings_simple"
+            : @"overflow_menu_destination_settings";
+    self.settingsDestination =
+        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
+                                destination:overflow_menu::Destination::Settings
+                                  imageName:settingsIconName
+                            accessibilityID:kToolsMenuSettingsId
+                                    handler:^{
+                                      [weakSelf openSettings];
+                                    }];
+  }
 
-  // Site Info destination.
-  NSString* siteInfoIconName =
-      IsNewOverflowMenuSimpleDestinationIconsEnabled()
-          ? @"overflow_menu_destination_site_info_simple"
-          : @"overflow_menu_destination_site_info";
-  self.siteInfoDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
-                              destination:overflow_menu::Destination::SiteInfo
-                                imageName:siteInfoIconName
-                          accessibilityID:kToolsMenuSiteInformation
-                                  handler:^{
-                                    [weakSelf openSiteInformation];
-                                  }];
+  if (UseSymbols()) {
+    // Site Info destination.
+    self.siteInfoDestination =
+        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
+                                destination:overflow_menu::Destination::SiteInfo
+                                 symbolName:kInfoCircleSymbol
+                               systemSymbol:YES
+                            accessibilityID:kToolsMenuSiteInformation
+                                    handler:^{
+                                      [weakSelf openSiteInformation];
+                                    }];
+  } else {
+    // Site Info destination.
+    NSString* siteInfoIconName =
+        IsNewOverflowMenuSimpleDestinationIconsEnabled()
+            ? @"overflow_menu_destination_site_info_simple"
+            : @"overflow_menu_destination_site_info";
+    self.siteInfoDestination =
+        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
+                                destination:overflow_menu::Destination::SiteInfo
+                                  imageName:siteInfoIconName
+                            accessibilityID:kToolsMenuSiteInformation
+                                    handler:^{
+                                      [weakSelf openSiteInformation];
+                                    }];
+  }
 
   [self logTranslateAvailability];
 
@@ -567,7 +676,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         GetFollowActionState(self.webState) != FollowActionStateHidden) {
       DCHECK(UseSymbols());
       UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-          configurationWithPointSize:kOverflowSymbolPointSize
+          configurationWithPointSize:kOverflowActionSymbolPointSize
                               weight:UIImageSymbolWeightLight
                                scale:UIImageSymbolScaleMedium];
       NSString* name = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
@@ -636,11 +745,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                    kToolsMenuTextZoom, ^{
                                                      [weakSelf openTextZoom];
                                                    });
-    self.settingsAction =
-        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_SETTINGS, kGearShapeSymbol,
-                                 YES, kToolsMenuSettingsActionId, ^{
-                                   [weakSelf openSettingsFromAction];
-                                 });
+    self.settingsAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_SETTINGS, kSettingsFilledSymbol, YES,
+        kToolsMenuSettingsActionId, ^{
+          [weakSelf openSettingsFromAction];
+        });
 
     self.reportIssueAction = CreateOverflowMenuAction(
         IDS_IOS_OPTIONS_REPORT_AN_ISSUE, kWarningSymbol, YES,
@@ -826,9 +935,57 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (OverflowMenuDestination*)
     createOverflowMenuDestination:(int)nameID
                       destination:(overflow_menu::Destination)destination
+                       symbolName:(NSString*)symbolName
+                     systemSymbol:(BOOL)systemSymbol
+                  accessibilityID:(NSString*)accessibilityID
+                          handler:(Handler)handler {
+  DCHECK(UseSymbols());
+  __weak __typeof(self) weakSelf = self;
+
+  UIImage* symbol = nil;
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kOverflowDestinationSymbolPointSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  if (systemSymbol) {
+    symbol = DefaultSymbolWithConfiguration(symbolName, configuration);
+  } else {
+    symbol = CustomSymbolWithConfiguration(symbolName, configuration);
+  }
+
+  NSString* name = l10n_util::GetNSString(nameID);
+
+  auto handlerWithMetrics = ^{
+    overflow_menu::RecordUmaActionForDestination(destination);
+
+    if (IsSmartSortingNewOverflowMenuEnabled()) {
+      [weakSelf.destinationUsageHistory
+             trackDestinationClick:destination
+          numAboveFoldDestinations:weakSelf.numAboveFoldDestinations];
+    }
+
+    handler();
+  };
+
+  OverflowMenuDestination* result =
+      [[OverflowMenuDestination alloc] initWithName:name
+                                              image:symbol
+                            accessibilityIdentifier:accessibilityID
+                                 enterpriseDisabled:NO
+                                            handler:handlerWithMetrics];
+  result.destinationName = base::SysUTF8ToNSString(
+      overflow_menu::StringNameForDestination(destination));
+  return result;
+}
+// Creates an OverflowMenuDestination to be displayed in the destinations
+// carousel.
+- (OverflowMenuDestination*)
+    createOverflowMenuDestination:(int)nameID
+                      destination:(overflow_menu::Destination)destination
                         imageName:(NSString*)imageName
                   accessibilityID:(NSString*)accessibilityID
                           handler:(Handler)handler {
+  DCHECK(!UseSymbols());
   __weak __typeof(self) weakSelf = self;
 
   NSString* name = l10n_util::GetNSString(nameID);

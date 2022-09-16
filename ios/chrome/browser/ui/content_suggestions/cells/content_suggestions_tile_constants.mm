@@ -20,9 +20,6 @@ namespace {
 // The size of the symbol image used in content suggestions.
 const CGFloat kSymbolContentSuggestionsPointSize = 22;
 
-// Specific symbols used in the content suggestions.
-NSString* const kContentSuggestionsBookmarksSymbol = @"star.fill";
-
 }  // namespace
 
 NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
@@ -68,8 +65,7 @@ UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type) {
   switch (type) {
     case NTPCollectionShortcutTypeBookmark:
       return DefaultSymbolTemplateWithPointSize(
-          kContentSuggestionsBookmarksSymbol,
-          kSymbolContentSuggestionsPointSize);
+          kBookmarksSymbol, kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeReadingList:
       return CustomSymbolTemplateWithPointSize(
           kReadingListSymbol, kSymbolContentSuggestionsPointSize);
@@ -78,7 +74,7 @@ UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type) {
           kRecentTabsSymbol, kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeHistory:
       return DefaultSymbolTemplateWithPointSize(
-          kClockArrowSymbol, kSymbolContentSuggestionsPointSize);
+          kHistorySymbol, kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeCount:
       NOTREACHED();
       return nil;

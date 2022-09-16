@@ -114,7 +114,7 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       interiorPadding = Dimensions.horizontalLayoutIconPadding
     }
     return destination.image
-      .padding(interiorPadding)
+      .renderingMode(.template)
       .overlay {
         if destination.showBadge {
           Circle()
@@ -128,7 +128,10 @@ struct OverflowMenuDestinationButton: ButtonStyle {
             .offset(x: Dimensions.iconWidth / 2, y: -Dimensions.iconWidth / 2)
         }
       }
+      .frame(width: Dimensions.imageWidth, height: Dimensions.imageWidth)
+      .padding(interiorPadding)
       .background(iconBackground(configuration: configuration))
+      .foregroundColor(.blue600)
       .padding([.leading, .trailing], spacing)
       // Without explicitly removing the image from accessibility,
       // VoiceOver will occasionally read out icons it thinks it can

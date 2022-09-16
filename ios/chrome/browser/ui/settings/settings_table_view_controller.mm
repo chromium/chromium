@@ -1140,13 +1140,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (TableViewItem*)contentSettingsDetailItem {
   if (UseSymbols()) {
-    return [self detailItemWithType:SettingsItemTypeContentSettings
-                               text:l10n_util::GetNSString(
-                                        IDS_IOS_CONTENT_SETTINGS_TITLE)
-                         detailText:nil
-                             symbol:DefaultSettingsRootSymbol(kGearShapeSymbol)
-              symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
-            accessibilityIdentifier:kSettingsContentSettingsCellId];
+    return [self
+             detailItemWithType:SettingsItemTypeContentSettings
+                           text:l10n_util::GetNSString(
+                                    IDS_IOS_CONTENT_SETTINGS_TITLE)
+                     detailText:nil
+                         symbol:DefaultSettingsRootSymbol(kSettingsFilledSymbol)
+          symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+        accessibilityIdentifier:kSettingsContentSettingsCellId];
   }
 
   return [self detailItemWithType:SettingsItemTypeContentSettings

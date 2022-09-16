@@ -103,8 +103,8 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   UIImage* symbol = nil;
   switch (itemType) {
     case ItemTypeDataTypeBrowsingHistory:
-      symbol = DefaultSymbolTemplateWithPointSize(kClockArrowSymbol,
-                                                  kSymbolPointSize);
+      symbol =
+          DefaultSymbolTemplateWithPointSize(kHistorySymbol, kSymbolPointSize);
       break;
     case ItemTypeDataTypeCookiesSiteData:
       symbol = DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,

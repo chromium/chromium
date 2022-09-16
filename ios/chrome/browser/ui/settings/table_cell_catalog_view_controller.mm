@@ -135,7 +135,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* symbolItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   symbolItem.text = @"Detail Icon using custom background";
-  symbolItem.iconImage = DefaultSymbolWithPointSize(kGearShapeSymbol, 18);
+  symbolItem.iconImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol, 18);
   symbolItem.iconBackgroundColor = UIColorFromRGB(0xFBBC04);
   symbolItem.iconTintColor = UIColor.whiteColor;
   symbolItem.iconCornerRadius = 7;

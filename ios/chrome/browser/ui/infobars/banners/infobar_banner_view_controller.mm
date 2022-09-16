@@ -256,10 +256,10 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [containerStack addArrangedSubview:labelsStackView];
     // Open Modal Button setup.
   self.openModalButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIImage* gearImage =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(kGearShapeSymbol, kSymbolImagePointSize)
-          : [UIImage imageNamed:@"infobar_settings_icon"];
+  UIImage* gearImage = UseSymbols()
+                           ? DefaultSymbolWithPointSize(kSettingsFilledSymbol,
+                                                        kSymbolImagePointSize)
+                           : [UIImage imageNamed:@"infobar_settings_icon"];
   gearImage =
       [gearImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
