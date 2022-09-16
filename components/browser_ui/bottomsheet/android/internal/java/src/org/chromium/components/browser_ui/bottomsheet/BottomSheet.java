@@ -477,7 +477,8 @@ class BottomSheet extends FrameLayout
 
     @Override
     public boolean isTouchEventInToolbar(MotionEvent event) {
-        mToolbarHolder.getLocationInWindow(mCachedLocation);
+        mToolbarHolder.getLocationOnScreen(mCachedLocation);
+
         // This check only tests for collision for the Y component since the sheet is the full width
         // of the screen. We only care if the touch event is above the bottom of the toolbar since
         // we won't receive an event if the touch is outside the sheet.
