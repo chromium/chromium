@@ -56,14 +56,6 @@ class TopSitesDatabase {
   // Rank used to indicate that a URL is not stored in the database.
   static const int kRankOfNonExistingURL;
 
-  // Upgrades the thumbnail table to version 3, returning true if the
-  // upgrade was successful.
-  bool UpgradeToVersion3();
-
-  // Upgrades the top_sites table to version 4, returning true if the upgrade
-  // was successful.
-  bool UpgradeToVersion4();
-
   // Sets a top site for the URL. `new_rank` is the position of the URL in the
   // list of top sites, zero-based.
   // If the URL is not in the table, adds it. If it is, updates its rank and

@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "sql/database.h"
@@ -54,7 +53,7 @@ namespace {
 // NOTE(shess): When changing the version, add a new golden file for
 // the new version and a test to verify that Init() works with it.
 static const int kVersionNumber = 4;
-static const int kDeprecatedVersionNumber = 2;  // and earlier.
+static const int kDeprecatedVersionNumber = 3;  // and earlier.
 
 // Rank used to indicate that this is a newly added URL.
 static const int kRankOfNewURL = -1;
@@ -98,8 +97,8 @@ enum RecoveryEventType {
   RECOVERY_EVENT_FAILED_COMMIT,
 
   // Track invariants resolved by FixTopSitesTable().
-  RECOVERY_EVENT_INVARIANT_RANK,
-  RECOVERY_EVENT_INVARIANT_REDIRECT,
+  OBSOLETE_RECOVERY_EVENT_INVARIANT_RANK,
+  OBSOLETE_RECOVERY_EVENT_INVARIANT_REDIRECT,
   RECOVERY_EVENT_INVARIANT_CONTIGUOUS,
 
   // Track automated full-database recovery.
@@ -120,45 +119,20 @@ void RecordRecoveryEvent(RecoveryEventType recovery_event) {
 // overflow pages, so it is possible (though unlikely) that a chain could fit
 // together and yield a row with errors.
 void FixTopSitesTable(sql::Database* db, int version) {
-  // Forced sites are only present in version 3.
-  if (version == 3) {
-    // Enforce invariant separating forced and non-forced thumbnails.
-    static constexpr char kFixRankSql[] =
-        "DELETE FROM thumbnails "
-        "WHERE(url_rank=-1 AND last_forced=0)"
-        "OR(url_rank<>-1 AND last_forced<>0)";
-    std::ignore = db->Execute(kFixRankSql);
-    if (db->GetLastChangeCount() > 0)
-      RecordRecoveryEvent(RECOVERY_EVENT_INVARIANT_RANK);
-  }
-
-  // The table was renamed to "top_sites" in version 4.
-  const char* kTableName = (version == 3 ? "thumbnails" : "top_sites");
-
-  // Enforce invariant that url is in its own redirects.
-  static constexpr char kFixRedirectsSql[] =
-      "DELETE FROM %s "
-      "WHERE url<>substr(redirects,-length(url),length(url))";
-  std::ignore =
-      db->Execute(base::StringPrintf(kFixRedirectsSql, kTableName).c_str());
-  if (db->GetLastChangeCount() > 0)
-    RecordRecoveryEvent(RECOVERY_EVENT_INVARIANT_REDIRECT);
-
   // Enforce invariant that url_rank>=0 forms a contiguous series.
   // TODO(shess): I have not found an UPDATE+SUBSELECT method of managing this.
   // It can be done with a temporary table and a subselect, but doing it
   // manually is easier to follow.  Another option would be to somehow integrate
   // the renumbering into the table recovery code.
   static constexpr char kByRankSql[] =
-      "SELECT url_rank,rowid FROM %s WHERE url_rank<>-1 "
+      "SELECT url_rank,rowid FROM top_sites "
+      "WHERE url_rank<>-1 "
       "ORDER BY url_rank";
-  sql::Statement select_statement(db->GetUniqueStatement(
-      base::StringPrintf(kByRankSql, kTableName).c_str()));
+  sql::Statement select_statement(db->GetUniqueStatement(kByRankSql));
 
   static constexpr char kAdjustRankSql[] =
-      "UPDATE %s SET url_rank=? WHERE rowid=?";
-  sql::Statement update_statement(db->GetUniqueStatement(
-      base::StringPrintf(kAdjustRankSql, kTableName).c_str()));
+      "UPDATE top_sites SET url_rank=? WHERE rowid=?";
+  sql::Statement update_statement(db->GetUniqueStatement(kAdjustRankSql));
 
   // Update any rows where `next_rank` doesn't match `url_rank`.
   int next_rank = 0;
@@ -350,20 +324,6 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
   if (!InitTables(db_.get()))
     return false;
 
-  if (meta_table_.GetVersionNumber() == 2) {
-    if (!UpgradeToVersion3()) {
-      LOG(WARNING) << "Unable to upgrade top sites database to version 3.";
-      return false;
-    }
-  }
-
-  if (meta_table_.GetVersionNumber() == 3) {
-    if (!UpgradeToVersion4()) {
-      LOG(WARNING) << "Unable to upgrade top sites database to version 4.";
-      return false;
-    }
-  }
-
   // Version check.
   if (meta_table_.GetVersionNumber() != kVersionNumber)
     return false;
@@ -389,38 +349,6 @@ void TopSitesDatabase::ApplyDelta(const TopSitesDelta& delta) {
     UpdateSiteRankNoTransaction(moved.url, moved.rank);
 
   transaction.Commit();
-}
-
-bool TopSitesDatabase::UpgradeToVersion3() {
-  // Add 'last_forced' column.
-  if (!db_->Execute(
-          "ALTER TABLE thumbnails ADD last_forced INTEGER DEFAULT 0")) {
-    return false;
-  }
-  meta_table_.SetVersionNumber(3);
-  return true;
-}
-
-bool TopSitesDatabase::UpgradeToVersion4() {
-  // Rename table to "top_sites" and retain only the url, url_rank, title, and
-  // redirects columns. Also, remove any remaining forced sites.
-
-  static constexpr char kInsertSql[] =
-      // The top_sites table is created before the version upgrade.
-      "INSERT INTO top_sites SELECT "
-      "url,url_rank,title,redirects FROM thumbnails";
-  if (!db_->Execute(kInsertSql))
-    return false;
-
-  if (!db_->Execute("DROP TABLE thumbnails"))
-    return false;
-
-  // Remove any forced sites.
-  if (!db_->Execute("DELETE FROM top_sites WHERE url_rank=-1"))
-    return false;
-
-  meta_table_.SetVersionNumber(4);
-  return true;
 }
 
 void TopSitesDatabase::GetSites(MostVisitedURLList* urls) {
