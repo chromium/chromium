@@ -34,7 +34,6 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
 namespace content {
@@ -45,6 +44,24 @@ constexpr char kPrefetchLoadResultHistogram[] =
     "SignedExchange.Prefetch.LoadResult2";
 
 SignedExchangeHandlerFactory* g_signed_exchange_factory_for_testing_ = nullptr;
+
+net::IsolationInfo CreateIsolationInfoForCertFetch(
+    const network::ResourceRequest& outer_request) {
+  if (!outer_request.trusted_params ||
+      outer_request.trusted_params->isolation_info.IsEmpty())
+    return net::IsolationInfo();
+  if (net::IsolationInfo::IsFrameSiteEnabled()) {
+    return net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther,
+        *outer_request.trusted_params->isolation_info.top_frame_origin(),
+        *outer_request.trusted_params->isolation_info.frame_origin(),
+        net::SiteForCookies());
+  }
+  return net::IsolationInfo::CreateDoubleKey(
+      net::IsolationInfo::RequestType::kOther,
+      *outer_request.trusted_params->isolation_info.top_frame_origin(),
+      net::SiteForCookies());
+}
 
 }  // namespace
 
@@ -71,14 +88,9 @@ SignedExchangeLoader::SignedExchangeLoader(
       reporter_(std::move(reporter)),
       url_loader_options_(url_loader_options),
       should_redirect_on_failure_(should_redirect_on_failure),
-      devtools_proxy_(std::move(devtools_proxy)),
-      url_loader_factory_(std::move(url_loader_factory)),
-      url_loader_throttles_getter_(std::move(url_loader_throttles_getter)),
-      network_isolation_key_(network_isolation_key),
-      frame_tree_node_id_(frame_tree_node_id),
-      metric_recorder_(std::move(metric_recorder)),
-      accept_langs_(accept_langs) {
+      metric_recorder_(std::move(metric_recorder)) {
   DCHECK(outer_request_.url.is_valid());
+  DCHECK(outer_response_body);
 
   if (keep_entry_for_prefetch_cache) {
     cache_entry_ = std::make_unique<PrefetchedSignedExchangeCacheEntry>();
@@ -91,16 +103,45 @@ SignedExchangeLoader::SignedExchangeLoader(
     metric_recorder_->OnSignedExchangeNonPrefetch(
         outer_request_.url, outer_response_head_->response_time);
   }
-  // Can't use HttpResponseHeaders::GetMimeType() because SignedExchangeHandler
-  // checks "v=" parameter.
-  outer_response_head_->headers->EnumerateHeader(nullptr, "content-type",
-                                                 &content_type_);
 
   url_loader_.Bind(std::move(endpoints->url_loader));
 
-  // |outer_response_body| is valid, when it's a navigation request.
-  if (outer_response_body)
-    OnStartLoadingResponseBody(std::move(outer_response_body));
+  auto cert_fetcher_factory = SignedExchangeCertFetcherFactory::Create(
+      std::move(url_loader_factory), std::move(url_loader_throttles_getter),
+      outer_request_.throttling_profile_id,
+      CreateIsolationInfoForCertFetch(outer_request_));
+
+  if (g_signed_exchange_factory_for_testing_) {
+    signed_exchange_handler_ = g_signed_exchange_factory_for_testing_->Create(
+        outer_request_.url,
+        std::make_unique<network::DataPipeToSourceStream>(
+            std::move(outer_response_body)),
+        base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
+                       weak_factory_.GetWeakPtr()),
+        std::move(cert_fetcher_factory));
+  } else {
+    // Can't use HttpResponseHeaders::GetMimeType() because
+    // SignedExchangeHandler checks "v=" parameter.
+    std::string content_type;
+    outer_response_head_->headers->EnumerateHeader(nullptr, "content-type",
+                                                   &content_type);
+
+    signed_exchange_handler_ = std::make_unique<SignedExchangeHandler>(
+        network::IsUrlPotentiallyTrustworthy(outer_request_.url),
+        web_package::HasNoSniffHeader(*outer_response_head_), content_type,
+        std::make_unique<network::DataPipeToSourceStream>(
+            std::move(outer_response_body)),
+        base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
+                       weak_factory_.GetWeakPtr()),
+        std::move(cert_fetcher_factory), network_isolation_key,
+        outer_request_.trusted_params
+            ? absl::make_optional(outer_request_.trusted_params->isolation_info)
+            : absl::nullopt,
+        outer_request_.load_flags, outer_response_head_->remote_endpoint,
+        std::make_unique<blink::WebPackageRequestMatcher>(
+            outer_request_.headers, accept_langs),
+        std::move(devtools_proxy), reporter_.get(), frame_tree_node_id);
+  }
 
   // Bind the endpoint with |this| to get the body DataPipe.
   url_loader_client_receiver_.Bind(std::move(endpoints->url_loader_client));
@@ -145,56 +186,6 @@ void SignedExchangeLoader::OnUploadProgress(
 void SignedExchangeLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   // TODO(https://crbug.com/803774): Implement this to progressively update the
   // encoded data length in DevTools.
-}
-
-void SignedExchangeLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle response_body) {
-  auto cert_fetcher_factory = SignedExchangeCertFetcherFactory::Create(
-      url_loader_factory_, url_loader_throttles_getter_,
-      outer_request_.throttling_profile_id,
-      (outer_request_.trusted_params &&
-       !outer_request_.trusted_params->isolation_info.IsEmpty())
-          ? net::IsolationInfo::IsFrameSiteEnabled()
-                ? net::IsolationInfo::Create(
-                      net::IsolationInfo::RequestType::kOther,
-                      *outer_request_.trusted_params->isolation_info
-                           .top_frame_origin(),
-                      *outer_request_.trusted_params->isolation_info
-                           .frame_origin(),
-                      net::SiteForCookies())
-                : net::IsolationInfo::CreateDoubleKey(
-                      net::IsolationInfo::RequestType::kOther,
-                      *outer_request_.trusted_params->isolation_info
-                           .top_frame_origin(),
-                      net::SiteForCookies())
-          : net::IsolationInfo());
-
-  if (g_signed_exchange_factory_for_testing_) {
-    signed_exchange_handler_ = g_signed_exchange_factory_for_testing_->Create(
-        outer_request_.url,
-        std::make_unique<network::DataPipeToSourceStream>(
-            std::move(response_body)),
-        base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
-                       weak_factory_.GetWeakPtr()),
-        std::move(cert_fetcher_factory));
-    return;
-  }
-
-  signed_exchange_handler_ = std::make_unique<SignedExchangeHandler>(
-      network::IsUrlPotentiallyTrustworthy(outer_request_.url),
-      web_package::HasNoSniffHeader(*outer_response_head_), content_type_,
-      std::make_unique<network::DataPipeToSourceStream>(
-          std::move(response_body)),
-      base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
-                     weak_factory_.GetWeakPtr()),
-      std::move(cert_fetcher_factory), network_isolation_key_,
-      outer_request_.trusted_params
-          ? absl::make_optional(outer_request_.trusted_params->isolation_info)
-          : absl::nullopt,
-      outer_request_.load_flags, outer_response_head_->remote_endpoint,
-      std::make_unique<blink::WebPackageRequestMatcher>(outer_request_.headers,
-                                                        accept_langs_),
-      std::move(devtools_proxy_), reporter_.get(), frame_tree_node_id_);
 }
 
 void SignedExchangeLoader::OnComplete(

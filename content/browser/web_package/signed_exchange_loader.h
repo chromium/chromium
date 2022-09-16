@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "net/base/network_isolation_key.h"
 #include "net/ssl/ssl_info.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -32,6 +31,7 @@ class URLLoaderThrottle;
 }  // namespace blink
 
 namespace net {
+class NetworkIsolationKey;
 class SourceStream;
 }  // namespace net
 
@@ -113,8 +113,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
 
-  void OnStartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body);
-
   void ConnectToClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
@@ -177,16 +175,9 @@ class CONTENT_EXPORT SignedExchangeLoader final
 
   const uint32_t url_loader_options_;
   const bool should_redirect_on_failure_;
-  std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  URLLoaderThrottlesGetter url_loader_throttles_getter_;
-  const net::NetworkIsolationKey network_isolation_key_;
-  const int frame_tree_node_id_;
   scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder_;
 
   absl::optional<net::SSLInfo> ssl_info_;
-
-  std::string content_type_;
 
   absl::optional<GURL> fallback_url_;
   absl::optional<GURL> inner_request_url_;
@@ -200,7 +191,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
 
   // Set when |body_data_pipe_adapter_| finishes loading the decoded body.
   absl::optional<int> decoded_body_read_result_;
-  const std::string accept_langs_;
 
   // Keep the signed exchange info to be stored to
   // PrefetchedSignedExchangeCache.
