@@ -444,7 +444,6 @@ void WaylandEventSource::OnTouchPressEvent(
   PointerDetails details(EventPointerType::kTouch, id);
   TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
                    keyboard_modifiers_);
-  DCHECK_EQ(dispatch_policy, wl::EventDispatchPolicy::kOnFrame);
   touch_frames_.push_back(
       std::make_unique<FrameData>(event, base::NullCallback()));
 }
