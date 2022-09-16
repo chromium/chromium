@@ -237,6 +237,8 @@ static void JNI_TraceEvent_InstantAndroidIPC(JNIEnv* env,
       });
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+
 static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
                                                  jint block_reason,
                                                  jint allow_reason,
@@ -261,6 +263,16 @@ static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
         }
       });
 }
+
+#else  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+// Empty implementations when TraceLog isn't available.
+static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
+                                                 jint block_reason,
+                                                 jint allow_reason,
+                                                 jint snapshot_diff) {}
+
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 static void JNI_TraceEvent_Begin(JNIEnv* env,
                                  const JavaParamRef<jstring>& jname,
