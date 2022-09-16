@@ -1697,8 +1697,6 @@ crbug.com/1294155 printing/fixed-positioned-overflow-scroll.html [ Failure ]
 crbug.com/1294155 printing/multi-page-background.html [ Failure ]
 crbug.com/1294155 [ Win ] printing/vertical-rl.html [ Failure ]
 crbug.com/1294155 scrollbars/scrollbars-on-positioned-content.html [ Failure ]
-crbug.com/1294155 [ Linux ] svg/text/caret-in-svg-text.xhtml [ Failure ]
-crbug.com/1294155 [ Win ] svg/text/caret-in-svg-text.xhtml [ Failure ]
 
 # ====== LayoutNG-only failures until here ======
 

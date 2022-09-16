@@ -2155,3 +2155,5 @@ crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/o
 crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/web-animations-api.html [ Failure ]
 crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.tentative.https.html [ Failure ]
 crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-filter.https.html [ Failure ]
+
+svg/text/caret-in-svg-text.xhtml [ Failure ]
