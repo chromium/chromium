@@ -1,5 +1,5 @@
 diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
-index c737e53c2ce72..963a095d14a19 100644
+index 21b4055dc151b..b0eddb1efad4d 100644
 --- a/build/config/BUILDCONFIG.gn
 +++ b/build/config/BUILDCONFIG.gn
 @@ -301,10 +301,11 @@ is_ios = current_os == "ios"
@@ -16,7 +16,7 @@ index c737e53c2ce72..963a095d14a19 100644
  # =============================================================================
  # TARGET DEFAULTS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index 0272bf80f31fe..59f24e500f01f 100644
+index a094aa41ec525..aa1b6629b61f5 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
 @@ -614,6 +614,20 @@ config("compiler") {
@@ -49,16 +49,16 @@ index 0272bf80f31fe..59f24e500f01f 100644
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -1532,7 +1546,7 @@ config("default_warnings") {
-         ]
-       }
+@@ -1540,7 +1554,7 @@ config("default_warnings") {
+         "-Wno-ignored-pragma-optimize",
+       ]
  
 -      if (!is_nacl) {
 +      if (!is_nacl && !is_wasm) {
          cflags += [
            # TODO(crbug.com/1343975) Evaluate and possibly enable.
            "-Wno-deprecated-builtins",
-@@ -2290,6 +2304,9 @@ config("symbols") {
+@@ -2316,6 +2330,9 @@ config("symbols") {
  
      # All configs using /DEBUG should include this:
      configs = [ ":win_pdbaltpath" ]
@@ -69,7 +69,7 @@ index 0272bf80f31fe..59f24e500f01f 100644
      cflags = []
      if (is_mac && enable_dsyms) {
 diff --git a/build/toolchain/toolchain.gni b/build/toolchain/toolchain.gni
-index 98b23fd705a1b..c6679a89f966a 100644
+index 6a49c399e39ea..57ded8e517966 100644
 --- a/build/toolchain/toolchain.gni
 +++ b/build/toolchain/toolchain.gni
 @@ -47,6 +47,9 @@ if (is_apple) {
