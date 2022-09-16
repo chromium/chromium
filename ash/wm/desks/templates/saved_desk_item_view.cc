@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
 #include "ash/style/pill_button.h"
@@ -140,10 +141,8 @@ SavedDeskItemView::SavedDeskItemView(
       .SetUseDefaultFillLayout(true)
       .SetAccessibleName(template_name)
       .SetCallback(std::move(launch_template_callback))
-      .SetBackground(views::CreateRoundedRectBackground(
-          color_provider->GetBaseLayerColor(
-              AshColorProvider::BaseLayerType::kTransparent80),
-          kCornerRadius))
+      .SetBackground(views::CreateThemedRoundedRectBackground(
+          kColorAshShieldAndBase80, kCornerRadius))
       .SetBorder(std::make_unique<views::HighlightBorder>(
           kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
           /*use_light_colors=*/false))
@@ -421,8 +420,6 @@ void SavedDeskItemView::Layout() {
 void SavedDeskItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
-  GetBackground()->SetNativeControlColor(color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
 
   time_view_->SetBackgroundColor(SK_ColorTRANSPARENT);
   time_view_->SetEnabledColor(color_provider->GetContentLayerColor(
