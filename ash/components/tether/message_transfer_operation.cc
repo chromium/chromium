@@ -28,7 +28,7 @@ multidevice::RemoteDeviceRefList RemoveDuplicatesFromVector(
   for (const auto& remote_device : remote_devices) {
     // Only add the device to the output vector if it has not already been put
     // into the set.
-    if (remote_devices_set.find(remote_device) == remote_devices_set.end()) {
+    if (!base::Contains(remote_devices_set, remote_device)) {
       remote_devices_set.insert(remote_device);
       updated_remote_devices.push_back(remote_device);
     }
