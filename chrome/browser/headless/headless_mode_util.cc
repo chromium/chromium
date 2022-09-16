@@ -62,8 +62,11 @@ void SetUpCommandLine(const base::CommandLine* command_line) {
   }
   // If Ozone/Headless is enabled, Vulkan initialization crashes unless
   // Angle implementation is specified explicitly.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
+  if (!command_line->HasSwitch(switches::kUseGL) &&
+      !command_line->HasSwitch(switches::kUseANGLE)) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
+  }
 #endif  // BUILDFLAG(IS_LINUX)
 }
 
