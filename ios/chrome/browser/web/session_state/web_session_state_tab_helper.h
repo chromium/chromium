@@ -27,8 +27,6 @@ class WebSessionStateTabHelper
 
   ~WebSessionStateTabHelper() override;
 
-  static void CreateForWebState(web::WebState* web_state);
-
   // Returns true if the feature is enabled and running iOS 15 or newer.
   static bool IsEnabled();
 

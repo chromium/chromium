@@ -43,16 +43,6 @@ const int64_t kMaxSessionState = 1024 * 5;  // 5MB
 }  // anonymous namespace
 
 // static
-void WebSessionStateTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new WebSessionStateTabHelper(web_state)));
-  }
-}
-
-// static
 bool WebSessionStateTabHelper::IsEnabled() {
   if (!base::FeatureList::IsEnabled(web::kRestoreSessionFromCache)) {
     return false;
