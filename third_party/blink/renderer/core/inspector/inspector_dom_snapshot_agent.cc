@@ -102,7 +102,7 @@ String GetOriginUrl(const Node* node) {
   if (!isolate || !isolate->InContext() || !debugger)
     return String();
   v8::HandleScope handleScope(isolate);
-  String url = GetCurrentScriptUrl();
+  String url = GetCurrentScriptUrl(isolate);
   if (!url.IsEmpty())
     return url;
   // If we did not get anything from the sync stack, let's try the slow

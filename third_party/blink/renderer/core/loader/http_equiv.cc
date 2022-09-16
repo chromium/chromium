@@ -118,8 +118,8 @@ void HttpEquiv::ProcessHttpEquivOriginTrial(LocalDOMWindow* window,
   // NOTE: The external script origin is not considered security-critical. See
   // the comment thread in the design doc for details:
   // https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA/edit?disco=AAAAJyG8StI
-  Vector<String> candidate_scripts =
-      GetScriptUrlsFromCurrentStack(/*unique_url_count=*/3);
+  Vector<String> candidate_scripts = GetScriptUrlsFromCurrentStack(
+      window->GetIsolate(), /*unique_url_count=*/3);
   Vector<scoped_refptr<SecurityOrigin>> external_origins;
   for (const String& external_script : candidate_scripts) {
     KURL external_script_url(external_script);

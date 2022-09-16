@@ -353,7 +353,7 @@ enum class NamedPropertyDeleterResult {
 // Gets the url of the currently executing script. Returns empty string, if no
 // script is executing (e.g. during parsing of a meta tag in markup), or the
 // script context is otherwise unavailable.
-PLATFORM_EXPORT String GetCurrentScriptUrl();
+PLATFORM_EXPORT String GetCurrentScriptUrl(v8::Isolate* isolate);
 
 // Gets the urls of the scripts at the top of the currently executing stack.
 // If available, returns up to |unique_url_count| urls, filtering out duplicate
@@ -363,6 +363,7 @@ PLATFORM_EXPORT String GetCurrentScriptUrl();
 // To minimize the cost of walking the stack, only the top frames (currently 10)
 // are examined, regardless of the value of |unique_url_count|.
 PLATFORM_EXPORT Vector<String> GetScriptUrlsFromCurrentStack(
+    v8::Isolate* isolate,
     wtf_size_t unique_url_count);
 
 namespace bindings {

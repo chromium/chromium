@@ -51,8 +51,7 @@ v8::Local<v8::Value> FreezeV8Object(v8::Local<v8::Value> value,
   return value;
 }
 
-String GetCurrentScriptUrl() {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+String GetCurrentScriptUrl(v8::Isolate* isolate) {
   DCHECK(isolate);
   if (!isolate->InContext())
     return String();
@@ -62,10 +61,10 @@ String GetCurrentScriptUrl() {
   return ToCoreStringWithNullCheck(script_name);
 }
 
-Vector<String> GetScriptUrlsFromCurrentStack(wtf_size_t unique_url_count) {
+Vector<String> GetScriptUrlsFromCurrentStack(v8::Isolate* isolate,
+                                             wtf_size_t unique_url_count) {
   Vector<String> unique_urls;
 
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   DCHECK(isolate);
   if (!isolate->InContext())
     return unique_urls;
