@@ -241,7 +241,7 @@ generate_embedded_i18n("generate_strings") {
 
   output_file_name_base = "installer_util_strings"
 
-  branding = branding_path_component
+  branding = branding_path_product
 }
 
 # Compile the generated .rc file.
