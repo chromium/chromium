@@ -832,7 +832,10 @@ TEST_F(RTCPeerConnectionHandlerTest, addAndRemoveStream) {
 
   EXPECT_FALSE(AddStream(local_stream));
   EXPECT_TRUE(RemoveStream(local_stream));
-  EXPECT_EQ(0u, mock_peer_connection_->GetSenders().size());
+  // Senders are not removed, only their tracks are nulled.
+  ASSERT_EQ(2u, mock_peer_connection_->GetSenders().size());
+  EXPECT_EQ(mock_peer_connection_->GetSenders()[0]->track(), nullptr);
+  EXPECT_EQ(mock_peer_connection_->GetSenders()[0]->track(), nullptr);
 
   StopAllTracks(local_stream);
 }

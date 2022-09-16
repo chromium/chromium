@@ -105,7 +105,6 @@ class RTCRtpSender final : public ScriptWrappable {
 
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpSenderPlatform> sender_;
-  // TODO(https://crbug.com/1302249): Delete this, it was only used for Plan B!
   String kind_;
   Member<MediaStreamTrack> track_;
   Member<RTCDtlsTransport> transport_;

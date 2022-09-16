@@ -120,8 +120,8 @@ FakeRtpSender::FakeRtpSender(
 FakeRtpSender::~FakeRtpSender() {}
 
 bool FakeRtpSender::SetTrack(webrtc::MediaStreamTrackInterface* track) {
-  NOTIMPLEMENTED();
-  return false;
+  track_ = track;
+  return true;
 }
 
 rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> FakeRtpSender::track()
@@ -412,10 +412,7 @@ webrtc::RTCError MockPeerConnectionImpl::RemoveTrackOrError(
     return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER,
                             "Mock: sender not found in senders");
   }
-  // TODO(https://crbug.com/1302249): This is old Plan B behavior, don't remove
-  // the sender.
-  senders_.erase(it);
-  auto track = sender->track();
+  sender->SetTrack(nullptr);
 
   for (const auto& stream_id : sender->stream_ids()) {
     auto local_stream_it = std::find(local_stream_ids_.begin(),
