@@ -21,35 +21,35 @@ USE_PYTHON3 = True
 
 _EXCLUDED_PATHS = (
     # Generated file
-    (r"chrome[\\/]android[\\/]webapk[\\/]shell_apk[\\/]src[\\/]org[\\/]chromium"
-     r"[\\/]webapk[\\/]lib[\\/]runtime_library[\\/]IWebApkApi.java"),
+    (r"chrome/android/webapk/shell_apk/src/org/chromium"
+     r"/webapk/lib/runtime_library/IWebApkApi.java"),
     # File needs to write to stdout to emulate a tool it's replacing.
-    r"chrome[\\/]updater[\\/]mac[\\/]keystone[\\/]ksadmin.mm",
+    r"chrome/updater/mac/keystone/ksadmin.mm",
     # Generated file.
-    (r"^components[\\/]variations[\\/]proto[\\/]devtools[\\/]"
+    (r"^components/variations/proto/devtools/"
      r"client_variations.js"),
     # These are video files, not typescript.
-    r"^media[\\/]test[\\/]data[\\/].*.ts",
-    r"^native_client_sdksrc[\\/]build_tools[\\/]make_rules.py",
-    r"^native_client_sdk[\\/]src[\\/]build_tools[\\/]make_simple.py",
-    r"^native_client_sdk[\\/]src[\\/]tools[\\/].*.mk",
-    r"^net[\\/]tools[\\/]spdyshark[\\/].*",
-    r"^skia[\\/].*",
-    r"^third_party[\\/]blink[\\/].*",
-    r"^third_party[\\/]breakpad[\\/].*",
+    r"^media/test/data/.*.ts",
+    r"^native_client_sdksrc/build_tools/make_rules.py",
+    r"^native_client_sdk/src/build_tools/make_simple.py",
+    r"^native_client_sdk/src/tools/.*.mk",
+    r"^net/tools/spdyshark/.*",
+    r"^skia/.*",
+    r"^third_party/blink/.*",
+    r"^third_party/breakpad/.*",
     # sqlite is an imported third party dependency.
-    r"^third_party[\\/]sqlite[\\/].*",
-    r"^v8[\\/].*",
+    r"^third_party/sqlite/.*",
+    r"^v8/.*",
     r".*MakeFile$",
     r".+_autogen\.h$",
     r".+_pb2(_grpc)?\.py$",
-    r".+[\\/]pnacl_shim\.c$",
-    r"^gpu[\\/]config[\\/].*_list_json\.cc$",
-    r"tools[\\/]md_browser[\\/].*\.css$",
+    r".+/pnacl_shim\.c$",
+    r"^gpu/config/.*_list_json\.cc$",
+    r"tools/md_browser/.*\.css$",
     # Test pages for Maps telemetry tests.
-    r"tools[\\/]perf[\\/]page_sets[\\/]maps_perf_test.*",
+    r"tools/perf/page_sets/maps_perf_test.*",
     # Test pages for WebRTC telemetry tests.
-    r"tools[\\/]perf[\\/]page_sets[\\/]webrtc_cases.*",
+    r"tools/perf/page_sets/webrtc_cases.*",
 )
 
 _EXCLUDED_SET_NO_PARENT_PATHS = (
@@ -72,15 +72,15 @@ _HEADER_EXTENSIONS = r'\.(h|hpp|hxx)$'
 
 # Paths with sources that don't use //base.
 _NON_BASE_DEPENDENT_PATHS = (
-    r"^chrome[\\/]browser[\\/]browser_switcher[\\/]bho[\\/]",
-    r"^tools[\\/]win[\\/]",
+    r"^chrome/browser/browser_switcher/bho/",
+    r"^tools/win/",
 )
 
 
 # Regular expression that matches code only used for test binaries
 # (best effort).
 _TEST_CODE_EXCLUDED_PATHS = (
-    r'.*[\\/](fake_|test_|mock_).+%s' % _IMPLEMENTATION_EXTENSIONS,
+    r'.*/(fake_|test_|mock_).+%s' % _IMPLEMENTATION_EXTENSIONS,
     r'.+_test_(base|support|util)%s' % _IMPLEMENTATION_EXTENSIONS,
     # Test suite files, like:
     # foo_browsertest.cc
@@ -90,21 +90,21 @@ _TEST_CODE_EXCLUDED_PATHS = (
         _IMPLEMENTATION_EXTENSIONS,
     r'.+_(fuzz|fuzzer)(_[a-z]+)?%s' % _IMPLEMENTATION_EXTENSIONS,
     r'.+sync_service_impl_harness%s' % _IMPLEMENTATION_EXTENSIONS,
-    r'.*[\\/](test|tool(s)?)[\\/].*',
+    r'.*/(test|tool(s)?)/.*',
     # content_shell is used for running content_browsertests.
-    r'content[\\/]shell[\\/].*',
+    r'content/shell/.*',
     # Web test harness.
-    r'content[\\/]web_test[\\/].*',
+    r'content/web_test/.*',
     # Non-production example code.
-    r'mojo[\\/]examples[\\/].*',
+    r'mojo/examples/.*',
     # Launcher for running iOS tests on the simulator.
-    r'testing[\\/]iossim[\\/]iossim\.mm$',
+    r'testing/iossim/iossim\.mm$',
     # EarlGrey app side code for tests.
-    r'ios[\\/].*_app_interface\.mm$',
+    r'ios/.*_app_interface\.mm$',
     # Views Examples code
-    r'ui[\\/]views[\\/]examples[\\/].*',
+    r'ui/views/examples/.*',
     # Chromium Codelab
-    r'codelabs[\\/]*'
+    r'codelabs/*'
 )
 
 _THIRD_PARTY_EXCEPT_BLINK = 'third_party/(?!blink/)'
@@ -449,8 +449,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       (
         # Files that #define IGNORE_EINTR.
-        r'^base[\\/]posix[\\/]eintr_wrapper\.h$',
-        r'^ppapi[\\/]tests[\\/]test_broker\.cc$',
+        r'^base/posix/eintr_wrapper\.h$',
+        r'^ppapi/tests/test_broker\.cc$',
       ),
     ),
     BanRule(
@@ -461,7 +461,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       (
-        r'extensions[\\/]renderer[\\/]safe_builtins\.*',
+        r'extensions/renderer/safe_builtins\.*',
       ),
     ),
     BanRule(
@@ -471,8 +471,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       (
-          r'^base[\\/]third_party[\\/]symbolize[\\/].*',
-          r'^third_party[\\/]abseil-cpp[\\/].*',
+          r'^base/third_party/symbolize/.*',
+          r'^third_party/abseil-cpp/.*',
       ),
     ),
     BanRule(
@@ -515,9 +515,9 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       False,
       (
-        r'^content[\\/]browser[\\/]webui[\\/]web_ui_impl\.(cc|h)$',
-        r'^content[\\/]public[\\/]browser[\\/]web_ui\.h$',
-        r'^content[\\/]public[\\/]test[\\/]test_web_ui\.(cc|h)$',
+        r'^content/browser/webui/web_ui_impl\.(cc|h)$',
+        r'^content/public/browser/web_ui\.h$',
+        r'^content/public/test/test_web_ui\.(cc|h)$',
       ),
     ),
     BanRule(
@@ -1032,7 +1032,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       True,
       (
-          r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$',
+          r'^base/win/scoped_winrt_initializer\.cc$',
       ),
     ),
     BanRule(
@@ -1071,9 +1071,9 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [
         # base::Bind{Once,Repeating} references absl::FunctionRef to disallow
         # interoperability.
-        r'^base[\\/]functional[\\/]bind_internal\.h',
+        r'^base/functional/bind_internal\.h',
         # base::FunctionRef is implemented on top of absl::FunctionRef.
-        r'^base[\\/]functional[\\/]function_ref.*\..+',
+        r'^base/functional/function_ref.*\..+',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK,
       ],
@@ -1105,11 +1105,11 @@ _LONG_PATH_ERROR = (
 )
 
 _JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS = [
-    r".*[\\/]AppHooksImpl\.java",
-    r".*[\\/]BuildHooksAndroidImpl\.java",
-    r".*[\\/]LicenseContentProvider\.java",
-    r".*[\\/]PlatformServiceBridgeImpl.java",
-    r".*chrome[\\\/]android[\\\/]feed[\\\/]dummy[\\\/].*\.java",
+    r".*/AppHooksImpl\.java",
+    r".*/BuildHooksAndroidImpl\.java",
+    r".*/LicenseContentProvider\.java",
+    r".*/PlatformServiceBridgeImpl.java",
+    r".*chrome/android/feed/dummy/.*\.java",
 ]
 
 # List of image extensions that are used as resources in chromium.
@@ -1117,17 +1117,17 @@ _IMAGE_EXTENSIONS = ['.svg', '.png', '.webp']
 
 # These paths contain test data and other known invalid JSON files.
 _KNOWN_TEST_DATA_AND_INVALID_JSON_FILE_PATTERNS = [
-    r'test[\\/]data[\\/]',
-    r'testing[\\/]buildbot[\\/]',
-    r'^components[\\/]policy[\\/]resources[\\/]policy_templates\.json$',
-    r'^third_party[\\/]protobuf[\\/]',
-    r'^third_party[\\/]blink[\\/]perf_tests[\\/]speedometer[\\/]resources[\\/]todomvc[\\/]learn.json',
-    r'^third_party[\\/]blink[\\/]renderer[\\/]devtools[\\/]protocol\.json$',
-    r'^third_party[\\/]blink[\\/]web_tests[\\/]external[\\/]wpt[\\/]',
-    r'^tools[\\/]perf[\\/]',
-    r'^tools[\\/]traceline[\\/]svgui[\\/]startup-release.json',
+    r'test/data/',
+    r'testing/buildbot/',
+    r'^components/policy/resources/policy_templates\.json$',
+    r'^third_party/protobuf/',
+    r'^third_party/blink/perf_tests/speedometer/resources/todomvc/learn.json',
+    r'^third_party/blink/renderer/devtools/protocol\.json$',
+    r'^third_party/blink/web_tests/external/wpt/',
+    r'^tools/perf/',
+    r'^tools/traceline/svgui/startup-release.json',
     # vscode configuration files allow comments
-    r'^tools[\\/]vscode[\\/]',
+    r'^tools/vscode/',
 ]
 
 # These are not checked on the public chromium-presubmit trybot.
@@ -1730,6 +1730,9 @@ def CheckNoBannedFunctions(input_api, output_api):
             return False
 
         local_path = affected_file.LocalPath()
+        # Consistently use / as path separator to simplify the writing of regex
+        # expressions.
+        local_path = local_path.replace(input_api.os_path.sep, '/')
         for item in excluded_paths:
             if input_api.re.match(item, local_path):
                 return True
@@ -2040,9 +2043,11 @@ def CheckNoInternalHeapIncludes(input_api, output_api):
     v8_wrapper_pattern = input_api.re.compile(
         r'^\s*#include\s*"third_party/blink/renderer/platform/heap/v8_wrapper/.*"'
     )
+    # Consistently use / as path separator to simplify the writing of regex
+    # expressions.
     file_filter = lambda f: not input_api.re.match(
-        r"^third_party[\\/]blink[\\/]renderer[\\/]platform[\\/]heap[\\/].*",
-        f.LocalPath())
+        r"^third_party/blink/renderer/platform/heap/.*",
+        f.LocalPath().replace(input_api.os_path.sep, '/'))
     errors = []
 
     for f in input_api.AffectedFiles(file_filter=file_filter):
@@ -2116,7 +2121,7 @@ def CheckHardcodedGoogleHostsInLowerLayers(input_api, output_api):
         """
         return input_api.FilterSourceFile(
             affected_file,
-            files_to_check=[r'^(android_webview|base|content|net)[\\/].*'],
+            files_to_check=[r'^(android_webview|base|content|net)/.*'],
             files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
                            input_api.DEFAULT_FILES_TO_SKIP))
 
@@ -2197,9 +2202,9 @@ def CheckNoAbbreviationInPngFileName(input_api, output_api):
     """
     errors = []
     files_to_check = [r'.*_[a-z]_.*\.png$|.*_[a-z]\.png$']
-    files_to_skip = [r'^native_client_sdk[\\/]',
-                     r'^services[\\/]test[\\/]',
-                     r'^third_party[\\/]blink[\\/]web_tests[\\/]',
+    files_to_skip = [r'^native_client_sdk/',
+                     r'^services/test/',
+                     r'^third_party/blink/web_tests/',
                     ]
     file_filter = lambda f: input_api.FilterSourceFile(
         f, files_to_check=files_to_check, files_to_skip=files_to_skip)
@@ -2339,8 +2344,11 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
 
     virtual_depended_on_files = set()
 
+    # Consistently use / as path separator to simplify the writing of regex
+    # expressions.
     file_filter = lambda f: not input_api.re.match(
-        r"^third_party[\\/]blink[\\/].*", f.LocalPath())
+        r"^third_party/blink/.*",
+        f.LocalPath().replace(input_api.os_path.sep, '/'))
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=file_filter):
         filename = input_api.os_path.basename(f.LocalPath())
@@ -2428,52 +2436,45 @@ def CheckSpamLogging(input_api, output_api):
     files_to_skip = (
         _EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
         input_api.DEFAULT_FILES_TO_SKIP + (
-            r"^base[\\/]logging\.h$",
-            r"^base[\\/]logging\.cc$",
-            r"^base[\\/]task[\\/]thread_pool[\\/]task_tracker\.cc$",
-            r"^chrome[\\/]app[\\/]chrome_main_delegate\.cc$",
-            r"^chrome[\\/]browser[\\/]chrome_browser_main\.cc$",
-            r"^chrome[\\/]browser[\\/]ui[\\/]startup[\\/]"
-            r"startup_browser_creator\.cc$",
-            r"^chrome[\\/]browser[\\/]browser_switcher[\\/]bho[\\/].*",
-            r"^chrome[\\/]browser[\\/]diagnostics[\\/]" +
-            r"diagnostics_writer\.cc$",
-            r"^chrome[\\/]chrome_cleaner[\\/].*",
-            r"^chrome[\\/]chrome_elf[\\/]dll_hash[\\/]" +
-            r"dll_hash_main\.cc$",
-            r"^chrome[\\/]installer[\\/]setup[\\/].*",
-            r"^chromecast[\\/]",
-            r"^components[\\/]browser_watcher[\\/]"
-            r"dump_stability_report_main_win\.cc$",
-            r"^components[\\/]media_control[\\/]renderer[\\/]"
-            r"media_playback_options\.cc$",
-            r"^components[\\/]viz[\\/]service[\\/]display[\\/]"
+            r"^base/logging\.h$",
+            r"^base/logging\.cc$",
+            r"^base/task/thread_pool/task_tracker\.cc$",
+            r"^chrome/app/chrome_main_delegate\.cc$",
+            r"^chrome/browser/chrome_browser_main\.cc$",
+            r"^chrome/browser/ui/startup/startup_browser_creator\.cc$",
+            r"^chrome/browser/browser_switcher/bho/.*",
+            r"^chrome/browser/diagnostics/diagnostics_writer\.cc$",
+            r"^chrome/chrome_cleaner/.*",
+            r"^chrome/chrome_elf/dll_hash/dll_hash_main\.cc$",
+            r"^chrome/installer/setup/.*",
+            r"^chromecast/",
+            r"^components/browser_watcher/dump_stability_report_main_win\.cc$",
+            r"^components/media_control/renderer/media_playback_options\.cc$",
+            r"^components/viz/service/display/"
             r"overlay_strategy_underlay_cast\.cc$",
-            r"^components[\\/]zucchini[\\/].*",
+            r"^components/zucchini/.*",
             # TODO(peter): Remove exception. https://crbug.com/534537
-            r"^content[\\/]browser[\\/]notifications[\\/]"
+            r"^content/browser/notifications/"
             r"notification_event_dispatcher_impl\.cc$",
-            r"^content[\\/]common[\\/]gpu[\\/]client[\\/]"
-            r"gl_helper_benchmark\.cc$",
-            r"^courgette[\\/]courgette_minimal_tool\.cc$",
-            r"^courgette[\\/]courgette_tool\.cc$",
-            r"^extensions[\\/]renderer[\\/]logging_native_handler\.cc$",
-            r"^fuchsia_web[\\/]common[\\/]init_logging\.cc$",
-            r"^fuchsia_web[\\/]runners[\\/]common[\\/]web_component\.cc$",
-            r"^fuchsia_web[\\/]shell[\\/].*_shell\.cc$",
-            r"^headless[\\/]app[\\/]headless_shell\.cc$",
-            r"^ipc[\\/]ipc_logging\.cc$",
-            r"^native_client_sdk[\\/]",
-            r"^remoting[\\/]base[\\/]logging\.h$",
-            r"^remoting[\\/]host[\\/].*",
-            r"^sandbox[\\/]linux[\\/].*",
-            r"^storage[\\/]browser[\\/]file_system[\\/]" +
-            r"dump_file_system\.cc$",
-            r"^tools[\\/]",
-            r"^ui[\\/]base[\\/]resource[\\/]data_pack\.cc$",
-            r"^ui[\\/]aura[\\/]bench[\\/]bench_main\.cc$",
-            r"^ui[\\/]ozone[\\/]platform[\\/]cast[\\/]",
-            r"^ui[\\/]base[\\/]x[\\/]xwmstartupcheck[\\/]"
+            r"^content/common/gpu/client/gl_helper_benchmark\.cc$",
+            r"^courgette/courgette_minimal_tool\.cc$",
+            r"^courgette/courgette_tool\.cc$",
+            r"^extensions/renderer/logging_native_handler\.cc$",
+            r"^fuchsia_web/common/init_logging\.cc$",
+            r"^fuchsia_web/runners/common/web_component\.cc$",
+            r"^fuchsia_web/shell/.*_shell\.cc$",
+            r"^headless/app/headless_shell\.cc$",
+            r"^ipc/ipc_logging\.cc$",
+            r"^native_client_sdk/",
+            r"^remoting/base/logging\.h$",
+            r"^remoting/host/.*",
+            r"^sandbox/linux/.*",
+            r"^storage/browser/file_system/dump_file_system\.cc$",
+            r"^tools/",
+            r"^ui/base/resource/data_pack\.cc$",
+            r"^ui/aura/bench/bench_main\.cc$",
+            r"^ui/ozone/platform/cast/",
+            r"^ui/base/x/xwmstartupcheck/"
             r"xwmstartupcheck\.cc$"))
     source_file_filter = lambda x: input_api.FilterSourceFile(
         x, files_to_check=file_inclusion_pattern, files_to_skip=files_to_skip)
@@ -2754,12 +2755,12 @@ def CheckParseErrors(input_api, output_api):
     }
     # Most JSON files are preprocessed and support comments, but these do not.
     json_no_comments_patterns = [
-        r'^testing[\\/]',
+        r'^testing/',
     ]
     # Only run IDL checker on files in these directories.
     idl_included_patterns = [
-        r'^chrome[\\/]common[\\/]extensions[\\/]api[\\/]',
-        r'^extensions[\\/]common[\\/]api[\\/]',
+        r'^chrome/common/extensions/api/',
+        r'^extensions/common/api/',
     ]
 
     def get_action(affected_file):
@@ -2840,8 +2841,8 @@ def CheckPythonDevilInit(input_api, output_api):
     sources = lambda affected_file: input_api.FilterSourceFile(
         affected_file,
         files_to_skip=(_EXCLUDED_PATHS + input_api.DEFAULT_FILES_TO_SKIP + (
-            r'^build[\\/]android[\\/]devil_chromium\.py',
-            r'^third_party[\\/].*',
+            r'^build/android/devil_chromium\.py',
+            r'^third_party/.*',
         )),
         files_to_check=[r'.*\.py$'])
 
@@ -2865,6 +2866,9 @@ def CheckPythonDevilInit(input_api, output_api):
 
 
 def _MatchesFile(input_api, patterns, path):
+    # Consistently use / as path separator to simplify the writing of regex
+    # expressions.
+    path = path.replace(input_api.os_path.sep, '/')
     for pattern in patterns:
         if input_api.re.search(pattern, path):
             return True
@@ -3397,12 +3401,11 @@ def _CheckAndroidDebuggableBuild(input_api, output_api):
         files_to_skip=(
             _EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS + input_api.
             DEFAULT_FILES_TO_SKIP + (
-                r"^android_webview[\\/]support_library[\\/]"
-                "boundary_interfaces[\\/]",
-                r"^chrome[\\/]android[\\/]webapk[\\/].*",
-                r'^third_party[\\/].*',
-                r"tools[\\/]android[\\/]customtabs_benchmark[\\/].*",
-                r"webview[\\/]chromium[\\/]License.*",
+                r"^android_webview/support_library/boundary_interfaces/",
+                r"^chrome/android/webapk/.*",
+                r'^third_party/.*',
+                r"tools/android/customtabs_benchmark/.*",
+                r"webview/chromium/License.*",
             )),
         files_to_check=[r'.*\.java$'])
 
@@ -3435,8 +3438,8 @@ def _CheckAndroidToastUsage(input_api, output_api):
     sources = lambda affected_file: input_api.FilterSourceFile(
         affected_file,
         files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS + input_api.
-                       DEFAULT_FILES_TO_SKIP + (r'^chromecast[\\/].*',
-                                                r'^remoting[\\/].*')),
+                       DEFAULT_FILES_TO_SKIP + (r'^chromecast/.*',
+                                                r'^remoting/.*')),
         files_to_check=[r'.*\.java$'])
 
     for f in input_api.AffectedSourceFiles(sources):
@@ -3467,13 +3470,13 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
     # Do not check format of logs in the given files
     cr_log_check_excluded_paths = [
         # //chrome/android/webapk cannot depend on //base
-        r"^chrome[\\/]android[\\/]webapk[\\/].*",
+        r"^chrome/android/webapk/.*",
         # WebView license viewer code cannot depend on //base; used in stub APK.
-        r"^android_webview[\\/]glue[\\/]java[\\/]src[\\/]com[\\/]android[\\/]"
-        r"webview[\\/]chromium[\\/]License.*",
+        r"^android_webview/glue/java/src/com/android/"
+        r"webview/chromium/License.*",
         # The customtabs_benchmark is a small app that does not depend on Chromium
         # java pieces.
-        r"tools[\\/]android[\\/]customtabs_benchmark[\\/].*",
+        r"tools/android/customtabs_benchmark/.*",
     ]
 
     cr_log_import_pattern = input_api.re.compile(
@@ -3689,8 +3692,8 @@ def _CheckAndroidWebkitImports(input_api, output_api):
         affected_file,
         files_to_skip=(_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS + input_api.
                        DEFAULT_FILES_TO_SKIP + (
-                           r'^android_webview[\\/]glue[\\/].*',
-                           r'^weblayer[\\/].*',
+                           r'^android_webview/glue/.*',
+                           r'^weblayer/.*',
                        )),
         files_to_check=[r'.*\.java$'])
 
@@ -3948,9 +3951,8 @@ def CheckSingletonInHeaders(input_api, output_api):
     def FileFilter(affected_file):
         # It's ok for base/memory/singleton.h to have |Singleton<|.
         files_to_skip = (_EXCLUDED_PATHS + input_api.DEFAULT_FILES_TO_SKIP +
-                         (r"^base[\\/]memory[\\/]singleton\.h$",
-                          r"^net[\\/]quic[\\/]platform[\\/]impl[\\/]"
-                          r"quic_singleton_impl\.h$"))
+                         (r"^base/memory/singleton\.h$",
+                          r"^net/quic/platform/impl/quic_singleton_impl\.h$"))
         return input_api.FilterSourceFile(affected_file,
                                           files_to_skip=files_to_skip)
 
@@ -4416,7 +4418,7 @@ def CheckFuzzTargetsOnUpload(input_api, output_api):
     def FilterFile(affected_file):
         """Ignore libFuzzer source code."""
         files_to_check = r'.*fuzz.*\.(h|hpp|hcc|cc|cpp|cxx)$'
-        files_to_skip = r"^third_party[\\/]libFuzzer"
+        files_to_skip = r"^third_party/libFuzzer"
 
         return input_api.FilterSourceFile(affected_file,
                                           files_to_check=[files_to_check],
@@ -4513,16 +4515,16 @@ def ChecksAndroidSpecificOnCommit(input_api, output_api):
 # TODO(chrishall): could we additionally match on any path owned by
 #                  ui/accessibility/OWNERS ?
 _ACCESSIBILITY_PATHS = (
-    r"^chrome[\\/]browser.*[\\/]accessibility[\\/]",
-    r"^chrome[\\/]browser[\\/]extensions[\\/]api[\\/]automation.*[\\/]",
-    r"^chrome[\\/]renderer[\\/]extensions[\\/]accessibility_.*",
-    r"^chrome[\\/]tests[\\/]data[\\/]accessibility[\\/]",
-    r"^content[\\/]browser[\\/]accessibility[\\/]",
-    r"^content[\\/]renderer[\\/]accessibility[\\/]",
-    r"^content[\\/]tests[\\/]data[\\/]accessibility[\\/]",
-    r"^extensions[\\/]renderer[\\/]api[\\/]automation[\\/]",
-    r"^ui[\\/]accessibility[\\/]",
-    r"^ui[\\/]views[\\/]accessibility[\\/]",
+    r"^chrome/browser.*/accessibility/",
+    r"^chrome/browser/extensions/api/automation.*/",
+    r"^chrome/renderer/extensions/accessibility_.*",
+    r"^chrome/tests/data/accessibility/",
+    r"^content/browser/accessibility/",
+    r"^content/renderer/accessibility/",
+    r"^content/tests/data/accessibility/",
+    r"^extensions/renderer/api/automation/",
+    r"^ui/accessibility/",
+    r"^ui/views/accessibility/",
 )
 
 def CheckAccessibilityRelnotesField(input_api, output_api):
@@ -4564,22 +4566,22 @@ def CheckAccessibilityRelnotesField(input_api, output_api):
 
 
 _ACCESSIBILITY_EVENTS_TEST_PATH = (
-    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]event[\\/].*\.html",
+    r"^content/test/data/accessibility/event/.*\.html",
 )
 
 _ACCESSIBILITY_TREE_TEST_PATH = (
-    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]accname[\\/].*\.html",
-    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]aria[\\/].*\.html",
-    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]css[\\/].*\.html",
-    r"^content[\\/]test[\\/]data[\\/]accessibility[\\/]html[\\/].*\.html",
+    r"^content/test/data/accessibility/accname/.*\.html",
+    r"^content/test/data/accessibility/aria/.*\.html",
+    r"^content/test/data/accessibility/css/.*\.html",
+    r"^content/test/data/accessibility/html/.*\.html",
 )
 
 _ACCESSIBILITY_ANDROID_EVENTS_TEST_PATH = (
-    r"^.*[\\/]WebContentsAccessibilityEventsTest\.java",
+    r"^.*/WebContentsAccessibilityEventsTest\.java",
 )
 
 _ACCESSIBILITY_ANDROID_TREE_TEST_PATH = (
-    r"^.*[\\/]WebContentsAccessibilityTreeTest\.java",
+    r"^.*/WebContentsAccessibilityTreeTest\.java",
 )
 
 def CheckAccessibilityEventsTestsAreIncludedForAndroid(input_api, output_api):
@@ -5248,7 +5250,7 @@ def CheckForUseOfChromeAppsDeprecations(input_api, output_api):
         input_api,
         output_api,
         detection_list=['config=nacl', 'enable-nacl', 'cpu=pnacl', 'nacl_io'],
-        files_to_skip=files_to_skip + [r"^native_client_sdk[\\/]"])
+        files_to_skip=files_to_skip + [r"^native_client_sdk/"])
 
     # PPAPI: any C/C++ file that in its diff includes a ppapi library
     problems += _CheckForDeprecatedTech(
@@ -5257,7 +5259,7 @@ def CheckForUseOfChromeAppsDeprecations(input_api, output_api):
         detection_list=['#include "ppapi', '#include <ppapi'],
         files_to_check=(r'.+%s' % _HEADER_EXTENSIONS,
                         r'.+%s' % _IMPLEMENTATION_EXTENSIONS),
-        files_to_skip=[r"^ppapi[\\/]"])
+        files_to_skip=[r"^ppapi/"])
 
     if problems:
         return [
@@ -5910,9 +5912,9 @@ def CheckMPArchApiUsage(input_api, output_api):
     # problematic blink APIs, (2) apply to desktop or android chrome, and (3)
     # are known to have a significant number of uses of the APIs of concern.
     files_to_check = (
-        r'^(chrome|components|content|extensions|third_party[\\/]blink[\\/]renderer)[\\/].+%s' %
+        r'^(chrome|components|content|extensions|third_party/blink/renderer)/.+%s' %
         _IMPLEMENTATION_EXTENSIONS,
-        r'^(chrome|components|content|extensions|third_party[\\/]blink[\\/]renderer)[\\/].+%s' %
+        r'^(chrome|components|content|extensions|third_party/blink/renderer)/.+%s' %
         _HEADER_EXTENSIONS,
     )
     files_to_skip = (_EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
