@@ -455,8 +455,11 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
     } else {
       // We need to move the file to Drive first. This flow will eventually
       // open the file in the browser, too.
-      return chromeos::cloud_upload::CloudUploadDialog::Show(
-          profile, file_urls, chromeos::cloud_upload::UploadType::kDrive);
+      // TODO(b/247038054) Add user preference to decide whether or not the
+      // dialog should be shown.
+      return chromeos::cloud_upload::UploadAndOpen(
+          profile, file_urls, chromeos::cloud_upload::UploadType::kDrive,
+          /*show_dialog=*/false);
     }
   } else {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
@@ -541,9 +544,12 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
     } else {
       // We need to move the file to ODFS first. This flow will eventually open
       // the file in the browser, too.
+      // TODO(b/247038054) Add user preference to decide whether or not the
+      // dialog should be shown.
       LOG(ERROR) << "File can be moved to ODFS";
-      return chromeos::cloud_upload::CloudUploadDialog::Show(
-          profile, file_urls, chromeos::cloud_upload::UploadType::kOneDrive);
+      return chromeos::cloud_upload::UploadAndOpen(
+          profile, file_urls, chromeos::cloud_upload::UploadType::kOneDrive,
+          /*show_dialog=*/false);
     }
   } else {
     LOG(ERROR) << "ODFS not available/mounted";

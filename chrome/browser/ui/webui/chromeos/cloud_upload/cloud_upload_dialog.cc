@@ -81,6 +81,24 @@ void OnUploadActionReceived(Profile* profile,
 
 }  // namespace
 
+bool UploadAndOpen(Profile* profile,
+                   const std::vector<storage::FileSystemURL>& file_urls,
+                   const UploadType upload_type,
+                   bool show_dialog) {
+  if (show_dialog) {
+    return CloudUploadDialog::Show(profile, file_urls, upload_type);
+  }
+
+  bool empty_selection = file_urls.empty();
+  DCHECK(!empty_selection);
+  if (empty_selection) {
+    return false;
+  }
+  // TODO(crbug.com/1336924) Add support for multi-file selection.
+  OnUploadActionReceived(profile, file_urls[0], upload_type, kUserActionUpload);
+  return true;
+}
+
 // static
 bool CloudUploadDialog::Show(
     Profile* profile,

@@ -24,6 +24,12 @@ enum class UploadType {
 const char kUserActionCancel[] = "cancel";
 const char kUserActionUpload[] = "upload";
 
+// Initiates the upload workflow.
+bool UploadAndOpen(Profile* profile,
+                   const std::vector<storage::FileSystemURL>& file_urls,
+                   const UploadType upload_type,
+                   bool show_dialog);
+
 // Defines the web dialog used to help users upload Office files to the cloud.
 class CloudUploadDialog : public SystemWebDialogDelegate {
  public:
