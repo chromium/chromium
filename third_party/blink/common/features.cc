@@ -1432,5 +1432,8 @@ const base::Feature kSyncAccessHandleAllSyncSurface{
 const base::Feature kNoCentralWebCacheLimitControl{
     "NoCentralWebCacheLimitControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kRunTextInputUpdatePostLifecycle{
+    "RunTextInputUpdatePostLifecycle", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

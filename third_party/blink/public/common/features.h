@@ -843,6 +843,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kSyncAccessHandleAllSyncSurface;
 // TODO(crbug.com/1340565): Remove once the data is available.
 BLINK_COMMON_EXPORT extern const base::Feature kNoCentralWebCacheLimitControl;
 
+// If enabled, IME updates are computed at the end of a lifecycle update rather
+// than the beginning.
+BLINK_COMMON_EXPORT extern const base::Feature kRunTextInputUpdatePostLifecycle;
+
 }  // namespace features
 }  // namespace blink
 

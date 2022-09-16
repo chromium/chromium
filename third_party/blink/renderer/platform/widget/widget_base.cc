@@ -550,6 +550,8 @@ void WidgetBase::OnDeferCommitsChanged(
 }
 
 void WidgetBase::DidBeginMainFrame() {
+  if (base::FeatureList::IsEnabled(features::kRunTextInputUpdatePostLifecycle))
+    UpdateTextInputState();
   client_->DidBeginMainFrame();
 }
 
@@ -846,11 +848,10 @@ void WidgetBase::WillBeginMainFrame() {
   client_->SetSuppressFrameRequestsWorkaroundFor704763Only(true);
   client_->WillBeginMainFrame();
   UpdateSelectionBounds();
-
-  // The UpdateTextInputState can result in further layout and possibly
-  // enable GPU acceleration so they need to be called before any painting
-  // is done.
-  UpdateTextInputState();
+  // UpdateTextInputState() will cause a forced style and layout update, which
+  // we would like to eliminate.
+  if (!base::FeatureList::IsEnabled(features::kRunTextInputUpdatePostLifecycle))
+    UpdateTextInputState();
 }
 
 void WidgetBase::RunPaintBenchmark(int repeat_count,
