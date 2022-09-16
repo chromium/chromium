@@ -284,7 +284,11 @@ struct MTECheckedPtrImpl {
   static ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
                                                T* wrapped_ptr2) {
     // Ensure that both pointers come from the same allocation.
-    CHECK(ExtractTag(wrapped_ptr1) == ExtractTag(wrapped_ptr2));
+    //
+    // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
+    // class is responsible for handling the software MTE tag.
+    CHECK(ExtractTag(partition_alloc::UntagPtr(wrapped_ptr1)) ==
+          ExtractTag(partition_alloc::UntagPtr(wrapped_ptr2)));
     return wrapped_ptr1 - wrapped_ptr2;
   }
 
