@@ -32,11 +32,6 @@ class AutofillTabHelper : public web::WebStateObserver,
 
   ~AutofillTabHelper() override;
 
-  // Create an AutofillTabHelper and attaches it to the given `web_state`.
-  static void CreateForWebState(
-      web::WebState* web_state,
-      password_manager::PasswordManager* password_manager);
-
   // Sets a weak reference to the view controller used to present UI.
   void SetBaseViewController(UIViewController* base_view_controller);
 

@@ -24,10 +24,6 @@ class FormSuggestionTabHelper
 
   ~FormSuggestionTabHelper() override;
 
-  // Creates a FormSuggestionTabHelper and attaches it to the given `web_state`.
-  static void CreateForWebState(web::WebState* web_state,
-                                NSArray<id<FormSuggestionProvider>>* providers);
-
   // Returns an object that can provide an input accessory view from the
   // FormSuggestionController.
   id<FormInputSuggestionsProvider> GetAccessoryViewProvider();

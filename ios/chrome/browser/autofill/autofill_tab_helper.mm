@@ -19,18 +19,6 @@
 
 AutofillTabHelper::~AutofillTabHelper() = default;
 
-// static
-void AutofillTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    password_manager::PasswordManager* password_manager) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new AutofillTabHelper(web_state, password_manager)));
-  }
-}
-
 void AutofillTabHelper::SetBaseViewController(
     UIViewController* base_view_controller) {
   autofill_client_->SetBaseViewController(base_view_controller);

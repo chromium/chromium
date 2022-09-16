@@ -14,18 +14,6 @@
 
 FormSuggestionTabHelper::~FormSuggestionTabHelper() = default;
 
-// static
-void FormSuggestionTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    NSArray<id<FormSuggestionProvider>>* providers) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new FormSuggestionTabHelper(web_state, providers)));
-  }
-}
-
 id<FormInputSuggestionsProvider>
 FormSuggestionTabHelper::GetAccessoryViewProvider() {
   return controller_;
