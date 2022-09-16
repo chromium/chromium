@@ -9,6 +9,8 @@ assert(is_chromeos, "CellularSetup UI is Chrome OS only.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+
   deps = [
     ":activation_code_page",
     ":activation_verification_page",
@@ -187,6 +189,7 @@ js_library("esim_flow_ui") {
     ":profile_discovery_list_item",
     ":profile_discovery_list_page",
     ":subflow_behavior",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:cellular_utils",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",

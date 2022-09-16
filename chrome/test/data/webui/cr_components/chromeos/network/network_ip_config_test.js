@@ -6,6 +6,7 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_ip_config.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {ConnectionStateType, NetworkType, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkIpConfigTest', function() {
@@ -19,23 +20,20 @@ suite('NetworkIpConfigTest', function() {
   });
 
   test('Enabled', function() {
-    const mojom = chromeos.networkConfig.mojom;
     assertTrue(!!ipConfig.$$('#autoConfigIpToggle'));
     // WiFi non-policy networks should enable autoConfigIpToggle.
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kNone,
+        policySource: PolicySource.kNone,
       },
-      type: mojom.NetworkType.kWiFi,
+      type: NetworkType.kWiFi,
     };
     flush();
     assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
   test('Auto-config toggle policy enforcement', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
     assertTrue(!!ipConfig.$$('#autoConfigIpToggle'));
 
     // ipAddressConfigType is not set; auto-config is toggleable.
@@ -49,7 +47,7 @@ suite('NetworkIpConfigTest', function() {
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kNone,
+        policySource: PolicySource.kNone,
       },
     };
     flush();
@@ -59,7 +57,7 @@ suite('NetworkIpConfigTest', function() {
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kUserPolicyEnforced,
+        policySource: PolicySource.kUserPolicyEnforced,
       },
     };
     flush();
@@ -67,20 +65,19 @@ suite('NetworkIpConfigTest', function() {
   });
 
   test('Disabled UI state', function() {
-    const mojom = chromeos.networkConfig.mojom;
     // WiFi non-policy networks should enable autoConfigIpToggle.
     ipConfig.managedProperties = {
       ipAddressConfigType: {
         activeValue: 'Static',
-        policySource: mojom.PolicySource.kNone,
+        policySource: PolicySource.kNone,
       },
       staticIpConfig: {
         ipAddress: {
           activeValue: '127.0.0.1',
         },
       },
-      connectionState: mojom.ConnectionStateType.kNotConnected,
-      type: mojom.NetworkType.kWiFi,
+      connectionState: ConnectionStateType.kNotConnected,
+      type: NetworkType.kWiFi,
     };
     flush();
 
@@ -98,17 +95,16 @@ suite('NetworkIpConfigTest', function() {
 
   test('Do not show toggle if network is cellular', function() {
     const getAutoConfig = () => ipConfig.$$('#autoConfig');
-    const mojom = chromeos.networkConfig.mojom;
 
-    const properties = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const properties =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     ipConfig.managedProperties = properties;
     flush();
 
     assertFalse(!!getAutoConfig());
 
-    const wifi = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'someguid', '');
+    const wifi =
+        OncMojo.getDefaultManagedProperties(NetworkType.kWiFi, 'someguid', '');
     ipConfig.managedProperties = wifi;
     flush();
 

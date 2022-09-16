@@ -7,6 +7,8 @@ import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
@@ -1034,20 +1036,19 @@ suite('CupsNearbyPrintersTests', function() {
   /** @type{!HtmlElement} */
   let printerEntryListTestElement = null;
 
-  /** @type {!chromeos.networkConfig.mojom.NetworkStateProperties|undefined} */
+  /** @type {!NetworkStateProperties|undefined} */
   let wifi1;
 
 
   setup(function() {
-    const mojom = chromeos.networkConfig.mojom;
     cupsPrintersBrowserProxy = new TestCupsPrintersBrowserProxy();
 
     CupsPrintersBrowserProxyImpl.setInstanceForTesting(
         cupsPrintersBrowserProxy);
 
     // Simulate internet connection.
-    wifi1 = OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi1');
-    wifi1.connectionState = mojom.ConnectionStateType.kOnline;
+    wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
+    wifi1.connectionState = ConnectionStateType.kOnline;
 
     PolymerTest.clearBody();
     Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
@@ -1338,8 +1339,7 @@ suite('CupsNearbyPrintersTests', function() {
 
   test('NetworkConnectedButNoInternet', function() {
     // Simulate connecting to a network with no internet connection.
-    wifi1.connectionState =
-        chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+    wifi1.connectionState = ConnectionStateType.kConnected;
     page.onActiveNetworksChanged([wifi1]);
     flush();
 
@@ -1356,8 +1356,7 @@ suite('CupsNearbyPrintersTests', function() {
 
   test('checkNetworkConnection', function() {
     // Simulate disconnecting from a network.
-    wifi1.connectionState =
-        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected;
+    wifi1.connectionState = ConnectionStateType.kNotConnected;
     page.onActiveNetworksChanged([wifi1]);
     flush();
 
@@ -1371,8 +1370,7 @@ suite('CupsNearbyPrintersTests', function() {
                            .disabled);
 
           // Simulate connecting to a network with connectivity.
-          wifi1.connectionState =
-              chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
+          wifi1.connectionState = ConnectionStateType.kOnline;
           page.onActiveNetworksChanged([wifi1]);
           flush();
 

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/chromeos/network/network_siminfo.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkSiminfoTest', function() {
@@ -14,13 +15,12 @@ suite('NetworkSiminfoTest', function() {
   let simInfo;
 
   const TEST_ICCID = '11111111111111111';
-  const mojom = chromeos.networkConfig.mojom;
 
   setup(async function() {
     simInfo = document.createElement('network-simInfo');
 
     const cellularNetwork =
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular');
+        OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
     cellularNetwork.typeState.cellular.iccid = TEST_ICCID;
 
     simInfo.networkState = cellularNetwork;

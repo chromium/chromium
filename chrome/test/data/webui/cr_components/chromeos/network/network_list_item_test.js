@@ -4,17 +4,14 @@
 
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_list_item.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 
 import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
@@ -24,16 +21,14 @@ import {eventToPromise} from 'chrome://test/test_util.js';
 suite('NetworkListItemTest', function() {
   /** @type {!NetworkListItem|undefined} */
   let listItem;
-  let mojom;
   let eSimManagerRemote = null;
 
-  /** @type {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote|undefined} */
+  /** @type {!CrosNetworkConfigRemote|undefined} */
   let mojoApi_;
 
   let eventTriggered;
 
   setup(function() {
-    mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     eSimManagerRemote = new FakeESimManagerRemote();
@@ -51,7 +46,7 @@ suite('NetworkListItemTest', function() {
 
   function initCellularNetwork(iccid, eid, simLocked, name) {
     const properties = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular', name);
+        NetworkType.kCellular, 'cellular', name);
     properties.typeProperties.cellular.iccid = iccid;
     properties.typeProperties.cellular.eid = eid;
     properties.typeProperties.cellular.simLocked = simLocked;
@@ -91,8 +86,8 @@ suite('NetworkListItemTest', function() {
     let networkIcon = listItem.$$('network-icon');
     assertFalse(!!networkIcon);
 
-    const properties = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kEthernet, 'eth0');
+    const properties =
+        OncMojo.getDefaultManagedProperties(NetworkType.kEthernet, 'eth0');
     mojoApi_.setManagedPropertiesForTest(properties);
     listItem.item = OncMojo.managedPropertiesToNetworkState(properties);
 
@@ -146,8 +141,8 @@ suite('NetworkListItemTest', function() {
 
     // Change to network state without provider name and verify that that title
     // is displayed correctly.
-    const ethernetProperties = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kEthernet, 'eth0');
+    const ethernetProperties =
+        OncMojo.getDefaultManagedProperties(NetworkType.kEthernet, 'eth0');
     mojoApi_.setManagedPropertiesForTest(ethernetProperties);
     listItem.item = OncMojo.managedPropertiesToNetworkState(ethernetProperties);
     await flushAsync();
@@ -205,10 +200,10 @@ suite('NetworkListItemTest', function() {
     assertFalse(!!listItem.$$('#activateButton'));
 
     // Set item to an activated pSIM network first.
-    const managedPropertiesActivated = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const managedPropertiesActivated =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesActivated.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kActivated;
+        ActivationStateType.kActivated;
     managedPropertiesActivated.typeProperties.cellular.paymentPortal = {
       url: 'url',
     };
@@ -225,11 +220,10 @@ suite('NetworkListItemTest', function() {
 
     // Set item to an unactivated eSIM network with a payment URL.
     const managedPropertiesESimNotActivated =
-        OncMojo.getDefaultManagedProperties(
-            mojom.NetworkType.kCellular, 'cellular');
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesESimNotActivated.typeProperties.cellular.eid = 'eid';
     managedPropertiesESimNotActivated.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kNotActivated;
+        ActivationStateType.kNotActivated;
     managedPropertiesESimNotActivated.typeProperties.cellular.paymentPortal = {
       url: 'url',
     };
@@ -244,10 +238,10 @@ suite('NetworkListItemTest', function() {
     assertFalse(networkStateText.hidden);
 
     // Set item to an unactivated pSIM network with a payment URL.
-    const managedPropertiesNotActivated = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const managedPropertiesNotActivated =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesNotActivated.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kNotActivated;
+        ActivationStateType.kNotActivated;
     managedPropertiesNotActivated.typeProperties.cellular.paymentPortal = {
       url: 'url',
     };
@@ -301,14 +295,13 @@ suite('NetworkListItemTest', function() {
 
     // Set item to an unactivated eSIM network without a payment URL.
     const managedPropertiesESimUnavailable =
-        OncMojo.getDefaultManagedProperties(
-            mojom.NetworkType.kCellular, 'cellular');
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesESimUnavailable.typeProperties.cellular.eid = 'eid';
     managedPropertiesESimUnavailable.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kNotActivated;
+        ActivationStateType.kNotActivated;
     managedPropertiesESimUnavailable.typeProperties.cellular.paymentPortal = {};
     managedPropertiesESimUnavailable.connectionState =
-        mojom.ConnectionStateType.kConnected;
+        ConnectionStateType.kConnected;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesESimUnavailable);
 
     listItem.item = OncMojo.managedPropertiesToNetworkState(
@@ -331,10 +324,10 @@ suite('NetworkListItemTest', function() {
     assertEquals(showDetailEvent.detail, listItem.item);
 
     // Set item to an unactivated pSIM network without a payment URL.
-    const managedPropertiesUnavailable = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const managedPropertiesUnavailable =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesUnavailable.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kNotActivated;
+        ActivationStateType.kNotActivated;
     managedPropertiesUnavailable.typeProperties.cellular.paymentPortal = {};
     mojoApi_.setManagedPropertiesForTest(managedPropertiesUnavailable);
 
@@ -367,10 +360,10 @@ suite('NetworkListItemTest', function() {
     assertFalse(!!listItem.$$('#activatingPSimSpinner'));
 
     // Set item to an activated pSIM network first.
-    const managedPropertiesActivated = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const managedPropertiesActivated =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesActivated.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kActivated;
+        ActivationStateType.kActivated;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesActivated);
 
     listItem.item =
@@ -381,12 +374,12 @@ suite('NetworkListItemTest', function() {
     assertFalse(!!listItem.$$('#activatingPSimSpinner'));
 
     // Set item to an activating eSIM network.
-    const managedPropertiesESimActivating = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const managedPropertiesESimActivating =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
 
     managedPropertiesESimActivating.typeProperties.cellular.eid = 'eid';
     managedPropertiesESimActivating.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kActivating;
+        ActivationStateType.kActivating;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesESimActivating);
 
     listItem.item = OncMojo.managedPropertiesToNetworkState(
@@ -397,10 +390,10 @@ suite('NetworkListItemTest', function() {
     assertFalse(!!listItem.$$('#activatingPSimSpinner'));
 
     // Set item to an activating pSIM network.
-    const managedPropertiesActivating = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, 'cellular');
+    const managedPropertiesActivating =
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesActivating.typeProperties.cellular.activationState =
-        mojom.ActivationStateType.kActivating;
+        ActivationStateType.kActivating;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesActivating);
 
     const networkState =
@@ -554,8 +547,8 @@ suite('NetworkListItemTest', function() {
 
     listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
     listItem.deviceState = {
-      type: mojom.NetworkType.kCellular,
-      inhibitedReason: mojom.InhibitReason.kInstallingProfile,
+      type: NetworkType.kCellular,
+      inhibitedReason: InhibitReason.kInstallingProfile,
     };
 
     await flushAsync();
@@ -580,14 +573,13 @@ suite('NetworkListItemTest', function() {
       },
     };
     listItem.deviceState = {
-      type: mojom.NetworkType.kCellular,
-      inhibitedReason: mojom.InhibitReason.kInstallingProfile,
+      type: NetworkType.kCellular,
+      inhibitedReason: InhibitReason.kInstallingProfile,
     };
 
     await flushAsync();
 
-    listItem.deviceState.inhibitedReason =
-        mojom.InhibitReason.kInstallingProfile;
+    listItem.deviceState.inhibitedReason = InhibitReason.kInstallingProfile;
 
     const installButton = listItem.$$('#installButton');
     assertTrue(!!installButton);
@@ -612,13 +604,13 @@ suite('NetworkListItemTest', function() {
         init();
 
         const properties = OncMojo.getDefaultManagedProperties(
-            mojom.NetworkType.kCellular, 'cellular');
+            NetworkType.kCellular, 'cellular');
         mojoApi_.setManagedPropertiesForTest(properties);
         listItem.networkState =
             OncMojo.managedPropertiesToNetworkState(properties);
         listItem.deviceState = {
-          type: mojom.NetworkType.kCellular,
-          inhibitedReason: mojom.InhibitReason.kInstallingProfile,
+          type: NetworkType.kCellular,
+          inhibitedReason: InhibitReason.kInstallingProfile,
         };
         await flushAsync();
 
@@ -700,11 +692,10 @@ suite('NetworkListItemTest', function() {
     assertFalse(listItem.computeIsBlockedNetwork_());
 
     // Set item to a policy blocked wifi network.
-    const managedProperties = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifiguid');
-    managedProperties.source = chromeos.networkConfig.mojom.OncSource.kUser;
-    managedProperties.typeProperties.wifi.security =
-        chromeos.networkConfig.mojom.SecurityType.kWepPsk;
+    const managedProperties =
+        OncMojo.getDefaultManagedProperties(NetworkType.kWiFi, 'wifiguid');
+    managedProperties.source = OncSource.kUser;
+    managedProperties.typeProperties.wifi.security = SecurityType.kWepPsk;
     mojoApi_.setManagedPropertiesForTest(managedProperties);
     const networkState =
         OncMojo.managedPropertiesToNetworkState(managedProperties);
@@ -724,10 +715,9 @@ suite('NetworkListItemTest', function() {
 
         // Set item to a policy blocked cellular network.
         const managedProperties = OncMojo.getDefaultManagedProperties(
-            mojom.NetworkType.kCellular, 'cellular');
-        managedProperties.connectionState =
-            mojom.ConnectionStateType.kNotConnected;
-        managedProperties.source = mojom.OncSource.kNone;
+            NetworkType.kCellular, 'cellular');
+        managedProperties.connectionState = ConnectionStateType.kNotConnected;
+        managedProperties.source = OncSource.kNone;
         mojoApi_.setManagedPropertiesForTest(managedProperties);
 
         const networkState =

@@ -4,6 +4,8 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
+import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://test/test_util.js';
 
@@ -19,23 +21,22 @@ suite('NetworkSummaryItem', function() {
   }
 
   function initWithPSimOnly(isLocked) {
-    const mojom = chromeos.networkConfig.mojom;
     const kTestIccid1 = '00000000000000000000';
 
     const simLockStatus = isLocked ? {lockType: 'sim-pin'} : {lockType: ''};
 
     netSummaryItem.setProperties({
       deviceState: {
-        deviceState: mojom.DeviceStateType.kEnabled,
-        type: mojom.NetworkType.kCellular,
+        deviceState: DeviceStateType.kEnabled,
+        type: NetworkType.kCellular,
         simAbsent: false,
         simLockStatus: simLockStatus,
         simInfos: [{slot_id: 1, eid: '', iccid: kTestIccid1, isPrimary: true}],
       },
       activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kNotConnected,
+        connectionState: ConnectionStateType.kNotConnected,
         guid: '',
-        type: mojom.NetworkType.kCellular,
+        type: NetworkType.kCellular,
         typeState: {cellular: {networkTechnology: ''}},
       },
     });
@@ -44,22 +45,21 @@ suite('NetworkSummaryItem', function() {
   }
 
   function initWithESimLocked() {
-    const mojom = chromeos.networkConfig.mojom;
     const kTestIccid1 = '00000000000000000000';
 
     netSummaryItem.setProperties({
       deviceState: {
-        deviceState: mojom.DeviceStateType.kEnabled,
-        type: mojom.NetworkType.kCellular,
+        deviceState: DeviceStateType.kEnabled,
+        type: NetworkType.kCellular,
         simAbsent: false,
         simLockStatus: {lockType: 'sim-pin'},
         simInfos:
             [{slot_id: 1, eid: 'eid', iccid: kTestIccid1, isPrimary: true}],
       },
       activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kNotConnected,
+        connectionState: ConnectionStateType.kNotConnected,
         guid: '',
-        type: mojom.NetworkType.kCellular,
+        type: NetworkType.kCellular,
         typeState: {cellular: {networkTechnology: ''}},
       },
     });
@@ -75,17 +75,15 @@ suite('NetworkSummaryItem', function() {
   });
 
   test('Device enabled button state', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
     netSummaryItem.setProperties({
       deviceState: {
-        deviceState: mojom.DeviceStateType.kUninitialized,
-        type: mojom.NetworkType.kEthernet,
+        deviceState: DeviceStateType.kUninitialized,
+        type: NetworkType.kEthernet,
       },
       activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kNotConnected,
+        connectionState: ConnectionStateType.kNotConnected,
         guid: '',
-        type: mojom.NetworkType.kEthernet,
+        type: NetworkType.kEthernet,
       },
     });
 
@@ -93,38 +91,38 @@ suite('NetworkSummaryItem', function() {
     assertFalse(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.deviceState = {
-      deviceState: mojom.DeviceStateType.kUninitialized,
-      type: mojom.NetworkType.kVPN,
+      deviceState: DeviceStateType.kUninitialized,
+      type: NetworkType.kVPN,
     };
     flush();
     assertFalse(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.deviceState = {
-      deviceState: mojom.DeviceStateType.kUninitialized,
-      type: mojom.NetworkType.kTether,
+      deviceState: DeviceStateType.kUninitialized,
+      type: NetworkType.kTether,
     };
     flush();
     assertTrue(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.deviceState = {
-      deviceState: mojom.DeviceStateType.kUninitialized,
-      type: mojom.NetworkType.kWiFi,
+      deviceState: DeviceStateType.kUninitialized,
+      type: NetworkType.kWiFi,
     };
     flush();
     assertFalse(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.setProperties({
       activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kConnected,
+        connectionState: ConnectionStateType.kConnected,
         guid: '',
-        type: mojom.NetworkType.kWiFi,
+        type: NetworkType.kWiFi,
         typeState: {
           wifi: {},
         },
       },
       deviceState: {
-        deviceState: mojom.DeviceStateType.kEnabled,
-        type: mojom.NetworkType.kWiFi,
+        deviceState: DeviceStateType.kEnabled,
+        type: NetworkType.kWiFi,
       },
     });
     flush();
@@ -132,19 +130,17 @@ suite('NetworkSummaryItem', function() {
   });
 
   test('Inhibited device on cellular network', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
     netSummaryItem.setProperties({
       deviceState: {
-        inhibitReason: mojom.InhibitReason.kInstallingProfile,
-        deviceState: mojom.DeviceStateType.kEnabled,
-        type: mojom.NetworkType.kCellular,
+        inhibitReason: InhibitReason.kInstallingProfile,
+        deviceState: DeviceStateType.kEnabled,
+        type: NetworkType.kCellular,
         simAbsent: false,
       },
       activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kNotConnected,
+        connectionState: ConnectionStateType.kNotConnected,
         guid: '',
-        type: mojom.NetworkType.kCellular,
+        type: NetworkType.kCellular,
         typeState: {cellular: {networkTechnology: ''}},
       },
     });
@@ -160,19 +156,17 @@ suite('NetworkSummaryItem', function() {
   });
 
   test('Not inhibited device on cellular network', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
     netSummaryItem.setProperties({
       deviceState: {
-        inhibitReason: mojom.InhibitReason.kNotInhibited,
-        deviceState: mojom.DeviceStateType.kUnavailable,
-        type: mojom.NetworkType.kCellular,
+        inhibitReason: InhibitReason.kNotInhibited,
+        deviceState: DeviceStateType.kUnavailable,
+        type: NetworkType.kCellular,
         simAbsent: false,
       },
       activeNetworkState: {
-        connectionState: mojom.ConnectionStateType.kNotConnected,
+        connectionState: ConnectionStateType.kNotConnected,
         guid: '',
-        type: mojom.NetworkType.kCellular,
+        type: NetworkType.kCellular,
         typeState: {cellular: {networkTechnology: ''}},
       },
     });
@@ -224,8 +218,6 @@ suite('NetworkSummaryItem', function() {
   test(
       'Show networks list when only 1 pSIM network is available',
       async function() {
-        const mojom = chromeos.networkConfig.mojom;
-
         const showNetworksFiredPromise =
             eventToPromise('show-networks', netSummaryItem);
 
@@ -234,17 +226,17 @@ suite('NetworkSummaryItem', function() {
 
         netSummaryItem.setProperties({
           deviceState: {
-            deviceState: mojom.DeviceStateType.kEnabled,
-            type: mojom.NetworkType.kCellular,
+            deviceState: DeviceStateType.kEnabled,
+            type: NetworkType.kCellular,
             simAbsent: false,
-            inhibitReason: mojom.InhibitReason.kNotInhibited,
+            inhibitReason: InhibitReason.kNotInhibited,
             simLockStatus: {lockEnabled: false},
             simInfos: simInfos,
           },
           activeNetworkState: {
-            connectionState: mojom.ConnectionStateType.kNotConnected,
+            connectionState: ConnectionStateType.kNotConnected,
             guid: '',
-            type: mojom.NetworkType.kCellular,
+            type: NetworkType.kCellular,
             typeState: {cellular: {networkTechnology: ''}},
           },
         });

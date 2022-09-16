@@ -7,6 +7,8 @@
  */
 
 /* #js_imports_placeholder */
+import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 /**
  * Custom data that is stored with network element to trigger action.
@@ -276,12 +278,10 @@ let networkCustomItemCustomData;
     const guid = networkState.guid;
 
     let shouldShowNetworkDetails = isNetworkConnected ||
-        networkState.connectionState ===
-            chromeos.networkConfig.mojom.ConnectionStateType.kConnecting;
+        networkState.connectionState === ConnectionStateType.kConnecting;
     // Cellular should normally auto connect. If it is selected, show the
     // details UI since there is no configuration UI for Cellular.
-    shouldShowNetworkDetails |= networkState.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular;
+    shouldShowNetworkDetails |= networkState.type === NetworkType.kCellular;
 
     if (shouldShowNetworkDetails) {
       chrome.send('showNetworkDetails', [oncType, guid]);
@@ -297,24 +297,23 @@ let networkCustomItemCustomData;
                               .getMojoServiceRemote();
 
     networkConfig.startConnect(guid).then(response => {
-      const mojom = chromeos.networkConfig.mojom;
       switch (response.result) {
-        case mojom.StartConnectResult.kSuccess:
+        case StartConnectResult.kSuccess:
           return;
-        case mojom.StartConnectResult.kInvalidGuid:
-        case mojom.StartConnectResult.kInvalidState:
-        case mojom.StartConnectResult.kCanceled:
+        case StartConnectResult.kInvalidGuid:
+        case StartConnectResult.kInvalidState:
+        case StartConnectResult.kCanceled:
           // TODO(stevenjb/khorimoto): Consider handling these cases.
           return;
-        case mojom.StartConnectResult.kNotConfigured:
+        case StartConnectResult.kNotConfigured:
           if (!OncMojo.networkTypeIsMobile(networkState.type)) {
             chrome.send('showNetworkConfig', [guid]);
           } else {
             console.error('Cellular network is not configured: ' + guid);
           }
           return;
-        case mojom.StartConnectResult.kBlocked:
-        case mojom.StartConnectResult.kUnknown:
+        case StartConnectResult.kBlocked:
+        case StartConnectResult.kUnknown:
           console.error(
               'startConnect failed for: ' + guid + ': ' + response.message);
           return;

@@ -5,10 +5,9 @@
 // clang-format off
 import 'chrome://os-settings/chromeos/os_settings.js';
 
+import { ConnectionStateType, NetworkType } from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 
@@ -188,18 +187,15 @@ suite('SettingsTrafficCountersTest', function() {
 
     // Remove default network.
     networkConfigRemote_.setNetworkConnectionStateForTest(
-        'eth0_guid',
-        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
+        'eth0_guid', ConnectionStateType.kNotConnected);
     flush();
   });
 
   test('Missing friendly date info', async function() {
     // Set managed properties for a connected cellular network.
     const managedProperties = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular_guid',
-        'cellular');
-    managedProperties.connectionState =
-        chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+        NetworkType.kCellular, 'cellular_guid', 'cellular');
+    managedProperties.connectionState = ConnectionStateType.kConnected;
     managedProperties.connectable = true;
     managedProperties.trafficCounterProperties.autoReset = true;
     managedProperties.trafficCounterProperties.userSpecifiedResetDay = 31;
@@ -225,10 +221,8 @@ suite('SettingsTrafficCountersTest', function() {
   test('Show traffic counter info', async function() {
     // Set managed properties for a connected cellular network.
     const managedProperties = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular_guid',
-        'cellular');
-    managedProperties.connectionState =
-        chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+        NetworkType.kCellular, 'cellular_guid', 'cellular');
+    managedProperties.connectionState = ConnectionStateType.kConnected;
     managedProperties.connectable = true;
     managedProperties.trafficCounterProperties.lastResetTime =
         FAKE_INITIAL_LAST_RESET_TIME;
@@ -294,10 +288,8 @@ suite('SettingsTrafficCountersTest', function() {
   test('Enable traffic counters auto reset', async function() {
     // Disable auto reset initially.
     const managedProperties = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular_guid',
-        'cellular');
-    managedProperties.connectionState =
-        chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+        NetworkType.kCellular, 'cellular_guid', 'cellular');
+    managedProperties.connectionState = ConnectionStateType.kConnected;
     managedProperties.connectable = true;
     managedProperties.trafficCounterProperties.autoReset = false;
     managedProperties.trafficCounterProperties.userSpecifiedResetDay = null;

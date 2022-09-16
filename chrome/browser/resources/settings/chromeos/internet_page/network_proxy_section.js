@@ -23,6 +23,8 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {ManagedProperties, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../os_route.js';
@@ -70,7 +72,7 @@ class NetworkProxySectionElement extends NetworkProxySectionElementBase {
         value: false,
       },
 
-      /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+      /** @type {!ManagedProperties|undefined} */
       managedProperties: Object,
 
       /**
@@ -177,13 +179,12 @@ class NetworkProxySectionElement extends NetworkProxySectionElementBase {
    * @private
    */
   isShared_() {
-    const mojom = chromeos.networkConfig.mojom;
-    return this.managedProperties.source === mojom.OncSource.kDevice ||
-        this.managedProperties.source === mojom.OncSource.kDevicePolicy;
+    return this.managedProperties.source === OncSource.kDevice ||
+        this.managedProperties.source === OncSource.kDevicePolicy;
   }
 
   /**
-   * @return {!chromeos.networkConfig.mojom.ManagedString|undefined}
+   * @return {!ManagedString|undefined}
    * @private
    */
   getProxySettingsTypeProperty_() {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
@@ -128,8 +129,7 @@ export function setNetworkConfigServiceForTesting(testService) {
  */
 export function getNetworkConfigService() {
   if (!networkConfigService) {
-    networkConfigService =
-        chromeos.networkConfig.mojom.CrosNetworkConfig.getRemote();
+    networkConfigService = CrosNetworkConfig.getRemote();
   }
 
   assert(!!networkConfigService);

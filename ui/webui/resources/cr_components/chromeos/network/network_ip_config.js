@@ -13,6 +13,8 @@ import './network_property_list_mojo.js';
 import './network_shared_css.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IPConfigProperties, ManagedProperties, NO_ROUTING_PREFIX} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {IPConfigType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -60,11 +62,11 @@ const getRoutingPrefixAsNetmask = function(prefixLength) {
 const getRoutingPrefixAsLength = function(netmask) {
   'use strict';
   if (!netmask) {
-    return chromeos.networkConfig.mojom.NO_ROUTING_PREFIX;
+    return NO_ROUTING_PREFIX;
   }
   const tokens = netmask.split('.');
   if (tokens.length !== 4) {
-    return chromeos.networkConfig.mojom.NO_ROUTING_PREFIX;
+    return NO_ROUTING_PREFIX;
   }
   let prefixLength = 0;
   for (let i = 0; i < tokens.length; ++i) {
@@ -73,7 +75,7 @@ const getRoutingPrefixAsLength = function(netmask) {
     // '0' then the netmask is invalid. For example, 255.224.255.0
     if (prefixLength / 8 !== i) {
       if (token !== '0') {
-        return chromeos.networkConfig.mojom.NO_ROUTING_PREFIX;
+        return NO_ROUTING_PREFIX;
       }
     } else if (token === '255') {
       prefixLength += 8;
@@ -95,7 +97,7 @@ const getRoutingPrefixAsLength = function(netmask) {
       prefixLength += 0;
     } else {
       // mask is not a valid number.
-      return chromeos.networkConfig.mojom.NO_ROUTING_PREFIX;
+      return NO_ROUTING_PREFIX;
     }
   }
   return prefixLength;
@@ -113,7 +115,7 @@ Polymer({
       value: false,
     },
 
-    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    /** @type {!ManagedProperties|undefined} */
     managedProperties: {
       type: Object,
       observer: 'managedPropertiesChanged_',
@@ -196,16 +198,16 @@ Polymer({
 
     if (properties.ipConfigs || properties.staticIpConfig) {
       // Update the 'ipConfig' property.
-      const ipv4 = this.getIPConfigUIProperties_(OncMojo.getIPConfigForType(
-          properties, chromeos.networkConfig.mojom.IPConfigType.kIPv4));
-      let ipv6 = this.getIPConfigUIProperties_(OncMojo.getIPConfigForType(
-          properties, chromeos.networkConfig.mojom.IPConfigType.kIPv6));
+      const ipv4 = this.getIPConfigUIProperties_(
+          OncMojo.getIPConfigForType(properties, IPConfigType.kIPv4));
+      let ipv6 = this.getIPConfigUIProperties_(
+          OncMojo.getIPConfigForType(properties, IPConfigType.kIPv6));
 
       // If connected and the IP address is automatic and set, show message if
       // the ipv6 address is not set.
       if (OncMojo.connectionStateIsConnected(properties.connectionState) &&
           this.automatic_ && ipv4 && ipv4.ipAddress) {
-        ipv6 = ipv6 || {type: chromeos.networkConfig.mojom.IPConfigType.kIPv6};
+        ipv6 = ipv6 || {type: IPConfigType.kIPv6};
         ipv6.ipAddress = ipv6.ipAddress || this.i18n('ipAddressNotAvailable');
       }
 
@@ -217,7 +219,7 @@ Polymer({
 
   /**
    * Checks whether IP address config type can be changed.
-   * @param {?chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @param {?ManagedProperties} managedProperties
    * @return {boolean}
    * @private
    */
@@ -225,8 +227,7 @@ Polymer({
     if (this.disabled || !managedProperties) {
       return false;
     }
-    if (managedProperties.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular) {
+    if (managedProperties.type === NetworkType.kCellular) {
       // Cellular IP config properties can not be changed.
       return false;
     }
@@ -265,7 +266,7 @@ Polymer({
       }
       if (!this.ipConfig_.ipv4) {
         this.ipConfig_.ipv4 = {
-          type: chromeos.networkConfig.mojom.IPConfigType.kIPv4,
+          type: IPConfigType.kIPv4,
         };
       }
       this.setIpv4Defaults_(this.ipConfig_.ipv4);
@@ -284,7 +285,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.IPConfigProperties|undefined}
+   * @param {!IPConfigProperties|undefined}
    *     ipconfig
    * @return {!OncMojo.IPConfigUIProperties|undefined} A new
    *     IPConfigUIProperties object with routingPrefix expressed as a netmask
@@ -305,8 +306,7 @@ Polymer({
     ipconfigUI.type = ipconfig.type;
     ipconfigUI.webProxyAutoDiscoveryUrl = ipconfig.webProxyAutoDiscoveryUrl;
 
-    if (ipconfig.routingPrefix !==
-        chromeos.networkConfig.mojom.NO_ROUTING_PREFIX) {
+    if (ipconfig.routingPrefix !== NO_ROUTING_PREFIX) {
       ipconfigUI.netmask = getRoutingPrefixAsNetmask(ipconfig.routingPrefix);
     }
 
@@ -315,7 +315,7 @@ Polymer({
 
   /**
    * @param {!OncMojo.IPConfigUIProperties} ipconfigUI
-   * @return {!chromeos.networkConfig.mojom.IPConfigProperties} A new
+   * @return {!IPConfigProperties} A new
    *     IPConfigProperties object with netmask expressed as a a prefix
    *     length.
    * @private
@@ -412,8 +412,7 @@ Polymer({
    * @private
    */
   computeShouldShowAutoIpConfigToggle_() {
-    if (this.managedProperties.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular) {
+    if (this.managedProperties.type === NetworkType.kCellular) {
       return false;
     }
     return true;

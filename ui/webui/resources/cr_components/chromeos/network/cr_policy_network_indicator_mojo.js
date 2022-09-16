@@ -11,6 +11,8 @@ import '../../../cr_elements/policy/cr_tooltip_icon.js';
 import '../../../cr_elements/cr_hidden_style.css.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ManagedBoolean, ManagedInt32, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from '../../../cr_elements/policy/cr_policy_indicator_behavior.js';
 
@@ -27,9 +29,9 @@ Polymer({
      * Network property associated with the indicator. Note: |property| may
      * be null or undefined, depending on how the properties dictionary is
      * generated.
-     * @type {?chromeos.networkConfig.mojom.ManagedBoolean|
-     *        ?chromeos.networkConfig.mojom.ManagedInt32|
-     *        ?chromeos.networkConfig.mojom.ManagedString|undefined}
+     * @type {?ManagedBoolean|
+     *        ?ManagedInt32|
+     *        ?ManagedString|undefined}
      */
     property: Object,
 
@@ -53,7 +55,6 @@ Polymer({
       this.indicatorType = CrPolicyIndicatorType.NONE;
       return;
     }
-    const PolicySource = chromeos.networkConfig.mojom.PolicySource;
     switch (property.policySource) {
       case PolicySource.kNone:
         this.indicatorType = CrPolicyIndicatorType.NONE;

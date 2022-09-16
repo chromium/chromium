@@ -8,14 +8,12 @@
  * strings and for debugging. They are not intended to be drectly user facing.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
-
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, NetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {IPAddress} from 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
+
 
 // Used to indicate a saved but unknown credential value. Will appear as
 // placeholder character in the credential (passphrase, password, etc.) field by
@@ -42,12 +40,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ActivationStateType} value
+   * @param {!ActivationStateType} value
    * @return {string}
    */
   static getActivationStateTypeString(value) {
-    const ActivationStateType =
-        chromeos.networkConfig.mojom.ActivationStateType;
     switch (value) {
       case ActivationStateType.kUnknown:
         return 'Unknown';
@@ -68,11 +64,9 @@ export class OncMojo {
 
   /**
    * @param {string} value
-   * @return {!chromeos.networkConfig.mojom.ActivationStateType}
+   * @return {!ActivationStateType}
    */
   static getActivationStateTypeFromString(value) {
-    const ActivationStateType =
-        chromeos.networkConfig.mojom.ActivationStateType;
     switch (value) {
       case 'Unknown':
         return ActivationStateType.kUnknown;
@@ -92,11 +86,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.PortalState} value
+   * @param {!PortalState} value
    * @return {string}
    */
   static getPortalStateString(value) {
-    const PortalState = chromeos.networkConfig.mojom.PortalState;
     switch (value) {
       case PortalState.kUnknown:
         return 'Unknown';
@@ -116,12 +109,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ConnectionStateType} value
+   * @param {!ConnectionStateType} value
    * @return {string}
    */
   static getConnectionStateTypeString(value) {
-    const ConnectionStateType =
-        chromeos.networkConfig.mojom.ConnectionStateType;
     switch (value) {
       case ConnectionStateType.kOnline:
         return 'Online';
@@ -140,11 +131,9 @@ export class OncMojo {
 
   /**
    * @param {string} value
-   * @return {!chromeos.networkConfig.mojom.ConnectionStateType}
+   * @return {!ConnectionStateType}
    */
   static getConnectionStateTypeFromString(value) {
-    const ConnectionStateType =
-        chromeos.networkConfig.mojom.ConnectionStateType;
     switch (value) {
       case 'Online':
         return ConnectionStateType.kOnline;
@@ -162,12 +151,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ConnectionStateType} value
+   * @param {!ConnectionStateType} value
    * @return {boolean}
    */
   static connectionStateIsConnected(value) {
-    const ConnectionStateType =
-        chromeos.networkConfig.mojom.ConnectionStateType;
     switch (value) {
       case ConnectionStateType.kOnline:
       case ConnectionStateType.kConnected:
@@ -182,11 +169,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.DeviceStateType} value
+   * @param {!DeviceStateType} value
    * @return {string}
    */
   static getDeviceStateTypeString(value) {
-    const DeviceStateType = chromeos.networkConfig.mojom.DeviceStateType;
     switch (value) {
       case DeviceStateType.kUninitialized:
         return 'Uninitialized';
@@ -208,11 +194,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.DeviceStateType} value
+   * @param {!DeviceStateType} value
    * @return {boolean}
    */
   static deviceStateIsIntermediate(value) {
-    const DeviceStateType = chromeos.networkConfig.mojom.DeviceStateType;
     switch (value) {
       case DeviceStateType.kUninitialized:
       case DeviceStateType.kDisabling:
@@ -228,7 +213,7 @@ export class OncMojo {
   }
 
   /**
-   * @param {?chromeos.networkConfig.mojom.DeviceStateProperties|undefined}
+   * @param {?DeviceStateProperties|undefined}
    *     device
    * @return {boolean}
    */
@@ -237,16 +222,14 @@ export class OncMojo {
       return false;
     }
 
-    return device.inhibitReason !==
-        chromeos.networkConfig.mojom.InhibitReason.kNotInhibited;
+    return device.inhibitReason !== InhibitReason.kNotInhibited;
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.NetworkType} value
+   * @param {!NetworkType} value
    * @return {string}
    */
   static getNetworkTypeString(value) {
-    const NetworkType = chromeos.networkConfig.mojom.NetworkType;
     switch (value) {
       case NetworkType.kAll:
         return 'All';
@@ -270,11 +253,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.NetworkType} value
+   * @param {!NetworkType} value
    * @return {boolean}
    */
   static networkTypeIsMobile(value) {
-    const NetworkType = chromeos.networkConfig.mojom.NetworkType;
     switch (value) {
       case NetworkType.kCellular:
       case NetworkType.kMobile:
@@ -292,7 +274,7 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.NetworkType} value
+   * @param {!NetworkType} value
    * @return {boolean}
    */
   static networkTypeHasConfigurationFlow(value) {
@@ -303,10 +285,9 @@ export class OncMojo {
 
   /**
    * @param {string} value
-   * @return {!chromeos.networkConfig.mojom.NetworkType}
+   * @return {!NetworkType}
    */
   static getNetworkTypeFromString(value) {
-    const NetworkType = chromeos.networkConfig.mojom.NetworkType;
     switch (value) {
       case 'All':
         return NetworkType.kAll;
@@ -330,11 +311,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.OncSource} value
+   * @param {!OncSource} value
    * @return {string}
    */
   static getOncSourceString(value) {
-    const OncSource = chromeos.networkConfig.mojom.OncSource;
     switch (value) {
       case OncSource.kNone:
         return 'None';
@@ -352,11 +332,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.SecurityType} value
+   * @param {!SecurityType} value
    * @return {string}
    */
   static getSecurityTypeString(value) {
-    const SecurityType = chromeos.networkConfig.mojom.SecurityType;
     switch (value) {
       case SecurityType.kNone:
         return 'None';
@@ -375,10 +354,9 @@ export class OncMojo {
 
   /**
    * @param {string} value
-   * @return {!chromeos.networkConfig.mojom.SecurityType}
+   * @return {!SecurityType}
    */
   static getSecurityTypeFromString(value) {
-    const SecurityType = chromeos.networkConfig.mojom.SecurityType;
     switch (value) {
       case 'None':
         return SecurityType.kNone;
@@ -396,11 +374,10 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.VpnType} value
+   * @param {!VpnType} value
    * @return {string}
    */
   static getVpnTypeString(value) {
-    const VpnType = chromeos.networkConfig.mojom.VpnType;
     switch (value) {
       case VpnType.kL2TPIPsec:
         return 'L2TP-IPsec';
@@ -417,10 +394,9 @@ export class OncMojo {
 
   /**
    * @param {string} value
-   * @return {!chromeos.networkConfig.mojom.VpnType}
+   * @return {!VpnType}
    */
   static getVpnTypeFromString(value) {
-    const VpnType = chromeos.networkConfig.mojom.VpnType;
     switch (value) {
       case 'L2TP-IPsec':
         return VpnType.kL2TPIPsec;
@@ -447,29 +423,27 @@ export class OncMojo {
   static getTypeString(key, value) {
     if (key === 'activationState') {
       return OncMojo.getActivationStateTypeString(
-          /** @type {!chromeos.networkConfig.mojom.ActivationStateType} */ (
-              value));
+          /** @type {!ActivationStateType} */ (value));
     }
     if (key === 'connectionState') {
       return OncMojo.getConnectionStateTypeString(
-          /** @type {!chromeos.networkConfig.mojom.ConnectionStateType} */ (
-              value));
+          /** @type {!ConnectionStateType} */ (value));
     }
     if (key === 'deviceState') {
       return OncMojo.getDeviceStateTypeString(
-          /** @type {!chromeos.networkConfig.mojom.DeviceStateType} */ (value));
+          /** @type {!DeviceStateType} */ (value));
     }
     if (key === 'type') {
       return OncMojo.getNetworkTypeString(
-          /** @type {!chromeos.networkConfig.mojom.NetworkType} */ (value));
+          /** @type {!NetworkType} */ (value));
     }
     if (key === 'source') {
       return OncMojo.getOncSourceString(
-          /** @type {!chromeos.networkConfig.mojom.OncSource} */ (value));
+          /** @type {!OncSource} */ (value));
     }
     if (key === 'security') {
       return OncMojo.getSecurityTypeString(
-          /** @type {!chromeos.networkConfig.mojom.SecurityType} */ (value));
+          /** @type {!SecurityType} */ (value));
     }
     return value;
   }
@@ -478,12 +452,10 @@ export class OncMojo {
    * Policy indicators expect a per-property PolicySource, but sometimes we need
    * to use the per-configuration OncSource (e.g. for unmanaged intrinsic
    * properties like Security). This returns the corresponding PolicySource.
-   * @param {!chromeos.networkConfig.mojom.OncSource} source
-   * @return {!chromeos.networkConfig.mojom.PolicySource}
+   * @param {!OncSource} source
+   * @return {!PolicySource}
    */
   static getEnforcedPolicySourceFromOncSource(source) {
-    const OncSource = chromeos.networkConfig.mojom.OncSource;
-    const PolicySource = chromeos.networkConfig.mojom.PolicySource;
     switch (source) {
       case OncSource.kNone:
       case OncSource.kDevice:
@@ -500,7 +472,7 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.NetworkType} type
+   * @param {!NetworkType} type
    * @return {string}
    */
   static getNetworkTypeDisplayName(type) {
@@ -522,15 +494,14 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network
+   * @param {!NetworkStateProperties} network
    * @return {string}
    */
   static getNetworkStateDisplayName(network) {
     if (!network.name) {
       return OncMojo.getNetworkTypeDisplayName(network.type);
     }
-    const mojom = chromeos.networkConfig.mojom;
-    if (network.type === mojom.NetworkType.kVPN &&
+    if (network.type === NetworkType.kVPN &&
         network.typeState.vpn.providerName) {
       return OncMojo.getVpnDisplayName(
           network.name, network.typeState.vpn.providerName);
@@ -539,15 +510,14 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} network
+   * @param {!ManagedProperties} network
    * @return {string}
    */
   static getNetworkName(network) {
     if (!network.name || !network.name.activeValue) {
       return OncMojo.getNetworkTypeDisplayName(network.type);
     }
-    const mojom = chromeos.networkConfig.mojom;
-    if (network.type === mojom.NetworkType.kVPN &&
+    if (network.type === NetworkType.kVPN &&
         network.typeProperties.vpn.providerName) {
       return OncMojo.getVpnDisplayName(
           network.name.activeValue, network.typeProperties.vpn.providerName);
@@ -557,11 +527,10 @@ export class OncMojo {
 
   /**
    * Gets the SignalStrength value from |network| based on network.type.
-   * @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network
+   * @param {!NetworkStateProperties} network
    * @return {number} The signal strength value if it exists or 0.
    */
   static getSignalStrength(network) {
-    const NetworkType = chromeos.networkConfig.mojom.NetworkType;
     switch (network.type) {
       case NetworkType.kCellular:
         return network.typeState.cellular.signalStrength;
@@ -578,8 +547,8 @@ export class OncMojo {
    * Determines whether a connection to |network| can be attempted. Note that
    * this function does not consider policies which may block a connection from
    * succeeding.
-   * @param {!chromeos.networkConfig.mojom.NetworkStateProperties|
-   *     !chromeos.networkConfig.mojom.ManagedProperties} network
+   * @param {!NetworkStateProperties|
+   *     !ManagedProperties} network
    * @return {boolean} Whether the network can currently be connected; if the
    *     network is not connectable, it must first be configured.
    */
@@ -619,32 +588,31 @@ export class OncMojo {
 
   /**
    * Returns a NetworkStateProperties object with type set and default values.
-   * @param {!chromeos.networkConfig.mojom.NetworkType} type
+   * @param {!NetworkType} type
    * @param {?string=} opt_name Optional name, intended for testing.
-   * @return {!chromeos.networkConfig.mojom.NetworkStateProperties}
+   * @return {!NetworkStateProperties}
    */
   static getDefaultNetworkState(type, opt_name) {
-    const mojom = chromeos.networkConfig.mojom;
     const result = {
       connectable: false,
       connectRequested: false,
-      connectionState: mojom.ConnectionStateType.kNotConnected,
+      connectionState: ConnectionStateType.kNotConnected,
       guid: opt_name ? (opt_name + '_guid') : '',
       name: opt_name || '',
-      portalState: mojom.PortalState.kUnknown,
+      portalState: PortalState.kUnknown,
       priority: 0,
-      proxyMode: mojom.ProxyMode.kDirect,
+      proxyMode: ProxyMode.kDirect,
       prohibitedByPolicy: false,
-      source: mojom.OncSource.kNone,
+      source: OncSource.kNone,
       type: type,
       typeState: {},
     };
     switch (type) {
-      case mojom.NetworkType.kCellular:
+      case NetworkType.kCellular:
         result.typeState.cellular = {
           iccid: '',
           eid: '',
-          activationState: mojom.ActivationStateType.kUnknown,
+          activationState: ActivationStateType.kUnknown,
           networkTechnology: '',
           roaming: false,
           signalStrength: 0,
@@ -653,12 +621,12 @@ export class OncMojo {
           simLockType: '',
         };
         break;
-      case mojom.NetworkType.kEthernet:
+      case NetworkType.kEthernet:
         result.typeState.ethernet = {
-          authentication: mojom.AuthenticationType.kNone,
+          authentication: AuthenticationType.kNone,
         };
         break;
-      case mojom.NetworkType.kTether:
+      case NetworkType.kTether:
         result.typeState.tether = {
           batteryPercentage: 0,
           carrier: '',
@@ -666,20 +634,20 @@ export class OncMojo {
           signalStrength: 0,
         };
         break;
-      case mojom.NetworkType.kVPN:
+      case NetworkType.kVPN:
         result.typeState.vpn = {
-          type: mojom.VpnType.kOpenVPN,
+          type: VpnType.kOpenVPN,
           providerId: '',
           providerName: '',
         };
         break;
-      case mojom.NetworkType.kWiFi:
+      case NetworkType.kWiFi:
         result.typeState.wifi = {
           bssid: '',
           frequency: 0,
           hexSsid: opt_name || '',
           hiddenSsid: false,
-          security: mojom.SecurityType.kNone,
+          security: SecurityType.kNone,
           signalStrength: 0,
           ssid: '',
         };
@@ -693,11 +661,10 @@ export class OncMojo {
   /**
    * Converts an ManagedProperties dictionary to NetworkStateProperties.
    * Used to provide state properties to NetworkIcon.
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
-   * @return {!chromeos.networkConfig.mojom.NetworkStateProperties}
+   * @param {!ManagedProperties} properties
+   * @return {!NetworkStateProperties}
    */
   static managedPropertiesToNetworkState(properties) {
-    const mojom = chromeos.networkConfig.mojom;
     const networkState = OncMojo.getDefaultNetworkState(properties.type);
     networkState.connectable = properties.connectable;
     networkState.connectionState = properties.connectionState;
@@ -711,7 +678,7 @@ export class OncMojo {
     networkState.source = properties.source;
 
     switch (properties.type) {
-      case mojom.NetworkType.kCellular:
+      case NetworkType.kCellular:
         const cellularProperties = properties.typeProperties.cellular;
         networkState.typeState.cellular.iccid =
             cellularProperties.iccid || '';
@@ -728,26 +695,26 @@ export class OncMojo {
         networkState.typeState.cellular.simLocked =
             cellularProperties.simLocked;
         break;
-      case mojom.NetworkType.kEthernet:
+      case NetworkType.kEthernet:
         networkState.typeState.ethernet.authentication =
             OncMojo.getActiveValue(
                 properties.typeProperties.ethernet.authentication) === '8021X' ?
-            mojom.AuthenticationType.k8021x :
-            mojom.AuthenticationType.kNone;
+            AuthenticationType.k8021x :
+            AuthenticationType.kNone;
         break;
-      case mojom.NetworkType.kTether:
+      case NetworkType.kTether:
         if (properties.typeProperties.tether) {
           networkState.typeState.tether =
-              /** @type {!mojom.TetherStateProperties}*/ (
+              /** @type {!TetherStateProperties}*/ (
                   Object.assign({}, properties.typeProperties.tether));
         }
         break;
-      case mojom.NetworkType.kVPN:
+      case NetworkType.kVPN:
         networkState.typeState.vpn.providerName =
             properties.typeProperties.vpn.providerName;
         networkState.typeState.vpn.type = properties.typeProperties.vpn.type;
         break;
-      case mojom.NetworkType.kWiFi:
+      case NetworkType.kWiFi:
         const wifiProperties = properties.typeProperties.wifi;
         networkState.typeState.wifi.bssid = wifiProperties.bssid || '';
         networkState.typeState.wifi.frequency = wifiProperties.frequency;
@@ -766,42 +733,41 @@ export class OncMojo {
   /**
    * Returns a ManagedProperties object with type, guid and name set, and all
    * other required properties set to their default values.
-   * @param {!chromeos.networkConfig.mojom.NetworkType} type
+   * @param {!NetworkType} type
    * @param {string} guid
    * @param {string} name
-   * @return {!chromeos.networkConfig.mojom.ManagedProperties}
+   * @return {!ManagedProperties}
    */
   static getDefaultManagedProperties(type, guid, name) {
-    const mojom = chromeos.networkConfig.mojom;
     const result = {
-      connectionState: mojom.ConnectionStateType.kNotConnected,
-      source: mojom.OncSource.kNone,
+      connectionState: ConnectionStateType.kNotConnected,
+      source: OncSource.kNone,
       type: type,
       connectable: false,
       guid: guid,
       name: OncMojo.createManagedString(name),
       ipAddressConfigType: OncMojo.createManagedString('DHCP'),
       nameServersConfigType: OncMojo.createManagedString('DHCP'),
-      portalState: mojom.PortalState.kUnknown,
+      portalState: PortalState.kUnknown,
       trafficCounterProperties: OncMojo.createTrafficCounterProperties(),
     };
     switch (type) {
-      case mojom.NetworkType.kCellular:
+      case NetworkType.kCellular:
         result.typeProperties = {
           cellular: {
-            activationState: mojom.ActivationStateType.kUnknown,
+            activationState: ActivationStateType.kUnknown,
             signalStrength: 0,
             simLocked: false,
             supportNetworkScan: false,
           },
         };
         break;
-      case mojom.NetworkType.kEthernet:
+      case NetworkType.kEthernet:
         result.typeProperties = {
           ethernet: {},
         };
         break;
-      case mojom.NetworkType.kTether:
+      case NetworkType.kTether:
         result.typeProperties = {
           tether: {
             batteryPercentage: 0,
@@ -811,22 +777,22 @@ export class OncMojo {
           },
         };
         break;
-      case mojom.NetworkType.kVPN:
+      case NetworkType.kVPN:
         result.typeProperties = {
           vpn: {
             providerName: '',
-            type: mojom.VpnType.kOpenVPN,
+            type: VpnType.kOpenVPN,
             openVpn: {},
           },
         };
         break;
-      case mojom.NetworkType.kWiFi:
+      case NetworkType.kWiFi:
         result.typeProperties = {
           wifi: {
             bssid: '',
             frequency: 0,
             ssid: OncMojo.createManagedString(''),
-            security: mojom.SecurityType.kNone,
+            security: SecurityType.kNone,
             signalStrength: 0,
             isSyncable: false,
             isConfiguredByActiveUser: false,
@@ -840,29 +806,28 @@ export class OncMojo {
   /**
    * Returns a ConfigProperties object with a default networkType struct
    * based on |type|.
-   * @param {!chromeos.networkConfig.mojom.NetworkType} type
-   * @return {!chromeos.networkConfig.mojom.ConfigProperties}
+   * @param {!NetworkType} type
+   * @return {!ConfigProperties}
    */
   static getDefaultConfigProperties(type) {
-    const mojom = chromeos.networkConfig.mojom;
     switch (type) {
-      case mojom.NetworkType.kCellular:
+      case NetworkType.kCellular:
         return {typeConfig: {cellular: {}}};
         break;
-      case mojom.NetworkType.kEthernet:
+      case NetworkType.kEthernet:
         return {typeConfig: {ethernet: {}}};
         break;
-      case mojom.NetworkType.kVPN:
+      case NetworkType.kVPN:
         return {typeConfig: {vpn: {}}};
         break;
-      case mojom.NetworkType.kWiFi:
+      case NetworkType.kWiFi:
         // Note: wifi.security can not be changed, so |security| will be ignored
         // for existing configurations.
         return {
           typeConfig: {
             wifi: {
-              security: mojom.SecurityType.kNone,
-              hiddenSsid: mojom.HiddenSsidMode.kAutomatic,
+              security: SecurityType.kNone,
+              hiddenSsid: HiddenSsidMode.kAutomatic,
             },
           },
         };
@@ -874,7 +839,7 @@ export class OncMojo {
 
   /**
    * Sets the value of a property in an mojo config dictionary.
-   * @param {!chromeos.networkConfig.mojom.ConfigProperties} config
+   * @param {!ConfigProperties} config
    * @param {string} key The property key which may be nested, e.g. 'foo.bar'
    * @param {boolean|number|string|!Object} value The property value
    */
@@ -898,15 +863,15 @@ export class OncMojo {
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
-   *         !chromeos.networkConfig.mojom.ManagedInt32|
-   *         !chromeos.networkConfig.mojom.ManagedString|
-   *         !chromeos.networkConfig.mojom.ManagedStringList|
-   *         !chromeos.networkConfig.mojom.ManagedApnList|
-   *         !chromeos.networkConfig.mojom.ManagedSubjectAltNameMatchList|
+   * @param {!ManagedBoolean|
+   *         !ManagedInt32|
+   *         !ManagedString|
+   *         !ManagedStringList|
+   *         !ManagedApnList|
+   *         !ManagedSubjectAltNameMatchList|
    *         null|undefined} property
    * @return {boolean|number|string|!Array<string>|
-   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined}
+   *          !Array<!ApnProperties>|undefined}
    */
   static getActiveValue(property) {
     if (!property) {
@@ -916,7 +881,7 @@ export class OncMojo {
   }
 
   /**
-   * @param {?chromeos.networkConfig.mojom.ManagedString|undefined} property
+   * @param {?ManagedString|undefined} property
    * @return {string}
    */
   static getActiveString(property) {
@@ -929,28 +894,27 @@ export class OncMojo {
   /**
    * Returns IPConfigProperties for |type|. For IPv4, these will be the static
    * properties if IPAddressConfigType is Static and StaticIPConfig is set.
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
-   * @param {!chromeos.networkConfig.mojom.IPConfigType} desiredType
-   * @return {!chromeos.networkConfig.mojom.IPConfigProperties|undefined}
+   * @param {!ManagedProperties} properties
+   * @param {!IPConfigType} desiredType
+   * @return {!IPConfigProperties|undefined}
    */
   static getIPConfigForType(properties, desiredType) {
-    const mojom = chromeos.networkConfig.mojom;
     const ipConfigs = properties.ipConfigs;
     let ipConfig;
     if (ipConfigs) {
       ipConfig = ipConfigs.find(ipconfig => ipconfig.type === desiredType);
-      if (ipConfig && desiredType !== mojom.IPConfigType.kIPv4) {
+      if (ipConfig && desiredType !== IPConfigType.kIPv4) {
         return ipConfig;
       }
     }
 
     // Only populate static ip config properties for IPv4.
-    if (desiredType !== mojom.IPConfigType.kIPv4) {
+    if (desiredType !== IPConfigType.kIPv4) {
       return undefined;
     }
 
     if (!ipConfig) {
-      ipConfig = /** @type {!mojom.IPConfigProperties} */ ({routingPrefix: 0});
+      ipConfig = /** @type {!IPConfigProperties} */ ({routingPrefix: 0});
     }
 
     const staticIpConfig = properties.staticIpConfig;
@@ -985,8 +949,8 @@ export class OncMojo {
    * Compares two IP config property dictionaries. Returns true if all
    * properties specified in the new dictionary match the values in the existing
    * dictionary.
-   * @param {!chromeos.networkConfig.mojom.IPConfigProperties} staticValue
-   * @param {!chromeos.networkConfig.mojom.IPConfigProperties} newValue
+   * @param {!IPConfigProperties} staticValue
+   * @param {!IPConfigProperties} newValue
    * @return {boolean} True if all properties set in |newValue| are equal to
    *     the corresponding properties in |staticValue|.
    */
@@ -1010,16 +974,15 @@ export class OncMojo {
 
   /**
    * Extracts existing ip config properties from |managedProperties| and applies
-   * |newValue| to |field|. Returns a mojom.ConfigProperties object with the
+   * |newValue| to |field|. Returns a ConfigProperties object with the
    * IP Config related properties set, or null if no changes were applied.
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @param {!ManagedProperties} managedProperties
    * @param {string} field
    * @param {string|!Array<string>|
-   *     !chromeos.networkConfig.mojom.IPConfigProperties} newValue
-   * @return {?chromeos.networkConfig.mojom.ConfigProperties}
+   *     !IPConfigProperties} newValue
+   * @return {?ConfigProperties}
    */
   static getUpdatedIPConfigProperties(managedProperties, field, newValue) {
-    const mojom = chromeos.networkConfig.mojom;
     // Get an empty ONC dictionary and set just the IP Config properties that
     // need to change.
     let ipConfigType =
@@ -1029,7 +992,7 @@ export class OncMojo {
         OncMojo.getActiveString(managedProperties.nameServersConfigType) ||
         'DHCP';
     let staticIpConfig =
-        OncMojo.getIPConfigForType(managedProperties, mojom.IPConfigType.kIPv4);
+        OncMojo.getIPConfigForType(managedProperties, IPConfigType.kIPv4);
     let nameServers = staticIpConfig ? staticIpConfig.nameServers : undefined;
     if (field === 'ipAddressConfigType') {
       const newIpConfigType = /** @type {string} */ (newValue);
@@ -1045,7 +1008,7 @@ export class OncMojo {
       nsConfigType = newNsConfigType;
     } else if (field === 'staticIpConfig') {
       const ipConfigValue =
-          /** @type {!mojom.IPConfigProperties} */ (newValue);
+          /** @type {!IPConfigProperties} */ (newValue);
       if (!ipConfigValue.ipAddress) {
         console.error('Invalid StaticIPConfig: ' + JSON.stringify(newValue));
         return null;
@@ -1083,18 +1046,17 @@ export class OncMojo {
     if (nsConfigType === 'Static') {
       assert(nameServers && nameServers.length);
       config.staticIpConfig = config.staticIpConfig ||
-          /** @type{!mojom.IPConfigProperties}*/ ({routingPrefix: 0});
+          /** @type {!IPConfigProperties}*/ ({routingPrefix: 0});
       config.staticIpConfig.nameServers = nameServers;
     }
     return config;
   }
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
-   * @return {chromeos.networkConfig.mojom.ManagedBoolean|undefined}
+   * @param {!ManagedProperties} properties
+   * @return {ManagedBoolean|undefined}
    */
   static getManagedAutoConnect(properties) {
-    const NetworkType = chromeos.networkConfig.mojom.NetworkType;
     const type = properties.type;
     switch (type) {
       case NetworkType.kCellular:
@@ -1109,42 +1071,42 @@ export class OncMojo {
 
   /**
    * @param {string} s
-   * @return {!chromeos.networkConfig.mojom.ManagedString}
+   * @return {!ManagedString}
    */
   static createManagedString(s) {
     return {
       activeValue: s,
-      policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
+      policySource: PolicySource.kNone,
       policyValue: undefined,
     };
   }
 
   /**
    * @param {number} n
-   * @return {!chromeos.networkConfig.mojom.ManagedInt32}
+   * @return {!ManagedInt32}
    */
   static createManagedInt(n) {
     return {
       activeValue: n,
-      policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
+      policySource: PolicySource.kNone,
       policyValue: 0,
     };
   }
 
   /**
    * @param {boolean} b
-   * @return {!chromeos.networkConfig.mojom.ManagedBoolean}
+   * @return {!ManagedBoolean}
    */
   static createManagedBool(b) {
     return {
       activeValue: b,
-      policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
+      policySource: PolicySource.kNone,
       policyValue: false,
     };
   }
 
   /**
-   * @return {!chromeos.networkConfig.mojom.TrafficCounterProperties}
+   * @return {!TrafficCounterProperties}
    */
   static createTrafficCounterProperties() {
     return {
@@ -1156,20 +1118,19 @@ export class OncMojo {
 
   /**
    * Returns a string to translate for the user visible connection state.
-   * @param {!chromeos.networkConfig.mojom.ConnectionStateType}
+   * @param {!ConnectionStateType}
    *     connectionState
    * @return {string}
    */
   static getConnectionStateString(connectionState) {
-    const mojom = chromeos.networkConfig.mojom;
     switch (connectionState) {
-      case mojom.ConnectionStateType.kOnline:
-      case mojom.ConnectionStateType.kConnected:
-      case mojom.ConnectionStateType.kPortal:
+      case ConnectionStateType.kOnline:
+      case ConnectionStateType.kConnected:
+      case ConnectionStateType.kPortal:
         return 'OncConnected';
-      case mojom.ConnectionStateType.kConnecting:
+      case ConnectionStateType.kConnecting:
         return 'OncConnecting';
-      case mojom.ConnectionStateType.kNotConnected:
+      case ConnectionStateType.kNotConnected:
         return 'OncNotConnected';
     }
     assertNotReached();
@@ -1178,8 +1139,8 @@ export class OncMojo {
 
   /**
    * Returns true the IPAddress bytes match.
-   * @param {?network.mojom.IPAddress|undefined} a
-   * @param {?network.mojom.IPAddress|undefined} b
+   * @param {?IPAddress|undefined} a
+   * @param {?IPAddress|undefined} b
    * @return {boolean}
    */
   static ipAddressMatch(a, b) {
@@ -1201,8 +1162,8 @@ export class OncMojo {
 
   /**
    * Returns true the SIMLockStatus properties match.
-   * @param {?chromeos.networkConfig.mojom.SIMLockStatus|undefined} a
-   * @param {?chromeos.networkConfig.mojom.SIMLockStatus|undefined} b
+   * @param {?SIMLockStatus|undefined} a
+   * @param {?SIMLockStatus|undefined} b
    * @return {boolean}
    */
   static simLockStatusMatch(a, b) {
@@ -1215,8 +1176,8 @@ export class OncMojo {
 
   /**
    * Returns true if the SIMInfos match.
-   * @param {?Array<chromeos.networkConfig.mojom.SIMInfo>|undefined} a
-   * @param {?Array<chromeos.networkConfig.mojom.SIMInfo>|undefined} b
+   * @param {?Array<SIMInfo>|undefined} a
+   * @param {?Array<SIMInfo>|undefined} b
    */
   static simInfosMatch(a, b) {
     if (!a || !b) {
@@ -1240,8 +1201,8 @@ export class OncMojo {
 
   /**
    * Returns true if the APN properties match.
-   * @param {chromeos.networkConfig.mojom.ApnProperties} a
-   * @param {chromeos.networkConfig.mojom.ApnProperties} b
+   * @param {ApnProperties} a
+   * @param {ApnProperties} b
    * @return {boolean}
    */
   static apnMatch(a, b) {
@@ -1255,8 +1216,8 @@ export class OncMojo {
 
   /**
    * Returns true if the APN List matches.
-   * @param {Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined} a
-   * @param {Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined} b
+   * @param {Array<!ApnProperties>|undefined} a
+   * @param {Array<!ApnProperties>|undefined} b
    * @return {boolean}
    */
   static apnListMatch(a, b) {
@@ -1271,14 +1232,13 @@ export class OncMojo {
 
   /**
    * Returns true if the portal state has restricted connectivity.
-   * @param {!chromeos.networkConfig.mojom.PortalState|undefined} portal
+   * @param {!PortalState|undefined} portal
    * @return {boolean}
    */
   static isRestrictedConnectivity(portal) {
     if (portal === undefined) {
       return false;
     }
-    const PortalState = chromeos.networkConfig.mojom.PortalState;
     switch (portal) {
       case PortalState.kUnknown:
       case PortalState.kOnline:
@@ -1336,7 +1296,7 @@ export class OncMojo {
    * formatted as a semicolon separated string of entries in the following
    * format: <type>:<value>.
    * See https://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf.
-   * @param {!Array<!chromeos.networkConfig.mojom.SubjectAltName>}
+   * @param {!Array<!SubjectAltName>}
    *        subjectAltNameMatch
    * @return {string}
    */
@@ -1348,13 +1308,13 @@ export class OncMojo {
     for (const e of subjectAltNameMatch) {
       let type;
       switch (e.type) {
-        case chromeos.networkConfig.mojom.SubjectAltName_Type.kEmail:
+        case SubjectAltName_Type.kEmail:
           type = 'EMAIL';
           break;
-        case chromeos.networkConfig.mojom.SubjectAltName_Type.kDns:
+        case SubjectAltName_Type.kDns:
           type = 'DNS';
           break;
-        case chromeos.networkConfig.mojom.SubjectAltName_Type.kUri:
+        case SubjectAltName_Type.kUri:
           type = 'URI';
           break;
         default:
@@ -1372,7 +1332,7 @@ export class OncMojo {
    *  - a type other than 'EMAIL', 'DNS', 'URI';
    *  - a value with non-RFC compliant characters.
    * @param {string} subjectAltNameMatch
-   * @return {?Array<!chromeos.networkConfig.mojom.SubjectAltName>}
+   * @return {?Array<!SubjectAltName>}
    */
   static deserializeSubjectAltNameMatch(subjectAltNameMatch) {
     const regValidEmailChars = RegExp('^[a-zA-Z0-9-\\.\\+_~@]*$');
@@ -1381,7 +1341,7 @@ export class OncMojo {
 
     const entries = subjectAltNameMatch.trim().split(';');
     const result =
-      /*@type {Array<!chromeos.networkConfig.mojom.SubjectAltName>}*/[];
+        /*@type {Array<!SubjectAltName>}*/[];
 
     for (const entry of entries) {
       if (entry === '') {
@@ -1390,13 +1350,13 @@ export class OncMojo {
       let type;
       let value;
       if (entry.toUpperCase().startsWith('EMAIL:')) {
-        type = chromeos.networkConfig.mojom.SubjectAltName_Type.kEmail;
+        type = SubjectAltName_Type.kEmail;
         value = regValidEmailChars.exec(entry.substring(6));
       } else if (entry.toUpperCase().startsWith('DNS:')) {
-        type = chromeos.networkConfig.mojom.SubjectAltName_Type.kDns;
+        type = SubjectAltName_Type.kDns;
         value = VALID_DNS_CHARS_REGEX.exec(entry.substring(4));
       } else if (entry.toUpperCase().startsWith('URI:')) {
-        type = chromeos.networkConfig.mojom.SubjectAltName_Type.kUri;
+        type = SubjectAltName_Type.kUri;
         value = regValidUriChars.exec(entry.substring(4));
       } else {
         console.warn('Invalid Subject Alternative Name Match type ' + entry);
@@ -1406,7 +1366,7 @@ export class OncMojo {
         console.warn('Invalid Subject Alternative Name Match value ' + entry);
         return null;
       }
-      result.push(/* @type {!chromeos.networkConfig.mojom.SubjectAltName} */ {
+      result.push(/* @type {!SubjectAltName} */ {
         type: type,
         value: value[0],
       });
@@ -1421,23 +1381,23 @@ export class OncMojo {
  */
 OncMojo.USE_ATTACH_APN_NAME = 'attach';
 
-/** @typedef {chromeos.networkConfig.mojom.DeviceStateProperties} */
+/** @typedef {DeviceStateProperties} */
 OncMojo.DeviceStateProperties;
 
-/** @typedef {chromeos.networkConfig.mojom.NetworkStateProperties} */
+/** @typedef {NetworkStateProperties} */
 OncMojo.NetworkStateProperties;
 
 /**
- * @typedef {chromeos.networkConfig.mojom.ManagedBoolean|
- *           chromeos.networkConfig.mojom.ManagedInt32|
- *           chromeos.networkConfig.mojom.ManagedString|
- *           chromeos.networkConfig.mojom.ManagedStringList|
- *           chromeos.networkConfig.mojom.ManagedApnList}
+ * @typedef {ManagedBoolean|
+ *           ManagedInt32|
+ *           ManagedString|
+ *           ManagedStringList|
+ *           ManagedApnList}
  */
 OncMojo.ManagedProperty;
 
 /**
- * Modified version of mojom.IPConfigProperties to store routingPrefix as
+ * Modified version of IPConfigProperties to store routingPrefix as
  * a human-readable netmask string instead of as a number. Used in
  * network_ip_config.js.
  * @typedef {{
@@ -1445,7 +1405,7 @@ OncMojo.ManagedProperty;
  *   ipAddress: (string|undefined),
  *   nameServers: (Array<string>|undefined),
  *   netmask: (string|undefined),
- *   type: !chromeos.networkConfig.mojom.IPConfigType,
+ *   type: !IPConfigType,
  *   webProxyAutoDiscoveryUrl: (string|undefined),
  * }}
  */

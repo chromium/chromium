@@ -25,9 +25,11 @@ import {getSimSlotCount} from 'chrome://resources/cr_components/chromeos/network
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {CrosNetworkConfigRemote, GlobalPolicy, InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
@@ -99,7 +101,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
        */
       tetherDeviceState: Object,
 
-      /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+      /** @type {!GlobalPolicy|undefined} */
       globalPolicy: Object,
 
       /**
@@ -229,7 +231,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   constructor() {
     super();
 
-    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     this.fetchEuiccAndESimPendingProfileList_();
@@ -380,14 +382,12 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * @private
    */
   onNetworksListChanged_() {
-    const mojom = chromeos.networkConfig.mojom;
-
     const pSimNetworks = [];
     const eSimNetworks = [];
     const tetherNetworks = [];
 
     for (const network of this.networks) {
-      if (network.type === mojom.NetworkType.kTether) {
+      if (network.type === NetworkType.kTether) {
         tetherNetworks.push(network);
         continue;
       }
@@ -543,7 +543,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   /**
    * Return true if the add cellular button should be disabled.
    * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
-   * @param {!chromeos.networkConfig.mojom.GlobalPolicy} globalPolicy
+   * @param {!GlobalPolicy} globalPolicy
    * @return {boolean}
    * @private
    */
@@ -564,7 +564,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * Return true if the policy indicator that next to the add cellular button
    * should be shown. This policy icon indicates the reason of disabling the
    * add cellular button.
-   * @param {!chromeos.networkConfig.mojom.GlobalPolicy} globalPolicy
+   * @param {!GlobalPolicy} globalPolicy
    * @return {boolean}
    * @private
    */
@@ -578,9 +578,8 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * @private
    */
   deviceIsEnabled_(cellularDeviceState) {
-    const mojom = chromeos.networkConfig.mojom;
     return !!cellularDeviceState &&
-        cellularDeviceState.deviceState === mojom.DeviceStateType.kEnabled;
+        cellularDeviceState.deviceState === DeviceStateType.kEnabled;
   }
 
   /**
@@ -623,21 +622,20 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       return '';
     }
 
-    const mojom = chromeos.networkConfig.mojom.InhibitReason;
     const inhibitReason = this.cellularDeviceState.inhibitReason;
 
     switch (inhibitReason) {
-      case mojom.kInstallingProfile:
+      case InhibitReason.kInstallingProfile:
         return this.i18n('cellularNetworkInstallingProfile');
-      case mojom.kRenamingProfile:
+      case InhibitReason.kRenamingProfile:
         return this.i18n('cellularNetworkRenamingProfile');
-      case mojom.kRemovingProfile:
+      case InhibitReason.kRemovingProfile:
         return this.i18n('cellularNetworkRemovingProfile');
-      case mojom.kConnectingToProfile:
+      case InhibitReason.kConnectingToProfile:
         return this.i18n('cellularNetworkConnectingToProfile');
-      case mojom.kRefreshingProfileList:
+      case InhibitReason.kRefreshingProfileList:
         return this.i18n('cellularNetworRefreshingProfileListProfile');
-      case mojom.kResettingEuiccMemory:
+      case InhibitReason.kResettingEuiccMemory:
         return this.i18n('cellularNetworkResettingESim');
     }
 
@@ -653,8 +651,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    */
   shouldShowNoESimMessageOrDownloadLink_(
       inhibitReason, eSimNetworks, eSimPendingProfiles) {
-    const mojom = chromeos.networkConfig.mojom.InhibitReason;
-    if (inhibitReason === mojom.kInstallingProfile) {
+    if (inhibitReason === InhibitReason.kInstallingProfile) {
       return false;
     }
 

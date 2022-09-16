@@ -4,6 +4,7 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
+import {OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkProxySection', function() {
@@ -35,33 +36,31 @@ suite('NetworkProxySection', function() {
   });
 
   test('Visibility of Allow Shared toggle', function() {
-    const mojom = chromeos.networkConfig.mojom;
-
     const allowSharedToggle = proxySection.$.allowShared;
     assertTrue(!!allowSharedToggle);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kNone,
+      source: OncSource.kNone,
     };
     assertTrue(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kDevice,
+      source: OncSource.kDevice,
     };
     assertFalse(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kDevicePolicy,
+      source: OncSource.kDevicePolicy,
     };
     assertFalse(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kUser,
+      source: OncSource.kUser,
     };
     assertTrue(allowSharedToggle.hidden);
 
     proxySection.managedProperties = {
-      source: mojom.OncSource.kUserPolicy,
+      source: OncSource.kUserPolicy,
     };
     assertTrue(allowSharedToggle.hidden);
   });

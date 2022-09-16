@@ -90,7 +90,7 @@ generate_grd("build_grd") {
 js_type_check("closure_compile_module") {
   is_polymer3 = true
 
-  closure_flags = default_closure_args
+  closure_flags = default_closure_args + mojom_js_args
   deps = [
     ":base_page",
     ":calibration_component_chip",
@@ -221,7 +221,7 @@ js_library("mojo_interface_provider") {
     ":fake_data",
     ":fake_shimless_rma_service",
     ":shimless_rma_types",
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -295,7 +295,7 @@ js_library("onboarding_network_page") {
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/cr_components/chromeos/network:network_config",
     "//ui/webui/resources/cr_components/chromeos/network:network_list",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
@@ -487,7 +487,7 @@ js_library("wrapup_wait_for_manual_wp_enable_page") {
 js_library("shimless_rma_types") {
   deps = [
     "//ash/webui/shimless_rma/mojom:mojom_js_library_for_compile",
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
   ]
 }
 

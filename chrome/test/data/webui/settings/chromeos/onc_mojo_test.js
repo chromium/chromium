@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-
-const mojom = chromeos.networkConfig.mojom;
+import {SubjectAltName_Type} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 suite('OncMojoTest', () => {
   test('Serialize Domain Suffix Match', () => {
@@ -35,8 +34,8 @@ suite('OncMojoTest', () => {
     assertEquals(OncMojo.serializeSubjectAltNameMatch([]), '');
     assertEquals(
         OncMojo.serializeSubjectAltNameMatch([
-          {type: mojom.SubjectAltName_Type.kEmail, value: 'test@example.com'},
-          {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'},
+          {type: SubjectAltName_Type.kEmail, value: 'test@example.com'},
+          {type: SubjectAltName_Type.kUri, value: 'http://test.com'},
         ]),
         'EMAIL:test@example.com;URI:http://test.com');
   });
@@ -49,8 +48,8 @@ suite('OncMojoTest', () => {
     expectEqualValues('', []);
     expectEqualValues('  ', []);
     expectEqualValues('EMAIL:test@example.com;uri:http://test.com', [
-      {type: mojom.SubjectAltName_Type.kEmail, value: 'test@example.com'},
-      {type: mojom.SubjectAltName_Type.kUri, value: 'http://test.com'},
+      {type: SubjectAltName_Type.kEmail, value: 'test@example.com'},
+      {type: SubjectAltName_Type.kUri, value: 'http://test.com'},
     ]);
     // Malformed SAN entry.
     assertEquals(

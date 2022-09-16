@@ -7,6 +7,7 @@ import 'chrome://cfm-network-settings/cfm_network_settings.js';
 import {CfmNetworkSettingsBrowserProxyImpl} from 'chrome://cfm-network-settings/cfm_network_settings_browser_proxy.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
@@ -44,7 +45,6 @@ export class TestCfmNetworkSettingsBrowserProxy extends TestBrowserProxy {
 }
 
 suite('cfm-network-settings', () => {
-  const mojom = chromeos.networkConfig.mojom;
   const wiFiId = 'WiFi 1';
   const disconnectedWiFiId = 'WiFi 2';
   const configuredWiFiId = 'Configured WiFi';
@@ -71,23 +71,23 @@ suite('cfm-network-settings', () => {
     mojoApi.resetForTest();
 
     const connectedWiFi =
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, wiFiId);
+        OncMojo.getDefaultNetworkState(NetworkType.kWiFi, wiFiId);
     connectedWiFi.connectable = true;
-    connectedWiFi.connectionState = mojom.ConnectionStateType.kConnected;
+    connectedWiFi.connectionState = ConnectionStateType.kConnected;
 
-    const disconnectedWiFi = OncMojo.getDefaultNetworkState(
-        mojom.NetworkType.kWiFi, disconnectedWiFiId);
+    const disconnectedWiFi =
+        OncMojo.getDefaultNetworkState(NetworkType.kWiFi, disconnectedWiFiId);
 
-    const configuredWiFi = OncMojo.getDefaultNetworkState(
-        mojom.NetworkType.kWiFi, configuredWiFiId);
+    const configuredWiFi =
+        OncMojo.getDefaultNetworkState(NetworkType.kWiFi, configuredWiFiId);
     configuredWiFi.connectable = true;
 
     mojoApi.addNetworksForTest(
         [connectedWiFi, disconnectedWiFi, configuredWiFi]);
     mojoApi.removeNetworkForTest({guid: 'eth0_guid'});
     mojoApi.setDeviceStateForTest({
-      type: mojom.NetworkType.kWiFi,
-      deviceState: mojom.DeviceStateType.kEnabled,
+      type: NetworkType.kWiFi,
+      deviceState: DeviceStateType.kEnabled,
     });
 
     networkSettings = document.createElement('cfm-network-settings');

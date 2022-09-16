@@ -16,9 +16,10 @@ import './network_password_input.js';
 import './network_shared_css.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CellularSimState, CrosNetworkConfigRemote, GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
-import {assertNotReached} from '../../../js/assert.m.js';
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {assertNotReached} from '../../../js/assert.m.js';
 import {loadTimeData} from '../../../js/load_time_data.m.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
@@ -52,7 +53,7 @@ Polymer({
       observer: 'deviceStateChanged_',
     },
 
-    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    /** @type {!GlobalPolicy|undefined} */
     globalPolicy: Object,
 
     /**
@@ -189,7 +190,7 @@ Polymer({
     },
   },
 
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  /** @private {?CrosNetworkConfigRemote} */
   networkConfig_: null,
 
   /** @override */
@@ -424,7 +425,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.CellularSimState} cellularSimState
+   * @param {!CellularSimState} cellularSimState
    * @private
    */
   setCellularSimState_(cellularSimState) {

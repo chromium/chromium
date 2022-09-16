@@ -5,6 +5,8 @@
 import {setUserActionRecorderForTesting, userActionRecorderMojomWebui} from 'chrome://os-settings/chromeos/os_settings.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 
@@ -14,7 +16,7 @@ suite('InternetConfig', function() {
   /** @type {!InternetConfig|undefined} */
   let internetConfig;
 
-  /** @type {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote|undefined} */
+  /** @type {!CrosNetworkConfigRemote|undefined} */
   let mojoApi_;
 
   /** @type {?userActionRecorderMojomWebui.UserActionRecorderInterface} */
@@ -27,8 +29,7 @@ suite('InternetConfig', function() {
 
   setup(function() {
     internetConfig = document.createElement('internet-config');
-    internetConfig.type = OncMojo.getNetworkTypeString(
-        chromeos.networkConfig.mojom.NetworkType.kWiFi);
+    internetConfig.type = OncMojo.getNetworkTypeString(NetworkType.kWiFi);
     document.body.appendChild(internetConfig);
     flush();
 

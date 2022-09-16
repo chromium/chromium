@@ -9,13 +9,14 @@
  * @see //ui/webui/resources/cr_components/chromeos/network/network_icon.js
  */
 
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
 import 'chrome://resources/cr_components/chromeos/network/network_icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './diagnostics_shared_css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {NetworkStateProperties, SecurityType as MojomSecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType as MojomConnectionStateType, NetworkType as MojomNetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkState, NetworkType, SecurityType} from './diagnostics_types.js';
@@ -23,29 +24,27 @@ import {getNetworkType} from './diagnostics_utils.js';
 
 /**
  * Type alias for network_config NetworkStateProperties struct.
- * @typedef {chromeos.networkConfig.mojom.NetworkStateProperties}
+ * @typedef {NetworkStateProperties}
  */
-export const CrosNetworkStateProperties =
-    chromeos.networkConfig.mojom.NetworkStateProperties;
+export const CrosNetworkStateProperties = NetworkStateProperties;
 
 /**
  * Type alias for network_config ConnectionStateType enum.
- * @typedef {chromeos.networkConfig.mojom.ConnectionStateType}
+ * @typedef {MojomConnectionStateType}
  */
-export const ConnectionStateType =
-    chromeos.networkConfig.mojom.ConnectionStateType;
+export const ConnectionStateType = MojomConnectionStateType;
 
 /**
  * Type alias for network_config NetworkType enum.
- * @typedef {chromeos.networkConfig.mojom.NetworkType}
+ * @typedef {MojomNetworkType}
  */
-export const CrosNetworkType = chromeos.networkConfig.mojom.NetworkType;
+export const CrosNetworkType = MojomNetworkType;
 
 /**
  * Type alias for network_config SecurityType enum.
- * @typedef {chromeos.networkConfig.mojom.SecurityType}
+ * @typedef {MojomSecurityType}
  */
-export const CrosSecurityType = chromeos.networkConfig.mojom.SecurityType;
+export const CrosSecurityType = MojomSecurityType;
 
 /**
  * Struct for minimal required network state required to display network-icon

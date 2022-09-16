@@ -12,6 +12,8 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chrome
 import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {$} from 'chrome://resources/js/util.m.js';
+import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CfmNetworkSettingsBrowserProxy, CfmNetworkSettingsBrowserProxyImpl} from './cfm_network_settings_browser_proxy.js';
@@ -26,10 +28,9 @@ let networkCustomItemCustomData;
  * @param {!OncMojo.NetworkStateProperties} networkState
  */
 function shouldShowNetworkDetails(networkState) {
-  const mojom = chromeos.networkConfig.mojom;
   return OncMojo.connectionStateIsConnected(networkState.connectionState) ||
-      networkState.connectionState == mojom.ConnectionStateType.kConnecting ||
-      (networkState.type == mojom.NetworkType.kCellular);
+      networkState.connectionState == ConnectionStateType.kConnecting ||
+      (networkState.type == NetworkType.kCellular);
 }
 
 /**
@@ -74,7 +75,6 @@ export class CfmNetworkSettings extends PolymerElement {
    * @private
    */
   onNetworkItemSelected_(e) {
-    const mojom = chromeos.networkConfig.mojom;
     const networkState = e.detail;
     const guid = networkState.guid;
 
@@ -92,21 +92,21 @@ export class CfmNetworkSettings extends PolymerElement {
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     networkConfig.startConnect(guid).then(response => {
       switch (response.result) {
-        case mojom.StartConnectResult.kSuccess:
+        case StartConnectResult.kSuccess:
           return;
-        case mojom.StartConnectResult.kInvalidGuid:
-        case mojom.StartConnectResult.kInvalidState:
-        case mojom.StartConnectResult.kCanceled:
+        case StartConnectResult.kInvalidGuid:
+        case StartConnectResult.kInvalidState:
+        case StartConnectResult.kCanceled:
           return;
-        case mojom.StartConnectResult.kNotConfigured:
+        case StartConnectResult.kNotConfigured:
           if (!OncMojo.networkTypeIsMobile(networkState.type)) {
             this.browserProxy_.showNetworkConfig(guid);
           } else {
             console.error('Cellular network is not configured: ' + guid);
           }
           return;
-        case mojom.StartConnectResult.kBlocked:
-        case mojom.StartConnectResult.kUnknown:
+        case StartConnectResult.kBlocked:
+        case StartConnectResult.kUnknown:
           console.error(
               'startConnect failed for: ' + guid + ': ' + response.message);
           return;
