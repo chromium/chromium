@@ -42,6 +42,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -604,8 +605,10 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   };
 
   WebAppFrameToolbarBrowserTest_WindowControlsOverlay() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppWindowControlsOverlay);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{safe_browsing::kDownloadBubble,
+                              features::kWebAppWindowControlsOverlay},
+        /*disabled_features=*/{});
   }
 
   void SetUp() override {
@@ -1281,6 +1284,26 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                   ->GetVisible());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DownloadIconVisibility) {
+  web_app::AppId app_id = InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  // There should be no visible Downloads icon.
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  EXPECT_FALSE(toolbar_button_container->download_button()->GetVisible());
+
+  ui_test_utils::DownloadURL(
+      browser(), ui_test_utils::GetTestUrl(
+                     base::FilePath().AppendASCII("downloads"),
+                     base::FilePath().AppendASCII("a_zip_file.zip")));
+
+  EXPECT_TRUE(toolbar_button_container->download_button()->GetVisible());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DisplayModeMediaCSS) {

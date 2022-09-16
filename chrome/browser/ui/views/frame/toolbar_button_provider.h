@@ -9,6 +9,7 @@
 
 class AppMenuButton;
 class AvatarToolbarButton;
+class DownloadToolbarButtonView;
 class ExtensionsToolbarContainer;
 class IntentChipButton;
 class PageActionIconView;
@@ -77,6 +78,9 @@ class ToolbarButtonProvider {
 
   // Returns the intent chip button, if present.
   virtual IntentChipButton* GetIntentChipButton() = 0;
+
+  // Returns the download button.
+  virtual DownloadToolbarButtonView* GetDownloadButton() = 0;
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:
