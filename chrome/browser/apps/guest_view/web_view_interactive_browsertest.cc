@@ -1633,13 +1633,13 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
 IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
                        DropDownPopupInCorrectPosition) {
   TestHelper("testSelectPopupPositionInMac", "web_view/shim", NO_TEST_SERVER);
-  ASSERT_TRUE(DeprecatedGuestWebContents());
+  ASSERT_TRUE(GetGuestRenderFrameHost());
 
   // This is set in javascript.
   const float distance_from_root_view_origin = 250.0;
   // Verify that the view is offset inside root view as expected.
   content::RenderWidgetHostView* guest_rwhv =
-      DeprecatedGuestWebContents()->GetRenderWidgetHostView();
+      GetGuestRenderFrameHost()->GetView();
   while (guest_rwhv->TransformPointToRootCoordSpace(gfx::Point())
              .OffsetFromOrigin()
              .Length() < distance_from_root_view_origin) {
