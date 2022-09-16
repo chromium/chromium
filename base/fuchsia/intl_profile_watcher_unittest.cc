@@ -22,8 +22,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::fuchsia::intl::Profile;
-
 namespace base {
 
 namespace {
@@ -45,16 +43,18 @@ void CopyIdsToFuchsiaStruct(const std::vector<std::string>& raw_ids,
   }
 }
 
-Profile CreateProfileWithTimeZones(const std::vector<std::string>& zone_ids) {
-  Profile profile;
+fuchsia::intl::Profile CreateProfileWithTimeZones(
+    const std::vector<std::string>& zone_ids) {
+  fuchsia::intl::Profile profile;
   std::vector<::fuchsia::intl::TimeZoneId> time_zone_ids;
   CopyIdsToFuchsiaStruct(zone_ids, &time_zone_ids);
   profile.set_time_zones(time_zone_ids);
   return profile;
 }
 
-Profile CreateProfileWithLocales(const std::vector<std::string>& locale_ids) {
-  Profile profile;
+fuchsia::intl::Profile CreateProfileWithLocales(
+    const std::vector<std::string>& locale_ids) {
+  fuchsia::intl::Profile profile;
   std::vector<::fuchsia::intl::LocaleId> fuchsia_locale_ids;
   CopyIdsToFuchsiaStruct(locale_ids, &fuchsia_locale_ids);
   profile.set_locales(fuchsia_locale_ids);
@@ -88,7 +88,7 @@ class FakePropertyProvider
   // PropertyProvider_TestBase implementation.
   void GetProfile(
       ::fuchsia::intl::PropertyProvider::GetProfileCallback callback) override {
-    Profile profile;
+    fuchsia::intl::Profile profile;
     profile.set_time_zones(time_zone_ids_);
     profile.set_locales(fuchsia_locale_ids_);
     callback(std::move(profile));
@@ -152,18 +152,18 @@ class GetValuesFromIntlPropertyProviderTest : public testing::Test {
 
  protected:
   std::string GetPrimaryLocaleId() {
-    Profile profile =
+    fuchsia::intl::Profile profile =
         GetProfileFromPropertyProvider(std::move(property_provider_ptr_));
     return FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(profile);
   }
 
   std::string GetPrimaryTimeZoneId() {
-    Profile profile =
+    fuchsia::intl::Profile profile =
         GetProfileFromPropertyProvider(std::move(property_provider_ptr_));
     return FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(profile);
   }
 
-  static Profile GetProfileFromPropertyProvider(
+  static fuchsia::intl::Profile GetProfileFromPropertyProvider(
       ::fuchsia::intl::PropertyProviderSyncPtr property_provider) {
     return FuchsiaIntlProfileWatcher::GetProfileFromPropertyProvider(
         std::move(property_provider));
@@ -279,8 +279,9 @@ TEST_F(IntlProfileWatcherTest, NoZones_NoNotification) {
 }
 
 TEST_F(IntlProfileWatcherTest, ChangeNotification_AfterInitialization) {
-  auto watcher = CreateIntlProfileWatcher(base::BindLambdaForTesting(
-      [quit_loop = run_loop_.QuitClosure()](const Profile& profile) {
+  auto watcher = CreateIntlProfileWatcher(
+      base::BindLambdaForTesting([quit_loop = run_loop_.QuitClosure()](
+                                     const fuchsia::intl::Profile& profile) {
         EXPECT_EQ(kPrimaryTimeZoneName,
                   FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
                       profile));
@@ -297,8 +298,9 @@ TEST_F(IntlProfileWatcherTest, ChangeNotification_BeforeInitialization) {
   property_provider_.SetTimeZones({kPrimaryTimeZoneName});
   property_provider_.NotifyChange();
 
-  auto watcher = CreateIntlProfileWatcher(base::BindLambdaForTesting(
-      [quit_loop = run_loop_.QuitClosure()](const Profile& profile) {
+  auto watcher = CreateIntlProfileWatcher(
+      base::BindLambdaForTesting([quit_loop = run_loop_.QuitClosure()](
+                                     const fuchsia::intl::Profile& profile) {
         EXPECT_EQ(kPrimaryTimeZoneName,
                   FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
                       profile));
@@ -336,7 +338,7 @@ TEST_F(IntlProfileWatcherTest, ChannelClosedAfterCreation) {
 
 TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, NoZones) {
   EXPECT_EQ("", FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdFromProfile(
-                    Profile()));
+                    fuchsia::intl::Profile()));
 }
 
 TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, EmptyZonesList) {
@@ -358,8 +360,8 @@ TEST(IntlProfileWatcherGetPrimaryTimeZoneIdFromProfileTest, TwoZones) {
 }
 
 TEST(IntlProfileWatcherGetPrimaryLocaleIdFromProfileTest, NoLocales) {
-  EXPECT_EQ(
-      "", FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(Profile()));
+  EXPECT_EQ("", FuchsiaIntlProfileWatcher::GetPrimaryLocaleIdFromProfile(
+                    fuchsia::intl::Profile()));
 }
 
 TEST(IntlProfileWatcherGetPrimaryLocaleIdFromProfileTest, EmptyLocalesList) {
