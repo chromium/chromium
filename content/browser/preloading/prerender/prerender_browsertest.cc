@@ -189,6 +189,15 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_ =
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
+
+    // Need to initialize features after creating PrerenderTestHelper since it
+    // initializes features in its constructor.
+    feature_list_.InitWithFeaturesAndParameters(
+        // TODO(crbug.com/1273341): remove the limitation and run tests with
+        // multiple prerenders.
+        {{blink::features::kPrerender2,
+          {{"max_num_of_running_speculation_rules", "1"}}}},
+        {});
   }
   ~PrerenderBrowserTest() override = default;
 
@@ -477,6 +486,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       attempt_ukm_entry_builder_;
   std::unique_ptr<test::PreloadingPredictionUkmEntryBuilder>
       prediction_ukm_entry_builder_;
+  base::test::ScopedFeatureList feature_list_;
 };
 }  // namespace
 

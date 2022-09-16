@@ -4,7 +4,7 @@ Test that prerender navigations reports failure on triggering
     params : {
         finalStatus : MaxNumOfRunningPrerendersExceeded
         initiatingFrameId : <string>
-        prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html?two
+        prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html?exceeded
     }
     sessionId : <string>
 }

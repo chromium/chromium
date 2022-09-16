@@ -120,8 +120,11 @@ class PrerenderWebContentsDelegate : public WebContentsDelegate {
 class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
  public:
   PrerenderHostRegistryTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // TODO(crbug.com/1273341): remove the limitation and run tests with
+        // multiple prerenders.
+        {{blink::features::kPrerender2,
+          {{"max_num_of_running_speculation_rules", "1"}}}},
         // Disable the memory requirement of Prerender2 so the test can run on
         // any bot.
         {blink::features::kPrerender2MemoryControls});

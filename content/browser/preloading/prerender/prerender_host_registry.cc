@@ -688,7 +688,7 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
              base::GetFieldTrialParamByFeatureAsInt(
                  blink::features::kPrerender2,
                  blink::features::kPrerender2MaxNumOfRunningSpeculationRules,
-                 1);
+                 10);
     case PrerenderTriggerType::kEmbedder:
       // Currently the number of prerenders triggered by an embedder is limited
       // to two.
@@ -727,13 +727,13 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
   }
 
   // TODO(crbug.com/1273341): Finalize the threshold after the experiment
-  // completes. The default acceptable percent is 20% of the system memory.
+  // completes. The default acceptable percent is 10% of the system memory.
   int acceptable_percent_of_system_memory =
       base::GetFieldTrialParamByFeatureAsInt(
           blink::features::kPrerender2MemoryControls,
           blink::features::
               kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName,
-          20);
+          10);
 
   // When the current memory usage is higher than
   // `acceptable_percent_of_system_memory` % of the system memory, cancel a
