@@ -161,8 +161,10 @@ public class BackPressManager {
             if (handler == null) continue;
             Boolean enabled = handler.getHandleBackPressChangedSupplier().get();
             if (enabled != null && enabled) {
-                handler.handleBackPress();
+                // Record before #handleBackPress; otherwise, histograms may be missing if
+                // #handleBackPress throws an error.
                 record(i);
+                handler.handleBackPress();
                 mLastCalledHandlerForTesting = i;
                 return;
             }
