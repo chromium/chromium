@@ -52,8 +52,10 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
   return true;
 }
 
-bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
-                               bool& subtree_should_use_infinite_cull_rect) {
+bool ShouldUseInfiniteCullRect(
+    const PaintLayer& layer,
+    DocumentTransitionSupplement* document_transition_supplement,
+    bool& subtree_should_use_infinite_cull_rect) {
   if (RuntimeEnabledFeatures::InfiniteCullRectEnabled())
     return true;
 
@@ -127,11 +129,11 @@ bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
     }
   }
 
-  if (auto* supplement =
-          DocumentTransitionSupplement::FromIfExists(object.GetDocument())) {
+  if (document_transition_supplement) {
     // This means that the contents of the object are drawn elsewhere, so we
     // shouldn't cull it.
-    if (supplement->GetTransition()->IsRepresentedViaPseudoElements(object)) {
+    if (document_transition_supplement->GetTransition()
+            ->IsRepresentedViaPseudoElements(object)) {
       return true;
     }
   }
@@ -158,6 +160,8 @@ bool HasScrolledEnough(const LayoutObject& object) {
 CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer)
     : starting_layer_(starting_layer) {
   DCHECK(RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled());
+  document_transition_supplement_ = DocumentTransitionSupplement::FromIfExists(
+      starting_layer.GetLayoutObject().GetDocument());
 }
 
 void CullRectUpdater::Update() {
@@ -186,7 +190,8 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   Context context;
   context.current.container = &starting_layer_;
   bool should_use_infinite = ShouldUseInfiniteCullRect(
-      starting_layer_, context.current.subtree_should_use_infinite_cull_rect);
+      starting_layer_, document_transition_supplement_,
+      context.current.subtree_should_use_infinite_cull_rect);
 
   auto& fragment = object.GetMutableForPainting().FirstFragment();
   SetFragmentCullRect(
@@ -313,7 +318,8 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
   bool should_use_infinite_cull_rect =
       !context.current.subtree_is_out_of_cull_rect &&
       ShouldUseInfiniteCullRect(
-          layer, context.current.subtree_should_use_infinite_cull_rect);
+          layer, document_transition_supplement_,
+          context.current.subtree_should_use_infinite_cull_rect);
 
   for (auto* fragment = &first_fragment; fragment;
        fragment = fragment->NextFragment()) {
@@ -457,9 +463,11 @@ void CullRectUpdater::PaintPropertiesChanged(
   bool should_use_infinite_cull_rect = false;
   if (object.HasLayer()) {
     bool subtree_should_use_infinite_cull_rect = false;
-    should_use_infinite_cull_rect =
-        ShouldUseInfiniteCullRect(*To<LayoutBoxModelObject>(object).Layer(),
-                                  subtree_should_use_infinite_cull_rect);
+    auto* document_transition_supplement =
+        DocumentTransitionSupplement::FromIfExists(object.GetDocument());
+    should_use_infinite_cull_rect = ShouldUseInfiniteCullRect(
+        *To<LayoutBoxModelObject>(object).Layer(),
+        document_transition_supplement, subtree_should_use_infinite_cull_rect);
     if (should_use_infinite_cull_rect &&
         object.FirstFragment().GetCullRect().IsInfinite() &&
         object.FirstFragment().GetContentsCullRect().IsInfinite()) {
