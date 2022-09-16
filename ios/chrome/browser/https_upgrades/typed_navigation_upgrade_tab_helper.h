@@ -25,9 +25,6 @@ class TypedNavigationUpgradeTabHelper
     : public web::WebStateObserver,
       public web::WebStateUserData<TypedNavigationUpgradeTabHelper> {
  public:
-  // Creates TabHelper. `web_state` must not be null.
-  static void CreateForWebState(web::WebState* web_state);
-
   ~TypedNavigationUpgradeTabHelper() override;
 
   TypedNavigationUpgradeTabHelper(const TypedNavigationUpgradeTabHelper&) =
@@ -48,6 +45,8 @@ class TypedNavigationUpgradeTabHelper
   static const char kHistogramName[];
 
  private:
+  friend class web::WebStateUserData<TypedNavigationUpgradeTabHelper>;
+
   enum class State {
     // No omnibox upgrade or fallback navigation happening at the moment. Could
     // be due to one of the following cases:
@@ -66,7 +65,6 @@ class TypedNavigationUpgradeTabHelper
   TypedNavigationUpgradeTabHelper(web::WebState* web_state,
                                   PrerenderService* prerender_service,
                                   HttpsUpgradeService* service);
-  friend class web::WebStateUserData<TypedNavigationUpgradeTabHelper>;
 
   // Called when the upgrade timer times out.
   void OnHttpsLoadTimeout(base::WeakPtr<web::WebState> weak_web_state);

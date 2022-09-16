@@ -11,10 +11,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/security_interstitials/core/https_only_mode_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
@@ -56,33 +54,11 @@ bool HttpsOnlyModeUpgradeTabHelper::IsTimerRunningForTesting() const {
 }
 
 void HttpsOnlyModeUpgradeTabHelper::ClearAllowlistForTesting() {
-  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
-      web_state()->GetBrowserState());
-  service->ClearAllowlist(base::Time(), base::Time::Max());
+  service_->ClearAllowlist(base::Time(), base::Time::Max());
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
-  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
-      web_state()->GetBrowserState());
-  return service->IsHttpAllowedForHost(url.host());
-}
-
-// static
-void HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web::WebState* web_state,
-                                                      PrefService* prefs) {
-  DCHECK(web_state);
-  DCHECK(prefs);
-  if (!FromWebState(web_state)) {
-    PrerenderService* prerender_service =
-        PrerenderServiceFactory::GetForBrowserState(
-            ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-    HttpsUpgradeService* service =
-        HttpsUpgradeServiceFactory::GetForBrowserState(
-            web_state->GetBrowserState());
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new HttpsOnlyModeUpgradeTabHelper(
-                               web_state, prefs, prerender_service, service)));
-  }
+  return service_->IsHttpAllowedForHost(url.host());
 }
 
 HttpsOnlyModeUpgradeTabHelper::HttpsOnlyModeUpgradeTabHelper(

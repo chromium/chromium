@@ -51,7 +51,9 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
     web_state_.SetBrowserState(browser_state_.get());
 
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
-        &web_state_, browser_state_->GetPrefs());
+        &web_state_, browser_state_->GetPrefs(),
+        PrerenderServiceFactory::GetForBrowserState(browser_state_.get()),
+        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_.get()));
     HttpsOnlyModeContainer::CreateForWebState(&web_state_);
 
     browser_state_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);

@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_only_mode_upgrade_tab_helper.h"
+#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/typed_navigation_upgrade_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -63,6 +64,7 @@
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/well_known_change_password_tab_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_tab_helper.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_web_state_observer.h"
@@ -246,13 +248,17 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsOnlyMode)) {
-    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(web_state,
-                                                     browser_state->GetPrefs());
+    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
+        web_state, browser_state->GetPrefs(),
+        PrerenderServiceFactory::GetForBrowserState(browser_state),
+        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state));
     HttpsOnlyModeContainer::CreateForWebState(web_state);
   }
 
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
-    TypedNavigationUpgradeTabHelper::CreateForWebState(web_state);
+    TypedNavigationUpgradeTabHelper::CreateForWebState(
+        web_state, PrerenderServiceFactory::GetForBrowserState(browser_state),
+        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state));
   }
 
   if (IsWebChannelsEnabled() && !is_off_the_record) {

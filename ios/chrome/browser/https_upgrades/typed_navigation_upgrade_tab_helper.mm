@@ -9,10 +9,8 @@
 #import "base/strings/string_number_conversions.h"
 #import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_impl.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -44,23 +42,6 @@ TypedNavigationUpgradeTabHelper::TypedNavigationUpgradeTabHelper(
     HttpsUpgradeService* service)
     : prerender_service_(prerender_service), service_(service) {
   web_state->AddObserver(this);
-}
-
-// static
-void TypedNavigationUpgradeTabHelper::CreateForWebState(
-    web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    PrerenderService* prerender_service =
-        PrerenderServiceFactory::GetForBrowserState(
-            ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-    HttpsUpgradeService* service =
-        HttpsUpgradeServiceFactory::GetForBrowserState(
-            web_state->GetBrowserState());
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new TypedNavigationUpgradeTabHelper(
-                               web_state, prerender_service, service)));
-  }
 }
 
 bool TypedNavigationUpgradeTabHelper::IsTimerRunningForTesting() const {

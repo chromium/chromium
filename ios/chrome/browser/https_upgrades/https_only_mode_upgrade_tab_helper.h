@@ -29,9 +29,6 @@ class HttpsOnlyModeUpgradeTabHelper
       public web::WebStatePolicyDecider,
       public web::WebStateUserData<HttpsOnlyModeUpgradeTabHelper> {
  public:
-  // Creates TabHelper. `web_state` and `prefs` must not be null.
-  static void CreateForWebState(web::WebState* web_state, PrefService* prefs);
-
   ~HttpsOnlyModeUpgradeTabHelper() override;
   HttpsOnlyModeUpgradeTabHelper(const HttpsOnlyModeUpgradeTabHelper&) = delete;
   HttpsOnlyModeUpgradeTabHelper& operator=(
@@ -43,6 +40,8 @@ class HttpsOnlyModeUpgradeTabHelper
   void ClearAllowlistForTesting();
 
  private:
+  friend class web::WebStateUserData<HttpsOnlyModeUpgradeTabHelper>;
+
   enum class State {
     // Initial state. The navigation hasn't started yet, or started but hasn't
     // been upgraded because it's already HTTPS or a non-HTTP scheme.
@@ -67,7 +66,6 @@ class HttpsOnlyModeUpgradeTabHelper
                                 PrefService* prefs,
                                 PrerenderService* prerender_service,
                                 HttpsUpgradeService* service);
-  friend class web::WebStateUserData<HttpsOnlyModeUpgradeTabHelper>;
 
   // Returns true if url can be loaded over HTTP (e.g. it was previously
   // allowlisted).
