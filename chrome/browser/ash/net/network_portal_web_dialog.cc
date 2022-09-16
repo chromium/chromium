@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/net/network_portal_web_dialog.h"
 
-#include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -12,7 +11,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -30,8 +28,9 @@ gfx::Size GetPortalDialogSize() {
 
 }  // namespace
 
-NetworkPortalWebDialog::NetworkPortalWebDialog(base::WeakPtr<Delegate> delegate)
-    : delegate_(delegate), widget_(nullptr) {
+NetworkPortalWebDialog::NetworkPortalWebDialog(const GURL& url,
+                                               base::WeakPtr<Delegate> delegate)
+    : url_(url), delegate_(delegate), widget_(nullptr) {
   set_can_resize(false);
 }
 
@@ -59,7 +58,7 @@ std::u16string NetworkPortalWebDialog::GetDialogTitle() const {
 }
 
 GURL NetworkPortalWebDialog::GetDialogContentURL() const {
-  return GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+  return url_;
 }
 
 void NetworkPortalWebDialog::GetWebUIMessageHandlers(

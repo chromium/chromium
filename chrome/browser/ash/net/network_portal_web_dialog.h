@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
+#include "url/gurl.h"
 
 namespace views {
 class Widget;
@@ -29,7 +30,7 @@ class NetworkPortalWebDialog : public ui::WebDialogDelegate {
     virtual void OnDialogDestroyed(const NetworkPortalWebDialog* dialog) = 0;
   };
 
-  explicit NetworkPortalWebDialog(base::WeakPtr<Delegate> delegate);
+  NetworkPortalWebDialog(const GURL& url, base::WeakPtr<Delegate> delegate);
   NetworkPortalWebDialog(const NetworkPortalWebDialog&) = delete;
   NetworkPortalWebDialog& operator=(const NetworkPortalWebDialog&) = delete;
   ~NetworkPortalWebDialog() override;
@@ -51,8 +52,8 @@ class NetworkPortalWebDialog : public ui::WebDialogDelegate {
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
 
+  GURL url_;
   base::WeakPtr<Delegate> delegate_;
-
   views::Widget* widget_;
 };
 

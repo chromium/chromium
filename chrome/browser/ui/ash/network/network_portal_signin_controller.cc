@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -28,22 +31,30 @@ NetworkPortalSigninController::GetWeakPtr() {
 }
 
 void NetworkPortalSigninController::ShowSignin() {
+  GURL url;
+  const NetworkState* default_network =
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+  if (default_network)
+    url = default_network->probe_url();
+  if (url.is_empty())
+    url = GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
     // Login screen. Always show an incognito dialog.
-    ShowDialog(ProfileHelper::GetSigninProfile());
+    ShowDialog(ProfileHelper::GetSigninProfile(), url);
     return;
   }
 
   if (profile->GetPrefs()->GetBoolean(
           prefs::kCaptivePortalAuthenticationIgnoresProxy)) {
     // If allowed, use an incognito dialog to ignore any proxies.
-    ShowDialog(ProfileHelper::GetSigninProfile());
+    ShowDialog(ProfileHelper::GetSigninProfile(), url);
     return;
   }
 
   // Otherwise show in a singleton browser tab.
-  ShowTab(profile);
+  ShowTab(profile, url);
 }
 
 void NetworkPortalSigninController::CloseSignin() {
@@ -63,21 +74,22 @@ void NetworkPortalSigninController::OnDialogDestroyed(
   SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
 }
 
-void NetworkPortalSigninController::ShowDialog(Profile* profile) {
+void NetworkPortalSigninController::ShowDialog(Profile* profile,
+                                               const GURL& url) {
   if (dialog_)
     return;
 
-  dialog_ = new NetworkPortalWebDialog(web_dialog_weak_factory_.GetWeakPtr());
+  dialog_ =
+      new NetworkPortalWebDialog(url, web_dialog_weak_factory_.GetWeakPtr());
   dialog_->SetWidget(views::Widget::GetWidgetForNativeWindow(
       chrome::ShowWebDialog(nullptr, profile, dialog_)));
 }
 
-void NetworkPortalSigninController::ShowTab(Profile* profile) {
+void NetworkPortalSigninController::ShowTab(Profile* profile, const GURL& url) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   if (!displayer.browser())
     return;
 
-  GURL url(captive_portal::CaptivePortalDetector::kDefaultURL);
   ShowSingletonTab(displayer.browser(), url);
 }
 
