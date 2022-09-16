@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
@@ -189,25 +190,25 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   // Clears the various bits of cached data that this class has.
   void ClearCachedData();
 
-  using ShouldSnapshotPropertyCallback =
-      std::function<bool(const PropertyHandle&)>;
-  using ShouldSnapshotKeyframeCallback =
-      std::function<bool(const PropertySpecificKeyframe&)>;
+  using ShouldSnapshotPropertyFunction =
+      base::FunctionRef<bool(const PropertyHandle&)>;
+  using ShouldSnapshotKeyframeFunction =
+      base::FunctionRef<bool(const PropertySpecificKeyframe&)>;
 
   bool SnapshotCompositableProperties(
       Element& element,
       const ComputedStyle& computed_style,
       const ComputedStyle* parent_style,
-      ShouldSnapshotPropertyCallback should_process_property_callback,
-      ShouldSnapshotKeyframeCallback should_process_keyframe_callback) const;
+      ShouldSnapshotPropertyFunction should_process_property,
+      ShouldSnapshotKeyframeFunction should_process_keyframe) const;
 
   bool SnapshotCompositorKeyFrames(
       const PropertyHandle& property,
       Element& element,
       const ComputedStyle& computed_style,
       const ComputedStyle* parent_style,
-      ShouldSnapshotPropertyCallback should_process_property_callback,
-      ShouldSnapshotKeyframeCallback should_process_keyframe_callback) const;
+      ShouldSnapshotPropertyFunction should_process_property,
+      ShouldSnapshotKeyframeFunction should_process_keyframe) const;
 
   KeyframeVector keyframes_;
   // The spec describes filtering the normalized keyframes at sampling time

@@ -115,19 +115,18 @@ bool KeyframeEffectModelBase::SnapshotNeutralCompositorKeyframes(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style,
     const ComputedStyle* parent_style) const {
-  ShouldSnapshotPropertyCallback should_snapshot_property_callback =
+  auto should_snapshot_property =
       [&old_style, &new_style](const PropertyHandle& property) {
         return !CSSPropertyEquality::PropertiesEqual(property, old_style,
                                                      new_style);
       };
-  ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback =
-      [](const PropertySpecificKeyframe& keyframe) {
-        return keyframe.IsNeutral();
-      };
+  auto should_snapshot_keyframe = [](const PropertySpecificKeyframe& keyframe) {
+    return keyframe.IsNeutral();
+  };
 
   return SnapshotCompositableProperties(element, new_style, parent_style,
-                                        should_snapshot_property_callback,
-                                        should_snapshot_keyframe_callback);
+                                        should_snapshot_property,
+                                        should_snapshot_keyframe);
 }
 
 bool KeyframeEffectModelBase::SnapshotAllCompositorKeyframesIfNecessary(
@@ -139,18 +138,19 @@ bool KeyframeEffectModelBase::SnapshotAllCompositorKeyframesIfNecessary(
   needs_compositor_keyframes_snapshot_ = false;
 
   bool has_neutral_compositable_keyframe = false;
-  ShouldSnapshotPropertyCallback should_snapshot_property_callback =
-      [](const PropertyHandle& property) { return true; };
-  ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback =
+  auto should_snapshot_property = [](const PropertyHandle& property) {
+    return true;
+  };
+  auto should_snapshot_keyframe =
       [&has_neutral_compositable_keyframe](
-          const PropertySpecificKeyframe& keyframe) mutable {
+          const PropertySpecificKeyframe& keyframe) {
         has_neutral_compositable_keyframe |= keyframe.IsNeutral();
         return true;
       };
 
   bool updated = SnapshotCompositableProperties(
-      element, base_style, parent_style, should_snapshot_property_callback,
-      should_snapshot_keyframe_callback);
+      element, base_style, parent_style, should_snapshot_property,
+      should_snapshot_keyframe);
 
   if (updated && has_neutral_compositable_keyframe) {
     UseCounter::Count(element.GetDocument(),
@@ -163,16 +163,15 @@ bool KeyframeEffectModelBase::SnapshotCompositableProperties(
     Element& element,
     const ComputedStyle& computed_style,
     const ComputedStyle* parent_style,
-    ShouldSnapshotPropertyCallback should_snapshot_property_callback,
-    ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback) const {
+    ShouldSnapshotPropertyFunction should_snapshot_property,
+    ShouldSnapshotKeyframeFunction should_snapshot_keyframe) const {
   EnsureKeyframeGroups();
   bool updated = false;
   static const CSSProperty** compositable_properties = CompositableProperties();
   for (size_t i = 0; i < num_compositable_properties; i++) {
     updated |= SnapshotCompositorKeyFrames(
         PropertyHandle(*compositable_properties[i]), element, computed_style,
-        parent_style, should_snapshot_property_callback,
-        should_snapshot_keyframe_callback);
+        parent_style, should_snapshot_property, should_snapshot_keyframe);
   }
 
   // Custom properties need to be handled separately, since not all values
@@ -196,7 +195,7 @@ bool KeyframeEffectModelBase::SnapshotCompositableProperties(
     }
     updated |= SnapshotCompositorKeyFrames(
         PropertyHandle(name), element, computed_style, parent_style,
-        should_snapshot_property_callback, should_snapshot_keyframe_callback);
+        should_snapshot_property, should_snapshot_keyframe);
   }
   return updated;
 }
@@ -206,9 +205,9 @@ bool KeyframeEffectModelBase::SnapshotCompositorKeyFrames(
     Element& element,
     const ComputedStyle& computed_style,
     const ComputedStyle* parent_style,
-    ShouldSnapshotPropertyCallback should_snapshot_property_callback,
-    ShouldSnapshotKeyframeCallback should_snapshot_keyframe_callback) const {
-  if (!should_snapshot_property_callback(property))
+    ShouldSnapshotPropertyFunction should_snapshot_property,
+    ShouldSnapshotKeyframeFunction should_snapshot_keyframe) const {
+  if (!should_snapshot_property(property))
     return false;
 
   auto it = keyframe_groups_->find(property);
@@ -219,7 +218,7 @@ bool KeyframeEffectModelBase::SnapshotCompositorKeyFrames(
 
   bool updated = false;
   for (auto& keyframe : keyframe_group->keyframes_) {
-    if (!should_snapshot_keyframe_callback(*keyframe))
+    if (!should_snapshot_keyframe(*keyframe))
       continue;
 
     updated |= keyframe->PopulateCompositorKeyframeValue(
