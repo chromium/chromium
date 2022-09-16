@@ -14,21 +14,46 @@
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_platform_delegate.h"
 #include "media/audio/audio_device_description.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace libassistant {
 
 namespace {
 using mojom::LidState;
+using testing::_;
 using Resolution = assistant_client::ConversationStateListener::Resolution;
 
 constexpr char kNormalDeviceId[] = "normal-device-id";
 constexpr char kHotwordDeviceId[] = "hotword-device-id";
 constexpr char kSkipForNonDspMessage[] = "This test case is for DSP";
+
+class MockStreamFactory : public audio::FakeStreamFactory {
+ public:
+  MOCK_METHOD(
+      void,
+      CreateInputStream,
+      (mojo::PendingReceiver<::media::mojom::AudioInputStream> stream_receiver,
+       mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+       mojo::PendingRemote<::media::mojom::AudioInputStreamObserver> observer,
+       mojo::PendingRemote<::media::mojom::AudioLog> log,
+       const std::string& device_id,
+       const media::AudioParameters& params,
+       uint32_t shared_memory_count,
+       bool enable_agc,
+       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+       media::mojom::AudioProcessingConfigPtr processing_config,
+       CreateInputStreamCallback callback),
+      (override));
+};
 
 class FakeAudioInputObserver : public assistant_client::AudioInput::Observer {
  public:
@@ -155,6 +180,30 @@ class AssistantAudioInputControllerTest : public testing::TestWithParam<bool> {
 
   bool IsUsingDeadStreamDetection() {
     return audio_input().IsUsingDeadStreamDetectionForTesting().value_or(false);
+  }
+
+  bool HasCreateInputStreamCalled(MockStreamFactory* mock_stream_factory) {
+    EXPECT_CALL(*mock_stream_factory,
+                CreateInputStream(_, _, _, _, _, _, _, _, _, _, _))
+        .WillOnce(testing::Invoke(
+            [](testing::Unused, testing::Unused, testing::Unused,
+               testing::Unused, testing::Unused, testing::Unused,
+               testing::Unused, testing::Unused, testing::Unused,
+               testing::Unused,
+               media::mojom::AudioStreamFactory::CreateInputStreamCallback
+                   callback) {
+              // Invoke the callback as it becomes error if the callback never
+              // gets invoked.
+              std::move(callback).Run(nullptr, false, absl::nullopt);
+            }));
+
+    mojo::PendingReceiver<media::mojom::AudioStreamFactory> pending_receiver =
+        platform_delegate_.stream_factory_receiver();
+    EXPECT_TRUE(pending_receiver.is_valid());
+    mock_stream_factory->receiver_.Bind(std::move(pending_receiver));
+    mock_stream_factory->receiver_.FlushForTesting();
+
+    return testing::Mock::VerifyAndClearExpectations(mock_stream_factory);
   }
 
   std::string GetOpenDeviceId() {
@@ -463,8 +512,7 @@ TEST_P(AssistantAudioInputControllerTest,
   EXPECT_EQ(false, IsRecordingAudio());
 }
 
-// Disabled due to excessive flakiness. http://crbug.com/1363156
-TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTrigger) {
+TEST_P(AssistantAudioInputControllerTest, DSPTrigger) {
   if (!IsEnableDspFlagOn()) {
     GTEST_SKIP() << kSkipForNonDspMessage;
   }
@@ -474,10 +522,14 @@ TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTrigger) {
   SetHotwordEnabled(true);
   AssertHotwordAvailableState();
   ASSERT_EQ(true, IsRecordingHotword());
-  ASSERT_NE(nullptr, audio_input().GetOpenAudioStreamForTesting());
 
-  ash::libassistant::AudioInputStream* open_audio_stream =
-      audio_input().GetOpenAudioStreamForTesting();
+  MockStreamFactory mock_stream_factory;
+  EXPECT_TRUE(HasCreateInputStreamCalled(&mock_stream_factory));
+
+  // Until the conversation ends, no new input stream should be created.
+  EXPECT_CALL(mock_stream_factory,
+              CreateInputStream(_, _, _, _, _, _, _, _, _, _, _))
+      .Times(0);
 
   // Simulate DSP hotword activation. When DSP detects a hotword, it starts
   // sending audio data until the channel gets closed.
@@ -495,20 +547,20 @@ TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTrigger) {
 
   // During the conversation, an audio stream used for detecting the hotword
   // should be used.
-  EXPECT_EQ(open_audio_stream, audio_input().GetOpenAudioStreamForTesting());
   EXPECT_TRUE(IsRecordingHotword());
 
+  testing::Mock::VerifyAndClearExpectations(&mock_stream_factory);
   OnConversationTurnFinished();
 
   // Once the converstation ends, the old audio stream will get closed and a new
   // one should be created.
-  EXPECT_NE(open_audio_stream, audio_input().GetOpenAudioStreamForTesting());
+  mock_stream_factory.ResetReceiver();
+  EXPECT_TRUE(HasCreateInputStreamCalled(&mock_stream_factory));
   EXPECT_TRUE(IsRecordingHotword());
   EXPECT_EQ(GetOpenDeviceId(), kHotwordDeviceId);
 }
 
-// Disabled due to excessive flakiness. http://crbug.com/1363156
-TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTriggerredButSoftwareRejection) {
+TEST_P(AssistantAudioInputControllerTest, DSPTriggerredButSoftwareRejection) {
   if (!IsEnableDspFlagOn()) {
     GTEST_SKIP() << kSkipForNonDspMessage;
   }
@@ -518,10 +570,9 @@ TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTriggerredButSoftwareRejec
   SetHotwordEnabled(true);
   AssertHotwordAvailableState();
   ASSERT_EQ(true, IsRecordingHotword());
-  ASSERT_NE(nullptr, audio_input().GetOpenAudioStreamForTesting());
 
-  ash::libassistant::AudioInputStream* open_audio_stream =
-      audio_input().GetOpenAudioStreamForTesting();
+  MockStreamFactory mock_stream_factory;
+  EXPECT_TRUE(HasCreateInputStreamCalled(&mock_stream_factory));
 
   // Simulate DSP hotword activation. When DSP detects a hotword, it starts
   // sending audio data until the channel gets closed.
@@ -535,7 +586,8 @@ TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTriggerredButSoftwareRejec
   environment_.RunUntilIdle();
 
   // If it's rejected by libassistant, DSP audio stream should be re-created.
-  EXPECT_NE(open_audio_stream, audio_input().GetOpenAudioStreamForTesting());
+  mock_stream_factory.ResetReceiver();
+  EXPECT_TRUE(HasCreateInputStreamCalled(&mock_stream_factory));
   EXPECT_TRUE(IsRecordingHotword());
   EXPECT_EQ(GetOpenDeviceId(), kHotwordDeviceId);
 }

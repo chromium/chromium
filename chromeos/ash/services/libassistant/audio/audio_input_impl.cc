@@ -483,10 +483,6 @@ void AudioInputImpl::OnCaptureDataArrivedForTesting() {
   OnCaptureDataArrived();
 }
 
-AudioInputStream* AudioInputImpl::GetOpenAudioStreamForTesting() {
-  return open_audio_stream_ ? open_audio_stream_.get() : nullptr;
-}
-
 void AudioInputImpl::StartRecording() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!HasOpenAudioStream());
