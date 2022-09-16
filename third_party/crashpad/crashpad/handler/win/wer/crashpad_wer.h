@@ -25,8 +25,9 @@ namespace crashpad::wer {
 //! OutOfProcessExceptionEventCallback().
 //!
 //! \param[in] handled_exceptions is an array of exception codes that the helper
-//!     should pass on to crashpad handler (if possible).  Provide an empty
-//!     array to pass every exception on to the crashpad handler.
+//!     should pass on to crashpad handler (if possible). Pass nullptr and set
+//!     num_handled_exceptions to 0 to pass every exception on to the crashpad
+//!     handler.
 //! \param[in] num_handled_exceptions is the number of elements in the array
 //!     passed to handled_exceptions.
 //! \param[in] pContext is the context provided by WerFault to the helper.
