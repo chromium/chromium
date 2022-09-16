@@ -41,7 +41,6 @@
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/rounded_label_widget.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
