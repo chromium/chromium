@@ -17,6 +17,10 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardAutocorrect.en_us_1",
   "inputs.PhysicalKeyboardAutocorrect.en_us_2",
 
+  # crbug.com/1364495
+  "inputs.PhysicalKeyboardAutocorrectAccentKey",
+  "inputs.PhysicalKeyboardKoreanTyping",
+
   # https://crbug.com/1252352
   "quicksettings.SignInScreen.battery",
   "quicksettings.SignInScreen.noaudio_nobattery",
