@@ -471,12 +471,14 @@ TEST_P(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
   EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetCullRect("child").Rect());
 
-  // Setting |scroller| needs repaint will lead to proactive update for it,
-  // and for |child| because |scroller|'s cull rect changes.
+  // Setting |scroller| needs repaint will let it ignore scrolled/changed
+  // enough logic. A scroll is needed to trigger cull rect update.
+  scroller->scrollBy(0, 1);
   GetPaintLayerByElementId("scroller")->SetNeedsRepaint();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 4200), GetContentsCullRect("scroller").Rect());
-  EXPECT_EQ(gfx::Rect(0, 0, 200, 4200), GetCullRect("child").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 4201), GetContentsCullRect("scroller").Rect());
+  // |child| also updates cull rect because |scroller|'s cull rect changes.
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 4201), GetCullRect("child").Rect());
 }
 
 TEST_P(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {

@@ -44,7 +44,7 @@ class CORE_EXPORT CullRectUpdater {
     const PaintLayer* container = nullptr;
     bool subtree_is_out_of_cull_rect = false;
     bool subtree_should_use_infinite_cull_rect = false;
-    bool force_proactive_update = false;
+    bool subtree_should_skip_changed_enough = false;
     bool force_update_children = false;
 
     STACK_ALLOCATED();
@@ -72,7 +72,7 @@ class CORE_EXPORT CullRectUpdater {
                                            PaintLayer&,
                                            const FragmentData& fragment,
                                            const CullRect& cull_rect);
-  bool ShouldProactivelyUpdate(const Context&, const PaintLayer&) const;
+  bool ShouldSkipChangedEnough(const Context&, const PaintLayer&) const;
 
   PaintLayer& starting_layer_;
   PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
