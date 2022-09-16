@@ -169,9 +169,6 @@ struct TestPrintOopCallbacks {
 
 namespace {
 
-// TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
-// hooked up to make use of `TestPrintingContext` yet.
-#if !BUILDFLAG(IS_CHROMEOS)
 constexpr int kTestPrintingDpi = 72;
 constexpr int kTestPrinterCapabilitiesMaxCopies = 99;
 constexpr gfx::Size kTestPrinterCapabilitiesDpi(kTestPrintingDpi,
@@ -182,13 +179,55 @@ const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis{
     kTestPrinterCapabilitiesDpi};
 const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},
                                                          {"opt2", "456"}};
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 constexpr int kDefaultDocumentCookie = 1234;
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+
+std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
+    PrintingContext::Delegate* delegate,
+    bool skip_system_calls,
+    const std::string& printer_name) {
+  auto context =
+      std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
+
+  // Setup a sample page setup, which is needed to pass checks in
+  // `PrintRenderFrameHelper` that the print params are valid.
+  constexpr gfx::Size kPhysicalSize = gfx::Size(200, 200);
+  constexpr gfx::Rect kPrintableArea = gfx::Rect(0, 0, 200, 200);
+  const PageMargins kRequestedMargins(0, 0, 5, 5, 5, 5);
+  const PageSetup kPageSetup(kPhysicalSize, kPrintableArea, kRequestedMargins,
+                             /*forced_margins=*/false,
+                             /*text_height=*/0);
+
+  auto settings = std::make_unique<PrintSettings>();
+  settings->set_copies(kTestPrintSettingsCopies);
+  settings->set_dpi(kTestPrintingDpi);
+  settings->set_page_setup_device_units(kPageSetup);
+  settings->set_device_name(base::ASCIIToUTF16(printer_name));
+  context->SetDeviceSettings(printer_name, std::move(settings));
+  return context;
+}
+
+void AddTestBackendPrinter(TestPrintBackend* test_backend,
+                           const std::string& printer_name) {
+  const PrinterBasicInfo kPrinterInfo(
+      printer_name,
+      /*display_name=*/"test printer",
+      /*printer_description=*/"A printer for testing.",
+      /*printer_status=*/0,
+      /*is_default=*/true, kTestDummyPrintInfoOptions);
+
+  auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
+  default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
+  default_caps->dpis = kTestPrinterCapabilitiesDefaultDpis;
+  default_caps->default_dpi = kTestPrinterCapabilitiesDpi;
+  test_backend->AddValidPrinter(
+      printer_name, std::move(default_caps),
+      std::make_unique<PrinterBasicInfo>(kPrinterInfo));
+}
 
 mojom::PrintParamsPtr GetPrintParams() {
   auto params = mojom::PrintParams::New();
@@ -232,6 +271,82 @@ void OnDidUpdatePrintSettings(
     printer_query->StopWorker();
   }
 }
+
+class PrintBackendPrintingContextFactoryForTest
+    : public PrintingContextFactoryForTest {
+ public:
+  std::unique_ptr<PrintingContext> CreatePrintingContext(
+      PrintingContext::Delegate* delegate,
+      bool skip_system_calls) override {
+    auto context = MakeDefaultTestPrintingContext(delegate, skip_system_calls,
+                                                  printer_name_);
+
+    if (access_denied_errors_for_new_document_)
+      context->SetNewDocumentBlockedByPermissions();
+#if BUILDFLAG(IS_WIN)
+    if (access_denied_errors_for_render_page_)
+      context->SetOnRenderPageBlockedByPermissions();
+#endif
+    if (access_denied_errors_for_render_document_)
+      context->SetOnRenderDocumentBlockedByPermissions();
+    if (access_denied_errors_for_document_done_)
+      context->SetDocumentDoneBlockedByPermissions();
+
+    if (fail_on_use_default_settings_)
+      context->SetUseDefaultSettingsFails();
+#if BUILDFLAG(IS_WIN)
+    if (cancel_on_ask_user_for_settings_)
+      context->SetAskUserForSettingsCanceled();
+#endif
+
+    return std::move(context);
+  }
+
+  void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
+    printer_name_ = printer_name;
+  }
+
+  void SetAccessDeniedErrorOnNewDocument(bool cause_errors) {
+    access_denied_errors_for_new_document_ = cause_errors;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  void SetAccessDeniedErrorOnRenderPage(bool cause_errors) {
+    access_denied_errors_for_render_page_ = cause_errors;
+  }
+#endif
+
+  void SetAccessDeniedErrorOnRenderDocument(bool cause_errors) {
+    access_denied_errors_for_render_document_ = cause_errors;
+  }
+
+  void SetAccessDeniedErrorOnDocumentDone(bool cause_errors) {
+    access_denied_errors_for_document_done_ = cause_errors;
+  }
+
+  void SetFailErrorOnUseDefaultSettings() {
+    fail_on_use_default_settings_ = true;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  void SetCancelErrorOnAskUserForSettings() {
+    cancel_on_ask_user_for_settings_ = true;
+  }
+#endif
+
+ private:
+  std::string printer_name_;
+  bool access_denied_errors_for_new_document_ = false;
+#if BUILDFLAG(IS_WIN)
+  bool access_denied_errors_for_render_page_ = false;
+#endif
+  bool access_denied_errors_for_render_document_ = false;
+  bool access_denied_errors_for_document_done_ = false;
+  bool fail_on_use_default_settings_ = false;
+#if BUILDFLAG(IS_WIN)
+  bool cancel_on_ask_user_for_settings_ = false;
+#endif
+};
 
 class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
  public:
@@ -2536,20 +2651,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
   }
 
   void AddPrinter(const std::string& printer_name) {
-    const PrinterBasicInfo kPrinterInfo(
-        printer_name,
-        /*display_name=*/"test printer",
-        /*printer_description=*/"A printer for testing.",
-        /*printer_status=*/0,
-        /*is_default=*/true, kTestDummyPrintInfoOptions);
-
-    auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
-    default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
-    default_caps->dpis = kTestPrinterCapabilitiesDefaultDpis;
-    default_caps->default_dpi = kTestPrinterCapabilitiesDpi;
-    test_backend_->AddValidPrinter(
-        printer_name, std::move(default_caps),
-        std::make_unique<PrinterBasicInfo>(kPrinterInfo));
+    AddTestBackendPrinter(test_backend_.get(), printer_name);
   }
 
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
@@ -2670,99 +2772,6 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
   bool stop_invoked() const { return stop_invoked_; }
 
  private:
-  class PrintBackendPrintingContextFactoryForTest
-      : public PrintingContextFactoryForTest {
-   public:
-    std::unique_ptr<PrintingContext> CreatePrintingContext(
-        PrintingContext::Delegate* delegate,
-        bool skip_system_calls) override {
-      auto context =
-          std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
-
-      // Setup a sample page setup, which is needed to pass checks in
-      // `PrintRenderFrameHelper` that the print params are valid.
-      constexpr gfx::Size kPhysicalSize = gfx::Size(200, 200);
-      constexpr gfx::Rect kPrintableArea = gfx::Rect(0, 0, 200, 200);
-      const PageMargins kRequestedMargins(0, 0, 5, 5, 5, 5);
-      const PageSetup kPageSetup(kPhysicalSize, kPrintableArea,
-                                 kRequestedMargins, /*forced_margins=*/false,
-                                 /*text_height=*/0);
-
-      auto settings = std::make_unique<PrintSettings>();
-      settings->set_copies(kTestPrintSettingsCopies);
-      settings->set_dpi(kTestPrintingDpi);
-      settings->set_page_setup_device_units(kPageSetup);
-      settings->set_device_name(
-          base::ASCIIToUTF16(base::StringPiece(printer_name_)));
-      context->SetDeviceSettings(printer_name_, std::move(settings));
-
-      if (access_denied_errors_for_new_document_)
-        context->SetNewDocumentBlockedByPermissions();
-#if BUILDFLAG(IS_WIN)
-      if (access_denied_errors_for_render_page_)
-        context->SetOnRenderPageBlockedByPermissions();
-#endif
-      if (access_denied_errors_for_render_document_)
-        context->SetOnRenderDocumentBlockedByPermissions();
-      if (access_denied_errors_for_document_done_)
-        context->SetDocumentDoneBlockedByPermissions();
-
-      if (fail_on_use_default_settings_)
-        context->SetUseDefaultSettingsFails();
-#if BUILDFLAG(IS_WIN)
-      if (cancel_on_ask_user_for_settings_)
-        context->SetAskUserForSettingsCanceled();
-#endif
-
-      return std::move(context);
-    }
-
-    void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
-      printer_name_ = printer_name;
-    }
-
-    void SetAccessDeniedErrorOnNewDocument(bool cause_errors) {
-      access_denied_errors_for_new_document_ = cause_errors;
-    }
-
-#if BUILDFLAG(IS_WIN)
-    void SetAccessDeniedErrorOnRenderPage(bool cause_errors) {
-      access_denied_errors_for_render_page_ = cause_errors;
-    }
-#endif
-
-    void SetAccessDeniedErrorOnRenderDocument(bool cause_errors) {
-      access_denied_errors_for_render_document_ = cause_errors;
-    }
-
-    void SetAccessDeniedErrorOnDocumentDone(bool cause_errors) {
-      access_denied_errors_for_document_done_ = cause_errors;
-    }
-
-    void SetFailErrorOnUseDefaultSettings() {
-      fail_on_use_default_settings_ = true;
-    }
-
-#if BUILDFLAG(IS_WIN)
-    void SetCancelErrorOnAskUserForSettings() {
-      cancel_on_ask_user_for_settings_ = true;
-    }
-#endif
-
-   private:
-    std::string printer_name_;
-    bool access_denied_errors_for_new_document_ = false;
-#if BUILDFLAG(IS_WIN)
-    bool access_denied_errors_for_render_page_ = false;
-#endif
-    bool access_denied_errors_for_render_document_ = false;
-    bool access_denied_errors_for_document_done_ = false;
-    bool fail_on_use_default_settings_ = false;
-#if BUILDFLAG(IS_WIN)
-    bool cancel_on_ask_user_for_settings_ = false;
-#endif
-  };
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
       bool use_service,
@@ -3467,8 +3476,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
-// crbug.com/1358766 is resolved.
+// TODO(crbug.com/1256506): Re-enable test on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentAnalysisPrintBrowserTest \
   DISABLED_ContentAnalysisPrintBrowserTest
@@ -3494,6 +3502,22 @@ class MAYBE_ContentAnalysisPrintBrowserTest
             kFakeDmToken));
 
     feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);
+  }
+
+  void SetUp() override {
+    test_backend_ = base::MakeRefCounted<TestPrintBackend>();
+    PrintBackend::SetPrintBackendForTesting(test_backend_.get());
+    test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
+        "printer_name");
+    PrintingContext::SetPrintingContextFactoryForTest(
+        &test_printing_context_factory_);
+    PrintBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    PrintBrowserTest::TearDown();
+    PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
+    PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
   }
 
   void SetUpOnMainThread() override {
@@ -3529,12 +3553,17 @@ class MAYBE_ContentAnalysisPrintBrowserTest
     return response;
   }
 
+  void AddPrinter(const std::string& printer_name) {
+    AddTestBackendPrinter(test_backend_.get(), printer_name);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<TestPrintBackend> test_backend_;
+  PrintBackendPrintingContextFactoryForTest test_printing_context_factory_;
 };
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
-// crbug.com/1358766 is resolved.
+// TODO(crbug.com/1256506): Re-enable test on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest \
   DISABLED_ContentAnalysisScriptedPreviewlessPrintBrowserTest
@@ -3552,6 +3581,7 @@ class MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest
   }
 
   void RunScriptedPrintTest(const std::string& script) {
+    AddPrinter("printer_name");
     ASSERT_TRUE(embedded_test_server()->Started());
     GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3573,6 +3603,7 @@ class MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest
 // TODO(crbug.com/1256506): Re-enable test on Windows
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest, PrintNow) {
+  AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3601,6 +3632,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest, PrintNow) {
 
 IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
                        PrintWithPreview) {
+  AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3637,6 +3669,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
                        BlockedByDLPThenNoContentAnalysis) {
+  AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -3660,14 +3693,12 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
-// crbug.com/1358766 is resolved.
+// TODO(crbug.com/1256506): Re-enable test on Windows.
 INSTANTIATE_TEST_SUITE_P(All,
                          MAYBE_ContentAnalysisPrintBrowserTest,
                          testing::Bool());
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
-// crbug.com/1358766 is resolved.
+// TODO(crbug.com/1256506): Re-enable test on Windows.
 // This test suite doesn't run on CrOS since it doesn't support non-print
 // preview scripted printing.
 #if !BUILDFLAG(IS_CHROMEOS)
