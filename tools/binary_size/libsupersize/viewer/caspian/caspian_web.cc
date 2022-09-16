@@ -148,6 +148,7 @@ bool BuildTree(bool method_count_mode,
                const char* include_sections,
                int minimum_size_bytes,
                int match_flag,
+               bool non_overhead,
                bool disassembly_mode) {
   std::vector<TreeBuilder::FilterFunc> filters;
 
@@ -185,6 +186,12 @@ bool BuildTree(bool method_count_mode,
         [match_flag](const GroupedPath&, const BaseSymbol& sym) -> bool {
           return match_flag & sym.Flags();
         });
+  }
+
+  if (non_overhead) {
+    filters.push_back([](const GroupedPath&, const BaseSymbol& sym) -> bool {
+      return !sym.IsOverhead();
+    });
   }
 
   if (disassembly_mode) {

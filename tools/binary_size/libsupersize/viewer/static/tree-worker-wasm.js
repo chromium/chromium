@@ -160,6 +160,7 @@ function wasmLoadSizeProperties() {
  * @property {string} includeSections
  * @property {number} minSymbolSize
  * @property {number} flagToFilter
+ * @property {boolean} nonOverhead
  * @property {boolean} disassemblyMode
  */
 
@@ -185,7 +186,7 @@ function parseOptions(optionsStr) {
   ret.includeSections = params.get('type');
   if (ret.methodCountMode) {
     ret.includeSections = _DEX_METHOD_SYMBOL_TYPE;
-  } else if (  ret.includeSections === null) {
+  } else if (ret.includeSections === null) {
     // Exclude native symbols by default.
     const includeSectionsSet = new Set(_SYMBOL_TYPE_SET);
     includeSectionsSet.delete('b');
@@ -193,12 +194,13 @@ function parseOptions(optionsStr) {
   }
 
   ret.minSymbolSize = Number(params.get('min_size'));
-  if (Number.isNaN(  ret.minSymbolSize)) {
+  if (Number.isNaN(ret.minSymbolSize)) {
     ret.minSymbolSize = 0;
   }
 
   ret.flagToFilter = _NAMES_TO_FLAGS[params.get('flag_filter')] || 0;
-  ret.disassemblyMode = params.get('flag_filter') == 'disassembly'
+  ret.nonOverhead = params.get('flag_filter') === 'nonoverhead';
+  ret.disassemblyMode = params.get('flag_filter') === 'disassembly';
 
   return ret;
 }
@@ -290,6 +292,7 @@ async function wasmBuildTree(optionsStr) {
     includeSections,
     minSymbolSize,
     flagToFilter,
+    nonOverhead,
     disassemblyMode,
   } = parseOptions(optionsStr);
 
@@ -299,7 +302,7 @@ async function wasmBuildTree(optionsStr) {
   const start_time = Date.now();
   const diffMode = cwrapBuildTree(
       methodCountMode, groupBy, includeRegex, excludeRegex, includeSections,
-      minSymbolSize, flagToFilter, disassemblyMode);
+      minSymbolSize, flagToFilter, nonOverhead, disassemblyMode);
   console.log(
       'Constructed tree in ' + (Date.now() - start_time) / 1000.0 + ' seconds');
   return diffMode;
