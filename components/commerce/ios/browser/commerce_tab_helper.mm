@@ -14,17 +14,6 @@
 
 namespace commerce {
 
-void CommerceTabHelper::CreateForWebState(web::WebState* web_state,
-                                          bool is_off_the_record,
-                                          ShoppingService* shopping_service) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(UserDataKey(),
-                         base::WrapUnique(new CommerceTabHelper(
-                             web_state, is_off_the_record, shopping_service)));
-}
-
 CommerceTabHelper::CommerceTabHelper(web::WebState* state,
                                      bool is_off_the_record,
                                      ShoppingService* shopping_service)

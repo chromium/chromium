@@ -33,10 +33,6 @@ class CommerceTabHelper : public web::WebStateObserver,
   CommerceTabHelper(const CommerceTabHelper& other) = delete;
   CommerceTabHelper& operator=(const CommerceTabHelper& other) = delete;
 
-  static void CreateForWebState(web::WebState* web_state,
-                                bool is_off_the_record,
-                                ShoppingService* shopping_service);
-
   // web::WebStateObserver implementation
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
