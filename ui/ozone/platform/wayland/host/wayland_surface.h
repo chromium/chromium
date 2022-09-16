@@ -95,7 +95,12 @@ class WaylandSurface {
 
   // Sets an optional transformation for how the Wayland compositor interprets
   // the contents of the buffer attached to this surface.
-  void set_buffer_transform(gfx::OverlayTransform transform);
+  void set_buffer_transform(gfx::OverlayTransform transform) {
+    DCHECK(!apply_state_immediately_);
+    DCHECK(transform != gfx::OVERLAY_TRANSFORM_INVALID);
+    pending_state_.buffer_transform = transform;
+    return;
+  }
 
   // Sets the |buffer_scale| (with respect to the scale factor used by the GPU
   // process) for the next submitted buffer. This helps Wayland compositor to
@@ -124,35 +129,61 @@ class WaylandSurface {
   // If |src_rect| is empty, the source rectangle is unset.
   // Note this method does not send corresponding wayland requests until
   // attaching the next buffer.
-  void set_viewport_source(const gfx::RectF& src_rect);
+  void set_viewport_source(const gfx::RectF& src_rect) {
+    DCHECK(!apply_state_immediately_);
+    pending_state_.crop =
+        src_rect == gfx::RectF{1.f, 1.f} ? gfx::RectF() : src_rect;
+  }
 
   // Sets the opacity of the wl_surface using zcr_blending_v1_set_alpha.
   // See: alpha-compositing-unstable-v1.xml
-  void set_opacity(const float opacity);
+  void set_opacity(const float opacity) {
+    DCHECK(!apply_state_immediately_);
+    if (blending())
+      pending_state_.opacity = opacity;
+  }
 
   // Sets the blending equation of the wl_surface using
   // zcr_blending_v1_set_blending. See: alpha-compositing-unstable-v1.xml
-  void set_blending(const bool use_blending);
+  void set_blending(const bool use_blending) {
+    DCHECK(!apply_state_immediately_);
+    if (blending())
+      pending_state_.use_blending = use_blending;
+  }
 
   // Set the destination size of the associated wl_surface according to
   // |dest_size_px|, which should be in physical pixels.
   // Note this method sends corresponding wayland requests immediately because
   // it does not need a new buffer attach to take effect.
-  void set_viewport_destination(const gfx::SizeF& dest_size_px);
+  void set_viewport_destination(const gfx::SizeF& dest_size_px) {
+    DCHECK(!apply_state_immediately_);
+    pending_state_.viewport_px = dest_size_px;
+  }
 
   // Sets the priority hint for the overlay that is committed via this surface.
-  void set_overlay_priority(gfx::OverlayPriorityHint priority_hint);
+  void set_overlay_priority(gfx::OverlayPriorityHint priority_hint) {
+    if (overlay_priority_surface())
+      pending_state_.priority_hint = priority_hint;
+  }
 
   // Sets the rounded clip bounds for this surface.
-  void set_rounded_clip_bounds(const gfx::RRectF& rounded_clip_bounds);
+  void set_rounded_clip_bounds(const gfx::RRectF& rounded_clip_bounds) {
+    if (GetAugmentedSurface())
+      pending_state_.rounded_clip_bounds = rounded_clip_bounds;
+  }
 
   // Sets the background color for this surface, which will be blended with the
   // wl_buffer contents during the compositing step on the Wayland compositor
   // side.
-  void set_background_color(absl::optional<SkColor4f> background_color);
+  void set_background_color(absl::optional<SkColor4f> background_color) {
+    if (GetAugmentedSurface())
+      pending_state_.background_color = background_color;
+  }
 
   // Sets whether this surface contains a video.
-  void set_contains_video(bool contains_video);
+  void set_contains_video(bool contains_video) {
+    pending_state_.contains_video = contains_video;
+  }
 
   // Creates a wl_subsurface relating this surface and a parent surface,
   // |parent|. Callers take ownership of the wl_subsurface.

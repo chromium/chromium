@@ -230,13 +230,6 @@ void WaylandSurface::Commit(bool flush) {
     connection_->Flush();
 }
 
-void WaylandSurface::set_buffer_transform(gfx::OverlayTransform transform) {
-  DCHECK(!apply_state_immediately_);
-  DCHECK(transform != gfx::OVERLAY_TRANSFORM_INVALID);
-  pending_state_.buffer_transform = transform;
-  return;
-}
-
 void WaylandSurface::set_surface_buffer_scale(float scale) {
   if (SurfaceSubmissionInPixelCoordinates())
     return;
@@ -333,29 +326,6 @@ zwp_linux_surface_synchronization_v1* WaylandSurface::GetSurfaceSync() {
 
 augmented_surface* WaylandSurface::GetAugmentedSurface() {
   return augmented_surface_.get();
-}
-
-void WaylandSurface::set_viewport_source(const gfx::RectF& src_rect) {
-  DCHECK(!apply_state_immediately_);
-  pending_state_.crop =
-      src_rect == gfx::RectF{1.f, 1.f} ? gfx::RectF() : src_rect;
-}
-
-void WaylandSurface::set_opacity(const float opacity) {
-  DCHECK(!apply_state_immediately_);
-  if (blending())
-    pending_state_.opacity = opacity;
-}
-
-void WaylandSurface::set_blending(const bool use_blending) {
-  DCHECK(!apply_state_immediately_);
-  if (blending())
-    pending_state_.use_blending = use_blending;
-}
-
-void WaylandSurface::set_viewport_destination(const gfx::SizeF& dest_size_px) {
-  DCHECK(!apply_state_immediately_);
-  pending_state_.viewport_px = dest_size_px;
 }
 
 wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
@@ -803,30 +773,8 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
     root_window_->OnLeftOutput();
 }
 
-void WaylandSurface::set_overlay_priority(
-    gfx::OverlayPriorityHint priority_hint) {
-  if (overlay_priority_surface())
-    pending_state_.priority_hint = priority_hint;
-}
-
 bool WaylandSurface::SurfaceSubmissionInPixelCoordinates() const {
   return connection_->surface_submission_in_pixel_coordinates();
-}
-
-void WaylandSurface::set_rounded_clip_bounds(
-    const gfx::RRectF& rounded_clip_bounds) {
-  if (GetAugmentedSurface())
-    pending_state_.rounded_clip_bounds = rounded_clip_bounds;
-}
-
-void WaylandSurface::set_background_color(
-    absl::optional<SkColor4f> background_color) {
-  if (GetAugmentedSurface())
-    pending_state_.background_color = background_color;
-}
-
-void WaylandSurface::set_contains_video(bool contains_video) {
-  pending_state_.contains_video = contains_video;
 }
 
 // static
