@@ -53,19 +53,6 @@ bool DeprecationNotificationController::NotifyDeprecatedRightClickRewrite() {
   return true;
 }
 
-bool DeprecationNotificationController::NotifyDeprecatedFKeyRewrite() {
-  if (fkey_notification_shown_) {
-    return false;
-  }
-
-  const std::string id = std::string(kNotificationIdPrefix) + "fkey";
-  ShowNotificationFromIdWithLauncherKey(id, IDS_ASH_SHORTCUT_DEPRECATION_FKEY);
-
-  // Don't show the notification again.
-  fkey_notification_shown_ = true;
-  return true;
-}
-
 bool DeprecationNotificationController::NotifyDeprecatedSixPackKeyRewrite(
     ui::KeyboardCode key_code) {
   if (!ShouldShowSixPackKeyDeprecationNotification(key_code)) {
@@ -87,7 +74,6 @@ bool DeprecationNotificationController::NotifyDeprecatedSixPackKeyRewrite(
 void DeprecationNotificationController::ResetStateForTesting() {
   shown_key_notifications_.clear();
   right_click_notification_shown_ = false;
-  fkey_notification_shown_ = false;
 }
 
 void DeprecationNotificationController::ShowNotificationFromIdWithLauncherKey(

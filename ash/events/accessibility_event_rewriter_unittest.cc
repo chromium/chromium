@@ -193,7 +193,6 @@ class ChromeVoxAccessibilityEventRewriterTest
   bool IsSearchKeyAcceleratorReserved() const override { return false; }
 
   bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedFKeyRewrite() override { return false; }
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
@@ -585,7 +584,6 @@ class SwitchAccessAccessibilityEventRewriterTest
   bool IsSearchKeyAcceleratorReserved() const override { return false; }
 
   bool NotifyDeprecatedRightClickRewrite() override { return false; }
-  bool NotifyDeprecatedFKeyRewrite() override { return false; }
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }

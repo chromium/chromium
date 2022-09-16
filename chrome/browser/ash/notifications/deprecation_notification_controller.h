@@ -32,11 +32,6 @@ class DeprecationNotificationController {
   // will only be shown once per user session.
   bool NotifyDeprecatedRightClickRewrite();
 
-  // Call to inform the notification controller that a Search + Digit
-  // key rewrite (eg. Search+Digit to F<digit>) was deprecated. The
-  // notification will only be shown once per user session.
-  bool NotifyDeprecatedFKeyRewrite();
-
   // Call to inform the notification controller that a legacy six-pack (PageUp,
   // PageDown, Insert, Delete, Home, End) key rewrite (eg. Alt+Up -> PageUp)
   // was deprecated. The |key_code| is the key that would have been generated
@@ -69,9 +64,6 @@ class DeprecationNotificationController {
 
   // Used to only show the right click notification once per user session.
   bool right_click_notification_shown_ = false;
-
-  // Used to only show the F-Key notification once per user session.
-  bool fkey_notification_shown_ = false;
 
   // Used to only show the key rewrite notifications once per user session.
   base::flat_set<ui::KeyboardCode> shown_key_notifications_;

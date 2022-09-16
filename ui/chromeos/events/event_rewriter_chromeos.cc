@@ -1748,19 +1748,6 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
             state->flags &= ~EF_COMMAND_DOWN;
             ApplyRemapping(map.result, state);
             RecordSearchPlusDigitFKeyRewrite(key_event.type(), state->key_code);
-          } else {
-            // Only trigger the notification for F1-F10.
-            //
-            // Because of this legacy remapping 2 virtual desk shortcuts
-            // implicitly used F11 and F12 because the shortcut included
-            // Search and either minus or equal. Do not trigger a
-            // notification for this case because it wasn't the users intent.
-            if (static_cast<int>(map.result.code) <=
-                static_cast<int>(DomCode::F10)) {
-              DCHECK_GE(static_cast<int>(map.result.code),
-                        static_cast<int>(DomCode::F1));
-              delegate_->NotifyDeprecatedFKeyRewrite();
-            }
           }
           return;
         }

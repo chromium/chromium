@@ -136,11 +136,6 @@ class EventRewriterChromeOS : public EventRewriter {
     // returns true if the notification was shown.
     virtual bool NotifyDeprecatedRightClickRewrite() = 0;
 
-    // Used to send a notification about Search+Digit Fkey rewrites being
-    // deprecated. The notification is only sent once per user session,
-    // and this function returns true if the notification was shown.
-    virtual bool NotifyDeprecatedFKeyRewrite() = 0;
-
     // Used to send a notification about a Six Pack (PageUp, PageDown, Home,
     // End, Insert, Delete) key rewrite being deprecated. The notification
     // is only sent once per user session, and this function returns true if

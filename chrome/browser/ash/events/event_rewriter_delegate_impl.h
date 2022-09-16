@@ -40,7 +40,6 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
                                     int flags) const override;
   bool IsSearchKeyAcceleratorReserved() const override;
   bool NotifyDeprecatedRightClickRewrite() override;
-  bool NotifyDeprecatedFKeyRewrite() override;
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override;
 
  private:
