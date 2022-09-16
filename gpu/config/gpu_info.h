@@ -209,6 +209,8 @@ enum class OverlaySupport {
 GPU_EXPORT const char* OverlaySupportToString(OverlaySupport support);
 
 struct GPU_EXPORT OverlayInfo {
+  OverlayInfo() = default;
+  OverlayInfo(const OverlayInfo& other) = default;
   OverlayInfo& operator=(const OverlayInfo& other) = default;
   bool operator==(const OverlayInfo& other) const {
     return direct_composition == other.direct_composition &&

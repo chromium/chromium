@@ -570,6 +570,7 @@ BASE_EXPORT bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo);
 struct BASE_EXPORT SystemPerformanceInfo {
   SystemPerformanceInfo();
   SystemPerformanceInfo(const SystemPerformanceInfo& other);
+  SystemPerformanceInfo& operator=(const SystemPerformanceInfo& other);
 
   // Serializes the platform specific fields to value.
   Value ToValue() const;

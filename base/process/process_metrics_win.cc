@@ -255,6 +255,8 @@ size_t ProcessMetrics::GetMallocUsage() {
 SystemPerformanceInfo::SystemPerformanceInfo() = default;
 SystemPerformanceInfo::SystemPerformanceInfo(
     const SystemPerformanceInfo& other) = default;
+SystemPerformanceInfo& SystemPerformanceInfo::operator=(
+    const SystemPerformanceInfo& other) = default;
 
 Value SystemPerformanceInfo::ToValue() const {
   Value result(Value::Type::DICTIONARY);
