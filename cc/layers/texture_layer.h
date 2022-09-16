@@ -20,6 +20,8 @@
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace gpu {
 struct SyncToken;
@@ -123,6 +125,9 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
 
+  // Set or unset HDR metadata.
+  void SetHDRMetadata(absl::optional<gfx::HDRMetadata> hdr_metadata);
+
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() const override;
@@ -174,6 +179,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   ProtectedSequenceReadable<bool> premultiplied_alpha_;
   ProtectedSequenceReadable<bool> blend_background_color_;
   ProtectedSequenceReadable<bool> force_texture_to_opaque_;
+  ProtectedSequenceWritable<absl::optional<gfx::HDRMetadata>> hdr_metadata_;
 
   ProtectedSequenceWritable<scoped_refptr<TransferableResourceHolder>>
       resource_holder_;

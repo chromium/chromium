@@ -220,6 +220,8 @@ TEST_F(TextureLayerTest, CheckPropertyChangeCausesCorrectBehavior) {
       gfx::PointF(0.25f, 0.25f), gfx::PointF(0.75f, 0.75f)));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetPremultipliedAlpha(false));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetBlendBackgroundColor(true));
+  EXPECT_SET_NEEDS_COMMIT(0, test_layer->SetHDRMetadata(absl::nullopt));
+  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetHDRMetadata(gfx::HDRMetadata()));
 }
 
 class RunOnCommitLayerTreeHostClient : public FakeLayerTreeHostClient {
