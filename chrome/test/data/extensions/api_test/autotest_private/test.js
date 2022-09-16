@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1572,20 +1572,43 @@ var systemWebAppsTests = [
   },
 ]
 
-var test_suites = {
-  'default': defaultTests,
-  'arcEnabled': arcEnabledTests,
-  'arcProcess': arcProcessTests,
-  'enterprisePolicies': policyTests,
-  'arcPerformanceTracing': arcPerformanceTracingTests,
-  'overviewDefault': overviewTests,
-  'overviewDrag': overviewDragTests,
-  'splitviewLeftSnapped': splitviewLeftSnappedTests,
-  'scrollableShelf': scrollableShelfTests,
-  'shelf': shelfTests,
-  'holdingSpace': holdingSpaceTests,
-  'systemWebApps': systemWebAppsTests,
-};
+    var lacrosEnabledTests = [
+      function checkLacrosInfoFields() {
+        chrome.autotestPrivate.getLacrosInfo(
+            chrome.test.callbackPass(function(lacrosInfo) {
+              chrome.test.assertEq(typeof lacrosInfo, 'object');
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('state'));
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('isKeepAlive'));
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('lacrosPath'));
+              chrome.test.assertTrue(lacrosInfo.hasOwnProperty('mode'));
+            }));
+      },
+      function checkLacrosInfoFieldValue() {
+        chrome.autotestPrivate.getLacrosInfo(
+            chrome.test.callbackPass(function(lacrosInfo) {
+              chrome.test.assertEq('Stopped', lacrosInfo['state']);
+              chrome.test.assertTrue(!lacrosInfo['isKeepAlive']);
+              chrome.test.assertEq('/run/lacros', lacrosInfo['lacrosPath']);
+              chrome.test.assertEq('SideBySide', lacrosInfo['mode']);
+            }));
+      },
+    ]
+
+    var test_suites = {
+      'default': defaultTests,
+      'arcEnabled': arcEnabledTests,
+      'arcProcess': arcProcessTests,
+      'enterprisePolicies': policyTests,
+      'arcPerformanceTracing': arcPerformanceTracingTests,
+      'overviewDefault': overviewTests,
+      'overviewDrag': overviewDragTests,
+      'splitviewLeftSnapped': splitviewLeftSnappedTests,
+      'scrollableShelf': scrollableShelfTests,
+      'shelf': shelfTests,
+      'holdingSpace': holdingSpaceTests,
+      'systemWebApps': systemWebAppsTests,
+      'lacrosEnabled': lacrosEnabledTests,
+    };
 
 chrome.test.getConfig(function(config) {
   var customArg = JSON.parse(config.customArg);

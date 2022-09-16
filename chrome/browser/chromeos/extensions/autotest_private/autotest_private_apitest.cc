@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_process_instance.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -433,6 +434,25 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
 // TODO(crbug.com/1201545): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("systemWebApps")) << message_;
+}
+
+class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
+ public:
+  AutotestPrivateLacrosTest(const AutotestPrivateLacrosTest&) = delete;
+  AutotestPrivateLacrosTest& operator=(const AutotestPrivateLacrosTest&) =
+      delete;
+
+ protected:
+  AutotestPrivateLacrosTest() {
+    feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateLacrosTest, Lacros) {
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("lacrosEnabled")) << message_;
 }
 
 }  // namespace extensions
