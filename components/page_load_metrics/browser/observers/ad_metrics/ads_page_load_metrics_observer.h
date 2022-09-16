@@ -138,14 +138,13 @@ class AdsPageLoadMetricsObserver
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnSubFrameDeleted(int frame_tree_node_id) override;
+  void OnV8MemoryChanged(
+      const std::vector<MemoryUpdate>& memory_updates) override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
       std::unique_ptr<HeavyAdThresholdNoiseProvider> noise_provider) {
     heavy_ad_threshold_noise_provider_ = std::move(noise_provider);
   }
-
-  void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates) override;
 
   void UpdateAggregateMemoryUsage(int64_t bytes, FrameVisibility visibility);
 

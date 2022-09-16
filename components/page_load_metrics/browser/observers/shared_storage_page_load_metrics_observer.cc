@@ -28,7 +28,7 @@ SharedStoragePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
   // Receive events for FencedFrames, as these will soon support shared storage.
-  return FORWARD_OBSERVING;
+  return CONTINUE_OBSERVING;
 }
 
 void SharedStoragePageLoadMetricsObserver::OnComplete(

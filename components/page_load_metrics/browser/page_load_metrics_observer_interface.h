@@ -139,10 +139,22 @@ class PageLoadMetricsObserverInterface {
   // forwarding. Eventually, we may treat all forwarding at the PageLoadTracker
   // layer to deprecate the FORWARD_OBSERVING for simplicity. FORWARD_OBSERVING
   // is available only for OnFencedFramesStart().
+  //
+  // FORWARD_OBSERVING was introduced to migrate existing observers to support
+  // FencedFrames. Some events need to use this policy to correct metrics that
+  // need observer level forwarding, but most metrics can be gathered by
+  // CONTINUE_OBSERVING. You can check PageLoadMetricsForwardObserver's
+  // implementation. If it does nothing, CONTINUE_OBSERVING just works for the
+  // event. We track FORWARD_OBSERVING users in the following sheet. Please
+  // contact toyoshim@chromium.org or kenoss@chromium.org when you need
+  // FORWARD_OBSERVING. We will replace the observer level forwarding with the
+  // tracker level forwarding so that CONTINUE_OBSERVING just works for all
+  // events.
+  // https://docs.google.com/spreadsheets/d/1ftmGPs5Q9iqSUKLJiS_hAU3m41iDXFq9p7zfGODmKGg/edit#gid=0
   enum ObservePolicy {
     CONTINUE_OBSERVING,
     STOP_OBSERVING,
-    FORWARD_OBSERVING,
+    FORWARD_OBSERVING,  // Deprecated. See the detailed comments above.
   };
 
   using FrameTreeNodeId = int;

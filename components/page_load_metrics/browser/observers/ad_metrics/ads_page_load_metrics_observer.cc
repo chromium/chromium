@@ -280,6 +280,10 @@ PageLoadMetricsObserver::ObservePolicy
 AdsPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // Need the observer-level forwarding for FrameReceivedUserActivation,
+  // FrameDisplayStateChanged, FrameSizeChanged, MediaStartedPlaying,
+  // OnMainFrameIntersectionRectChanged, OnMainFrameViewportRectChanged,
+  // and OnV8MemoryChanged.
   return FORWARD_OBSERVING;
 }
 
