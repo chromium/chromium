@@ -65,7 +65,7 @@ class COMPONENTS_PREFS_EXPORT ScopedUserPrefUpdateBase {
 class COMPONENTS_PREFS_EXPORT ScopedDictPrefUpdate
     : public subtle::ScopedUserPrefUpdateBase {
  public:
-  // The underlying dictionary must not be removed from `servuce` service during
+  // The underlying dictionary must not be removed from `service` during
   // the lifetime of the created ScopedDictPrefUpdate.
   ScopedDictPrefUpdate(PrefService* service, const std::string& path)
       : ScopedUserPrefUpdateBase(service, path) {}
@@ -81,7 +81,7 @@ class COMPONENTS_PREFS_EXPORT ScopedDictPrefUpdate
   // - is (silently) created and written to the user pref store if none existed
   //   before.
   //
-  // Calling Get() will result in an an update notification automatically
+  // Calling Get() will result in an update notification automatically
   // being triggered at destruction time.
   //
   // The ownership of the return value remains with the user pref store.
@@ -100,7 +100,7 @@ class COMPONENTS_PREFS_EXPORT ScopedDictPrefUpdate
 class COMPONENTS_PREFS_EXPORT ScopedListPrefUpdate
     : public subtle::ScopedUserPrefUpdateBase {
  public:
-  // The underlying dictionary must not be removed from `servuce` service during
+  // The underlying list must not be removed from `service` during
   // the lifetime of the created ScopedListPrefUpdate.
   ScopedListPrefUpdate(PrefService* service, const std::string& path)
       : ScopedUserPrefUpdateBase(service, path) {}
@@ -116,7 +116,7 @@ class COMPONENTS_PREFS_EXPORT ScopedListPrefUpdate
   // - is (silently) created and written to the user pref store if none existed
   //   before.
   //
-  // Calling Get() will result in an an update notification automatically
+  // Calling Get() will result in an update notification automatically
   // being triggered at destruction time.
   //
   // The ownership of the return value remains with the user pref store.
@@ -153,7 +153,7 @@ class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
   // - is (silently) created and written to the user pref store if none existed
   //   before.
   //
-  // Calling Get() will result in an an update notification automatically
+  // Calling Get() will result in an update notification automatically
   // being triggered at destruction time.
   //
   // The ownership of the return value remains with the user pref store.
