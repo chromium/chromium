@@ -199,31 +199,19 @@ void PrefService::SchedulePendingLossyWrites() {
 }
 
 bool PrefService::GetBoolean(const std::string& path) const {
-  const base::Value& value = GetValue(path);
-  if (!value.is_bool())
-    return false;
-  return value.GetBool();
+  return GetValue(path).GetBool();
 }
 
 int PrefService::GetInteger(const std::string& path) const {
-  const base::Value& value = GetValue(path);
-  if (!value.is_int())
-    return 0;
-  return value.GetInt();
+  return GetValue(path).GetInt();
 }
 
 double PrefService::GetDouble(const std::string& path) const {
-  const base::Value& value = GetValue(path);
-  if (!value.is_double())
-    return 0.0;
-  return value.GetDouble();
+  return GetValue(path).GetDouble();
 }
 
-std::string PrefService::GetString(const std::string& path) const {
-  const base::Value& value = GetValue(path);
-  if (!value.is_string())
-    return std::string();
-  return value.GetString();
+const std::string& PrefService::GetString(const std::string& path) const {
+  return GetValue(path).GetString();
 }
 
 base::FilePath PrefService::GetFilePath(const std::string& path) const {

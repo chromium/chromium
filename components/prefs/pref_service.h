@@ -239,7 +239,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   bool GetBoolean(const std::string& path) const;
   int GetInteger(const std::string& path) const;
   double GetDouble(const std::string& path) const;
-  std::string GetString(const std::string& path) const;
+  const std::string& GetString(const std::string& path) const;
   base::FilePath GetFilePath(const std::string& path) const;
 
   // Returns the branch if it exists, or the registered default value otherwise.
