@@ -145,14 +145,6 @@ class GpuIntegrationTest(
         action='store_true',
         default=False,
         help='Disables uploads of logs to cloud storage')
-    # TODO(skbug.com/12149): Remove this once Gold-based tests no longer clobber
-    # earlier results on retry attempts.
-    parser.add_option(
-        '--has-test-filter',
-        action='store_true',
-        default=False,
-        help=('Whether a test filter has been applied. Can be used as a proxy '
-              'for whether this is a retry without patch on a trybot.'))
     parser.add_option('--extra-intel-device-id-with-overlays',
                       dest='extra_intel_device_id_with_overlays',
                       help='The extra Intel device id with overlays')

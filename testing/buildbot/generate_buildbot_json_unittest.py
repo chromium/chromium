@@ -2870,20 +2870,6 @@ class UnitTest(TestCase):
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
-  def test_gpu_telemetry_tests_pixel_with_filter(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_GPU_TELEMETRY_TEST_WATERFALL,
-                    COMPOSITION_SUITE_WITH_PIXEL_AND_FILTER,
-                    LUCI_MILO_CFG,
-                    exceptions=NO_BAR_TEST_EXCEPTIONS,
-                    gn_isolate_map=GPU_TELEMETRY_GN_ISOLATE_MAP)
-    self.create_testing_buildbot_json_file('chromium.test.json',
-                                           GPU_TELEMETRY_TEST_OUTPUT)
-    self.create_testing_buildbot_json_file('chromium.ci.json',
-                                           GPU_TELEMETRY_TEST_OUTPUT)
-    with self.assertRaises(RuntimeError):
-      fbb.check_output_file_consistency(verbose=True)
-
   def test_gpu_telemetry_tests_android(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL_ANDROID,

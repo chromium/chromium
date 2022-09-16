@@ -22,10 +22,7 @@ class GpuIntegrationTestAdapater(common.BaseIsolatedScriptArgsAdapter):
   def generate_test_filter_args(self, test_filter_str):
     # isolated_script_test_filter comes in like:
     # WebglExtension_WEBGL_depth_texture::conformance/textures/misc/copytexsubimage2d-subrects.html # pylint: disable=line-too-long
-    # TODO(skbug.com/12149): Remove --has-test-filter once Gold-based tests no
-    # longer clobber earlier results on retry attempts.
-    return ['--test-filter=%s' % test_filter_str,
-            '--has-test-filter']
+    return ['--test-filter=%s' % test_filter_str]
 
   def generate_sharding_args(self, total_shards, shard_index):
     return ['--total-shards=%d' % total_shards,
