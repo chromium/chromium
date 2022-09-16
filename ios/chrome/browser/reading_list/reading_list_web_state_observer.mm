@@ -23,18 +23,6 @@
 #error "This file requires ARC support."
 #endif
 
-// static
-void ReadingListWebStateObserver::CreateForWebState(
-    web::WebState* web_state,
-    ReadingListModel* reading_list_model) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new ReadingListWebStateObserver(
-                               web_state, reading_list_model)));
-  }
-}
-
 ReadingListWebStateObserver::~ReadingListWebStateObserver() {
   if (reading_list_model_) {
     reading_list_model_->RemoveObserver(this);

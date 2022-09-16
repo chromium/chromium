@@ -25,9 +25,6 @@ class ReadingListWebStateObserver
       public web::WebStateObserver,
       public web::WebStateUserData<ReadingListWebStateObserver> {
  public:
-  static void CreateForWebState(web::WebState* web_state,
-                                ReadingListModel* reading_list_model);
-
   ReadingListWebStateObserver(const ReadingListWebStateObserver&) = delete;
   ReadingListWebStateObserver& operator=(const ReadingListWebStateObserver&) =
       delete;

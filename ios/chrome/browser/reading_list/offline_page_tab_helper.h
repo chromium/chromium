@@ -35,9 +35,6 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
                              public web::WebStateObserver,
                              ReadingListModelObserver {
  public:
-  // Creates TabHelper. `web_state` and `model` must not be null.
-  static void CreateForWebState(web::WebState* web_state,
-                                ReadingListModel* model);
   ~OfflinePageTabHelper() override;
 
   // Returns true if distilled version is currently being presented.
