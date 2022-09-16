@@ -15,18 +15,6 @@
 
 BROWSER_USER_DATA_KEY_IMPL(UpgradeCenterBrowserAgent)
 
-// static
-void UpgradeCenterBrowserAgent::CreateForBrowser(
-    Browser* browser,
-    UpgradeCenter* upgrade_center) {
-  DCHECK(browser);
-  if (!FromBrowser(browser)) {
-    browser->SetUserData(UserDataKey(),
-                         base::WrapUnique(new UpgradeCenterBrowserAgent(
-                             browser, upgrade_center)));
-  }
-}
-
 UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(
     Browser* browser,
     UpgradeCenter* upgrade_center)

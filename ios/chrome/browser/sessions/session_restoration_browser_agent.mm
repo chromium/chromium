@@ -34,18 +34,6 @@
 
 BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
 
-// static
-void SessionRestorationBrowserAgent::CreateForBrowser(
-    Browser* browser,
-    SessionServiceIOS* session_service) {
-  DCHECK(browser);
-  if (!FromBrowser(browser)) {
-    browser->SetUserData(UserDataKey(),
-                         base::WrapUnique(new SessionRestorationBrowserAgent(
-                             browser, session_service)));
-  }
-}
-
 SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
     Browser* browser,
     SessionServiceIOS* session_service)

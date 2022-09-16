@@ -29,17 +29,6 @@
 
 BROWSER_USER_DATA_KEY_IMPL(WebStateListMetricsBrowserAgent)
 
-// static
-void WebStateListMetricsBrowserAgent::CreateForBrowser(
-    Browser* browser,
-    SessionMetrics* session_metrics) {
-  if (!FromBrowser(browser)) {
-    browser->SetUserData(UserDataKey(),
-                         base::WrapUnique(new WebStateListMetricsBrowserAgent(
-                             browser, session_metrics)));
-  }
-}
-
 WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
     Browser* browser,
     SessionMetrics* session_metrics)

@@ -37,10 +37,6 @@ class SessionRestorationBrowserAgent
       WebStateListObserver,
       public web::WebStateObserver {
  public:
-  // Creates an SessionRestorationBrowserAgent scoped to `browser`.
-  static void CreateForBrowser(Browser* browser,
-                               SessionServiceIOS* session_service);
-
   ~SessionRestorationBrowserAgent() override;
 
   SessionRestorationBrowserAgent(const SessionRestorationBrowserAgent&) =

@@ -41,10 +41,6 @@ class WebStateDelegateBrowserAgent
   WebStateDelegateBrowserAgent& operator=(const WebStateDelegateBrowserAgent&) =
       delete;
 
-  // Factory.
-  static void CreateForBrowser(Browser* browser,
-                               TabInsertionBrowserAgent* tab_insertion_agent);
-
   // Sets the UI providers to be used for WebStateDelegate tasks that require
   // them.
   // If providers are added, factor these params into a Params struct.

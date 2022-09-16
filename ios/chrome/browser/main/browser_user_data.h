@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_USER_DATA_H_
 #define IOS_CHROME_BROWSER_MAIN_BROWSER_USER_DATA_H_
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -41,9 +42,14 @@ class BrowserUserData : public base::SupportsUserData::Data {
  public:
   // Creates an object of type T, and attaches it to the specified Browser.
   // If an instance is already attached, does nothing.
-  static void CreateForBrowser(Browser* browser) {
-    if (!FromBrowser(browser))
-      browser->SetUserData(UserDataKey(), base::WrapUnique(new T(browser)));
+  template <typename... Args>
+  static void CreateForBrowser(Browser* browser, Args&&... args) {
+    DCHECK(browser);
+    if (!FromBrowser(browser)) {
+      browser->SetUserData(
+          UserDataKey(),
+          base::WrapUnique(new T(browser, std::forward<Args>(args)...)));
+    }
   }
 
   // Retrieves the instance of type T that was attached to the specified

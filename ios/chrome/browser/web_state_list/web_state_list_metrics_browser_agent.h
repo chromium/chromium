@@ -28,10 +28,6 @@ class WebStateListMetricsBrowserAgent
 
   ~WebStateListMetricsBrowserAgent() override;
 
-  // Creates the WebStateListMetricsBrowserAgent associating it with `browser`.
-  static void CreateForBrowser(Browser* browser,
-                               SessionMetrics* session_metrics);
-
   // WebStateListObserver implementation.
   void WebStateInsertedAt(WebStateList* web_state_list,
                           web::WebState* web_state,

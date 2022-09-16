@@ -49,19 +49,6 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
 }
 }  // namespace
 
-// static
-void WebStateDelegateBrowserAgent::CreateForBrowser(
-    Browser* browser,
-    TabInsertionBrowserAgent* tab_insertion_agent) {
-  DCHECK(browser);
-
-  if (!FromBrowser(browser)) {
-    browser->SetUserData(UserDataKey(),
-                         base::WrapUnique(new WebStateDelegateBrowserAgent(
-                             browser, tab_insertion_agent)));
-  }
-}
-
 WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
     Browser* browser,
     TabInsertionBrowserAgent* tab_insertion_agent)

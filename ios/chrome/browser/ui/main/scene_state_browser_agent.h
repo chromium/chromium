@@ -13,10 +13,6 @@
 // objects) with a Browser.
 class SceneStateBrowserAgent : public BrowserUserData<SceneStateBrowserAgent> {
  public:
-  // Creates the browser agent, attaching it to `browser` and associating
-  // `scene_state` with it.
-  static void CreateForBrowser(Browser* browser, SceneState* scene_state);
-
   // Not copyable or moveable
   SceneStateBrowserAgent(const SceneStateBrowserAgent&) = delete;
   SceneStateBrowserAgent& operator=(const SceneStateBrowserAgent&) = delete;

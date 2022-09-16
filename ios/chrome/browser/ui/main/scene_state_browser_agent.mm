@@ -10,16 +10,6 @@
 
 BROWSER_USER_DATA_KEY_IMPL(SceneStateBrowserAgent)
 
-void SceneStateBrowserAgent::CreateForBrowser(Browser* browser,
-                                              SceneState* scene_state) {
-  DCHECK(browser);
-  if (!FromBrowser(browser)) {
-    browser->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new SceneStateBrowserAgent(browser, scene_state)));
-  }
-}
-
 SceneStateBrowserAgent::~SceneStateBrowserAgent() {}
 
 SceneState* SceneStateBrowserAgent::GetSceneState() {

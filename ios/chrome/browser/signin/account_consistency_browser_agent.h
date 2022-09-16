@@ -25,13 +25,6 @@ class AccountConsistencyBrowserAgent
       public ManageAccountsDelegate,
       BrowserObserver {
  public:
-  // `browser` is the browser this agent is attached to.
-  // `base_view_controller` is the view controller which UI will be presented
-  // from.
-  static void CreateForBrowser(Browser* browser,
-                               UIViewController* base_view_controller,
-                               id<ApplicationCommands> handler);
-
   // Not copyable or moveable
   AccountConsistencyBrowserAgent(const AccountConsistencyBrowserAgent&) =
       delete;
@@ -55,6 +48,8 @@ class AccountConsistencyBrowserAgent
   friend class BrowserUserData<AccountConsistencyBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
 
+  // `base_view_controller` is the view controller which UI will be presented
+  // from.
   AccountConsistencyBrowserAgent(Browser* browser,
                                  UIViewController* base_view_controller,
                                  id<ApplicationCommands> handler);
