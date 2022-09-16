@@ -212,16 +212,17 @@ TEST_P(AddressFieldTest,
 }
 
 // Tests that the field is classified as |ADDRESS_HOME_COUNTRY| when the field
-// label contains 'Region'.
-TEST_P(AddressFieldTest, ParseCountryLabelRegion) {
-  AddTextFormFieldData("country", "Country/Region", ADDRESS_HOME_COUNTRY);
+// contains 'region'.
+TEST_P(AddressFieldTest, ParseAmbiguousCountryState) {
+  // The strings are ambiguous between country and state. Country should be
+  // preferred.
+  AddTextFormFieldData("country/region", "asdf", ADDRESS_HOME_COUNTRY);
   ClassifyAndVerify();
 }
-
-// Tests that the field is classified as |ADDRESS_HOME_COUNTRY| when the field
-// name contains 'region'.
-TEST_P(AddressFieldTest, ParseCountryNameRegion) {
-  AddTextFormFieldData("client_region", "Land", ADDRESS_HOME_COUNTRY);
+TEST_P(AddressFieldTest, ParseAmbiguousCountryState2) {
+  // The strings are ambiguous between country and state. Country should be
+  // preferred.
+  AddTextFormFieldData("asdf", "country/region", ADDRESS_HOME_COUNTRY);
   ClassifyAndVerify();
 }
 
