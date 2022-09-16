@@ -33153,6 +33153,7 @@ This policy has no effect if the option to keep existing browsing data is not av
         }
       ],
       'example_value': False,
+      'deprecated': True,
       'default': False,
       'id': 1002,
       'caption': '''Force persistent quota to be enabled''',
@@ -33186,6 +33187,7 @@ This policy has no effect if the option to keep existing browsing data is not av
           'caption': 'window.webkitStorageInfo will be unavailable.',
         },
       ],
+      'deprecated': True,
       'default': False,
       'example_value': False,
       'id': 1004,
