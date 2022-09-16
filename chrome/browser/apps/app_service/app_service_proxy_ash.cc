@@ -618,7 +618,14 @@ void AppServiceProxyAsh::OnPauseDialogClosed(apps::AppType app_type,
         });
   }
   if (should_pause_app) {
-    app_service_->PauseApp(ConvertAppTypeToMojomAppType(app_type), app_id);
+    if (base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+      auto* publisher = GetPublisher(app_type);
+      if (publisher) {
+        publisher->PauseApp(app_id);
+      }
+    } else {
+      app_service_->PauseApp(ConvertAppTypeToMojomAppType(app_type), app_id);
+    }
   }
 }
 

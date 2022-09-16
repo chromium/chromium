@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -63,9 +64,16 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     EXPECT_EQ(title, ActiveView()->GetWindowTitle());
 
     if (name == "accept") {
-      ActiveView()->AcceptDialog();
+      if (app_service_proxy->AppRegistryCache().GetAppType(app_id_) ==
+          apps::AppType::kWeb) {
+        web_app::WebAppTestUninstallObserver app_listener(browser()->profile());
+        app_listener.BeginListening();
+        ActiveView()->AcceptDialog();
+        app_listener.Wait();
+      } else {
+        ActiveView()->AcceptDialog();
+      }
 
-      app_service_proxy->FlushMojoCallsForTesting();
       bool is_uninstalled = false;
       app_service_proxy->AppRegistryCache().ForOneApp(
           app_id_, [&is_uninstalled, name](const apps::AppUpdate& update) {
@@ -77,7 +85,6 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     } else {
       ActiveView()->CancelDialog();
 
-      app_service_proxy->FlushMojoCallsForTesting();
       bool is_installed = true;
       app_service_proxy->AppRegistryCache().ForOneApp(
           app_id_, [&is_installed, name](const apps::AppUpdate& update) {
@@ -86,6 +93,9 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
 
       EXPECT_TRUE(is_installed);
     }
+    // Wait for the dialog window to be closed to destroy the Uninstall
+    // dialog.
+    base::RunLoop().RunUntilIdle();
     EXPECT_EQ(nullptr, ActiveView());
   }
 
@@ -292,7 +302,9 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
 
   // Cancelling the active dialog should not uninstall the web app.
   ActiveView()->CancelDialog();
-  app_service_proxy->FlushMojoCallsForTesting();
+  // Wait for the dialog window to be closed to destroy the Uninstall dialog.
+  base::RunLoop().RunUntilIdle();
+
   bool is_installed = true;
   app_service_proxy->AppRegistryCache().ForOneApp(
       app_id_, [&is_installed](const apps::AppUpdate& update) {

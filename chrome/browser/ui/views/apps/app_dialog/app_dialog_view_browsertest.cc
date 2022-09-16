@@ -74,8 +74,6 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
   apps::AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
   bool IsAppPaused() {
-    app_service_proxy()->FlushMojoCallsForTesting();
-
     bool is_app_paused = false;
     app_service_proxy()->AppRegistryCache().ForOneApp(
         app_id(), [&is_app_paused](const apps::AppUpdate& update) {
@@ -107,7 +105,6 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
       app_service_proxy_->SetDialogCreatedCallbackForTesting(
           run_loop.QuitClosure());
       app_instance_->SendRefreshAppList(apps);
-      app_service_proxy_->FlushMojoCallsForTesting();
       app_service_proxy_->Launch(
           app_id_, ui::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal);
     } else {
@@ -125,7 +122,6 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     EXPECT_EQ(ui::DIALOG_BUTTON_OK, ActiveView(name)->GetDialogButtons());
 
     if (name == "block") {
-      app_service_proxy_->FlushMojoCallsForTesting();
       bool state_is_set = false;
       app_service_proxy_->AppRegistryCache().ForOneApp(
           app_id_, [&state_is_set](const apps::AppUpdate& update) {
