@@ -882,50 +882,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 };
 
-// Subclass of BrowserAutofillManagerTest that parameterizes the finch flag to
-// enable structured names.
-// TODO(crbug.com/1103421): Clean legacy implementation once structured names
-// are fully launched. Here, the changes applied in CL 2333204 must be reverted
-// by deleting this class and use TEST_F(BrowserAutofillManagerTest, ) for all
-// test cases again.
-class BrowserAutofillManagerStructuredProfileTest
-    : public BrowserAutofillManagerTest,
-      public testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override {
-    InitializeFeatures();
-    BrowserAutofillManagerTest::SetUp();
-  }
-
-  void InitializeFeatures();
-
-  bool StructuredNamesAndAddresses() const {
-    return structured_names_and_addresses_;
-  }
-
- private:
-  bool structured_names_and_addresses_;
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-void BrowserAutofillManagerStructuredProfileTest::InitializeFeatures() {
-  structured_names_and_addresses_ = GetParam();
-
-  // The BrowserAutofillManagerStructuredProfileTest test suite will run every
-  // test once with these flags on, and once with these flags off.
-  std::vector<base::Feature> features = {
-      features::kAutofillEnableSupportForMoreStructureInAddresses,
-      features::kAutofillEnableSupportForMoreStructureInNames,
-      // TODO(crbug.com/1190334): Remove this feature flag once the GPay
-      // activated promo code autofill project is fully launched and stable.
-      features::kAutofillFillMerchantPromoCodeFields};
-  if (structured_names_and_addresses_) {
-    scoped_features_.InitWithFeatures(features, {});
-  } else {
-    scoped_features_.InitWithFeatures({}, features);
-  }
-}
-
 class SuggestionMatchingTest
     : public BrowserAutofillManagerTest,
       public testing::WithParamInterface<std::tuple<bool, std::string>> {
@@ -1024,7 +980,7 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
 // Test that calling OnFormsSeen with an empty set of forms (such as when
 // reloading a page or when the renderer processes a set of forms but detects
 // no changes) does not load the forms again.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, OnFormsSeen_Empty) {
+TEST_F(BrowserAutofillManagerTest, OnFormsSeen_Empty) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -1044,8 +1000,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, OnFormsSeen_Empty) {
 
 // Test that calling OnFormsSeen consecutively with a different set of forms
 // will query for each separately.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       OnFormsSeen_DifferentFormStructures) {
+TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -1082,7 +1037,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that when forms are seen, the renderer is updated with the predicted
 // field types
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        OnFormsSeen_SendAutofillTypePredictionsToRenderer) {
   // Set up a queryable form.
   FormData form1;
@@ -1110,7 +1065,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that when forms are seen, the renderer is sent the fields that are
 // eligible for manual filling.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        OnFormsSeen_SendFieldsEligibleForManualFillingToRenderer) {
   // Set up a queryable form.
   FormData form1;
@@ -1139,7 +1094,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that no autofill suggestions are returned for a field with an
 // unrecognized autocomplete attribute.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_UnrecognizedAttribute) {
   // Set up our form data.
   FormData form;
@@ -1181,7 +1136,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that when small forms are disabled (min required fields enforced) no
 // suggestions are returned when there are less than three fields and none of
 // them have an autocomplete attribute.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_MinFieldsEnforced_NoAutocomplete) {
   // Set up our form data.
   FormData form;
@@ -1211,7 +1166,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that when small forms are disabled (min required fields enforced)
 // for a form with two fields with one that has an autocomplete attribute,
 // suggestions are only made for the one that has the attribute.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_MinFieldsEnforced_WithOneAutocomplete) {
   // Set up our form data.
   FormData form;
@@ -1243,7 +1198,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that for a form with two fields with autocomplete attributes,
 // suggestions are made for both fields. This is true even if a minimum number
 // of fields is enforced.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_SmallFormWithTwoAutocomplete) {
   // Set up our form data.
   FormData form;
@@ -1275,8 +1230,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that the call is properly forwarded to its SingleFieldFormFillRouter.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       OnSingleFieldSuggestionSelected) {
+TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   std::u16string test_value = u"TestValue";
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(test_value,
@@ -1482,8 +1436,7 @@ TEST_P(SuggestionMatchingTest,
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetProfileSuggestions_UnknownFields) {
+TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
   // Set up our form data.
   FormData form;
   form.name = u"MyForm";
@@ -1556,7 +1509,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
 }
 
 // Test that we return no suggestions when autofill is disabled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_AutofillDisabledByUser) {
   // Set up our form data.
   FormData form;
@@ -1573,7 +1526,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        OnSuggestionsReturned_CallsExternalDelegate) {
   std::vector<Suggestion> suggestions = {
       Suggestion("Charles", "123 Apple St.", "", 1),
@@ -1597,8 +1550,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return all credit card profile suggestions when all form fields
 // are empty.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_EmptyValue) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_EmptyValue) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -1631,8 +1583,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return all credit card profile suggestions when the triggering
 // field has whitespace in it.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_Whitespace) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_Whitespace) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -1666,8 +1617,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return all credit card profile suggestions when the triggering
 // field has stop characters in it, which should be removed.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_StopCharsOnly) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_StopCharsOnly) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -1701,7 +1651,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return all credit card profile suggestions when the triggering
 // field has some invisible unicode characters in it.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_InvisibleUnicodeOnly) {
   // Set up our form data.
   FormData form;
@@ -1736,7 +1686,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return all credit card profile suggestions when the triggering
 // field has stop characters in it and some input.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_StopCharsWithInput) {
   // Add a credit card with particular numbers that we will attempt to recall.
   CreditCard credit_card;
@@ -1774,8 +1724,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return only matching credit card profile suggestions when the
 // selected form field has been partially filled out.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_MatchCharacter) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_MatchCharacter) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -1908,8 +1857,7 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
 // Test that we will eventually return the credit card signin promo when there
 // are no credit card suggestions and the promo is active. See the tests in
 // AutofillExternalDelegateTest that test whether the promo is added.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_OnlySigninPromo) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_OnlySigninPromo) {
   personal_data().ClearCreditCards();
 
   // Set up our form data.
@@ -1941,7 +1889,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that we return a warning explaining that credit card profile suggestions
 // are unavailable when the page is secure, but the form action URL is valid but
 // not secure.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_SecureContext_FormActionNotHTTPS) {
   // Set up our form data.
   FormData form;
@@ -1972,7 +1920,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return credit card suggestions for secure pages that have an
 // empty form action target URL.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_SecureContext_EmptyFormAction) {
   // Set up our form data.
   FormData form;
@@ -2008,7 +1956,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return credit card suggestions for secure pages that have a
 // form action set to "javascript:something".
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_SecureContext_JavascriptFormAction) {
   // Set up our form data.
   FormData form;
@@ -2044,7 +1992,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we return all credit card suggestions in the case that two cards
 // have the same obfuscated number.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_RepeatedObfuscatedNumber) {
   // Add a credit card with the same obfuscated number as Elvis's.
   // |credit_card| will be owned by the mock PersonalDataManager.
@@ -2094,7 +2042,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that a masked server card is not suggested if more that six digits
 // have been typed in the field.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_MaskedCardWithMoreThan6Digits) {
   // Add a masked server card.
   personal_data().ClearCreditCards();
@@ -2123,8 +2071,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that expired cards are ordered by their ranking score and are always
 // suggested after non expired cards even if they have a higher ranking score.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_ExpiredCards) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_ExpiredCards) {
   personal_data().ClearCreditCards();
 
   // Add a never used non expired credit card.
@@ -2195,7 +2142,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test cards that are expired AND disused are suppressed when suppression is
 // enabled and the input field is empty.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_SuppressDisusedCreditCardsOnEmptyField) {
   personal_data().ClearCreditCards();
   ASSERT_EQ(0U, personal_data().GetCreditCards().size());
@@ -2341,8 +2288,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that a card that doesn't have a number is not shown in the
 // suggestions when querying credit cards by their number, and is shown when
 // querying other fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_NumberMissing) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
   // Create one normal credit card and one credit card with the number
   // missing.
   personal_data().ClearCreditCards();
@@ -2505,8 +2451,7 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
 // only return address suggestions. Instead of credit card suggestions, we
 // should return a warning explaining that credit card profile suggestions are
 // unavailable when the form is not https.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetAddressAndCreditCardSuggestionsNonHttps) {
+TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -2536,7 +2481,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   external_delegate_->CheckNoSuggestions(kDefaultPageID);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        ShouldShowAddressSuggestionsIfCreditCardAutofillDisabled) {
   base::test::ScopedFeatureList features;
   DisableAutofillViaAblation(features, /*for_addresses=*/false,
@@ -2554,7 +2499,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        ShouldShowCreditCardSuggestionsIfAddressAutofillDisabled) {
   base::test::ScopedFeatureList features;
   DisableAutofillViaAblation(features, /*for_addresses=*/true,
@@ -3105,7 +3050,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
 
 // Test that nothing breaks when there are single field form fill (Autocomplete)
 // suggestions but no autofill suggestions.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetFieldSuggestionsForSingleFieldFormFillOnly) {
   // Set up our form data.
   FormData form;
@@ -3236,7 +3181,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
                    Suggestion(value3, label3, kAddressEntryIcon, 3));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_ForPhonePrefixOrSuffix) {
   // Set up our form data.
   FormData form;
@@ -3289,8 +3234,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Tests that the suggestion consists of phone number without the country code
 // when a length limit is imposed in the field due to which filling with
 // country code is not possible.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetProfileSuggestions_ForPhoneField) {
+TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_ForPhoneField) {
   FormData form;
   test::CreateTestAddressFormData(&form);
   form.fields[9].max_length = 10;
@@ -3313,7 +3257,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Tests that we return email profile suggestions values
 // when the email field with username autocomplete attribute exist.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_ForEmailFieldWithUserNameAutocomplete) {
   // Set up our form data.
   FormData form;
@@ -3358,7 +3302,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that we correctly fill an address form.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FillAddressForm) {
+TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -3383,7 +3327,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillAddressForm) {
   EXPECT_NE(base::Time(), profile->use_date());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest, WillFillCreditCardNumber) {
+TEST_F(BrowserAutofillManagerTest, WillFillCreditCardNumber) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -3433,8 +3377,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, WillFillCreditCardNumber) {
 }
 
 // Test that we correctly log FIELD_WAS_AUTOFILLED event in UserHappiness.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_LogFieldWasAutofill) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_LogFieldWasAutofill) {
   // Set up our form data.
   FormData form;
   // Construct a form with a 4 fields: cardholder name, card number,
@@ -3457,7 +3400,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that we correctly fill a credit card form.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FillCreditCardForm_Simple) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_Simple) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -3475,7 +3418,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillCreditCardForm_Simple) {
 }
 
 // Test that whitespace is stripped from the credit card number.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillCreditCardForm_StripCardNumberWhitespace) {
   // Same as the SetUp(), but generate Elvis card with whitespace in credit
   // card number.  |credit_card| will be owned by the TestPersonalDataManager.
@@ -3503,7 +3446,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that separator characters are stripped from the credit card number.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillCreditCardForm_StripCardNumberSeparators) {
   // Same as the SetUp(), but generate Elvis card with separator characters in
   // credit card number.  |credit_card| will be owned by the
@@ -3533,8 +3476,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a credit card form with month input type.
 // Test 1 of 4: Empty month, empty year
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_NoYearNoMonth) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearNoMonth) {
   personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
@@ -3560,8 +3502,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a credit card form with month input type.
 // Test 2 of 4: Non-empty month, empty year
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_NoYearMonth) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearMonth) {
   personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
@@ -3587,8 +3528,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a credit card form with month input type.
 // Test 3 of 4: Empty month, non-empty year
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_YearNoMonth) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearNoMonth) {
   // Same as the SetUp(), but generate 4 credit cards with year month
   // combination.
   personal_data().ClearCreditCards();
@@ -3616,8 +3556,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a credit card form with month input type.
 // Test 4 of 4: Non-empty month, non-empty year
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_YearMonth) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearMonth) {
   personal_data().ClearCreditCards();
   CreditCard credit_card;
   test::SetCreditCardInfo(&credit_card, "Miku Hatsune",
@@ -3642,7 +3581,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that only the first 16 credit card number fields are filled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillOnlyFirstNineteenCreditCardNumberFields) {
   // Set up our form data.
   FormData form;
@@ -3696,7 +3635,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that only the first 16 of identical fields are filled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillOnlyFirstSixteenIdenticalCreditCardNumberFields) {
   // Set up our form data.
   FormData form;
@@ -3746,8 +3685,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test the credit card number is filled correctly into single-digit fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardNumberIntoSingleDigitFields) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
   // Set up our form data.
   FormData form;
   form.name = u"MyForm";
@@ -3804,8 +3742,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a credit card form with first and last cardholder
 // name.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_SplitName) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_SplitName) {
   // Set up our form data.
   FormData form;
   form.name = u"MyForm";
@@ -3840,7 +3777,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that only filled selection boxes are counted for the type filling limit.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        OnlyCountFilledSelectionBoxesForTypeFillingLimit) {
   test::PopulateAlternativeStateNameMapForTesting(
       "US", "Tennessee",
@@ -3945,8 +3882,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that we correctly fill a combined address and credit card form.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillAddressAndCreditCardForm) {
+TEST_F(BrowserAutofillManagerTest, FillAddressAndCreditCardForm) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -3982,8 +3918,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that a field with an unrecognized autocomplete attribute is not filled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillAddressForm_UnrecognizedAttribute) {
+TEST_F(BrowserAutofillManagerTest, FillAddressForm_UnrecognizedAttribute) {
   FormData address_form;
   address_form.name = u"MyForm";
   address_form.url = GURL("https://myform.com/form.html");
@@ -4025,7 +3960,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that non credit card related fields with the autocomplete attribute set
 // to off are filled on all platforms when the feature to autofill all addresses
 // is enabled (default).
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillAddressForm_AutocompleteOffNotRespected) {
   FormData address_form;
   address_form.name = u"MyForm";
@@ -4067,8 +4002,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that if a company is of a format of a birthyear and the relevant feature
 // is enabled, we would not fill it.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillAddressForm_CompanyBirthyear) {
+TEST_F(BrowserAutofillManagerTest, FillAddressForm_CompanyBirthyear) {
   // Set up our form data.
   FormData address_form;
   address_form.name = u"MyForm";
@@ -4114,8 +4048,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that a field with a value equal to it's placeholder attribute is filled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillAddressForm_PlaceholderEqualsValue) {
+TEST_F(BrowserAutofillManagerTest, FillAddressForm_PlaceholderEqualsValue) {
   FormData address_form;
   address_form.name = u"MyForm";
   address_form.url = GURL("https://myform.com/form.html");
@@ -4156,8 +4089,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that a credit card field with an unrecognized autocomplete attribute
 // gets filled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_UnrecognizedAttribute) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_UnrecognizedAttribute) {
   // Set up the form data.
   FormData form;
   form.name = u"MyForm";
@@ -4200,8 +4132,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that credit card fields are filled even if they have the autocomplete
 // attribute set to off.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_AutocompleteOff) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_AutocompleteOff) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -4227,8 +4158,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that selecting an expired credit card fills everything except the
 // expiration date.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillCreditCardForm_ExpiredCard) {
+TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_ExpiredCard) {
   personal_data().ClearCreditCards();
   CreditCard expired_card;
   test::SetCreditCardInfo(&expired_card, "Homer Simpson",
@@ -4287,8 +4217,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                     response_data.fields[4]);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       PreviewCreditCardForm_VirtualCard) {
+TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
   personal_data().ClearCreditCards();
   CreditCard virtual_card = test::GetVirtualCard();
   personal_data().AddServerCreditCard(virtual_card);
@@ -4325,8 +4254,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that non-focusable field is ignored while inferring boundaries between
 // sections, but not filled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFormWithNonFocusableFields) {
+TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {
   // Create a form with both focusable and non-focusable fields.
   FormData form;
   form.name = u"MyForm";
@@ -4382,8 +4310,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a form that has multiple logical sections, e.g.
 // both a billing and a shipping address.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFormWithMultipleSections) {
+TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleSections) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -4453,8 +4380,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a form that has author-specified sections, which
 // might not match our expected section breakdown.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFormWithAuthorSpecifiedSections) {
+TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
   // Create a form with a billing section and an unnamed section, interleaved.
   // The billing section includes both address and credit card fields.
   FormData form;
@@ -4602,8 +4528,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we correctly fill a form that has a single logical section with
 // multiple email address fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFormWithMultipleEmails) {
+TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleEmails) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -4632,7 +4557,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that we correctly fill a previously auto-filled form.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FillAutofilledForm) {
+TEST_F(BrowserAutofillManagerTest, FillAutofilledForm) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -4692,7 +4617,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillAutofilledForm) {
 }
 
 // Test that we correctly fill a previously partly auto-filled form.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPartlyAutofilledForm) {
+TEST_F(BrowserAutofillManagerTest, FillPartlyAutofilledForm) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -4737,8 +4662,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPartlyAutofilledForm) {
 }
 
 // Test that we correctly fill a previously partly auto-filled form.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillPartlyManuallyFilledForm) {
+TEST_F(BrowserAutofillManagerTest, FillPartlyManuallyFilledForm) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -4789,7 +4713,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that we correctly fill a phone number split across multiple fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
+TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   // In one form, rely on the max length attribute to imply US phone number
   // parts. In the other form, rely on the autocomplete type attribute.
   FormData form_with_us_number_max_length;
@@ -4909,8 +4833,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(std::u16string(), response_data4.fields[4].value);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFirstPhoneNumber_ComponentizedNumbers) {
+TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
@@ -4979,8 +4902,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_EQ(std::u16string(), response_data.fields[7].value);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFirstPhoneNumber_WholeNumbers) {
+TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
@@ -5031,8 +4953,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_EQ(std::u16string(), response_data.fields[3].value);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFirstPhoneNumber_FillPartsOnceOnly) {
+TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
@@ -5105,7 +5026,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Verify when extension is misclassified, and there is a complete
 // phone field, we do not fill anything to extension field.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_NotFillMisclassifiedExtention) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
@@ -5170,8 +5091,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // are filled best-effort.
 // Phone number local heuristics only succeed if a PHONE_HOME_NUMBER field is
 // present.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillFirstPhoneNumber_BestEfforFilling) {
+TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEfforFilling) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
@@ -5228,7 +5148,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // When the focus is on second phone field explicitly, we will fill the
 // entire form, both first phone field and second phone field included.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_FocusOnSecondPhoneNumber) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
@@ -5283,7 +5203,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_EQ(u"6505554567", response_data.fields[3].value);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_HiddenFieldShouldNotCount) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
@@ -5340,8 +5260,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // The hidden and the presentational fields should be filled, only if their
 // control type is 'select-one'. This exception is made to support synthetic
 // fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FormWithHiddenOrPresentationalSelects) {
+TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
   FormData form;
   form.unique_renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
@@ -5410,7 +5329,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                     response_data.fields[5]);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
       "00000000-0000-0000-0000-000000000002");
@@ -5503,7 +5422,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that we can still fill a form when a field has been removed from it.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FormChangesRemoveField) {
+TEST_F(BrowserAutofillManagerTest, FormChangesRemoveField) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5531,7 +5450,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormChangesRemoveField) {
 }
 
 // Test that we can still fill a form when a field has been added to it.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FormChangesAddField) {
+TEST_F(BrowserAutofillManagerTest, FormChangesAddField) {
   // The offset of the phone field in the address form.
   const int kPhoneFieldOffset = 9;
 
@@ -5564,8 +5483,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormChangesAddField) {
 
 // Test that we can still fill a form when the visibility of some fields
 // changes.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FormChangesVisibilityOfFields) {
+TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
   // Set up our form data.
   FormData form;
   form.unique_renderer_id = test::MakeFormRendererId();
@@ -5641,7 +5559,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that we are able to save form data when forms are submitted.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmitted) {
+TEST_F(BrowserAutofillManagerTest, FormSubmitted) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5665,7 +5583,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmitted) {
 }
 
 // Test that we are saving form data when the FormSubmitted event is sent.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmittedSaveData) {
+TEST_F(BrowserAutofillManagerTest, FormSubmittedSaveData) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -5689,8 +5607,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmittedSaveData) {
 
 // Test that when Autocomplete is enabled and Autofill is disabled, form
 // submissions are still received by the SingleFieldFormFillRouter.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FormSubmittedAutocompleteEnabled) {
+TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
   browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
 
@@ -5703,7 +5620,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test that the value patterns metric is reported.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, ValuePatternsMetric) {
+TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
   struct ValuePatternTestCase {
     const char* value;
     autofill::ValuePatternsMetric pattern;
@@ -5733,7 +5650,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, ValuePatternsMetric) {
 
 // Test that when Autofill is disabled, single field form fill suggestions are
 // still queried as a fallback.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_SomeWhenAutofillDisabled) {
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
   browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
@@ -5763,7 +5680,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we do not query for single field form fill suggestions when there
 // are Autofill suggestions available.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_NoneWhenAutofillPresent) {
   // Set up our form data.
   FormData form;
@@ -5783,7 +5700,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we query for single field form fill suggestions when there are no
 // Autofill suggestions available.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_SomeWhenAutofillEmpty) {
   // Set up our form data.
   FormData form;
@@ -5804,7 +5721,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that when Autofill is disabled and the field is a credit card name
 // field, single field form fill suggestions are queried.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_CreditCardNameFieldShouldAutocomplete) {
   TestAutofillClient client;
   // Since we are testing a form that submits over HTTP, we also need to set
@@ -5840,7 +5757,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that when Autofill is disabled and the field is a credit card number
 // field, single field form fill suggestions are not queried.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_CreditCardNumberShouldNotAutocomplete) {
   TestAutofillClient client;
   // Since we are testing a form that submits over HTTP, we also need to set
@@ -5909,8 +5826,8 @@ TEST_F(
 // is handled correctly. The single field form fill conditions were not met
 // because autocomplete is set to off and the field is not recognized as a promo
 // code field.
-TEST_P(
-    BrowserAutofillManagerStructuredProfileTest,
+TEST_F(
+    BrowserAutofillManagerTest,
     SingleFieldFormFillSuggestions_NoneWhenSingleFieldFormFillConditionsNotMet) {
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
   browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
@@ -5941,7 +5858,7 @@ TEST_P(
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DestructorCancelsSingleFieldFormFillQueries) {
   EXPECT_CALL(*single_field_form_fill_router_, CancelPendingQueries).Times(1);
   browser_autofill_manager_.reset();
@@ -5949,8 +5866,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Make sure that we don't error out when AutocompleteHistoryManager was
 // destroyed before BrowserAutofillManager.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       Destructor_DeletedAutocomplete_Works) {
+TEST_F(BrowserAutofillManagerTest, Destructor_DeletedAutocomplete_Works) {
   // The assertion here is that no exceptions will be thrown.
   autocomplete_history_manager_.reset();
   browser_autofill_manager_.reset();
@@ -5961,8 +5877,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // What we test here:
 //  * The API response parser is used.
 //  * The query can be processed with a response from the API.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       OnLoadedServerPredictionsFromApi) {
+TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   // First form on the page.
   FormData form;
   form.host_frame = test::MakeLocalFrameToken();
@@ -6068,8 +5983,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that OnLoadedServerPredictions does not call ParseQueryResponse if the
 // BrowserAutofillManager has been reset between the time the query was sent and
 // the response received.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       OnLoadedServerPredictions_ResetManager) {
+TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -6111,8 +6025,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that when server predictions disagree with the heuristic ones, the
 // overall types and sections would be set based on the server one.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DetermineHeuristicsWithOverallPrediction) {
+TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   // Set up our form data.
   FormData form;
   form.url = GURL("https://www.myform.com");
@@ -6204,7 +6117,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we are able to save form data when forms are submitted and we only
 // have server data for the field types.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmittedServerTypes) {
+TEST_F(BrowserAutofillManagerTest, FormSubmittedServerTypes) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -6243,8 +6156,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FormSubmittedServerTypes) {
 
 // Test that the form signature for an uploaded form always matches the form
 // signature from the query.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FormSubmittedWithDifferentFields) {
+TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDifferentFields) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -6269,8 +6181,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we do not save form data when submitted fields contain default
 // values.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FormSubmittedWithDefaultValues) {
+TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -6310,172 +6221,117 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 struct ProfileMatchingTypesTestCase {
   const char* input_value;         // The value to input in the field.
   ServerFieldTypeSet field_types;  // The expected field types to be determined.
-  ServerFieldTypeSet
-      structured_field_types;  // The expected field types to be determined.
 };
 
 class ProfileMatchingTypesTest
     : public BrowserAutofillManagerTest,
-      public ::testing::WithParamInterface<
-          std::tuple<ProfileMatchingTypesTestCase,
-                     bool>> {  // kAutofillEnableSupportForMoreStructureInNames
+      public ::testing::WithParamInterface<ProfileMatchingTypesTestCase> {
  protected:
-  void SetUp() override {
-    BrowserAutofillManagerTest::SetUp();
-    InitializeFeatures();
-  }
-
-  bool StructuredNamesAndAddresses() const {
-    return structured_names_and_addresses_;
-  }
-
-  void InitializeFeatures();
-
- private:
-  bool structured_names_and_addresses_;
-  base::test::ScopedFeatureList scoped_features_;
+  void SetUp() override { BrowserAutofillManagerTest::SetUp(); }
 };
-
-void ProfileMatchingTypesTest::InitializeFeatures() {
-  structured_names_and_addresses_ = std::get<1>(GetParam());
-
-  std::vector<base::Feature> features = {
-      features::kAutofillEnableSupportForMoreStructureInAddresses,
-      features::kAutofillEnableSupportForMoreStructureInNames};
-  if (structured_names_and_addresses_) {
-    scoped_features_.InitWithFeatures(features, {});
-  } else {
-    scoped_features_.InitWithFeatures({}, features);
-  }
-}
 
 const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     // Profile fields matches.
-    {"Elvis", {NAME_FIRST}, {NAME_FIRST}},
-    {"Aaron", {NAME_MIDDLE}, {NAME_MIDDLE}},
-    {"A", {NAME_MIDDLE_INITIAL}, {NAME_MIDDLE_INITIAL}},
-    {"Presley", {NAME_LAST}, {NAME_LAST, NAME_LAST_SECOND}},
-    {"Elvis Aaron Presley", {NAME_FULL}, {NAME_FULL}},
-    {"theking@gmail.com", {EMAIL_ADDRESS}, {EMAIL_ADDRESS}},
-    {"RCA", {COMPANY_NAME}, {COMPANY_NAME}},
-    {"3734 Elvis Presley Blvd.", {ADDRESS_HOME_LINE1}, {ADDRESS_HOME_LINE1}},
-    {"3734", {UNKNOWN_TYPE}, {ADDRESS_HOME_HOUSE_NUMBER}},
-    {"Elvis Presley Blvd.", {UNKNOWN_TYPE}, {ADDRESS_HOME_STREET_NAME}},
-    {"Apt. 10",
-     {ADDRESS_HOME_LINE2},
-     {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
-    {"Memphis", {ADDRESS_HOME_CITY}, {ADDRESS_HOME_CITY}},
-    {"Tennessee", {ADDRESS_HOME_STATE}, {ADDRESS_HOME_STATE}},
-    {"38116", {ADDRESS_HOME_ZIP}, {ADDRESS_HOME_ZIP}},
-    {"USA", {ADDRESS_HOME_COUNTRY}, {ADDRESS_HOME_COUNTRY}},
-    {"United States", {ADDRESS_HOME_COUNTRY}, {ADDRESS_HOME_COUNTRY}},
-    {"12345678901", {PHONE_HOME_WHOLE_NUMBER}, {PHONE_HOME_WHOLE_NUMBER}},
-    {"+1 (234) 567-8901", {PHONE_HOME_WHOLE_NUMBER}, {PHONE_HOME_WHOLE_NUMBER}},
-    {"(234)567-8901",
-     {PHONE_HOME_CITY_AND_NUMBER},
-     {PHONE_HOME_CITY_AND_NUMBER}},
-    {"2345678901", {PHONE_HOME_CITY_AND_NUMBER}, {PHONE_HOME_CITY_AND_NUMBER}},
-    {"1", {PHONE_HOME_COUNTRY_CODE}, {PHONE_HOME_COUNTRY_CODE}},
-    {"234", {PHONE_HOME_CITY_CODE}, {PHONE_HOME_CITY_CODE}},
-    {"5678901", {PHONE_HOME_NUMBER}, {PHONE_HOME_NUMBER}},
-    {"567", {PHONE_HOME_NUMBER_PREFIX}, {PHONE_HOME_NUMBER_PREFIX}},
-    {"8901", {PHONE_HOME_NUMBER_SUFFIX}, {PHONE_HOME_NUMBER_SUFFIX}},
+    {"Elvis", {NAME_FIRST}},
+    {"Aaron", {NAME_MIDDLE}},
+    {"A", {NAME_MIDDLE_INITIAL}},
+    {"Presley", {NAME_LAST, NAME_LAST_SECOND}},
+    {"Elvis Aaron Presley", {NAME_FULL}},
+    {"theking@gmail.com", {EMAIL_ADDRESS}},
+    {"RCA", {COMPANY_NAME}},
+    {"3734 Elvis Presley Blvd.", {ADDRESS_HOME_LINE1}},
+    {"3734", {ADDRESS_HOME_HOUSE_NUMBER}},
+    {"Elvis Presley Blvd.", {ADDRESS_HOME_STREET_NAME}},
+    {"Apt. 10", {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
+    {"Memphis", {ADDRESS_HOME_CITY}},
+    {"Tennessee", {ADDRESS_HOME_STATE}},
+    {"38116", {ADDRESS_HOME_ZIP}},
+    {"USA", {ADDRESS_HOME_COUNTRY}},
+    {"United States", {ADDRESS_HOME_COUNTRY}},
+    {"12345678901", {PHONE_HOME_WHOLE_NUMBER}},
+    {"+1 (234) 567-8901", {PHONE_HOME_WHOLE_NUMBER}},
+    {"(234)567-8901", {PHONE_HOME_CITY_AND_NUMBER}},
+    {"2345678901", {PHONE_HOME_CITY_AND_NUMBER}},
+    {"1", {PHONE_HOME_COUNTRY_CODE}},
+    {"234", {PHONE_HOME_CITY_CODE}},
+    {"5678901", {PHONE_HOME_NUMBER}},
+    {"567", {PHONE_HOME_NUMBER_PREFIX}},
+    {"8901", {PHONE_HOME_NUMBER_SUFFIX}},
 
     // Test a European profile.
-    {"Paris", {ADDRESS_HOME_CITY}, {ADDRESS_HOME_CITY}},
-    {"Île de France",
-     {ADDRESS_HOME_STATE},
-     {ADDRESS_HOME_STATE}},  // Exact match
-    {"Ile de France",
-     {ADDRESS_HOME_STATE},
-     {ADDRESS_HOME_STATE}},  // Missing accent.
-    {"-Ile-de-France-",
-     {ADDRESS_HOME_STATE},
-     {ADDRESS_HOME_STATE}},  // Extra punctuation.
-    {"île dÉ FrÃÑÇË",
-     {ADDRESS_HOME_STATE},
-     {ADDRESS_HOME_STATE}},  // Other accents & case mismatch.
-    {"75008", {ADDRESS_HOME_ZIP}, {ADDRESS_HOME_ZIP}},
-    {"FR", {ADDRESS_HOME_COUNTRY}, {ADDRESS_HOME_COUNTRY}},
-    {"France", {ADDRESS_HOME_COUNTRY}, {ADDRESS_HOME_COUNTRY}},
-    {"33249197070", {PHONE_HOME_WHOLE_NUMBER}, {PHONE_HOME_WHOLE_NUMBER}},
-    {"+33 2 49 19 70 70", {PHONE_HOME_WHOLE_NUMBER}, {PHONE_HOME_WHOLE_NUMBER}},
-    {"02 49 19 70 70",
-     {PHONE_HOME_CITY_AND_NUMBER},
-     {PHONE_HOME_CITY_AND_NUMBER}},
-    {"0249197070", {PHONE_HOME_CITY_AND_NUMBER}, {PHONE_HOME_CITY_AND_NUMBER}},
-    {"33", {PHONE_HOME_COUNTRY_CODE}, {PHONE_HOME_COUNTRY_CODE}},
-    {"2", {PHONE_HOME_CITY_CODE}, {PHONE_HOME_CITY_CODE}},
+    {"Paris", {ADDRESS_HOME_CITY}},
+    {"Île de France", {ADDRESS_HOME_STATE}},    // Exact match
+    {"Ile de France", {ADDRESS_HOME_STATE}},    // Missing accent.
+    {"-Ile-de-France-", {ADDRESS_HOME_STATE}},  // Extra punctuation.
+    {"île dÉ FrÃÑÇË", {ADDRESS_HOME_STATE}},  // Other accents & case mismatch.
+    {"75008", {ADDRESS_HOME_ZIP}},
+    {"FR", {ADDRESS_HOME_COUNTRY}},
+    {"France", {ADDRESS_HOME_COUNTRY}},
+    {"33249197070", {PHONE_HOME_WHOLE_NUMBER}},
+    {"+33 2 49 19 70 70", {PHONE_HOME_WHOLE_NUMBER}},
+    {"02 49 19 70 70", {PHONE_HOME_CITY_AND_NUMBER}},
+    {"0249197070", {PHONE_HOME_CITY_AND_NUMBER}},
+    {"33", {PHONE_HOME_COUNTRY_CODE}},
+    {"2", {PHONE_HOME_CITY_CODE}},
 
     // Credit card fields matches.
-    {"John Doe", {CREDIT_CARD_NAME_FULL}, {CREDIT_CARD_NAME_FULL}},
-    {"John", {CREDIT_CARD_NAME_FIRST}, {CREDIT_CARD_NAME_FIRST}},
-    {"Doe", {CREDIT_CARD_NAME_LAST}, {CREDIT_CARD_NAME_LAST}},
-    {"4234-5678-9012-3456", {CREDIT_CARD_NUMBER}, {CREDIT_CARD_NUMBER}},
-    {"04", {CREDIT_CARD_EXP_MONTH}, {CREDIT_CARD_EXP_MONTH}},
-    {"April", {CREDIT_CARD_EXP_MONTH}, {CREDIT_CARD_EXP_MONTH}},
-    {"2999", {CREDIT_CARD_EXP_4_DIGIT_YEAR}, {CREDIT_CARD_EXP_4_DIGIT_YEAR}},
-    {"99", {CREDIT_CARD_EXP_2_DIGIT_YEAR}, {CREDIT_CARD_EXP_2_DIGIT_YEAR}},
-    {"04/2999",
-     {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-     {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
+    {"John Doe", {CREDIT_CARD_NAME_FULL}},
+    {"John", {CREDIT_CARD_NAME_FIRST}},
+    {"Doe", {CREDIT_CARD_NAME_LAST}},
+    {"4234-5678-9012-3456", {CREDIT_CARD_NUMBER}},
+    {"04", {CREDIT_CARD_EXP_MONTH}},
+    {"April", {CREDIT_CARD_EXP_MONTH}},
+    {"2999", {CREDIT_CARD_EXP_4_DIGIT_YEAR}},
+    {"99", {CREDIT_CARD_EXP_2_DIGIT_YEAR}},
+    {"04/2999", {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
 
     // Make sure whitespace and invalid characters are handled properly.
-    {"", {EMPTY_TYPE}, {EMPTY_TYPE}},
-    {" ", {EMPTY_TYPE}, {EMPTY_TYPE}},
-    {"***", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
-    {" Elvis", {NAME_FIRST}, {NAME_FIRST}},
-    {"Elvis ", {NAME_FIRST}, {NAME_FIRST}},
+    {"", {EMPTY_TYPE}},
+    {" ", {EMPTY_TYPE}},
+    {"***", {UNKNOWN_TYPE}},
+    {" Elvis", {NAME_FIRST}},
+    {"Elvis ", {NAME_FIRST}},
 
     // Make sure fields that differ by case match.
-    {"elvis ", {NAME_FIRST}, {NAME_FIRST}},
-    {"UnItEd StAtEs", {ADDRESS_HOME_COUNTRY}, {ADDRESS_HOME_COUNTRY}},
+    {"elvis ", {NAME_FIRST}},
+    {"UnItEd StAtEs", {ADDRESS_HOME_COUNTRY}},
 
     // Make sure fields that differ by punctuation match.
-    {"3734 Elvis Presley Blvd", {ADDRESS_HOME_LINE1}, {ADDRESS_HOME_LINE1}},
-    {"3734, Elvis    Presley Blvd.",
-     {ADDRESS_HOME_LINE1},
-     {ADDRESS_HOME_LINE1}},
+    {"3734 Elvis Presley Blvd", {ADDRESS_HOME_LINE1}},
+    {"3734, Elvis    Presley Blvd.", {ADDRESS_HOME_LINE1}},
 
     // Make sure that a state's full name and abbreviation match.
-    {"TN",
-     {ADDRESS_HOME_STATE},
-     {ADDRESS_HOME_STATE}},  // Saved as "Tennessee" in profile.
-    {"Texas",
-     {ADDRESS_HOME_STATE},
-     {ADDRESS_HOME_STATE}},  // Saved as "TX" in profile.
+    {"TN", {ADDRESS_HOME_STATE}},     // Saved as "Tennessee" in profile.
+    {"Texas", {ADDRESS_HOME_STATE}},  // Saved as "TX" in profile.
 
     // Special phone number case. A profile with no country code should
     // only match PHONE_HOME_CITY_AND_NUMBER.
-    {"5142821292", {PHONE_HOME_CITY_AND_NUMBER}, {PHONE_HOME_CITY_AND_NUMBER}},
+    {"5142821292", {PHONE_HOME_CITY_AND_NUMBER}},
 
     // Make sure unsupported variants do not match.
-    {"Elvis Aaron", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
-    {"Mr. Presley", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
-    {"3734 Elvis Presley", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
-    {"38116-1023", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
-    {"5", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
-    {"56", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
-    {"901", {UNKNOWN_TYPE}, {UNKNOWN_TYPE}},
+    {"Elvis Aaron", {UNKNOWN_TYPE}},
+    {"Mr. Presley", {UNKNOWN_TYPE}},
+    {"3734 Elvis Presley", {UNKNOWN_TYPE}},
+    {"38116-1023", {UNKNOWN_TYPE}},
+    {"5", {UNKNOWN_TYPE}},
+    {"56", {UNKNOWN_TYPE}},
+    {"901", {UNKNOWN_TYPE}},
 };
 
 // Tests that DeterminePossibleFieldTypesForUpload finds accurate possible
 // types.
 TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   // Unpack the test parameters
-  const auto& test_case = std::get<0>(GetParam());
+  const auto& test_case = GetParam();
 
   SCOPED_TRACE(base::StringPrintf(
       "Test: input_value='%s', field_type=%s, structured_names=%s ",
       test_case.input_value,
-      AutofillType(*test_case.field_types.begin()).ToString().c_str(),
-      StructuredNamesAndAddresses() ? "true" : "false"));
+      AutofillType(*test_case.field_types.begin()).ToString().c_str(), "true"));
 
   // Take the field types depending on the state of the structured names
   // feature.
-  const ServerFieldTypeSet& expected_possible_types =
-      StructuredNamesAndAddresses() ? test_case.structured_field_types
-                                    : test_case.field_types;
+  const ServerFieldTypeSet& expected_possible_types = test_case.field_types;
 
   // Set up the test profiles.
   std::vector<AutofillProfile> profiles;
@@ -6529,7 +6385,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
 // Tests that DeterminePossibleFieldTypesForUpload is called when a form is
 // submitted.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DeterminePossibleFieldTypesForUpload_IsTriggered) {
   FormData form;
   form.name = u"MyForm";
@@ -6580,7 +6436,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Tests that DisambiguateUploadTypes makes the correct choices.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
+TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
   // Set up the test profile.
   std::vector<AutofillProfile> profiles;
   AutofillProfile profile;
@@ -6737,21 +6593,20 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
     for (size_t i = 0; i < test_fields.size(); ++i) {
       possible_types = form_structure.field(i)->possible_types();
       if (test_fields[i].expect_disambiguation) {
-        // For structured names it is possible that a field as two out of three
+        // It is possible that a field as two out of three
         // possible classifications: NAME_FULL, NAME_LAST,
         // NAME_LAST_FIRST/SECOND. Note, all cases contain NAME_LAST.
-        if (StructuredNamesAndAddresses() && possible_types.size() == 2) {
-          EXPECT_TRUE(possible_types.count(NAME_LAST) &&
-                      (possible_types.count(NAME_LAST_SECOND) ||
-                       possible_types.count(NAME_LAST_FIRST) ||
-                       possible_types.count(NAME_FULL)));
-        } else if (StructuredNamesAndAddresses() &&
-                   possible_types.size() == 3) {
+        if (possible_types.size() == 2) {
+          EXPECT_TRUE(possible_types.contains(NAME_LAST) &&
+                      (possible_types.contains(NAME_LAST_SECOND) ||
+                       possible_types.contains(NAME_LAST_FIRST) ||
+                       possible_types.contains(NAME_FULL)));
+        } else if (possible_types.size() == 3) {
           // Or even all three.
-          EXPECT_TRUE(possible_types.count(NAME_FULL) &&
-                      possible_types.count(NAME_LAST) &&
-                      (possible_types.count(NAME_LAST_SECOND) ||
-                       possible_types.count(NAME_LAST_FIRST)));
+          EXPECT_TRUE(possible_types.contains(NAME_FULL) &&
+                      possible_types.contains(NAME_LAST) &&
+                      (possible_types.contains(NAME_LAST_SECOND) ||
+                       possible_types.contains(NAME_LAST_FIRST)));
         } else {
           EXPECT_EQ(1U, possible_types.size());
         }
@@ -6768,7 +6623,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
 
 // When a field contains fields with UPI ID values, a crowdsourcing vote should
 // be uploaded.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, CrowdsourceUPIVPA) {
+TEST_F(BrowserAutofillManagerTest, CrowdsourceUPIVPA) {
   std::vector<AutofillProfile> profiles;
   std::vector<CreditCard> credit_cards;
 
@@ -6791,8 +6646,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, CrowdsourceUPIVPA) {
 // If a server-side credit card is unmasked by entering the CVC, the
 // BrowserAutofillManager reuses the CVC value to identify a potentially
 // existing CVC form field to cast a |CREDIT_CARD_VERIFICATION_CODE|-type vote.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       CrowdsourceCVCFieldByValue) {
+TEST_F(BrowserAutofillManagerTest, CrowdsourceCVCFieldByValue) {
   std::vector<AutofillProfile> profiles;
   std::vector<CreditCard> credit_cards;
 
@@ -6833,7 +6687,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Expiration year field was detected by the server. The other field with a
 // 4-digit value should be detected as CVC.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        CrowdsourceCVCFieldAfterInvalidExpDateByHeuristics) {
   FormData form;
   FormFieldData field;
@@ -6887,7 +6741,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Tests if the CVC field is heuristically detected if it appears after the
 // expiration year field as it was predicted by the server.
 // The value in the CVC field would be a valid expiration year value.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        CrowdsourceCVCFieldAfterExpDateByHeuristics) {
   FormData form;
   FormFieldData field;
@@ -6940,7 +6794,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Tests if the CVC field is heuristically detected if it contains a value which
 // is not a valid expiration year.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        CrowdsourceCVCFieldBeforeExpDateByHeuristics) {
   FormData form;
   FormFieldData field;
@@ -6994,7 +6848,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Tests if no CVC field is heuristically detected due to the missing of a
 // credit card number field.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        CrowdsourceNoCVCFieldDueToMissingCreditCardNumber) {
   FormData form;
   FormFieldData field;
@@ -7045,8 +6899,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 }
 
 // Test if no CVC is found because the candidate has no valid CVC value.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       CrowdsourceNoCVCDueToInvalidCandidateValue) {
+TEST_F(BrowserAutofillManagerTest, CrowdsourceNoCVCDueToInvalidCandidateValue) {
   FormData form;
   FormFieldData field;
 
@@ -7096,7 +6949,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest, RemoveProfile) {
+TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
   // Add and remove an Autofill profile.
   AutofillProfile profile;
   const char guid[] = "00000000-0000-0000-0000-000000000102";
@@ -7110,7 +6963,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, RemoveProfile) {
   EXPECT_FALSE(personal_data().GetProfileWithGUID(guid));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest, RemoveCreditCard) {
+TEST_F(BrowserAutofillManagerTest, RemoveCreditCard) {
   // Add and remove an Autofill credit card.
   CreditCard credit_card;
   const char guid[] = "00000000-0000-0000-0000-000000100007";
@@ -7125,7 +6978,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, RemoveCreditCard) {
 }
 
 // Test our external delegate is called at the right time.
-TEST_P(BrowserAutofillManagerStructuredProfileTest, TestExternalDelegate) {
+TEST_F(BrowserAutofillManagerTest, TestExternalDelegate) {
   FormData form;
   test::CreateTestAddressFormData(&form);
   std::vector<FormData> forms(1, form);
@@ -7138,8 +6991,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, TestExternalDelegate) {
 
 // Test that unfocusing a filled form sends an upload with types matching the
 // fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       OnTextFieldDidChangeAndUnfocus_Upload) {
+TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
   form.name = u"MyForm";
@@ -7159,11 +7011,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
   types.clear();
   types.insert(NAME_LAST);
-  // For structured names, this type cannot be differentiated from
-  // NAME_LAST_SECOND.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames))
-    types.insert(NAME_LAST_SECOND);
+  types.insert(NAME_LAST_SECOND);
   expected_types.push_back(types);
 
   test::CreateTestFormField("Email", "email", "", "text", &field);
@@ -7194,8 +7042,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that navigating with a filled form sends an upload with types matching
 // the fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       OnTextFieldDidChangeAndNavigation_Upload) {
+TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
   form.name = u"MyForm";
@@ -7214,8 +7061,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
   types.clear();
-  if (StructuredNamesAndAddresses())
-    types.insert(NAME_LAST_SECOND);
+  types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
 
@@ -7247,8 +7093,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that unfocusing a filled form sends an upload with types matching the
 // fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       OnDidFillAutofillFormDataAndUnfocus_Upload) {
+TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
   // Set up our form data (empty).
   FormData form;
   form.name = u"MyForm";
@@ -7268,8 +7113,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
   types.clear();
-  if (StructuredNamesAndAddresses())
-    types.insert(NAME_LAST_SECOND);
+  types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
 
@@ -7300,7 +7144,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Test that suggestions are returned for credit card fields with an
 // unrecognized
 // autocomplete attribute.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_UnrecognizedAttribute) {
   // Set up the form data.
   FormData form;
@@ -7338,7 +7182,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test to verify suggestions appears for forms having credit card number split
 // across fields.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_ForNumberSplitAcrossFields) {
   // Set up our form data with credit card number split across fields.
   FormData form;
@@ -7404,8 +7248,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that inputs detected to be CVC inputs are forced to
 // !should_autocomplete for SingleFieldFormFillRouter::OnWillSubmitForm.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DontSaveCvcInAutocompleteHistory) {
+TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
   FormData form_seen_by_ahm;
   EXPECT_CALL(*single_field_form_fill_router_, OnWillSubmitForm(_, _, true))
       .WillOnce(SaveArg<0>(&form_seen_by_ahm));
@@ -7446,8 +7289,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   }
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DontOfferToSavePaymentsCard) {
+TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
   FormData form;
   CreditCard card;
   PrepareForRealPanResponse(&form, &card);
@@ -7473,8 +7315,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                                              SubmissionSource::FORM_SUBMISSION);
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FillInUpdatedExpirationDate) {
+TEST_F(BrowserAutofillManagerTest, FillInUpdatedExpirationDate) {
   FormData form;
   CreditCard card;
   PrepareForRealPanResponse(&form, &card);
@@ -7488,8 +7329,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                   "4012888888881881");
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       ProfileDisabledDoesNotFillFormData) {
+TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotFillFormData) {
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
 
   // Set up our form data.
@@ -7507,8 +7347,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                        MakeFrontendId(std::string(), guid));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       ProfileDisabledDoesNotSuggest) {
+TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
 
   // Set up our form data.
@@ -7525,8 +7364,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       CreditCardDisabledDoesNotFillFormData) {
+TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
   browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
 
   // Set up our form data.
@@ -7544,8 +7382,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                        MakeFrontendId(guid, std::string()));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       CreditCardDisabledDoesNotSuggest) {
+TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
   browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
 
   // Set up our form data.
@@ -7654,8 +7491,7 @@ TEST_P(SuggestionMatchingTest,
 
 // Verify that typing "mail" will not match any of the "@gmail.com" email
 // addresses when substring matching is enabled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       NoSuggestionForNonPrefixTokenMatch) {
+TEST_F(BrowserAutofillManagerTest, NoSuggestionForNonPrefixTokenMatch) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kAutofillTokenPrefixMatching);
 
@@ -7727,7 +7563,7 @@ TEST_P(CreditCardSuggestionTest,
 
 // Verify that typing "lvis" will not match any of the credit card name when
 // substring matching is enabled.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        NoCreditCardSuggestionsForNonPrefixTokenMatch) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kAutofillTokenPrefixMatching);
@@ -7746,8 +7582,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetPopupType_CreditCardForm) {
+TEST_F(BrowserAutofillManagerTest, GetPopupType_CreditCardForm) {
   // Set up our form data.
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -7760,7 +7595,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   }
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest, GetPopupType_AddressForm) {
+TEST_F(BrowserAutofillManagerTest, GetPopupType_AddressForm) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -7773,8 +7608,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, GetPopupType_AddressForm) {
   }
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetPopupType_PersonalInformationForm) {
+TEST_F(BrowserAutofillManagerTest, GetPopupType_PersonalInformationForm) {
   // Set up our form data.
   FormData form;
   test::CreateTestPersonalInformationFormData(&form);
@@ -7789,7 +7623,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that ShouldShowCreditCardSigninPromo behaves as expected for a credit
 // card form with an impression limit of three and no impressions yet.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        ShouldShowCreditCardSigninPromo_CreditCardField_UnmetLimit) {
   // No impressions yet.
   ASSERT_EQ(0, autofill_client_.GetPrefs()->GetInteger(
@@ -7827,7 +7661,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that ShouldShowCreditCardSigninPromo behaves as expected for a credit
 // card form with an impression limit that has been attained already.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        ShouldShowCreditCardSigninPromo_CreditCardField_WithAttainedLimit) {
   // Set up our form data.
   FormData form;
@@ -7863,7 +7697,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that ShouldShowCreditCardSigninPromo behaves as expected for a credit
 // card form on a non-secure page.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        ShouldShowCreditCardSigninPromo_CreditCardField_NonSecureContext) {
   // Set up our form data.
   FormData form;
@@ -7896,7 +7730,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that ShouldShowCreditCardSigninPromo behaves as expected for a credit
 // card form targeting a non-secure page.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        ShouldShowCreditCardSigninPromo_CreditCardField_NonSecureAction) {
   // Set up our form data.
   FormData form;
@@ -7928,7 +7762,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that ShouldShowCreditCardSigninPromo behaves as expected for an address
 // form.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        ShouldShowCreditCardSigninPromo_AddressField) {
   // Set up our form data.
   FormData form;
@@ -7998,7 +7832,7 @@ TEST_P(SuggestionMatchingTest,
                    Suggestion("Adam Smith", label2, kAddressEntryIcon, 2));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest, ShouldUploadForm) {
+TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   // Note: The enforcement of a minimum number of required fields for upload
   // is disabled by default. This tests validates both the disabled and enabled
   // scenarios.
@@ -8070,7 +7904,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, ShouldUploadForm) {
 
 // Verify that no suggestions are shown on desktop for non credit card related
 // fields if the initiating field has the "autocomplete" attribute set to off.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DisplaySuggestions_AutocompleteOffNotRespected_AddressField) {
   // Set up an address form.
   FormData mixed_form;
@@ -8104,7 +7938,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Verify that suggestions are shown on desktop for credit card related fields
 // even if the initiating field has the "autocomplete" attribute set to off.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DisplaySuggestions_AutocompleteOff_CreditCardField) {
   // Set up a credit card form.
   FormData mixed_form;
@@ -8143,7 +7977,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Tests that a form with server only types is still autofillable if the form
 // gets updated in cache.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DisplaySuggestionsForUpdatedServerTypedForm) {
   // Create a form with unknown heuristic fields.
   FormData form;
@@ -8205,8 +8039,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 // Tests that a form with <select> field is accepted if <option> value (not
 // content) is quite long. Some websites use value to propagate long JSON to
 // JS-backed logic.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       FormWithLongOptionValuesIsAcceptable) {
+TEST_F(BrowserAutofillManagerTest, FormWithLongOptionValuesIsAcceptable) {
   FormData form;
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
@@ -8238,7 +8071,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that is_all_server_suggestions is true if there are only
 // full_server_card and masked_server_card on file.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_IsAllServerSuggestionsTrue) {
   // Create server credit cards.
   CreateTestServerCreditCards();
@@ -8258,7 +8091,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that is_all_server_suggestions is false if there is at least one
 // local_card on file.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_IsAllServerSuggestionsFalse) {
   // Create server and local credit cards.
   CreateTestServerAndLocalCreditCards();
@@ -8276,8 +8109,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   ASSERT_FALSE(external_delegate_->is_all_server_suggestions());
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       GetCreditCardSuggestions_VirtualCard) {
+TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   personal_data().ClearCreditCards();
   CreditCard masked_server_card(CreditCard::MASKED_SERVER_CARD,
                                 /*server_id=*/"a123");
@@ -8351,7 +8183,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                  browser_autofill_manager_->GetPackedCreditCardID(7)));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogAutocompleteShownMetric) {
   FormData form;
   form.name = u"NothingSpecial";
@@ -8376,7 +8208,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogAutofillAddressShownMetric) {
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -8406,8 +8238,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DidShowSuggestions_LogByType_AddressOnly) {
+TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   // Create a form with name and address fields.
   FormData form;
   form.name = u"MyForm";
@@ -8451,7 +8282,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressOnlyWithoutName) {
   // Create a form with address fields.
   FormData form;
@@ -8496,8 +8327,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DidShowSuggestions_LogByType_ContactOnly) {
+TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_ContactOnly) {
   // Create a form with name and contact fields.
   FormData form;
   form.name = u"MyForm";
@@ -8540,7 +8370,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_ContactOnlyWithoutName) {
   // Create a form with contact fields.
   FormData form;
@@ -8584,8 +8414,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DidShowSuggestions_LogByType_PhoneOnly) {
+TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
   // Create a form with phone field.
   FormData form;
   form.name = u"MyForm";
@@ -8628,8 +8457,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       DidShowSuggestions_LogByType_Other) {
+TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_Other) {
   // Create a form with name fields.
   FormData form;
   form.name = u"MyForm";
@@ -8672,7 +8500,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.ContactOnly"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmail) {
   // Create a form with name, address, and email fields.
   FormData form;
@@ -8725,7 +8553,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailWithoutName) {
   // Create a form with address and email fields.
   FormData form;
@@ -8776,7 +8604,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusPhone) {
   // Create a form with name fields.
   FormData form;
@@ -8829,7 +8657,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusPhoneWithoutName) {
   // Create a form with name, address, and phone fields.
   FormData form;
@@ -8880,7 +8708,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
           HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhone) {
   // Create a form with name, address, phone, and email fields.
   FormData form;
@@ -8934,7 +8762,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                 HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhoneWithoutName) {
   // Create a form with address, phone, and email fields.
   FormData form;
@@ -8984,7 +8812,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                 HasSubstr("Autofill.FormEvents.Address.Other"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogAutofillCreditCardShownMetric) {
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -9013,7 +8841,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                                     HasSubstr("Autofill.FormEvents.Address"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidSuppressPopup_LogAutofillAddressPopupSuppressed) {
   FormData form;
   test::CreateTestAddressFormData(&form);
@@ -9032,7 +8860,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                         HasSubstr("Autofill.FormEvents.CreditCard"))));
 }
 
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
+TEST_F(BrowserAutofillManagerTest,
        DidSuppressPopup_LogAutofillCreditCardPopupSuppressed) {
   FormData form;
   CreateTestCreditCardFormData(&form, true, false);
@@ -9052,8 +8880,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
 // Test that we import data when the field type is determined by the value and
 // without any heuristics on the attributes.
-TEST_P(BrowserAutofillManagerStructuredProfileTest,
-       ImportDataWhenValueDetected) {
+TEST_F(BrowserAutofillManagerTest, ImportDataWhenValueDetected) {
   const std::string test_upi_id_value = "user@indianbank";
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -10036,19 +9863,11 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
   CheckNoSuggestionsAvailableOnFieldFocus();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    BrowserAutofillManagerTest,
-    ProfileMatchingTypesTest,
-    testing::Combine(testing::ValuesIn(kProfileMatchingTypesTestCases),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(BrowserAutofillManagerTest,
+                         ProfileMatchingTypesTest,
+                         testing::ValuesIn(kProfileMatchingTypesTestCases));
 
 INSTANTIATE_TEST_SUITE_P(All, OnFocusOnFormFieldTest, testing::Bool());
-
-// Runs the suite with the feature |kAutofillSupportForMoreStructuredNames|
-// enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(,
-                         BrowserAutofillManagerStructuredProfileTest,
-                         testing::Bool());
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
