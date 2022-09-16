@@ -388,6 +388,21 @@ public abstract class org.chromium.net.UrlResponseInfo {
   public abstract java.lang.String getProxyServer();
   public abstract long getReceivedByteCount();
 }
+public abstract class org.chromium.net.apihelpers.ImplicitFlowControlCallback extends org.chromium.net.UrlRequest$Callback {
+  public org.chromium.net.apihelpers.ImplicitFlowControlCallback();
+  protected abstract boolean shouldFollowRedirect(org.chromium.net.UrlResponseInfo, java.lang.String) throws java.lang.Exception;
+  protected abstract void onResponseStarted(org.chromium.net.UrlResponseInfo) throws java.lang.Exception;
+  protected abstract void onBodyChunkRead(org.chromium.net.UrlResponseInfo, java.nio.ByteBuffer) throws java.lang.Exception;
+  protected abstract void onSucceeded(org.chromium.net.UrlResponseInfo);
+  protected abstract void onFailed(org.chromium.net.UrlResponseInfo, org.chromium.net.CronetException);
+  protected abstract void onCanceled(org.chromium.net.UrlResponseInfo);
+  public final void onResponseStarted(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo) throws java.lang.Exception;
+  public final void onRedirectReceived(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo, java.lang.String) throws java.lang.Exception;
+  public final void onReadCompleted(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo, java.nio.ByteBuffer) throws java.lang.Exception;
+  public final void onSucceeded(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo);
+  public final void onFailed(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo, org.chromium.net.CronetException);
+  public final void onCanceled(org.chromium.net.UrlRequest, org.chromium.net.UrlResponseInfo);
+}
 public final class org.chromium.net.apihelpers.UploadDataProviders {
   public static org.chromium.net.UploadDataProvider create(java.io.File);
   public static org.chromium.net.UploadDataProvider create(android.os.ParcelFileDescriptor);
@@ -395,4 +410,4 @@ public final class org.chromium.net.apihelpers.UploadDataProviders {
   public static org.chromium.net.UploadDataProvider create(byte[], int, int);
   public static org.chromium.net.UploadDataProvider create(byte[]);
 }
-Stamp: 9ca96d8e2cee4df3a62cefff1a431d5a
+Stamp: 19fc660475771a65e7db31fceefa1102
