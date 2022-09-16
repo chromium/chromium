@@ -1438,12 +1438,6 @@
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
       },
       {
-        "name": "chrome_junit_tests",
-        "swarming": {},
-        "test": "chrome_junit_tests",
-        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
-      },
-      {
         "name": "components_junit_tests",
         "swarming": {},
         "test": "components_junit_tests",
@@ -24760,16 +24754,6 @@
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
       },
       {
-        "name": "chrome_junit_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "test": "chrome_junit_tests",
-        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
-      },
-      {
         "name": "components_junit_tests",
         "resultdb": {
           "enable": true,
@@ -31711,6 +31695,34 @@
     "isolated_scripts": [
       {
         "args": [
+          "--shards=8"
+        ],
+        "isolate_name": "chrome_junit_tests",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chrome_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/",
+        "use_isolated_scripts_api": true
+      },
+      {
+        "args": [
           "--gtest-benchmark-name=components_perftests"
         ],
         "isolate_name": "components_perftests",
@@ -31848,20 +31860,6 @@
         "swarming": {},
         "test": "chrome_java_test_pagecontroller_junit_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
-      },
-      {
-        "args": [
-          "--shards=8"
-        ],
-        "isolate_profile_data": true,
-        "name": "chrome_junit_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "test": "chrome_junit_tests",
-        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
       },
       {
         "isolate_profile_data": true,
@@ -32450,6 +32448,34 @@
         },
         "test": "chrome_java_test_wpr_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_wpr_tests/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "n1-standard-4|e2-standard-4",
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_junit_tests",
+        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/",
+        "use_isolated_scripts_api": true
       },
       {
         "args": [
