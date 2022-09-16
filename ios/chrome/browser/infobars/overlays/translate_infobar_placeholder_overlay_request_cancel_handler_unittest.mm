@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/fake_translate_overlay_tab_helper.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
@@ -50,7 +51,8 @@ class TranslateInfobarPlaceholderOverlayRequestCancelHandlerTest
                                                 WebStateList::INSERT_ACTIVATE,
                                                 WebStateOpener());
     InfoBarManagerImpl::CreateForWebState(web_state_);
-    InfobarOverlayRequestInserter::CreateForWebState(web_state_);
+    InfobarOverlayRequestInserter::CreateForWebState(
+        web_state_, &DefaultInfobarOverlayRequestFactory);
     FakeTranslateOverlayTabHelper::CreateForWebState(web_state_);
 
     // Set up the OverlayPresenter's presentation context so that presentation

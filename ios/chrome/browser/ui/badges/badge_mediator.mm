@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -473,7 +474,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   InfoBarIOS* infobar = [self infobarWithType:infobarType];
   DCHECK(infobar);
   if (infobar) {
-    InfobarOverlayRequestInserter::CreateForWebState(self.webState);
+    InfobarOverlayRequestInserter::CreateForWebState(
+        self.webState, &DefaultInfobarOverlayRequestFactory);
     InsertParams params(infobar);
     params.overlay_type = InfobarOverlayType::kModal;
     params.insertion_index = OverlayRequestQueue::FromWebState(

@@ -7,7 +7,6 @@
 #import "base/check_op.h"
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_banner_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_completion_notifier.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_overlay_request_cancel_handler.h"
@@ -24,21 +23,6 @@
 #endif
 
 WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayRequestInserter)
-
-// static
-void InfobarOverlayRequestInserter::CreateForWebState(
-    web::WebState* web_state,
-    InfobarOverlayRequestFactory request_factory) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new InfobarOverlayRequestInserter(
-            web_state, request_factory
-                           ? request_factory
-                           : &DefaultInfobarOverlayRequestFactory)));
-  }
-}
 
 InsertParams::InsertParams(InfoBarIOS* infobar) : infobar(infobar) {}
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
@@ -28,7 +29,8 @@ class InfobarBannerInteractionHandlerTest : public PlatformTest {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
-    InfobarOverlayRequestInserter::CreateForWebState(&web_state_);
+    InfobarOverlayRequestInserter::CreateForWebState(
+        &web_state_, &DefaultInfobarOverlayRequestFactory);
 
     std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypePasswordSave,

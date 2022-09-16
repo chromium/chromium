@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/infobars/test/mock_infobar_delegate.h"
@@ -24,7 +25,8 @@ class ConfirmInfobarBannerInteractionHandlerTest : public PlatformTest {
   ConfirmInfobarBannerInteractionHandlerTest() {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    InfobarOverlayRequestInserter::CreateForWebState(&web_state_);
+    InfobarOverlayRequestInserter::CreateForWebState(
+        &web_state_, &DefaultInfobarOverlayRequestFactory);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
 
     std::unique_ptr<InfoBarIOS> infobar =

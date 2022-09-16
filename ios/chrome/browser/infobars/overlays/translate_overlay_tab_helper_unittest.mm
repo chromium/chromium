@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
@@ -50,7 +51,8 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
-    InfobarOverlayRequestInserter::CreateForWebState(&web_state_);
+    InfobarOverlayRequestInserter::CreateForWebState(
+        &web_state_, &DefaultInfobarOverlayRequestFactory);
     TranslateOverlayTabHelper::CreateForWebState(&web_state_);
 
     std::unique_ptr<FakeTranslateInfoBarDelegate> delegate =

@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/https_upgrades/typed_navigation_upgrade_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_tab_helper.h"
 #import "ios/chrome/browser/infobars/overlays/permissions_overlay_tab_helper.h"
@@ -140,7 +141,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   InvalidUrlTabHelper::CreateForWebState(web_state);
 
-  InfobarOverlayRequestInserter::CreateForWebState(web_state);
+  InfobarOverlayRequestInserter::CreateForWebState(
+      web_state, &DefaultInfobarOverlayRequestFactory);
   InfobarOverlayTabHelper::CreateForWebState(web_state);
   TranslateOverlayTabHelper::CreateForWebState(web_state);
 

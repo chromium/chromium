@@ -49,12 +49,6 @@ struct InsertParams {
 class InfobarOverlayRequestInserter
     : public web::WebStateUserData<InfobarOverlayRequestInserter> {
  public:
-  // Creates an inserter for `web_state` that uses `request_factory` to create
-  // inserted requests.
-  static void CreateForWebState(
-      web::WebState* web_state,
-      InfobarOverlayRequestFactory request_factory = nullptr);
-
   ~InfobarOverlayRequestInserter() override;
 
   // Creates an OverlayRequest with `params` configurations.
@@ -85,8 +79,8 @@ class InfobarOverlayRequestInserter
   WEB_STATE_USER_DATA_KEY_DECL();
 
   // Constructor for an inserter that uses `factory` to construct
-  // OverlayRequests to insert into `web_state`'s OverlayRequestQueues.  Both
-  // `web_state` and `factory` must be non-null.
+  // OverlayRequests to insert into `web_state`'s OverlayRequestQueues.
+  // Both `web_state` and `factory` must be non-null.
   InfobarOverlayRequestInserter(web::WebState* web_state,
                                 InfobarOverlayRequestFactory factory);
 
