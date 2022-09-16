@@ -8,6 +8,7 @@
  * settings/WebUI team. For the updated version (JS modules only), see
  * chrome/test/data/webui/settings/fake_settings_private.js.
  */
+cr.define('settings', function() {
   /**
    * @typedef {Array<{key: string,
    *               type: chrome.settingsPrivate.PrefType,
@@ -145,3 +146,9 @@
       };
     }
   }
+
+  return {
+    FakeSettingsPrivate,
+    FakeSettingsPrivatePref,
+  };
+});
