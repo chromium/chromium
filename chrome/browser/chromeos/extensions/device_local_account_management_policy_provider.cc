@@ -40,15 +40,11 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     std::u16string* error) const {
   if (account_type_ == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
       account_type_ == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
-    // Allow extension if it is a component of Chrome.
+    // For Managed Guest Sessions, allow component & force-installed extensions.
     if (extension->location() == ManifestLocation::kExternalComponent ||
-        extension->location() == ManifestLocation::kComponent) {
-      return true;
-    }
-
-    // TODO(isandrk): Remove when whitelisting work is done (crbug/651027).
-    // Allow extension if its type is whitelisted for use in public sessions.
-    if (extension->GetType() == extensions::Manifest::TYPE_HOSTED_APP) {
+        extension->location() == ManifestLocation::kComponent ||
+        extension->location() == ManifestLocation::kExternalPolicyDownload ||
+        extension->location() == ManifestLocation::kExternalPolicy) {
       return true;
     }
 
@@ -56,14 +52,10 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     if (extensions::IsAllowlistedForManagedGuestSession(extension->id())) {
       return true;
     }
+  }
 
-    // Allow force-installed extensions.
-    if (extension->location() == ManifestLocation::kExternalPolicyDownload ||
-        extension->location() == ManifestLocation::kExternalPolicy) {
-      return true;
-    }
-  } else if (account_type_ == policy::DeviceLocalAccount::TYPE_KIOSK_APP ||
-             account_type_ == policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
+  if (account_type_ == policy::DeviceLocalAccount::TYPE_KIOSK_APP ||
+      account_type_ == policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
     // For single-app kiosk sessions, allow platform apps, extensions and shared
     // modules.
     if (extension->GetType() == extensions::Manifest::TYPE_PLATFORM_APP ||

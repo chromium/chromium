@@ -61,14 +61,6 @@ scoped_refptr<const extensions::Extension> CreateComponentExtension() {
                                    &values, extensions::Extension::NO_FLAGS);
 }
 
-scoped_refptr<const extensions::Extension> CreateHostedApp() {
-  base::DictionaryValue values;
-  values.SetKey(extensions::manifest_keys::kApp, base::DictionaryValue());
-  values.SetPath(extensions::manifest_keys::kWebURLs, base::ListValue());
-  return CreateExtensionFromValues(std::string(), ManifestLocation::kInternal,
-                                   &values, extensions::Extension::NO_FLAGS);
-}
-
 scoped_refptr<const extensions::Extension> CreatePlatformAppWithExtraValues(
     const base::DictionaryValue* extra_values,
     ManifestLocation location,
@@ -104,14 +96,6 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   error.clear();
 
   extension = CreateComponentExtension();
-  ASSERT_TRUE(extension.get());
-  EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-  EXPECT_EQ(std::u16string(), error);
-  error.clear();
-
-  // Verify that if an extension's type has been whitelisted for use in
-  // device-local accounts, the extension can be installed.
-  extension = CreateHostedApp();
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
   EXPECT_EQ(std::u16string(), error);
@@ -359,15 +343,6 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSessions) {
     ASSERT_TRUE(extension.get());
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
     EXPECT_EQ(std::u16string(), error);
-    error.clear();
-
-    // Verify that an extension whose type has been whitelisted for use in other
-    // types of device-local accounts cannot be installed in a single-app kiosk
-    // session.
-    extension = CreateHostedApp();
-    ASSERT_TRUE(extension.get());
-    EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 }
