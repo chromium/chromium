@@ -1547,9 +1547,6 @@ mixed_component("base") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  # Windows cannot use the nodebug assertion handler because it doesn't support
-  # weak symbols, which are required to override the default libc++
-  # implementation.
   if (use_custom_libcxx && !is_debug) {
     public_deps += [ ":nodebug_assertion" ]
   }
