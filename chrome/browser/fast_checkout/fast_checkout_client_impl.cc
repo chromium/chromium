@@ -24,9 +24,11 @@
 namespace {
 constexpr char kIntentValue[] = "CHROME_FAST_CHECKOUT";
 constexpr char kTrue[] = "true";
+constexpr char kFalse[] = "false";
 // TODO(crbug.com/1338521): Define and specify proper caller(s) and source(s).
 constexpr char kCaller[] = "7";  // run was started from within Chromium
 constexpr char kSource[] = "1";  // run was started organically
+constexpr char kIsNoRoundTrip[] = "IS_NO_ROUND_TRIP";
 
 std::vector<autofill::CreditCard*> GetValidCreditCards(
     autofill::PersonalDataManager* pdm) {
@@ -60,9 +62,22 @@ FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
 
 bool FastCheckoutClientImpl::Start(
     base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
-    const GURL& url) {
+    const GURL& url,
+    bool script_supports_consentless_execution) {
   if (!base::FeatureList::IsEnabled(features::kFastCheckout))
     return false;
+
+  bool client_supports_consentless_execution =
+      features::kFastCheckoutConsentlessExecutionParam.Get();
+
+  // The run requires consent (`script_supports_consentless_execution == false`)
+  // but the client is consentless.
+  if (!script_supports_consentless_execution &&
+      client_supports_consentless_execution)
+    return false;
+
+  bool run_consentless = client_supports_consentless_execution &&
+                         script_supports_consentless_execution;
 
   if (is_running_)
     return false;
@@ -104,7 +119,7 @@ bool FastCheckoutClientImpl::Start(
        kCaller},
       {autofill_assistant::public_script_parameters::kSourceParameterName,
        kSource},
-  };
+      {kIsNoRoundTrip, run_consentless ? kTrue : kFalse}};
 
   fast_checkout_external_action_delegate_ =
       CreateFastCheckoutExternalActionDelegate();
@@ -116,7 +131,7 @@ bool FastCheckoutClientImpl::Start(
       params_map,
       base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
                      base::Unretained(this)),
-      /*use_autofill_assistant_onboarding=*/true,
+      /*use_autofill_assistant_onboarding=*/!run_consentless,
       base::BindOnce(&FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully,
                      base::Unretained(this)),
       /*suppress_browsing_features=*/false);

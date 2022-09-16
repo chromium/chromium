@@ -93,6 +93,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
@@ -741,6 +742,31 @@ bool ChromeAutofillClient::IsFastCheckoutTriggerForm(
 #endif
 }
 
+bool ChromeAutofillClient::FastCheckoutScriptSupportsConsentlessExecution(
+    const url::Origin& origin) {
+#if BUILDFLAG(IS_ANDROID)
+  FastCheckoutCapabilitiesFetcher* fetcher =
+      FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
+          GetProfile());
+  if (!fetcher) {
+    return false;
+  }
+  return fetcher->SupportsConsentlessExecution(origin);
+#else
+  NOTREACHED();
+  return false;
+#endif
+}
+
+bool ChromeAutofillClient::FastCheckoutClientSupportsConsentlessExecution() {
+#if BUILDFLAG(IS_ANDROID)
+  return ::features::kFastCheckoutConsentlessExecutionParam.Get();
+#else
+  NOTREACHED();
+  return false;
+#endif
+}
+
 bool ChromeAutofillClient::ShowFastCheckout(
     base::WeakPtr<FastCheckoutDelegate> delegate) {
 #if BUILDFLAG(IS_ANDROID)
@@ -752,8 +778,11 @@ bool ChromeAutofillClient::ShowFastCheckout(
   if (IsAutofillAssistantShowing())
     return false;
 
+  const GURL& url = web_contents()->GetLastCommittedURL();
   return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->Start(delegate, web_contents()->GetLastCommittedURL());
+      ->Start(delegate, url,
+              FastCheckoutScriptSupportsConsentlessExecution(
+                  url::Origin::Create(url)));
 #else
   NOTREACHED();
   return false;

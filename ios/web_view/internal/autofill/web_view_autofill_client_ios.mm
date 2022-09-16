@@ -251,6 +251,16 @@ bool WebViewAutofillClientIOS::IsFastCheckoutTriggerForm(
   return false;
 }
 
+bool WebViewAutofillClientIOS::FastCheckoutScriptSupportsConsentlessExecution(
+    const url::Origin& origin) {
+  return false;
+}
+
+bool WebViewAutofillClientIOS::
+    FastCheckoutClientSupportsConsentlessExecution() {
+  return false;
+}
+
 bool WebViewAutofillClientIOS::ShowFastCheckout(
     base::WeakPtr<FastCheckoutDelegate> delegate) {
   NOTREACHED();

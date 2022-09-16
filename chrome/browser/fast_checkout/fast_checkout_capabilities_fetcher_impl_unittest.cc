@@ -78,6 +78,14 @@ class FastCheckoutCapabilitiesFetcherImplTest : public ::testing::Test {
   std::unique_ptr<FastCheckoutCapabilitiesFetcher> fetcher_;
 };
 
+class FastCheckoutCapabilitiesFetcherImplTestParametrized
+    : public FastCheckoutCapabilitiesFetcherImplTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(FastCheckoutCapabilitiesFetcherImplTest,
+                         FastCheckoutCapabilitiesFetcherImplTestParametrized,
+                         testing::Bool());
+
 TEST_F(FastCheckoutCapabilitiesFetcherImplTest, GetCapabilitiesEmptyResponse) {
   url::Origin origin1 = url::Origin::Create(GURL(kUrl1));
   uint64_t hash1 = AutofillAssistant::GetHashPrefix(kHashPrefixSize, origin1);
@@ -360,6 +368,25 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
       kUmaKeyCacheStateIsTriggerFormSupported,
       CacheStateForIsTriggerFormSupported::kEntryAvailableAndFormNotSupported,
       1u);
+}
+
+TEST_P(FastCheckoutCapabilitiesFetcherImplTestParametrized,
+       SupportsConsentlessExecution) {
+  url::Origin origin = url::Origin::Create(GURL(kUrl1));
+  uint64_t hash = AutofillAssistant::GetHashPrefix(kHashPrefixSize, origin);
+  BundleCapabilitiesInformation capabilities;
+  capabilities.trigger_form_signatures.push_back(kFormSignature1);
+  capabilities.supports_consentless_execution = GetParam();
+  CapabilitiesInfo info{kUrl1, {}, capabilities};
+  EXPECT_CALL(*autofill_assistant(),
+              GetCapabilitiesByHashPrefix(
+                  kHashPrefixSize, std::vector<uint64_t>{hash}, kIntent, _))
+      .WillOnce(RunOnceCallback<3>(net::HttpStatusCode::HTTP_OK,
+                                   std::vector<CapabilitiesInfo>{info}));
+  base::MockCallback<FastCheckoutCapabilitiesFetcher::Callback> callback;
+  fetcher()->FetchAvailability(origin, callback.Get());
+
+  EXPECT_EQ(fetcher()->SupportsConsentlessExecution(origin), GetParam());
 }
 
 }  // namespace

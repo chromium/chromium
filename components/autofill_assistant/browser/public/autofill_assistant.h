@@ -44,6 +44,9 @@ class AutofillAssistant {
 
     // The form signatures that the script may be started on.
     std::vector<autofill::FormSignature> trigger_form_signatures;
+
+    // Indicates whether the script supports consentless execution.
+    bool supports_consentless_execution = false;
   };
 
   struct CapabilitiesInfo {

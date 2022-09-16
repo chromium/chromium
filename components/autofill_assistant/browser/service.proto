@@ -233,7 +233,7 @@ message GetCapabilitiesByHashPrefixRequestProto {
 
 // Information that is passed from the bundle to the caller in GetCapabilities
 // RPC requests.
-// Next ID: 2
+// Next ID: 3
 message BundleCapabilitiesInformationProto {
   // Information used by Chrome's FastCheckout vertical.
   message ChromeFastCheckoutProto {
@@ -242,6 +242,10 @@ message BundleCapabilitiesInformationProto {
   }
 
   optional ChromeFastCheckoutProto chrome_fast_checkout = 1;
+
+  // If set to `true` the bundle supports consentless execution which is the
+  // case for JS scripts executed on the client-side.
+  optional bool supports_consentless_execution = 2;
 }
 
 message GetCapabilitiesByHashPrefixResponseProto {

@@ -602,6 +602,13 @@ class AutofillClient : public RiskDataLoader {
   virtual bool IsFastCheckoutTriggerForm(const FormData& form,
                                          const FormFieldData& field) = 0;
 
+  // Returns true if the script for `origin` supports consentless execution.
+  virtual bool FastCheckoutScriptSupportsConsentlessExecution(
+      const url::Origin& origin) = 0;
+
+  // Returns true if --fast-checkout flag is set to consentless-only execution.
+  virtual bool FastCheckoutClientSupportsConsentlessExecution() = 0;
+
   // Shows the FastCheckout surface (for autofilling information during the
   // checkout flow) and returns `true` on success. `delegate` will be notified
   // of events. Should be called only if `IsFastCheckoutSupported` returns true.

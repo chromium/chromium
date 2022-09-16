@@ -51,6 +51,14 @@ class MockAutofillClient : public TestAutofillClient {
               ShowFastCheckout,
               (base::WeakPtr<FastCheckoutDelegate>),
               (override));
+  MOCK_METHOD(bool,
+              FastCheckoutScriptSupportsConsentlessExecution,
+              (const url::Origin& origin),
+              (override));
+  MOCK_METHOD(bool,
+              FastCheckoutClientSupportsConsentlessExecution,
+              (),
+              (override));
   MOCK_METHOD(void, HideFastCheckout, (), (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
 };
@@ -73,6 +81,10 @@ class FastCheckoutDelegateImplTest : public testing::Test {
         .WillByDefault(Return(true));
     ON_CALL(autofill_client_, IsFastCheckoutTriggerForm)
         .WillByDefault(Return(true));
+    ON_CALL(autofill_client_, FastCheckoutScriptSupportsConsentlessExecution)
+        .WillByDefault(Return(false));
+    ON_CALL(autofill_client_, FastCheckoutClientSupportsConsentlessExecution)
+        .WillByDefault(Return(false));
     ON_CALL(autofill_client_, ShowFastCheckout).WillByDefault(Return(true));
     ON_CALL(*autofill_driver_, CanShowAutofillUi).WillByDefault(Return(true));
   }
@@ -127,6 +139,16 @@ TEST_F(FastCheckoutDelegateImplTest,
 
   // Events are only logged if Fast Checkout is supported and there is a script.
   histogram_tester_.ExpectTotalCount(kUmaKeyFastCheckoutTriggerOutcome, 0u);
+}
+
+TEST_F(FastCheckoutDelegateImplTest,
+       TryToShowFastCheckoutFailsIfConsentlessClientAndScriptRequiresConsent) {
+  ASSERT_FALSE(fast_checkout_delegate_->IsShowingFastCheckoutUI());
+  EXPECT_CALL(autofill_client_, FastCheckoutScriptSupportsConsentlessExecution)
+      .WillOnce(Return(false));
+  EXPECT_CALL(autofill_client_, FastCheckoutClientSupportsConsentlessExecution)
+      .WillOnce(Return(true));
+  TryToShowFastCheckout(/*expected_success=*/false);
 }
 
 TEST_F(FastCheckoutDelegateImplTest,

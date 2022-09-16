@@ -29,7 +29,8 @@ class FastCheckoutClientImpl
 
   // FastCheckoutClient:
   bool Start(base::WeakPtr<autofill::FastCheckoutDelegate> delegate,
-             const GURL& url) override;
+             const GURL& url,
+             bool script_supports_consentless_execution) override;
   void Stop() override;
   bool IsRunning() const override;
 

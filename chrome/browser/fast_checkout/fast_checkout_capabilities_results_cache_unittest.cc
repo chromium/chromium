@@ -53,13 +53,19 @@ class FastCheckoutCapabilitiesResultsCacheTest : public ::testing::Test {
 };
 
 TEST(CapabilitiesResultTest, SupportsForm) {
-  FastCheckoutCapabilitiesResult result{kSignatures1};
+  FastCheckoutCapabilitiesResult result{kSignatures1, false};
 
   for (auto signature : kSignatures1) {
     EXPECT_TRUE(result.SupportsForm(signature))
         << "signature should be supported: " << signature;
   }
   EXPECT_FALSE(result.SupportsForm(kSignatureNotIn1));
+}
+
+TEST(CapabilitiesResultTest, SupportsConsentlessExecution) {
+  FastCheckoutCapabilitiesResult result{kSignatures1, true};
+
+  EXPECT_TRUE(result.SupportsConsentlessExecution());
 }
 
 TEST_F(FastCheckoutCapabilitiesResultsCacheTest, AddToCache) {
@@ -74,9 +80,12 @@ TEST_F(FastCheckoutCapabilitiesResultsCacheTest, AddToCache) {
   EXPECT_FALSE(cache().ContainsOrigin(origin3));
   EXPECT_FALSE(cache().ContainsTriggerForm(origin3, kSignatures3.front()));
 
-  cache().AddToCache(origin1, FastCheckoutCapabilitiesResult(kSignatures1));
-  cache().AddToCache(origin2, FastCheckoutCapabilitiesResult(kSignatures2));
-  cache().AddToCache(origin3, FastCheckoutCapabilitiesResult(kSignatures3));
+  cache().AddToCache(origin1,
+                     FastCheckoutCapabilitiesResult(kSignatures1, false));
+  cache().AddToCache(origin2,
+                     FastCheckoutCapabilitiesResult(kSignatures2, false));
+  cache().AddToCache(origin3,
+                     FastCheckoutCapabilitiesResult(kSignatures3, false));
 
   EXPECT_TRUE(cache().ContainsOrigin(origin1));
   EXPECT_TRUE(cache().ContainsTriggerForm(origin1, kSignatures1.front()));
@@ -96,13 +105,15 @@ TEST_F(FastCheckoutCapabilitiesResultsCacheTest, AddToCacheWithAdvancedClock) {
   EXPECT_FALSE(cache().ContainsOrigin(origin2));
   EXPECT_FALSE(cache().ContainsTriggerForm(origin2, kSignatures2.front()));
 
-  cache().AddToCache(origin1, FastCheckoutCapabilitiesResult(kSignatures1));
+  cache().AddToCache(origin1,
+                     FastCheckoutCapabilitiesResult(kSignatures1, false));
 
   EXPECT_TRUE(cache().ContainsOrigin(origin1));
   EXPECT_FALSE(cache().ContainsOrigin(origin2));
 
   AdvanceClock(base::Minutes(6));
-  cache().AddToCache(origin2, FastCheckoutCapabilitiesResult(kSignatures2));
+  cache().AddToCache(origin2,
+                     FastCheckoutCapabilitiesResult(kSignatures2, false));
 
   EXPECT_TRUE(cache().ContainsOrigin(origin1));
   EXPECT_TRUE(cache().ContainsOrigin(origin2));
@@ -119,7 +130,8 @@ TEST_F(FastCheckoutCapabilitiesResultsCacheTest, AddToCacheWithAdvancedClock) {
 
 TEST_F(FastCheckoutCapabilitiesResultsCacheTest, AddToCacheWithMaxSizeReached) {
   url::Origin origin1 = url::Origin::Create(GURL(kOrigin1));
-  cache().AddToCache(origin1, FastCheckoutCapabilitiesResult(kSignatures1));
+  cache().AddToCache(origin1,
+                     FastCheckoutCapabilitiesResult(kSignatures1, false));
   EXPECT_TRUE(cache().ContainsOrigin(origin1));
 
   // Add generic origins until the cache is full.
@@ -128,7 +140,7 @@ TEST_F(FastCheckoutCapabilitiesResultsCacheTest, AddToCacheWithMaxSizeReached) {
     cache().AddToCache(
         url::Origin::Create(GURL(base::StrCat(
             {"example-page", base::NumberToString(index), ".de"}))),
-        FastCheckoutCapabilitiesResult(kEmptySignatures));
+        FastCheckoutCapabilitiesResult(kEmptySignatures, false));
   }
 
   // The earliest entry should still be contained in the cache.
@@ -136,9 +148,28 @@ TEST_F(FastCheckoutCapabilitiesResultsCacheTest, AddToCacheWithMaxSizeReached) {
 
   // Adding another entry purges the earliest one.
   url::Origin origin2 = url::Origin::Create(GURL(kOrigin2));
-  cache().AddToCache(origin2, FastCheckoutCapabilitiesResult(kSignatures2));
+  cache().AddToCache(origin2,
+                     FastCheckoutCapabilitiesResult(kSignatures2, false));
   EXPECT_FALSE(cache().ContainsOrigin(origin1));
   EXPECT_TRUE(cache().ContainsOrigin(origin2));
+}
+
+TEST_F(FastCheckoutCapabilitiesResultsCacheTest, SupportsConsentlessExecution) {
+  url::Origin originConsentless = url::Origin::Create(GURL(kOrigin1));
+  url::Origin originNotConsentless = url::Origin::Create(GURL(kOrigin2));
+
+  EXPECT_FALSE(cache().ContainsOrigin(originConsentless));
+  EXPECT_FALSE(cache().SupportsConsentlessExecution(originConsentless));
+  EXPECT_FALSE(cache().ContainsOrigin(originNotConsentless));
+  EXPECT_FALSE(cache().SupportsConsentlessExecution(originNotConsentless));
+
+  cache().AddToCache(originConsentless,
+                     FastCheckoutCapabilitiesResult(kSignatures1, true));
+  cache().AddToCache(originNotConsentless,
+                     FastCheckoutCapabilitiesResult(kSignatures2, false));
+
+  EXPECT_TRUE(cache().SupportsConsentlessExecution(originConsentless));
+  EXPECT_FALSE(cache().SupportsConsentlessExecution(originNotConsentless));
 }
 
 }  // namespace

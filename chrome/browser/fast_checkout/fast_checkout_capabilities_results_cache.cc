@@ -15,8 +15,10 @@
 FastCheckoutCapabilitiesResult::FastCheckoutCapabilitiesResult() = default;
 
 FastCheckoutCapabilitiesResult::FastCheckoutCapabilitiesResult(
-    base::span<const autofill::FormSignature> signatures)
-    : form_signatures_(signatures.begin(), signatures.end()) {}
+    base::span<const autofill::FormSignature> signatures,
+    bool supports_consentless_execution)
+    : form_signatures_(signatures.begin(), signatures.end()),
+      supports_consentless_execution_(supports_consentless_execution) {}
 
 FastCheckoutCapabilitiesResult::~FastCheckoutCapabilitiesResult() = default;
 
@@ -26,6 +28,10 @@ FastCheckoutCapabilitiesResult::FastCheckoutCapabilitiesResult(
 bool FastCheckoutCapabilitiesResult::SupportsForm(
     autofill::FormSignature form_signature) const {
   return form_signatures_.contains(form_signature);
+}
+
+bool FastCheckoutCapabilitiesResult::SupportsConsentlessExecution() const {
+  return supports_consentless_execution_;
 }
 
 FastCheckoutCapabilitiesResultsCache::FastCheckoutCapabilitiesResultsCache() =
@@ -68,6 +74,15 @@ bool FastCheckoutCapabilitiesResultsCache::ContainsTriggerForm(
       capabilities_.find(origin);
   return (entry != capabilities_.end() &&
           entry->second.SupportsForm(form_signature));
+}
+
+bool FastCheckoutCapabilitiesResultsCache::SupportsConsentlessExecution(
+    const url::Origin& origin) {
+  RemoveStaleEntries();
+  std::map<url::Origin, FastCheckoutCapabilitiesResult>::iterator entry =
+      capabilities_.find(origin);
+  return (entry != capabilities_.end() &&
+          entry->second.SupportsConsentlessExecution());
 }
 
 void FastCheckoutCapabilitiesResultsCache::RemoveOldestEntry() {

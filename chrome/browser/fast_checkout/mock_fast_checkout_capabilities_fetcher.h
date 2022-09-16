@@ -26,6 +26,10 @@ class MockFastCheckoutCapabilitiesFetcher
               IsTriggerFormSupported,
               (const url::Origin&, autofill::FormSignature),
               (override));
+  MOCK_METHOD(bool,
+              SupportsConsentlessExecution,
+              (const url::Origin& origin),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_FAST_CHECKOUT_MOCK_FAST_CHECKOUT_CAPABILITIES_FETCHER_H_

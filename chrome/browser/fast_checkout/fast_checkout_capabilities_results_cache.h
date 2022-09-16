@@ -23,18 +23,23 @@ class Origin;
 class FastCheckoutCapabilitiesResult {
  public:
   FastCheckoutCapabilitiesResult();
-  explicit FastCheckoutCapabilitiesResult(
-      base::span<const autofill::FormSignature> signatures);
+  FastCheckoutCapabilitiesResult(
+      base::span<const autofill::FormSignature> signatures,
+      bool supports_consentless_execution);
   virtual ~FastCheckoutCapabilitiesResult();
 
   FastCheckoutCapabilitiesResult(const FastCheckoutCapabilitiesResult& other);
 
   bool SupportsForm(autofill::FormSignature form_signature) const;
 
+  bool SupportsConsentlessExecution() const;
+
  private:
   // The set of signatures supported. The number of entries is expected to be
   // `O(1)` and often zero.
   base::flat_set<autofill::FormSignature> form_signatures_;
+  // Indicates whether consentless execution is supported.
+  bool supports_consentless_execution_ = false;
 };
 
 // A cache of `CapabilitiesResult` entries that has both a maximum age and a
@@ -65,6 +70,10 @@ class FastCheckoutCapabilitiesResultsCache {
   // on `origin` is supported.
   bool ContainsTriggerForm(const url::Origin& origin,
                            autofill::FormSignature form_signature);
+
+  // Returns whether there is a cache entry that consentless execution is
+  // supported on `origin`.
+  bool SupportsConsentlessExecution(const url::Origin& origin);
 
  private:
   // Removes the oldest cache entry. Assumes that the cache is non-empty.

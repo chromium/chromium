@@ -175,6 +175,9 @@ class ChromeAutofillClient
   bool IsFastCheckoutSupported() override;
   bool IsFastCheckoutTriggerForm(const FormData& form,
                                  const FormFieldData& field) override;
+  bool FastCheckoutScriptSupportsConsentlessExecution(
+      const url::Origin& origin) override;
+  bool FastCheckoutClientSupportsConsentlessExecution() override;
   bool ShowFastCheckout(base::WeakPtr<FastCheckoutDelegate> delegate) override;
   void HideFastCheckout() override;
   bool IsTouchToFillCreditCardSupported() override;
@@ -254,6 +257,7 @@ class ChromeAutofillClient
   bool IsMultipleAccountUser();
   std::u16string GetAccountHolderName();
   std::u16string GetAccountHolderEmail();
+  bool SupportsConsentlessExecution(const url::Origin& origin);
 
   std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;

@@ -65,27 +65,38 @@ void OnCapabilitiesResponse(
       info.script_parameters[param.name()] = param.value();
     }
 
-    if (match.has_bundle_capabilities_information() &&
-        match.bundle_capabilities_information().has_chrome_fast_checkout() &&
-        !match.bundle_capabilities_information()
-             .chrome_fast_checkout()
-             .trigger_form_signatures()
-             .empty()) {
-      // Source and the target vector are abbreviated due to their length.
-      auto& source = match.bundle_capabilities_information()
-                         .chrome_fast_checkout()
-                         .trigger_form_signatures();
-
+    if (match.has_bundle_capabilities_information()) {
       info.bundle_capabilities_information =
           AutofillAssistant::BundleCapabilitiesInformation();
-      std::vector<autofill::FormSignature>& target =
-          info.bundle_capabilities_information.value().trigger_form_signatures;
 
-      target.reserve(source.size());
-      base::ranges::transform(source, std::back_inserter(target),
-                              [](uint64_t signature) {
-                                return autofill::FormSignature(signature);
-                              });
+      if (match.bundle_capabilities_information().has_chrome_fast_checkout() &&
+          !match.bundle_capabilities_information()
+               .chrome_fast_checkout()
+               .trigger_form_signatures()
+               .empty()) {
+        // Source and the target vector are abbreviated due to their length.
+        auto& source = match.bundle_capabilities_information()
+                           .chrome_fast_checkout()
+                           .trigger_form_signatures();
+
+        std::vector<autofill::FormSignature>& target =
+            info.bundle_capabilities_information.value()
+                .trigger_form_signatures;
+
+        target.reserve(source.size());
+        base::ranges::transform(source, std::back_inserter(target),
+                                [](uint64_t signature) {
+                                  return autofill::FormSignature(signature);
+                                });
+      }
+
+      if (match.bundle_capabilities_information()
+              .has_supports_consentless_execution()) {
+        info.bundle_capabilities_information.value()
+            .supports_consentless_execution =
+            match.bundle_capabilities_information()
+                .supports_consentless_execution();
+      }
     }
 
     infos.push_back(info);

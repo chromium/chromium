@@ -63,6 +63,7 @@ class FastCheckoutCapabilitiesFetcherImpl
   void FetchAvailability(const url::Origin& origin, Callback callback) override;
   bool IsTriggerFormSupported(const url::Origin& origin,
                               autofill::FormSignature form_signature) override;
+  bool SupportsConsentlessExecution(const url::Origin& origin) override;
 
  private:
   // Abbreviation for a map of origins to a pair of the start time (in time

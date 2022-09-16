@@ -23,6 +23,8 @@
 using autofill_assistant::AutofillAssistant;
 using CapabilitiesInfo =
     autofill_assistant::AutofillAssistant::CapabilitiesInfo;
+using BundleCapabilitiesInformation =
+    autofill_assistant::AutofillAssistant::BundleCapabilitiesInformation;
 
 namespace {
 
@@ -143,11 +145,13 @@ void FastCheckoutCapabilitiesFetcherImpl::OnGetCapabilitiesInformationReceived(
 
   if (request_capabilities != capabilities.end() &&
       request_capabilities->bundle_capabilities_information.has_value()) {
+    BundleCapabilitiesInformation bundle_capabilities_information =
+        request_capabilities->bundle_capabilities_information.value();
     cache_.AddToCache(
         origin,
         FastCheckoutCapabilitiesResult(
-            request_capabilities->bundle_capabilities_information.value()
-                .trigger_form_signatures));
+            bundle_capabilities_information.trigger_form_signatures,
+            bundle_capabilities_information.supports_consentless_execution));
   } else {
     // If no form signatures are supported, save that into the cache, too.
     cache_.AddToCache(origin, FastCheckoutCapabilitiesResult());
@@ -155,4 +159,9 @@ void FastCheckoutCapabilitiesFetcherImpl::OnGetCapabilitiesInformationReceived(
 
   inform_callers(true);
   ongoing_requests_.erase(request);
+}
+
+bool FastCheckoutCapabilitiesFetcherImpl::SupportsConsentlessExecution(
+    const url::Origin& origin) {
+  return cache_.SupportsConsentlessExecution(origin);
 }
