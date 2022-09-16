@@ -26,12 +26,23 @@ class TestRunner(ABC):
         self._packages = packages
         self._package_paths = None
 
+    # TODO(crbug.com/1256503): Remove when all tests are converted to CFv2.
+    @staticmethod
+    def is_cfv2() -> bool:
+        """
+        Returns True if packages are CFv2, False otherwise. Subclasses can
+        override this and return False if needed.
+        """
+
+        return True
+
     @property
     def packages(self) -> List[str]:
         """
         Returns:
             A list of package names needed for the test.
         """
+
         return self._packages
 
     def get_package_paths(self) -> List[str]:
@@ -41,6 +52,7 @@ class TestRunner(ABC):
             A list of the path to all .far files that need to be updated on the
             device.
         """
+
         if self._package_paths:
             return self._package_paths
         self._package_paths = []

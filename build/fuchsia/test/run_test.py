@@ -99,13 +99,12 @@ def main():
 
         with serve_repository(runner_args):
 
-            # TODO(crbug.com/1342460): Remove when Telemetry and blink_web_tests
-            # are using CFv2 packages.
-            if runner_args.test_type in ['blink', 'gpu']:
+            if test_runner.is_cfv2():
+                resolve_packages(test_runner.packages, runner_args.target_id)
+            else:
+                # TODO(crbug.com/1256503): Remove when all packages are CFv2.
                 resolve_v1_packages(test_runner.packages,
                                     runner_args.target_id)
-            else:
-                resolve_packages(test_runner.packages, runner_args.target_id)
             return test_runner.run_test().returncode
 
 
