@@ -162,21 +162,11 @@ static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
   }
 }
 
-static void HibernateWrapperForTesting(
-    base::WeakPtr<Canvas2DLayerBridge> bridge) {
-  HibernateWrapper(std::move(bridge), base::TimeTicks());
-}
-
 static void LoseContextInBackgroundWrapper(
     base::WeakPtr<Canvas2DLayerBridge> bridge,
     base::TimeTicks /*idleDeadline*/) {
   if (bridge)
     bridge->LoseContext();
-}
-
-static void LoseContextInBackgroundForTestingWrapper(
-    base::WeakPtr<Canvas2DLayerBridge> bridge) {
-  LoseContextInBackgroundWrapper(std::move(bridge), base::TimeTicks());
 }
 
 void Canvas2DLayerBridge::Hibernate() {
@@ -391,15 +381,9 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
       base::FeatureList::IsEnabled(
           ::features::kCanvasContextLostInBackground)) {
     lose_context_in_background_scheduled_ = true;
-    if (dont_use_idle_scheduling_for_testing_) {
-      Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-          FROM_HERE, WTF::BindOnce(&LoseContextInBackgroundForTestingWrapper,
-                                   weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      ThreadScheduler::Current()->PostIdleTask(
-          FROM_HERE, WTF::BindOnce(&LoseContextInBackgroundWrapper,
-                                   weak_ptr_factory_.GetWeakPtr()));
-    }
+    ThreadScheduler::Current()->PostIdleTask(
+        FROM_HERE, WTF::BindOnce(&LoseContextInBackgroundWrapper,
+                                 weak_ptr_factory_.GetWeakPtr()));
   } else if (IsHibernationEnabled() && ResourceProvider() && IsAccelerated() &&
              IsHidden() && !hibernation_scheduled_ &&
              !base::FeatureList::IsEnabled(
@@ -408,15 +392,9 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
       layer_->ClearTexture();
     logger_->ReportHibernationEvent(kHibernationScheduled);
     hibernation_scheduled_ = true;
-    if (dont_use_idle_scheduling_for_testing_) {
-      Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-          FROM_HERE, WTF::BindOnce(&HibernateWrapperForTesting,
-                                   weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      ThreadScheduler::Current()->PostIdleTask(
-          FROM_HERE,
-          WTF::BindOnce(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
-    }
+    ThreadScheduler::Current()->PostIdleTask(
+        FROM_HERE,
+        WTF::BindOnce(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
   }
   if (!IsHidden() && (IsHibernating() || lose_context_in_background_))
     GetOrCreateResourceProvider();  // Rude awakening
@@ -552,11 +530,8 @@ void Canvas2DLayerBridge::FlushRecording(bool printing) {
 
   // Sample one out of every kRasterMetricProbability frames to time
   // If the canvas is accelerated, we also need access to the raster_interface
-
-  // We are using @dont_use_idle_scheduling_for_testing_ temporarily to always
-  // measure while testing.
   const bool will_measure =
-      dont_use_idle_scheduling_for_testing_ ||
+      always_measure_for_testing_ ||
       metrics_subsampler_.ShouldSample(kRasterMetricProbability);
   const bool measure_raster_metric =
       (raster_interface || !IsAccelerated()) && will_measure;
