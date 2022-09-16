@@ -206,6 +206,7 @@ class CountDanglingRawPtr {
 // For ease of reading, the tests are placed into the latter namespace.
 namespace partition_alloc::internal {
 
+using BucketDistribution = ThreadSafePartitionRoot::BucketDistribution;
 using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
 const size_t kTestAllocSize = 16;
@@ -221,6 +222,21 @@ const size_t kRealAllocSize = partition_alloc::internal::base::bits::AlignUp(
     kAlignment);
 
 const char* type_name = nullptr;
+
+void SetDistributionForPartitionRoot(ThreadSafePartitionRoot* root,
+                                     BucketDistribution distribution) {
+  switch (distribution) {
+    case BucketDistribution::kDefault:
+      root->SwitchToDefaultBucketDistribution();
+      break;
+    case BucketDistribution::kCoarser:
+      root->ResetBucketDistributionForTesting();
+      break;
+    case BucketDistribution::kDenser:
+      root->SwitchToDenserBucketDistribution();
+      break;
+  }
+}
 
 class ScopedPageAllocation {
  public:
@@ -249,7 +265,7 @@ class ScopedPageAllocation {
   char* ptr_;
 };
 
-class PartitionAllocTest : public testing::TestWithParam<bool> {
+class PartitionAllocTest : public testing::TestWithParam<BucketDistribution> {
  protected:
   PartitionAllocTest() = default;
 
@@ -294,16 +310,19 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
     allocator.root()->UncapEmptySlotSpanMemoryForTesting();
     aligned_allocator.root()->UncapEmptySlotSpanMemoryForTesting();
 
-    if (GetParam())
-      allocator.root()->SwitchToDenserBucketDistribution();
-    else
-      allocator.root()->ResetBucketDistributionForTesting();
+    SetDistributionForPartitionRoot(allocator.root(), GetParam());
+    SetDistributionForPartitionRoot(aligned_allocator.root(), GetParam());
   }
 
   size_t SizeToIndex(size_t size) {
-    const bool with_denser_bucket_distribution = GetParam();
+    const auto distribution_to_use = GetParam();
     return PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-        size, with_denser_bucket_distribution);
+        size, distribution_to_use);
+  }
+
+  size_t SizeToBucketSize(size_t size) {
+    const auto index = SizeToIndex(size);
+    return allocator.root()->buckets[index].slot_size;
   }
 
   void TearDown() override {
@@ -471,7 +490,9 @@ class PartitionAllocDeathTest : public PartitionAllocTest {};
 
 INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          PartitionAllocDeathTest,
-                         testing::Values(false, true));
+                         testing::Values(BucketDistribution::kDefault,
+                                         BucketDistribution::kCoarser,
+                                         BucketDistribution::kDenser));
 
 #endif
 
@@ -557,7 +578,9 @@ class MockPartitionStatsDumper : public PartitionStatsDumper {
 
 INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          PartitionAllocTest,
-                         testing::Values(false, true));
+                         testing::Values(BucketDistribution::kDefault,
+                                         BucketDistribution::kCoarser,
+                                         BucketDistribution::kDenser));
 
 // Check that the most basic of allocate / free pairs work.
 TEST_P(PartitionAllocTest, Basic) {
@@ -1005,11 +1028,10 @@ TEST_P(PartitionAllocTest, AllocSizes) {
   }
 
   {
+    // Single-slot slot span size.
     const size_t size =
-        (((PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan) -
-          SystemPageSize()) /
-         2) -
-        kExtraAllocSize;
+        PartitionPageSize() * kMaxPartitionPagesPerRegularSlotSpan + 1;
+
     void* ptr = allocator.root()->Alloc(size, type_name);
     EXPECT_TRUE(ptr);
     memset(ptr, 'A', size);
@@ -2553,8 +2575,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
                                   &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
-      size_t slot_size =
-          requested_size + (requested_size / kNumBucketsPerOrder);
+      size_t slot_size = SizeToBucketSize(requested_size + 1);
       const PartitionBucketMemoryStats* stats =
           dumper.GetBucketStats(slot_size);
       ASSERT_TRUE(stats);
@@ -2565,7 +2586,9 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
+      EXPECT_EQ((slot_size - (requested_size + 1)) / SystemPageSize() *
+                    SystemPageSize(),
+                stats->discardable_bytes);
       EXPECT_EQ(1u, stats->num_full_slot_spans);
       EXPECT_EQ(0u, stats->num_active_slot_spans);
       EXPECT_EQ(0u, stats->num_empty_slot_spans);
@@ -2580,8 +2603,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
                                   &dumper);
       EXPECT_FALSE(dumper.IsMemoryAllocationRecorded());
 
-      size_t slot_size =
-          requested_size + (requested_size / kNumBucketsPerOrder);
+      size_t slot_size = SizeToBucketSize(requested_size + 1);
       const PartitionBucketMemoryStats* stats =
           dumper.GetBucketStats(slot_size);
       EXPECT_TRUE(stats);
@@ -2609,7 +2631,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
       size_t slot_size =
-          requested_size + (requested_size / kNumBucketsPerOrder);
+          SizeToBucketSize(requested_size + SystemPageSize() + 1);
       const PartitionBucketMemoryStats* stats =
           dumper.GetBucketStats(slot_size);
       EXPECT_TRUE(stats);
@@ -2621,7 +2643,9 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       EXPECT_EQ(1u, stats->active_count);
       EXPECT_EQ(slot_size, stats->resident_bytes);
       EXPECT_EQ(0u, stats->decommittable_bytes);
-      EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
+      EXPECT_EQ((slot_size - (requested_size + SystemPageSize() + 1)) /
+                    SystemPageSize() * SystemPageSize(),
+                stats->discardable_bytes);
       EXPECT_EQ(1u, stats->num_full_slot_spans);
       EXPECT_EQ(0u, stats->num_active_slot_spans);
       EXPECT_EQ(0u, stats->num_empty_slot_spans);
@@ -3225,7 +3249,7 @@ TEST_P(PartitionAllocTest, Bug_897585) {
   // Need sizes big enough to be direct mapped and a delta small enough to
   // allow re-use of the slot span when cookied. These numbers fall out of the
   // test case in the indicated bug.
-  size_t kInitialSize = 983040;
+  size_t kInitialSize = 983050;
   size_t kDesiredSize = 983100;
   ASSERT_GT(kInitialSize, kMaxBucketed);
   ASSERT_GT(kDesiredSize, kMaxBucketed);
@@ -3528,6 +3552,17 @@ TEST_P(PartitionAllocTest, Bookkeeping) {
 
   // Single-slot slot spans...
   size_t big_size = kMaxBucketed - SystemPageSize();
+  // When the system page size is larger than 4KiB, we don't necessarily have
+  // enough space in the superpage to store two of the largest bucketed
+  // allocations, particularly when we reserve extra space for e.g. bitmaps. In
+  // this case, use a smaller size.
+  //
+  // TODO(lizeb): Fix it, perhaps by lowering the maximum order for bucketed
+  // allocations.
+  if (SystemPageSize() > (1 << 12)) {
+    big_size -= 4 * SystemPageSize();
+  }
+
   ASSERT_GT(big_size, MaxRegularSlotSpanSize());
   ASSERT_LE(big_size, kMaxBucketed);
   bucket_index = SizeToIndex(big_size - kExtraAllocSize);
@@ -4224,6 +4259,7 @@ TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
       PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
+  SetDistributionForPartitionRoot(new_root, GetParam());
 
   // Realloc from |allocator.root()| into |new_root|.
   void* ptr2 = new_root->ReallocWithFlags(AllocFlags::kReturnNull, ptr,
@@ -4428,6 +4464,7 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
         PartitionOptions::UseConfigurablePool::kIfAvailable,
     });
     root->UncapEmptySlotSpanMemoryForTesting();
+    SetDistributionForPartitionRoot(root, GetParam());
 
     const size_t count = 250;
     std::vector<void*> allocations(count, nullptr);
@@ -4464,6 +4501,7 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
       PartitionOptions::BackupRefPtrZapping::kDisabled,
       PartitionOptions::UseConfigurablePool::kNo,
   });
+  SetDistributionForPartitionRoot(&root, GetParam());
 
   // Allocate some memory, don't free it to keep committed memory.
   std::vector<void*> allocated_memory;
@@ -4522,6 +4560,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
       PartitionOptions::UseConfigurablePool::kIfAvailable,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
+  SetDistributionForPartitionRoot(&root, GetParam());
 
   std::vector<void*> single_slot_allocated_memory;
   constexpr size_t single_slot_count = kDefaultEmptySlotSpanRingSize + 10;
@@ -4850,7 +4889,7 @@ TEST_P(PartitionAllocTest, OpenCL) {
 
 TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
   for (PartitionRoot<ThreadSafe>::Bucket& bucket : allocator.root()->buckets) {
-    size_t slot_size = bucket.slot_size;
+    const size_t slot_size = bucket.slot_size;
     if (slot_size == kInvalidBucketSize)
       continue;
 

@@ -555,10 +555,18 @@ uint8_t ComputeSystemPagesPerSlotSpanInternal(size_t slot_size) {
 
 uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
                                       bool prefer_smaller_slot_spans) {
-  if (prefer_smaller_slot_spans)
-    return ComputeSystemPagesPerSlotSpanPreferSmall(slot_size);
-  else
-    return ComputeSystemPagesPerSlotSpanInternal(slot_size);
+  if (prefer_smaller_slot_spans) {
+    size_t system_page_count =
+        ComputeSystemPagesPerSlotSpanPreferSmall(slot_size);
+    size_t waste = (system_page_count * SystemPageSize()) % slot_size;
+    // In case the waste is too large (more than 5% of a page), don't try to use
+    // the "small" slot span formula. This happens when we have a lot of
+    // buckets, in some cases the formula doesn't find a nice, small size.
+    if (waste <= .05 * SystemPageSize())
+      return system_page_count;
+  }
+
+  return ComputeSystemPagesPerSlotSpanInternal(slot_size);
 }
 
 template <bool thread_safe>

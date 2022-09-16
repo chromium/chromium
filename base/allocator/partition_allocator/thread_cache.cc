@@ -424,7 +424,9 @@ void ThreadCache::SetLargestCachedSize(size_t size) {
   if (size > ThreadCache::kLargeSizeThreshold)
     size = ThreadCache::kLargeSizeThreshold;
   largest_active_bucket_index_ =
-      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(size, false);
+      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
+          size,
+          PartitionRoot<internal::ThreadSafe>::BucketDistribution::kCoarser);
   PA_CHECK(largest_active_bucket_index_ < kBucketCount);
   ThreadCacheRegistry::Instance().SetLargestActiveBucketIndex(
       largest_active_bucket_index_);
@@ -447,9 +449,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   size_t usable_size;
   bool already_zeroed;
 
-  auto* bucket = root->buckets +
-                 PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-                     raw_size, root->flags.with_denser_bucket_distribution);
+  auto* bucket =
+      root->buckets + PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
+                          raw_size, root->GetBucketDistribution());
   uintptr_t buffer = root->RawAlloc(bucket, AllocFlags::kZeroFill, raw_size,
                                     internal::PartitionPageSize(), &usable_size,
                                     &already_zeroed);

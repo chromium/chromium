@@ -106,6 +106,7 @@ class BucketIndexLookup final {
  public:
   PA_ALWAYS_INLINE constexpr static uint16_t GetIndexForDenserBuckets(
       size_t size);
+  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexFor8Buckets(size_t size);
   PA_ALWAYS_INLINE constexpr static uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
@@ -221,6 +222,52 @@ PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
   }
 }
 
+PA_ALWAYS_INLINE constexpr uint16_t RoundUpToOdd(uint16_t size) {
+  return (size % 2 == 0) + size;
+}
+
+// static
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexFor8Buckets(
+    size_t size) {
+  // This forces the bucket table to be constant-initialized and immediately
+  // materialized in the binary.
+  constexpr BucketIndexLookup lookup{};
+  const size_t order =
+      kBitsPerSizeT -
+      static_cast<size_t>(base::bits::CountLeadingZeroBits(size));
+  // The order index is simply the next few bits after the most significant
+  // bit.
+  const size_t order_index =
+      (size >> kOrderIndexShift[order]) & (kNumBucketsPerOrder - 1);
+  // And if the remaining bits are non-zero we must bump the bucket up.
+  const size_t sub_order_index = size & kOrderSubIndexMask[order];
+  const uint16_t index =
+      lookup.bucket_index_lookup_[(order << kNumBucketsPerOrderBits) +
+                                  order_index + !!sub_order_index];
+  PA_DCHECK(index <= kNumBuckets);  // Last one is the sentinel bucket.
+  return index;
+}
+
+// static
+PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
+    size_t size) {
+  const auto index = GetIndexFor8Buckets(size);
+  // Below the minimum size, 4 and 8 bucket distributions are the same, since we
+  // can't fit any more buckets per order; this is due to alignment
+  // requirements: each bucket must be a multiple of the alignment, which
+  // implies the difference between buckets must also be a multiple of the
+  // alignment. In smaller orders, this limits the number of buckets we can
+  // have per order. So, for these small order, we do not want to skip every
+  // second bucket.
+  //
+  // We also do not want to go about the index for the max bucketed size.
+  if (size > kAlignment * kNumBucketsPerOrder &&
+      index < GetIndexFor8Buckets(kMaxBucketed))
+    return RoundUpToOdd(index);
+  else
+    return index;
+}
+
 // static
 PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   // For any order 2^N, under the denser bucket distribution ("Distribution A"),
@@ -244,28 +291,6 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   if (1 << 8 < size && size < kHighThresholdForAlternateDistribution)
     return BucketIndexLookup::GetIndexForDenserBuckets(RoundUpSize(size));
   return BucketIndexLookup::GetIndexForDenserBuckets(size);
-}
-
-// static
-PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
-    size_t size) {
-  // This forces the bucket table to be constant-initialized and immediately
-  // materialized in the binary.
-  constexpr BucketIndexLookup lookup{};
-  const size_t order =
-      kBitsPerSizeT -
-      static_cast<size_t>(base::bits::CountLeadingZeroBits(size));
-  // The order index is simply the next few bits after the most significant
-  // bit.
-  const size_t order_index =
-      (size >> kOrderIndexShift[order]) & (kNumBucketsPerOrder - 1);
-  // And if the remaining bits are non-zero we must bump the bucket up.
-  const size_t sub_order_index = size & kOrderSubIndexMask[order];
-  const uint16_t index =
-      lookup.bucket_index_lookup_[(order << kNumBucketsPerOrderBits) +
-                                  order_index + !!sub_order_index];
-  PA_DCHECK(index <= kNumBuckets);  // Last one is the sentinel bucket.
-  return index;
 }
 
 }  // namespace partition_alloc::internal

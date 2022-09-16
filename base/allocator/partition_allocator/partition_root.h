@@ -247,6 +247,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     kEnabled,
   };
 
+  enum class BucketDistribution : uint8_t { kDefault, kCoarser, kDenser };
+
   // Flags accessed on fast paths.
   //
   // Careful! PartitionAlloc's performance is sensitive to its layout.  Please
@@ -259,8 +261,13 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // Defines whether the root should be scanned.
     ScanMode scan_mode;
 
+    // It's important to default to the coarser distribution, otherwise a switch
+    // from dense -> coarse would leave some buckets with dirty memory forever,
+    // since no memory would be allocated from these, their freelist would
+    // typically not be empty, making these unreclaimable.
+    BucketDistribution bucket_distribution = BucketDistribution::kCoarser;
+
     bool with_thread_cache = false;
-    bool with_denser_bucket_distribution = false;
 
     bool allow_aligned_alloc;
     bool allow_cookie;
@@ -546,8 +553,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   static void DeleteForTesting(PartitionRoot* partition_root);
   void ResetBookkeepingForTesting();
 
+  PA_ALWAYS_INLINE BucketDistribution GetBucketDistribution() const {
+    return flags.bucket_distribution;
+  }
+
   static uint16_t SizeToBucketIndex(size_t size,
-                                    bool with_denser_bucket_distribution);
+                                    BucketDistribution bucket_distribution);
 
   PA_ALWAYS_INLINE void FreeInSlotSpan(uintptr_t slot_start,
                                        SlotSpan* slot_span)
@@ -571,15 +582,18 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // more buckets, meaning any allocations we have done before the switch are
   // guaranteed to have a bucket under the new distribution when they are
   // eventually deallocated. We do not need synchronization here or below.
+  void SwitchToDefaultBucketDistribution() {
+    flags.bucket_distribution = BucketDistribution::kDefault;
+  }
   void SwitchToDenserBucketDistribution() {
-    flags.with_denser_bucket_distribution = true;
+    flags.bucket_distribution = BucketDistribution::kDenser;
   }
   // Switching back to the less dense bucket distribution is ok during tests.
   // At worst, we end up with deallocations that are sent to a bucket that we
   // cannot allocate from, which will not cause problems besides wasting
   // memory.
   void ResetBucketDistributionForTesting() {
-    flags.with_denser_bucket_distribution = false;
+    flags.bucket_distribution = BucketDistribution::kCoarser;
   }
 
   ThreadCache* thread_cache_for_testing() const {
@@ -1693,10 +1707,15 @@ PartitionRoot<thread_safe>::AllocationCapacityFromSlotStart(
 template <bool thread_safe>
 PA_ALWAYS_INLINE uint16_t PartitionRoot<thread_safe>::SizeToBucketIndex(
     size_t size,
-    bool with_denser_bucket_distribution) {
-  if (with_denser_bucket_distribution)
-    return internal::BucketIndexLookup::GetIndexForDenserBuckets(size);
-  return internal::BucketIndexLookup::GetIndex(size);
+    BucketDistribution bucket_distribution) {
+  switch (bucket_distribution) {
+    case BucketDistribution::kDefault:
+      return internal::BucketIndexLookup::GetIndexForDenserBuckets(size);
+    case BucketDistribution::kCoarser:
+      return internal::BucketIndexLookup::GetIndex(size);
+    case BucketDistribution::kDenser:
+      return internal::BucketIndexLookup::GetIndexFor8Buckets(size);
+  }
 }
 
 template <bool thread_safe>
@@ -1777,11 +1796,11 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
   // We should only call |SizeToBucketIndex| at most once when allocating.
-  // Otherwise, we risk having |with_denser_bucket_distribution| changed
+  // Otherwise, we risk having |bucket_distribution| changed
   // underneath us (between calls to |SizeToBucketIndex| during the same call),
   // which would result in an inconsistent state.
   uint16_t bucket_index =
-      SizeToBucketIndex(raw_size, this->flags.with_denser_bucket_distribution);
+      SizeToBucketIndex(raw_size, this->GetBucketDistribution());
   size_t usable_size;
   bool is_already_zeroed = false;
   uintptr_t slot_start = 0;
@@ -2079,8 +2098,7 @@ PartitionRoot<thread_safe>::AllocationCapacityFromRequestedSize(
 #else
   PA_DCHECK(PartitionRoot<thread_safe>::initialized);
   size = AdjustSizeForExtrasAdd(size);
-  auto& bucket =
-      bucket_at(SizeToBucketIndex(size, flags.with_denser_bucket_distribution));
+  auto& bucket = bucket_at(SizeToBucketIndex(size, GetBucketDistribution()));
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
   PA_DCHECK(!(bucket.slot_size % internal::kSmallestBucket));
 
