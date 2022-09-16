@@ -59,7 +59,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -762,8 +761,8 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1315415")
-    public void testEndIconVisiblityInSearchMode() throws Exception {
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
+    public void testEndIconVisibilityInSearchMode() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
         addFolder(TEST_TITLE_A);
 
