@@ -59,6 +59,8 @@ enum SegmentId {
   OPTIMIZATION_TARGET_TEXT_CLASSIFIER = 19;
   // Target for segmentation: Determine users who are interested in shopping.
   OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER = 21;
+  // Target for segmentation: Chrome Android Start user V2.
+  OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2 = 22;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not

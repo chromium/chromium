@@ -20,6 +20,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kDummyFeatureUmaName;
   } else if (segmentation_key == kChromeStartAndroidSegmentationKey) {
     return kChromeStartAndroidUmaName;
+  } else if (segmentation_key == kChromeStartAndroidV2SegmentationKey) {
+    return kChromeStartAndroidV2UmaName;
   } else if (segmentation_key == kQueryTilesSegmentationKey) {
     return kQueryTilesUmaName;
   } else if (segmentation_key == kChromeLowUserEngagementSegmentationKey) {
@@ -86,6 +88,9 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
       return "IntentionalUser";
     case proto::SegmentId::RESUME_HEAVY_USER_SEGMENT:
       return "ResumeHeavyUserSegment";
+    case proto::SegmentId::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2:
+      return "ChromeStartAndroidV2";
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.

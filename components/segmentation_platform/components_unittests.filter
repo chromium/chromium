@@ -1,4 +1,5 @@
 ConfigParserTest.*
+CrossDeviceUserModelTest.*
 CustomInputProcessorTest.*
 DatabaseMaintenanceImplTest.*
 DefaultModelManagerTest.*
@@ -30,7 +31,6 @@ SegmentationPlatformServiceImplTest.*
 SegmentationResultPrefsTest.*
 SegmentationUkmHelperTest.*
 SegmentInfoCacheTest.*
-SegmentInfoDatabaseTest.*
 SegmentResultProviderTest.*
 SegmentScoreProviderTest.*
 SegmentSelectorTest.*

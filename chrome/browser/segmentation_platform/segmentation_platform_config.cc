@@ -13,7 +13,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
-#include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #include "components/segmentation_platform/internal/config_parser.h"
@@ -30,10 +29,12 @@
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
+#include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android_v2.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/query_tiles/switches.h"
+#include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
@@ -145,6 +146,33 @@ std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
       "segment_unknown_selection_ttl_days", kChromeStartDefaultUnknownTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
+
+  return config;
+}
+
+std::unique_ptr<ModelProvider> GetChromeStartAndroidModelV2() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          chrome::android::kStartSurfaceReturnTime, kDefaultModelEnabledParam,
+          true)) {
+    return nullptr;
+  }
+  return std::make_unique<ChromeStartModelV2>();
+}
+
+std::unique_ptr<Config> GetConfigForChromeStartAndroidV2() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kChromeStartAndroidV2SegmentationKey;
+  config->segmentation_uma_name = kChromeStartAndroidV2UmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2,
+      GetChromeStartAndroidModelV2());
+
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kStartSurfaceReturnTime,
+      kVariationsParamNameSegmentSelectionTTLDays,
+      kChromeStartDefaultSelectionTTLDays);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  config->unknown_selection_ttl = config->segment_selection_ttl;
 
   return config;
 }
@@ -384,6 +412,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForQueryTiles());
   }
 
+  configs.emplace_back(GetConfigForChromeStartAndroidV2());
   configs.emplace_back(GetConfigForIntentionalUser());
 #endif
   if (IsLowEngagementFeatureEnabled()) {

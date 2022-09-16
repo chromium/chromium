@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -43,7 +42,8 @@ enum class SegmentationModel {
   kChromeLowUserEngagement = 16,
   kFeedUserSegment = 17,
   kContextualPageActionPriceTracking = 18,
-  kMaxValue = kContextualPageActionPriceTracking,
+  kChromeStartAndroidV2 = 22,
+  kMaxValue = kChromeStartAndroidV2,
 };
 
 AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
@@ -67,6 +67,7 @@ bool IsBooleanSegment(const std::string& segmentation_key) {
   // Please keep in sync with BooleanModel variant in
   // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
   return segmentation_key == kChromeStartAndroidSegmentationKey ||
+         segmentation_key == kChromeStartAndroidV2SegmentationKey ||
          segmentation_key == kQueryTilesSegmentationKey ||
          segmentation_key == kChromeLowUserEngagementSegmentationKey ||
          segmentation_key == kFeedUserSegmentationKey ||
@@ -172,6 +173,8 @@ SegmentationModel OptimizationTargetToSegmentationModel(SegmentId segment_id) {
       return SegmentationModel::kFeedUserSegment;
     case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
       return SegmentationModel::kContextualPageActionPriceTracking;
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2:
+      return SegmentationModel::kChromeStartAndroidV2;
     default:
       return SegmentationModel::kUnknown;
   }

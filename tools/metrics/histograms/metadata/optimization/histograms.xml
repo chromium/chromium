@@ -46,6 +46,8 @@ chromium-metrics-reviews@google.com.
       summary="Segmentation: Low user engagement with Chrome"/>
   <variant name="SegmentationChromeStartAndroid"
       summary="Chrome Start Android"/>
+  <variant name="SegmentationChromeStartAndroidV2"
+      summary="Chrome Start Android V2"/>
   <variant name="SegmentationDummyFeature" summary="Dummy feature"/>
   <variant name="SegmentationFeedUser"
       summary="Segmentation: Feed usage in Chrome"/>

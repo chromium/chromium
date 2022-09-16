@@ -3260,6 +3260,8 @@ static_library("browser") {
       "segmentation_platform/android/segmentation_platform_service_factory_android.cc",
       "segmentation_platform/default_model/chrome_start_model_android.cc",
       "segmentation_platform/default_model/chrome_start_model_android.h",
+      "segmentation_platform/default_model/chrome_start_model_android_v2.cc",
+      "segmentation_platform/default_model/chrome_start_model_android_v2.h",
       "sessions/session_restore_android.cc",
       "sharing/click_to_call/click_to_call_message_handler_android.cc",
       "sharing/click_to_call/click_to_call_message_handler_android.h",

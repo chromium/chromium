@@ -24,6 +24,10 @@ const char kDummyFeatureUmaName[] = "DummyFeature";
 const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
 const char kChromeStartAndroidUmaName[] = "ChromeStartAndroid";
 
+// The key is used to decide how long to wait before showing Chrome Start.
+const char kChromeStartAndroidV2SegmentationKey[] = "chrome_start_android_v2";
+const char kChromeStartAndroidV2UmaName[] = "ChromeStartAndroidV2";
+
 // The key is used to decide whether to show query tiles.
 const char kQueryTilesSegmentationKey[] = "query_tiles";
 const char kQueryTilesUmaName[] = "QueryTiles";
