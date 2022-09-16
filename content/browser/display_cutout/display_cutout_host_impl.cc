@@ -125,8 +125,7 @@ void DisplayCutoutHostImpl::SendSafeAreaToFrame(RenderFrameHost* rfh,
 
   mojo::AssociatedRemote<blink::mojom::DisplayCutoutClient> client;
   provider->GetInterface(client.BindNewEndpointAndPassReceiver());
-  client->SetSafeArea(blink::mojom::DisplayCutoutSafeArea::New(
-      insets.top(), insets.left(), insets.bottom(), insets.right()));
+  client->SetSafeArea(insets);
 }
 
 blink::mojom::ViewportFit DisplayCutoutHostImpl::GetValueOrDefault(

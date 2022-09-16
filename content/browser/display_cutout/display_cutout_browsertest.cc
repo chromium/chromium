@@ -165,8 +165,7 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
     mojo::AssociatedRemote<blink::mojom::DisplayCutoutClient> client;
     MainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
         client.BindNewEndpointAndPassReceiver());
-    client->SetSafeArea(
-        blink::mojom::DisplayCutoutSafeArea::New(top, left, bottom, right));
+    client->SetSafeArea(gfx::Insets::TLBR(top, left, bottom, right));
   }
 
   std::string GetCurrentSafeAreaValue(const std::string& name) {

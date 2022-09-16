@@ -32,7 +32,7 @@ class CORE_EXPORT DisplayCutoutClientImpl final
   DisplayCutoutClientImpl& operator=(const DisplayCutoutClientImpl&) = delete;
 
   // Notify the renderer that the safe areas have changed.
-  void SetSafeArea(mojom::blink::DisplayCutoutSafeAreaPtr safe_area) override;
+  void SetSafeArea(const gfx::Insets& safe_area) override;
 
   void Trace(Visitor*) const;
 
