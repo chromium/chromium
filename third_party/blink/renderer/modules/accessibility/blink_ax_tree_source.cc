@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_common.h"
@@ -399,9 +398,6 @@ void BlinkAXTreeSource::SerializeNode(AXObject* src,
     dst->AddStringAttribute(ax::mojom::blink::StringAttribute::kImageDataUrl,
                             src->ImageDataUrl(max_image_data_size_).Utf8());
   }
-
-  TRACE_EVENT2("accessibility", "BlinkAXTreeSource::SerializeNode", "role",
-               ui::ToString(dst->role), "id", dst->id);
 }
 
 void BlinkAXTreeSource::Trace(Visitor* visitor) const {
