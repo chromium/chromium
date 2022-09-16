@@ -123,6 +123,7 @@
                                   delegate:self];
     case kSignInAndSync:
     case kSync:
+    case kTangibleSync:
     case kWelcomeAndConsent:
     case kDefaultBrowserPromo:
     case kStepsCompleted:

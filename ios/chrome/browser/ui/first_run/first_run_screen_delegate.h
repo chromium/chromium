@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_DELEGATE_H_
 
+#import <UIKit/UIKit.h>
+
 // The delegate for transferring between screens.
 @protocol FirstRunScreenDelegate <NSObject>
 

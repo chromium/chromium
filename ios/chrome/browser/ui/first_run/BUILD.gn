@@ -91,6 +91,7 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/first_run/legacy_signin",
     "//ios/chrome/browser/ui/first_run/signin",
     "//ios/chrome/browser/ui/first_run/sync",
+    "//ios/chrome/browser/ui/first_run/tangible_sync",
     "//ios/chrome/browser/ui/first_run/welcome",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_type",
