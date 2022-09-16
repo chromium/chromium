@@ -281,6 +281,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
   Database(const Database&) = delete;
   Database& operator=(const Database&) = delete;
+  Database(Database&&) = delete;
+  Database& operator=(Database&&) = delete;
   ~Database();
 
   // Allows mmapping to be disabled globally by default in the calling process.
@@ -791,6 +793,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
     StatementRef(const StatementRef&) = delete;
     StatementRef& operator=(const StatementRef&) = delete;
+    StatementRef(StatementRef&&) = delete;
+    StatementRef& operator=(StatementRef&&) = delete;
 
     // When true, the statement can be used.
     bool is_valid() const { return !!stmt_; }

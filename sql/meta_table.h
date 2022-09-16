@@ -27,6 +27,8 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   MetaTable();
   MetaTable(const MetaTable&) = delete;
   MetaTable& operator=(const MetaTable&) = delete;
+  MetaTable(MetaTable&&) = delete;
+  MetaTable& operator=(MetaTable&&) = delete;
   ~MetaTable();
 
   // Values for Get/SetMmapStatus(). `kMmapFailure` indicates that there was at

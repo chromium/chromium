@@ -33,6 +33,8 @@ class COMPONENT_EXPORT(SQL) Transaction {
   explicit Transaction(Database* database);
   Transaction(const Transaction&) = delete;
   Transaction& operator=(const Transaction&) = delete;
+  Transaction(Transaction&&) = delete;
+  Transaction& operator=(Transaction&&) = delete;
   ~Transaction();
 
   // Activates an inactive transaction. Must be called after construction.

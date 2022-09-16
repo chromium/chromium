@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(SQL) Statement {
   Statement(const Statement&) = delete;
   Statement& operator=(const Statement&) = delete;
 
+  Statement(Statement&&) = delete;
+  Statement& operator=(Statement&&) = delete;
+
   ~Statement();
 
   // Initializes this object with the given statement, which may or may not
