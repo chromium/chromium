@@ -342,7 +342,9 @@ TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.ReportsDeletedInDataClearOperation", 3, 1);
+      "Conversions.ReportsDeletedInDataClearOperation.Event", 3, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.ReportsDeletedInDataClearOperation.Aggregatable", 3, 1);
 }
 
 //  Create a source with two triggers resulting in two event-level reports (C1
@@ -394,7 +396,9 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.ReportsDeletedInDataClearOperation", 2, 1);
+      "Conversions.ReportsDeletedInDataClearOperation.Event", 2, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.ReportsDeletedInDataClearOperation.Aggregatable", 2, 1);
 }
 
 // Same as the above test, but with a null filter.
@@ -439,7 +443,9 @@ TEST_F(AttributionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.ReportsDeletedInDataClearOperation", 2, 1);
+      "Conversions.ReportsDeletedInDataClearOperation.Event", 2, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.ReportsDeletedInDataClearOperation.Aggregatable", 2, 1);
 }
 
 // The max time range with a null filter should delete everything.
@@ -485,7 +491,9 @@ TEST_F(AttributionStorageSqlTest, DeleteEverything) {
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.ReportsDeletedInDataClearOperation", 2, 1);
+      "Conversions.ReportsDeletedInDataClearOperation.Event", 2, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.ReportsDeletedInDataClearOperation.Aggregatable", 2, 1);
 }
 
 TEST_F(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {

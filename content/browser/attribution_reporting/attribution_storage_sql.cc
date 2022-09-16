@@ -178,9 +178,12 @@ void RecordSourcesDeleted(int count) {
       "Conversions.ImpressionsDeletedInDataClearOperation", count);
 }
 
-void RecordReportsDeleted(int count) {
-  UMA_HISTOGRAM_COUNTS_1000("Conversions.ReportsDeletedInDataClearOperation",
-                            count);
+void RecordReportsDeleted(int event_count, int aggregatable_count) {
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Conversions.ReportsDeletedInDataClearOperation.Event", event_count);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Conversions.ReportsDeletedInDataClearOperation.Aggregatable",
+      aggregatable_count);
 }
 
 int64_t SerializeUint64(uint64_t data) {
@@ -1617,7 +1620,7 @@ void AttributionStorageSql::ClearData(
   // opaque/untrustworthy origins.
 
   std::vector<StoredSource::Id> source_ids_to_delete;
-  int num_reports_deleted = 0;
+  int num_event_reports_deleted = 0;
   while (statement.Step()) {
     if (filter.is_null() ||
         filter.Run(
@@ -1633,7 +1636,7 @@ void AttributionStorageSql::ClearData(
           return;
         }
 
-        ++num_reports_deleted;
+        ++num_event_reports_deleted;
       }
     }
   }
@@ -1650,10 +1653,14 @@ void AttributionStorageSql::ClearData(
   if (!transaction.Begin())
     return;
 
-  if (!ClearAggregatableAttributionsForOriginsInRange(
-          delete_begin, delete_end, filter, source_ids_to_delete)) {
+  int aggregatable_maybe_deleted =
+      ClearAggregatableAttributionsForOriginsInRange(
+          delete_begin, delete_end, filter, source_ids_to_delete);
+
+  if (aggregatable_maybe_deleted < 0) {
     return;
   }
+  int num_aggregatable_reports_deleted = aggregatable_maybe_deleted;
 
   // Since multiple reports can be associated with a single source,
   // deduplicate source IDs using a set to avoid redundant DB operations
@@ -1681,13 +1688,17 @@ void AttributionStorageSql::ClearData(
     if (!delete_vestigial_statement.Run())
       return;
 
-    num_reports_deleted += db_->GetLastChangeCount();
+    num_event_reports_deleted += db_->GetLastChangeCount();
   }
 
   // Careful! At this point we can still have some vestigial entries in the DB.
   // See comments above for event-level reports.
-  if (!ClearAggregatableAttributionsForSourceIds(source_ids_to_delete))
+  aggregatable_maybe_deleted =
+      ClearAggregatableAttributionsForSourceIds(source_ids_to_delete);
+
+  if (aggregatable_maybe_deleted < 0)
     return;
+  num_aggregatable_reports_deleted += aggregatable_maybe_deleted;
 
   if (delete_rate_limit_data && !rate_limit_table_.ClearDataForSourceIds(
                                     db_.get(), source_ids_to_delete)) {
@@ -1704,7 +1715,8 @@ void AttributionStorageSql::ClearData(
     return;
 
   RecordSourcesDeleted(static_cast<int>(source_ids_to_delete.size()));
-  RecordReportsDeleted(num_reports_deleted);
+  RecordReportsDeleted(num_event_reports_deleted,
+                       num_aggregatable_reports_deleted);
 }
 
 void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
@@ -1718,7 +1730,7 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllReportsSql));
   if (!delete_all_reports_statement.Run())
     return;
-  int num_reports_deleted = db_->GetLastChangeCount();
+  int num_event_reports_deleted = db_->GetLastChangeCount();
 
   static constexpr char kDeleteAllSourcesSql[] = "DELETE FROM sources";
   sql::Statement delete_all_sources_statement(
@@ -1746,6 +1758,7 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllContributionsSql));
   if (!delete_all_contributions_statement.Run())
     return;
+  int num_aggregatable_reports_deleted = db_->GetLastChangeCount();
 
   if (delete_rate_limit_data &&
       !rate_limit_table_.ClearAllDataAllTime(db_.get()))
@@ -1755,7 +1768,8 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
     return;
 
   RecordSourcesDeleted(num_sources_deleted);
-  RecordReportsDeleted(num_reports_deleted);
+  RecordReportsDeleted(num_event_reports_deleted,
+                       num_aggregatable_reports_deleted);
 }
 
 bool AttributionStorageSql::HasCapacityForStoringSource(
@@ -2358,7 +2372,7 @@ bool AttributionStorageSql::DeleteSources(
   return transaction.Commit();
 }
 
-bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
+int AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
     base::Time delete_begin,
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
@@ -2367,7 +2381,7 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return false;
+    return -1;
 
   // TODO(linnan): Considering optimizing SQL query by moving some logic to C++.
   // See the comment in crrev.com/c/3379484 for more information.
@@ -2384,6 +2398,7 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
   statement.BindTime(0, delete_begin);
   statement.BindTime(1, delete_end);
 
+  int num_aggregate_reports_deleted = 0;
   while (statement.Step()) {
     if (filter.is_null() ||
         filter.Run(
@@ -2393,19 +2408,21 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
         filter.Run(
             blink::StorageKey(DeserializeOrigin(statement.ColumnString(2))))) {
       source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
-      if (statement.GetColumnType(4) != sql::ColumnType::kNull &&
-          !DeleteReportInternal(
-              AttributionReport::AggregatableAttributionData::Id(
-                  statement.ColumnInt64(4)))) {
-        return false;
+      if (statement.GetColumnType(4) != sql::ColumnType::kNull) {
+        if (!DeleteReportInternal(
+                AttributionReport::AggregatableAttributionData::Id(
+                    statement.ColumnInt64(4)))) {
+          return -1;
+        }
+        ++num_aggregate_reports_deleted;
       }
     }
   }
 
-  if (!statement.Succeeded())
-    return false;
+  if (!statement.Succeeded() || !transaction.Commit())
+    return -1;
 
-  return transaction.Commit();
+  return num_aggregate_reports_deleted;
 }
 
 bool AttributionStorageSql::DeleteReportInternal(
@@ -2441,7 +2458,7 @@ bool AttributionStorageSql::DeleteAggregatableContributions(
   return statement.Run();
 }
 
-bool AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
+int AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
     const std::vector<StoredSource::Id>& source_ids) {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
@@ -2455,6 +2472,8 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAggregationsSql));
 
+  int num_aggregatable_reports_deleted = 0;
+
   for (StoredSource::Id id : source_ids) {
     statement.Reset(/*clear_bound_vars=*/true);
     statement.BindInt64(0, *id);
@@ -2463,15 +2482,20 @@ bool AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
       if (!DeleteAggregatableContributions(
               AttributionReport::AggregatableAttributionData::Id(
                   statement.ColumnInt64(0)))) {
-        return false;
+        return -1;
       }
     }
 
     if (!statement.Succeeded())
-      return false;
+      return -1;
+
+    num_aggregatable_reports_deleted += db_->GetLastChangeCount();
   }
 
-  return transaction.Commit();
+  if (!transaction.Commit())
+    return -1;
+
+  return num_aggregatable_reports_deleted;
 }
 
 std::vector<AttributionReport>

@@ -285,15 +285,15 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   //    attributed to the aggregatable attribution are also deleted.
   //
   // All sources to be deleted are updated in `source_ids_to_delete`.
-  // Returns false on failure.
-  [[nodiscard]] bool ClearAggregatableAttributionsForOriginsInRange(
+  // Returns number of aggregatable attributions deleted, or -1 for failure.
+  [[nodiscard]] int ClearAggregatableAttributionsForOriginsInRange(
       base::Time delete_begin,
       base::Time delete_end,
       StoragePartition::StorageKeyMatcherFunction filter,
       std::vector<StoredSource::Id>& source_ids_to_delete)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool ClearAggregatableAttributionsForSourceIds(
+  [[nodiscard]] int ClearAggregatableAttributionsForSourceIds(
       const std::vector<StoredSource::Id>& source_ids)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
