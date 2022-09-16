@@ -83,6 +83,12 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // passes it to the processor so that it can start tracking changes.
   void LoadMetadata();
 
+  // Queries the redirect chain ending in `final_visit` from the HistoryBackend,
+  // and creates the corresponding EntityData. May return null in case of
+  // HistoryBackend failure (e.g. corrupted DB).
+  std::unique_ptr<syncer::EntityData> QueryRedirectChainAndMakeEntityData(
+      const VisitRow& final_visit);
+
   // Adds visit(s) corresponding to the `specifics` to the HistoryBackend.
   // Returns true on success, or false in case of backend errors.
   bool AddEntityInBackend(VisitIDRemapper* id_remapper,

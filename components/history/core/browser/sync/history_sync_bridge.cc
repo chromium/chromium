@@ -543,25 +543,11 @@ void HistorySyncBridge::GetData(StorageKeyList storage_keys,
       continue;
     }
 
-    // Query the redirect chain that ended in this visit.
-    std::vector<VisitRow> redirect_visits =
-        history_backend_->GetRedirectChain(final_visit);
-    if (redirect_visits.empty()) {
-      // This can happen if there's invalid data in the DB (e.g. broken referrer
-      // "links"). In that case, skip this item.
+    std::unique_ptr<syncer::EntityData> entity_data =
+        QueryRedirectChainAndMakeEntityData(final_visit);
+    if (!entity_data) {
       continue;
     }
-    DCHECK_EQ(redirect_visits.back().visit_id, final_visit.visit_id);
-
-    std::vector<AnnotatedVisit> annotated_visits =
-        history_backend_->ToAnnotatedVisits(redirect_visits);
-
-    std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
-        annotated_visits.back().url_row.url());
-
-    std::unique_ptr<syncer::EntityData> entity_data =
-        MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
-
     batch->Put(key, std::move(entity_data));
   }
 
@@ -652,24 +638,11 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
     return;
   }
 
-  // Query the redirect chain that ended in this visit.
-  std::vector<VisitRow> redirect_visits =
-      history_backend_->GetRedirectChain(visit_row);
-  if (redirect_visits.empty()) {
-    // This can happen if there's invalid data in the DB (e.g. broken referrer
-    // "links"). In that case, ignore the change.
+  std::unique_ptr<syncer::EntityData> entity_data =
+      QueryRedirectChainAndMakeEntityData(visit_row);
+  if (!entity_data) {
     return;
   }
-  DCHECK_EQ(redirect_visits.back().visit_id, visit_row.visit_id);
-
-  std::vector<AnnotatedVisit> annotated_visits =
-      history_backend_->ToAnnotatedVisits(redirect_visits);
-
-  std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
-      annotated_visits.back().url_row.url());
-
-  std::unique_ptr<syncer::EntityData> entity_data =
-      MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
@@ -751,24 +724,11 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
     return;
   }
 
-  // Query the redirect chain that ended in this visit.
-  std::vector<VisitRow> redirect_visits =
-      history_backend_->GetRedirectChain(visit_row);
-  if (redirect_visits.empty()) {
-    // This can happen if there's invalid data in the DB (e.g. broken referrer
-    // "links"). In that case, ignore the change.
+  std::unique_ptr<syncer::EntityData> entity_data =
+      QueryRedirectChainAndMakeEntityData(visit_row);
+  if (!entity_data) {
     return;
   }
-  DCHECK_EQ(redirect_visits.back().visit_id, visit_row.visit_id);
-
-  std::vector<AnnotatedVisit> annotated_visits =
-      history_backend_->ToAnnotatedVisits(redirect_visits);
-
-  std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
-      annotated_visits.back().url_row.url());
-
-  std::unique_ptr<syncer::EntityData> entity_data =
-      MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
@@ -819,6 +779,33 @@ void HistorySyncBridge::LoadMetadata() {
     return;
   }
   change_processor()->ModelReadyToSync(std::move(batch));
+}
+
+std::unique_ptr<syncer::EntityData>
+HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
+    const VisitRow& final_visit) {
+  // Query the redirect chain that ended in this visit.
+  std::vector<VisitRow> redirect_visits =
+      history_backend_->GetRedirectChain(final_visit);
+  if (redirect_visits.empty()) {
+    // This can happen if there's invalid data in the DB (e.g. broken referrer
+    // "links").
+    return nullptr;
+  }
+  DCHECK_EQ(redirect_visits.back().visit_id, final_visit.visit_id);
+
+  std::vector<AnnotatedVisit> annotated_visits =
+      history_backend_->ToAnnotatedVisits(redirect_visits);
+  if (annotated_visits.empty()) {
+    // Again, this can happen if there's invalid data in the DB.
+    return nullptr;
+  }
+
+  std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
+      annotated_visits.back().url_row.url());
+  // Note: `favicon_urls` may legitimately be empty, that's fine.
+
+  return MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
 }
 
 bool HistorySyncBridge::AddEntityInBackend(
