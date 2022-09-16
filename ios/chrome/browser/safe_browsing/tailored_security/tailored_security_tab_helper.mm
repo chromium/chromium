@@ -17,18 +17,6 @@
 
 #pragma mark - TailoredSecurityTabHelper
 
-// static
-void TailoredSecurityTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    safe_browsing::TailoredSecurityService* service) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(
-      UserDataKey(),
-      std::make_unique<TailoredSecurityTabHelper>(web_state, service));
-}
-
 TailoredSecurityTabHelper::TailoredSecurityTabHelper(
     web::WebState* web_state,
     safe_browsing::TailoredSecurityService* service)
@@ -39,11 +27,11 @@ TailoredSecurityTabHelper::TailoredSecurityTabHelper(
     service_->AddObserver(this);
   }
 
-  if (web_state) {
-    web_state->AddObserver(this);
-    focused = web_state->IsVisible();
+  if (web_state_) {
+    web_state_->AddObserver(this);
+    focused = web_state_->IsVisible();
   }
-  UpdateFocusAndURL(focused, web_state->GetLastCommittedURL());
+  UpdateFocusAndURL(focused, web_state_->GetLastCommittedURL());
 }
 
 TailoredSecurityTabHelper::~TailoredSecurityTabHelper() {
@@ -64,7 +52,7 @@ void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(
     bool enabled,
     base::Time previous_update) {
   ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   if (!enabled || !safe_browsing::CanShowUnconsentedTailoredSecurityDialog(
@@ -109,9 +97,9 @@ void TailoredSecurityTabHelper::WebStateDestroyed(web::WebState* web_state) {
 
 void TailoredSecurityTabHelper::UpdateFocusAndURL(bool focused,
                                                   const GURL& url) {
-  DCHECK(web_state());
+  DCHECK(web_state_);
   ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
 
