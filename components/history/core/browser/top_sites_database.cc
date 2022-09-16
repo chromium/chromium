@@ -335,7 +335,7 @@ bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {
 void TopSitesDatabase::ApplyDelta(const TopSitesDelta& delta) {
   sql::Transaction transaction(db_.get());
   // TODO: consider returning early if `Begin()` returns false.
-  transaction.Begin();
+  std::ignore = transaction.Begin();
 
   for (const auto& deleted : delta.deleted) {
     if (!RemoveURLNoTransaction(deleted))

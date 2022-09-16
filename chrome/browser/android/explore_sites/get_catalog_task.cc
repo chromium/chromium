@@ -110,7 +110,8 @@ GetCatalogSync(bool update_current, sql::Database* db) {
   if (update_current) {
     DVLOG(1) << "Updating current catalog from " << catalog_version_token;
     sql::Transaction transaction(db);
-    transaction.Begin();
+    if (!transaction.Begin())
+      return std::make_pair(GetCatalogStatus::kFailed, nullptr);
     catalog_version_token =
         UpdateCurrentCatalogIfNewer(&meta_table, catalog_version_token);
     if (catalog_version_token == "")

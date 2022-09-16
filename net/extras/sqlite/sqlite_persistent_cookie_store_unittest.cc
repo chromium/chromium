@@ -1177,7 +1177,8 @@ bool AddV9CookiesToDBImpl(sql::Database* db,
   if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
-  transaction.Begin();
+  if (!transaction.Begin())
+    return false;
   for (const auto& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
@@ -1652,7 +1653,8 @@ bool AddV10CookiesToDBImpl(sql::Database* db,
   if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
-  transaction.Begin();
+  if (!transaction.Begin())
+    return false;
   for (const auto& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
@@ -2026,7 +2028,8 @@ bool AddV11CookiesToDB(sql::Database* db) {
   if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
-  transaction.Begin();
+  if (!transaction.Begin())
+    return false;
   for (const auto& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
@@ -2073,7 +2076,8 @@ bool AddV12CookiesToDB(sql::Database* db) {
   if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
-  transaction.Begin();
+  if (!transaction.Begin())
+    return false;
   for (const CanonicalCookie& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
@@ -2121,7 +2125,8 @@ bool AddV13CookiesToDB(sql::Database* db) {
   if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
-  transaction.Begin();
+  if (!transaction.Begin())
+    return false;
   for (const CanonicalCookie& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(
@@ -2171,7 +2176,8 @@ bool AddV15CookiesToDB(sql::Database* db) {
   if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
-  transaction.Begin();
+  if (!transaction.Begin())
+    return false;
   for (const CanonicalCookie& cookie : cookies) {
     statement.Reset(true);
     statement.BindInt64(

@@ -142,7 +142,7 @@ TEST_F(DatabaseStringTableTest, Prune) {
   // Wrap the lookups in a transaction to improve performance.
   sql::Transaction transaction(&db_);
 
-  transaction.Begin();
+  ASSERT_TRUE(transaction.Begin());
   for (int i = 0; i < 2000; i++) {
     int64_t id;
     ASSERT_TRUE(table.StringToInt(&db_, base::StringPrintf("value-%d", i),

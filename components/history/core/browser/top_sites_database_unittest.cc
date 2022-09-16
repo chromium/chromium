@@ -123,7 +123,7 @@ TEST_F(TopSitesDatabaseTest, Version4) {
   EXPECT_EQ(kUrl0, urls[0].url);  // [0] because of url_rank.
 
   sql::Transaction transaction(db.db_.get());
-  transaction.Begin();
+  ASSERT_TRUE(transaction.Begin());
   ASSERT_TRUE(db.RemoveURLNoTransaction(urls[1]));
   transaction.Commit();
 
