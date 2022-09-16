@@ -64,6 +64,8 @@ component("backend") {
       "printing_info_win.h",
       "win_helper.cc",
       "win_helper.h",
+      "xps_utils_win.cc",
+      "xps_utils_win.h",
     ]
     deps += [ "//services/data_decoder/public/cpp:safe_xml_parser" ]
   }

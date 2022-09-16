@@ -260,14 +260,6 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
       const std::string& printer_name,
       std::string& capabilities);
 
-  // Since parsing XML data to `PrinterSemanticCapsAndDefaults` can not be done
-  // in the print_backend level, parse base::Value into
-  // `PrinterSemanticCapsAndDefaults` data structure instead. Parsing XML data
-  // to base::Value will be processed by data_decoder service.
-  mojom::ResultCode ParseValueForXpsPrinterCapabilities(
-      const base::Value& value,
-      PrinterSemanticCapsAndDefaults* printer_info);
-
 #endif  // BUILDFLAG(IS_WIN)
 
   // Allocates a print backend.
