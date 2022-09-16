@@ -89,7 +89,7 @@ void ConvertBase64ToBase64Url(base::Value* params,
 
 Status ExecuteWebAuthnCommand(const WebAuthnCommand& command,
                               Session* session,
-                              const base::DictionaryValue& params,
+                              const base::Value::Dict& params,
                               std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -104,7 +104,7 @@ Status ExecuteWebAuthnCommand(const WebAuthnCommand& command,
   if (status.IsError())
     return status;
 
-  return command.Run(web_view, params, value);
+  return command.Run(web_view, base::Value(params.Clone()), value);
 }
 
 Status ExecuteAddVirtualAuthenticator(WebView* web_view,

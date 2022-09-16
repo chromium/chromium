@@ -614,17 +614,17 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
   return Status(kOk);
 }
 
-Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
+Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
                                   base::DictionaryValue* input_state,
                                   bool is_key_down,
                                   std::vector<KeyEvent>* key_events) {
-  std::string raw_key;
-  if (!action_object->GetString("value", &raw_key))
+  const std::string* raw_key = action_object.FindString("value");
+  if (!raw_key)
     return Status(kUnknownError, "missing 'value'");
 
   size_t char_index = 0;
   base_icu::UChar32 code_point;
-  base::ReadUnicodeCharacter(raw_key.c_str(), raw_key.size(), &char_index,
+  base::ReadUnicodeCharacter(raw_key->c_str(), raw_key->size(), &char_index,
                              &code_point);
 
   std::string key;
@@ -634,7 +634,7 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
     key = kNormalisedKeyValue[code_point - kNormalisedKeyValueBase];
   }
   if (key.size() == 0)
-    key = raw_key;
+    key = *raw_key;
 
   base::DictionaryValue* pressed;
   if (!input_state->GetDictionary("pressed", &pressed))
@@ -750,8 +750,8 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
       }
     } else {
       // Do a best effort and use the raw key we were given.
-      unmodified_text = raw_key;
-      modified_text = raw_key;
+      unmodified_text = *raw_key;
+      modified_text = *raw_key;
     }
   }
 

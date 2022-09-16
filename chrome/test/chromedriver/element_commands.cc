@@ -178,16 +178,20 @@ Status SendKeysToElement(Session* session,
 
 }  // namespace
 
-Status ExecuteElementCommand(
-    const ElementCommand& command,
-    Session* session,
-    WebView* web_view,
-    const base::DictionaryValue& params,
-    std::unique_ptr<base::Value>* value,
-    Timeout* timeout) {
-  std::string id;
-  if (params.GetString("id", &id) || params.GetString("element", &id))
-    return command.Run(session, web_view, id, params, value);
+Status ExecuteElementCommand(const ElementCommand& command,
+                             Session* session,
+                             WebView* web_view,
+                             const base::Value::Dict& params,
+                             std::unique_ptr<base::Value>* value,
+                             Timeout* timeout) {
+  const std::string* id = params.FindString("id");
+  if (!id)
+    id = params.FindString("element");
+  if (id) {
+    return command.Run(
+        session, web_view, *id,
+        base::Value::AsDictionaryValue(base::Value(params.Clone())), value);
+  }
   return Status(kInvalidArgument, "element identifier must be a string");
 }
 

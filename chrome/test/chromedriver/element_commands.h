@@ -9,11 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
+#include "base/values.h"
 
 struct Session;
 class Status;
@@ -28,13 +24,12 @@ using ElementCommand =
                                    std::unique_ptr<base::Value>*)>;
 
 // Execute a command on a specific element.
-Status ExecuteElementCommand(
-    const ElementCommand& command,
-    Session* session,
-    WebView* web_view,
-    const base::DictionaryValue& params,
-    std::unique_ptr<base::Value>* value,
-    Timeout* timeout);
+Status ExecuteElementCommand(const ElementCommand& command,
+                             Session* session,
+                             WebView* web_view,
+                             const base::Value::Dict& params,
+                             std::unique_ptr<base::Value>* value,
+                             Timeout* timeout);
 
 // Search for an element on the page, starting from the given element.
 Status ExecuteFindChildElement(int interval_ms,

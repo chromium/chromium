@@ -18,7 +18,7 @@
 
 Status ExecuteAlertCommand(const AlertCommand& alert_command,
                            Session* session,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -38,7 +38,9 @@ Status ExecuteAlertCommand(const AlertCommand& alert_command,
   if (status.IsError() && status.code() != kUnexpectedAlertOpen)
     return status;
 
-  return alert_command.Run(session, web_view, params, value);
+  return alert_command.Run(
+      session, web_view,
+      base::Value::AsDictionaryValue(base::Value(params.Clone())), value);
 }
 
 Status ExecuteGetAlert(Session* session,

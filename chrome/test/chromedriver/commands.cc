@@ -34,10 +34,9 @@
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/util.h"
 
-void ExecuteGetStatus(
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback) {
+void ExecuteGetStatus(const base::Value::Dict& params,
+                      const std::string& session_id,
+                      const CommandCallback& callback) {
   // W3C defined data:
   // ChromeDriver doesn't have a preset limit on number of active sessions,
   // so we are always ready.
@@ -64,7 +63,7 @@ void ExecuteGetStatus(
 
 void ExecuteCreateSession(SessionThreadMap* session_thread_map,
                           const Command& init_session_cmd,
-                          const base::DictionaryValue& params,
+                          const base::Value::Dict& params,
                           const std::string& host,
                           const CommandCallback& callback) {
   std::string new_id = GenerateId();
@@ -116,7 +115,7 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
 
 void ExecuteGetSessions(const Command& session_capabilities_command,
                         SessionThreadMap* session_thread_map,
-                        const base::DictionaryValue& params,
+                        const base::Value::Dict& params,
                         const std::string& session_id,
                         const CommandCallback& callback) {
   size_t get_remaining_count = session_thread_map->size();
@@ -163,12 +162,11 @@ void OnSessionQuit(const base::WeakPtr<size_t>& quit_remaining_count,
 
 }  // namespace
 
-void ExecuteQuitAll(
-    const Command& quit_command,
-    SessionThreadMap* session_thread_map,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback) {
+void ExecuteQuitAll(const Command& quit_command,
+                    SessionThreadMap* session_thread_map,
+                    const base::Value::Dict& params,
+                    const std::string& session_id,
+                    const CommandCallback& callback) {
   size_t quit_remaining_count = session_thread_map->size();
   base::WeakPtrFactory<size_t> weak_ptr_factory(&quit_remaining_count);
   if (!quit_remaining_count) {
@@ -206,7 +204,7 @@ void ExecuteSessionCommandOnSessionThread(
     const SessionCommand& command,
     bool w3c_standard_command,
     bool return_ok_without_session,
-    std::unique_ptr<base::DictionaryValue> params,
+    const base::Value::Dict& params,
     scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const CommandCallback& callback_on_cmd,
     const base::RepeatingClosure& terminate_on_cmd) {
@@ -228,7 +226,8 @@ void ExecuteSessionCommandOnSessionThread(
       // Note: ChromeDriver log-replay depends on the format of this logging.
       // see chromedriver/log_replay/client_replay.py
       VLOG(0) << "[" << session->id << "] "
-              << "COMMAND " << command_name << " " << PrettyPrintValue(*params);
+              << "COMMAND " << command_name << " "
+              << PrettyPrintValue(base::Value(params.Clone()));
     }
   }
 
@@ -259,7 +258,7 @@ void ExecuteSessionCommandOnSessionThread(
     if (status.IsError()) {
       LOG(ERROR) << status.message();
     } else {
-      status = command.Run(session, *params, &value);
+      status = command.Run(session, params, &value);
 
       if (status.IsError() && session->chrome) {
         if (!session->quit && session->chrome->HasCrashedWebView()) {
@@ -332,7 +331,7 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
                            const SessionCommand& command,
                            bool w3c_standard_command,
                            bool return_ok_without_session,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            const std::string& session_id,
                            const CommandCallback& callback) {
   auto iter = session_thread_map->find(session_id);
@@ -346,9 +345,7 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
         base::BindOnce(
             &ExecuteSessionCommandOnSessionThread, command_name, session_id,
             command, w3c_standard_command, return_ok_without_session,
-            base::DictionaryValue::From(
-                base::Value::ToUniquePtrValue(params.Clone())),
-            base::ThreadTaskRunnerHandle::Get(), callback,
+            params.Clone(), base::ThreadTaskRunnerHandle::Get(), callback,
             base::BindRepeating(&TerminateSessionThreadOnCommandThread,
                                 session_thread_map, session_id)));
   }

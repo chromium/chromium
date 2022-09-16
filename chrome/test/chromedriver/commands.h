@@ -10,48 +10,41 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 struct Session;
 class Status;
 
 // Gets status/info about ChromeDriver.
-void ExecuteGetStatus(
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback);
+void ExecuteGetStatus(const base::Value::Dict& params,
+                      const std::string& session_id,
+                      const CommandCallback& callback);
 
 // Creates a new session.
 void ExecuteCreateSession(SessionThreadMap* session_thread_map,
                           const Command& init_session_cmd,
-                          const base::DictionaryValue& params,
+                          const base::Value::Dict& params,
                           const std::string& host,
                           const CommandCallback& callback);
 
 // Gets all sessions
-void ExecuteGetSessions(
-    const Command& session_capabilities_command,
-    SessionThreadMap* session_thread_map,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback);
+void ExecuteGetSessions(const Command& session_capabilities_command,
+                        SessionThreadMap* session_thread_map,
+                        const base::Value::Dict& params,
+                        const std::string& session_id,
+                        const CommandCallback& callback);
 
 // Quits all sessions.
-void ExecuteQuitAll(
-    const Command& quit_command,
-    SessionThreadMap* session_thread_map,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback);
+void ExecuteQuitAll(const Command& quit_command,
+                    SessionThreadMap* session_thread_map,
+                    const base::Value::Dict& params,
+                    const std::string& session_id,
+                    const CommandCallback& callback);
 
 typedef base::RepeatingCallback<Status(Session* session,
-                                       const base::DictionaryValue&,
+                                       const base::Value::Dict&,
                                        std::unique_ptr<base::Value>*)>
     SessionCommand;
 
@@ -62,7 +55,7 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
                            const SessionCommand& command,
                            bool w3c_standard_command,
                            bool return_ok_without_session,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            const std::string& session_id,
                            const CommandCallback& callback);
 

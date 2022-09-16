@@ -55,15 +55,14 @@ void OnGetStatus(const Status& status,
 }  // namespace
 
 TEST(CommandsTest, GetStatus) {
-  base::Value params(base::Value::Type::DICTIONARY);
-  ExecuteGetStatus(base::Value::AsDictionaryValue(params), std::string(),
-                   base::BindRepeating(&OnGetStatus));
+  base::Value::Dict params;
+  ExecuteGetStatus(params, std::string(), base::BindRepeating(&OnGetStatus));
 }
 
 namespace {
 
 void ExecuteStubGetSession(int* count,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            const std::string& session_id,
                            const CommandCallback& callback) {
   if (*count == 0) {
@@ -149,21 +148,20 @@ TEST(CommandsTest, GetSessions) {
 
   Command cmd = base::BindRepeating(&ExecuteStubGetSession, &count);
 
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  ExecuteGetSessions(cmd, &map, base::Value::AsDictionaryValue(params),
-                     std::string(), base::BindRepeating(&OnGetSessions));
+  ExecuteGetSessions(cmd, &map, params, std::string(),
+                     base::BindRepeating(&OnGetSessions));
   ASSERT_EQ(2, count);
 }
 
 namespace {
 
-void ExecuteStubQuit(
-    int* count,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback) {
+void ExecuteStubQuit(int* count,
+                     const base::Value::Dict& params,
+                     const std::string& session_id,
+                     const CommandCallback& callback) {
   if (*count == 0) {
     EXPECT_STREQ("id", session_id.c_str());
   } else {
@@ -192,22 +190,21 @@ TEST(CommandsTest, QuitAll) {
 
   int count = 0;
   Command cmd = base::BindRepeating(&ExecuteStubQuit, &count);
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   base::test::SingleThreadTaskEnvironment task_environment;
-  ExecuteQuitAll(cmd, &map, base::Value::AsDictionaryValue(params),
-                 std::string(), base::BindRepeating(&OnQuitAll));
+  ExecuteQuitAll(cmd, &map, params, std::string(),
+                 base::BindRepeating(&OnQuitAll));
   ASSERT_EQ(2, count);
 }
 
 namespace {
 
 Status ExecuteSimpleCommand(const std::string& expected_id,
-                            base::Value* expected_params,
+                            base::Value::Dict* expected_params,
                             base::Value* value,
                             Session* session,
-                            const base::DictionaryValue& params,
+                            const base::Value::Dict& params,
                             std::unique_ptr<base::Value>* return_value) {
-  EXPECT_TRUE(expected_params->is_dict());
   EXPECT_EQ(expected_id, session->id);
   EXPECT_EQ(*expected_params, params);
   *return_value = base::Value::ToUniquePtrValue(value->Clone());
@@ -241,8 +238,8 @@ TEST(CommandsTest, ExecuteSessionCommand) {
       base::BindOnce(&internal::CreateSessionOnSessionThreadForTesting, id));
   map[id] = std::move(threadInfo);
 
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetIntKey("param", 5);
+  base::Value::Dict params;
+  params.Set("param", 5);
   base::Value expected_value(6);
   SessionCommand cmd =
       base::BindRepeating(&ExecuteSimpleCommand, id, &params, &expected_value);
@@ -250,8 +247,7 @@ TEST(CommandsTest, ExecuteSessionCommand) {
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false,
-      base::Value::AsDictionaryValue(params), id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnSimpleCommand, &run_loop, id, &expected_value));
   run_loop.Run();
 }
@@ -259,7 +255,7 @@ TEST(CommandsTest, ExecuteSessionCommand) {
 namespace {
 
 Status ShouldNotBeCalled(Session* session,
-                         const base::DictionaryValue& params,
+                         const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value) {
   EXPECT_TRUE(false);
   return Status(kOk);
@@ -285,19 +281,17 @@ void OnNoSuchSessionIsOk(const Status& status,
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
   SessionThreadMap map;
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
-                        true /*w3c_standard_command*/, false,
-                        base::Value::AsDictionaryValue(params), "session",
+                        true /*w3c_standard_command*/, false, params, "session",
                         base::BindRepeating(&OnNoSuchSession));
 }
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSessionWhenItExpectsOk) {
   SessionThreadMap map;
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
-                        true /*w3c_standard_command*/, true,
-                        base::Value::AsDictionaryValue(params), "session",
+                        true /*w3c_standard_command*/, true, params, "session",
                         base::BindRepeating(&OnNoSuchSessionIsOk));
 }
 
@@ -323,12 +317,11 @@ TEST(CommandsTest, ExecuteSessionCommandOnJustDeletedSession) {
   map[id] = std::move(threadInfo);
 
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   base::RunLoop run_loop;
   ExecuteSessionCommand(
       &map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
-      true /*w3c_standard_command*/, false,
-      base::Value::AsDictionaryValue(params), "session",
+      true /*w3c_standard_command*/, false, params, "session",
       base::BindRepeating(&OnNoSuchSessionAndQuit, &run_loop));
   run_loop.Run();
 }
@@ -450,14 +443,13 @@ TEST(CommandsTest, SuccessfulFindElement) {
   Session session("id");
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id1", std::string());
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kOk, ExecuteFindElement(1, &session, &web_view,
-                                    base::Value::AsDictionaryValue(params),
-                                    &result, nullptr)
-                     .code());
+  ASSERT_EQ(kOk,
+            ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
+                .code());
   base::Value param(base::Value::Type::DICTIONARY);
   param.SetStringKey("css selector", "#a");
   base::Value expected_args(base::Value::Type::LIST);
@@ -468,14 +460,12 @@ TEST(CommandsTest, SuccessfulFindElement) {
 TEST(CommandsTest, FailedFindElement) {
   FindElementWebView web_view(true, kElementNotExistsQueryOnce);
   Session session("id");
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> result;
   ASSERT_EQ(kNoSuchElement,
-            ExecuteFindElement(1, &session, &web_view,
-                               base::Value::AsDictionaryValue(params), &result,
-                               nullptr)
+            ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
                 .code());
 }
 
@@ -484,14 +474,13 @@ TEST(CommandsTest, SuccessfulFindElements) {
   Session session("id");
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id2", std::string());
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "*[name='b']");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "*[name='b']");
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kOk, ExecuteFindElements(1, &session, &web_view,
-                                     base::Value::AsDictionaryValue(params),
-                                     &result, nullptr)
-                     .code());
+  ASSERT_EQ(
+      kOk, ExecuteFindElements(1, &session, &web_view, params, &result, nullptr)
+               .code());
   base::Value param(base::Value::Type::DICTIONARY);
   param.SetStringKey("css selector", "*[name='b']");
   base::Value expected_args(base::Value::Type::LIST);
@@ -502,14 +491,13 @@ TEST(CommandsTest, SuccessfulFindElements) {
 TEST(CommandsTest, FailedFindElements) {
   Session session("id");
   FindElementWebView web_view(false, kElementNotExistsQueryOnce);
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kOk, ExecuteFindElements(1, &session, &web_view,
-                                     base::Value::AsDictionaryValue(params),
-                                     &result, nullptr)
-                     .code());
+  ASSERT_EQ(
+      kOk, ExecuteFindElements(1, &session, &web_view, params, &result, nullptr)
+               .code());
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(0U, result->GetList().size());
 }
@@ -596,15 +584,13 @@ TEST(CommandsTest, TimeoutInFindElement) {
   Session session("id");
   FindElementWebView web_view(true, kElementExistsTimeout);
   session.implicit_wait = base::Milliseconds(2);
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
-  params.SetStringKey("id", "1");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
+  params.Set("id", "1");
   std::unique_ptr<base::Value> result;
   ASSERT_EQ(kNoSuchElement,
-            ExecuteFindElement(1, &session, &web_view,
-                               base::Value::AsDictionaryValue(params), &result,
-                               nullptr)
+            ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
                 .code());
 }
 
@@ -633,19 +619,15 @@ class ErrorCallFunctionWebView : public StubWebView {
 TEST(CommandsTest, ErrorFindElement) {
   Session session("id");
   ErrorCallFunctionWebView web_view(kUnknownError);
-  base::Value params(base::Value::Type::DICTIONARY);
-  params.SetStringKey("using", "css selector");
-  params.SetStringKey("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> value;
   ASSERT_EQ(kUnknownError,
-            ExecuteFindElement(1, &session, &web_view,
-                               base::Value::AsDictionaryValue(params), &value,
-                               nullptr)
+            ExecuteFindElement(1, &session, &web_view, params, &value, nullptr)
                 .code());
   ASSERT_EQ(kUnknownError,
-            ExecuteFindElements(1, &session, &web_view,
-                                base::Value::AsDictionaryValue(params), &value,
-                                nullptr)
+            ExecuteFindElements(1, &session, &web_view, params, &value, nullptr)
                 .code());
 }
 
@@ -697,14 +679,14 @@ class MockCommandListener : public CommandListener {
 Status ExecuteAddListenerToSessionCommand(
     std::unique_ptr<CommandListener> listener,
     Session* session,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     std::unique_ptr<base::Value>* return_value) {
   session->command_listeners.push_back(std::move(listener));
   return Status(kOk);
 }
 
 Status ExecuteQuitSessionCommand(Session* session,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* return_value) {
   session->quit = true;
   return Status(kOk);
@@ -733,7 +715,7 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
 
   map[id] = std::move(threadInfo);
 
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   auto listener = std::make_unique<MockCommandListener>();
   auto proxy = std::make_unique<CommandListenerProxy>(listener.get());
   // We add |proxy| to the session instead of adding |listener| directly so that
@@ -748,8 +730,7 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   // Here, the command adds |listener| to the session, so |listener|
   // should not be notified since it will not have been added yet.
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false,
-      base::Value::AsDictionaryValue(params), id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnSessionCommand, &run_loop_addlistener));
   run_loop_addlistener.Run();
 
@@ -761,8 +742,7 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   // |listener| was added to |session| by ExecuteAddListenerToSessionCommand
   // and should be notified before the next command, ExecuteQuitSessionCommand.
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false,
-      base::Value::AsDictionaryValue(params), id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnSessionCommand, &run_loop_testlistener));
   run_loop_testlistener.Run();
 
@@ -824,15 +804,14 @@ TEST(CommandsTest, ErrorNotifyingCommandListeners) {
       FROM_HERE, base::BindOnce(&AddListenerToSessionIfSessionExists,
                                 std::move(listener)));
 
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   // The command should never be executed if BeforeCommand fails for a listener.
   SessionCommand cmd = base::BindRepeating(&ShouldNotBeCalled);
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
 
   ExecuteSessionCommand(
-      &map, "cmd", cmd, true /*w3c_standard_command*/, false,
-      base::Value::AsDictionaryValue(params), id,
+      &map, "cmd", cmd, true /*w3c_standard_command*/, false, params, id,
       base::BindRepeating(&OnFailBecauseErrorNotifyingListeners, &run_loop));
   run_loop.Run();
 

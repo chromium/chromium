@@ -9,11 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
+#include "base/values.h"
 
 class Status;
 
@@ -21,9 +17,8 @@ typedef base::RepeatingCallback<
     void(const Status&, std::unique_ptr<base::Value>, const std::string&, bool)>
     CommandCallback;
 
-typedef base::RepeatingCallback<void(const base::DictionaryValue&,
-                                     const std::string&,
-                                     const CommandCallback&)>
+typedef base::RepeatingCallback<
+    void(const base::Value::Dict&, const std::string&, const CommandCallback&)>
     Command;
 
 #endif  // CHROME_TEST_CHROMEDRIVER_COMMAND_H_

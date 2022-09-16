@@ -8,11 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 struct Session;
 class Status;
@@ -26,7 +22,7 @@ using WebAuthnCommand =
 // Executes a WebAuthn command.
 Status ExecuteWebAuthnCommand(const WebAuthnCommand& command,
                               Session* session,
-                              const base::DictionaryValue& params,
+                              const base::Value::Dict& params,
                               std::unique_ptr<base::Value>* value);
 
 // Add a virtual authenticator.

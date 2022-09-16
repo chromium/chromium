@@ -245,7 +245,8 @@ Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
       else
         return Status(kInvalidArgument, "timeout can not be null");
     } else {
-      if (!GetOptionalSafeInt(timeouts, it.first, &timeout_ms_int64) ||
+      if (!GetOptionalSafeInt(timeouts->GetDict(), it.first,
+                              &timeout_ms_int64) ||
           timeout_ms_int64 < 0)
         return Status(kInvalidArgument, "value must be a non-negative integer");
       else
@@ -653,12 +654,28 @@ Status ParseSeleniumOptions(
 }
 }  // namespace
 
-bool GetChromeOptionsDictionary(const base::DictionaryValue& params,
-                                const base::DictionaryValue** out) {
+bool GetChromeOptionsDictionaryDeprecated(const base::DictionaryValue& params,
+                                          const base::DictionaryValue** out) {
   if (params.GetDictionary(kChromeDriverOptionsKeyPrefixed, out)) {
     return true;
   }
   return params.GetDictionary(kChromeDriverOptionsKey, out);
+}
+
+bool GetChromeOptionsDictionary(const base::Value::Dict& params,
+                                const base::Value::Dict** out) {
+  const base::Value::Dict* result =
+      params.FindDict(kChromeDriverOptionsKeyPrefixed);
+  if (result) {
+    *out = result;
+    return true;
+  }
+  result = params.FindDict(kChromeDriverOptionsKey);
+  if (result) {
+    *out = result;
+    return true;
+  }
+  return false;
 }
 
 Switches::Switches() {}
@@ -875,7 +892,7 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   // mobile emulation is on.
 
   const base::DictionaryValue* chrome_options = nullptr;
-  if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
+  if (GetChromeOptionsDictionaryDeprecated(desired_caps, &chrome_options) &&
       chrome_options->GetDictionary("mobileEmulation", nullptr)) {
     parser_map["networkConnectionEnabled"] =
         base::BindRepeating(&ParseBoolean, &network_emulation_enabled);
@@ -905,7 +922,7 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   LoggingPrefs::const_iterator iter = logging_prefs.find(
       WebDriverLog::kPerformanceType);
   if (iter == logging_prefs.end() || iter->second == Log::kOff) {
-    if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
+    if (GetChromeOptionsDictionaryDeprecated(desired_caps, &chrome_options) &&
         chrome_options->FindKey("perfLoggingPrefs")) {
       return Status(kInvalidArgument,
                     "perfLoggingPrefs specified, "
@@ -916,7 +933,7 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
       WebDriverLog::kDevToolsType);
   if (dt_events_logging_iter == logging_prefs.end()
       || dt_events_logging_iter->second == Log::kOff) {
-    if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
+    if (GetChromeOptionsDictionaryDeprecated(desired_caps, &chrome_options) &&
         chrome_options->FindKey("devToolsEventsToLog")) {
       return Status(kInvalidArgument,
                     "devToolsEventsToLog specified, "
