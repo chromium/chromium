@@ -64,7 +64,6 @@ message_center::SystemNotificationWarningLevel GetWarningLevelMD(
 
 std::unique_ptr<Notification> CreateNotification(
     PowerNotificationController::NotificationState notification_state) {
-  notification_state = PowerNotificationController::NOTIFICATION_LOW_POWER;
   const PowerStatus& status = *PowerStatus::Get();
 
   const double battery_percentage = status.GetRoundedBatteryPercent();
