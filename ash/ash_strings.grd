@@ -1312,7 +1312,7 @@ This file contains the strings for ash.
 
       <!-- Holding space tray-->
       <message name="IDS_ASH_HOLDING_SPACE_A11Y_NAME" desc="A11y name of the holding space tray and bubble.">
-        Tote: recent screen captures, downloads, and pinned files
+        <ph name="HOLDING_SPACE_TITLE">$1</ph>: recent screen captures, downloads, and pinned files
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_TITLE" desc="Title of the holding space tray and bubble.">
         Tote

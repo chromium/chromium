@@ -3582,6 +3582,37 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
       pinned_files_bubble));
 }
 
+// Base class for tests of the holding space accessibility text parameterized by
+// a boolean for the kHoldingSpaceRebrand feature flag.
+class HoldingSpaceTrayAccessibilityTest
+    : public HoldingSpaceTrayTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  HoldingSpaceTrayAccessibilityTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRebrand,
+                                              IsHoldingSpaceRebrandEnabled());
+  }
+
+  bool IsHoldingSpaceRebrandEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceTrayAccessibilityTest,
+                         ::testing::Bool());
+
+TEST_P(HoldingSpaceTrayAccessibilityTest, CheckTrayAccessibilityText) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_EQ(
+      GetTray()->GetAccessibleNameForTray(),
+      IsHoldingSpaceRebrandEnabled()
+          ? u"Quick Files: recent screen captures, downloads, and pinned files"
+          : u"Tote: recent screen captures, downloads, and pinned files");
+}
+
 // Base class for tests of the holding space icon parameterized by a boolean for
 // the kHoldingSpaceRebrand feature flag.
 class HoldingSpaceTrayIconTest : public HoldingSpaceTrayTestBase,
