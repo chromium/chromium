@@ -343,21 +343,15 @@ function runTests() {
           TESTING_CHOCOLATE_FILE_NAME,
           {create: false, exclusive: false},
           function(fileEntry) {
-            var hadAbort = false;
             fileEntry.createWriter(function(fileWriter) {
               fileWriter.onwriteend = function(e) {
-                if (!hadAbort) {
+                if (fileWriter.error) {
+                  chrome.test.assertEq(
+                      'AbortError', fileWriter.error.name);
+                } else {
                   chrome.test.fail(
-                      'Unexpectedly finished writing, despite aborting.');
-                  return;
+                      'Unexpectedly succeeded writing, despite aborting.');
                 }
-              };
-              fileWriter.onerror = function(e) {
-                chrome.test.assertEq(
-                    'AbortError', fileWriter.error.name);
-              };
-              fileWriter.onabort = function(e) {
-                hadAbort = true;
               };
               writeFileRequestedCallbacks.push(
                   function(filePath) {
