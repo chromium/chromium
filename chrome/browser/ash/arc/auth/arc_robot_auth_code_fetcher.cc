@@ -87,26 +87,25 @@ void ArcRobotAuthCodeFetcher::Fetch(FetchCallback callback) {
 
 void ArcRobotAuthCodeFetcher::OnFetchRobotAuthCodeCompleted(
     FetchCallback callback,
-    policy::DeviceManagementService::Job* job,
-    policy::DeviceManagementStatus status,
-    int net_error,
-    const enterprise_management::DeviceManagementResponse& response) {
+    policy::DMServerJobResult result) {
   fetch_request_job_.reset();
 
-  if (status == policy::DM_STATUS_SUCCESS &&
-      (!response.has_service_api_access_response())) {
+  if (result.dm_status == policy::DM_STATUS_SUCCESS &&
+      (!result.response.has_service_api_access_response())) {
     LOG(WARNING) << "Invalid service api access response.";
-    status = policy::DM_STATUS_RESPONSE_DECODING_ERROR;
+    result.dm_status = policy::DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
-  if (status != policy::DM_STATUS_SUCCESS) {
-    LOG(ERROR) << "Fetching of robot auth code failed. DM Status: " << status;
+  if (result.dm_status != policy::DM_STATUS_SUCCESS) {
+    LOG(ERROR) << "Fetching of robot auth code failed. DM Status: "
+               << result.dm_status;
     std::move(callback).Run(false /* success */, std::string());
     return;
   }
 
-  std::move(callback).Run(true /* success */,
-                          response.service_api_access_response().auth_code());
+  std::move(callback).Run(
+      true /* success */,
+      result.response.service_api_access_response().auth_code());
 }
 
 }  // namespace arc

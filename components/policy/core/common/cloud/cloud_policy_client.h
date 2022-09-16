@@ -44,6 +44,7 @@ class ClientDataDelegate;
 class DMServerJobConfiguration;
 class RegistrationJobConfiguration;
 class SigningService;
+struct DMServerJobResult;
 
 // Implements the core logic required to talk to the device management service.
 // Also keeps track of the current state of the association with the service,
@@ -656,49 +657,25 @@ class POLICY_EXPORT CloudPolicyClient {
       enterprise_management::SignedData signed_data);
 
   // Callback for registration requests.
-  void OnRegisterCompleted(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnRegisterCompleted(DMServerJobResult result);
 
   // Callback for policy fetch requests.
-  void OnPolicyFetchCompleted(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnPolicyFetchCompleted(DMServerJobResult result);
 
   // Callback for robot account api authorization requests.
-  void OnFetchRobotAuthCodesCompleted(
-      RobotAuthCodeCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnFetchRobotAuthCodesCompleted(RobotAuthCodeCallback callback,
+                                      DMServerJobResult result);
 
   // Callback for unregistration requests.
-  void OnUnregisterCompleted(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnUnregisterCompleted(DMServerJobResult result);
 
   // Callback for certificate upload requests.
-  void OnCertificateUploadCompleted(
-      StatusCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnCertificateUploadCompleted(StatusCallback callback,
+                                    DMServerJobResult result);
 
   // Callback for several types of status/report upload requests.
-  void OnReportUploadCompleted(
-      StatusCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnReportUploadCompleted(StatusCallback callback,
+                               DMServerJobResult result);
 
   // Callback for realtime report upload requests.
   void OnRealtimeReportUploadCompleted(
@@ -717,71 +694,40 @@ class POLICY_EXPORT CloudPolicyClient {
       absl::optional<base::Value::Dict> response);
 
   // Callback for remote command fetch requests.
-  void OnRemoteCommandsFetched(
-      RemoteCommandCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnRemoteCommandsFetched(RemoteCommandCallback callback,
+                               DMServerJobResult result);
 
   // Callback for device attribute update permission requests.
-  void OnDeviceAttributeUpdatePermissionCompleted(
-      StatusCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnDeviceAttributeUpdatePermissionCompleted(StatusCallback callback,
+                                                  DMServerJobResult result);
 
   // Callback for device attribute update requests.
-  void OnDeviceAttributeUpdated(
-      StatusCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnDeviceAttributeUpdated(StatusCallback callback,
+                                DMServerJobResult result);
 
   // Callback for gcm id update requests.
-  void OnGcmIdUpdated(
-      StatusCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnGcmIdUpdated(StatusCallback callback, DMServerJobResult result);
 
   // Callback for EUICC info upload requests.
-  void OnEuiccInfoUploaded(
-      StatusCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnEuiccInfoUploaded(StatusCallback callback, DMServerJobResult result);
 
   // Callback for certificate provisioning start csr requests.
   void OnClientCertProvisioningStartCsrResponse(
       ClientCertProvisioningStartCsrCallback callback,
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+      DMServerJobResult result);
 
   // Callback for certificate provisioning finish csr requests.
   void OnClientCertProvisioningFinishCsrResponse(
       ClientCertProvisioningFinishCsrCallback callback,
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+      DMServerJobResult result);
 
   // Callback for certificate provisioning download cert requests.
   void OnClientCertProvisioningDownloadCertResponse(
       ClientCertProvisioningDownloadCertCallback callback,
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+      DMServerJobResult result);
 
   // Helper to remove a job from request_jobs_.
-  void RemoveJob(DeviceManagementService::Job* job);
+  void RemoveJob(const DeviceManagementService::Job* job);
 
   // Observer notification helpers.
   void NotifyPolicyFetched();

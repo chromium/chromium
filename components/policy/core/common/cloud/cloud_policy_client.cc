@@ -362,7 +362,8 @@ void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
 
   if (!success) {
     const em::DeviceManagementResponse response;
-    OnRegisterCompleted(nullptr, DM_STATUS_CANNOT_SIGN_REQUEST, 0, response);
+    OnRegisterCompleted(
+        DMServerJobResult{nullptr, 0, DM_STATUS_CANNOT_SIGN_REQUEST, response});
     return;
   }
 
@@ -926,18 +927,14 @@ void CloudPolicyClient::UploadEuiccInfo(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::OnEuiccInfoUploaded(
-    StatusCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  status_ = status;
-  if (status != DM_STATUS_SUCCESS)
+void CloudPolicyClient::OnEuiccInfoUploaded(StatusCallback callback,
+                                            DMServerJobResult result) {
+  status_ = result.dm_status;
+  if (status_ != DM_STATUS_SUCCESS)
     NotifyClientError();
 
-  std::move(callback).Run(status == DM_STATUS_SUCCESS);
-  RemoveJob(job);
+  std::move(callback).Run(result.dm_status == DM_STATUS_SUCCESS);
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::ClientCertProvisioningStartCsr(
@@ -1163,31 +1160,27 @@ void CloudPolicyClient::ExecuteCertUploadJob(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
-void CloudPolicyClient::OnRegisterCompleted(
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  if (status == DM_STATUS_SUCCESS) {
-    if (!response.has_register_response() ||
-        !response.register_response().has_device_management_token()) {
+void CloudPolicyClient::OnRegisterCompleted(DMServerJobResult result) {
+  if (result.dm_status == DM_STATUS_SUCCESS) {
+    if (!result.response.has_register_response() ||
+        !result.response.register_response().has_device_management_token()) {
       LOG(WARNING) << "Invalid registration response.";
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
     } else if (!reregistration_dm_token_.empty() &&
-               reregistration_dm_token_ !=
-                   response.register_response().device_management_token()) {
+               reregistration_dm_token_ != result.response.register_response()
+                                               .device_management_token()) {
       LOG(WARNING) << "Reregistration DMToken mismatch.";
-      status = DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID;
+      result.dm_status = DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID;
     }
   }
 
-  status_ = status;
-  if (status == DM_STATUS_SUCCESS) {
-    dm_token_ = response.register_response().device_management_token();
+  status_ = result.dm_status;
+  if (result.dm_status == DM_STATUS_SUCCESS) {
+    dm_token_ = result.response.register_response().device_management_token();
     reregistration_dm_token_.clear();
-    if (response.register_response().has_configuration_seed()) {
+    if (result.response.register_response().has_configuration_seed()) {
       absl::optional<base::Value> configuration_seed = base::JSONReader::Read(
-          response.register_response().configuration_seed(),
+          result.response.register_response().configuration_seed(),
           base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
       if (configuration_seed && configuration_seed->is_dict()) {
         configuration_seed_ = std::make_unique<base::Value::Dict>(
@@ -1202,15 +1195,15 @@ void CloudPolicyClient::OnRegisterCompleted(
     // Device mode is only relevant for device policy really, it's the
     // responsibility of the consumer of the field to check validity.
     device_mode_ = DEVICE_MODE_NOT_SET;
-    if (response.register_response().has_enrollment_type()) {
+    if (result.response.register_response().has_enrollment_type()) {
       device_mode_ = TranslateProtobufDeviceMode(
-          response.register_response().enrollment_type());
+          result.response.register_response().enrollment_type());
     }
 
     if (device_dm_token_callback_) {
       std::vector<std::string> user_affiliation_ids(
-          response.register_response().user_affiliation_ids().begin(),
-          response.register_response().user_affiliation_ids().end());
+          result.response.register_response().user_affiliation_ids().begin(),
+          result.response.register_response().user_affiliation_ids().end());
       device_dm_token_ = device_dm_token_callback_.Run(user_affiliation_ids);
     }
     NotifyRegistrationStateChanged();
@@ -1221,48 +1214,42 @@ void CloudPolicyClient::OnRegisterCompleted(
 
 void CloudPolicyClient::OnFetchRobotAuthCodesCompleted(
     RobotAuthCodeCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   // Remove the job before executing the callback because |this| might be
   // deleted during the callback.
-  RemoveJob(job);
+  RemoveJob(result.job);
 
-  if (status == DM_STATUS_SUCCESS &&
-      (!response.has_service_api_access_response())) {
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      (!result.response.has_service_api_access_response())) {
     LOG(WARNING) << "Invalid service api access response.";
-    status = DM_STATUS_RESPONSE_DECODING_ERROR;
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
-  status_ = status;
-  if (status == DM_STATUS_SUCCESS) {
+  status_ = result.dm_status;
+  if (result.dm_status == DM_STATUS_SUCCESS) {
     DVLOG(1) << "Device robot account auth code fetch complete - code = "
-             << response.service_api_access_response().auth_code();
-    std::move(callback).Run(status,
-                            response.service_api_access_response().auth_code());
+             << result.response.service_api_access_response().auth_code();
+    std::move(callback).Run(
+        result.dm_status,
+        result.response.service_api_access_response().auth_code());
   } else {
-    std::move(callback).Run(status, std::string());
+    std::move(callback).Run(result.dm_status, std::string());
   }
   // |this| might be deleted at this point.
 }
 
-void CloudPolicyClient::OnPolicyFetchCompleted(
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  if (status == DM_STATUS_SUCCESS) {
-    if (!response.has_policy_response() ||
-        response.policy_response().responses_size() == 0) {
+void CloudPolicyClient::OnPolicyFetchCompleted(DMServerJobResult result) {
+  if (result.dm_status == DM_STATUS_SUCCESS) {
+    if (!result.response.has_policy_response() ||
+        result.response.policy_response().responses_size() == 0) {
       LOG(WARNING) << "Empty policy response.";
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
     }
   }
 
-  status_ = status;
-  if (status == DM_STATUS_SUCCESS) {
+  status_ = result.dm_status;
+  if (result.dm_status == DM_STATUS_SUCCESS) {
     const em::DevicePolicyResponse& policy_response =
-        response.policy_response();
+        result.response.policy_response();
     // Log histogram on first device policy fetch response to check the state
     // keys.
     if (responses_.empty()) {
@@ -1298,10 +1285,10 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
   } else {
     NotifyClientError();
 
-    VLOG(2) << "Policy fetch error: " << status;
+    VLOG(2) << "Policy fetch error: " << status_;
 
-    if (status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
-        status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
+    if (result.dm_status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND ||
+        result.dm_status == DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
       // Mark as unregistered and initialize re-registration flow.
       reregistration_dm_token_ = dm_token_;
       dm_token_.clear();
@@ -1310,18 +1297,15 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
   }
 }
 
-void CloudPolicyClient::OnUnregisterCompleted(
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  if (status == DM_STATUS_SUCCESS && !response.has_unregister_response()) {
+void CloudPolicyClient::OnUnregisterCompleted(DMServerJobResult result) {
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      !result.response.has_unregister_response()) {
     // Assume unregistration has succeeded either way.
     LOG(WARNING) << "Empty unregistration response.";
   }
 
-  status_ = status;
-  if (status == DM_STATUS_SUCCESS) {
+  status_ = result.dm_status;
+  if (result.dm_status == DM_STATUS_SUCCESS) {
     dm_token_.clear();
     // Cancel all outstanding jobs.
     request_jobs_.clear();
@@ -1336,77 +1320,69 @@ void CloudPolicyClient::OnUnregisterCompleted(
 
 void CloudPolicyClient::OnCertificateUploadCompleted(
     CloudPolicyClient::StatusCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   bool success = true;
-  status_ = status;
-  if (status != DM_STATUS_SUCCESS) {
+  status_ = result.dm_status;
+  if (result.dm_status != DM_STATUS_SUCCESS) {
     success = false;
     NotifyClientError();
-  } else if (!response.has_cert_upload_response()) {
+  } else if (!result.response.has_cert_upload_response()) {
     LOG(WARNING) << "Empty upload certificate response.";
     success = false;
   }
   std::move(callback).Run(success);
-  RemoveJob(job);
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::OnDeviceAttributeUpdatePermissionCompleted(
     CloudPolicyClient::StatusCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   bool success = false;
 
-  if (status == DM_STATUS_SUCCESS &&
-      !response.has_device_attribute_update_permission_response()) {
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      !result.response.has_device_attribute_update_permission_response()) {
     LOG(WARNING) << "Invalid device attribute update permission response.";
-    status = DM_STATUS_RESPONSE_DECODING_ERROR;
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
-  status_ = status;
-  if (status == DM_STATUS_SUCCESS &&
-      response.device_attribute_update_permission_response().has_result() &&
-      response.device_attribute_update_permission_response().result() ==
+  status_ = result.dm_status;
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      result.response.device_attribute_update_permission_response()
+          .has_result() &&
+      result.response.device_attribute_update_permission_response().result() ==
           em::DeviceAttributeUpdatePermissionResponse::
               ATTRIBUTE_UPDATE_ALLOWED) {
     success = true;
   }
 
   std::move(callback).Run(success);
-  RemoveJob(job);
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::OnDeviceAttributeUpdated(
     CloudPolicyClient::StatusCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   bool success = false;
 
-  if (status == DM_STATUS_SUCCESS &&
-      !response.has_device_attribute_update_response()) {
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      !result.response.has_device_attribute_update_response()) {
     LOG(WARNING) << "Invalid device attribute update response.";
-    status = DM_STATUS_RESPONSE_DECODING_ERROR;
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
-  status_ = status;
-  if (status == DM_STATUS_SUCCESS &&
-      response.device_attribute_update_response().has_result() &&
-      response.device_attribute_update_response().result() ==
+  status_ = result.dm_status;
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      result.response.device_attribute_update_response().has_result() &&
+      result.response.device_attribute_update_response().result() ==
           em::DeviceAttributeUpdateResponse::ATTRIBUTE_UPDATE_SUCCESS) {
     success = true;
   }
 
   std::move(callback).Run(success);
-  RemoveJob(job);
+  RemoveJob(result.job);
 }
 
-void CloudPolicyClient::RemoveJob(DeviceManagementService::Job* job) {
+void CloudPolicyClient::RemoveJob(const DeviceManagementService::Job* job) {
   if (app_install_report_request_job_ == job) {
     app_install_report_request_job_ = nullptr;
   } else if (extension_install_report_request_job_ == job) {
@@ -1423,18 +1399,14 @@ void CloudPolicyClient::RemoveJob(DeviceManagementService::Job* job) {
   NOTREACHED();
 }
 
-void CloudPolicyClient::OnReportUploadCompleted(
-    StatusCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  status_ = status;
-  if (status != DM_STATUS_SUCCESS)
+void CloudPolicyClient::OnReportUploadCompleted(StatusCallback callback,
+                                                DMServerJobResult result) {
+  status_ = result.dm_status;
+  if (result.dm_status != DM_STATUS_SUCCESS)
     NotifyClientError();
 
-  std::move(callback).Run(status == DM_STATUS_SUCCESS);
-  RemoveJob(job);
+  std::move(callback).Run(result.dm_status == DM_STATUS_SUCCESS);
+  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::OnRealtimeReportUploadCompleted(
@@ -1473,30 +1445,23 @@ void CloudPolicyClient::OnEncryptedReportUploadCompleted(
   RemoveJob(job);
 }
 
-void CloudPolicyClient::OnRemoteCommandsFetched(
-    RemoteCommandCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  auto [decoded_status, commands] = DecodeRemoteCommands(status, response);
+void CloudPolicyClient::OnRemoteCommandsFetched(RemoteCommandCallback callback,
+                                                DMServerJobResult result) {
+  auto [decoded_status, commands] =
+      DecodeRemoteCommands(result.dm_status, result.response);
 
   std::move(callback).Run(decoded_status, commands);
-  RemoveJob(job);
+  RemoveJob(result.job);
 }
 
-void CloudPolicyClient::OnGcmIdUpdated(
-    StatusCallback callback,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
-  status_ = status;
-  if (status != DM_STATUS_SUCCESS)
+void CloudPolicyClient::OnGcmIdUpdated(StatusCallback callback,
+                                       DMServerJobResult result) {
+  status_ = result.dm_status;
+  if (status_ != DM_STATUS_SUCCESS)
     NotifyClientError();
 
-  std::move(callback).Run(status == DM_STATUS_SUCCESS);
-  RemoveJob(job);
+  std::move(callback).Run(result.dm_status == DM_STATUS_SUCCESS);
+  RemoveJob(result.job);
 }
 
 namespace {
@@ -1539,30 +1504,27 @@ bool CheckCommonClientCertProvisioningResponse(
 
 void CloudPolicyClient::OnClientCertProvisioningStartCsrResponse(
     ClientCertProvisioningStartCsrCallback callback,
-    policy::DeviceManagementService::Job* job,
-    policy::DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   base::ScopedClosureRunner job_cleaner(base::BindOnce(
-      &CloudPolicyClient::RemoveJob, base::Unretained(this), job));
+      &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
-  status_ = status;
+  status_ = result.dm_status;
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
   // Single step loop for convenience.
   do {
     if (!CheckCommonClientCertProvisioningResponse(
-            response, &status, &response_error, &try_later)) {
+            result.response, &result.dm_status, &response_error, &try_later)) {
       break;
     }
 
     const em::ClientCertificateProvisioningResponse&
         cert_provisioning_response =
-            response.client_certificate_provisioning_response();
+            result.response.client_certificate_provisioning_response();
 
     if (!cert_provisioning_response.has_start_csr_response()) {
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
       break;
     }
 
@@ -1572,13 +1534,13 @@ void CloudPolicyClient::OnClientCertProvisioningStartCsrResponse(
     if (!start_csr_response.has_hashing_algorithm() ||
         !start_csr_response.has_signing_algorithm() ||
         !start_csr_response.has_data_to_sign()) {
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
       break;
     }
 
     if (start_csr_response.signing_algorithm() !=
         em::SigningAlgorithm::RSA_PKCS1_V1_5) {
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
       break;
     }
 
@@ -1594,80 +1556,74 @@ void CloudPolicyClient::OnClientCertProvisioningStartCsrResponse(
                                           : empty_str;
 
     // Everything is ok, run |callback| with data.
-    std::move(callback).Run(status, response_error, try_later,
+    std::move(callback).Run(result.dm_status, response_error, try_later,
                             invalidation_topic, va_challenge,
                             start_csr_response.hashing_algorithm(),
                             start_csr_response.data_to_sign());
     return;
   } while (false);
 
-  // Something went wrong. Return error via |status|, |response_error|,
-  // |try_later|.
+  // Something went wrong. Return error via |result.dm_status|,
+  // |response_error|, |try_later|.
   const std::string empty_str;
   em::HashingAlgorithm hash_algo = {};
-  std::move(callback).Run(status, response_error, try_later, empty_str,
-                          empty_str, hash_algo, empty_str);
+  std::move(callback).Run(result.dm_status, response_error, try_later,
+                          empty_str, empty_str, hash_algo, empty_str);
 }
 
 void CloudPolicyClient::OnClientCertProvisioningFinishCsrResponse(
     ClientCertProvisioningFinishCsrCallback callback,
-    policy::DeviceManagementService::Job* job,
-    policy::DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   base::ScopedClosureRunner job_cleaner(base::BindOnce(
-      &CloudPolicyClient::RemoveJob, base::Unretained(this), job));
+      &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
-  status_ = status;
+  status_ = result.dm_status;
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
   // Single step loop for convenience.
   do {
     if (!CheckCommonClientCertProvisioningResponse(
-            response, &status, &response_error, &try_later)) {
+            result.response, &result.dm_status, &response_error, &try_later)) {
       break;
     }
 
     const em::ClientCertificateProvisioningResponse&
         cert_provisioning_response =
-            response.client_certificate_provisioning_response();
+            result.response.client_certificate_provisioning_response();
 
     if (!cert_provisioning_response.has_finish_csr_response()) {
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
       break;
     }
   } while (false);
 
-  std::move(callback).Run(status, response_error, try_later);
+  std::move(callback).Run(result.dm_status, response_error, try_later);
 }
 
 void CloudPolicyClient::OnClientCertProvisioningDownloadCertResponse(
     ClientCertProvisioningDownloadCertCallback callback,
-    policy::DeviceManagementService::Job* job,
-    policy::DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   base::ScopedClosureRunner job_cleaner(base::BindOnce(
-      &CloudPolicyClient::RemoveJob, base::Unretained(this), job));
+      &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
-  status_ = status;
+  status_ = result.dm_status;
   absl::optional<CertProvisioningResponseErrorType> response_error;
   absl::optional<int64_t> try_later;
 
   // Single step loop for convenience.
   do {
     if (!CheckCommonClientCertProvisioningResponse(
-            response, &status, &response_error, &try_later)) {
+            result.response, &result.dm_status, &response_error, &try_later)) {
       break;
     }
 
     const em::ClientCertificateProvisioningResponse&
         cert_provisioning_response =
-            response.client_certificate_provisioning_response();
+            result.response.client_certificate_provisioning_response();
 
     if (!cert_provisioning_response.has_download_cert_response()) {
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
       break;
     }
 
@@ -1675,19 +1631,20 @@ void CloudPolicyClient::OnClientCertProvisioningDownloadCertResponse(
         cert_provisioning_response.download_cert_response();
 
     if (!download_cert_response.has_pem_encoded_certificate()) {
-      status = DM_STATUS_RESPONSE_DECODING_ERROR;
+      result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
       break;
     }
 
     // Everything is ok, run |callback| with data.
-    std::move(callback).Run(status, response_error, try_later,
+    std::move(callback).Run(result.dm_status, response_error, try_later,
                             download_cert_response.pem_encoded_certificate());
     return;
   } while (false);
 
-  // Something went wrong. Return error via |status|, |response_error|,
-  // |try_later|.
-  std::move(callback).Run(status, response_error, try_later, std::string());
+  // Something went wrong. Return error via |result.dm_status|,
+  // |response_error|, |try_later|.
+  std::move(callback).Run(result.dm_status, response_error, try_later,
+                          std::string());
 }
 
 void CloudPolicyClient::NotifyPolicyFetched() {

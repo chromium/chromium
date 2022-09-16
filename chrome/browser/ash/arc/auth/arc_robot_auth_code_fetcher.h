@@ -13,8 +13,8 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
+namespace policy {
+struct DMServerJobResult;
 }
 
 namespace arc {
@@ -34,12 +34,8 @@ class ArcRobotAuthCodeFetcher : public ArcAuthCodeFetcher {
   void Fetch(FetchCallback callback) override;
 
  private:
-  void OnFetchRobotAuthCodeCompleted(
-      FetchCallback callback,
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnFetchRobotAuthCodeCompleted(FetchCallback callback,
+                                     policy::DMServerJobResult result);
 
   std::unique_ptr<policy::DeviceManagementService::Job> fetch_request_job_;
   base::WeakPtrFactory<ArcRobotAuthCodeFetcher> weak_ptr_factory_{this};

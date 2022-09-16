@@ -13,11 +13,9 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
-}  // namespace enterprise_management
-
 namespace policy {
+
+struct DMServerJobResult;
 
 // This class handles sending request to check account to DM server,
 // waits for the response and retrieves the account status from it.
@@ -58,11 +56,7 @@ class AccountStatusCheckFetcher {
 
  private:
   // Response from DM server.
-  void OnAccountStatusCheckReceived(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus dm_status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnAccountStatusCheckReceived(DMServerJobResult result);
 
   // Account ID, added to the DM server request.
   std::string email_;

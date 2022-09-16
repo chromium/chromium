@@ -271,7 +271,8 @@ void DMServerJobConfiguration::OnURLLoadComplete(
     }
   }
 
-  std::move(callback_).Run(job, code, net_error, response);
+  std::move(callback_).Run(
+      DMServerJobResult{job, net_error, code, std::move(response)});
 }
 
 GURL DMServerJobConfiguration::GetURL(int last_error) const {

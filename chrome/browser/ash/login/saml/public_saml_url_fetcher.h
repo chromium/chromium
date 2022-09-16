@@ -14,10 +14,9 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
-}  // namespace enterprise_management
-
+namespace policy {
+struct DMServerJobResult;
+}
 namespace ash {
 
 // This class handles sending request for public SAML session URL to DM
@@ -40,11 +39,7 @@ class PublicSamlUrlFetcher {
  private:
   // Response from DM server. Calls the stored FetchCallback or initiates the
   // SAML flow.
-  void OnPublicSamlUrlReceived(
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus dm_status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnPublicSamlUrlReceived(policy::DMServerJobResult result);
 
   // Account ID, added to the DM server request.
   std::string account_id_;

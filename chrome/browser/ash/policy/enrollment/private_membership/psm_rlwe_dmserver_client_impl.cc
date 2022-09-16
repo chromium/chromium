@@ -143,19 +143,18 @@ void PsmRlweDmserverClientImpl::SendPsmRlweOprfRequest() {
 }
 
 void PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion(
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::UmaHistogramSparse(kUMAPsmDmServerRequestStatus + uma_suffix_, status);
+  base::UmaHistogramSparse(kUMAPsmDmServerRequestStatus + uma_suffix_,
+                           result.dm_status);
 
-  switch (status) {
+  switch (result.dm_status) {
     case DM_STATUS_SUCCESS: {
       // Check if the RLWE OPRF response is empty.
-      if (!response.private_set_membership_response().has_rlwe_response() ||
-          !response.private_set_membership_response()
+      if (!result.response.private_set_membership_response()
+               .has_rlwe_response() ||
+          !result.response.private_set_membership_response()
                .rlwe_response()
                .has_oprf_response()) {
         LOG(ERROR) << "PSM error: empty OPRF RLWE response";
@@ -164,14 +163,15 @@ void PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion(
       }
 
       LOG(WARNING) << "PSM RLWE OPRF request completed successfully";
-      SendPsmRlweQueryRequest(response.private_set_membership_response());
+      SendPsmRlweQueryRequest(
+          result.response.private_set_membership_response());
       return;
     }
     case DM_STATUS_REQUEST_FAILED: {
       LOG(ERROR)
           << "PSM error: RLWE OPRF request failed due to connection error";
       base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
-                               -net_error);
+                               -result.net_error);
       StoreErrorAndStop(PsmResult::kConnectionError);
       return;
     }
@@ -219,20 +219,20 @@ void PsmRlweDmserverClientImpl::SendPsmRlweQueryRequest(
 }
 
 void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
-    const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response,
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
+        oprf_response,
+    DMServerJobResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::UmaHistogramSparse(kUMAPsmDmServerRequestStatus + uma_suffix_, status);
+  base::UmaHistogramSparse(kUMAPsmDmServerRequestStatus + uma_suffix_,
+                           result.dm_status);
 
-  switch (status) {
+  switch (result.dm_status) {
     case DM_STATUS_SUCCESS: {
       // Check if the RLWE query response is empty.
-      if (!response.private_set_membership_response().has_rlwe_response() ||
-          !response.private_set_membership_response()
+      if (!result.response.private_set_membership_response()
+               .has_rlwe_response() ||
+          !result.response.private_set_membership_response()
                .rlwe_response()
                .has_query_response()) {
         LOG(ERROR) << "PSM error: empty query RLWE response";
@@ -241,7 +241,7 @@ void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
       }
 
       const psm_rlwe::PrivateMembershipRlweQueryResponse query_response =
-          response.private_set_membership_response()
+          result.response.private_set_membership_response()
               .rlwe_response()
               .query_response();
 
@@ -311,7 +311,7 @@ void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
       LOG(ERROR)
           << "PSM error: RLWE query request failed due to connection error";
       base::UmaHistogramSparse(kUMAPsmNetworkErrorCode + uma_suffix_,
-                               -net_error);
+                               -result.net_error);
       StoreErrorAndStop(PsmResult::kConnectionError);
       return;
     }

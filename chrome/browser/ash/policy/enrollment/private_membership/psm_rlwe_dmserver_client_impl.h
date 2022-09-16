@@ -23,10 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
-}  // namespace enterprise_management
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -72,11 +68,7 @@ class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
 
   // If the completion was successful, then it makes another request to
   // DMServer for performing phase two.
-  void OnRlweOprfRequestCompletion(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnRlweOprfRequestCompletion(DMServerJobResult result);
 
   // Constructs and sends the PSM RLWE Query request.
   void SendPsmRlweQueryRequest(
@@ -87,10 +79,7 @@ class PsmRlweDmserverClientImpl : public PsmRlweDmserverClient {
   void OnRlweQueryRequestCompletion(
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
           oprf_response,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+      DMServerJobResult result);
 
   // Returns a job config that has TYPE_PSM_REQUEST as job type and |callback|
   // will be executed on completion.

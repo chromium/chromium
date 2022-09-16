@@ -15,12 +15,9 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
-}  // namespace enterprise_management
-
 namespace policy {
 class DMTokenStorage;
+struct DMServerJobResult;
 }  // namespace policy
 
 namespace arc {
@@ -75,11 +72,7 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
 
   // Response from DM server. Calls the stored FetchCallback or initiates the
   // SAML flow.
-  void OnEnrollmentTokenResponseReceived(
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus dm_status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnEnrollmentTokenResponseReceived(policy::DMServerJobResult result);
 
   // Sends |auth_redirect_url| to the ArcSupportHost instance, which displays
   // it in a web view and checks whether authentication succeeded. Calls

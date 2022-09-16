@@ -122,27 +122,24 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::DoFetchEnrollmentToken() {
 }
 
 void ArcActiveDirectoryEnrollmentTokenFetcher::
-    OnEnrollmentTokenResponseReceived(
-        policy::DeviceManagementService::Job* job,
-        policy::DeviceManagementStatus dm_status,
-        int net_error,
-        const em::DeviceManagementResponse& response) {
-  VLOG(1) << "Enrollment token response received. DM Status: " << dm_status;
+    OnEnrollmentTokenResponseReceived(policy::DMServerJobResult result) {
+  VLOG(1) << "Enrollment token response received. DM Status: "
+          << result.dm_status;
   fetch_request_job_.reset();
 
   Status fetch_status;
   std::string enrollment_token;
   std::string user_id;
 
-  switch (dm_status) {
+  switch (result.dm_status) {
     case policy::DM_STATUS_SUCCESS: {
-      if (!response.has_active_directory_enroll_play_user_response()) {
+      if (!result.response.has_active_directory_enroll_play_user_response()) {
         LOG(WARNING) << "Invalid Active Directory enroll Play user response.";
         fetch_status = Status::FAILURE;
         break;
       }
       const em::ActiveDirectoryEnrollPlayUserResponse& enroll_response =
-          response.active_directory_enroll_play_user_response();
+          result.response.active_directory_enroll_play_user_response();
 
       if (enroll_response.has_saml_parameters()) {
         // SAML authentication required.
@@ -169,7 +166,7 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::
     }
     default: {  // All other error cases
       LOG(ERROR) << "Fetching an enrollment token failed. DM Status: "
-                 << dm_status;
+                 << result.dm_status;
       fetch_status = Status::FAILURE;
       break;
     }

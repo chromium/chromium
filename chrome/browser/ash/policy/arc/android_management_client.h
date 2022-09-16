@@ -16,10 +16,6 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "google_apis/gaia/core_account_id.h"
 
-namespace enterprise_management {
-class DeviceManagementResponse;
-}
-
 namespace signin {
 class AccessTokenFetcher;
 class IdentityManager;
@@ -33,6 +29,8 @@ class SharedURLLoaderFactory;
 class GoogleServiceAuthError;
 
 namespace policy {
+
+struct DMServerJobResult;
 
 // Interacts with the device management service and determines whether Android
 // management is enabled for the user or not. Uses the IdentityManager to
@@ -80,11 +78,7 @@ class AndroidManagementClient {
   void CheckAndroidManagement(const std::string& access_token);
 
   // Callback for check Android management requests.
-  void OnAndroidManagementChecked(
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      const enterprise_management::DeviceManagementResponse& response);
+  void OnAndroidManagementChecked(DMServerJobResult result);
 
   // Used to communicate with the device management service.
   DeviceManagementService* const device_management_service_;

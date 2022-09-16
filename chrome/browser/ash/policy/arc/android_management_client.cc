@@ -95,31 +95,28 @@ void AndroidManagementClient::CheckAndroidManagement(
 }
 
 void AndroidManagementClient::OnAndroidManagementChecked(
-    DeviceManagementService::Job* job,
-    DeviceManagementStatus status,
-    int net_error,
-    const em::DeviceManagementResponse& response) {
+    DMServerJobResult result) {
   DCHECK(!callback_.is_null());
-  if (status == DM_STATUS_SUCCESS &&
-      !response.has_check_android_management_response()) {
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      !result.response.has_check_android_management_response()) {
     LOG(WARNING) << "Invalid check android management response.";
-    status = DM_STATUS_RESPONSE_DECODING_ERROR;
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
-  Result result;
-  switch (status) {
+  Result management_result;
+  switch (result.dm_status) {
     case DM_STATUS_SUCCESS:
-      result = Result::UNMANAGED;
+      management_result = Result::UNMANAGED;
       break;
     case DM_STATUS_SERVICE_DEVICE_ID_CONFLICT:
-      result = Result::MANAGED;
+      management_result = Result::MANAGED;
       break;
     default:
-      result = Result::ERROR;
+      management_result = Result::ERROR;
   }
 
   request_job_.reset();
-  std::move(callback_).Run(result);
+  std::move(callback_).Run(management_result);
 }
 
 std::ostream& operator<<(std::ostream& os,
