@@ -19,6 +19,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -4009,9 +4010,56 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
       PrerenderHost::FinalStatus::kActivatedBeforeStarted, 1);
 }
 
-// TODO(crbug.com/1355151): Test that when the 4 URLs are specified in the
-// speculation rule while only 3 prerenders are allowed, the 4th prerender
-// should be canceled or enqueued until the forerunner are canceled.
+// Test that if the 4 URLs are specified in the speculation rule while only 3
+// prerenders are allowed, the 4th prerender should be cancelled.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       ExceedTheRequestNumberLimit) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/empty.html?prerender1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+
+  std::vector<GURL> prerender_urls;
+
+  ASSERT_EQ(MaxNumOfRunningPrerenders(), 3);
+  for (int i = 0; i < MaxNumOfRunningPrerenders() + 1; i++) {
+    prerender_urls.push_back(embedded_test_server()->GetURL(
+        "/empty.html?prerender" + base::NumberToString(i)));
+  }
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 4 URLs into the speculation rules at the same time.
+  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+                  const sc = document.createElement('script');
+                  sc.type = 'speculationrules';
+                  sc.textContent = JSON.stringify({
+                    prerender: [
+                      {source: "list", urls: [$1, $2, $3, $4]}
+                    ]
+                  });
+                  document.head.appendChild(sc);
+                  )",
+                         prerender_urls[0], prerender_urls[1],
+                         prerender_urls[2], prerender_urls[3])));
+
+  // Stop the first prerendering initial navigation.
+  response.WaitForRequest();
+
+  // Wait for the last prerender request will be triggered.
+  registry_observer.WaitForTrigger(prerender_urls[3]);
+
+  // The forth prerender is destroyed since the number of prerender requests
+  // from speculation rules exceeds its limit of 3.
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+}
 
 // TODO(crbug.com/1355151): Test that the requests from embedder are
 // handled immediately regardless of the requests from speculation rules after

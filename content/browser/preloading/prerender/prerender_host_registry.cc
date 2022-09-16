@@ -208,6 +208,10 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // TODO(crbug.com/1197133): Cancel the started prerender and start a new one
     // if the score of the new candidate is higher than the started one's.
+    //
+    // TODO(crbug.com/1355151): Enqueue the request exceeding the number limit
+    // until the forerunners are cancelled, and suspend starting a new prerender
+    // when the number reaches the limit.
     if (!IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type)) {
       if (attempt) {
         // The reason we don't consider limit exceeded as an ineligibility
