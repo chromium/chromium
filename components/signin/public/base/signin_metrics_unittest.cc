@@ -39,7 +39,8 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::ACCESS_POINT_TAB_SWITCHER,
     AccessPoint::ACCESS_POINT_MACHINE_LOGON,
     AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS,
-    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO};
+    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
+    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO};
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_START_PAGE,
@@ -59,7 +60,8 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS,
     AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
     AccessPoint::ACCESS_POINT_TAB_SWITCHER,
-    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO};
+    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
+    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO};
 
 const AccessPoint kAccessPointsThatSupportPersonalizedPromos[] = {
     AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER,
@@ -71,7 +73,8 @@ const AccessPoint kAccessPointsThatSupportPersonalizedPromos[] = {
     AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
     AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
     AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS,
-    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO};
+    AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO,
+    AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO};
 
 class SigninMetricsTest : public ::testing::Test {
  public:
@@ -147,6 +150,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "NTPFeedTopPromo";
       case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
         return "SettingsSyncOffRow";
+      case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+        return "PostDeviceRestoreSigninPromo";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

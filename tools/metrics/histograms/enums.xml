@@ -89970,6 +89970,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="36" label="Send-tab-to-self promo"/>
   <int value="37" label="Sign-in promo on NTP feed top section."/>
   <int value="38" label="Sync off settings row"/>
+  <int value="39" label="Post device restore sign-in promo"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

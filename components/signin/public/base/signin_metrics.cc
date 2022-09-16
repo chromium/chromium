@@ -411,6 +411,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSendTabToSelfPromo"));
       break;
+    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromPostDeviceRestoreSigninPromo"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
       break;
@@ -504,6 +508,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromNTPFeedTopPromo"));
+      break;
+    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromPostDeviceRestoreSigninPromo"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_CONTENT_AREA:
