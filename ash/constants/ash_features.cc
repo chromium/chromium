@@ -1373,7 +1373,7 @@ const base::Feature kVCBackgroundBlur{"VCBackgroundBlur",
 // Enables or disables the Quick Settings Network revamp, which updates Network
 // Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
 const base::Feature kQuickSettingsNetworkRevamp{
-    "QuickSettingsNetworkRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
+    "QuickSettingsNetworkRevamp", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables fingerprint quick unlock.
 const base::Feature kQuickUnlockFingerprint{"QuickUnlockFingerprint",
