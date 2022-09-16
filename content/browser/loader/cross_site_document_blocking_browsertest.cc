@@ -73,11 +73,17 @@ enum CorbExpectations {
   kShouldBeBlocked = 1 << 0,
   kShouldBeSniffed = 1 << 1,
 
+  kBlockResourcesAsError = 1 << 2,
+
   kShouldBeAllowedWithoutSniffing = 0,
   kShouldBeBlockedWithoutSniffing = kShouldBeBlocked,
   kShouldBeSniffedAndAllowed = kShouldBeSniffed,
   kShouldBeSniffedAndBlocked = kShouldBeSniffed | kShouldBeBlocked,
 };
+
+constexpr CorbExpectations BlockAsError(const CorbExpectations expectations) {
+  return CorbExpectations(expectations | kBlockResourcesAsError);
+}
 
 std::ostream& operator<<(std::ostream& os, const CorbExpectations& value) {
   if (value == 0) {
@@ -90,6 +96,8 @@ std::ostream& operator<<(std::ostream& os, const CorbExpectations& value) {
     os << "kShouldBeBlocked ";
   if (0 != (value & kShouldBeSniffed))
     os << "kShouldBeSniffed ";
+  if (0 != (value & kBlockResourcesAsError))
+    os << "kBlockResourcesAsError ";
   os << ")";
   return os;
 }
@@ -250,20 +258,31 @@ class RequestInterceptor {
   void Verify(CorbExpectations expectations,
               const std::string& expected_resource_body) {
     if (0 != (expectations & kShouldBeBlocked)) {
-      ASSERT_EQ(net::OK, completion_status().error_code);
-
       // Verify that the body is empty.
       EXPECT_EQ("", response_body());
       EXPECT_EQ(0, completion_status().decoded_body_length);
 
-      // Verify that other response parts have been sanitized.
-      EXPECT_EQ(0u, response_head()->content_length);
-      const std::string& headers = response_head()->headers->raw_headers();
-      EXPECT_THAT(headers, Not(HasSubstr("Content-Length")));
-      EXPECT_THAT(headers, Not(HasSubstr("Content-Type")));
-
       // Verify that the console message would have been printed.
       EXPECT_TRUE(completion_status().should_report_corb_blocking);
+
+      // Verify the response code & headers, which depends on whether the
+      // response is blocked as an error, or as an empty response.
+      if (0 != (expectations & kBlockResourcesAsError)) {
+        ASSERT_EQ(net::ERR_BLOCKED_BY_ORB, completion_status().error_code);
+        ASSERT_FALSE(response_head());
+      } else {
+        ASSERT_EQ(net::OK, completion_status().error_code);
+
+        // Verify that response has no content.
+        EXPECT_EQ(0u, response_head()->content_length);
+
+        // Verify that response headers have been sanitized.
+        size_t iter = 0;
+        std::string name, value;
+        EXPECT_FALSE(response_head()->headers->EnumerateHeaderLines(
+            &iter, &name, &value));
+        EXPECT_EQ(iter, 0u);
+      }
     } else {
       ASSERT_EQ(net::OK, completion_status().error_code);
       EXPECT_FALSE(completion_status().should_report_corb_blocking);
@@ -475,6 +494,7 @@ enum class TestMode {
   kWithCORBProtectionSniffing,
   kWithoutCORBProtectionSniffing,
   kWithORBv01,
+  kWithORBv02,
 };
 struct ImgTestParams {
   const char* resource;
@@ -492,18 +512,30 @@ class CrossSiteDocumentBlockingImgElementTest
             /* enabled_features= */ {network::features::
                                          kCORBProtectionSniffing},
             /* disabled_features= */ {
-                network::features::kOpaqueResponseBlockingV01});
+                network::features::kOpaqueResponseBlockingV01,
+                network::features::kOpaqueResponseBlockingV02});
         break;
       case TestMode::kWithoutCORBProtectionSniffing:
         scoped_feature_list_.InitWithFeatures(
             /* enabled_features= */ {},
             /* disabled_features= */ {
                 network::features::kCORBProtectionSniffing,
-                network::features::kOpaqueResponseBlockingV01});
+                network::features::kOpaqueResponseBlockingV01,
+                network::features::kOpaqueResponseBlockingV02});
         break;
       case TestMode::kWithORBv01:
-        scoped_feature_list_.InitAndEnableFeature(
-            network::features::kOpaqueResponseBlockingV01);
+        scoped_feature_list_.InitWithFeatures(
+            /* enabled_features= */ {network::features::
+                                         kOpaqueResponseBlockingV01},
+            /* disabled_features= */ {
+                network::features::kOpaqueResponseBlockingV02});
+        break;
+      case TestMode::kWithORBv02:
+        scoped_feature_list_.InitWithFeatures(
+            /* enabled_features= */
+            {network::features::kOpaqueResponseBlockingV01,
+             network::features::kOpaqueResponseBlockingV02},
+            /* disabled_features= */ {});
         break;
     }
   }
@@ -594,24 +626,32 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingImgElementTest, Test) {
   INSTANTIATE_TEST_SUITE_P(                                                    \
       ORBv01_##tag, CrossSiteDocumentBlockingImgElementTest,                   \
       ::testing::Values(                                                       \
-          ImgTestParams{resource, expectations, TestMode::kWithORBv01}));
+          ImgTestParams{resource, expectations, TestMode::kWithORBv01}));      \
+  INSTANTIATE_TEST_SUITE_P(                                                    \
+      ORBv02_##tag, CrossSiteDocumentBlockingImgElementTest,                   \
+      ::testing::Values(ImgTestParams{resource, BlockAsError(expectations),    \
+                                      TestMode::kWithORBv02}));
 
-#define IMG_TEST_WITH_DIFFERENT_ORB_EXPECTATIONS(                           \
-    tag, resource, corb_expectations, orb_expectations)                     \
-  INSTANTIATE_TEST_SUITE_P(ProtectionSniffingOn_##tag,                      \
-                           CrossSiteDocumentBlockingImgElementTest,         \
-                           ::testing::Values(ImgTestParams{                 \
-                               resource, corb_expectations,                 \
-                               TestMode::kWithoutCORBProtectionSniffing})); \
-  INSTANTIATE_TEST_SUITE_P(ProtectionSniffingOff_##tag,                     \
-                           CrossSiteDocumentBlockingImgElementTest,         \
-                           ::testing::Values(ImgTestParams{                 \
-                               resource, corb_expectations,                 \
-                               TestMode::kWithCORBProtectionSniffing}));    \
-  INSTANTIATE_TEST_SUITE_P(                                                 \
-      ORBv01_##tag, CrossSiteDocumentBlockingImgElementTest,                \
-      ::testing::Values(                                                    \
-          ImgTestParams{resource, orb_expectations, TestMode::kWithORBv01}));
+#define IMG_TEST_WITH_DIFFERENT_ORB_EXPECTATIONS(                             \
+    tag, resource, corb_expectations, orb_expectations)                       \
+  INSTANTIATE_TEST_SUITE_P(ProtectionSniffingOn_##tag,                        \
+                           CrossSiteDocumentBlockingImgElementTest,           \
+                           ::testing::Values(ImgTestParams{                   \
+                               resource, corb_expectations,                   \
+                               TestMode::kWithoutCORBProtectionSniffing}));   \
+  INSTANTIATE_TEST_SUITE_P(ProtectionSniffingOff_##tag,                       \
+                           CrossSiteDocumentBlockingImgElementTest,           \
+                           ::testing::Values(ImgTestParams{                   \
+                               resource, corb_expectations,                   \
+                               TestMode::kWithCORBProtectionSniffing}));      \
+  INSTANTIATE_TEST_SUITE_P(                                                   \
+      ORBv01_##tag, CrossSiteDocumentBlockingImgElementTest,                  \
+      ::testing::Values(                                                      \
+          ImgTestParams{resource, orb_expectations, TestMode::kWithORBv01})); \
+  INSTANTIATE_TEST_SUITE_P(                                                   \
+      ORBv02_##tag, CrossSiteDocumentBlockingImgElementTest,                  \
+      ::testing::Values(ImgTestParams{                                        \
+          resource, BlockAsError(orb_expectations), TestMode::kWithORBv02}));
 
 // The following are files under content/test/data/site_isolation. All
 // should be disallowed for cross site XHR under the document blocking policy.
@@ -730,8 +770,18 @@ class CrossSiteDocumentBlockingTest
             network::features::kCORBProtectionSniffing);
         break;
       case TestMode::kWithORBv01:
-        scoped_feature_list_.InitAndEnableFeature(
-            network::features::kOpaqueResponseBlockingV01);
+        scoped_feature_list_.InitWithFeatures(
+            /* enabled_features= */ {network::features::
+                                         kOpaqueResponseBlockingV01},
+            /* disabled_features= */ {
+                network::features::kOpaqueResponseBlockingV02});
+        break;
+      case TestMode::kWithORBv02:
+        scoped_feature_list_.InitWithFeatures(
+            /* enabled_features= */
+            {network::features::kOpaqueResponseBlockingV01,
+             network::features::kOpaqueResponseBlockingV02},
+            /* disabled_features= */ {});
         break;
     }
   }

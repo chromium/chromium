@@ -419,8 +419,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     // processing the request (e.g. by calling ReadMore as necessary).
     kContinueRequest,
   };
-  BlockResponseForCorbResult BlockResponseForCorb(
-      bool should_report_corb_blocking);
+  // Block the response because of CORB (or ORB).
+  BlockResponseForCorbResult BlockResponseForCorb();
+  // Decide whether to call block a response via BlockResponseForCorb.
+  // Returns true if the request should be cancelled.
+  bool MaybeBlockResponseForCorb(corb::ResponseAnalyzer::Decision);
 
   void ReportFlaggedResponseCookies();
   void StartReading();

@@ -1273,5 +1273,23 @@
       "external/wpt/close-watcher"
     ],
     "args": ["--enable-blink-features=CloseWatcher"]
+  },
+  {
+    "prefix": "orb-v01",
+    "platforms": ["Linux"],
+    "args": ["--enable-features=OpaqueResponseBlockingV01"],
+    "bases": [
+      "external/wpt/fetch/corb",
+      "external/wpt/fetch/api",
+      "external/wpt/fetch/nosniff"
+    ]
+  },
+  {
+    "prefix": "orb-v02",
+    "platforms": ["Linux"],
+    "args": ["--enable-features=OpaqueResponseBlockingV01,OpaqueResponseBlockingV02"],
+    "bases": [
+      "external/wpt/fetch/corb"
+    ]
   }
 ]

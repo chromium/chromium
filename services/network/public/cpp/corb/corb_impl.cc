@@ -1029,6 +1029,13 @@ bool CrossOriginReadBlocking::CorbResponseAnalyzer::
   return true;
 }
 
+ResponseAnalyzer::BlockedResponseHandling
+CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldHandleBlockedResponseAs()
+    const {
+  // CORB wants blocked responses to be empty responses.
+  return ResponseAnalyzer::BlockedResponseHandling::kEmptyResponse;
+}
+
 Decision CrossOriginReadBlocking::CorbResponseAnalyzer::GetCorbDecision() {
   if (ShouldBlock())
     return Decision::kBlock;

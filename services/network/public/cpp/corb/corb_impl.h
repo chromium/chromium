@@ -118,6 +118,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     Decision Sniff(base::StringPiece data) override;
     Decision HandleEndOfSniffableResponseBody() override;
     bool ShouldReportBlockedResponse() const override;
+    BlockedResponseHandling ShouldHandleBlockedResponseAs() const override;
 
     class ConfirmationSniffer;
     class SimpleConfirmationSniffer;

@@ -43,6 +43,8 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kMdnsResponderGeneratedNameListing;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kOpaqueResponseBlockingV01;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kOpaqueResponseBlockingV02;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kTrustTokens;

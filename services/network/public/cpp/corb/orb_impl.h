@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   Decision Sniff(base::StringPiece data) override;
   Decision HandleEndOfSniffableResponseBody() override;
   bool ShouldReportBlockedResponse() const override;
+  BlockedResponseHandling ShouldHandleBlockedResponseAs() const override;
 
   // TODO(https://crbug.com/1178928): Remove this once we gather enough
   // DumpWithoutCrashing data.

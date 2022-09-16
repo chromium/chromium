@@ -112,7 +112,7 @@ NET_ERROR(CONTEXT_SHUT_DOWN, -26)
 
 // The request failed because the response was delivered along with requirements
 // which are not met ('X-Frame-Options' and 'Content-Security-Policy' ancestor
-// checks and 'Cross-Origin-Resource-Policy', for instance).
+// checks and 'Cross-Origin-Resource-Policy' for instance).
 NET_ERROR(BLOCKED_BY_RESPONSE, -27)
 
 // Error -28 was removed (BLOCKED_BY_XSS_AUDITOR).
@@ -126,6 +126,9 @@ NET_ERROR(BLOCKED_BY_CSP, -30)
 
 // The request was blocked because of no H/2 or QUIC session.
 NET_ERROR(H2_OR_QUIC_REQUIRED, -31)
+
+// The request was blocked by CORB or ORB.
+NET_ERROR(BLOCKED_BY_ORB, -32)
 
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)

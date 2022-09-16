@@ -49,6 +49,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
     kSniffMore,
   };
 
+  // Decision for how to signal a blocking decision to the network stack and
+  // the application.
+  enum class BlockedResponseHandling {
+    kEmptyResponse,
+    kNetworkError,
+  };
+
   // The Init method should be called exactly once after getting the
   // ResponseAnalyzer from the Create method.  The Init method attempts to
   // calculate the `Decision` based on the HTTP response headers.  If
@@ -80,6 +87,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
   // True if the analyzed response should report the blocking decision in a
   // warning message written to the DevTools console.
   virtual bool ShouldReportBlockedResponse() const = 0;
+
+  // How should a blocked response be treated?
+  virtual BlockedResponseHandling ShouldHandleBlockedResponseAs() const = 0;
 
   virtual ~ResponseAnalyzer();
 };

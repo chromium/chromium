@@ -14,6 +14,7 @@
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -435,6 +436,16 @@ Decision OpaqueResponseBlockingAnalyzer::HandleEndOfSniffableResponseBody() {
 
 bool OpaqueResponseBlockingAnalyzer::ShouldReportBlockedResponse() const {
   return !is_empty_response_ && is_http_status_okay_;
+}
+
+ResponseAnalyzer::BlockedResponseHandling
+OpaqueResponseBlockingAnalyzer::ShouldHandleBlockedResponseAs() const {
+  // "ORB v0.1" uses CORB-style error handling with injecting an empty response.
+  // Later versions use ORB-specified error handling, by injecting a network
+  // error.
+  return base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV02)
+             ? BlockedResponseHandling::kNetworkError
+             : BlockedResponseHandling::kEmptyResponse;
 }
 
 void OpaqueResponseBlockingAnalyzer::ReportOrbBlockedAndCorbDidnt() const {

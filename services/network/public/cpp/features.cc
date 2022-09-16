@@ -124,6 +124,13 @@ const base::Feature kMdnsResponderGeneratedNameListing{
 const base::Feature kOpaqueResponseBlockingV01{
     "OpaqueResponseBlockingV01", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables ORB blocked responses being treated as errors (according to the spec)
+// rather than the current, CORB-style handling of injecting an empty response.
+// This is ORB v0.2.
+// This should only be enabled when ORB v0.1 is, too.
+const base::Feature kOpaqueResponseBlockingV02{
+    "OpaqueResponseBlockingV02", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)
