@@ -39,7 +39,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
     SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
   }
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
+  if (features::IsCrossDeviceAttestationCertificateGenerationEnabled()) {
     AttestationCertificatesSyncerImpl::RegisterPrefs(registry);
   }
 }
