@@ -122,6 +122,7 @@ static_library("lzma_sdk_xz") {
     "C/XzCrc64.h",
     "C/XzCrc64Opt.c",
     "C/XzDec.c",
+    "C/XzIn.c",
   ]
 
   # TODO(crbug.com/1338627): Enable ARM optimizations
