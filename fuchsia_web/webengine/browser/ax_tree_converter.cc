@@ -269,7 +269,7 @@ fuchsia::ui::gfx::BoundingBox ConvertBoundingBox(gfx::RectF bounds) {
 // only one node to be updated on such an event.
 fuchsia::ui::gfx::mat4 ConvertTransform(gfx::Transform* transform) {
   std::array<float, 16> mat = {};
-  transform->matrix().getColMajor(mat.data());
+  transform->GetColMajorF(mat.data());
   fuchsia::ui::gfx::Matrix4Value fuchsia_transform =
       scenic::NewMatrix4Value(mat);
   return fuchsia_transform.value;

@@ -41,9 +41,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Initialize with the concatenation of lhs * rhs.
   Transform(const Transform& lhs, const Transform& rhs)
       : matrix_(lhs.matrix_, rhs.matrix_) {}
-  explicit Transform(const SkM44& matrix);
-  explicit Transform(const Matrix44& matrix) : matrix_(matrix) {}
-  explicit Transform(const SkMatrix& matrix) : matrix_(Matrix44(matrix)) {}
   // Constructs a transform from explicit 16 matrix elements. Elements
   // should be given in row-major order.
   Transform(SkScalar col1row1,
@@ -325,14 +322,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
     PreconcatTransform(other);
     return *this;
   }
-
-  // Returns the underlying matrix.
-  // TODO(crbug.com/1359528): Remove these.
-  const Matrix44& matrix() const { return matrix_; }
-  Matrix44& matrix() { return matrix_; }
-
-  // TODO(crbug.com/1359528): Remove this in favor of gfx::TransformToSkM44().
-  SkM44 GetMatrixAsSkM44() const;
 
   bool ApproximatelyEqual(const gfx::Transform& transform) const;
 

@@ -69,16 +69,7 @@ Transform::Transform(SkScalar col1row1,
               col1row2, col2row2, 0, y_translation,
               0, 0, 1, 0,
               0, 0, 0, 1) {}
-// clang-format on
 
-// TODO(crbug.com/1359528): Remove this in favor of gfx::SkM44ToTransform().
-Transform::Transform(const SkM44& matrix) {
-  float data[16];
-  matrix.getRowMajor(data);
-  matrix_.setRowMajor(data);
-}
-
-// clang-format off
 Transform::Transform(const Quaternion& q)
     : matrix_(
         // Row 1.
@@ -518,24 +509,24 @@ bool Transform::TransformPointReverse(Point3F* point) const {
 }
 
 void Transform::TransformRect(RectF* rect) const {
-  if (matrix_.isIdentity())
+  if (IsIdentity())
     return;
 
   SkRect src = RectFToSkRect(*rect);
-  matrix_.asM33().mapRect(&src);
+  TransformToFlattenedSkMatrix(*this).mapRect(&src);
   *rect = SkRectToRectF(src);
 }
 
 bool Transform::TransformRectReverse(RectF* rect) const {
-  if (matrix_.isIdentity())
+  if (IsIdentity())
     return true;
 
-  Matrix44 inverse(Matrix44::kUninitialized_Constructor);
-  if (!matrix_.invert(&inverse))
+  Transform inverse(kSkipInitialization);
+  if (!GetInverse(&inverse))
     return false;
 
   SkRect src = RectFToSkRect(*rect);
-  inverse.asM33().mapRect(&src);
+  TransformToFlattenedSkMatrix(inverse).mapRect(&src);
   *rect = SkRectToRectF(src);
   return true;
 }
@@ -546,7 +537,7 @@ bool Transform::TransformRRectF(RRectF* rrect) const {
   // SkMatrix::preservesAxisAlignment is stricter (it lacks the kEpsilon
   // test).  So after converting our Matrix44 to SkMatrix, round
   // relevant values less than kEpsilon to zero.
-  SkMatrix rounded_matrix = matrix_.asM33();
+  SkMatrix rounded_matrix = TransformToFlattenedSkMatrix(*this);
   if (std::abs(rounded_matrix.get(SkMatrix::kMScaleX)) < kEpsilon)
     rounded_matrix.set(SkMatrix::kMScaleX, 0.0f);
   if (std::abs(rounded_matrix.get(SkMatrix::kMSkewX)) < kEpsilon)
@@ -599,7 +590,7 @@ bool Transform::Blend(const Transform& from, double progress) {
 
   to_decomp = BlendDecomposedTransforms(to_decomp, from_decomp, progress);
 
-  matrix_ = ComposeTransform(to_decomp).matrix();
+  *this = ComposeTransform(to_decomp);
   return true;
 }
 
@@ -687,12 +678,6 @@ std::string Transform::ToString() const {
       rc(0, 0), rc(0, 1), rc(0, 2), rc(0, 3), rc(1, 0), rc(1, 1), rc(1, 2),
       rc(1, 3), rc(2, 0), rc(2, 1), rc(2, 2), rc(2, 3), rc(3, 0), rc(3, 1),
       rc(3, 2), rc(3, 3));
-}
-
-SkM44 Transform::GetMatrixAsSkM44() const {
-  return SkM44(rc(0, 0), rc(0, 1), rc(0, 2), rc(0, 3), rc(1, 0), rc(1, 1),
-               rc(1, 2), rc(1, 3), rc(2, 0), rc(2, 1), rc(2, 2), rc(2, 3),
-               rc(3, 0), rc(3, 1), rc(3, 2), rc(3, 3));
 }
 
 }  // namespace gfx

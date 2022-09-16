@@ -61,6 +61,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/gpu_fence.h"
@@ -1309,7 +1310,7 @@ void Surface::UpdateBufferTransform(bool y_invert) {
   if (state_.basic_state.buffer_scale != 0)
     buffer_matrix.postScale(1.0f / state_.basic_state.buffer_scale,
                             1.0f / state_.basic_state.buffer_scale);
-  buffer_transform_ = gfx::Transform(buffer_matrix);
+  buffer_transform_ = gfx::SkMatrixToTransform(buffer_matrix);
 }
 
 void Surface::AppendContentsToFrame(const gfx::PointF& origin,
@@ -1391,7 +1392,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
   gfx::Transform quad_to_target_transform(buffer_transform_);
   quad_to_target_transform.ConcatTransform(
-      gfx::Transform(viewport_to_target_matrix));
+      gfx::SkMatrixToTransform(viewport_to_target_matrix));
 
   bool are_contents_opaque =
       !current_resource_has_alpha_ ||

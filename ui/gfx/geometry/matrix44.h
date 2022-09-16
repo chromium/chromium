@@ -19,7 +19,7 @@ struct CATransform3D;
 namespace gfx {
 
 // This is the underlying data structure of Transform. Don't use this type
-// directly. The public methods can be called through Transform::matrix().
+// directly.
 class GEOMETRY_SKIA_EXPORT Matrix44 {
  public:
   enum Uninitialized_Constructor { kUninitialized_Constructor };
@@ -59,19 +59,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
 
   bool operator==(const Matrix44& other) const;
   bool operator!=(const Matrix44& other) const { return !(other == *this); }
-
-  /* When converting from Matrix44 to SkMatrix, the third row and
-   * column is dropped.  When converting from SkMatrix to Matrix44
-   * the third row and column remain as identity:
-   * [ a b c ]      [ a b 0 c ]
-   * [ d e f ]  ->  [ d e 0 f ]
-   * [ g h i ]      [ 0 0 1 0 ]
-   *                [ g h 0 i ]
-   */
-  explicit Matrix44(const SkMatrix&);
-
-  // Inverse conversion of the above.
-  SkMatrix asM33() const;
 
   using TypeMask = uint8_t;
   enum : TypeMask {
@@ -220,16 +207,6 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
    */
   void mapScalars(const SkScalar src[4], SkScalar dst[4]) const;
   inline void mapScalars(SkScalar vec[4]) const { this->mapScalars(vec, vec); }
-
-  /**
-   *  map an array of [x, y, 0, 1] through the matrix, returning an array
-   *  of [x', y', z', w'].
-   *
-   *  @param src2     array of [x, y] pairs, with implied z=0 and w=1
-   *  @param count    number of [x, y] pairs in src2
-   *  @param dst4     array of [x', y', z', w'] quads as the output.
-   */
-  void map2(const float src2[], int count, float dst4[]) const;
 
   double determinant() const;
 

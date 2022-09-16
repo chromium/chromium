@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/views/widget/widget.h"
 
@@ -344,7 +345,7 @@ void ViewTreeHostRootView::Paint() {
   int stride = resource->gpu_memory_buffer->stride(0);
   std::unique_ptr<SkCanvas> canvas =
       SkCanvas::MakeRasterDirect(info, data, stride);
-  canvas->setMatrix(rotate_transform_.matrix().asM33());
+  canvas->setMatrix(gfx::TransformToFlattenedSkMatrix(rotate_transform_));
   display_item_list->Raster(canvas.get());
 
   {

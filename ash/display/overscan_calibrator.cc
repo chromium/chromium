@@ -21,6 +21,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ash {
 namespace {
@@ -63,7 +64,8 @@ void DrawTriangle(int x_offset,
   gfx::Transform move_transform;
   move_transform.Translate(x_offset, y_offset);
   rotate_transform.ConcatTransform(move_transform);
-  base_path.transform(rotate_transform.matrix().asM33(), &path);
+  base_path.transform(gfx::TransformToFlattenedSkMatrix(rotate_transform),
+                      &path);
 
   canvas->DrawPath(path, content_flags);
   canvas->DrawPath(path, border_flags);
