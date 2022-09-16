@@ -748,16 +748,22 @@
     },
     'chromeos_bluetooth': {
       'filepath': 'ash/system/bluetooth/'\
+                  '|chromeos/ash/components/hid_detection/'\
+                  '|chromeos/ash/services/bluetooth_config/'\
                   '|chrome/browser/ui/webui/chromeos/bluetooth'\
                   '|chrome/browser/resources/settings/chromeos/bluetooth_page/'\
+                  '|chrome/browser/resources/settings/chromeos/os_bluetooth_page/'\
                   '|chrome/browser/resources/chromeos/bluetooth_pairing_dialog/'\
+                  '|chrome/test/data/webui/cr_components/chromeos/bluetooth/'\
                   '|device/bluetooth/bluez/'\
                   '|device/bluetooth/chromeos/'\
-                  '|ui/webui/resources/cr_components/chromeos/bluetooth'
+                  '|device/bluetooth/floss/'\
+                  '|ui/webui/resources/cr_components/chromeos/bluetooth/'
     },
     'chromeos_cellular': {
       'filepath': 'chromeos/ash/services/cellular_setup/|'\
                   'chromeos/ash/components/dbus/hermes/|'\
+                  'chrome/test/data/webui/cr_components/chromeos/cellular_setup/|'\
                   'ui/webui/resources/cr_components/chromeos/cellular_setup/',
     },
     'chromeos_geolocation': {
@@ -788,8 +794,11 @@
                   'chrome/browser/resources/chromeos/internet_detail_dialog/|'\
                   'chrome/browser/resources/chromeos/network_ui/|'\
                   'chrome/browser/resources/settings/chromeos/internet_page/|'\
+                  'chrome/browser/ui/ash/network/|'\
+                  'chrome/browser/ui/webui/chromeos/network|'\
+                  'chrome/test/data/webui/cr_components/chromeos/network/|'\
+                  'components/onc/|'\
                   'extensions/browser/api/networking_private/|'\
-                  'ui/chromeos/network/|'\
                   'ui/webui/resources/cr_components/chromeos/network/'
     },
     'chromeos_tast_control': {
@@ -2466,28 +2475,33 @@
     'chromedriver': ['mathias@chromium.org'],
     'chromeos': ['oshima+watch@chromium.org'],
     'chromeos_attestation': ['dkrahn+watch@chromium.org'],
-    'chromeos_bluetooth': ['azeemarshad+watch-bluetooth@chromium.org',
+    'chromeos_bluetooth': ['andrewdear+watch-bluetooth@google.com',
+                          'azeemarshad+watch-bluetooth@chromium.org',
                           'chadduffin+watch-bluetooth@chromium.org',
-                          'hansberry+watch-bluetooth@chromium.org',
                           'gordonseto+watch-bluetooth@google.com',
+                          'hansberry+watch-bluetooth@chromium.org',
                           'hsuregan+watch-bluetooth@chromium.org',
                           'jiajunz+watch-bluetooth@google.com',
                           'khorimoto+watch-bluetooth@chromium.org',
+                          'nikhilcn+watch-bluetooth@google.com',
                           'tjohnsonkanu+watch-bluetooth@google.com'],
-    'chromeos_cellular': ['azeemarshad+watch-cellular@chromium.org',
+    'chromeos_cellular': ['andrewdear+watch-cellular@google.com',
+                          'azeemarshad+watch-cellular@chromium.org',
                           'chadduffin+watch-cellular@chromium.org',
                           'ejcaruso+watch-cellular@chromium.org',
                           'gordonseto+watch-cellular@google.com',
                           'hsuregan+watch-cellular@chromium.org',
                           'jiajunz+watch-cellular@google.com',
                           'khorimoto+watch-cellular@chromium.org',
+                          'nikhilcn+watch-cellular@google.com',
                           'tjohnsonkanu+watch-cellular@google.com'],
     'chromeos_geolocation': ['alemate+watch@chromium.org'],
     'chromeos_lkgm': ['achuith+watch@chromium.org'],
     'chromeos_login': ['alemate+watch@chromium.org',
                        'tbarzic+watch@chromium.org'],
     'chromeos_media_app': ['cros-essential-apps-dev-watch@chromium.org'],
-    'chromeos_net': ['azeemarshad+watch-network@chromium.org',
+    'chromeos_net': ['andrewdear+watch-network@google.com',
+                     'azeemarshad+watch-network@chromium.org',
                      'chadduffin+watch-network@chromium.org',
                      'ejcaruso+watch-network@chromium.org',
                      'gordonseto+watch-network@google.com',
@@ -2495,6 +2509,7 @@
                      'jiajunz+watch-network@google.com',
                      'jonmann+watch-network@chromium.org',
                      'khorimoto+watch-network@chromium.org',
+                     'nikhilcn+watch-network@google.com',
                      'stevenjb+watch-network@chromium.org',
                      'tjohnsonkanu+watch-network@google.com'],
     'chromeos_tast_control': ['chromeos-engprod+watch@google.com',
