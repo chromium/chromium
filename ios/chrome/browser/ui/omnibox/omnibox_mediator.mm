@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -112,12 +113,19 @@
     [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
       [weakSelf.consumer updateAutocompleteIcon:image];
     }];
-  } else {
-    // Show favicon.
+  } else if (suggestion.destinationUrl.gurl.is_valid()) {
+    // Show url favicon when it's valid.
     [self loadFaviconByPageURL:suggestion.destinationUrl.gurl
                     completion:^(UIImage* image) {
                       [weakSelf.consumer updateAutocompleteIcon:image];
                     }];
+  } else if (isFirstUpdate) {
+    // When no suggestion is highlighted (aka. isFirstUpdate) show the default
+    // browser icon.
+    [self setDefaultLeftImage];
+  } else {
+    // When a suggestion is highlighted, show the same icon as in the popup.
+    [self.consumer updateAutocompleteIcon:suggestion.matchTypeIcon];
   }
 }
 
@@ -142,7 +150,7 @@
                   completion:(void (^)(UIImage* image))completion {
   // Can't load favicons without a favicon loader.
   DCHECK(self.faviconLoader);
-
+  DCHECK(pageURL.is_valid());
   // Remember which favicon is loaded in case we start loading a new one
   // before this one completes.
   self.latestFaviconURL = pageURL;
