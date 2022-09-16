@@ -12,6 +12,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1364499
   "documentscanapi.Scan",
 
+  # crbug.com/1364560
+  "inputs.InputMethodShelfInputs",
+
   # b/246226666
   "inputs.VirtualKeyboardAccessibility",
   "inputs.VirtualKeyboardDeadKeys.french",
