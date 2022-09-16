@@ -406,9 +406,13 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define GSL_POINTER
 #endif
 
-// Adds the "logically_const" tag to a symbol's mangled name, which can be
-// recognized by the "Mutable Constants" check
-// (https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants).
+// Adds the "logically_const" tag to a symbol's mangled name. The "Mutable
+// Constants" check [1] detects instances of constants that aren't in .rodata,
+// e.g. due to a missing `const`. Using this tag suppresses the check for this
+// symbol, allowing it to live outside .rodata without a warning.
+//
+// [1]:
+// https://crsrc.org/c/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants
 #if defined(COMPILER_GCC) || defined(__clang__)
 #define LOGICALLY_CONST [[gnu::abi_tag("logically_const")]]
 #else

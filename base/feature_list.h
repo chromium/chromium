@@ -47,22 +47,23 @@ enum FeatureState {
 //
 // Note: New code should use CONSTINIT on the base::Feature declaration, as in:
 //
-//   constexpr Feature kSomeFeature CONSTINIT{"FeatureName",
-//                                            FEATURE_DISABLED_BY_DEFAULT};
+//   CONSTINIT Feature kSomeFeature("FeatureName", FEATURE_DISABLED_BY_DEFAULT);
 //
-// Making Feature constants mutable allows them to contain a mutable member to
-// cache their override state, while still remaining declared as const. This
-// cache member allows for significantly faster IsEnabled() checks.
-// The "Mutable Constants" check
-// (https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants)
-// detects this, because this generally means that a readonly symbol is put in
-// writable memory when readonly memory would be more efficient in terms of
-// space. Declaring as LOGICALLY_CONST adds a recognizable pattern to all
-// Feature constant mangled names, which the "Mutable Constants" can use to
-// ignore the symbols declared as such. The performance gains of the cache are
-// large enough that it is worth the tradeoff to have the symbols in
-// non-readonly memory, therefore requiring a bypass of the "Mutable Constants"
-// check.
+// Feature constants are internally mutable, as this allows them to contain a
+// mutable member to cache their override state, while still remaining declared
+// as const. This cache member allows for significantly faster IsEnabled()
+// checks.
+//
+// However, the "Mutable Constants" check [1] detects this as a regression,
+// because this usually means that a readonly symbol is put in writable memory
+// when readonly memory would be more efficient.
+//
+// The performance gains of the cache are large enough to offset the downsides
+// to having the symbols in bssdata rather than rodata. Use LOGICALLY_CONST to
+// suppress the "Mutable Constants" check.
+//
+// [1]:
+// https://crsrc.org/c/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants
 struct BASE_EXPORT LOGICALLY_CONST Feature {
   constexpr Feature(const char* name, FeatureState default_state)
       : name(name), default_state(default_state) {
