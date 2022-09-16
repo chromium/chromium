@@ -225,7 +225,7 @@ TEST_F(BorealisTasksTest,
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(BorealisTasksTest, SyncBorealisDiskFails) {
+TEST_F(BorealisTasksTest, SyncBorealisDiskFailureIgnored) {
   auto disk_mock = std::make_unique<DiskManagerMock>();
   EXPECT_CALL(*disk_mock, SyncDiskSize(_))
       .WillOnce(testing::Invoke(
@@ -241,8 +241,7 @@ TEST_F(BorealisTasksTest, SyncBorealisDiskFails) {
           }));
 
   CallbackFactory callback_factory;
-  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSyncDiskFailed,
-                                     "Failed to sync disk: error message"));
+  EXPECT_CALL(callback_factory, Call(BorealisStartupResult::kSuccess, ""));
   context_->SetDiskManagerForTesting(std::move(disk_mock));
   SyncBorealisDisk task;
   task.Run(context_.get(), callback_factory.BindOnce());

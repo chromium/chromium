@@ -381,10 +381,10 @@ void SyncBorealisDisk::OnSyncBorealisDisk(
     BorealisContext* context,
     Expected<BorealisSyncDiskSizeResult, Described<BorealisSyncDiskSizeResult>>
         result) {
+  // This step should not block startup, so just log the error and declare
+  // success.
   if (!result) {
-    Complete(BorealisStartupResult::kSyncDiskFailed,
-             "Failed to sync disk: " + result.Error().description());
-    return;
+    LOG(ERROR) << "Failed to sync disk: " << result.Error().description();
   }
   Complete(BorealisStartupResult::kSuccess, "");
 }
