@@ -773,9 +773,11 @@ class CC_EXPORT LayerTreeImpl {
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
     delegated_ink_metadata_ = std::move(metadata);
   }
-  std::unique_ptr<gfx::DelegatedInkMetadata> take_delegated_ink_metadata() {
-    return std::move(delegated_ink_metadata_);
+  const gfx::DelegatedInkMetadata* delegated_ink_metadata() const {
+    return delegated_ink_metadata_.get();
   }
+
+  void clear_delegated_ink_metadata() { delegated_ink_metadata_.reset(); }
 
   size_t events_metrics_from_main_thread_count_for_testing() const {
     return events_metrics_from_main_thread_.size();

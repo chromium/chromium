@@ -9122,10 +9122,7 @@ class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostCustomThroughputTrackerTest);
 
-// Confirm that DelegatedInkMetadata set on the LTH propagates to the
-// CompositorFrameMetadata and RenderFrameMetadata, and then both are correctly
-// reset when another frame is drawn without DelegatedInkMetadata.
-class LayerTreeHostTestDelegatedInkMetadataOnAndOff
+class LayerTreeHostTestDelegatedInkMetadataBase
     : public LayerTreeHostTest,
       public RenderFrameMetadataObserver {
  public:
@@ -9152,11 +9149,11 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     raw_ptr<RenderFrameMetadataObserver> target_ = nullptr;
   };
 
+  // LayerTreeHostTest implementation:
   void BeginTest() override {
     // Set up a basic render frame observer for the LTH/LTHI to forward to.
     layer_tree_host()->SetRenderFrameObserver(
         std::make_unique<ForwardingRenderFrameMetadataObserver>(this));
-
     // Setting up a basic frame that can be redrawn.
     layer_tree_host()->SetViewportRectAndScale(gfx::Rect(10, 10), 1.f,
                                                viz::LocalSurfaceId());
@@ -9165,37 +9162,25 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     layer_tree_host()->root_layer()->AddChild(layer_);
     client_.set_bounds(layer_->bounds());
 
-    // Values chosen arbitrarily
+    // Create DelegatedInkMetadata. Values chosen arbitrarily.
     SkColor color = SK_ColorDKGRAY;
     double diameter = 1.000002;
     gfx::PointF point = gfx::PointF(135, 45);
     gfx::RectF area = gfx::RectF(173, 438);
     base::TimeTicks timestamp = base::TimeTicks::Now();
     bool is_hovering = true;
-
     expected_metadata_ = gfx::DelegatedInkMetadata(
         point, diameter, color, timestamp, area, is_hovering);
+
+    // Send the initial delegated ink metadata so it can be passed to
+    // CompositorFrameMetadata.
     layer_tree_host()->SetDelegatedInkMetadata(
         std::make_unique<gfx::DelegatedInkMetadata>(
             expected_metadata_.value()));
   }
 
-  void DidCommitAndDrawFrame() override {
-    // Cause a redraw to occur.
-    if (set_needs_display_) {
-      layer_->SetNeedsDisplay();
-      set_needs_display_ = false;
-    }
-  }
-
-  void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
-    if (expected_metadata_.has_value()) {
-      EXPECT_EQ(metadata_frame_time_, impl->CurrentBeginFrameArgs().frame_time);
-      // Now try again with no metadata to confirm everything is cleared out.
-      expected_metadata_.reset();
-    }
-  }
-
+  // Check DelegatedInkMetadata on the CompositorFrameMetadata when the
+  // compositor frame is submitted.
   void ExpectMetadata(absl::optional<DelegatedInkBrowserMetadata>
                           browser_delegated_ink_metadata,
                       gfx::DelegatedInkMetadata* actual_metadata) {
@@ -9234,15 +9219,163 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
                    compositor_frame_metadata->delegated_ink_metadata.get());
   }
 
- private:
+ protected:
   absl::optional<gfx::DelegatedInkMetadata> expected_metadata_;
+  base::TimeTicks metadata_frame_time_;
   FakeContentLayerClient client_;
   scoped_refptr<Layer> layer_;
+};
+
+// Confirm that DelegatedInkMetadata set on the LTH propagates to the
+// CompositorFrameMetadata and RenderFrameMetadata, and then both are correctly
+// reset when another frame is drawn without DelegatedInkMetadata.
+class LayerTreeHostTestDelegatedInkMetadataOnAndOff
+    : public LayerTreeHostTestDelegatedInkMetadataBase {
+ public:
+  void DidCommitAndDrawFrame() override {
+    // Cause a redraw to occur.
+    if (set_needs_display_) {
+      layer_->SetNeedsDisplay();
+      set_needs_display_ = false;
+    }
+  }
+
+  void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
+    if (expected_metadata_.has_value()) {
+      EXPECT_EQ(metadata_frame_time_, impl->CurrentBeginFrameArgs().frame_time);
+      // Now try again with no metadata to confirm everything is cleared out.
+      expected_metadata_.reset();
+    }
+  }
+
+ private:
   bool set_needs_display_ = true;
-  base::TimeTicks metadata_frame_time_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDelegatedInkMetadataOnAndOff);
+
+// Confirm that DelegatedInkMetadata set on the LTH propagates to the
+// CompositorFrameMetadata and RenderFrameMetadata. Also confirm that the
+// DelegatedInkMetadata persists on the active tree and is present in the
+// CompositorFrameMetadata until a new main frame is complete with no
+// DelegatedInkMetadata present in commit data.
+// This test does the following:
+//
+// 1) Set DelegatedInkMetadata on LayerTreeHost (BeginTest() in
+//    LayerTreeHostTestDelegatedInkMetadataBase)
+// 3) Confirm it gets passed down to CompositorFrameMetadata in first frame
+// 4) Issue some animation-only BeginFrames so that compositor-only frames are
+//    generated.
+// 5) Commit+Activate without new DelegatedInkMetadata and confirm that the
+//    metadata is erased from all relevant data structures.
+class LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame
+    : public viz::ExternalBeginFrameSourceClient,
+      public LayerTreeHostTestDelegatedInkMetadataBase {
+ public:
+  LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame()
+      : external_begin_frame_source_(this) {
+    UseBeginFrameSource(&external_begin_frame_source_);
+  }
+
+  // Once the first Impl frame is finished, send some more that are animation
+  // only so that there is no main frame. Once each compositor-only frame
+  // is generated and sent, the DelegatedInkMetadata is assessed on the
+  // frame's associated CompositorFrameMetadata.
+  // Once the frame count has reached 3 (arbitrarily chosen), SetNeedsCommit
+  // so that the DelegatedInkMetadata can be reset.
+  void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) override {
+    if (begin_frame_count_ < 3) {
+      // Send another animation_only BeginFrame.
+      PostIssueBeginFrame(true);
+    } else if (begin_frame_count_ == 3) {
+      // Trigger second commit.
+      MainThreadTaskRunner()->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              &LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame::
+                  SetNeedsCommitOnMainThread,
+              base::Unretained(this)),
+          base::BindOnce(
+              &LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame::
+                  IssueBeginFrame,
+              base::Unretained(this), true));
+    } else if (begin_frame_count_ == 4) {
+      PostIssueBeginFrame(false);
+    }
+    host_impl->SetNeedsRedraw();
+    host_impl->SetViewportDamage(gfx::Rect(1, 1));
+  }
+
+  void SetNeedsCommitOnMainThread() { layer_tree_host()->SetNeedsCommit(); }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    ++commit_count_;
+    // First commit is due to first frame having `animate_only` forced to false
+    // in order to create the surface.
+    if (commit_count_ == 1)
+      return;
+    // Reset the expected metadata on the second commit complete as a signal
+    // for ExpectMetadata to know that there should be no actual metadata
+    // received.
+    expected_metadata_.reset();
+  }
+
+  void AfterTest() override {
+    EXPECT_EQ(2, commit_count_);
+    EXPECT_EQ(5, begin_frame_count_);
+  }
+
+  // The following code is necessary to issue BeginFrames.
+  // Initialize BeginFrameArgs.
+  void IssueBeginFrame(bool animate_only) {
+    ++begin_frame_count_;
+
+    last_begin_frame_time_ += viz::BeginFrameArgs::DefaultInterval();
+    uint64_t sequence_number = next_begin_frame_sequence_number_++;
+
+    auto args = viz::BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId,
+        sequence_number, last_begin_frame_time_,
+        last_begin_frame_time_ + viz::BeginFrameArgs::DefaultInterval(),
+        viz::BeginFrameArgs::DefaultInterval(), viz::BeginFrameArgs::NORMAL);
+    args.animate_only = animate_only;
+
+    external_begin_frame_source_.OnBeginFrame(args);
+  }
+
+  void PostIssueBeginFrame(bool animate_only) {
+    // Post a new task so that BeginFrame is not issued within same callstack.
+    ImplThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame::
+                IssueBeginFrame,
+            base::Unretained(this), animate_only));
+  }
+
+  // viz::ExternalBeginFrameSourceClient implementation:
+  void OnNeedsBeginFrames(bool needs_begin_frames) override {
+    if (needs_begin_frames) {
+      EXPECT_EQ(0, begin_frame_count_);
+      // Send a first animation_only BeginFrame.
+      PostIssueBeginFrame(true);
+    }
+  }
+
+ private:
+  viz::ExternalBeginFrameSource external_begin_frame_source_;
+
+  base::TimeTicks last_begin_frame_time_ = base::TimeTicks::Now();
+  uint64_t next_begin_frame_sequence_number_ =
+      viz::BeginFrameArgs::kStartingFrameNumber;
+  int commit_count_ = 0;
+  int begin_frame_count_ = 0;
+  scoped_refptr<Layer> layer_;
+  FakeContentLayerClient client_;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(
+    LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame);
 
 // Base class for EventMetrics-related tests.
 class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {

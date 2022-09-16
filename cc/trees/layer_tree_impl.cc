@@ -749,6 +749,8 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
 
   if (commit_state.delegated_ink_metadata)
     set_delegated_ink_metadata(std::move(commit_state.delegated_ink_metadata));
+  else
+    delegated_ink_metadata_.reset();
 
   // Transfer page transition directives.
   for (auto& request : commit_state.document_transition_requests)
@@ -878,6 +880,8 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
                            TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                            "metadata", delegated_ink_metadata_->ToString());
     target_tree->set_delegated_ink_metadata(std::move(delegated_ink_metadata_));
+  } else if (target_tree->delegated_ink_metadata()) {
+    target_tree->clear_delegated_ink_metadata();
   }
 
   for (auto& request : TakeDocumentTransitionRequests())

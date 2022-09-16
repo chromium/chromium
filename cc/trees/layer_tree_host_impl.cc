@@ -2325,8 +2325,11 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 
   metadata.display_transform_hint = active_tree_->display_transform_hint();
 
-  if (std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata =
-          active_tree_->take_delegated_ink_metadata()) {
+  if (const gfx::DelegatedInkMetadata* delegated_ink_metadata_ptr =
+          active_tree_->delegated_ink_metadata()) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata =
+        std::make_unique<gfx::DelegatedInkMetadata>(
+            *delegated_ink_metadata_ptr);
     delegated_ink_metadata->set_frame_time(CurrentBeginFrameArgs().frame_time);
     TRACE_EVENT_WITH_FLOW1(
         "delegated_ink_trails",
