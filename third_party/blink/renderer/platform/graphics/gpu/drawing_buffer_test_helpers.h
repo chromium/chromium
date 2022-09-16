@@ -428,6 +428,7 @@ class DrawingBufferForTests : public DrawingBuffer {
             std::move(context_provider),
             graphics_info,
             false /* usingSwapChain */,
+            false /* desynchronized */,
             std::move(extensions_util),
             client,
             false /* discardFramebufferSupported */,
