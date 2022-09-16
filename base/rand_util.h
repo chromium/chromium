@@ -16,10 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
-namespace partition_alloc {
-class RandomGenerator;
-}  // namespace partition_alloc
-
 namespace base {
 
 namespace internal {
@@ -139,12 +135,6 @@ class BASE_EXPORT InsecureRandomGenerator {
   // Before adding a new friend class, make sure that the overhead of
   // base::Rand*() is too high, using something more representative than a
   // microbenchmark.
-  //
-  // PartitionAlloc allocations should not take more than 40-50ns per
-  // malloc()/free() pair, otherwise high-level benchmarks regress, and does not
-  // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
-  // free() time.
-  friend class ::partition_alloc::RandomGenerator;
 
   // Uses the generator to sub-sample metrics.
   friend class MetricsSubSampler;
