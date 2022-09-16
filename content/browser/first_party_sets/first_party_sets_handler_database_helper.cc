@@ -94,10 +94,11 @@ FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
     const FlattenedSets& current_sets,
     const PolicyCustomization& current_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::flat_set<net::SchemefulSite> diff = ComputeSetsDiff(
-      db_->GetPublicSets(), db_->FetchPolicyModifications(browser_context_id),
-      current_sets, current_policy);
+  DCHECK(!browser_context_id.empty());
+  base::flat_set<net::SchemefulSite> diff =
+      ComputeSetsDiff(db_->GetPublicSets(browser_context_id),
+                      db_->FetchPolicyModifications(browser_context_id),
+                      current_sets, current_policy);
 
   if (!db_->InsertSitesToClear(browser_context_id, diff)) {
     DVLOG(1) << "Failed to update the sites to clear for browser_context_id="
@@ -117,19 +118,23 @@ void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(
 }
 
 void FirstPartySetsHandlerDatabaseHelper::PersistPublicSets(
+    const std::string& browser_context_id,
     const base::Version& version,
     const FirstPartySetsHandlerDatabaseHelper::FlattenedSets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!browser_context_id.empty());
   DCHECK(version.IsValid());
-  if (!db_->SetPublicSets(version.GetString(), sets)) {
+  if (!db_->SetPublicSets(browser_context_id, version.GetString(), sets)) {
     DVLOG(1) << "Failed to write public sets into the database.";
   }
 }
 
 FirstPartySetsHandlerDatabaseHelper::FlattenedSets
-FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets() {
+FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets(
+    const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->GetPublicSets();
+  DCHECK(!browser_context_id.empty());
+  return db_->GetPublicSets(browser_context_id);
 }
 
 }  // namespace content

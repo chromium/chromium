@@ -10,6 +10,11 @@ CREATE TABLE IF NOT EXISTS public_sets(
   PRIMARY KEY(version, site)
 ) WITHOUT ROWID;
 
+CREATE TABLE IF NOT EXISTS browser_context_sets_version (
+   browser_context_id TEXT PRIMARY KEY NOT NULL,
+   public_sets_version TEXT NOT NULL
+) WITHOUT ROWID;
+
 CREATE TABLE IF NOT EXISTS policy_modifications (
    browser_context_id TEXT NOT NULL,
    site TEXT NOT NULL,
@@ -41,6 +46,7 @@ INSERT INTO meta VALUES('run_count','0');
 
 INSERT INTO public_sets VALUES('0.0.1', 'https://aaa.test', 'https://bbb.test', 1),
                               ('0.0.1', 'https://bbb.test', 'https://bbb.test', 0);
+INSERT INTO browser_context_sets_version VALUES('b0', '0.0.1');
 
 -- b0: has sites to clear and has performed the clearing.
 -- b1: has sites to clear but has not performed the clearing.

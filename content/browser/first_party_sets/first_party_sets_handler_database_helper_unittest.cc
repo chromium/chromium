@@ -433,7 +433,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
   const std::string& browser_context_id = "b";
 
   db_helper_->PersistPublicSets(
-      base::Version("0.0.1"),
+      browser_context_id, base::Version("0.0.1"),
       {{net::SchemefulSite(GURL("https://example.test")),
         net::FirstPartySetEntry(
             net::SchemefulSite(GURL("https://example.test")),

@@ -110,6 +110,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   }
 
   void GetPersistedPublicSetsForTesting(
+      const std::string& browser_context_id,
       base::OnceCallback<void(
           absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>)> callback);
 

@@ -45,6 +45,14 @@ const char kRunCountKey[] = "run_count";
   if (!db.Execute(kPublicSetsSql))
     return false;
 
+  static constexpr char kBrowserContextSetsVersionSql[] =
+      "CREATE TABLE IF NOT EXISTS browser_context_sets_version("
+      "browser_context_id TEXT PRIMARY KEY NOT NULL,"
+      "public_sets_version TEXT NOT NULL"
+      ")WITHOUT ROWID";
+  if (!db.Execute(kBrowserContextSetsVersionSql))
+    return false;
+
   static constexpr char kBrowserContextSitesToClearSql[] =
       "CREATE TABLE IF NOT EXISTS browser_context_sites_to_clear("
       "browser_context_id TEXT NOT NULL,"
@@ -114,6 +122,7 @@ FirstPartySetsDatabase::~FirstPartySetsDatabase() {
 }
 
 bool FirstPartySetsDatabase::SetPublicSets(
+    const std::string& browser_context_id,
     const std::string& version,
     const FirstPartySetsDatabase::FlattenedSets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -141,6 +150,22 @@ bool FirstPartySetsDatabase::SetPublicSets(
     if (!insert_statement.Run())
       return false;
   }
+
+  // Keeps track of the version used by the given `browser_context_id`.
+  static constexpr char kInsertSql[] =
+      "INSERT OR REPLACE INTO browser_context_sets_version"
+      "(browser_context_id,public_sets_version)VALUES(?,?)";
+  sql::Statement insert_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
+  insert_statement.BindString(0, browser_context_id);
+  insert_statement.BindString(1, version);
+
+  if (!insert_statement.Run())
+    return false;
+
+  // TODO(shuuran): Garbage collect the public sets no longer used by any
+  // browser_context_id.
+
   return transaction.Commit();
 }
 
@@ -240,16 +265,30 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
   return transaction.Commit();
 }
 
-FirstPartySetsDatabase::FlattenedSets FirstPartySetsDatabase::GetPublicSets() {
+FirstPartySetsDatabase::FlattenedSets FirstPartySetsDatabase::GetPublicSets(
+    const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit())
     return {};
 
+  static constexpr char kVersionSql[] =
+      "SELECT public_sets_version FROM browser_context_sets_version "
+      "WHERE browser_context_id=?";
+  sql::Statement version_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kVersionSql));
+  version_statement.BindString(0, browser_context_id);
+
+  if (!version_statement.Step())
+    return {};
+
+  const std::string version = version_statement.ColumnString(0);
+
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> results;
   static constexpr char kSelectSql[] =
-      "SELECT site,primary_site,site_type FROM public_sets";
+      "SELECT site,primary_site,site_type FROM public_sets WHERE version=?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, version);
 
   while (statement.Step()) {
     absl::optional<net::SchemefulSite> site =

@@ -67,9 +67,10 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   FirstPartySetsDatabase& operator=(const FirstPartySetsDatabase&&) = delete;
   ~FirstPartySetsDatabase();
 
-  // Stores the public First-Party Sets into database, and returns true on
-  // success.
-  [[nodiscard]] bool SetPublicSets(const std::string& version,
+  // Stores the public First-Party Sets into database, and updates the sets
+  // version used by `browser_context_id`. Returns true on success.
+  [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
+                                   const std::string& version,
                                    const FlattenedSets& sets);
 
   // Stores the `sites` to be cleared for the `browser_context_id` into
@@ -95,7 +96,9 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
   // fetching methods when having query errors
 
-  [[nodiscard]] FlattenedSets GetPublicSets();
+  // Gets the public First-Party Sets used by `browser_context_id`.
+  [[nodiscard]] FlattenedSets GetPublicSets(
+      const std::string& browser_context_id);
 
   // Gets the list of sites to clear for the `browser_context_id`.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
