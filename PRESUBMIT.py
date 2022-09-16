@@ -757,8 +757,16 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'base::RepeatingCallback, which directly support Chromium\'s weak ',
         'pointers, ref counting and more.',
       ),
-      False,  # Only a warning since it is already used.
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Do not warn in third_party folders.
+      # TODO(https://crbug.com/1364577): Change this to an error and use the
+      # exceptions list below.
+      False,
+      [
+          # Has tests that template trait helpers don't unintentionally match
+          # std::function.
+          r"base[\\/]functional[\\/]callback_helpers_unittest\.cc",
+          # Not an error in third_party folders.
+          _THIRD_PARTY_EXCEPT_BLINK
+      ],
     ),
     BanRule(
       r'/\b#include <random>\b',
@@ -1050,6 +1058,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       (
         # False positive, but it is also fine to let bind internals reference
         # base::Passed.
+        r'^base[\\/]functional[\\/]bind\.h',
         r'^base[\\/]functional[\\/]bind_internal\.h',
       ),
     ),
