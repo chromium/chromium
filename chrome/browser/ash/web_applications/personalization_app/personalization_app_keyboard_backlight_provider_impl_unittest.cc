@@ -18,8 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -183,5 +182,4 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
   EXPECT_EQ(SK_ColorTRANSPARENT, ObservedWallpaperColor());
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

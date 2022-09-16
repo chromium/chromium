@@ -8,8 +8,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class PersonalizationAppAmbientProvider : public mojom::AmbientProvider {
  public:
@@ -17,7 +16,6 @@ class PersonalizationAppAmbientProvider : public mojom::AmbientProvider {
       mojo::PendingReceiver<mojom::AmbientProvider> receiver) = 0;
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_H_

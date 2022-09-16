@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/mock_personalization_app_manager.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 MockPersonalizationAppManager::MockPersonalizationAppManager() = default;
 
 MockPersonalizationAppManager::~MockPersonalizationAppManager() = default;
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

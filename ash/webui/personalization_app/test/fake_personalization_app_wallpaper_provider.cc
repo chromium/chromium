@@ -16,8 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 const char kFakeCollectionId[] = "fake_collection_id";
@@ -183,5 +182,4 @@ void FakePersonalizationAppWallpaperProvider::CancelPreviewWallpaper() {
   return;
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

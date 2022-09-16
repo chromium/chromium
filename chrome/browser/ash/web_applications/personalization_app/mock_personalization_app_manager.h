@@ -10,8 +10,7 @@
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class MockPersonalizationAppManager : public PersonalizationAppManager {
  public:
@@ -31,7 +30,6 @@ class MockPersonalizationAppManager : public PersonalizationAppManager {
   MOCK_METHOD((SearchHandler*), search_handler, (), (override));
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_MOCK_PERSONALIZATION_APP_MANAGER_H_

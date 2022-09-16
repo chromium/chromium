@@ -32,8 +32,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -845,5 +844,4 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
                               /*settings=*/std::move(settings));
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

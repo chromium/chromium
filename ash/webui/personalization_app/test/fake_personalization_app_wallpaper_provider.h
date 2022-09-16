@@ -19,8 +19,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class FakePersonalizationAppWallpaperProvider
     : public PersonalizationAppWallpaperProvider {
@@ -121,7 +120,6 @@ class FakePersonalizationAppWallpaperProvider
       wallpaper_receiver_{this};
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_

@@ -56,8 +56,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -977,5 +976,4 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                     ash::WallpaperInfo()));
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

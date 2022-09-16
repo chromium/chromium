@@ -22,8 +22,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -194,5 +193,4 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
       kPersonalizationThemeColorModeHistogramName, ColorMode::kAuto, 1);
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

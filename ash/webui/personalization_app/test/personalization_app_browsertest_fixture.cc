@@ -15,8 +15,7 @@
 #include "ash/webui/personalization_app/test/fake_personalization_app_wallpaper_provider.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 std::unique_ptr<content::WebUIController>
 TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
@@ -43,5 +42,4 @@ void PersonalizationAppBrowserTestFixture::SetUpOnMainThread() {
                                    &test_web_ui_provider_);
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

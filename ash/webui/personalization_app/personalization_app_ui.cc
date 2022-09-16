@@ -27,8 +27,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -352,5 +351,4 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

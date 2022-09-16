@@ -22,13 +22,11 @@
 
 class Profile;
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class SearchHandler;
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 namespace app_list {
 

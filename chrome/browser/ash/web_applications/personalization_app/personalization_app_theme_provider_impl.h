@@ -20,8 +20,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class PersonalizationAppThemeProviderImpl
     : public PersonalizationAppThemeProvider,
@@ -80,7 +79,6 @@ class PersonalizationAppThemeProviderImpl
       theme_observer_remote_;
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_THEME_PROVIDER_IMPL_H_

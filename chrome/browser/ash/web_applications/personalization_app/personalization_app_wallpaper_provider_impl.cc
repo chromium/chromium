@@ -62,8 +62,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -920,5 +919,4 @@ void PersonalizationAppWallpaperProviderImpl::NotifyWallpaperChanged(
   wallpaper_observer_remote_->OnWallpaperChanged(std::move(current_wallpaper));
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

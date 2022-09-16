@@ -53,8 +53,7 @@ class GooglePhotosPhotosFetcher;
 
 class Profile;
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 // Implemented in //chrome because this relies on chrome |wallpaper_handlers|
 // code.
@@ -366,7 +365,6 @@ class PersonalizationAppWallpaperProviderImpl
       weak_ptr_factory_{this};
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_IMPL_H_

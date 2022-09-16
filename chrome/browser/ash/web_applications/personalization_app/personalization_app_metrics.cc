@@ -6,8 +6,7 @@
 #include "ash/constants/ambient_animation_theme.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 void LogPersonalizationTheme(ColorMode color_mode) {
   base::UmaHistogramEnumeration(kPersonalizationThemeColorModeHistogramName,
@@ -29,5 +28,4 @@ void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color) {
       kPersonalizationKeyboardBacklightColorHistogramName, backlight_color);
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

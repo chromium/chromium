@@ -38,8 +38,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -572,5 +571,4 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   has_pending_updates_for_backend_ = false;
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

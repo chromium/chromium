@@ -11,9 +11,7 @@
 #include "components/user_manager/user.h"
 #include "url/gurl.h"
 
-namespace ash {
-
-namespace personalization_app {
+namespace ash::personalization_app {
 
 struct ASH_PUBLIC_EXPORT UserDisplayInfo {
   // The display email of the user.
@@ -34,8 +32,6 @@ struct ASH_PUBLIC_EXPORT UserDisplayInfo {
   ~UserDisplayInfo();
 };
 
-}  // namespace personalization_app
-
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // ASH_PUBLIC_CPP_PERSONALIZATION_APP_USER_DISPLAY_INFO_H_

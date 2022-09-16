@@ -9,8 +9,7 @@
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 // This enum is used to define the buckets for an enumerated UMA histogram.
 // Hence,
@@ -45,7 +44,6 @@ void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point);
 
 void LogKeyboardBacklightColor(mojom::BacklightColor backlight_color);
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_METRICS_H_

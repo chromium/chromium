@@ -4,8 +4,7 @@
 
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 const char kChromeUIPersonalizationAppHost[] = "personalization";
 const char kChromeUIPersonalizationAppURL[] = "chrome://personalization/";
@@ -13,5 +12,4 @@ const char kAmbientSubpageRelativeUrl[] = "ambient";
 const char kUserSubpageRelativeUrl[] = "user";
 const char kWallpaperSubpageRelativeUrl[] = "wallpaper";
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

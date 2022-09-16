@@ -23,8 +23,7 @@
 
 class Profile;
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class PersonalizationAppAmbientProviderImpl
     : public PersonalizationAppAmbientProvider {
@@ -161,7 +160,6 @@ class PersonalizationAppAmbientProviderImpl
       google_photos_albums_previews_weak_factory_{this};
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_

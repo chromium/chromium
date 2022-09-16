@@ -48,8 +48,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -587,5 +586,4 @@ TEST_F(PersonalizationAppUserProviderImplWithMockTest,
       ash::default_user_image::kHistogramImageExternal, 2);
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

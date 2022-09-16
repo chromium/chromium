@@ -37,8 +37,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -474,5 +473,4 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
   EXPECT_EQ(0.5, results.at(1)->relevance_score);
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

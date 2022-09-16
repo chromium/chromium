@@ -15,8 +15,7 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class PersonalizationAppAmbientProvider;
 class PersonalizationAppKeyboardBacklightProvider;
@@ -71,7 +70,6 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_H_

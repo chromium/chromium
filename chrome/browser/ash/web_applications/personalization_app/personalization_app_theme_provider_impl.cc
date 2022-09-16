@@ -11,8 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
@@ -107,5 +106,4 @@ void PersonalizationAppThemeProviderImpl::NotifyColorModeAutoScheduleChanged() {
       IsColorModeAutoScheduleEnabled());
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

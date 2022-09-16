@@ -46,8 +46,7 @@
 #include "ui/snapshot/snapshot_aura.h"
 #include "ui/views/widget/widget.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -402,5 +401,4 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppWithoutHubIntegrationTest,
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     PersonalizationAppWithoutHubIntegrationTest);
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
