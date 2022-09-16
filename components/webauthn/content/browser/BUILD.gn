@@ -12,7 +12,6 @@ static_library("browser") {
   ]
   deps = [
     "//components/webauthn/core/browser",
-    "//content/browser:for_internal_webauthn",
     "//content/public/browser",
   ]
 }

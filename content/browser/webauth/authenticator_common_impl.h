@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBAUTH_AUTHENTICATOR_COMMON_H_
-#define CONTENT_BROWSER_WEBAUTH_AUTHENTICATOR_COMMON_H_
+#ifndef CONTENT_BROWSER_WEBAUTH_AUTHENTICATOR_COMMON_IMPL_H_
+#define CONTENT_BROWSER_WEBAUTH_AUTHENTICATOR_COMMON_IMPL_H_
 
 #include <stdint.h>
 
@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/authenticator_common.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
@@ -59,56 +60,39 @@ enum class RequestExtension;
 enum class AttestationErasureOption;
 
 // Common code for any WebAuthn Authenticator interfaces.
-class CONTENT_EXPORT AuthenticatorCommon {
+class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
  public:
-  // Creates a new AuthenticatorCommon. Callers must ensure that this instance
-  // outlives the RenderFrameHost.
-  explicit AuthenticatorCommon(RenderFrameHost* render_frame_host);
+  // Creates a new AuthenticatorCommonImpl. Callers must ensure that this
+  // instance outlives the RenderFrameHost.
+  explicit AuthenticatorCommonImpl(RenderFrameHost* render_frame_host);
 
-  AuthenticatorCommon(const AuthenticatorCommon&) = delete;
-  AuthenticatorCommon& operator=(const AuthenticatorCommon&) = delete;
+  AuthenticatorCommonImpl(const AuthenticatorCommonImpl&) = delete;
+  AuthenticatorCommonImpl& operator=(const AuthenticatorCommonImpl&) = delete;
 
-  virtual ~AuthenticatorCommon();
+  ~AuthenticatorCommonImpl() override;
 
-  // This is not-quite an implementation of blink::mojom::Authenticator. The
-  // first two functions take the caller's origin explicitly. This allows the
-  // caller origin to be overridden if needed. `GetAssertion()` also takes the
-  // optional `payment` to add to "clientDataJson" after the browser displays
-  // the payment confirmation dialog to the user.
+  // AuthenticatorCommon:
   void MakeCredential(
       url::Origin caller_origin,
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
-      blink::mojom::Authenticator::MakeCredentialCallback callback);
-  void GetAssertion(url::Origin caller_origin,
-                    blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-                    blink::mojom::PaymentOptionsPtr payment,
-                    blink::mojom::Authenticator::GetAssertionCallback callback);
+      blink::mojom::Authenticator::MakeCredentialCallback callback) override;
+  void GetAssertion(
+      url::Origin caller_origin,
+      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+      blink::mojom::PaymentOptionsPtr payment,
+      blink::mojom::Authenticator::GetAssertionCallback callback) override;
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       blink::mojom::Authenticator::
-          IsUserVerifyingPlatformAuthenticatorAvailableCallback callback);
+          IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
+      override;
   void IsConditionalMediationAvailable(
       blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
-          callback);
-  void Cancel();
-
-  void Cleanup();
-
-  void DisableUI();
-
-  // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
-  // to the constructor. Use this rather than keeping a copy of the
-  // RenderFrameHost* that was passed in.
-  //
-  // This object assumes that the RenderFrameHost overlives it but, in case it
-  // doesn't, this avoids holding a raw pointer and creating a use-after-free.
-  // If the RenderFrameHost has been destroyed then this function will return
-  // nullptr and the process will crash when it tries to use it.
-  RenderFrameHost* GetRenderFrameHost() const;
-
-  // Enables support for the webAuthenticationRequestProxy extensions API.  If
-  // called, remote desktop Chrome extensions may choose to act as a request
-  // proxy for all requests sent to this instance.
-  void EnableRequestProxyExtensionsAPISupport();
+          callback) override;
+  void Cancel() override;
+  void Cleanup() override;
+  void DisableUI() override;
+  RenderFrameHost* GetRenderFrameHost() const override;
+  void EnableRequestProxyExtensionsAPISupport() override;
 
  protected:
   // MaybeCreateRequestDelegate returns the embedder-provided implementation of
@@ -293,9 +277,9 @@ class CONTENT_EXPORT AuthenticatorCommon {
   absl::optional<WebAuthenticationRequestProxy::RequestId>
       pending_proxied_request_id_;
 
-  base::WeakPtrFactory<AuthenticatorCommon> weak_factory_{this};
+  base::WeakPtrFactory<AuthenticatorCommonImpl> weak_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBAUTH_AUTHENTICATOR_COMMON_H_
+#endif  // CONTENT_BROWSER_WEBAUTH_AUTHENTICATOR_COMMON_IMPL_H_

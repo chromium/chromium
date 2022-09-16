@@ -36,7 +36,6 @@ source_set("browser") {
   # internal content ones) should depend on the public one.
   visibility = [
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
-    ":for_internal_webauthn",
     "//content/app:*",
     "//content/public/browser:browser_sources",
     "//content/test/fuzzer:browser_accessibility_fuzzer",
@@ -3077,8 +3076,8 @@ source_set("browser") {
       "tracing/tracing_ui.h",
 
       # Most webauth code is non-Android
-      "webauth/authenticator_common.cc",
-      "webauth/authenticator_common.h",
+      "webauth/authenticator_common_impl.cc",
+      "webauth/authenticator_common_impl.h",
       "webauth/authenticator_environment_impl.cc",
       "webauth/authenticator_environment_impl.h",
       "webauth/authenticator_impl.cc",
@@ -3306,14 +3305,6 @@ group("for_content_tests") {
     public_deps = [ ":browser" ]
   } else {
     public_deps = [ "//third_party/leveldatabase" ]
-  }
-}
-
-# Meant for internal components to facilitate WebAuthn.
-group("for_internal_webauthn") {
-  visibility = [ "//components/webauthn/content/browser" ]
-  if (!is_component_build) {
-    public_deps = [ ":browser" ]
   }
 }
 

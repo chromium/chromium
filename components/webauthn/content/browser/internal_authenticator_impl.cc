@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "content/browser/webauth/authenticator_common.h"
+#include "content/public/browser/authenticator_common.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -19,8 +19,7 @@ InternalAuthenticatorImpl::InternalAuthenticatorImpl(
     RenderFrameHost* render_frame_host)
     : WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
       effective_origin_(render_frame_host->GetLastCommittedOrigin()),
-      authenticator_common_(
-          std::make_unique<AuthenticatorCommon>(render_frame_host)) {
+      authenticator_common_(AuthenticatorCommon::Create(render_frame_host)) {
   // Disabling WebAuthn modal dialogs to avoid conflict with Autofill's own
   // modal dialogs. Since WebAuthn is designed for websites, rather than browser
   // components, the UI can be confusing for users in the case for Autofill.

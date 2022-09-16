@@ -1,5 +1,4 @@
 include_rules = [
-  "+content/browser/webauth",
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
   "+third_party/blink/public/mojom/webauthn",

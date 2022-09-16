@@ -11,8 +11,6 @@
 
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 

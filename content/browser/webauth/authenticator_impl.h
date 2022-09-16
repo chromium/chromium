@@ -17,7 +17,7 @@
 
 namespace content {
 
-class AuthenticatorCommon;
+class AuthenticatorCommonImpl;
 class RenderFrameHost;
 
 // Implementation of the public Authenticator interface.
@@ -31,7 +31,7 @@ class CONTENT_EXPORT AuthenticatorImpl
   static void CreateForTesting(
       RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
-      std::unique_ptr<AuthenticatorCommon> authenticator_common);
+      std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl);
 
   AuthenticatorImpl(const AuthenticatorImpl&) = delete;
   AuthenticatorImpl& operator=(const AuthenticatorImpl&) = delete;
@@ -40,16 +40,17 @@ class CONTENT_EXPORT AuthenticatorImpl
   friend class AuthenticatorImplTest;
   friend class AuthenticatorImplRequestDelegateTest;
 
-  AuthenticatorImpl(RenderFrameHost& render_frame_host,
-                    mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
-                    std::unique_ptr<AuthenticatorCommon> authenticator_common);
+  AuthenticatorImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+      std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl);
   ~AuthenticatorImpl() override;
 
-  AuthenticatorCommon* get_authenticator_common_for_testing() {
-    return authenticator_common_.get();
+  AuthenticatorCommonImpl* get_authenticator_common_impl_for_testing() {
+    return authenticator_common_impl_.get();
   }
 
-  // mojom:Authenticator
+  // mojom::Authenticator
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override;
@@ -61,7 +62,7 @@ class CONTENT_EXPORT AuthenticatorImpl
       IsConditionalMediationAvailableCallback callback) override;
   void Cancel() override;
 
-  std::unique_ptr<AuthenticatorCommon> authenticator_common_;
+  std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl_;
 
   // Owns pipes to this Authenticator from |render_frame_host_|.
   mojo::Receiver<blink::mojom::Authenticator> receiver_{this};

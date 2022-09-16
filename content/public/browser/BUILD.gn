@@ -34,6 +34,7 @@ source_set("browser_sources") {
     "audio_service_info.h",
     "audio_stream_broker.cc",
     "audio_stream_broker.h",
+    "authenticator_common.h",
     "authenticator_environment.h",
     "authenticator_request_client_delegate.cc",
     "authenticator_request_client_delegate.h",

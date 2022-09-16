@@ -42,7 +42,7 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
-#include "content/browser/webauth/authenticator_common.h"
+#include "content/browser/webauth/authenticator_common_impl.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -3672,20 +3672,20 @@ class MockAuthenticatorRequestDelegateObserver
   InterestingFailureReasonCallback failure_reasons_callback_;
 };
 
-// Fake test construct that shares all other behavior with AuthenticatorCommon
-// except that:
-//  - FakeAuthenticatorCommon does not trigger UI activity.
+// Fake test construct that shares all other behavior with
+// AuthenticatorCommonImpl except that:
+//  - FakeAuthenticatorCommonImpl does not trigger UI activity.
 //  - MockAuthenticatorRequestDelegateObserver is injected to
 //  |request_delegate_|
 //    instead of ChromeAuthenticatorRequestDelegate.
-class FakeAuthenticatorCommon : public AuthenticatorCommon {
+class FakeAuthenticatorCommonImpl : public AuthenticatorCommonImpl {
  public:
-  explicit FakeAuthenticatorCommon(
+  explicit FakeAuthenticatorCommonImpl(
       RenderFrameHost* render_frame_host,
       std::unique_ptr<MockAuthenticatorRequestDelegateObserver> mock_delegate)
-      : AuthenticatorCommon(render_frame_host),
+      : AuthenticatorCommonImpl(render_frame_host),
         mock_delegate_(std::move(mock_delegate)) {}
-  ~FakeAuthenticatorCommon() override = default;
+  ~FakeAuthenticatorCommonImpl() override = default;
 
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   MaybeCreateRequestDelegate() override {
@@ -3711,8 +3711,8 @@ class AuthenticatorImplRequestDelegateTest : public AuthenticatorImplTest {
     // navigates or is deleted.
     AuthenticatorImpl::CreateForTesting(
         *main_rfh(), authenticator.BindNewPipeAndPassReceiver(),
-        std::make_unique<FakeAuthenticatorCommon>(main_rfh(),
-                                                  std::move(delegate)));
+        std::make_unique<FakeAuthenticatorCommonImpl>(main_rfh(),
+                                                      std::move(delegate)));
     return authenticator;
   }
 };
