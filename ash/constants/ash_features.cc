@@ -775,10 +775,6 @@ const base::Feature kFilesSinglePartitionFormat{
 const base::Feature kFilesTrash{"FilesTrash",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables opening Office files located in Files app Drive in Web Drive.
-const base::Feature kFilesWebDriveOffice{"FilesWebDriveOffice",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables filters in Files app Recents view V2.
 const base::Feature kFiltersInRecentsV2{"FiltersInRecentsV2",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2076,10 +2072,6 @@ bool IsFileManagerFuseBoxEnabled() {
 
 bool IsFileManagerFuseBoxDebugEnabled() {
   return base::FeatureList::IsEnabled(kFuseBoxDebug);
-}
-
-bool IsFilesWebDriveOfficeEnabled() {
-  return base::FeatureList::IsEnabled(kFilesWebDriveOffice);
 }
 
 bool IsFirmwareUpdaterAppEnabled() {

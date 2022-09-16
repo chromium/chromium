@@ -1931,12 +1931,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kDataLeakPreventionFilesRestriction);
   }
 
-  if (options.enable_web_drive_office) {
-    enabled_features.push_back(chromeos::features::kFilesWebDriveOffice);
-  } else {
-    disabled_features.push_back(chromeos::features::kFilesWebDriveOffice);
-  }
-
   if (options.enable_mirrorsync) {
     enabled_features.push_back(chromeos::features::kDriveFsMirroring);
   } else {

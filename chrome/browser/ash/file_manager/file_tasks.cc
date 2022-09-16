@@ -340,16 +340,15 @@ void PostProcessFoundTasks(
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  if (!ash::features::IsFilesWebDriveOfficeEnabled()) {
+  if (!ash::features::IsUploadOfficeToCloudEnabled()) {
     disabled_actions.emplace(kActionIdWebDriveOfficeWord);
     disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
-  }
-  // Hack around the fact that App Service will only return one task for each
-  // app. We want both tasks to be available, so add the office task if the
-  // WebDrive task is available.
-  // TODO(petermarshall): Find a better way to enable both tasks.
-  if (ash::features::IsUploadOfficeToCloudEnabled()) {
+  } else {
+    // Hack around the fact that App Service will only return one task for each
+    // app. We want both tasks to be available, so add the office task if the
+    // WebDrive task is available.
+    // TODO(petermarshall): Find a better way to enable both tasks.
     auto it = std::find_if(
         result_list->begin(), result_list->end(),
         [](const FullTaskDescriptor& task) {

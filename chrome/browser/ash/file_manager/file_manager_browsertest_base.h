@@ -118,9 +118,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // feature.
     bool enable_dlp_files_restriction = false;
 
-    // Whether test should run with the Web Drive Office feature.
-    bool enable_web_drive_office = false;
-
     // Whether test should run with the Upload Office to Cloud feature.
     bool enable_upload_office_to_cloud = false;
 

@@ -3121,9 +3121,6 @@ extern const char kFilesSinglePartitionFormatDescription[];
 extern const char kFilesTrashName[];
 extern const char kFilesTrashDescription[];
 
-extern const char kFilesWebDriveOfficeName[];
-extern const char kFilesWebDriveOfficeDescription[];
-
 extern const char kFiltersInRecentsV2Name[];
 extern const char kFiltersInRecentsV2Description[];
 

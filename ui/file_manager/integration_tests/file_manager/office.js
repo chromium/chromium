@@ -127,9 +127,9 @@ testcase.openOfficeWordFromMyFiles = async () => {
   chrome.test.assertEq(1, removedCount);
 };
 
-// Tests that "Upload to Drive" cannot be enabled if the "Web Drive Office" flag
-// is disabled (test setup similar to `openOfficeWordFromMyFiles`).
-testcase.uploadToDriveRequiresWebDriveOfficeEnabled = async () => {
+// Tests that "Upload to Drive" cannot be enabled if the "Upload Office To
+// Cloud" flag is disabled (test setup similar to `openOfficeWordFromMyFiles`).
+testcase.uploadToDriveRequiresUploadOfficeToCloudEnabled = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallDocx]);
   // Fake chrome.fileManagerPrivate.executeTask to return
@@ -143,9 +143,9 @@ testcase.uploadToDriveRequiresWebDriveOfficeEnabled = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
-  // Since the Web Drive Office flag isn't enabled, the Upload to Drive task
-  // should not be available: another task should have been executed instead
-  // (QuickOffice or generic task).
+  // Since the Upload Office To Cloud flag isn't enabled, the Upload to Drive
+  // task should not be available: another task should have been executed
+  // instead (QuickOffice or generic task).
   const taskDescriptor = await getExecutedTask(appId);
   chrome.test.assertFalse(
       taskDescriptor.actionId == openDocWithDriveDescriptor().actionId);

@@ -148,11 +148,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableWebDriveOffice() {
-    options.enable_web_drive_office = true;
-    return *this;
-  }
-
   TestCase& EnableUploadOfficeToCloud() {
     options.enable_upload_office_to_cloud = true;
     return *this;
@@ -1496,23 +1491,20 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Office, /* office.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("openOfficeWordFile").EnableWebDriveOffice(),
-        TestCase("openOfficeWordFromMyFiles")
-            .EnableWebDriveOffice()
+        TestCase("openOfficeWordFile").EnableUploadOfficeToCloud(),
+        TestCase("openOfficeWordFromMyFiles").EnableUploadOfficeToCloud(),
+        TestCase("uploadToDriveRequiresUploadOfficeToCloudEnabled"),
+        TestCase("openMultipleOfficeWordFromDrive").EnableUploadOfficeToCloud(),
+        TestCase("openOfficeWordFromDrive").EnableUploadOfficeToCloud(),
+        TestCase("openOfficeExcelFromDrive").EnableUploadOfficeToCloud(),
+        TestCase("openOfficePowerPointFromDrive").EnableUploadOfficeToCloud(),
+        TestCase("openOfficeWordFromDriveNotSynced")
             .EnableUploadOfficeToCloud(),
-        TestCase("uploadToDriveRequiresWebDriveOfficeEnabled")
-            .EnableUploadOfficeToCloud(),
-        TestCase("openMultipleOfficeWordFromDrive").EnableWebDriveOffice(),
-        TestCase("openOfficeWordFromDrive").EnableWebDriveOffice(),
-        TestCase("openOfficeExcelFromDrive").EnableWebDriveOffice(),
-        TestCase("openOfficePowerPointFromDrive").EnableWebDriveOffice(),
-        TestCase("openOfficeWordFromDriveNotSynced").EnableWebDriveOffice(),
         TestCase("openOfficeWordFromMyFilesOffline")
-            .EnableWebDriveOffice()
             .EnableUploadOfficeToCloud()
             .Offline(),
         TestCase("openOfficeWordFromDriveOffline")
-            .EnableWebDriveOffice()
+            .EnableUploadOfficeToCloud()
             .Offline()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
