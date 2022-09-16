@@ -360,6 +360,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   AncestorAnalysis AnalyzeAncestors(const Node&);
 
   bool MarkReattachAllowed() const;
+  bool MarkStyleDirtyAllowed() const;
 
   CSSFontSelector* GetFontSelector() { return font_selector_; }
 

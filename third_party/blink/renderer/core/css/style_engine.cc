@@ -3056,6 +3056,13 @@ bool StyleEngine::MarkReattachAllowed() const {
          allow_mark_for_reattach_from_rebuild_layout_tree_;
 }
 
+bool StyleEngine::MarkStyleDirtyAllowed() const {
+  if (GetDocument().InStyleRecalc() || InContainerQueryStyleRecalc()) {
+    return allow_mark_style_dirty_from_recalc_;
+  }
+  return !InRebuildLayoutTree();
+}
+
 bool StyleEngine::SupportsDarkColorScheme() {
   return (page_color_schemes_ &
           static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark)) &&

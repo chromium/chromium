@@ -1344,7 +1344,7 @@ void Node::SetNeedsReattachLayoutTree() {
 
 void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
                                const StyleChangeReasonForTracing& reason) {
-  DCHECK(!GetDocument().GetStyleEngine().InRebuildLayoutTree());
+  DCHECK(GetDocument().GetStyleEngine().MarkStyleDirtyAllowed());
   DCHECK(!GetDocument().InPostLifecycleSteps());
   DCHECK(change_type != kNoStyleChange);
   DCHECK(IsElementNode() || IsTextNode());
