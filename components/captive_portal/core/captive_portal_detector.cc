@@ -103,7 +103,6 @@ void CaptivePortalDetector::StartProbe(
   simple_loader_->SetAllowHttpErrorResults(true);
   network::SimpleURLLoader::BodyAsStringCallback callback = base::BindOnce(
       &CaptivePortalDetector::OnSimpleLoaderComplete, base::Unretained(this));
-  state_ = State::kProbe;
   simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       loader_factory_, std::move(callback));
 }
@@ -115,15 +114,13 @@ void CaptivePortalDetector::Cancel() {
   // Cancel any pending calls to StartProbe().
   weak_factory_.InvalidateWeakPtrs();
 #endif
-  state_ = State::kCancelled;
 }
 
 void CaptivePortalDetector::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kProbe);
-  CHECK(FetchingURL());
-  CHECK(!detection_callback_.is_null());
+  DCHECK(FetchingURL());
+  DCHECK(!detection_callback_.is_null());
 
   int response_code = 0;
   net::HttpResponseHeaders* headers = nullptr;
@@ -134,7 +131,6 @@ void CaptivePortalDetector::OnSimpleLoaderComplete(
   }
   OnSimpleLoaderCompleteInternal(simple_loader_->NetError(), response_code,
                                  simple_loader_->GetFinalURL(), headers);
-  state_ = State::kCompleted;
 }
 
 void CaptivePortalDetector::OnSimpleLoaderCompleteInternal(
@@ -146,7 +142,6 @@ void CaptivePortalDetector::OnSimpleLoaderCompleteInternal(
   GetCaptivePortalResultFromResponse(net_error, response_code, url, headers,
                                      &results);
   simple_loader_.reset();
-  CHECK(detection_callback_);
   std::move(detection_callback_).Run(results);
 }
 

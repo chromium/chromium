@@ -31,8 +31,6 @@ namespace captive_portal {
 
 class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
  public:
-  enum class State { kUnknown, kInit, kProbe, kCompleted, kCancelled };
-
   struct Results {
     captive_portal::CaptivePortalResult result =
         captive_portal::RESULT_NO_RESPONSE;
@@ -119,8 +117,6 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
 
   // Probe URL accessed by tests.
   GURL probe_url_;
-
-  State state_ = State::kInit;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
