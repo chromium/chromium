@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/autotest_private/autotest_private_api.h"
 
-#include <algorithm>
 #include <deque>
 #include <map>
 #include <memory>
@@ -60,6 +59,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -751,9 +751,7 @@ arc::mojom::ThemeStyleType ToThemeStyleType(
 
 aura::Window* FindAppWindowById(const int64_t id) {
   auto list = ash::GetAppWindowList();
-  auto iter = std::find_if(
-      list.begin(), list.end(),
-      [id](aura::Window* window) { return window->GetId() == id; });
+  auto iter = base::ranges::find(list, id, &aura::Window::GetId);
   if (iter == list.end())
     return nullptr;
   return *iter;
@@ -762,9 +760,9 @@ aura::Window* FindAppWindowById(const int64_t id) {
 // Returns the first available Browser that is not a web app.
 Browser* GetFirstRegularBrowser() {
   const BrowserList* list = BrowserList::GetInstance();
-  auto iter = std::find_if(list->begin(), list->end(), [](Browser* browser) {
-    return browser->app_controller() == nullptr;
-  });
+  const web_app::AppBrowserController* (Browser::*app_controller)() const =
+      &Browser::app_controller;
+  auto iter = base::ranges::find(*list, nullptr, app_controller);
   if (iter == list->end())
     return nullptr;
   return *iter;

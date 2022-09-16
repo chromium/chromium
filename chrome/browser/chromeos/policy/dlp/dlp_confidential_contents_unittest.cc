@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -62,13 +63,11 @@ class DlpConfidentialContentsTest : public testing::Test {
   // |web_contents|.
   bool Contains(const DlpConfidentialContents& contents,
                 content::WebContents* web_contents) {
-    auto iter = std::find_if(contents.GetContents().begin(),
-                             contents.GetContents().end(),
-                             [&](const DlpConfidentialContent& content) {
-                               return content.url.EqualsIgnoringRef(
-                                   web_contents->GetLastCommittedURL());
-                             });
-    return iter != contents.GetContents().end();
+    return base::ranges::any_of(contents.GetContents(),
+                                [&](const DlpConfidentialContent& content) {
+                                  return content.url.EqualsIgnoringRef(
+                                      web_contents->GetLastCommittedURL());
+                                });
   }
 
  protected:

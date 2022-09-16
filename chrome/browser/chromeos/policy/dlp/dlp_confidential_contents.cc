@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -157,12 +157,11 @@ void DlpConfidentialContents::InsertOrUpdate(
     const DlpConfidentialContents& other) {
   contents_.insert(other.contents_.begin(), other.contents_.end());
   for (auto other_content : other.contents_) {
-    auto it =
-        std::find_if(contents_.begin(), contents_.end(),
-                     [&other_content](const DlpConfidentialContent& content) {
-                       return content == other_content &&
-                              content.title != other_content.title;
-                     });
+    auto it = base::ranges::find_if(
+        contents_, [&other_content](const DlpConfidentialContent& content) {
+          return content == other_content &&
+                 content.title != other_content.title;
+        });
     if (it != contents_.end()) {
       *it = other_content;
     }
@@ -205,22 +204,21 @@ bool DlpConfidentialContentsCache::Contains(
     content::WebContents* web_contents,
     DlpRulesManager::Restriction restriction) const {
   const GURL url = web_contents->GetLastCommittedURL();
-  return std::find_if(entries_.begin(), entries_.end(),
-                      [&](const std::unique_ptr<Entry>& entry) {
-                        return entry->restriction == restriction &&
-                               entry->content.url.EqualsIgnoringRef(url);
-                      }) != entries_.end();
+  return base::ranges::any_of(
+      entries_, [&](const std::unique_ptr<Entry>& entry) {
+        return entry->restriction == restriction &&
+               entry->content.url.EqualsIgnoringRef(url);
+      });
 }
 
 bool DlpConfidentialContentsCache::Contains(
     const DlpConfidentialContent& content,
     DlpRulesManager::Restriction restriction) const {
-  return std::find_if(
-             entries_.begin(), entries_.end(),
-             [&](const std::unique_ptr<Entry>& entry) {
-               return entry->restriction == restriction &&
-                      entry->content.url.EqualsIgnoringRef(content.url);
-             }) != entries_.end();
+  return base::ranges::any_of(
+      entries_, [&](const std::unique_ptr<Entry>& entry) {
+        return entry->restriction == restriction &&
+               entry->content.url.EqualsIgnoringRef(content.url);
+      });
 }
 
 size_t DlpConfidentialContentsCache::GetSizeForTesting() const {

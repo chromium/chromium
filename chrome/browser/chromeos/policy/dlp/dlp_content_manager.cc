@@ -16,6 +16,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
@@ -627,9 +628,9 @@ void DlpContentManager::AddOrUpdateScreenShare(
     base::RepeatingClosure stop_callback,
     content::MediaStreamUI::StateChangeCallback state_change_callback,
     content::MediaStreamUI::SourceCallback source_callback) {
-  auto screen_share_it = std::find_if(
-      running_screen_shares_.begin(), running_screen_shares_.end(),
-      [&label, media_id](const std::unique_ptr<ScreenShareInfo>& info) -> bool {
+  auto screen_share_it = base::ranges::find_if(
+      running_screen_shares_,
+      [&label, media_id](const std::unique_ptr<ScreenShareInfo>& info) {
         return info && info->label() == label &&
                info->new_media_id() == media_id;
       });
