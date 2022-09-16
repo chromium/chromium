@@ -396,4 +396,356 @@ TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
 }
 
+TEST_F(PublicSetsTest, ComputeConfig_Empty) {
+  EXPECT_EQ(PublicSets(
+                /*entries=*/
+                {
+                    {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
+                                                  absl::nullopt)},
+                    {kAssociated1,
+                     FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+                },
+                /*aliases=*/{})
+                .ComputeConfig({}, {}),
+            FirstPartySetsContextConfig());
+}
+
+TEST_F(PublicSetsTest, ComputeConfig_Replacements_NoIntersection_NoRemoval) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/
+              {
+                  {
+                      {kPrimary2,
+                       FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated2,
+                       FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              },
+              /*normalized_additions=*/{});
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kAssociated2,
+               Optional(FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kPrimary2, Optional(FirstPartySetEntry(
+                              kPrimary2, SiteType::kPrimary, absl::nullopt)))));
+}
+
+// The common associated site between the policy and existing set is removed
+// from its previous set.
+TEST_F(
+    PublicSetsTest,
+    ComputeConfig_Replacements_ReplacesExistingAssociatedSite_RemovedFromFormerSet) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+              {kAssociated2,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/
+              {
+                  {
+                      {kPrimary2,
+                       FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated2,
+                       FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              },
+              /*normalized_additions=*/{});
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kAssociated2,
+               Optional(FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kPrimary2, Optional(FirstPartySetEntry(
+                              kPrimary2, SiteType::kPrimary, absl::nullopt)))));
+}
+
+// The common primary between the policy and existing set is removed and its
+// former associated sites are removed since they are now unowned.
+TEST_F(
+    PublicSetsTest,
+    ComputeConfig_Replacements_ReplacesExistingPrimary_RemovesFormerAssociatedSites) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+              {kAssociated2,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/
+              {
+                  {
+                      {kPrimary,
+                       FirstPartySetEntry(kPrimary, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated3,
+                       FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              },
+              /*normalized_additions=*/{});
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kAssociated3,
+               Optional(FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kPrimary, Optional(FirstPartySetEntry(
+                             kPrimary, SiteType::kPrimary, absl::nullopt))),
+          Pair(kAssociated1, absl::nullopt),
+          Pair(kAssociated2, absl::nullopt)));
+}
+
+// The common associated site between the policy and existing set is removed and
+// any leftover singletons are deleted.
+TEST_F(
+    PublicSetsTest,
+    ComputeConfig_Replacements_ReplacesExistingAssociatedSite_RemovesSingletons) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/
+              {
+                  {
+                      {kPrimary3,
+                       FirstPartySetEntry(kPrimary3, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated1,
+                       FirstPartySetEntry(kPrimary3, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              },
+              /*normalized_additions=*/{});
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kAssociated1,
+               Optional(FirstPartySetEntry(kPrimary3, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kPrimary3, Optional(FirstPartySetEntry(
+                              kPrimary3, SiteType::kPrimary, absl::nullopt))),
+          Pair(kPrimary, absl::nullopt)));
+}
+
+// The policy set and the existing set have nothing in common so the policy set
+// gets added in without updating the existing set.
+TEST_F(PublicSetsTest,
+       ComputeConfig_Additions_NoIntersection_AddsWithoutUpdating) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/{},
+              /*normalized_additions=*/{
+                  {
+                      {kPrimary2,
+                       FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated2,
+                       FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              });
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kAssociated2,
+               Optional(FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kPrimary2, Optional(FirstPartySetEntry(
+                              kPrimary2, SiteType::kPrimary, absl::nullopt)))));
+}
+
+// The primary of a policy set is also an associated site in an existing set.
+// The policy set absorbs all sites in the existing set into its
+// associated sites.
+TEST_F(
+    PublicSetsTest,
+    ComputeConfig_Additions_PolicyPrimaryIsExistingAssociatedSite_PolicySetAbsorbsExistingSet) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/{},
+              /*normalized_additions=*/{
+                  {
+                      {kAssociated1,
+                       FirstPartySetEntry(kAssociated1, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated2,
+                       FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
+                                          absl::nullopt)},
+                      {kAssociated3,
+                       FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              });
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kPrimary,
+               Optional(FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kAssociated2,
+               Optional(FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kAssociated3,
+               Optional(FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kAssociated1,
+               Optional(FirstPartySetEntry(kAssociated1, SiteType::kPrimary,
+                                           absl::nullopt)))));
+}
+
+// The primary of a policy set is also a primary of an existing set.
+// The policy set absorbs all of its primary's existing associated sites into
+// its associated sites.
+TEST_F(
+    PublicSetsTest,
+    ComputeConfig_Additions_PolicyPrimaryIsExistingPrimary_PolicySetAbsorbsExistingAssociatedSites) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+              {kAssociated3,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/{},
+              /*normalized_additions=*/{{
+                  {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
+                                                absl::nullopt)},
+                  {kAssociated2,
+                   FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                      absl::nullopt)},
+              }});
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kAssociated1,
+               Optional(FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kAssociated2,
+               Optional(FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kAssociated3,
+               Optional(FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kPrimary, Optional(FirstPartySetEntry(
+                             kPrimary, SiteType::kPrimary, absl::nullopt)))));
+}
+
+// Existing set overlaps with both replacement and addition set.
+TEST_F(
+    PublicSetsTest,
+    ComputeConfig_ReplacementsAndAdditions_SetListsOverlapWithSameExistingSet) {
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+              {kAssociated2,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/
+              {
+                  {
+                      {kPrimary2,
+                       FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated1,
+                       FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              },
+              /*normalized_additions=*/{
+                  {
+                      {kPrimary,
+                       FirstPartySetEntry(kPrimary, SiteType::kPrimary,
+                                          absl::nullopt)},
+                      {kAssociated3,
+                       FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                          absl::nullopt)},
+                  },
+              });
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(kAssociated1,
+               Optional(FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kAssociated2,
+               Optional(FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kAssociated3,
+               Optional(FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                           absl::nullopt))),
+          Pair(kPrimary, Optional(FirstPartySetEntry(
+                             kPrimary, SiteType::kPrimary, absl::nullopt))),
+          Pair(kPrimary2, Optional(FirstPartySetEntry(
+                              kPrimary2, SiteType::kPrimary, absl::nullopt)))));
+}
+
 }  // namespace net

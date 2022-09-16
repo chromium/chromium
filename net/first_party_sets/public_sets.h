@@ -10,6 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -42,6 +43,20 @@ class NET_EXPORT PublicSets {
 
   // Creates a clone of this instance.
   PublicSets Clone() const;
+
+  // Returns a FirstPartySetsContextConfig suitable for passing into
+  // FindEntries, in order to respect the overrides given by `replacement_sets`
+  // and `normalized_additions`.
+  //
+  // Preconditions: sets defined by `replacement_sets` and
+  // `normalized_additions` must be disjoint. `normalized_additions` must be
+  // preprocessed such that no two addition sets intersect with the same public
+  // set (i.e. they must be pre-unioned using a disjoint-set data structure).
+  FirstPartySetsContextConfig ComputeConfig(
+      const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
+          replacement_sets,
+      const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
+          normalized_additions) const;
 
   // Returns the entry corresponding to the given `site`, if one exists.
   // Respects any customization/overlay specified by `config`. This is

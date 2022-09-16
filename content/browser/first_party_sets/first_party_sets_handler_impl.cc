@@ -36,52 +36,6 @@ using SingleSet = FirstPartySetParser::SingleSet;
 constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
     FILE_PATH_LITERAL("first_party_sets.db");
 
-// Converts a list of First-Party Sets from a SingleSet to a FlattenedSet
-// representation.
-FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
-  FlattenedSets sets;
-  for (const auto& set : set_list) {
-    for (const auto& site_and_entry : set) {
-      bool inserted = sets.emplace(site_and_entry).second;
-      DCHECK(inserted);
-    }
-  }
-  return sets;
-}
-
-// Adds all sets in a list of First-Party Sets into `site_to_owner` which maps
-// from a site to its owner.
-void UpdateCustomizationMap(
-    const std::vector<SingleSet>& set_list,
-    base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>&
-        site_to_entry) {
-  for (const auto& set : set_list) {
-    for (const auto& site_and_entry : set) {
-      bool inserted = site_to_entry.emplace(site_and_entry).second;
-      DCHECK(inserted);
-    }
-  }
-}
-
-// Populates the `policy_set_overlaps` out-parameter by checking
-// `existing_sets`. If `site` is equal to an existing site e in `sets`, then
-// `policy_set_index` will be added to the list of set indices at
-// `policy_set_overlaps`[e].
-void AddIfPolicySetOverlaps(
-    const net::SchemefulSite& site,
-    size_t policy_set_index,
-    const net::PublicSets& existing_sets,
-    base::flat_map<net::SchemefulSite, base::flat_set<size_t>>&
-        policy_set_overlaps) {
-  // Check `site` for membership in `existing_sets`.
-  if (auto entry = existing_sets.FindEntry(site, /*config=*/nullptr);
-      entry.has_value()) {
-    // Add the index of `site`'s policy set to the list of policy set indices
-    // that also overlap with site_owner.
-    policy_set_overlaps[entry->primary()].insert(policy_set_index);
-  }
-}
-
 std::vector<SingleSet> NormalizeAdditionSets(
     const net::PublicSets& public_sets,
     const std::vector<SingleSet>& addition_sets) {
@@ -91,8 +45,11 @@ std::vector<SingleSet> NormalizeAdditionSets(
       policy_set_overlaps;
   for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
     for (const auto& site_and_entry : addition_sets[set_idx]) {
-      AddIfPolicySetOverlaps(site_and_entry.first, set_idx, public_sets,
-                             policy_set_overlaps);
+      if (auto entry =
+              public_sets.FindEntry(site_and_entry.first, /*config=*/nullptr);
+          entry.has_value()) {
+        policy_set_overlaps[entry->primary()].insert(set_idx);
+      }
     }
   }
 
@@ -184,107 +141,10 @@ net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
     const net::PublicSets& public_sets,
     const FirstPartySetParser::ParsedPolicySetLists& policy) {
-  // Maps a site to its new entry if it has one.
-  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
-      site_to_entry;
-
-  // Normalize the addition sets to prevent them from affecting the same
-  // existing set.
-  std::vector<SingleSet> normalized_additions =
-      NormalizeAdditionSets(public_sets, policy.additions);
-
-  // Create flattened versions of the sets for easier lookup.
-  FlattenedSets flattened_replacements =
-      SetListToFlattenedSets(policy.replacements);
-  FlattenedSets flattened_additions =
-      SetListToFlattenedSets(normalized_additions);
-
-  // All of the policy sets are automatically inserted into site_to_owner.
-  UpdateCustomizationMap(policy.replacements, site_to_entry);
-  UpdateCustomizationMap(normalized_additions, site_to_entry);
-
-  // Maps old owner to new entry.
-  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>
-      addition_intersected_owners;
-  for (const auto& [new_member, new_entry] : flattened_additions) {
-    if (const auto entry =
-            public_sets.FindEntry(new_member, /*config=*/nullptr);
-        entry.has_value()) {
-      // Found an overlap with the existing list of sets.
-      addition_intersected_owners.emplace(entry->primary(), new_entry);
-    }
-  }
-
-  // Maps an existing owner to the members it lost due to replacement.
-  base::flat_map<net::SchemefulSite, base::flat_set<net::SchemefulSite>>
-      potential_singletons;
-  for (const auto& [member, set_entry] : flattened_replacements) {
-    if (member == set_entry.primary())
-      continue;
-    if (auto existing_entry = public_sets.FindEntry(member, /*config=*/nullptr);
-        existing_entry.has_value() && existing_entry->primary() != member) {
-      if (!addition_intersected_owners.contains(existing_entry->primary()) &&
-          !flattened_additions.contains(existing_entry->primary()) &&
-          !flattened_replacements.contains(existing_entry->primary())) {
-        potential_singletons[existing_entry->primary()].insert(member);
-      }
-    }
-  }
-
-  // Find the existing owners that have left their existing sets, and whose
-  // existing members should be removed from their set (excl any policy sets
-  // that those members are involved in).
-  base::flat_set<net::SchemefulSite> replaced_existing_owners;
-  for (const auto& [site, unused_owner] : flattened_replacements) {
-    if (const auto entry = public_sets.FindEntry(site, /*config=*/nullptr);
-        entry.has_value() && entry->primary() == site) {
-      // Site was an owner in the existing sets.
-      bool inserted = replaced_existing_owners.emplace(site).second;
-      DCHECK(inserted);
-    }
-  }
-
-  // Find out which potential singletons are actually singletons; delete
-  // members whose owners left; and reparent the sets that intersected with
-  // an addition set.
-  for (const auto& [member, set_entry] : public_sets.entries()) {
-    // Reparent all sites in any intersecting addition sets.
-    if (auto entry = addition_intersected_owners.find(set_entry.primary());
-        entry != addition_intersected_owners.end() &&
-        !flattened_replacements.contains(member)) {
-      site_to_entry.emplace(
-          member, net::FirstPartySetEntry(entry->second.primary(),
-                                          member == entry->second.primary()
-                                              ? net::SiteType::kPrimary
-                                              : net::SiteType::kAssociated,
-                                          absl::nullopt));
-    }
-    if (member == set_entry.primary())
-      continue;
-    // Remove non-singletons from the potential list.
-    if (auto entry = potential_singletons.find(set_entry.primary());
-        entry != potential_singletons.end() &&
-        !entry->second.contains(member)) {
-      // This owner lost members, but it still has at least one (`member`),
-      // so it's not a singleton.
-      potential_singletons.erase(entry);
-    }
-    // Remove members from sets whose owner left.
-    if (replaced_existing_owners.contains(set_entry.primary()) &&
-        !flattened_replacements.contains(member) &&
-        !addition_intersected_owners.contains(set_entry.primary())) {
-      bool inserted = site_to_entry.emplace(member, absl::nullopt).second;
-      DCHECK(inserted);
-    }
-  }
-  // Any owner remaining in `potential_singleton` is a real singleton, so delete
-  // it:
-  for (auto& [owner, members] : potential_singletons) {
-    bool inserted = site_to_entry.emplace(owner, absl::nullopt).second;
-    DCHECK(inserted);
-  }
-
-  return net::FirstPartySetsContextConfig(std::move(site_to_entry));
+  return public_sets.ComputeConfig(
+      /*replacement_sets=*/policy.replacements,
+      /*normalized_additions=*/NormalizeAdditionSets(public_sets,
+                                                     policy.additions));
 }
 
 FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(

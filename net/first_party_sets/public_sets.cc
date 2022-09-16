@@ -7,20 +7,52 @@
 #include <tuple>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 namespace {
+
+using FlattenedSets = base::flat_map<SchemefulSite, FirstPartySetEntry>;
+using SingleSet = base::flat_map<SchemefulSite, FirstPartySetEntry>;
 
 // Converts WS to HTTP, and WSS to HTTPS.
 SchemefulSite NormalizeScheme(const SchemefulSite& site) {
   SchemefulSite normalized_site = site;
   normalized_site.ConvertWebSocketToHttp();
   return normalized_site;
+}
+
+// Converts a list of First-Party Sets from a SingleSet to a FlattenedSet
+// representation.
+FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
+  FlattenedSets sets;
+  for (const auto& set : set_list) {
+    for (const auto& site_and_entry : set) {
+      bool inserted = sets.emplace(site_and_entry).second;
+      DCHECK(inserted);
+    }
+  }
+  return sets;
+}
+
+// Adds all sets in a list of First-Party Sets into `site_to_entry` which maps
+// from a site to its entry.
+void UpdateCustomizationMap(
+    const std::vector<SingleSet>& set_list,
+    base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>&
+        site_to_entry) {
+  for (const auto& set : set_list) {
+    for (const auto& site_and_entry : set) {
+      bool inserted = site_to_entry.emplace(site_and_entry).second;
+      DCHECK(inserted);
+    }
+  }
 }
 
 }  // namespace
@@ -159,6 +191,105 @@ void PublicSets::ApplyManuallySpecifiedSet(
                singletons.contains(alias.second);
       });
   aliases_.insert(manual_aliases.begin(), manual_aliases.end());
+}
+
+FirstPartySetsContextConfig PublicSets::ComputeConfig(
+    const std::vector<SingleSet>& replacement_sets,
+    const std::vector<SingleSet>& normalized_additions) const {
+  // Maps a site to its new entry if it has one.
+  base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>
+      site_to_entry;
+
+  // Create flattened versions of the sets for easier lookup.
+  FlattenedSets flattened_replacements =
+      SetListToFlattenedSets(replacement_sets);
+  FlattenedSets flattened_additions =
+      SetListToFlattenedSets(normalized_additions);
+
+  // All of the policy sets are automatically inserted into site_to_owner.
+  UpdateCustomizationMap(replacement_sets, site_to_entry);
+  UpdateCustomizationMap(normalized_additions, site_to_entry);
+
+  // Maps old owner to new entry.
+  base::flat_map<SchemefulSite, FirstPartySetEntry> addition_intersected_owners;
+  for (const auto& [new_member, new_entry] : flattened_additions) {
+    if (const auto entry = FindEntry(new_member, /*config=*/nullptr);
+        entry.has_value()) {
+      // Found an overlap with the existing list of sets.
+      addition_intersected_owners.emplace(entry->primary(), new_entry);
+    }
+  }
+
+  // Maps an existing owner to the members it lost due to replacement.
+  base::flat_map<SchemefulSite, base::flat_set<SchemefulSite>>
+      potential_singletons;
+  for (const auto& [member, set_entry] : flattened_replacements) {
+    if (member == set_entry.primary())
+      continue;
+    if (auto existing_entry = FindEntry(member, /*config=*/nullptr);
+        existing_entry.has_value() && existing_entry->primary() != member) {
+      if (!addition_intersected_owners.contains(existing_entry->primary()) &&
+          !flattened_additions.contains(existing_entry->primary()) &&
+          !flattened_replacements.contains(existing_entry->primary())) {
+        potential_singletons[existing_entry->primary()].insert(member);
+      }
+    }
+  }
+
+  // Find the existing owners that have left their existing sets, and whose
+  // existing members should be removed from their set (excl any policy sets
+  // that those members are involved in).
+  base::flat_set<SchemefulSite> replaced_existing_owners;
+  for (const auto& [site, unused_owner] : flattened_replacements) {
+    if (const auto entry = FindEntry(site, /*config=*/nullptr);
+        entry.has_value() && entry->primary() == site) {
+      // Site was an owner in the existing sets.
+      bool inserted = replaced_existing_owners.emplace(site).second;
+      DCHECK(inserted);
+    }
+  }
+
+  // Find out which potential singletons are actually singletons; delete
+  // members whose owners left; and reparent the sets that intersected with
+  // an addition set.
+  for (const auto& [member, set_entry] : entries_) {
+    // Reparent all sites in any intersecting addition sets.
+    if (auto entry = addition_intersected_owners.find(set_entry.primary());
+        entry != addition_intersected_owners.end() &&
+        !flattened_replacements.contains(member)) {
+      site_to_entry.emplace(member,
+                            FirstPartySetEntry(entry->second.primary(),
+                                               member == entry->second.primary()
+                                                   ? SiteType::kPrimary
+                                                   : SiteType::kAssociated,
+                                               absl::nullopt));
+    }
+    if (member == set_entry.primary())
+      continue;
+    // Remove non-singletons from the potential list.
+    if (auto entry = potential_singletons.find(set_entry.primary());
+        entry != potential_singletons.end() &&
+        !entry->second.contains(member)) {
+      // This owner lost members, but it still has at least one (`member`),
+      // so it's not a singleton.
+      potential_singletons.erase(entry);
+    }
+    // Remove members from sets whose owner left.
+    if (replaced_existing_owners.contains(set_entry.primary()) &&
+        !flattened_replacements.contains(member) &&
+        !addition_intersected_owners.contains(set_entry.primary())) {
+      bool inserted = site_to_entry.emplace(member, absl::nullopt).second;
+      DCHECK(inserted);
+    }
+  }
+  // Any owner remaining in `potential_singleton` is a real singleton, so delete
+  // it:
+  for (auto& [owner, members] : potential_singletons) {
+    bool inserted = site_to_entry.emplace(owner, absl::nullopt).second;
+    DCHECK(inserted);
+  }
+
+  return FirstPartySetsContextConfig(std::move(site_to_entry));
 }
 
 std::ostream& operator<<(std::ostream& os, const PublicSets& ps) {
