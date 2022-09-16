@@ -16,6 +16,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -29,6 +30,12 @@ constexpr int kBetweenButtonSpacing = 12;
 constexpr int kCornerRadius = 8;
 constexpr int kShadowElevation = 3;
 constexpr gfx::Insets kInsideBorderInsets(16);
+
+// The duration of the menu position animation.
+constexpr base::TimeDelta kPositionAnimationDurationMs =
+    base::Milliseconds(250);
+// The duration of the menu opacity animation.
+constexpr base::TimeDelta kOpacityAnimationDurationMs = base::Milliseconds(150);
 
 }  // namespace
 
@@ -113,13 +120,8 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   params.shadow_elevation = kShadowElevation;
 
   multitask_menu_widget_->Init(std::move(params));
-  auto* view = multitask_menu_widget_->SetContentsView(
+  multitask_menu_widget_->SetContentsView(
       std::make_unique<TabletModeMultitaskMenuView>(window_, hide_menu));
-  const gfx::Size widget_size = view->GetPreferredSize();
-  const gfx::Rect widget_bounds(
-      window_->bounds().CenterPoint().x() - widget_size.width() / 2,
-      kMultitaskMenuVerticalPadding, widget_size.width(), widget_size.height());
-  multitask_menu_widget_->SetBounds(widget_bounds);
 
   widget_observation_.Observe(multitask_menu_widget_.get());
   display_observer_.emplace(this);
@@ -168,7 +170,29 @@ void TabletModeMultitaskMenu::Show() {
   // TODO(sophiewen): Consider adding transient child instead.
   multitask_menu_window->parent()->StackChildAbove(multitask_menu_window,
                                                    window_);
+
+  // Start with the widget offscreen.
+  const gfx::Size widget_size =
+      multitask_menu_widget_->GetContentsView()->GetPreferredSize();
+  const gfx::Rect start_bounds(
+      window_->bounds().CenterPoint().x() - widget_size.width() / 2,
+      -widget_size.height(), widget_size.width(), widget_size.height());
+  multitask_menu_widget_->SetBounds(start_bounds);
   multitask_menu_widget_->Show();
+  multitask_menu_widget_->SetOpacity(0.f);
+
+  auto* widget_layer = multitask_menu_widget_->GetLayer();
+  const gfx::Rect end_bounds(
+      gfx::Point(start_bounds.x(), kMultitaskMenuVerticalPadding), widget_size);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kPositionAnimationDurationMs)
+      .SetBounds(widget_layer, end_bounds, gfx::Tween::ACCEL_20_DECEL_100)
+      .At(base::Seconds(0))
+      .SetDuration(kOpacityAnimationDurationMs)
+      .SetOpacity(widget_layer, 1.f, gfx::Tween::LINEAR);
 }
 
 void TabletModeMultitaskMenu::CloseMultitaskMenu() {
