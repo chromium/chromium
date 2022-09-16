@@ -11,7 +11,6 @@
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "base/token.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 
@@ -35,7 +34,7 @@ enum class OobeDialogState {
   WRONG_HWID_WARNING = 3,
 
   // Showing supervised user creation screen.
-  SUPERVISED_USER_CREATION_FLOW = 4,
+  DEPRECATED_SUPERVISED_USER_CREATION_FLOW = 4,
 
   // Showing SAML password confirmation screen.
   SAML_PASSWORD_CONFIRM = 5,

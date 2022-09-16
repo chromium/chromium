@@ -50,8 +50,7 @@
       <span hidden="[[!isOneOf_(uiState_, 'ui-state-update')]]">
         [[i18nDynamic(locale, 'updateOfflineMessageBody')]]
       </span>
-      <span hidden="[[!isOneOf_(uiState_,
-          'ui-state-signin', 'ui-state-supervised')]]">
+      <span hidden="[[!isOneOf_(uiState_, 'ui-state-signin')]]">
         [[i18nDynamic(locale, 'signinOfflineMessageBody')]]
       </span>
       <span hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
@@ -63,7 +62,6 @@
           hidden="[[!isOneOf_(uiState_,
               'ui-state-update',
               'ui-state-signin',
-              'ui-state-supervised',
               'ui-state-kiosk-mode')]]">
       </span>
     </div>
@@ -74,7 +72,6 @@
           hidden="[[!isOneOf_(uiState_,
               'ui-state-update',
               'ui-state-signin',
-              'ui-state-supervised',
               'ui-state-kiosk-mode')]]">
       </span>
     </div>
@@ -86,7 +83,6 @@
       <span id="signin-proxy-message-text"
           hidden="[[!isOneOf_(uiState_,
               'ui-state-signin',
-              'ui-state-supervised',
               'ui-state-kiosk-mode')]]">
       </span>
     </div>
@@ -96,7 +92,6 @@
     <div id="guestSessionText" hidden="[[!isOneOf_(uiState_,
         'ui-state-update',
         'ui-state-signin',
-        'ui-state-supervised',
         'ui-state-kiosk-mode')]]">
       <span id="error-guest-signin" hidden="[[!guestSessionAllowed_]]">
       </span>
@@ -120,7 +115,6 @@
       <div hidden="[[!isOneOf_(uiState_,
           'ui-state-update',
           'ui-state-signin',
-          'ui-state-supervised',
           'ui-state-kiosk-mode',
           'ui-state-auto-enrollment-error')]]" class="scrollable">
         <network-select-login id="offline-network-control"

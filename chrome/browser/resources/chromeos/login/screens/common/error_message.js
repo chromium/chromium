@@ -40,16 +40,14 @@ const ERROR_SCREEN_UI_STATE = {
   SIGNIN: 'ui-state-signin',
   KIOSK_MODE: 'ui-state-kiosk-mode',
   AUTO_ENROLLMENT_ERROR: 'ui-state-auto-enrollment-error',
-  SUPERVISED_USER_CREATION_FLOW: 'ui-state-supervised',
 };
 
 // Array of the possible UI states of the screen. Must be in the
-// same order as ErrorScreen::UIState enum values.
+// same order as NetworkError::UIState enum values.
 const ErrorMessageUIState = [
   ERROR_SCREEN_UI_STATE.UNKNOWN,
   ERROR_SCREEN_UI_STATE.UPDATE,
   ERROR_SCREEN_UI_STATE.SIGNIN,
-  ERROR_SCREEN_UI_STATE.SUPERVISED_USER_CREATION_FLOW,
   ERROR_SCREEN_UI_STATE.KIOSK_MODE,
   ERROR_SCREEN_UI_STATE.AUTO_ENROLLMENT_ERROR,
 ];
@@ -69,7 +67,7 @@ const ERROR_STATE = {
 };
 
 // Possible error states of the screen. Must be in the same order as
-// ErrorScreen::ErrorState enum values.
+// NetworkError::ErrorState enum values.
 const ERROR_STATES = [
   ERROR_STATE.UNKNOWN,
   ERROR_STATE.PORTAL,
