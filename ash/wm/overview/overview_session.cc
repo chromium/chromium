@@ -1015,7 +1015,6 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 }
 
 void OverviewSession::ShowDesksTemplatesGrids(
-    bool was_zero_state,
     const base::GUID& item_to_focus,
     const std::u16string& saved_desk_name,
     aura::Window* const root_window) {
@@ -1032,7 +1031,8 @@ void OverviewSession::ShowDesksTemplatesGrids(
       AccessibilityAlert::SAVED_DESKS_MODE_ENTERED);
 
   for (auto& grid : grid_list_)
-    grid->ShowDesksTemplatesGrid(was_zero_state);
+    grid->ShowDesksTemplatesGrid();
+
   // Only ask for all entries if it is the first time creating the grid widgets.
   // Otherwise, add or update the entries one at a time.
   if (created_grid_widgets) {

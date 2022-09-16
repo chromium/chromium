@@ -559,6 +559,9 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
 }
 
 bool DesksBarView::IsZeroState() const {
+  // TODO(crbug.com/1363382): This function should not be checking if the
+  // templates grid is visible. Return what the state is, rather than what it
+  // should be. See corresponding TODO in `OverviewGrid`.
   if (overview_grid_->IsShowingDesksTemplatesGrid())
     return false;
   return mini_views_.empty() && DesksController::Get()->desks().size() == 1;
@@ -1297,7 +1300,7 @@ void DesksBarView::OnDesksTemplatesButtonPressed() {
   if (IsDeskNameBeingModified())
     DeskNameView::CommitChanges(GetWidget());
   overview_grid_->overview_session()->ShowDesksTemplatesGrids(
-      IsZeroState(), base::GUID(), /*saved_desk_name=*/u"",
+      base::GUID(), /*saved_desk_name=*/u"",
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }
 

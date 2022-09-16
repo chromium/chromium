@@ -343,9 +343,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Commits any on-going name changes if any.
   void CommitNameChanges();
 
-  // Shows the grid of the desks templates. Creates the widget if needed. If
-  // `was_zero_state` is true then we will expand the desks bar.
-  void ShowDesksTemplatesGrid(bool was_zero_state);
+  // Shows the grid of the desks templates. Creates the widget if needed. The
+  // desks bar will be expanded if it isn't already.
+  void ShowDesksTemplatesGrid();
 
   // Hides the grid of desks templates and reshow the overview items. Updates
   // the templates button if we are not exiting overview.

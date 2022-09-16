@@ -245,11 +245,8 @@ class WindowCloseObserver : public aura::WindowObserver {
     }
 
     // Show the library, this should highlight the newly saved item.
-    OverviewGrid* overview_grid =
-        overview_session->GetGridWithRootWindow(root_window_);
-    overview_session->ShowDesksTemplatesGrids(
-        overview_grid->desks_bar_view()->IsZeroState(), saved_desk_guid_,
-        saved_desk_name_, root_window_);
+    overview_session->ShowDesksTemplatesGrids(saved_desk_guid_,
+                                              saved_desk_name_, root_window_);
 
     // Remove the current desk, this will be done without animation.
     if (remove_desk) {
@@ -647,8 +644,6 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
   OverviewGrid* overview_grid =
       overview_session_->GetGridWithRootWindow(root_window);
   DCHECK(overview_grid);
-  DCHECK(overview_grid->desks_bar_view());
-  const bool is_zero_state = overview_grid->desks_bar_view()->IsZeroState();
 
   if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
     // TODO(dandersson): Rework literally all of this. This path is only taken
@@ -658,7 +653,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
 
     if (!was_update) {
       // Shows the grid if it was hidden. This will not call `GetAllEntries`.
-      overview_session_->ShowDesksTemplatesGrids(is_zero_state, base::GUID(),
+      overview_session_->ShowDesksTemplatesGrids(base::GUID(),
                                                  /*saved_desk_name=*/u"",
                                                  root_window);
       if (SavedDeskItemView* item_view =
@@ -673,8 +668,8 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
   } else if (desk_template->type() != DeskTemplateType::kSaveAndRecall) {
     // This will update the templates button and save as desks button too. This
     // will call `GetAllEntries`.
-    overview_session_->ShowDesksTemplatesGrids(
-        is_zero_state, desk_template->uuid(), saved_desk_name, root_window);
+    overview_session_->ShowDesksTemplatesGrids(desk_template->uuid(),
+                                               saved_desk_name, root_window);
   }
 
   if (!was_update) {

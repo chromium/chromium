@@ -290,11 +290,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // |active_window_before_overview_|.
   bool IsWindowActiveWindowBeforeOverview(aura::Window* window) const;
 
-  // Shows the desks templates grids on all displays. If `was_zero_state` is
-  // true then we will expand the desks bars. Focuses the item which matches
+  // Shows the desks templates grids on all displays. This will expand desk bars
+  // if they are not already expanded. Focuses the item which matches
   // `item_to_focus` on the display associated with `root_window`.
-  void ShowDesksTemplatesGrids(bool was_zero_state,
-                               const base::GUID& item_to_focus,
+  void ShowDesksTemplatesGrids(const base::GUID& item_to_focus,
                                const std::u16string& saved_desk_name,
                                aura::Window* const root_window);
 

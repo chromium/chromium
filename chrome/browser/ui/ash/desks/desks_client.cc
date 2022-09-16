@@ -602,11 +602,9 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
       DCHECK(overview_session);
     }
 
-    auto* overview_grid = overview_session->GetGridWithRootWindow(
-        ash::Shell::GetPrimaryRootWindow());
     overview_session->ShowDesksTemplatesGrids(
-        overview_grid->desks_bar_view()->IsZeroState(), desk_template->uuid(),
-        desk_template->template_name(), ash::Shell::GetPrimaryRootWindow());
+        desk_template->uuid(), desk_template->template_name(),
+        ash::Shell::GetPrimaryRootWindow());
 
     // We have successfully created a *new* desk template for Save & Recall,
     // so we are now going to close all the windows on the active desk and
