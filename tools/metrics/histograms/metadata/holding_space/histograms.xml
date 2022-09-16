@@ -200,6 +200,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.Suggestions.Action.All"
+    enum="HoldingSpaceSuggestionsAction" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on the suggestions header in holding space UI at the
+    moment the action is performed.
+  </summary>
+</histogram>
+
 <histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstAdd" units="ms"
     expires_after="2023-04-01">
   <owner>dmblack@google.com</owner>

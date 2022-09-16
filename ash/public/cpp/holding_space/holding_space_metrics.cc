@@ -157,6 +157,10 @@ void RecordItemFailureToLaunch(HoldingSpaceItem::Type type,
                                 reason);
 }
 
+void RecordSuggestionsAction(SuggestionsAction action) {
+  base::UmaHistogramEnumeration("HoldingSpace.Suggestions.Action.All", action);
+}
+
 void RecordTimeFromFirstAvailabilityToFirstAdd(base::TimeDelta time_delta) {
   // NOTE: 24 days appears to be the max supported number of days.
   base::UmaHistogramCustomTimes(

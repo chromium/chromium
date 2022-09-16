@@ -48758,6 +48758,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="kDragAndDropToPin"/>
 </enum>
 
+<enum name="HoldingSpaceSuggestionsAction">
+  <int value="0" label="kCollapse"/>
+  <int value="1" label="kExpand"/>
+</enum>
+
 <enum name="HomeButtonPreferenceStateType">
   <obsolete>
     Removed from code as of 10/2020.

@@ -1178,6 +1178,9 @@ TEST_F(HoldingSpaceTrayTest, PlaceholderHiddenAfterFilesAppChipPressed) {
 TEST_F(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsExpanded) {
   StartSession();
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("HoldingSpace.Suggestions.Action.All", 0);
+
   // Add a suggested item.
   AddItem(HoldingSpaceItem::Type::kLocalSuggestion,
           base::FilePath("/tmp/fake1"));
@@ -1200,6 +1203,12 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsExpanded) {
   // Press ENTER and expect the section to collapse.
   EXPECT_TRUE(PressTabUntilFocused(suggestions_section_header));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Suggestions.Action.All",
+      holding_space_metrics::SuggestionsAction::kCollapse, 1);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Suggestions.Action.All",
+      holding_space_metrics::SuggestionsAction::kExpand, 0);
   {
     SCOPED_TRACE("First collapse.");
     VerifySuggestionsSectionState(/*expanded=*/false, /*item_present=*/true);
@@ -1207,6 +1216,12 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsExpanded) {
 
   // Press ENTER and expect the section to expand.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Suggestions.Action.All",
+      holding_space_metrics::SuggestionsAction::kCollapse, 1);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Suggestions.Action.All",
+      holding_space_metrics::SuggestionsAction::kExpand, 1);
   {
     SCOPED_TRACE("First expand.");
     VerifySuggestionsSectionState(/*expanded=*/true, /*item_present=*/true);
@@ -1230,6 +1245,12 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsExpanded) {
   // Verify that removing and adding an item works with the section collapsed.
   EXPECT_TRUE(PressTabUntilFocused(suggestions_section_header));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Suggestions.Action.All",
+      holding_space_metrics::SuggestionsAction::kCollapse, 2);
+  histogram_tester.ExpectBucketCount(
+      "HoldingSpace.Suggestions.Action.All",
+      holding_space_metrics::SuggestionsAction::kExpand, 1);
   {
     SCOPED_TRACE("Second collapse.");
     VerifySuggestionsSectionState(/*expanded=*/false, /*item_present=*/true);

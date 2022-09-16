@@ -9,6 +9,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -107,11 +108,15 @@ class Header : public views::Button {
   }
 
   void OnPressed() {
-    // TODO(crbug/1358547): Record toggling the suggestions section's expanded
-    // state in a histogram.
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-    holding_space_prefs::SetSuggestionsExpanded(
-        prefs, !holding_space_prefs::IsSuggestionsExpanded(prefs));
+    bool expanded_after_toggle =
+        !holding_space_prefs::IsSuggestionsExpanded(prefs);
+    holding_space_prefs::SetSuggestionsExpanded(prefs, expanded_after_toggle);
+
+    holding_space_metrics::RecordSuggestionsAction(
+        expanded_after_toggle
+            ? holding_space_metrics::SuggestionsAction::kExpand
+            : holding_space_metrics::SuggestionsAction::kCollapse);
   }
 
   // Sets the header's `chevron_` icon to the correct color (based on theme) and
