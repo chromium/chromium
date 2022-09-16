@@ -59,9 +59,7 @@ void CSSVariableData::AppendBackingStrings(Vector<String>& output) const {
   if (num_backing_strings_ == 1) {
     output.push_back(backing_string_);
   } else {
-    for (wtf_size_t i = 0; i < num_backing_strings_; ++i) {
-      output.push_back(backing_strings_[i]);
-    }
+    output.Append(backing_strings_.get(), num_backing_strings_);
   }
 }
 

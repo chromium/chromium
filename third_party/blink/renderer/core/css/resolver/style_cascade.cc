@@ -746,9 +746,7 @@ bool StyleCascade::TokenSequence::AppendTokens(
   // https://drafts.csswg.org/css-variables/#long-variables
   if (tokens.size() > limit)
     return false;
-  for (const CSSParserToken& token : tokens) {
-    tokens_.push_back(token);
-  }
+  tokens_.Append(tokens.data(), static_cast<wtf_size_t>(tokens.size()));
   return true;
 }
 
