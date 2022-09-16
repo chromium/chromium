@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -30,4 +33,48 @@ js_library("fake_cros_audio_config") {
   deps = [
     "//chromeos/ash/components/audio/public/mojom:mojom_js_library_for_compile",
   ]
+}
+
+mojom("test_api_mojom") {
+  testonly = true
+  sources = [ "test_api.test-mojom" ]
+  webui_module_path = "chrome://webui-test/settings/chromeos"
+}
+
+copy("copy_ts") {
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.js",
+    "test_api.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+  deps = [ ":test_api_mojom_webui_js" ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "test_api.ts",
+    "test_api.test-mojom-webui.js",
+  ]
+  deps = [
+    "//chrome/test/data/webui:build_ts",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [ ":copy_ts" ]
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_settings_chromeos"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "settings/chromeos"
 }

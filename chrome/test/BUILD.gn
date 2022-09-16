@@ -4199,6 +4199,7 @@ if (!is_android) {
         "//chrome/browser/ui/webui/chromeos/manage_mirrorsync:mojo_bindings",
         "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings",
         "//chrome/browser/ui/webui/chromeos/parent_access:proto",
+        "//chrome/browser/ui/webui/settings/ash:test_support",
         "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
         "//chrome/services/file_util/public/cpp:browser_tests",
         "//chrome/services/keymaster/public/mojom",
