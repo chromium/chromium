@@ -13,6 +13,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/containers/span.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 
 namespace ash {
 
@@ -28,6 +29,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   ~AshAcceleratorConfiguration() override;
 
   // AcceleratorConfiguration::
+  const std::vector<mojom::AcceleratorLayoutInfoPtr>&
+  GetAcceleratorLayoutInfos() override;
   const std::vector<AcceleratorInfo>& GetConfigForAction(
       AcceleratorActionId action_id) override;
   bool IsMutable() const override;
@@ -53,11 +56,14 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   }
 
  private:
+  void AddLayoutInfo(const AcceleratorData& data);
+
   std::vector<AcceleratorInfo> accelerator_infos_;
   // One accelerator action ID can potentially have multiple accelerators
   // associated with it.
   std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
       id_to_accelerator_infos_;
+  std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 };
 
 }  // namespace ash

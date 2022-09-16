@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerator_configuration.h"
+#include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 
 #include <vector>
@@ -29,6 +30,8 @@ class ASH_EXPORT BrowserAcceleratorConfiguration
   ~BrowserAcceleratorConfiguration() override;
 
   // AcceleratorConfiguration:
+  const std::vector<mojom::AcceleratorLayoutInfoPtr>&
+  GetAcceleratorLayoutInfos() override;
   const std::vector<AcceleratorInfo>& GetConfigForAction(
       AcceleratorActionId action_id) override;
   bool IsMutable() const override;
@@ -48,6 +51,7 @@ class ASH_EXPORT BrowserAcceleratorConfiguration
 
  private:
   std::vector<AcceleratorInfo> accelerator_infos_;
+  std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 };
 
 }  // namespace ash
