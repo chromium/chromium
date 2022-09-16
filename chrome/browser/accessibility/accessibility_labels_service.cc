@@ -291,7 +291,7 @@ void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
   if (!profile_ || !profile_->GetPrefs())
     return;
 
-  base::UmaHistogramBoolean("Accessibility.ImageLabels",
+  base::UmaHistogramBoolean("Accessibility.ImageLabels2",
                             profile_->GetPrefs()->GetBoolean(
                                 prefs::kAccessibilityImageLabelsEnabled));
 

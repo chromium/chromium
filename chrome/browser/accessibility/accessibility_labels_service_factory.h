@@ -21,9 +21,6 @@ class AccessibilityLabelsServiceFactory : public ProfileKeyedServiceFactory {
 
   static AccessibilityLabelsServiceFactory* GetInstance();
 
-  // Used to create instances for testing.
-  static KeyedService* BuildInstanceFor(Profile* profile);
-
  private:
   friend struct base::DefaultSingletonTraits<AccessibilityLabelsServiceFactory>;
 

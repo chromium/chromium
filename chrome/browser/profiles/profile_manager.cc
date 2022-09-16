@@ -1725,7 +1725,10 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   signin_util::SigninWithCredentialProviderIfPossible(profile);
 #endif
 
-  AccessibilityLabelsServiceFactory::GetForProfile(profile)->Init();
+  auto* accessibility_service =
+      AccessibilityLabelsServiceFactory::GetForProfile(profile);
+  if (accessibility_service)
+    accessibility_service->Init();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AccountManagerPolicyControllerFactory::GetForBrowserContext(profile);

@@ -253,6 +253,7 @@
 #include "components/url_param_filter/content/url_param_filter_throttle.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -6276,7 +6277,15 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
 ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return AccessibilityLabelsServiceFactory::GetForProfile(profile)->GetAXMode();
+  auto* service = AccessibilityLabelsServiceFactory::GetForProfile(profile);
+  if (service)
+    return service->GetAXMode();
+  // No AccessibilityLabelsService.  Return the current accessibility mode.
+  ui::AXMode ax_mode =
+      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
+  // kLabelImages should only be set if there's an AccessibilityLabelsService.
+  DCHECK(!ax_mode.has_mode(ui::AXMode::kLabelImages));
+  return ax_mode;
 }
 
 #if BUILDFLAG(IS_ANDROID)

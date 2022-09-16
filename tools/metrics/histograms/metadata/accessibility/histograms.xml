@@ -904,11 +904,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
     expires_after="2023-07-01">
+  <obsolete>
+    Logged on profile open, including for profiles that do not show web content.
+    (For those profiles, this logged the value of disabled.) Replaced in M-107
+    with Accessibility.ImageLabels2, which is similar but not logged for
+    unnecessary profiles.
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Chrome accessibility image label setting is on (logged once 45
-    secs after startup).
+    Whether the Chrome accessibility image label setting is on. Logged once 45
+    secs after profile open.
   </summary>
 </histogram>
 
@@ -918,8 +924,9 @@ chromium-metrics-reviews@google.com.
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Chrome accessibility image label setting is on for Android
-    (logged once 45 secs after startup).
+    Whether the Chrome accessibility image label setting is on for Android.
+    Logged once 45 secs after profile open, which always happens when the
+    browser starts.
   </summary>
 </histogram>
 
@@ -941,7 +948,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether the Chrome accessibility image label setting for Android is set to
-    only be enabled on a Wi-Fi connection (logged once 45 secs after startup).
+    only be enabled on a Wi-Fi connection. Logged once 45 secs after profile
+    open, which always happens when the browser starts.
   </summary>
 </histogram>
 
@@ -1021,6 +1029,18 @@ chromium-metrics-reviews@google.com.
     <variant name="NameLength"/>
     <variant name="NonStopNameLength"/>
   </token>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels2" enum="BooleanEnabled"
+    expires_after="2023-07-01">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome accessibility image label setting is on. Logged once 45
+    secs after profile open. Only logged for regular profiles, Incognito
+    profiles, and guest off-the-record profiles, as these are the only profiles
+    that can display web content.
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.InactiveTime" units="ms"
