@@ -535,13 +535,13 @@ ScriptPromise AudioContext::setSinkId(ScriptState* script_state,
     return promise;
   }
 
-  // When the queue is empty, we start resolver immediately because it is the
-  // only item in the queue.
-  if (set_sink_id_resolvers_.IsEmpty()) {
+  set_sink_id_resolvers_.push_back(resolver);
+
+  // When there's only one resolver in the queue, we start it immediately
+  // because there is no preceding resolver will start it.
+  if (set_sink_id_resolvers_.size() == 1) {
     resolver->Start();
   }
-
-  set_sink_id_resolvers_.push_back(resolver);
 
   return promise;
 }
