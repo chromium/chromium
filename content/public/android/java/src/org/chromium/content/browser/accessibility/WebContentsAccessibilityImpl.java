@@ -138,7 +138,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // Constants defined for AccessibilityNodeInfo Bundle extras keys.
     public static final String EXTRAS_KEY_CHROME_ROLE = "AccessibilityNodeInfo.chromeRole";
     public static final String EXTRAS_KEY_CLICKABLE_SCORE = "AccessibilityNodeInfo.clickableScore";
-    public static final String EXTRAS_KEY_CSS_DISPLAY = "AccessibilityNodeInfo.blockDisplay";
+    public static final String EXTRAS_KEY_CSS_DISPLAY = "AccessibilityNodeInfo.cssDisplay";
     public static final String EXTRAS_KEY_HAS_IMAGE = "AccessibilityNodeInfo.hasImage";
     public static final String EXTRAS_KEY_HINT = "AccessibilityNodeInfo.hint";
     public static final String EXTRAS_KEY_IMAGE_DATA = "AccessibilityNodeInfo.imageData";

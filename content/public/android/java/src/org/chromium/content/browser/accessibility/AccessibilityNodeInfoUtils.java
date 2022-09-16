@@ -352,8 +352,8 @@ public class AccessibilityNodeInfoUtils {
                 continue;
             }
 
-            // Exclude css display for now
-            // TODO: remove this exclusion and update tests
+            // CSS Display is very noisy and currently unused, so we exclude it here because we
+            // don't have a way to filter it for certain tests.
             if (key.equals(EXTRAS_KEY_CSS_DISPLAY)) {
                 continue;
             }
