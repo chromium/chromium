@@ -96,7 +96,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(query_id, autoselect_first_suggestion,
                                      field.value, handler));
-    uma_recorder_.OnGetAutocompleteSuggestions(field.name,
+    uma_recorder_.OnGetAutocompleteSuggestions(field.global_id(),
                                                0 /* pending_query_handle */);
     return true;
   }
@@ -104,7 +104,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
         field.name, field.value, kMaxAutocompleteMenuItems, this);
-    uma_recorder_.OnGetAutocompleteSuggestions(field.name, query_handle);
+    uma_recorder_.OnGetAutocompleteSuggestions(field.global_id(), query_handle);
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
@@ -236,21 +236,21 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
 }
 
 void AutocompleteHistoryManager::UMARecorder::OnGetAutocompleteSuggestions(
-    const std::u16string& name,
+    const FieldGlobalId& field_global_id,
     WebDataServiceBase::Handle pending_query_handle) {
-  // log only if the current field is different than the latest one that has
-  // been logged. we assume that user works at the same field if
-  // measuring_name_ is same as the name of current field.
-  bool should_log_query = measuring_name_ != name;
+  // Log only if the current field is different than the latest one that has
+  // been logged. We determine this by comparing the global ID of the current
+  // field against `measuring_field_global_id_`.
+  bool should_log_query = measuring_field_global_id_ != field_global_id;
 
   if (should_log_query) {
     AutofillMetrics::LogAutocompleteQuery(pending_query_handle /* created */);
-    measuring_name_ = name;
+    measuring_field_global_id_ = field_global_id;
   }
   // We should track the query and log the suggestions, only if
-  // - query has been logged.
-  // - or, the query we previously tracked has been cancelled
-  // The previous query must be cancelled if measuring_query_handle_ isn't
+  // - query has been logged, or
+  // - the query we previously tracked has been cancelled
+  // The previous query must be cancelled if `measuring_query_handle_` isn't
   // reset.
   if (should_log_query || measuring_query_handle_)
     measuring_query_handle_ = pending_query_handle;

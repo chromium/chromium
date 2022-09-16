@@ -46,7 +46,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(
-          promo_code_offers, field.name,
+          promo_code_offers, field.global_id(),
           QueryHandler(query_id, autoselect_first_suggestion, field.value,
                        handler));
       return true;
@@ -84,12 +84,12 @@ base::WeakPtr<MerchantPromoCodeManager> MerchantPromoCodeManager::GetWeakPtr() {
 }
 
 void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
-    const std::u16string& name,
+    const FieldGlobalId& field_global_id,
     const std::vector<const AutofillOfferData*>& offers) {
   // Log metrics related to the showing of overall offers suggestions popup.
   autofill_metrics::LogOffersSuggestionsPopupShown(
-      /*first_time_being_logged=*/most_recent_suggestions_shown_field_name_ !=
-      name);
+      /*first_time_being_logged=*/
+      most_recent_suggestions_shown_field_global_id_ != field_global_id);
 
   // Log metrics related to the showing of individual offers in the offers
   // suggestions popup.
@@ -102,14 +102,14 @@ void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
 
     // We log that this individual offer suggestion was shown once for this
     // field while autofilling if it is the first time being logged.
-    if (most_recent_suggestions_shown_field_name_ != name) {
+    if (most_recent_suggestions_shown_field_global_id_ != field_global_id) {
       autofill_metrics::LogIndividualOfferSuggestionEvent(
           autofill_metrics::OffersSuggestionsEvent::kOfferSuggestionShownOnce,
           offer->GetOfferType());
     }
   }
 
-  most_recent_suggestions_shown_field_name_ = name;
+  most_recent_suggestions_shown_field_global_id_ = field_global_id;
 }
 
 void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
@@ -123,8 +123,8 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
 
     // We log that this individual offer suggestion was selected once for this
     // field while autofilling if it is the first time being logged.
-    if (most_recent_suggestion_selected_field_name_ !=
-        most_recent_suggestions_shown_field_name_) {
+    if (most_recent_suggestion_selected_field_global_id_ !=
+        most_recent_suggestions_shown_field_global_id_) {
       autofill_metrics::LogIndividualOfferSuggestionEvent(
           autofill_metrics::OffersSuggestionsEvent::
               kOfferSuggestionSelectedOnce,
@@ -142,8 +142,8 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
     // We log that this individual see offer details suggestion in the footer
     // was selected once for this field while autofilling if it is the first
     // time being logged.
-    if (most_recent_suggestion_selected_field_name_ !=
-        most_recent_suggestions_shown_field_name_) {
+    if (most_recent_suggestion_selected_field_global_id_ !=
+        most_recent_suggestions_shown_field_global_id_) {
       autofill_metrics::LogIndividualOfferSuggestionEvent(
           autofill_metrics::OffersSuggestionsEvent::
               kOfferSuggestionSeeOfferDetailsSelectedOnce,
@@ -151,13 +151,13 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
     }
   }
 
-  most_recent_suggestion_selected_field_name_ =
-      most_recent_suggestions_shown_field_name_;
+  most_recent_suggestion_selected_field_global_id_ =
+      most_recent_suggestions_shown_field_global_id_;
 }
 
 void MerchantPromoCodeManager::SendPromoCodeSuggestions(
     const std::vector<const AutofillOfferData*>& promo_code_offers,
-    const std::u16string& field_name,
+    const FieldGlobalId& field_global_id,
     const QueryHandler& query_handler) {
   if (!query_handler.handler_) {
     // Either the handler has been destroyed, or it is invalid.
@@ -186,7 +186,7 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
           promo_code_offers));
 
   // Log that promo code autofill suggestions were shown.
-  uma_recorder_.OnOffersSuggestionsShown(field_name, promo_code_offers);
+  uma_recorder_.OnOffersSuggestionsShown(field_global_id, promo_code_offers);
 }
 
 }  // namespace autofill

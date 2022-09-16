@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
@@ -78,28 +79,28 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
     ~UMARecorder() = default;
 
     void OnOffersSuggestionsShown(
-        const std::u16string& name,
+        const FieldGlobalId& field_global_id,
         const std::vector<const AutofillOfferData*>& offers);
     void OnOfferSuggestionSelected(int frontend_id);
 
    private:
-    // The name of the field that most recently had suggestions shown.
-    std::u16string most_recent_suggestions_shown_field_name_;
+    // The global id of the field that most recently had suggestions shown.
+    FieldGlobalId most_recent_suggestions_shown_field_global_id_;
 
-    // The name of the field that most recently had a suggestion selected.
-    std::u16string most_recent_suggestion_selected_field_name_;
+    // The global id of the field that most recently had a suggestion selected.
+    FieldGlobalId most_recent_suggestion_selected_field_global_id_;
   };
 
-  // Sends suggestions for |promo_code_offers| to the |query_handler|'s handler
+  // Sends suggestions for `promo_code_offers` to the `query_handler`'s handler
   // for display in the associated Autofill popup. If suggestions were
   // displayed, this function also logs metrics for promo code suggestions
-  // shown. |field_name| is used for this metrics logging, as it checks whether
-  // the field where promo code suggestions are being shown has just had
+  // shown. `field_global_id` is used for this metrics logging, as it checks
+  // whether the field where promo code suggestions are being shown has just had
   // suggestions shown. This ensures we to log to the correct histogram, as we
   // have separate histograms for unique shows and repetitive shows.
   void SendPromoCodeSuggestions(
       const std::vector<const AutofillOfferData*>& promo_code_offers,
-      const std::u16string& field_name,
+      const FieldGlobalId& field_global_id,
       const QueryHandler& query_handler);
 
   raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;

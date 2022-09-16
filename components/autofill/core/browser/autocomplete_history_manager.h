@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
@@ -95,7 +96,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     ~UMARecorder() = default;
 
     void OnGetAutocompleteSuggestions(
-        const std::u16string& name,
+        const FieldGlobalId& global_id,
         WebDataServiceBase::Handle pending_query_handle);
     void OnWebDataServiceRequestDone(
         WebDataServiceBase::Handle pending_query_handle,
@@ -105,9 +106,10 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     // The query handle should be measured for UMA.
     WebDataServiceBase::Handle measuring_query_handle_ = 0;
 
-    // The name of field that is currently measured, we don't repeatedly measure
-    // the query of the same field while user is filling the field.
-    std::u16string measuring_name_;
+    // The global id of the field that is currently being measured, saved so
+    // that we don't repeatedly measure the query of the same field while the
+    // user is filling the field.
+    FieldGlobalId measuring_field_global_id_;
   };
 
   // Sends the autocomplete |suggestions| to the |query_handler|'s handler for
