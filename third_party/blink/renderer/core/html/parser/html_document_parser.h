@@ -178,8 +178,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   NextTokenStatus CanTakeNextToken(base::TimeDelta& time_executing_script);
   bool PumpTokenizer();
   void PumpTokenizerIfPossible();
-  void DeferredPumpTokenizerIfPossible();
-  void SchedulePumpTokenizer();
+  void DeferredPumpTokenizerIfPossible(bool from_finish_append,
+                                       base::TimeTicks schedule_time);
+  void SchedulePumpTokenizer(bool from_finish_append);
   void ScheduleEndIfDelayed();
   void ConstructTreeFromToken(AtomicHTMLToken& atomic_token);
 

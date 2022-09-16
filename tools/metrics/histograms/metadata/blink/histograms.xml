@@ -1325,6 +1325,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.TimeToDeferredPumpTokenizer4"
+    units="microseconds" expires_after="2023-06-30">
+  <owner>sky@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    The time between when the first content has been received by the
+    HTMLDocumentParser and when parsing begins. This is effectively measuring
+    the time between when SchedulePumpTokenizer() is called, and when the task
+    runs that does the parsing. This is only reported for http/https urls.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.TokensParsedAverage4" units="tokens"
     expires_after="2023-06-30">
   <owner>masonf@chromium.org</owner>

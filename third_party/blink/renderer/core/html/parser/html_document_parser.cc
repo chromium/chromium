@@ -678,7 +678,9 @@ bool HTMLDocumentParser::IsParsingFragment() const {
   return tree_builder_->IsParsingFragment();
 }
 
-void HTMLDocumentParser::DeferredPumpTokenizerIfPossible() {
+void HTMLDocumentParser::DeferredPumpTokenizerIfPossible(
+    bool from_finish_append,
+    base::TimeTicks schedule_time) {
   // This method is called asynchronously, continues building the HTML document.
 
   // If we're scheduled for a tokenizer pump, then document should be attached
@@ -691,6 +693,13 @@ void HTMLDocumentParser::DeferredPumpTokenizerIfPossible() {
   TRACE_EVENT2("blink", "HTMLDocumentParser::DeferredPumpTokenizerIfPossible",
                "parser", (void*)this, "state",
                task_runner_state_->GetStateAsString());
+
+  if (metrics_reporter_ && from_finish_append && !did_pump_tokenizer_) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Blink.HTMLParsing.TimeToDeferredPumpTokenizer4",
+        base::TimeTicks::Now() - schedule_time, base::Microseconds(1),
+        base::Seconds(1), 100);
+  }
 
   // This method is called when the post task is executed, marking the end of
   // a yield. Report the yielded time.
@@ -731,7 +740,7 @@ void HTMLDocumentParser::PumpTokenizerIfPossible() {
 
   if (yielded) {
     DCHECK(!task_runner_state_->ShouldComplete());
-    SchedulePumpTokenizer();
+    SchedulePumpTokenizer(/*from_finish_append=*/false);
   } else if (task_runner_state_->ShouldAttemptToEndOnEOF()) {
     // Fall into this branch if ::Finish has been previously called and we've
     // just finished asynchronously parsing everything.
@@ -948,7 +957,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   return should_yield;
 }
 
-void HTMLDocumentParser::SchedulePumpTokenizer() {
+void HTMLDocumentParser::SchedulePumpTokenizer(bool from_finish_append) {
   TRACE_EVENT0("blink", "HTMLDocumentParser::SchedulePumpTokenizer");
   DCHECK(!IsStopped());
   DCHECK(!task_runner_state_->InPumpSession());
@@ -960,7 +969,8 @@ void HTMLDocumentParser::SchedulePumpTokenizer() {
   loading_task_runner_->PostTask(
       FROM_HERE,
       WTF::BindOnce(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
-                    WrapPersistent(this)));
+                    WrapPersistent(this), from_finish_append,
+                    base::TimeTicks::Now()));
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kScheduled);
 
@@ -978,7 +988,8 @@ void HTMLDocumentParser::ScheduleEndIfDelayed() {
     loading_task_runner_->PostTask(
         FROM_HERE,
         WTF::BindOnce(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
-                      WrapPersistent(this)));
+                      WrapPersistent(this),
+                      /*from_finish_append=*/false, base::TimeTicks::Now()));
     yield_timer_ = std::make_unique<base::ElapsedTimer>();
   }
   // If a pump is already scheduled, it's OK to just upgrade it to one
@@ -1131,7 +1142,7 @@ void HTMLDocumentParser::FinishAppend() {
   if (task_runner_state_->GetMode() ==
           ParserSynchronizationPolicy::kAllowDeferredParsing &&
       !task_runner_state_->ShouldComplete()) {
-    SchedulePumpTokenizer();
+    SchedulePumpTokenizer(/*from_finish_append=*/true);
   } else {
     PumpTokenizerIfPossible();
   }
@@ -1294,7 +1305,7 @@ void HTMLDocumentParser::ResumeParsingAfterPause() {
   if (task_runner_state_->GetMode() == kAllowDeferredParsing &&
       !task_runner_state_->ShouldComplete() &&
       !task_runner_state_->InPumpSession()) {
-    SchedulePumpTokenizer();
+    SchedulePumpTokenizer(/*from_finish_append=*/false);
   } else {
     ShouldCompleteScope should_complete(task_runner_state_);
     PumpTokenizerIfPossible();
