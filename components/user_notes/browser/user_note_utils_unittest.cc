@@ -706,15 +706,16 @@ TEST_P(UserNoteUtilsTest, CalculateNoteChanges) {
 
   std::unordered_set<content::RenderFrameHost*> frames_with_diff;
   for (const std::unique_ptr<FrameUserNoteChanges>& diff : actual_diffs) {
+    content::RenderFrameHost* rfh = diff->document_.AsRenderFrameHostIfValid();
     // Find the frame config for this diff's frame.
-    const auto config_it = frame_to_config_.find(diff->rfh_);
+    const auto config_it = frame_to_config_.find(rfh);
     DCHECK(config_it != frame_to_config_.end());
     FrameConfig frame_config = config_it->second;
 
     // Make sure there is at most one diff per frame.
-    EXPECT_TRUE(frames_with_diff.find(diff->rfh_) == frames_with_diff.end())
+    EXPECT_TRUE(frames_with_diff.find(rfh) == frames_with_diff.end())
         << "More than one diff generated for frame " << frame_config.test_id;
-    frames_with_diff.emplace(diff->rfh_);
+    frames_with_diff.emplace(rfh);
 
     // Verify that a diff was expected for this frame.
     EXPECT_TRUE(frame_config.expect_diff)

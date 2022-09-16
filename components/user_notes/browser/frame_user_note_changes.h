@@ -28,12 +28,12 @@ class FrameUserNoteChanges {
   using ChangeList = std::vector<base::UnguessableToken>;
 
   FrameUserNoteChanges(base::SafeRef<UserNoteService> service,
-                       content::RenderFrameHost* rfh,
+                       content::WeakDocumentPtr document,
                        const ChangeList& notes_added,
                        const ChangeList& notes_modified,
                        const ChangeList& notes_removed);
   FrameUserNoteChanges(base::SafeRef<UserNoteService> service,
-                       content::RenderFrameHost* rfh,
+                       content::WeakDocumentPtr document,
                        ChangeList&& notes_added,
                        ChangeList&& notes_modified,
                        ChangeList&& notes_removed);
@@ -45,7 +45,9 @@ class FrameUserNoteChanges {
   const base::UnguessableToken& id() const { return id_; }
   const ChangeList& notes_added() const { return notes_added_; }
   const ChangeList& notes_modified() const { return notes_modified_; }
-  const content::RenderFrameHost* render_frame_host() const { return rfh_; }
+  const content::RenderFrameHost* render_frame_host() const {
+    return document_.AsRenderFrameHostIfValid();
+  }
 
   // Kicks off the asynchronous logic to add and remove highlights in the frame
   // as necessary. Invokes the provided callback after the changes have fully
@@ -67,7 +69,7 @@ class FrameUserNoteChanges {
   base::UnguessableToken id_;
 
   base::SafeRef<UserNoteService> service_;
-  raw_ptr<content::RenderFrameHost> rfh_;
+  content::WeakDocumentPtr document_;
   ChangeList notes_added_;
   ChangeList notes_modified_;
   ChangeList notes_removed_;

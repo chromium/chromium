@@ -45,12 +45,12 @@ class MockFrameUserNoteChanges : public FrameUserNoteChanges {
  public:
   MockFrameUserNoteChanges(
       base::SafeRef<UserNoteService> service,
-      content::RenderFrameHost* rfh,
+      content::WeakDocumentPtr document,
       const FrameUserNoteChanges::ChangeList& notes_added,
       const FrameUserNoteChanges::ChangeList& notes_modified,
       const FrameUserNoteChanges::ChangeList& notes_removed)
       : FrameUserNoteChanges(service,
-                             rfh,
+                             document,
                              notes_added,
                              notes_modified,
                              notes_removed) {}
@@ -94,8 +94,9 @@ TEST_F(FrameUserNoteChangesTest, ApplyAddedNotes) {
   std::vector<base::UnguessableToken> removed;
 
   auto mock_changes = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), web_contents_list_[0]->GetPrimaryMainFrame(),
-      added, modified, removed);
+      note_service_->GetSafeRef(),
+      web_contents_list_[0]->GetPrimaryMainFrame()->GetWeakDocumentPtr(), added,
+      modified, removed);
 
   EXPECT_CALL(*mock_changes, MakeNoteInstance(_, _))
       .Times(2)
@@ -127,8 +128,9 @@ TEST_F(FrameUserNoteChangesTest, ApplyModifiedNotes) {
   std::vector<base::UnguessableToken> removed;
 
   auto mock_changes = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), web_contents_list_[0]->GetPrimaryMainFrame(),
-      added, modified, removed);
+      note_service_->GetSafeRef(),
+      web_contents_list_[0]->GetPrimaryMainFrame()->GetWeakDocumentPtr(), added,
+      modified, removed);
 
   EXPECT_CALL(*mock_changes, MakeNoteInstance(_, _)).Times(0);
 
@@ -159,8 +161,9 @@ TEST_F(FrameUserNoteChangesTest, ApplyRemovedNotes) {
   std::vector<base::UnguessableToken> removed({note_ids_[0], note_ids_[2]});
 
   auto mock_changes = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), web_contents_list_[0]->GetPrimaryMainFrame(),
-      added, modified, removed);
+      note_service_->GetSafeRef(),
+      web_contents_list_[0]->GetPrimaryMainFrame()->GetWeakDocumentPtr(), added,
+      modified, removed);
 
   EXPECT_CALL(*mock_changes, MakeNoteInstance(_, _)).Times(0);
 

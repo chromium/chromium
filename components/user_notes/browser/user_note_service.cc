@@ -519,15 +519,32 @@ void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
   const auto& changes_it = note_changes_in_progress_.find(change_id);
   DCHECK(changes_it != note_changes_in_progress_.end());
 
-  // If this set of changes was for a page that's in an active tab, notify the
-  // UI to reload the notes it's displaying.
   const std::unique_ptr<FrameUserNoteChanges>& frame_changes =
       changes_it->second;
-  if (delegate_->IsFrameInActiveTab(frame_changes->render_frame_host())) {
-    UserNotesUI* ui =
-        delegate_->GetUICoordinatorForFrame(frame_changes->render_frame_host());
+  const content::RenderFrameHost* rfh = frame_changes->render_frame_host();
+
+  if (rfh && delegate_->IsFrameInActiveTab(rfh)) {
+    // If this set of changes was for a page that's in an active tab, notify
+    // the UI to reload the notes it's displaying.
+    UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
     DCHECK(ui);
     ui->InvalidateIfVisible();
+  } else if (!rfh) {
+    // The frame for these changes was deleted or navigated away; the frame was
+    // removed before new note instances were added. Normally the model will be
+    // removed when the last instance is removed but in this case it has no
+    // instances referring back to it so it needs to be removed here.
+    // TODO(bokan): We need to add browser tests and test variations of RFH
+    // going away at each of the async breaks. https://crbug.com/1363310.
+    for (const base::UnguessableToken& note_id : frame_changes->notes_added()) {
+      const auto& entry_it = model_map_.find(note_id);
+      if (entry_it == model_map_.end())
+        continue;
+
+      if (entry_it->second.managers.empty()) {
+        model_map_.erase(note_id);
+      }
+    }
   }
 
   note_changes_in_progress_.erase(changes_it);

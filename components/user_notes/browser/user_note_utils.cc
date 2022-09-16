@@ -97,8 +97,8 @@ std::vector<std::unique_ptr<FrameUserNoteChanges>> CalculateNoteChanges(
 
     if (!added.empty() || !removed.empty() || !modified.empty()) {
       result.emplace_back(std::make_unique<FrameUserNoteChanges>(
-          note_service.GetSafeRef(), rfh, std::move(added), std::move(modified),
-          std::move(removed)));
+          note_service.GetSafeRef(), rfh->GetWeakDocumentPtr(),
+          std::move(added), std::move(modified), std::move(removed)));
     }
   }
 

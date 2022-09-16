@@ -14,36 +14,36 @@ namespace user_notes {
 
 FrameUserNoteChanges::FrameUserNoteChanges(
     base::SafeRef<UserNoteService> service,
-    content::RenderFrameHost* rfh,
+    content::WeakDocumentPtr document,
     const ChangeList& notes_added,
     const ChangeList& notes_modified,
     const ChangeList& notes_removed)
     : id_(base::UnguessableToken::Create()),
       service_(service),
-      rfh_(rfh),
+      document_(document),
       notes_added_(notes_added),
       notes_modified_(notes_modified),
       notes_removed_(notes_removed) {
   DCHECK(!notes_added_.empty() || !notes_modified_.empty() ||
          !notes_removed_.empty());
-  DCHECK(rfh_);
+  DCHECK(document_.AsRenderFrameHostIfValid());
 }
 
 FrameUserNoteChanges::FrameUserNoteChanges(
     base::SafeRef<UserNoteService> service,
-    content::RenderFrameHost* rfh,
+    content::WeakDocumentPtr document,
     ChangeList&& notes_added,
     ChangeList&& notes_modified,
     ChangeList&& notes_removed)
     : id_(base::UnguessableToken::Create()),
       service_(service),
-      rfh_(rfh),
+      document_(document),
       notes_added_(std::move(notes_added)),
       notes_modified_(std::move(notes_modified)),
       notes_removed_(std::move(notes_removed)) {
   DCHECK(!notes_added_.empty() || !notes_modified_.empty() ||
          !notes_removed_.empty());
-  DCHECK(rfh_);
+  DCHECK(document_.AsRenderFrameHostIfValid());
 }
 
 FrameUserNoteChanges::FrameUserNoteChanges(FrameUserNoteChanges&& other) =
@@ -52,7 +52,13 @@ FrameUserNoteChanges::FrameUserNoteChanges(FrameUserNoteChanges&& other) =
 FrameUserNoteChanges::~FrameUserNoteChanges() = default;
 
 void FrameUserNoteChanges::Apply(base::OnceClosure callback) {
-  UserNoteManager* manager = UserNoteManager::GetForPage(rfh_->GetPage());
+  content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
+  if (!rfh) {
+    std::move(callback).Run();
+    return;
+  }
+
+  UserNoteManager* manager = UserNoteManager::GetForPage(rfh->GetPage());
   DCHECK(manager);
 
   // Removed notes can be synchronously deleted from the note manager. There is

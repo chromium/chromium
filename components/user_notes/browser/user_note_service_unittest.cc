@@ -216,12 +216,12 @@ class MockUserNoteInstance : public UserNoteInstance {
 class MockFrameUserNoteChanges : public FrameUserNoteChanges {
  public:
   MockFrameUserNoteChanges(base::SafeRef<UserNoteService> service,
-                           content::RenderFrameHost* rfh,
+                           content::WeakDocumentPtr document,
                            const ChangeList& notes_added,
                            const ChangeList& notes_modified,
                            const ChangeList& notes_removed)
       : FrameUserNoteChanges(service,
-                             rfh,
+                             document,
                              notes_added,
                              notes_modified,
                              notes_removed) {}
@@ -964,10 +964,12 @@ TEST_F(UserNoteServiceTest, OnNoteModelsFetched) {
   content::RenderFrameHost* frame2 =
       web_contents_list_[1]->GetPrimaryMainFrame();
   auto change1 = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), frame1, /*added=*/IdList{note_ids_[4]},
+      note_service_->GetSafeRef(), frame1->GetWeakDocumentPtr(),
+      /*added=*/IdList{note_ids_[4]},
       /*modified=*/IdList{note_ids_[0]}, /*removed=*/IdList{note_ids_[1]});
   auto change2 = std::make_unique<MockFrameUserNoteChanges>(
-      note_service_->GetSafeRef(), frame2, /*added=*/IdList{note_ids_[5]},
+      note_service_->GetSafeRef(), frame2->GetWeakDocumentPtr(),
+      /*added=*/IdList{note_ids_[5]},
       /*modified=*/IdList{note_ids_[2]}, /*removed=*/IdList{});
   base::UnguessableToken change1_id = change1->id();
   base::UnguessableToken change2_id = change2->id();
@@ -1067,10 +1069,12 @@ TEST_F(UserNoteServiceTest, OnFrameChangesApplied) {
   content::RenderFrameHost* frame2 =
       web_contents_list_[1]->GetPrimaryMainFrame();
   auto change1 = std::make_unique<FrameUserNoteChanges>(
-      note_service_->GetSafeRef(), frame1, /*added=*/IdList{},
+      note_service_->GetSafeRef(), frame1->GetWeakDocumentPtr(),
+      /*added=*/IdList{},
       /*modified=*/IdList{note_ids_[0]}, /*removed=*/IdList{});
   auto change2 = std::make_unique<FrameUserNoteChanges>(
-      note_service_->GetSafeRef(), frame2, /*added=*/IdList{},
+      note_service_->GetSafeRef(), frame2->GetWeakDocumentPtr(),
+      /*added=*/IdList{},
       /*modified=*/IdList{note_ids_[2]}, /*removed=*/IdList{});
   base::UnguessableToken change1_id = change1->id();
   base::UnguessableToken change2_id = change2->id();
