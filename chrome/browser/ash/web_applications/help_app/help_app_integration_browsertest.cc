@@ -13,6 +13,7 @@
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -706,12 +707,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   auto& tasks = GetManager().GetBackgroundTasksForTesting();
 
   // Find the help app's background task.
-  const auto& help_task = std::find_if(
-      tasks.begin(), tasks.end(),
-      [&bg_task_url](
-          const std::unique_ptr<ash::SystemWebAppBackgroundTask>& x) {
-        return x->url_for_testing() == bg_task_url;
-      });
+  const auto& help_task = base::ranges::find(
+      tasks, bg_task_url, &ash::SystemWebAppBackgroundTask::url_for_testing);
   ASSERT_NE(help_task, tasks.end());
 
   auto* timer = help_task->get()->get_timer_for_testing();

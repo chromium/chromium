@@ -7,6 +7,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -54,10 +55,8 @@ void FolderInMyFiles::AddWithName(const base::FilePath& file,
 }
 
 OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
-  const auto& it = std::find_if(files_.begin(), files_.end(),
-                                [file](const base::FilePath& i) {
-                                  return i.BaseName() == file.BaseName();
-                                });
+  const auto& it =
+      base::ranges::find(files_, file.BaseName(), &base::FilePath::BaseName);
   EXPECT_FALSE(it == files_.end());
   if (it == files_.end())
     return platform_util::OPEN_FAILED_PATH_NOT_FOUND;

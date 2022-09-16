@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
@@ -296,10 +297,7 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
   ProfileHelper::Get()->RemoveUserFromListForTesting(account_id);
 
   const user_manager::UserList::iterator it =
-      std::find_if(users_.begin(), users_.end(),
-                   [&account_id](const user_manager::User* user) {
-                     return user->GetAccountId() == account_id;
-                   });
+      base::ranges::find(users_, account_id, &user_manager::User::GetAccountId);
   if (it != users_.end()) {
     if (primary_user_ == *it)
       primary_user_ = nullptr;

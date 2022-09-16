@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -213,8 +214,8 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
 void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
                             std::vector<FullTaskDescriptor>* tasks) {
   const auto task_for_app = [&](const std::string& app_id) {
-    return std::find_if(tasks->begin(), tasks->end(), [&](const auto& task) {
-      return task.task_descriptor.app_id == app_id;
+    return base::ranges::find(*tasks, app_id, [](const auto& task) {
+      return task.task_descriptor.app_id;
     });
   };
 
@@ -350,9 +351,8 @@ void PostProcessFoundTasks(
     // app. We want both tasks to be available, so add the office task if the
     // WebDrive task is available.
     // TODO(petermarshall): Find a better way to enable both tasks.
-    auto it = std::find_if(
-        result_list->begin(), result_list->end(),
-        [](const FullTaskDescriptor& task) {
+    auto it =
+        base::ranges::find_if(*result_list, [](const FullTaskDescriptor& task) {
           if (!IsFilesAppId(task.task_descriptor.app_id)) {
             return false;
           }

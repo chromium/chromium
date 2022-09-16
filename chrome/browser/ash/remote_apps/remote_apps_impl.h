@@ -71,6 +71,8 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
   void OnAppLaunched(const std::string& source_id, const std::string& app_id);
 
  private:
+  using SourceToRemoteIds = std::map<std::string, mojo::RemoteSetElementId>;
+
   void OnAppAdded(AddAppCallback callback,
                   const std::string& app_id,
                   RemoteAppsError error);
@@ -78,7 +80,7 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
   void DisconnectHandler(mojo::RemoteSetElementId id);
 
   RemoteAppsManager* manager_ = nullptr;
-  std::map<std::string, mojo::RemoteSetElementId> source_id_to_remote_id_map_;
+  SourceToRemoteIds source_id_to_remote_id_map_;
   mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteApps> receivers_;
   // Observers with an associated source in `source_id_to_remote_id_map_`.
   mojo::RemoteSet<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>

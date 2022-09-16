@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/borealis/borealis_disk_manager_impl.h"
 
-#include <algorithm>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -177,9 +177,8 @@ class BorealisDiskManagerImpl::BuildDiskInfo
       return;
     }
     const std::string& vm_name = context_->vm_name();
-    auto image =
-        std::find_if(response->images().begin(), response->images().end(),
-                     [&vm_name](const auto& a) { return a.name() == vm_name; });
+    auto image = base::ranges::find(response->images(), vm_name,
+                                    &vm_tools::concierge::VmDiskInfo::name);
     if (image == response->images().end()) {
       Fail(Described<BorealisGetDiskInfoResult>(
           BorealisGetDiskInfoResult::kConciergeFailed,

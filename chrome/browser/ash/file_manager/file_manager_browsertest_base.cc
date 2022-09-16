@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -3342,13 +3341,8 @@ FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
       }
 
       // Ignore known WebContents.
-      bool found =
-          std::find_if(swa_web_contents_.begin(), swa_web_contents_.end(),
-                       [web_contents](const auto& pair) {
-                         return pair.second == web_contents;
-                       }) != swa_web_contents_.end();
-
-      if (!found) {
+      if (!base::Contains(swa_web_contents_, web_contents,
+                          &IdToWebContents::value_type::second)) {
         return web_contents;
       }
     }

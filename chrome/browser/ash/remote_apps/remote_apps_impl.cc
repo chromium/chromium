@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -176,11 +177,8 @@ void RemoteAppsImpl::OnAppAdded(AddAppCallback callback,
 }
 
 void RemoteAppsImpl::DisconnectHandler(mojo::RemoteSetElementId id) {
-  const auto& it = std::find_if(
-      source_id_to_remote_id_map_.begin(), source_id_to_remote_id_map_.end(),
-      [&id](const std::pair<std::string, mojo::RemoteSetElementId>& pair) {
-        return pair.second == id;
-      });
+  const auto& it = base::ranges::find(source_id_to_remote_id_map_, id,
+                                      &SourceToRemoteIds::value_type::second);
 
   if (it == source_id_to_remote_id_map_.end())
     return;

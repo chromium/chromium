@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,8 +72,7 @@ void VerifyTasks(int* remaining,
   --*remaining;
 
   auto default_task =
-      std::find_if(result->begin(), result->end(),
-                   [](const auto& task) { return task.is_default; });
+      base::ranges::find_if(*result, &FullTaskDescriptor::is_default);
 
   // Early exit for the uncommon situation where no default should be set.
   if (!expectation.app_id) {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
@@ -60,8 +60,8 @@ NetworkInterfaceInfoPtr GetWifiNetworkInterfaceInfo(
   const auto& interface_info_list =
       cros_healthd_telemetry->network_interface_result
           ->get_network_interface_info();
-  const auto& interface_info_it = std::find_if(
-      interface_info_list.begin(), interface_info_list.end(),
+  const auto& interface_info_it = base::ranges::find_if(
+      interface_info_list,
       [&interface_name](const NetworkInterfaceInfoPtr& interface_info) {
         return !interface_info.is_null() &&
                interface_info->is_wireless_interface_info() &&

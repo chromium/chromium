@@ -71,7 +71,7 @@ VmPermissionServiceProvider::~VmPermissionServiceProvider() = default;
 VmPermissionServiceProvider::VmMap::iterator
 VmPermissionServiceProvider::FindVm(const std::string& owner_id,
                                     const std::string& name) {
-  return std::find_if(vms_.begin(), vms_.end(), [&](const auto& vm) {
+  return base::ranges::find_if(vms_, [&](const auto& vm) {
     return vm.second->owner_id == owner_id && vm.second->name == name;
   });
 }

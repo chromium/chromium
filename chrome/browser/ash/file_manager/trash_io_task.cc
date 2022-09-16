@@ -7,7 +7,9 @@
 #include <sys/xattr.h>
 
 #include "base/callback.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -176,10 +178,10 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
   // however in the case of nested directories, reverse lexicographical order is
   // preferred to ensure the closer parent path by depth is chosen.
   const trash::TrashPathsMap::reverse_iterator& trash_parent_path_it =
-      std::find_if(free_space_map_.rbegin(), free_space_map_.rend(),
-                   [&source_path](const auto& it) -> bool {
-                     return it.first.IsParent(source_path);
-                   });
+      base::ranges::find_if(base::Reversed(free_space_map_),
+                            [&source_path](const auto& it) {
+                              return it.first.IsParent(source_path);
+                            });
 
   if (trash_parent_path_it == free_space_map_.rend()) {
     // The `source_path` is not parented at a supported Trash location, bail

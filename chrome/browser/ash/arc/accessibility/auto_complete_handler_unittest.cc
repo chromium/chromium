@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
@@ -207,12 +208,10 @@ TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {
       AutoCompleteHandler::CreateIfNecessary(tree_source(), *event_data);
   ASSERT_EQ(2U, create_result.size());
 
-  auto editable1_handler =
-      std::find_if(create_result.begin(), create_result.end(),
-                   [](const auto& p) { return p.first == 1; });
-  auto editable2_handler =
-      std::find_if(create_result.begin(), create_result.end(),
-                   [](const auto& p) { return p.first == 2; });
+  auto editable1_handler = base::ranges::find(
+      create_result, 1, &AutoCompleteHandler::IdAndHandler::first);
+  auto editable2_handler = base::ranges::find(
+      create_result, 2, &AutoCompleteHandler::IdAndHandler::first);
   ASSERT_NE(editable1_handler, create_result.end());
   ASSERT_NE(editable2_handler, create_result.end());
 

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
@@ -129,10 +130,9 @@ void AddContainerToPrefs(Profile* profile,
                          const GuestId& container_id,
                          base::Value::Dict properties) {
   ListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
-  auto it = std::find_if(
-      updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
-      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
-  if (it != updater->GetListDeprecated().end()) {
+  if (base::ranges::any_of(updater->GetListDeprecated(), [&](const auto& dict) {
+        return MatchContainerDict(dict, container_id);
+      })) {
     return;
   }
 

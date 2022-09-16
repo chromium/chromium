@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
@@ -79,9 +80,8 @@ class SuggestionWindowViewTest
     const auto& children =
         suggestion_window_view_->multiple_candidate_area_for_testing()
             ->children();
-    const auto it =
-        std::find_if(children.cbegin(), children.cend(),
-                     [](const views::View* v) { return !!v->background(); });
+    const auto it = base::ranges::find_if(
+        children, [](const views::View* v) { return !!v->background(); });
     return (it == children.cend())
                ? absl::nullopt
                : absl::make_optional(std::distance(children.cbegin(), it));

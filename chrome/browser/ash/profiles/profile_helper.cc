@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -426,8 +427,8 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
   const std::string username_hash =
       ProfileHelper::GetUserIdHashFromProfile(profile);
   const user_manager::UserList& users = user_manager->GetLoggedInUsers();
-  const user_manager::UserList::const_iterator pos = std::find_if(
-      users.begin(), users.end(), UsernameHashMatcher(username_hash));
+  const user_manager::UserList::const_iterator pos =
+      base::ranges::find_if(users, UsernameHashMatcher(username_hash));
   if (pos != users.end())
     return *pos;
 
@@ -467,11 +468,8 @@ void ProfileHelperImpl::SetUserToProfileMappingForTesting(
 
 void ProfileHelperImpl::RemoveUserFromListForTesting(
     const AccountId& account_id) {
-  auto it =
-      std::find_if(user_list_for_testing_.begin(), user_list_for_testing_.end(),
-                   [&account_id](const user_manager::User* user) {
-                     return user->GetAccountId() == account_id;
-                   });
+  auto it = base::ranges::find(user_list_for_testing_, account_id,
+                               &user_manager::User::GetAccountId);
   if (it != user_list_for_testing_.end())
     user_list_for_testing_.erase(it);
 }

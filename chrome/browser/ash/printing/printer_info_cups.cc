@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/printing/printer_info.h"
 
-#include <algorithm>
 #include <array>
 #include <string>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
@@ -67,9 +67,8 @@ IppVersion ToIppVersion(const base::Version& version) {
   }
 
   const auto target = MajorMinor(components[0], components[1]);
-  const VersionEntry* iter = std::find_if(
-      kVersions.cbegin(), kVersions.cend(),
-      [target](const VersionEntry& entry) { return entry.first == target; });
+  const VersionEntry* iter =
+      base::ranges::find(kVersions, target, &VersionEntry::first);
 
   if (iter == kVersions.end()) {
     return IppVersion::kUnknown;
@@ -80,13 +79,9 @@ IppVersion ToIppVersion(const base::Version& version) {
 
 // Returns true if any of the |ipp_versions| are greater than or equal to 2.0.
 bool AllowedIpp(const std::vector<base::Version>& ipp_versions) {
-  auto found =
-      std::find_if(ipp_versions.begin(), ipp_versions.end(),
-                   [](const base::Version& version) {
-                     return version.IsValid() && version.components()[0] >= 2;
-                   });
-
-  return found != ipp_versions.end();
+  return base::ranges::any_of(ipp_versions, [](const base::Version& version) {
+    return version.IsValid() && version.components()[0] >= 2;
+  });
 }
 
 // Returns true if |mime_type| is one of the supported types.
@@ -97,8 +92,7 @@ bool SupportedMime(const std::string& mime_type) {
 // Returns true if |formats| contains one of the supported printer description
 // languages for an autoconf printer identified by MIME type.
 bool SupportsRequiredPDLS(const std::vector<std::string>& formats) {
-  auto found = std::find_if(formats.begin(), formats.end(), &SupportedMime);
-  return found != formats.end();
+  return base::ranges::any_of(formats, &SupportedMime);
 }
 
 // Returns true if |info| describes a printer for which we want to attempt

@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
@@ -290,11 +291,8 @@ bool CrosSettings::AddSettingsProvider(
 std::unique_ptr<CrosSettingsProvider> CrosSettings::RemoveSettingsProvider(
     CrosSettingsProvider* provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = std::find_if(
-      providers_.begin(), providers_.end(),
-      [provider](const std::unique_ptr<CrosSettingsProvider>& ptr) {
-        return ptr.get() == provider;
-      });
+  auto it = base::ranges::find(providers_, provider,
+                               &std::unique_ptr<CrosSettingsProvider>::get);
   if (it != providers_.end()) {
     std::unique_ptr<CrosSettingsProvider> ptr = std::move(*it);
     providers_.erase(it);

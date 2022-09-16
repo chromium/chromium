@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 
-#include <algorithm>
-
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -90,12 +89,9 @@ void EduCoexistenceConsentInvalidationController::
       continue;
     }
 
-    auto iterator =
-        std::find_if(current_edu_account_consent_list.begin(),
-                     current_edu_account_consent_list.end(),
-                     [&account](const edu_coexistence::UserConsentInfo& info) {
-                       return info.edu_account_gaia_id == account.key.id();
-                     });
+    auto iterator = base::ranges::find(
+        current_edu_account_consent_list, account.key.id(),
+        &edu_coexistence::UserConsentInfo::edu_account_gaia_id);
 
     // If account exists in |current_edu_account_consent_list| copy the entry
     // over.

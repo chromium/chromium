@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_state.h"
 
-#include <algorithm>
-
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -66,10 +65,8 @@ InputMethodDescriptors ArcInputMethodState::GetEnabledInputMethods() const {
 
 void ArcInputMethodState::SetInputMethodEnabled(const std::string& ime_id,
                                                 bool enabled) {
-  auto it = std::find_if(installed_imes_.begin(), installed_imes_.end(),
-                         [&ime_id](const InputMethodEntry& entry) {
-                           return ime_id == entry.ime_id_;
-                         });
+  auto it =
+      base::ranges::find(installed_imes_, ime_id, &InputMethodEntry::ime_id_);
   if (it == installed_imes_.end()) {
     // Ignore the request to enable/disable not-installed IME.
     return;
