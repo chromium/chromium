@@ -126,7 +126,7 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/lo
 # The -3 variant additionally exposes a bug, but even once that's fixed the test is too slow.
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-1.html [ Skip Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-2.html [ Skip Timeout ]
-crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Skip Failure Timeout ]
+crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Skip Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
@@ -7129,11 +7129,11 @@ crbug.com/1363259 [ Mac12 ] http/tests/devtools/network/network-initiator.js [ F
 crbug.com/1363259 [ Mac10.15 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
 
 # Disable media security policy test on Linux (dbg, ASAN) and Mac12 (dbg)
-crbug.com/1349180 [ Linux ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Timeout Pass ]
-crbug.com/1349180 [ Debug Mac12 ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Timeout Pass ]
+crbug.com/1349180 [ Linux ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Pass Timeout ]
+crbug.com/1349180 [ Debug Mac12 ] external/wpt/content-security-policy/media-src/media-src-7_2_2.sub.html [ Failure Pass Timeout ]
 
 # Disable flakes on mac builders
-crbug.com/1363708 [ Mac12 ] http/tests/media/gc-while-network-loading.html [ Timeout Pass ]
+crbug.com/1363708 [ Mac12 ] http/tests/media/gc-while-network-loading.html [ Pass Timeout ]
 crbug.com/1363683 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 crbug.com/1364129 [ Mac10.15 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
 crbug.com/1364129 [ Mac11 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
