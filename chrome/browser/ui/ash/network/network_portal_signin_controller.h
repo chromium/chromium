@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ash/net/network_portal_web_dialog.h"
 
+class Profile;
+
 namespace ash {
 
 class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
@@ -33,7 +35,8 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
   void OnDialogDestroyed(const NetworkPortalWebDialog* dialog) override;
 
  private:
-  void ShowDialog();
+  void ShowDialog(Profile* profile);
+  void ShowTab(Profile* profile);
 
   NetworkPortalWebDialog* dialog_ = nullptr;
   base::WeakPtrFactory<NetworkPortalWebDialog::Delegate>
