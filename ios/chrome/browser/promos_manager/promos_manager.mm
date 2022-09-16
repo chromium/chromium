@@ -364,10 +364,10 @@ std::vector<promos_manager::Promo> PromosManager::LeastRecentlyShown(
   std::vector<promos_manager::Promo>
       active_promos_sorted_by_least_recently_shown;
 
-  // If there are no active promos or impression history, return an empty array.
-  // (This is seldom expected to happen, if ever, as Promos Manager will launch
-  // with promos_manager::Promo::DefaultBrowser continuously running.)
-  if (active_promos.empty() || sorted_impressions.empty())
+  // If there are no active promos, and no impression history, return an empty
+  // array. (This is seldom expected to happen, if ever, as Promos Manager will
+  // launch with promos_manager::Promo::DefaultBrowser continuously running.)
+  if (active_promos.empty() && sorted_impressions.empty())
     return active_promos_sorted_by_least_recently_shown;
 
   for (promos_manager::Impression impression : sorted_impressions) {

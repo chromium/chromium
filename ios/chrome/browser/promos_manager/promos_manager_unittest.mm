@@ -461,15 +461,10 @@ TEST_F(PromosManagerTest,
 }
 
 // Tests PromosManager::LeastRecentlyShown() gracefully returns an empty array
-// when no impression history exists (i.e. there's no 'least recently
-// shown' promo because empty impression history means no promo has ever been
-// shown.)
+// when no impression history and no active promos exist.
 TEST_F(PromosManagerTest,
        ReturnsEmptyListWhenLeastRecentlyShownHasNoImpressionHistory) {
-  const std::set<promos_manager::Promo> active_promos = {
-      promos_manager::Promo::CredentialProviderExtension,
-  };
-
+  const std::set<promos_manager::Promo> active_promos;
   const std::vector<promos_manager::Impression> impressions;
   const std::vector<promos_manager::Promo> expected;
 
