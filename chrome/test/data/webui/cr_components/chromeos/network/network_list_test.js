@@ -4,18 +4,25 @@
 
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_list.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkListTest', function() {
   /** @type {!NetworkList|undefined} */
   let networkList;
 
+  let mojom;
 
   setup(function() {
+    mojom = chromeos.networkConfig.mojom;
+
     networkList = document.createElement('network-list');
     // iron-list will not create list items if the container of the list is of
     // size zero.
@@ -27,8 +34,8 @@ suite('NetworkListTest', function() {
 
   test('focus() focuses the first item', function() {
     const testNetworks = [
-      OncMojo.getDefaultNetworkState(NetworkType.kEthernet, 'eth0'),
-      OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi'),
+      OncMojo.getDefaultNetworkState(mojom.NetworkType.kEthernet, 'eth0'),
+      OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi'),
     ];
     networkList.networks = testNetworks;
     flush();

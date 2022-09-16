@@ -25,7 +25,7 @@ group("polymer3_elements") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
+  closure_flags = default_closure_args
   deps = [
     ":auto_enrollment_check",
     ":demo_preferences.m",

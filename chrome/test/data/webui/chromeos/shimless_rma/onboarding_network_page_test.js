@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {fakeNetworks} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setNetworkConfigServiceForTesting, setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -146,8 +145,10 @@ export function onboardingNetworkPageTest() {
     const networkList = component.shadowRoot.querySelector('#networkList');
 
     // Add fake unconnected wifi.
-    const fakeWiFi = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
-    fakeWiFi.connectionState = ConnectionStateType.kNotConnected;
+    const fakeWiFi = OncMojo.getDefaultNetworkState(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifi');
+    fakeWiFi.connectionState =
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected;
     networkConfigService.addNetworksForTest(fakeWiFi);
     component.refreshNetworks();
     await flushTasks();
@@ -186,8 +187,10 @@ export function onboardingNetworkPageTest() {
     const networkList = component.shadowRoot.querySelector('#networkList');
 
     // Add fake connected wifi.
-    const fakeWiFi = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
-    fakeWiFi.connectionState = ConnectionStateType.kConnected;
+    const fakeWiFi = OncMojo.getDefaultNetworkState(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifi');
+    fakeWiFi.connectionState =
+        chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
     networkConfigService.addNetworksForTest(fakeWiFi);
     component.refreshNetworks();
     await flushTasks();
@@ -195,7 +198,9 @@ export function onboardingNetworkPageTest() {
     // fake WiFi connectionState should be 'Connected'.
     const length = networkList.networks.length;
     const network = networkList.networks[length - 1];
-    assertEquals(network.connectionState, ConnectionStateType.kConnected);
+    assertEquals(
+        network.connectionState,
+        chromeos.networkConfig.mojom.ConnectionStateType.kConnected);
 
     // Show the 'disconnect' button instead of 'connect'.
     component.onNetworkSelected_({detail: network});
@@ -209,7 +214,9 @@ export function onboardingNetworkPageTest() {
     disconnectButton.click();
     component.refreshNetworks();
     await flushTasks();
-    assertEquals(network.connectionState, ConnectionStateType.kNotConnected);
+    assertEquals(
+        network.connectionState,
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
   });
 
   test('SetSkipButtonWhenNotConnected', async () => {
@@ -226,9 +233,10 @@ export function onboardingNetworkPageTest() {
     await flushTasks();
     assertEquals('skipButtonLabel', buttonLabelKey);
 
-    const ethernetConnected =
-        OncMojo.getDefaultNetworkState(NetworkType.kEthernet, 'ethernet');
-    ethernetConnected.connectionState = ConnectionStateType.kOnline;
+    const ethernetConnected = OncMojo.getDefaultNetworkState(
+        chromeos.networkConfig.mojom.NetworkType.kEthernet, 'ethernet');
+    ethernetConnected.connectionState =
+        chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
     networkConfigService.addNetworksForTest([ethernetConnected]);
 
     component.refreshNetworks();

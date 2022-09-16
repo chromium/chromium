@@ -10,13 +10,16 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import '//resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
+import '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+import '//resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './network_shared_css.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrosNetworkConfigRemote, FoundNetworkProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {OncMojo} from './onc_mojo.js';
@@ -39,7 +42,7 @@ Polymer({
       value: false,
     },
 
-    /** @type {!ManagedProperties|undefined} */
+    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties: {
       type: Object,
       observer: 'managedPropertiesChanged_',
@@ -57,7 +60,7 @@ Polymer({
 
     /**
      * Selectable list of mojom.FoundNetworkProperties dictionaries for the UI.
-     * @private {!Array<!FoundNetworkProperties>}
+     * @private {!Array<!chromeos.networkConfig.mojom.FoundNetworkProperties>}
      */
     mobileNetworkList_: {
       type: Array,
@@ -70,7 +73,7 @@ Polymer({
   /** @private {boolean} */
   scanRequested_: false,
 
-  /** @private {?CrosNetworkConfigRemote} */
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
   /** @override */
@@ -79,7 +82,7 @@ Polymer({
   },
 
   /**
-   * @return {?CrosNetworkConfigRemote}
+   * @return {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
    * @private
    */
   getNetworkConfig_() {
@@ -115,7 +118,7 @@ Polymer({
   },
 
   /**
-   * @param {!FoundNetworkProperties} foundNetwork
+   * @param {!chromeos.networkConfig.mojom.FoundNetworkProperties} foundNetwork
    * @return {boolean}
    * @private
    */
@@ -125,31 +128,33 @@ Polymer({
   },
 
   /**
-   * @param {!ManagedProperties} properties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
    * @return {boolean}
    * @private
    */
   getEnableScanButton_(properties) {
     return !this.disabled &&
-        properties.connectionState === ConnectionStateType.kNotConnected &&
+        properties.connectionState ===
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected &&
         !!this.deviceState && !this.deviceState.scanning;
   },
 
   /**
-   * @param {!ManagedProperties} properties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
    * @return {boolean}
    * @private
    */
   getEnableSelectNetwork_(properties) {
     return (
         !this.disabled && !!this.deviceState && !this.deviceState.scanning &&
-        properties.connectionState === ConnectionStateType.kNotConnected &&
+        properties.connectionState ===
+            chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected &&
         !!properties.typeProperties.cellular.foundNetworks &&
         properties.typeProperties.cellular.foundNetworks.length > 0);
   },
 
   /**
-   * @param {!ManagedProperties} properties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
    * @return {string}
    * @private
    */
@@ -163,14 +168,15 @@ Polymer({
     if (this.scanRequested_) {
       return this.i18n('networkCellularScanCompleted');
     }
-    if (properties.connectionState !== ConnectionStateType.kNotConnected) {
+    if (properties.connectionState !==
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected) {
       return this.i18n('networkCellularScanConnectedHelp');
     }
     return '';
   },
 
   /**
-   * @param {!FoundNetworkProperties} foundNetwork
+   * @param {!chromeos.networkConfig.mojom.FoundNetworkProperties} foundNetwork
    * @return {string}
    * @private
    */
@@ -188,7 +194,8 @@ Polymer({
   onScanTap_() {
     this.scanRequested_ = true;
 
-    this.getNetworkConfig_().requestNetworkScan(NetworkType.kCellular);
+    this.getNetworkConfig_().requestNetworkScan(
+        chromeos.networkConfig.mojom.NetworkType.kCellular);
   },
 
   /**

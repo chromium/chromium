@@ -7,9 +7,8 @@
  */
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
-import {CrosNetworkConfig, CrosNetworkConfigRemote, FilterType, NO_LIMIT, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 /** @type {number} Default traffic counter reset day. */
 const kDefaultResetDay = 1;
@@ -19,9 +18,9 @@ const kDefaultResetDay = 1;
  * @typedef {{
  *   guid: string,
  *   name: string,
- *   type: !NetworkType,
+ *   type: !chromeos.networkConfig.mojom.NetworkType,
  *   counters: !Array<!Object>,
- *   lastResetTime: ?Time,
+ *   lastResetTime: ?mojoBase.mojom.Time,
  *   friendlyDate: ?string,
  *   autoReset: boolean,
  *   userSpecifiedResetDay: number,
@@ -34,9 +33,9 @@ export let Network;
  * Helper function to create a Network object.
  * @param {string} guid
  * @param {string} name
- * @param {!NetworkType} type
+ * @param {!chromeos.networkConfig.mojom.NetworkType} type
  * @param {!Array<!Object>} counters
- * @param {?Time} lastResetTime
+ * @param {?mojoBase.mojom.Time} lastResetTime
  * @param {?string} friendlyDate
  * @param {boolean} autoReset
  * @param {number} userSpecifiedResetDay
@@ -61,7 +60,7 @@ export class TrafficCountersAdapter {
   constructor() {
     /**
      * Network Config mojo remote.
-     * @private {?CrosNetworkConfigRemote}
+     * @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
      */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
@@ -73,9 +72,9 @@ export class TrafficCountersAdapter {
    */
   async requestTrafficCountersForActiveNetworks() {
     const filter = {
-      filter: FilterType.kActive,
-      networkType: NetworkType.kAll,
-      limit: NO_LIMIT,
+      filter: chromeos.networkConfig.mojom.FilterType.kActive,
+      networkType: chromeos.networkConfig.mojom.NetworkType.kAll,
+      limit: chromeos.networkConfig.mojom.NO_LIMIT,
     };
     const networks = [];
     const networkStateList =
@@ -121,7 +120,7 @@ export class TrafficCountersAdapter {
   /**
    * Requests last reset time for the given network.
    * @param {string} guid
-   * @return {?Promise<?Time>} last reset
+   * @return {?Promise<?mojoBase.mojom.Time>} last reset
    * time for network with guid
    */
   async requestLastResetTimeForNetwork(guid) {
@@ -186,7 +185,7 @@ export class TrafficCountersAdapter {
    * Sets values for auto reset.
    * @param {string} guid
    * @param {boolean} autoReset
-   * @param {?UInt32Value} resetDay
+   * @param {?chromeos.networkConfig.mojom.UInt32Value} resetDay
    */
   async setTrafficCountersAutoResetForNetwork(guid, autoReset, resetDay) {
     await this.networkConfig_.setTrafficCountersAutoReset(

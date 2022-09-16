@@ -13,13 +13,14 @@ import './network_list.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrosNetworkConfigRemote, FilterType, GlobalPolicy, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {NetworkList} from './network_list_types.js';
 import {NetworkListenerBehavior} from './network_listener_behavior.js';
 import {OncMojo} from './onc_mojo.js';
+
+
+const mojom = chromeos.networkConfig.mojom;
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -98,7 +99,7 @@ Polymer({
       value: false,
     },
 
-    /** @private {!GlobalPolicy|undefined} */
+    /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
     globalPolicy_: Object,
   },
 
@@ -109,7 +110,7 @@ Polymer({
   /** @private {number|null} */
   scanIntervalId_: null,
 
-  /** @private {?CrosNetworkConfigRemote} */
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
   /** @override */
@@ -190,12 +191,12 @@ Polymer({
         defaultNetwork = state;
         break;
       }
-      if (state.connectionState === ConnectionStateType.kConnecting &&
+      if (state.connectionState === mojom.ConnectionStateType.kConnecting &&
           !defaultNetwork) {
         defaultNetwork = state;
         // Do not break here in case a non WiFi network is connecting but a
         // WiFi network is connected.
-      } else if (state.type === NetworkType.kWiFi) {
+      } else if (state.type === mojom.NetworkType.kWiFi) {
         break;  // Non connecting or connected WiFI networks are always last.
       }
     }
@@ -231,7 +232,7 @@ Polymer({
     // Request only WiFi network scans. Tether and Cellular scans are not useful
     // here. Cellular scans are disruptive and should only be triggered by
     // explicit user action.
-    const kWiFi = NetworkType.kWiFi;
+    const kWiFi = chromeos.networkConfig.mojom.NetworkType.kWiFi;
     this.networkConfig_.requestNetworkScan(kWiFi);
     this.scanIntervalId_ = window.setInterval(function() {
       this.networkConfig_.requestNetworkScan(kWiFi);
@@ -258,9 +259,9 @@ Polymer({
         deviceStates.some((deviceState) => !!deviceState.scanning);
 
     const filter = {
-      filter: FilterType.kVisible,
-      networkType: NetworkType.kAll,
-      limit: NO_LIMIT,
+      filter: chromeos.networkConfig.mojom.FilterType.kVisible,
+      networkType: mojom.NetworkType.kAll,
+      limit: chromeos.networkConfig.mojom.NO_LIMIT,
     };
     this.networkConfig_.getNetworkStateList(filter).then(response => {
       this.onGetNetworkStateList_(deviceStates, response.result);

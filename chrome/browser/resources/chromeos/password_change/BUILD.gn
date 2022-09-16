@@ -80,7 +80,6 @@ html_to_js("web_components") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
   deps = [
     ":lock_screen_network",
     ":password_change",

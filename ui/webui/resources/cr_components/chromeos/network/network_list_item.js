@@ -20,11 +20,9 @@ import {CellularSetupPageName} from '//resources/cr_components/chromeos/cellular
 import {getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ActivationStateType, CrosNetworkConfigRemote, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 import {FocusRowBehavior} from '../../../js/cr/ui/focus_row_behavior.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
@@ -110,7 +108,7 @@ Polymer({
 
     /**
      * The cached ConnectionState for the network.
-     * @type {!ConnectionStateType|undefined}
+     * @type {!chromeos.networkConfig.mojom.ConnectionStateType|undefined}
      */
     connectionState_: Number,
 
@@ -133,10 +131,10 @@ Polymer({
      */
     deviceState: Object,
 
-    /** @private {?ManagedProperties|undefined} */
+    /** @private {?chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties_: Object,
 
-    /** @type {!GlobalPolicy|undefined} */
+    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
     globalPolicy: Object,
 
     /**
@@ -241,7 +239,7 @@ Polymer({
     },
   },
 
-  /** @private {?CrosNetworkConfigRemote} */
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
   /** @override */
@@ -265,8 +263,9 @@ Polymer({
    * @private
    */
   isESimNetwork_() {
+    const mojom = chromeos.networkConfig.mojom;
     return !!this.networkState &&
-        this.networkState.type === NetworkType.kCellular &&
+        this.networkState.type === mojom.NetworkType.kCellular &&
         !!this.networkState.typeState.cellular.eid &&
         !!this.networkState.typeState.cellular.iccid;
   },
@@ -287,6 +286,8 @@ Polymer({
 
   /** @private */
   async setSubtitle_() {
+    const mojom = chromeos.networkConfig.mojom;
+
     if (this.item.hasOwnProperty('customItemSubtitle') &&
         this.item.customItemSubtitle) {
       // Item is a custom OOBE network or pending eSIM profile.
@@ -414,6 +415,9 @@ Polymer({
       return '';
     }
 
+    const NetworkType = chromeos.networkConfig.mojom.NetworkType;
+    const OncSource = chromeos.networkConfig.mojom.OncSource;
+    const SecurityType = chromeos.networkConfig.mojom.SecurityType;
     const status = this.getNetworkStateText_();
     const isManaged = this.item.source === OncSource.kDevicePolicy ||
         this.item.source === OncSource.kUserPolicy;
@@ -628,11 +632,12 @@ Polymer({
    * @private
    */
   getNetworkStateText_() {
+    const mojom = chromeos.networkConfig.mojom;
     if (!this.networkState) {
       return '';
     }
 
-    if (this.networkState.type === NetworkType.kCellular) {
+    if (this.networkState.type === mojom.NetworkType.kCellular) {
       if (this.networkState.typeState.cellular.simLocked) {
         return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
@@ -647,7 +652,7 @@ Polymer({
       // and Online.
       return this.i18n('networkListItemConnected');
     }
-    if (connectionState === ConnectionStateType.kConnecting) {
+    if (connectionState === mojom.ConnectionStateType.kConnecting) {
       return this.i18n('networkListItemConnecting');
     }
     return '';
@@ -658,7 +663,9 @@ Polymer({
    * @private
    */
   getNetworkStateTextClass_() {
-    if (this.networkState && this.networkState.type === NetworkType.kCellular &&
+    const mojom = chromeos.networkConfig.mojom;
+    if (this.networkState &&
+        this.networkState.type === mojom.NetworkType.kCellular &&
         this.networkState.typeState.cellular.simLocked) {
       return 'warning';
     }
@@ -792,9 +799,10 @@ Polymer({
 
     // If cellular activation is not currently available and |this.networkState|
     // describes an unactivated cellular network, the text should be shown.
-    return this.networkState.type === NetworkType.kCellular &&
+    const mojom = chromeos.networkConfig.mojom;
+    return this.networkState.type === mojom.NetworkType.kCellular &&
         this.networkState.typeState.cellular.activationState !==
-        ActivationStateType.kActivated;
+        mojom.ActivationStateType.kActivated;
   },
 
   /**
@@ -844,7 +852,8 @@ Polymer({
   },
 
   /**
-   * @param {?ManagedProperties|undefined} managedProperties
+   * @param {?chromeos.networkConfig.mojom.ManagedProperties|undefined}
+   *     managedProperties
    * @return {boolean}
    * @private
    */
@@ -858,11 +867,11 @@ Polymer({
       return false;
     }
     return cellularProperties.activationState ===
-        ActivationStateType.kNotActivated;
+        chromeos.networkConfig.mojom.ActivationStateType.kNotActivated;
   },
 
   /**
-   * @param {?ManagedCellularProperties|undefined}
+   * @param {?chromeos.networkConfig.mojom.ManagedCellularProperties|undefined}
    *     cellularProperties
    * @return {boolean}
    * @private
@@ -872,11 +881,11 @@ Polymer({
       return false;
     }
     return cellularProperties.activationState ===
-        ActivationStateType.kNotActivated;
+        chromeos.networkConfig.mojom.ActivationStateType.kNotActivated;
   },
 
   /**
-   * @param {?ManagedCellularProperties|undefined}
+   * @param {?chromeos.networkConfig.mojom.ManagedCellularProperties|undefined}
    *     cellularProperties
    * @return {boolean}
    * @private
@@ -891,7 +900,7 @@ Polymer({
   },
 
   /**
-   * @param {?ManagedProperties|undefined}
+   * @param {?chromeos.networkConfig.mojom.ManagedProperties|undefined}
    *     managedProperties
    * @return {boolean}
    * @private
@@ -935,7 +944,7 @@ Polymer({
   },
 
   /**
-   * @param {?ManagedProperties|undefined}
+   * @param {?chromeos.networkConfig.mojom.ManagedProperties|undefined}
    *     managedProperties
    * @return {boolean}
    * @private
@@ -959,7 +968,7 @@ Polymer({
       return false;
     }
     return this.networkState.typeState.cellular.activationState ===
-        ActivationStateType.kActivating;
+        chromeos.networkConfig.mojom.ActivationStateType.kActivating;
   },
 
   /**
@@ -971,7 +980,8 @@ Polymer({
       return false;
     }
 
-    if (this.item.type !== NetworkType.kWiFi) {
+    const mojom = chromeos.networkConfig.mojom;
+    if (this.item.type !== mojom.NetworkType.kWiFi) {
       return false;
     }
 
@@ -1003,8 +1013,9 @@ Polymer({
     }
 
     // Only Cellular and WiFi networks can be blocked by administrators.
-    if (this.item.type !== NetworkType.kCellular &&
-        this.item.type !== NetworkType.kWiFi) {
+    const mojom = chromeos.networkConfig.mojom;
+    if (this.item.type !== mojom.NetworkType.kCellular &&
+        this.item.type !== mojom.NetworkType.kWiFi) {
       return false;
     }
 
@@ -1012,7 +1023,7 @@ Polymer({
       return false;
     }
 
-    if (this.item.type === NetworkType.kCellular) {
+    if (this.item.type === mojom.NetworkType.kCellular) {
       return !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
     }
 

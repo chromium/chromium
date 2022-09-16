@@ -42,7 +42,7 @@ suite('NetworkConfigSelectTest', function() {
     // Set the select to contain certs.
     configSelect.certList = true;
 
-    // NetworkCertificate
+    // chromeos.networkConfig.mojom.NetworkCertificate
     configSelect.items = [
       {deviceWide: true, hash: 'hash', issuedBy: 'me'},
     ];

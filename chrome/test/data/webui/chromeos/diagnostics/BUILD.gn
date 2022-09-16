@@ -7,7 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags =
-      default_closure_args + mojom_js_args + [
+      default_closure_args + [
         "browser_resolver_prefix_replacements=\"chrome://diagnostics/=" +
             rebase_path("//ash/webui/diagnostics_ui/resources/",
                         root_build_dir) + "\"",

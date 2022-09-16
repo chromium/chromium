@@ -13,7 +13,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import './file_path.mojom-lite.js';
 import './mojom/shimless_rma.mojom-lite.js';
 
-import {CrosNetworkConfigInterface, CrosNetworkConfigRemote, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 
 /**
  * @typedef {ash.shimlessRma.mojom.StateResult}
@@ -344,21 +344,23 @@ export const ShimlessRmaServiceInterface =
 
 /**
  * Type alias for NetworkConfigServiceInterface.
- * @typedef {CrosNetworkConfigInterface}
+ * @typedef {chromeos.networkConfig.mojom.CrosNetworkConfigInterface}
  */
-export const NetworkConfigServiceInterface = CrosNetworkConfigInterface;
+export const NetworkConfigServiceInterface =
+    chromeos.networkConfig.mojom.CrosNetworkConfigInterface;
 
 /**
  * Type alias for NetworkConfigServiceRemote.
- * @typedef {CrosNetworkConfigRemote}
+ * @typedef {chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
  */
-export const NetworkConfigServiceRemote = CrosNetworkConfigRemote;
+export const NetworkConfigServiceRemote =
+    chromeos.networkConfig.mojom.CrosNetworkConfigRemote;
 
 /**
  * Type alias for Network
- * @typedef {NetworkStateProperties}
+ * @typedef {chromeos.networkConfig.mojom.NetworkStateProperties}
  */
-export const Network = NetworkStateProperties;
+export const Network = chromeos.networkConfig.mojom.NetworkStateProperties;
 
 /**
  * Type alias for the ShutdownMethod.

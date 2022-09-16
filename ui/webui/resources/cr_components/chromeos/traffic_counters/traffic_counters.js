@@ -6,9 +6,8 @@ import 'chrome://resources/cr_components/chromeos/network/network_shared_css.js'
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {TrafficCounterSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TrafficCountersAdapter} from './traffic_counters_adapter.js';
@@ -34,9 +33,9 @@ const TechnologyIcons = {
  * @typedef {{
  *   guid: string,
  *   name: string,
- *   type: !NetworkType,
+ *   type: !chromeos.networkConfig.mojom.NetworkType,
  *   counters: !Array<!Object>,
- *   lastResetTime: ?Time,
+ *   lastResetTime: ?mojoBase.mojom.Time,
  * }}
  */
 let Network;
@@ -45,9 +44,9 @@ let Network;
  * Helper function to create a Network object.
  * @param {string} guid
  * @param {string} name
- * @param {!NetworkType} type
+ * @param {!chromeos.networkConfig.mojom.NetworkType} type
  * @param {!Array<!Object>} counters
- * @param {?Time} lastResetTime
+ * @param {?mojoBase.mojom.Time} lastResetTime
  * @return {Network} Network object
  */
 function createNetwork(guid, name, type, counters, lastResetTime) {
@@ -72,7 +71,7 @@ function replacer(key, value) {
 
 /**
  * Converts a mojo time to JS. TODO(b/200327630)
- * @param {!Time} mojoTime
+ * @param {!mojoBase.mojom.Time} mojoTime
  * @return {!Date}
  */
 function convertMojoTimeToJS(mojoTime) {
@@ -186,7 +185,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   }
 
   /**
-   * @param {!NetworkType} type
+   * @param {!chromeos.networkConfig.mojom.NetworkType} type
    * @return {string} A string for the given NetworkType.
    * @private
    */
@@ -195,21 +194,21 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   }
 
   /**
-   * @param {!NetworkType} type
+   * @param {!chromeos.networkConfig.mojom.NetworkType} type
    * @return {string} An icon for the given NetworkType.
    * @private
    */
   getNetworkTypeIcon_(type) {
     switch (type) {
-      case NetworkType.kEthernet:
+      case chromeos.networkConfig.mojom.NetworkType.kEthernet:
         return TechnologyIcons.ETHERNET;
-      case NetworkType.kWiFi:
+      case chromeos.networkConfig.mojom.NetworkType.kWiFi:
         return TechnologyIcons.WIFI;
-      case NetworkType.kVPN:
+      case chromeos.networkConfig.mojom.NetworkType.kVPN:
         return TechnologyIcons.VPN;
-      case NetworkType.kTether:
-      case NetworkType.kMobile:
-      case NetworkType.kCellular:
+      case chromeos.networkConfig.mojom.NetworkType.kTether:
+      case chromeos.networkConfig.mojom.NetworkType.kMobile:
+      case chromeos.networkConfig.mojom.NetworkType.kCellular:
         return TechnologyIcons.CELLULAR;
       default:
         return '';
@@ -217,7 +216,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   }
 
   /**
-   * @param {!NetworkType} type
+   * @param {!chromeos.networkConfig.mojom.NetworkType} type
    * @return {boolean} Whether type should be expanded.
    * @private
    * */
@@ -249,31 +248,31 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   convertSourceEnumToString_(counters) {
     for (const counter of counters) {
       switch (counter.source) {
-        case TrafficCounterSource.kUnknown:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kUnknown:
           counter.source = this.i18n('TrafficCountersUnknown');
           break;
-        case TrafficCounterSource.kChrome:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kChrome:
           counter.source = this.i18n('TrafficCountersChrome');
           break;
-        case TrafficCounterSource.kUser:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kUser:
           counter.source = this.i18n('TrafficCountersUser');
           break;
-        case TrafficCounterSource.kArc:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kArc:
           counter.source = this.i18n('TrafficCountersArc');
           break;
-        case TrafficCounterSource.kCrosvm:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kCrosvm:
           counter.source = this.i18n('TrafficCountersCrosvm');
           break;
-        case TrafficCounterSource.kPluginvm:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kPluginvm:
           counter.source = this.i18n('TrafficCountersPluginvm');
           break;
-        case TrafficCounterSource.kUpdateEngine:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kUpdateEngine:
           counter.source = this.i18n('TrafficCountersUpdateEngine');
           break;
-        case TrafficCounterSource.kVpn:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kVpn:
           counter.source = this.i18n('TrafficCountersVpn');
           break;
-        case TrafficCounterSource.kSystem:
+        case chromeos.networkConfig.mojom.TrafficCounterSource.kSystem:
           counter.source = this.i18n('TrafficCountersSystem');
       }
     }

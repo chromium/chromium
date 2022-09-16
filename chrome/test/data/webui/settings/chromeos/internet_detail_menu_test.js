@@ -7,8 +7,6 @@ import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/c
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
@@ -19,6 +17,7 @@ import {assertEquals, assertTrue} from '../../chai_assert.js';
 suite('InternetDetailMenu', function() {
   let internetDetailMenu;
   let mojoApi_;
+  let mojom;
   let eSimManagerRemote;
 
   setup(function() {
@@ -29,7 +28,8 @@ suite('InternetDetailMenu', function() {
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
 
-    mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+    mojom = chromeos.networkConfig.mojom;
+    mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
   });
 
   teardown(function() {
@@ -61,11 +61,12 @@ suite('InternetDetailMenu', function() {
   }
 
   async function addEsimCellularNetwork(iccid, eid, is_managed) {
-    const cellular = getManagedProperties(NetworkType.kCellular, 'cellular');
+    const cellular =
+        getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
     cellular.typeProperties.cellular.iccid = iccid;
     cellular.typeProperties.cellular.eid = eid;
     if (is_managed) {
-      cellular.source = OncSource.kDevicePolicy;
+      cellular.source = mojom.OncSource.kDevicePolicy;
     }
     mojoApi_.setManagedPropertiesForTest(cellular);
     await flushAsync();
@@ -246,16 +247,16 @@ suite('InternetDetailMenu', function() {
     assertFalse(tripleDot.disabled);
 
     internetDetailMenu.deviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kConnectingToProfile,
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kConnectingToProfile,
     };
     assertTrue(tripleDot.disabled);
 
     internetDetailMenu.deviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kNotInhibited,
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     assertFalse(tripleDot.disabled);
   });
@@ -293,7 +294,7 @@ suite('InternetDetailMenu', function() {
 
         // Change esim profile name.
         const cellular =
-            getManagedProperties(NetworkType.kCellular, 'cellular');
+            getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
         cellular.typeProperties.cellular.iccid = iccid;
         cellular.typeProperties.cellular.eid = eid;
         cellular.name.activeValue = profileName;

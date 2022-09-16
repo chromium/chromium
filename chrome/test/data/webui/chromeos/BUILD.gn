@@ -9,7 +9,7 @@ assert(is_chromeos_ash)
 
 js_type_check("closure_compile_local") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
+  closure_flags = default_closure_args + [
                     "js_module_root=" + rebase_path("//chrome/test/data/webui/",
                                                     root_build_dir),
                     "js_module_root=./gen/chrome/test/data/webui/",

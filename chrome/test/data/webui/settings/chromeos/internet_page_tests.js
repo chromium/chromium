@@ -8,8 +8,6 @@ import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/c
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {CrosNetworkConfigRemote, InhibitReason, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
@@ -22,7 +20,7 @@ suite('InternetPage', function() {
   /** @type {?NetworkSummaryElement} */
   let networkSummary_ = null;
 
-  /** @type {?CrosNetworkConfigRemote} */
+  /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   let mojoApi_ = null;
 
   /** @type {?ash.cellularSetup.mojom.ESimManagerRemote} */
@@ -67,7 +65,7 @@ suite('InternetPage', function() {
     // Update the device state here to trigger an
     // attemptShowCellularSetupDialog_() call.
     mojoApi_.setNetworkTypeEnabledState(
-        NetworkType.kCellular, isCellularEnabled);
+        chromeos.networkConfig.mojom.NetworkType.kCellular, isCellularEnabled);
 
     return flushAsync();
   }
@@ -82,10 +80,11 @@ suite('InternetPage', function() {
     assertTrue(warningMessage.hidden);
 
     // Add a pSIM network.
-    mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
-    const pSimNetwork =
-        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1');
-    pSimNetwork.connectionState = ConnectionStateType.kConnected;
+    const mojom = chromeos.networkConfig.mojom;
+    mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+    const pSimNetwork = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular1');
+    pSimNetwork.connectionState = mojom.ConnectionStateType.kConnected;
     mojoApi_.setManagedPropertiesForTest(pSimNetwork);
     await flushAsync();
 
@@ -93,16 +92,16 @@ suite('InternetPage', function() {
     assertFalse(warningMessage.hidden);
 
     // Disconnect from the pSIM network.
-    pSimNetwork.connectionState = ConnectionStateType.kNotConnected;
+    pSimNetwork.connectionState = mojom.ConnectionStateType.kNotConnected;
     mojoApi_.setManagedPropertiesForTest(pSimNetwork);
     await flushAsync();
     // Warning message should be hidden.
     assertTrue(warningMessage.hidden);
 
     // Add an eSIM network.
-    const eSimNetwork =
-        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular2');
-    eSimNetwork.connectionState = ConnectionStateType.kConnected;
+    const eSimNetwork = OncMojo.getDefaultManagedProperties(
+        mojom.NetworkType.kCellular, 'cellular2');
+    eSimNetwork.connectionState = mojom.ConnectionStateType.kConnected;
     eSimNetwork.typeProperties.cellular.eid = 'eid';
     mojoApi_.setManagedPropertiesForTest(eSimNetwork);
     await flushAsync();
@@ -114,8 +113,9 @@ suite('InternetPage', function() {
   async function navigateToCellularDetailPage() {
     await init();
 
+    const mojom = chromeos.networkConfig.mojom;
     const cellularNetwork = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular1', 'name1');
+        mojom.NetworkType.kCellular, 'cellular1', 'name1');
     cellularNetwork.typeProperties.cellular.eid = 'eid';
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
 
@@ -194,11 +194,12 @@ suite('InternetPage', function() {
 
     test('WiFi', async function() {
       await init();
+      const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest([
-        OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1'),
-        OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi2'),
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi1'),
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi2'),
       ]);
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
       return flushAsync().then(() => {
         const wifi = networkSummary_.shadowRoot.querySelector('#WiFi');
         assertTrue(!!wifi);
@@ -208,17 +209,19 @@ suite('InternetPage', function() {
 
     test('WiFiToggle', async function() {
       await init();
+      const mojom = chromeos.networkConfig.mojom;
       // Make WiFi an available but disabled technology.
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, false);
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, false);
       return flushAsync().then(() => {
         const wifi = networkSummary_.shadowRoot.querySelector('#WiFi');
         assertTrue(!!wifi);
 
         // Ensure that the initial state is disabled and the toggle is
         // enabled but unchecked.
-        const wifiDevice = mojoApi_.getDeviceStateForTest(NetworkType.kWiFi);
+        const wifiDevice =
+            mojoApi_.getDeviceStateForTest(mojom.NetworkType.kWiFi);
         assertTrue(!!wifiDevice);
-        assertEquals(DeviceStateType.kDisabled, wifiDevice.deviceState);
+        assertEquals(mojom.DeviceStateType.kDisabled, wifiDevice.deviceState);
         const toggle = wifi.shadowRoot.querySelector('#deviceEnabledButton');
         assertTrue(!!toggle);
         assertFalse(toggle.disabled);
@@ -228,17 +231,19 @@ suite('InternetPage', function() {
         toggle.click();
         return flushAsync().then(() => {
           assertTrue(toggle.checked);
-          const wifiDevice = mojoApi_.getDeviceStateForTest(NetworkType.kWiFi);
+          const wifiDevice =
+              mojoApi_.getDeviceStateForTest(mojom.NetworkType.kWiFi);
           assertTrue(!!wifiDevice);
-          assertEquals(DeviceStateType.kEnabling, wifiDevice.deviceState);
+          assertEquals(mojom.DeviceStateType.kEnabling, wifiDevice.deviceState);
         });
       });
     });
 
     test('Deep link to WiFiToggle', async () => {
       await init();
+      const mojom = chromeos.networkConfig.mojom;
       // Make WiFi an available but disabled technology.
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, false);
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, false);
 
       const params = new URLSearchParams();
       params.append('settingId', '4');
@@ -259,23 +264,24 @@ suite('InternetPage', function() {
     suite('VPN', function() {
       test('VpnProviders', async function() {
         await init();
+        const mojom = chromeos.networkConfig.mojom;
         mojoApi_.setVpnProvidersForTest([
           {
-            type: VpnType.kExtension,
+            type: mojom.VpnType.kExtension,
             providerId: 'extension_id1',
             providerName: 'MyExtensionVPN1',
             appId: 'extension_id1',
             lastLaunchTime: {internalValue: 0},
           },
           {
-            type: VpnType.kArc,
+            type: mojom.VpnType.kArc,
             providerId: 'vpn.app.package1',
             providerName: 'MyArcVPN1',
             appId: 'arcid1',
             lastLaunchTime: {internalValue: 1},
           },
           {
-            type: VpnType.kArc,
+            type: mojom.VpnType.kArc,
             providerId: 'vpn.app.package2',
             providerName: 'MyArcVPN2',
             appId: 'arcid2',
@@ -311,12 +317,13 @@ suite('InternetPage', function() {
             };
             clickAddConnectionsButton();
 
+            const mojom = chromeos.networkConfig.mojom;
             setNetworksForTest([
-              OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
+              OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
             ]);
             mojoApi_.setDeviceStateForTest({
-              type: NetworkType.kVPN,
-              deviceState: DeviceStateType.kEnabled,
+              type: mojom.NetworkType.kVPN,
+              deviceState: mojom.DeviceStateType.kEnabled,
             });
 
             return flushAsync().then(() => {
@@ -331,12 +338,13 @@ suite('InternetPage', function() {
             await init();
             clickAddConnectionsButton();
 
+            const mojom = chromeos.networkConfig.mojom;
             setNetworksForTest([
-              OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
+              OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
             ]);
             mojoApi_.setDeviceStateForTest({
-              type: NetworkType.kVPN,
-              deviceState: DeviceStateType.kProhibited,
+              type: mojom.NetworkType.kVPN,
+              deviceState: mojom.DeviceStateType.kProhibited,
             });
 
             return flushAsync().then(() => {
@@ -354,12 +362,13 @@ suite('InternetPage', function() {
             await init();
             clickAddConnectionsButton();
 
+            const mojom = chromeos.networkConfig.mojom;
             setNetworksForTest([
-              OncMojo.getDefaultNetworkState(NetworkType.kVPN, 'vpn'),
+              OncMojo.getDefaultNetworkState(mojom.NetworkType.kVPN, 'vpn'),
             ]);
             mojoApi_.setDeviceStateForTest({
-              type: NetworkType.kVPN,
-              deviceState: DeviceStateType.kEnabled,
+              type: mojom.NetworkType.kVPN,
+              deviceState: mojom.DeviceStateType.kEnabled,
             });
 
             return flushAsync().then(() => {
@@ -374,8 +383,9 @@ suite('InternetPage', function() {
 
     test('Deep link to mobile on/off toggle', async () => {
       await init();
+      const mojom = chromeos.networkConfig.mojom;
       // Make WiFi an available but disabled technology.
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, false);
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, false);
 
       const params = new URLSearchParams();
       params.append('settingId', '13');
@@ -465,9 +475,10 @@ suite('InternetPage', function() {
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
+        const mojom = chromeos.networkConfig.mojom;
         const wifiNetwork =
-            OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
-        wifiNetwork.connectionState = ConnectionStateType.kOnline;
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
         mojoApi_.addNetworksForTest([wifiNetwork]);
         await flushAsync();
 
@@ -545,9 +556,10 @@ suite('InternetPage', function() {
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
+        const mojom = chromeos.networkConfig.mojom;
         const wifiNetwork =
-            OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
-        wifiNetwork.connectionState = ConnectionStateType.kOnline;
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
         mojoApi_.addNetworksForTest([wifiNetwork]);
         await flushAsync();
 
@@ -574,9 +586,10 @@ suite('InternetPage', function() {
         await init();
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 5);
 
+        const mojom = chromeos.networkConfig.mojom;
         const wifiNetwork =
-            OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
-        wifiNetwork.connectionState = ConnectionStateType.kOnline;
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
         mojoApi_.addNetworksForTest([wifiNetwork]);
         await flushAsync();
 
@@ -598,8 +611,10 @@ suite('InternetPage', function() {
   test('Show sim lock dialog through URL parameters', async () => {
     await init();
 
+    const mojom = chromeos.networkConfig.mojom;
     const params = new URLSearchParams();
-    params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+    params.append(
+        'type', OncMojo.getNetworkTypeString(mojom.NetworkType.kCellular));
     params.append('showSimLockDialog', true);
 
     // Pretend that we initially started on the INTERNET_NETWORKS route with the
@@ -609,9 +624,9 @@ suite('InternetPage', function() {
 
     // Update the device state here to trigger an onDeviceStatesChanged_() call.
     mojoApi_.setDeviceStateForTest({
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kNotInhibited,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
       simLockStatus: {
         lockEnabled: true,
       },
@@ -630,7 +645,8 @@ suite('InternetPage', function() {
       async function() {
         await init();
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
-        mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+        mojoApi_.setNetworkTypeEnabledState(
+            chromeos.networkConfig.mojom.NetworkType.kCellular, true);
         await flushAsync();
 
         assertFalse(internetPage.$.errorToast.open);
@@ -653,9 +669,10 @@ suite('InternetPage', function() {
         assertFalse(internetPage.$.errorToast.open);
 
         // Connect to non-cellular network.
+        const mojom = chromeos.networkConfig.mojom;
         const wifiNetwork =
-            OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi');
-        wifiNetwork.connectionState = ConnectionStateType.kOnline;
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
         mojoApi_.addNetworksForTest([wifiNetwork]);
         await flushAsync();
 
@@ -717,6 +734,7 @@ suite('InternetPage', function() {
       async function() {
         await init();
 
+        const mojom = chromeos.networkConfig.mojom;
         const params = new URLSearchParams();
         params.append('type', '');
 
@@ -730,7 +748,7 @@ suite('InternetPage', function() {
 
         // Confirm that the knownNetworkType_ was set to kWiFi.
         assertTrue(!!knownNetworksPage);
-        assertEquals(knownNetworksPage.networkType, NetworkType.kWiFi);
+        assertEquals(knownNetworksPage.networkType, mojom.NetworkType.kWiFi);
       });
 
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently

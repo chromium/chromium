@@ -46,8 +46,7 @@ js_library("cfm_network_settings_browser_proxy") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [ "language_in=ECMASCRIPT_2020" ]
+  closure_flags = default_closure_args + [ "language_in=ECMASCRIPT_2020" ]
   deps = [
     ":cfm_network_settings",
     ":cfm_network_settings_browser_proxy",

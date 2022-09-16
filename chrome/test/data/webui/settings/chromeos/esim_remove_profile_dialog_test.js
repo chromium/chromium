@@ -6,7 +6,6 @@ import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
@@ -60,7 +59,8 @@ suite('EsimRemoveProfileDialog', function() {
 
   function addEsimCellularNetwork(guid, iccid) {
     const cellular = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, guid, 'profile' + iccid);
+        chromeos.networkConfig.mojom.NetworkType.kCellular, guid,
+        'profile' + iccid);
     cellular.typeProperties.cellular.iccid = iccid;
     cellular.typeProperties.cellular.eid = iccid + 'eid';
     mojoApi_.setManagedPropertiesForTest(cellular);

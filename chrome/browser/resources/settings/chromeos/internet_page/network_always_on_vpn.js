@@ -12,8 +12,9 @@ import 'chrome://resources/cr_components/chromeos/network/network_shared_css.js'
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {AlwaysOnVpnMode} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+const mojom = chromeos.networkConfig.mojom;
 
 /**
  * @constructor
@@ -43,7 +44,7 @@ class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
 
       /**
        * Always-on VPN operating mode.
-       * @type {!AlwaysOnVpnMode|undefined}
+       * @type {!chromeos.networkConfig.mojom.AlwaysOnVpnMode|undefined}
        */
       mode: {
         type: Number,
@@ -79,7 +80,7 @@ class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
    */
   shouldShowAlwaysOnVpnOptions_() {
     return !this.shouldDisableAlwaysOnVpn_() &&
-        this.mode !== AlwaysOnVpnMode.kOff;
+        this.mode !== mojom.AlwaysOnVpnMode.kOff;
   }
 
   /**
@@ -89,7 +90,7 @@ class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
    */
   computeAlwaysOnVpnEnabled_() {
     return !this.shouldDisableAlwaysOnVpn_() &&
-        this.mode !== AlwaysOnVpnMode.kOff;
+        this.mode !== mojom.AlwaysOnVpnMode.kOff;
   }
 
   /**
@@ -99,10 +100,10 @@ class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
    */
   onAlwaysOnEnableChanged_(event) {
     if (!event.target.checked) {
-      this.mode = AlwaysOnVpnMode.kOff;
+      this.mode = mojom.AlwaysOnVpnMode.kOff;
       return;
     }
-    this.mode = AlwaysOnVpnMode.kBestEffort;
+    this.mode = mojom.AlwaysOnVpnMode.kBestEffort;
   }
 
   /**
@@ -111,7 +112,7 @@ class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
    * @private
    */
   computeAlwaysOnVpnLockdown_() {
-    return this.mode === AlwaysOnVpnMode.kStrict;
+    return this.mode === mojom.AlwaysOnVpnMode.kStrict;
   }
 
   /**
@@ -121,13 +122,14 @@ class NetworkAlwaysOnVpnElement extends NetworkAlwaysOnVpnElementBase {
    * @private
    */
   onAlwaysOnVpnLockdownChanged_(event) {
-    if (this.mode === AlwaysOnVpnMode.kOff) {
+    if (this.mode === mojom.AlwaysOnVpnMode.kOff) {
       // The event should not be fired when always-on VPN is disabled (the
       // enable toggle is disabled).
       return;
     }
-    this.mode = event.target.checked ? AlwaysOnVpnMode.kStrict :
-                                       AlwaysOnVpnMode.kBestEffort;
+    this.mode = event.target.checked ?
+        mojom.AlwaysOnVpnMode.kStrict :
+        mojom.AlwaysOnVpnMode.kBestEffort;
   }
 
   /**

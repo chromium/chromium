@@ -286,7 +286,7 @@ js_library("network_summary_item") {
 js_library("tether_connection_dialog") {
   deps = [
     "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

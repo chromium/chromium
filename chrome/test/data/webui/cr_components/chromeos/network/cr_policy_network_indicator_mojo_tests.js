@@ -7,7 +7,6 @@
 import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.js';
 import 'chrome://test/cr_components/chromeos/network/cr_policy_strings.js';
 
-import {PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('cr-policy-network-indicator-mojo', function() {
@@ -49,7 +48,8 @@ suite('cr-policy-network-indicator-mojo', function() {
   test('recommended', function() {
     indicator.property = {
       activeValue: 'foo',
-      policySource: PolicySource.kUserPolicyRecommended,
+      policySource:
+          chromeos.networkConfig.mojom.PolicySource.kUserPolicyRecommended,
       policyValue: 'bar',
     };
     return flushAsync()
@@ -75,7 +75,8 @@ suite('cr-policy-network-indicator-mojo', function() {
   test('policy', function() {
     indicator.property = {
       activeValue: 'foo',
-      policySource: PolicySource.kDevicePolicyEnforced,
+      policySource:
+          chromeos.networkConfig.mojom.PolicySource.kDevicePolicyEnforced,
       policyValue: 'foo',
     };
     return flushAsync().then(() => {
@@ -89,7 +90,7 @@ suite('cr-policy-network-indicator-mojo', function() {
   test('extension', function() {
     indicator.property = {
       activeValue: 'foo',
-      policySource: PolicySource.kActiveExtension,
+      policySource: chromeos.networkConfig.mojom.PolicySource.kActiveExtension,
     };
     return flushAsync().then(() => {
       const icon = indicator.$$('cr-tooltip-icon');

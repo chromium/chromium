@@ -12,10 +12,9 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared_css.js';
 
-import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {NetworkCertificate} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
@@ -92,7 +91,7 @@ Polymer({
   /**
    * Returns a localized label for |item|. If |this.key| is set, |item| is
    * expected to be an enum and the key is used to convert it to a string.
-   * @param {string|number|!NetworkCertificate}
+   * @param {string|number|!chromeos.networkConfig.mojom.NetworkCertificate}
    *     item
    * @return {string}
    * @private
@@ -100,7 +99,8 @@ Polymer({
   getItemLabel_(item) {
     if (this.certList) {
       return this.getCertificateName_(
-          /** @type {!NetworkCertificate}*/ (item));
+          /** @type {!chromeos.networkConfig.mojom.NetworkCertificate}*/ (
+              item));
     }
     let value;
     if (this.key) {
@@ -123,27 +123,29 @@ Polymer({
   },
 
   /**
-   * @param {string|number|!NetworkCertificate}
+   * @param {string|number|!chromeos.networkConfig.mojom.NetworkCertificate}
    *     item
    * @return {string|number}
    * @private
    */
   getItemValue_(item) {
     if (this.certList) {
-      return /** @type {NetworkCertificate}*/ (item).hash;
+      return /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (
+                 item)
+          .hash;
     }
     return /** @type {string|number}*/ (item);
   },
 
   /**
-   * @param {string|!NetworkCertificate} item
+   * @param {string|!chromeos.networkConfig.mojom.NetworkCertificate} item
    * @return {boolean}
    * @private
    */
   getItemEnabled_(item) {
     if (this.certList) {
       const cert =
-          /** @type {NetworkCertificate}*/ (item);
+          /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (item);
       if (this.deviceCertsOnly && !cert.deviceWide) {
         return false;
       }
@@ -153,7 +155,7 @@ Polymer({
   },
 
   /**
-   * @param {!NetworkCertificate} certificate
+   * @param {!chromeos.networkConfig.mojom.NetworkCertificate} certificate
    * @return {string}
    * @private
    */

@@ -21,7 +21,10 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("mojo_interface_provider") {
-  deps = [ "//chromeos/services/network_health/public/mojom:mojom_webui_js" ]
+  deps = [
+    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+  ]
 }
 
 js_library("network_health_summary") {

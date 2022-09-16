@@ -15,8 +15,6 @@ import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_c
 import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -220,9 +218,9 @@ Polymer({
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
     const filter = {
-      filter: FilterType.kActive,
-      limit: NO_LIMIT,
-      networkType: NetworkType.kAll,
+      filter: chromeos.networkConfig.mojom.FilterType.kActive,
+      limit: chromeos.networkConfig.mojom.NO_LIMIT,
+      networkType: chromeos.networkConfig.mojom.NetworkType.kAll,
     };
     networkConfig.getNetworkStateList(filter).then(response => {
       this.onActiveNetworksChanged(response.result);
@@ -288,12 +286,13 @@ Polymer({
   /**
    * NetworkListenerBehavior override
    * Used to determine if there is an online network connection.
-   * @param {!Array<NetworkStateProperties>}
+   * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
    *     activeNetworks
    */
   onActiveNetworksChanged(activeNetworks) {
     this.isOffline_ = !activeNetworks.some(
-        (network) => network.connectionState === ConnectionStateType.kOnline);
+        (network) => network.connectionState ===
+            chromeos.networkConfig.mojom.ConnectionStateType.kOnline);
   },
 
   initSubflow() {

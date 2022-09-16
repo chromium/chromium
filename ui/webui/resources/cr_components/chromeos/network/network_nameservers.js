@@ -15,8 +15,6 @@ import '../../../cr_elements/md_select.css.js';
 import './network_shared_css.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {IPConfigType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -45,7 +43,7 @@ Polymer({
       value: false,
     },
 
-    /** @type {!ManagedProperties|undefined} */
+    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties: {
       type: Object,
       observer: 'managedPropertiesChanged_',
@@ -208,8 +206,9 @@ Polymer({
 
     // Update the 'nameservers' property.
     let nameservers = [];
-    const ipv4 =
-        OncMojo.getIPConfigForType(this.managedProperties, IPConfigType.kIPv4);
+    const ipv4 = OncMojo.getIPConfigForType(
+        this.managedProperties,
+        chromeos.networkConfig.mojom.IPConfigType.kIPv4);
     if (ipv4 && ipv4.nameServers) {
       nameservers = ipv4.nameServers.slice();
     }
@@ -257,7 +256,7 @@ Polymer({
   },
 
   /**
-   * @param {!ManagedProperties} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
    * @return {boolean} True if the nameservers config type type can be changed.
    * @private
    */
@@ -273,7 +272,7 @@ Polymer({
 
   /**
    * @param {string} nameserversType
-   * @param {!ManagedProperties} managedProperties
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
    * @return {boolean} True if the nameservers are editable.
    * @private
    */

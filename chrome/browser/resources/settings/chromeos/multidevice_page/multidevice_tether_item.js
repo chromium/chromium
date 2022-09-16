@@ -19,8 +19,6 @@ import './multidevice_feature_item.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {CrosNetworkConfigRemote, FilterType, InhibitReason, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -96,7 +94,7 @@ class SettingsMultideviceTetherItemElement extends
   constructor() {
     super();
 
-    /** @private {!CrosNetworkConfigRemote} */
+    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
@@ -120,7 +118,7 @@ class SettingsMultideviceTetherItemElement extends
    * onNetworkStateListChanged, triggering updateTetherNetworkState_ and
    * rendering this callback redundant. As a result, we return early if the
    * active network is not changed.
-   * @param {!Array<NetworkStateProperties>}
+   * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
    *     networks
    * @private
    */
@@ -156,13 +154,13 @@ class SettingsMultideviceTetherItemElement extends
    */
   updateTetherDeviceState_() {
     this.networkConfig_.getDeviceStateList().then(response => {
-      const kTether = NetworkType.kTether;
+      const kTether = chromeos.networkConfig.mojom.NetworkType.kTether;
       const deviceStates = response.result;
       const deviceState =
           deviceStates.find(deviceState => deviceState.type === kTether);
       this.deviceState_ = deviceState || {
-        deviceState: DeviceStateType.kDisabled,
-        inhibitReason: InhibitReason.kNotInhibited,
+        deviceState: chromeos.networkConfig.mojom.DeviceStateType.kDisabled,
+        inhibitReason: chromeos.networkConfig.mojom.InhibitReason.kNotInhibited,
         managedNetworkAvailable: false,
         scanning: false,
         simAbsent: false,
@@ -180,9 +178,9 @@ class SettingsMultideviceTetherItemElement extends
    * @private
    */
   updateTetherNetworkState_() {
-    const kTether = NetworkType.kTether;
+    const kTether = chromeos.networkConfig.mojom.NetworkType.kTether;
     const filter = {
-      filter: FilterType.kVisible,
+      filter: chromeos.networkConfig.mojom.FilterType.kVisible,
       limit: 1,
       networkType: kTether,
     };
@@ -197,7 +195,7 @@ class SettingsMultideviceTetherItemElement extends
    * Returns an array containing the active network state if there is one
    * (note that if there is not GUID will be falsy).  Returns an empty array
    * otherwise.
-   * @return {!Array<NetworkStateProperties>}
+   * @return {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
    * @private
    */
   getNetworkStateList_() {

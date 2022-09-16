@@ -7,8 +7,6 @@ import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/c
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {CrosNetworkConfigRemote, InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
@@ -21,13 +19,16 @@ import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 suite('CellularNetworksList', function() {
   let cellularNetworkList;
 
-  /** @type {!CrosNetworkConfigRemote|undefined} */
+  let mojom;
+
+  /** @type {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote|undefined} */
   let mojoApi_;
 
   let eSimManagerRemote;
   let browserProxy;
 
   setup(function() {
+    mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
 
@@ -70,9 +71,9 @@ suite('CellularNetworksList', function() {
     let deviceState = cellularNetworkList.cellularDeviceState;
     if (!deviceState) {
       deviceState = {
-        type: NetworkType.kCellular,
-        deviceState: DeviceStateType.kEnabled,
-        inhibitReason: InhibitReason.kNotInhibited,
+        type: mojom.NetworkType.kCellular,
+        deviceState: mojom.DeviceStateType.kEnabled,
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
       };
     }
     if (!deviceState.simInfos) {
@@ -121,20 +122,22 @@ suite('CellularNetworksList', function() {
         MultiDeviceFeatureState.ENABLED_BY_USER);
 
     const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular_esim1');
+        mojom.NetworkType.kCellular, 'cellular_esim1');
     eSimNetwork1.typeProperties.cellular.eid =
         '11111111111111111111111111111111';
     const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular_esim2');
+        mojom.NetworkType.kCellular, 'cellular_esim2');
     eSimNetwork2.typeProperties.cellular.eid =
         '22222222222222222222222222222222';
-    setManagedPropertiesForTest(NetworkType.kCellular, [
-      OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
-      OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular2'),
+    setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kCellular, 'cellular1'),
+      OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kCellular, 'cellular2'),
       eSimNetwork1,
       eSimNetwork2,
-      OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
-      OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether2'),
+      OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether1'),
+      OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether2'),
     ]);
     addPSimSlot();
     addESimSlot();
@@ -244,8 +247,9 @@ suite('CellularNetworksList', function() {
   test(
       'Hide esim section when no EUICC is found or no eSIM slots', async () => {
         init();
-        setManagedPropertiesForTest(NetworkType.kCellular, [
-          OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
+        setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+          OncMojo.getDefaultManagedProperties(
+              mojom.NetworkType.kTether, 'tether1'),
         ]);
         flush();
         await flushAsync();
@@ -275,8 +279,8 @@ suite('CellularNetworksList', function() {
 
   test('Hide pSIM section when no pSIM slots', async () => {
     init();
-    setManagedPropertiesForTest(NetworkType.kCellular, [
-      OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
+    setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultManagedProperties(mojom.NetworkType.kTether, 'tether1'),
     ]);
     await flushAsync();
     assertFalse(
@@ -297,11 +301,11 @@ suite('CellularNetworksList', function() {
         eSimManagerRemote.addEuiccForTest(2);
         init();
 
-        setManagedPropertiesForTest(NetworkType.kCellular, [
+        setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
           OncMojo.getDefaultManagedProperties(
-              NetworkType.kCellular, 'pSimCellular1'),
+              mojom.NetworkType.kCellular, 'pSimCellular1'),
           OncMojo.getDefaultManagedProperties(
-              NetworkType.kCellular, 'pSimcellular2'),
+              mojom.NetworkType.kCellular, 'pSimcellular2'),
         ]);
 
         await flushAsync();
@@ -405,9 +409,9 @@ suite('CellularNetworksList', function() {
         eSimManagerRemote.addEuiccForTest(0);
         init();
         cellularNetworkList.deviceState = {
-          type: NetworkType.kCellular,
-          deviceState: DeviceStateType.kEnabled,
-          inhibitReason: InhibitReason.kNotInhibited,
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kNotInhibited,
         };
         cellularNetworkList.globalPolicy = {
           allowOnlyPolicyCellularNetworks: true,
@@ -433,9 +437,9 @@ suite('CellularNetworksList', function() {
         assertTrue(noESimFoundMessage.hidden);
 
         cellularNetworkList.cellularDeviceState = {
-          type: NetworkType.kCellular,
-          deviceState: DeviceStateType.kEnabled,
-          inhibitReason: InhibitReason.kInstallingProfile,
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kInstallingProfile,
         };
         addESimSlot();
         await flushAsync();
@@ -447,17 +451,18 @@ suite('CellularNetworksList', function() {
     eSimManagerRemote.addEuiccForTest(1);
     init();
     const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular_esim1');
+        mojom.NetworkType.kCellular, 'cellular_esim1');
     eSimNetwork1.typeProperties.cellular.eid =
         '11111111111111111111111111111111';
-    setManagedPropertiesForTest(NetworkType.kCellular, [
-      OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
+    setManagedPropertiesForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kCellular, 'cellular1'),
       eSimNetwork1,
     ]);
     cellularNetworkList.cellularDeviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kNotInhibited,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     addESimSlot();
     cellularNetworkList.globalPolicy = {
@@ -492,9 +497,9 @@ suite('CellularNetworksList', function() {
 
     // When device is inhibited add cellular button should be disabled.
     cellularNetworkList.cellularDeviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kInstallingProfile,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kInstallingProfile,
     };
     addESimSlot();
     await flushAsync();
@@ -504,9 +509,9 @@ suite('CellularNetworksList', function() {
     // Device is not inhibited and policy is also false add cellular button
     // should be enabled
     cellularNetworkList.cellularDeviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kNotInhibited,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     addESimSlot();
     await flushAsync();
@@ -523,9 +528,9 @@ suite('CellularNetworksList', function() {
     eSimManagerRemote.addEuiccForTest(0);
     init();
     cellularNetworkList.deviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kNotInhibited,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     addESimSlot();
 
@@ -537,9 +542,9 @@ suite('CellularNetworksList', function() {
     assertFalse(esimLocalizedLink.linkDisabled);
 
     cellularNetworkList.cellularDeviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kRefreshingProfileList,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kRefreshingProfileList,
     };
     addESimSlot();
     await flushAsync();
@@ -550,9 +555,9 @@ suite('CellularNetworksList', function() {
     eSimManagerRemote.addEuiccForTest(0);
     init();
     cellularNetworkList.deviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kNotInhibited,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     addESimSlot();
     cellularNetworkList.canShowSpinner = true;
@@ -568,9 +573,9 @@ suite('CellularNetworksList', function() {
     assertFalse(getInhibitedSpinner().active);
 
     cellularNetworkList.cellularDeviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kInstallingProfile,
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kInstallingProfile,
     };
     addESimSlot();
     await flushAsync();
@@ -592,9 +597,9 @@ suite('CellularNetworksList', function() {
         // Put the device under the inhibited status with kRefreshingProfileList
         // reason first.
         cellularNetworkList.cellularDeviceState = {
-          type: NetworkType.kCellular,
-          deviceState: DeviceStateType.kEnabled,
-          inhibitReason: InhibitReason.kRefreshingProfileList,
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kRefreshingProfileList,
         };
         addESimSlot();
         cellularNetworkList.canShowSpinner = true;
@@ -616,7 +621,7 @@ suite('CellularNetworksList', function() {
         // kInstallingProfile, the inhibited subtext should also get updated to
         // reflect that.
         cellularNetworkList.cellularDeviceState = {
-          inhibitReason: InhibitReason.kInstallingProfile,
+          inhibitReason: mojom.InhibitReason.kInstallingProfile,
         };
         addESimSlot();
         await flushAsync();

@@ -12,8 +12,6 @@ assert(is_chromeos_ash)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-
   deps = [
     ":battery_status_card",
     ":cellular_info",

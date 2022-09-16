@@ -13,7 +13,6 @@ import '../../../cr_elements/cr_input/cr_input.js';
 import './network_shared_css.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ManagedProxyLocation} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -44,7 +43,7 @@ Polymer({
 
     /**
      * The proxy object.
-     * @type {!ManagedProxyLocation}
+     * @type {!chromeos.networkConfig.mojom.ManagedProxyLocation}
      */
     value: {
       type: Object,

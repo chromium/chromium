@@ -10,6 +10,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './strings.m.js';
@@ -20,10 +22,10 @@ import './network_metrics_ui.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {CrosNetworkConfig, CrosNetworkConfigRemote, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
+
 
 /**
  * @fileoverview
@@ -117,7 +119,7 @@ Polymer({
 
   },
 
-  /** @type {?CrosNetworkConfigRemote} */
+  /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
   /** @type {!NetworkUIBrowserProxy} */
@@ -125,7 +127,8 @@ Polymer({
 
   /** @override */
   attached() {
-    this.networkConfig_ = CrosNetworkConfig.getRemote();
+    this.networkConfig_ =
+        chromeos.networkConfig.mojom.CrosNetworkConfig.getRemote();
 
     const select = this.$$('network-select');
     select.customItems = [
@@ -378,7 +381,8 @@ Polymer({
 
     // Otherwise, connect.
     this.networkConfig_.startConnect(networkState.guid).then(response => {
-      if (response.result == StartConnectResult.kSuccess) {
+      if (response.result ==
+          chromeos.networkConfig.mojom.StartConnectResult.kSuccess) {
         return;
       }
       console.error(

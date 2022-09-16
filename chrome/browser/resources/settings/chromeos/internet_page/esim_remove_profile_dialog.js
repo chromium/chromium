@@ -13,7 +13,6 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {getESimProfile} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../router.js';
@@ -77,7 +76,8 @@ class EsimRemoveProfileDialogElement extends
   /** @private */
   async init_() {
     if (!(this.networkState &&
-          this.networkState.type === NetworkType.kCellular)) {
+          this.networkState.type ===
+              chromeos.networkConfig.mojom.NetworkType.kCellular)) {
       return;
     }
     this.esimProfileRemote_ =
@@ -126,7 +126,10 @@ class EsimRemoveProfileDialogElement extends
     });
     this.$.dialog.close();
     const params = new URLSearchParams();
-    params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
+    params.append(
+        'type',
+        OncMojo.getNetworkTypeString(
+            chromeos.networkConfig.mojom.NetworkType.kCellular));
     Router.getInstance().setCurrentRoute(
         routes.INTERNET_NETWORKS, params, /*isPopState=*/ true);
   }

@@ -4,9 +4,11 @@
 
 /** @fileoverview Suite of tests for CrPolicyIndicatorBehavior. */
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
-import {PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('CrPolicyNetworkBehaviorMojo', function() {
@@ -18,9 +20,11 @@ suite('CrPolicyNetworkBehaviorMojo', function() {
     });
   });
 
+  let mojom;
   let testBehavior;
 
   setup(function() {
+    mojom = chromeos.networkConfig.mojom;
     PolymerTest.clearBody();
     testBehavior = document.createElement('test-behavior');
     document.body.appendChild(testBehavior);
@@ -29,7 +33,7 @@ suite('CrPolicyNetworkBehaviorMojo', function() {
   test('active', function() {
     const property = {
       activeValue: 'foo',
-      policySource: PolicySource.kNone,
+      policySource: mojom.PolicySource.kNone,
     };
     assertFalse(testBehavior.isNetworkPolicyControlled(property));
     assertFalse(testBehavior.isControlled(property));
@@ -42,7 +46,7 @@ suite('CrPolicyNetworkBehaviorMojo', function() {
   test('user_recommended', function() {
     const property = {
       activeValue: 'foo',
-      policySource: PolicySource.kUserPolicyRecommended,
+      policySource: mojom.PolicySource.kUserPolicyRecommended,
       policyValue: 'bar',
     };
     assertTrue(testBehavior.isNetworkPolicyControlled(property));
@@ -59,7 +63,7 @@ suite('CrPolicyNetworkBehaviorMojo', function() {
   test('device_recommended', function() {
     const property = {
       activeValue: 'foo',
-      policySource: PolicySource.kDevicePolicyRecommended,
+      policySource: mojom.PolicySource.kDevicePolicyRecommended,
       policyValue: 'bar',
     };
     assertTrue(testBehavior.isNetworkPolicyControlled(property));
@@ -76,7 +80,7 @@ suite('CrPolicyNetworkBehaviorMojo', function() {
   test('user_enforced', function() {
     const property = {
       activeValue: 'foo',
-      policySource: PolicySource.kUserPolicyEnforced,
+      policySource: mojom.PolicySource.kUserPolicyEnforced,
       policyValue: 'foo',
     };
     assertTrue(testBehavior.isNetworkPolicyControlled(property));
@@ -93,7 +97,7 @@ suite('CrPolicyNetworkBehaviorMojo', function() {
   test('device_enforced', function() {
     const property = {
       activeValue: 'foo',
-      policySource: PolicySource.kDevicePolicyEnforced,
+      policySource: mojom.PolicySource.kDevicePolicyEnforced,
       policyValue: 'foo',
     };
     assertTrue(testBehavior.isNetworkPolicyControlled(property));
@@ -110,7 +114,7 @@ suite('CrPolicyNetworkBehaviorMojo', function() {
   test('extension_controlled', function() {
     const property = {
       activeValue: 'foo',
-      policySource: PolicySource.kActiveExtension,
+      policySource: mojom.PolicySource.kActiveExtension,
     };
     assertFalse(testBehavior.isNetworkPolicyControlled(property));
     assertTrue(testBehavior.isControlled(property));

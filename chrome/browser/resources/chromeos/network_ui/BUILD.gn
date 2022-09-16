@@ -108,7 +108,7 @@ js_library("network_metrics_ui") {
 js_library("network_state_ui") {
   deps = [
     ":network_ui_browser_proxy",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
     "//ui/webui/resources/cr_components/chromeos/network:network_icon",
     "//ui/webui/resources/cr_components/chromeos/network:network_list",
