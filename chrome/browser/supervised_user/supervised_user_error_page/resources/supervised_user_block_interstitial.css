@@ -3,9 +3,7 @@
    found in the LICENSE file. */
 
 /* This is the stylesheet for the interstitial when the
-   "WebFilterInterstitialRefresh" flag is disabled.
-   TODO(b/243916175): update this file to only include the flag-on styling, and
-   remove interstitial-refresh-enabled. */
+   "WebFilterInterstitialRefresh" flag is disabled. */
 
 body {
   --avatar-stroke-color: var(--google-gray-50);
@@ -199,107 +197,11 @@ p {
 }
 
 #block-reason {
-  /* Hidden unless the web filter interstitial refresh flag is enabled */
-  display: none;
-}
-
-/* Styles for when the web filter interstitial refresh flag is enabled. */
-.interstitial-refresh-enabled button {
-  font-size: 13px;
-  font-weight: 500;
-  height: 32px;
-  line-height: normal;
-  padding: 6px 16px;
-}
-
-.interstitial-refresh-enabled .secondary-button {
-  background: var(--background-color);
-  border: 1px solid var(--google-gray-300);
-  color: var(--google-blue-600);
-}
-
-.interstitial-refresh-enabled .secondary-button:active {
-  background: var(--secondary-button-hover-fill-color);
-}
-
-.interstitial-refresh-enabled h1 {
-  font-family: "Google Sans", sans-serif;
-}
-
-.interstitial-refresh-enabled p {
-  color: var(--paragraph-color);
-  font-size: 14px;
-}
-
-.interstitial-refresh-enabled .icon {
   display: none;
 }
 
 picture {
   margin: auto;
-}
-
-.interstitial-refresh-enabled .illustration {
-  display: inline;
-}
-
-.interstitial-refresh-enabled .frame-blocked {
-  display: flex;
-  flex-direction: column;
-  margin-top: 50px;
-  max-width: 432px;
-}
-
-.interstitial-refresh-enabled .go-back-button {
-  float: right;
-  margin-left: 24px;
-}
-
-.interstitial-refresh-enabled #custodians-information {
-  margin-top: 0;
-}
-
-.interstitial-refresh-enabled .custodian-information {
-  margin-top: 24px;
-}
-
-.interstitial-refresh-enabled .avatar-img {
-  border: none;
-}
-
-.interstitial-refresh-enabled .custodian-name {
-  display: none;
-}
-
-.interstitial-refresh-enabled .custodian-email {
-  font-size: 13px;
-}
-
-.interstitial-refresh-enabled #block-reason {
-  align-items: center;
-  background-color: var(--callout-bg-color);
-  border-radius: 8px;
-  color: var(--header-color);
-  display: flex;
-  justify-content: flex-start;
-  padding: 16px;
-  max-width: 276px;
-  margin: 20px auto 0;
-}
-
-.interstitial-refresh-enabled #block-reason-header {
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 24px;
-  margin: 0;
-}
-
-.interstitial-refresh-enabled #block-reason-message {
-  color: var(--callout-text-color);
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  margin: 0;
 }
 
 /* Local approvals button is only shown when the local web approvals flag
@@ -326,18 +228,6 @@ button:focus-visible {
     --custodian-email-color: var(--google-gray-500);
     --custodian-name-color: var(--google-gray-500);
   }
-
-  body.supervised-user-block.interstitial-refresh-enabled {
-    --header-color: #e9eaed;
-    --paragraph-color: var(--google-gray-500);
-    --callout-bg-color: var(--google-gray-800);
-    --callout-text-color: var(--google-gray-200);
-  }
-
-  .interstitial-refresh-enabled .remote-approvals-button {
-    color: var(--google-blue-300);
-    border-color: var(--secondary-button-border-color);
-  }
 }
 
 /* If the height is smaller than min-height, set top and bottom
@@ -359,79 +249,5 @@ margin to 0. This will be useful for subframes. */
 
   .details-button {
     margin-top: 20px;
-  }
-}
-
-/* Narrow width styles when the web filter interstitial refresh flag is
-enabled. */
-@media (max-width: 480px) {
-  .interstitial-refresh-enabled {
-    padding: 0;
-    margin: auto;
-  }
-
-  .interstitial-refresh-enabled button,
-  .interstitial-refresh-enabled [dir='rtl'] button {
-    width: initial;
-  }
-
-  .interstitial-refresh-enabled button {
-    margin: 0 4px 16px 4px;
-  }
-
-  .interstitial-refresh-enabled .illustration {
-    display: none;
-  }
-
-  .interstitial-refresh-enabled .frame-blocked {
-    align-items: center;
-    background-color: rgba(232, 234, 237, .38);
-    border-radius: 12px;
-    padding: 0 8px;
-    width: 284px;
-  }
-
-  .interstitial-refresh-enabled .message-container {
-    align-items: center;
-  }
-
-  .interstitial-refresh-enabled #main-message {
-    margin-top: 32px;
-    text-align: center;
-  }
-
-  .interstitial-refresh-enabled #custodians-information {
-    margin-top: 8px;
-  }
-
-  .interstitial-refresh-enabled .custodian-information {
-    margin-top: 8px;
-  }
-
-  .interstitial-refresh-enabled .custodian-contact {
-    height: 24px;
-  }
-
-  .interstitial-refresh-enabled .avatar-img {
-    height: 24px;
-    width: 24px;
-  }
-
-  .interstitial-refresh-enabled .button-container {
-    display: flex;
-    flex-direction: row-reverse;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 24px 0 16px;
-  }
-
-  .interstitial-refresh-enabled .go-back-button {
-    margin-left: 4px;
-  }
-}
-
-@media (prefers-color-scheme: dark) and (max-width: 480px) {
-  .interstitial-refresh-enabled .frame-blocked {
-    background-color: initial;
   }
 }
