@@ -124,6 +124,8 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // Returns whether the recent files bubble is shown.
   bool RecentFilesBubbleShown() const;
 
+  bool RecentFilesPlaceholderShown() const;
+
  private:
   HoldingSpaceTray* holding_space_tray_ = nullptr;
 };

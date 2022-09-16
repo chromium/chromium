@@ -4,11 +4,25 @@
 
 #include "ash/system/holding_space/recent_files_bubble.h"
 
+#include "ash/bubble/bubble_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/system/holding_space/downloads_section.h"
 #include "ash/system/holding_space/screen_captures_section.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
+
+namespace {
+
+const gfx::Insets kPlaceholderPadding =
+    gfx::Insets::TLBR(24, 48, 40, 48) - kHoldingSpaceChildBubblePadding;
+const int kPlaceholderChildSpacing = 8;
+
+}  // namespace
 
 RecentFilesBubble::RecentFilesBubble(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceTrayChildBubble(delegate) {
@@ -19,6 +33,34 @@ RecentFilesBubble::~RecentFilesBubble() = default;
 
 const char* RecentFilesBubble::GetClassName() const {
   return "RecentFilesBubble";
+}
+
+std::unique_ptr<views::View> RecentFilesBubble::CreatePlaceholder() {
+  if (!features::IsHoldingSpacePredictabilityEnabled())
+    return nullptr;
+
+  return views::Builder<views::View>()
+      .SetID(kHoldingSpaceRecentFilesPlaceholderId)
+      .SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, kPlaceholderPadding,
+          kPlaceholderChildSpacing))
+      .AddChild(views::Builder<views::ImageView>().SetImage(
+          ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+              IDR_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER_IMAGE)))
+      .AddChild(
+          views::Builder<views::Label>(
+              bubble_utils::CreateLabel(bubble_utils::LabelStyle::kHeader,
+                                        u"[i18n]Nothing to show here"))
+              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER))
+      .AddChild(
+          views::Builder<views::Label>(
+              bubble_utils::CreateLabel(
+                  bubble_utils::LabelStyle::kSubheader,
+                  u"[i18n]Your recently downloaded files and screen captures "
+                  u"would show up here"))
+              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
+              .SetMultiLine(true))
+      .Build();
 }
 
 std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>

@@ -3399,6 +3399,27 @@ TEST_P(HoldingSpaceTrayPredictableFeatureTest,
   }
 }
 
+// If the predictable feature flag is enabled and the user has no items in the
+// screen captures or downloads sections, then show a placeholder.
+TEST_P(HoldingSpaceTrayPredictableFeatureTest,
+       ShowRecentFilesPlaceholderWhenNoScreenCapturesOrDownloadsExist) {
+  StartSession();
+
+  // Assert we have no items to display in the recent files holding space
+  // sections.
+  ASSERT_EQ(model()->items().size(), 0u);
+
+  test_api()->Show();
+  ASSERT_TRUE(test_api()->IsShowing());
+
+  // Expect that the recent files bubble and its placeholder are shown if the
+  // feature is enabled.
+  EXPECT_EQ(test_api()->RecentFilesBubbleShown(),
+            IsHoldingSpacePredictabilityEnabled());
+  EXPECT_EQ(test_api()->RecentFilesPlaceholderShown(),
+            IsHoldingSpacePredictabilityEnabled());
+}
+
 class HoldingSpaceTraySuggestionsFeatureTest
     : public HoldingSpaceTrayTestBase,
       public ::testing::WithParamInterface<std::tuple<
@@ -3472,7 +3493,8 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
 
   RemoveAllItems();
-  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+  EXPECT_EQ(test_api()->RecentFilesBubbleShown(),
+            IsHoldingSpacePredictabilityEnabled());
   EXPECT_EQ(test_api()->PinnedFilesBubbleShown(),
             IsHoldingSpacePredictabilityEnabled());
   EXPECT_EQ(test_api()->IsShowingInShelf(),
@@ -3526,12 +3548,15 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
        PlaceholderContainsGSuitePrompt) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
 
-  // Show the bubble. Only the pinned files bubble should be visible.
+  // Show the bubble. Only the pinned files bubble should be visible if the
+  // predictable flag is off, otherwise both should be shown.
   test_api()->Show();
   EXPECT_TRUE(test_api()->PinnedFilesBubbleShown());
-  EXPECT_FALSE(test_api()->RecentFilesBubbleShown());
+  EXPECT_EQ(test_api()->RecentFilesBubbleShown(),
+            IsHoldingSpacePredictabilityEnabled());
 
-  // The new suggestions placeholder text and icons should exist in the bubble.
+  // The new suggestions placeholder text and icons should exist in the pinned
+  // files bubble.
   views::View* pinned_files_bubble = test_api()->GetPinnedFilesBubble();
   ASSERT_TRUE(pinned_files_bubble);
 

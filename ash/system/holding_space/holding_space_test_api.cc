@@ -245,4 +245,13 @@ bool HoldingSpaceTestApi::RecentFilesBubbleShown() const {
   return bubble && bubble->GetVisible();
 }
 
+bool HoldingSpaceTestApi::RecentFilesPlaceholderShown() const {
+  if (!holding_space_tray_->GetBubbleView())
+    return false;
+
+  views::View* placeholder = holding_space_tray_->GetBubbleView()->GetViewByID(
+      kHoldingSpaceRecentFilesPlaceholderId);
+  return placeholder && placeholder->GetVisible();
+}
+
 }  // namespace ash
