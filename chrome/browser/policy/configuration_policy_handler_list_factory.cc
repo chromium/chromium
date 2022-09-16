@@ -1337,6 +1337,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDevicePrintingClientNameTemplate,
     prefs::kPrintingClientNameTemplate,
     base::Value::Type::STRING },
+  { key::kCalendarIntegrationEnabled,
+    ash::prefs::kCalendarIntegrationEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

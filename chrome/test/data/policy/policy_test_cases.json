@@ -19557,6 +19557,39 @@
       }
     ]
   },
+  "CalendarIntegrationEnabled": {
+    "os": ["chromeos_ash"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.calendar_integration_enabled": {
+            "value": false
+        }
+      }
+    },
+    {
+      "policies": {
+        "CalendarIntegrationEnabled": false
+      },
+      "prefs": {
+        "ash.calendar_integration_enabled": {
+          "value": false
+        }
+      }
+    },
+    {
+      "policies": {
+        "CalendarIntegrationEnabled": true
+      },
+      "prefs": {
+        "ash.calendar_integration_enabled": {
+          "value": true
+        }
+      }
+    }
+  ]
+  },
   "OsColorMode": {
     "os": [
       "chromeos_ash"

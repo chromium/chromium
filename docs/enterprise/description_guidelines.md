@@ -10,6 +10,7 @@ how various product names and the like should be referenced.
 * Linux: `<ph name="LINUX_OS_NAME">Linux</ph>`
 * Internet Explorer: `<ph name="IE_PRODUCT_NAME">Internet® Explorer®</ph>`
 * Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
+* Google Calendar: `<ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph>`
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
