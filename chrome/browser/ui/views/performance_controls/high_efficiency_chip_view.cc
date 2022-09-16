@@ -7,6 +7,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "chrome/common/pref_names.h"
@@ -86,7 +88,10 @@ void HighEfficiencyChipView::UpdateImpl() {
 
 void HighEfficiencyChipView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  bubble_ = HighEfficiencyBubbleView::ShowBubble(browser_, this, this);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
+      PageActionIconType::kHighEfficiency);
+  bubble_ = HighEfficiencyBubbleView::ShowBubble(browser_, anchor_view, this);
 }
 
 const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {

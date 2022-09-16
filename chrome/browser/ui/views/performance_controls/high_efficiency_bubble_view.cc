@@ -48,7 +48,7 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
           .Build();
 
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor_view, views::BubbleBorder::NONE);
+      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
   auto* bubble = bubble_unique.get();
 
   views::Widget* const widget =
