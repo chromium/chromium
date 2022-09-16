@@ -5,7 +5,7 @@
 'use strict';
 
 import {PermissionType, TriState, FakePageHandler, AppManagementStore, updateSelectedAppId, createTriStatePermission} from 'chrome://os-settings/chromeos/os_settings.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionToggleByType} from './test_util.js';
 
 suite('<app-management-managed-apps>', () => {

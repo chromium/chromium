@@ -6,7 +6,7 @@
 
 import {AppManagementStore, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceBody} from './test_util.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 suite('<app-management-pin-to-shelf-item>', () => {
   let pinToShelfItem;

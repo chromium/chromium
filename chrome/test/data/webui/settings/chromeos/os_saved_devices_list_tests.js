@@ -9,7 +9,7 @@ import {OsBluetoothDevicesSubpageBrowserProxyImpl} from 'chrome://os-settings/ch
 import {DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-import {eventToPromise, isVisible} from 'chrome://test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
 

@@ -8,9 +8,9 @@ import {TestKerberosAccountsBrowserProxy, TEST_KERBEROS_ACCOUNTS} from './test_k
 import {Router, Route, routes, KerberosErrorType, KerberosConfigErrorCode, KerberosAccountsBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {waitAfterNextRender} from 'chrome://test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 // Tests for the Kerberos Accounts settings page.

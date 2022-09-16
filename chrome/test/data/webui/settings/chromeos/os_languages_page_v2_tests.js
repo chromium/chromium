@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {fakeDataBind} from '../../test_util.js';

@@ -8,7 +8,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.js';
 import {TestDeviceNameBrowserProxy} from './test_device_name_browser_proxy.js';

@@ -6,7 +6,7 @@
 
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody, isHidden} from './test_util.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 suite('<app-management-supported-links-item>', () => {
   let supportedLinksItem;

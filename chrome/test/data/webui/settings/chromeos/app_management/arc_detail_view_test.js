@@ -6,7 +6,7 @@
 
 import {AppManagementStore, FakePageHandler, PermissionType, updateSelectedAppId, getPermissionValueBool} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 suite('<app-management-arc-detail-view>', () => {
   let arcPermissionView;

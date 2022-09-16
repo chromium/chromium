@@ -99,7 +99,7 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUISiteEngagementHost));
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   source->AddResourcePath("site_engagement.js", IDR_SITE_ENGAGEMENT_JS);
   source->AddResourcePath("site_engagement_details.mojom-webui.js",
                           IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_WEBUI_JS);

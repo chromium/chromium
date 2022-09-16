@@ -6,7 +6,7 @@
 
 import {PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool, Router} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 suite('<app-management-borealis-detail-view>', function() {
   let borealisDetailView;

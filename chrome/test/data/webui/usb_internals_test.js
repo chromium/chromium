@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://test/mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
 import {setSetupFn} from 'chrome://usb-internals/app.js';
 import {UsbControlTransferParams, UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceCallbackRouter, UsbDeviceRemote, UsbOpenDeviceError, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
 import {UsbInternalsPageHandler, UsbInternalsPageHandlerReceiver, UsbInternalsPageHandlerRemote} from 'chrome://usb-internals/usb_internals.mojom-webui.js';
 import {UsbDeviceManagerReceiver, UsbDeviceManagerRemote} from 'chrome://usb-internals/usb_manager.mojom-webui.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 /** @implements {UsbInternalsPageHandlerRemote} */
 class FakePageHandlerRemote extends TestBrowserProxy {

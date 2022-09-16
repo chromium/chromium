@@ -69,7 +69,7 @@ TEST_F('SiteEngagementBrowserTest', 'All', function() {
   }
 
   setup(async function() {
-    await import('chrome://test/mojo_webui_test_support.js');
+    await import('chrome://webui-test/mojo_webui_test_support.js');
     cells = getCells();
   });
 

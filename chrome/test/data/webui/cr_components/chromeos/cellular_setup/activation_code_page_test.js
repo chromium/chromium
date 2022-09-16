@@ -6,7 +6,7 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/cr_components/chromeos/cellular_setup/activation_code_page.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {assertTrue} from '../../../chai_assert.js';
 

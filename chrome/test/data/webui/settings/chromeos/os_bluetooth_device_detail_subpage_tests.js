@@ -9,7 +9,7 @@ import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chr
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.js';
+import {eventToPromise, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../../chai_assert.js';
 
