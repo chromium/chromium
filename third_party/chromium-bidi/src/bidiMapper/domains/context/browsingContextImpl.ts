@@ -49,7 +49,7 @@ export class BrowsingContextImpl {
   #cdpClient: CdpClient;
   readonly #bidiServer: IBidiServer;
   #eventManager: IEventManager;
-  readonly #children: BrowsingContextImpl[] = [];
+  readonly #children: Map<string, BrowsingContextImpl> = new Map();
   #scriptEvaluator: ScriptEvaluator;
   // Default execution context is set with key `null`.
   readonly #sandboxToExecutionContextIdMap: Map<
@@ -178,7 +178,7 @@ export class BrowsingContextImpl {
   }
 
   get children(): BrowsingContextImpl[] {
-    return this.#children;
+    return Array.from(this.#children.values());
   }
 
   get url(): string {
@@ -186,7 +186,11 @@ export class BrowsingContextImpl {
   }
 
   addChild(child: BrowsingContextImpl): void {
-    this.#children.push(child);
+    this.#children.set(child.contextId, child);
+  }
+
+  removeChild(childContextId: string): void {
+    this.#children.delete(childContextId);
   }
 
   public serializeToBidiValue(

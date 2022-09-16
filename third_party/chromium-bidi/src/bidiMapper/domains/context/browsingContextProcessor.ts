@@ -38,7 +38,34 @@ export class BrowsingContextProcessor {
     );
   }
 
-  static #removeContext(contextId: string) {
+  async #removeChildContexts(context: BrowsingContextImpl): Promise<void> {
+    await Promise.all(
+      context.children.map((child) => this.#removeContext(child.contextId))
+    );
+  }
+
+  async #removeContext(contextId: string): Promise<void> {
+    if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
+      return;
+    }
+    const context = BrowsingContextProcessor.#getKnownContext(contextId);
+
+    // Remove context's children.
+    await this.#removeChildContexts(context);
+
+    // Remove context from the parent.
+    if (context.parentId !== null) {
+      BrowsingContextProcessor.#findContext(context.parentId)?.removeChild(
+        context.contextId
+      );
+    }
+
+    await this.#eventManager.sendEvent(
+      new BrowsingContext.ContextDestroyedEvent(
+        context.serializeToBidiValue(0, true)
+      ),
+      context.contextId
+    );
     BrowsingContextProcessor.#contexts.delete(contextId);
   }
 
@@ -55,11 +82,16 @@ export class BrowsingContextProcessor {
     return BrowsingContextProcessor.#contexts.has(contextId);
   }
 
+  static #findContext(contextId: string): BrowsingContextImpl | undefined {
+    return BrowsingContextProcessor.#contexts.get(contextId)!;
+  }
+
   static #getKnownContext(contextId: string): BrowsingContextImpl {
-    if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
+    const result = BrowsingContextProcessor.#findContext(contextId);
+    if (result === undefined) {
       throw new NoSuchFrameException(`Context ${contextId} not found`);
     }
-    return BrowsingContextProcessor.#contexts.get(contextId)!;
+    return result;
   }
 
   readonly sessions: Set<string> = new Set();
@@ -118,6 +150,21 @@ export class BrowsingContextProcessor {
         null
       );
     });
+
+    sessionCdpClient.Page.on(
+      'frameNavigated',
+      async (params: Protocol.Page.FrameNavigatedEvent) => {
+        const contextId = params.frame.id;
+        if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
+          return;
+        }
+        const context = BrowsingContextProcessor.#getKnownContext(contextId);
+        // At the point the page is initiated, all the nested iframes are
+        // detached.
+        // Remove context's children.
+        await this.#removeChildContexts(context);
+      }
+    );
 
     sessionCdpClient.Page.on(
       'frameAttached',
@@ -195,8 +242,6 @@ export class BrowsingContextProcessor {
   async #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
-    logContext('detachedFromTarget event received: ' + JSON.stringify(params));
-
     // TODO: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
@@ -204,14 +249,7 @@ export class BrowsingContextProcessor {
     if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
       return;
     }
-    const context = BrowsingContextProcessor.#getKnownContext(contextId);
-    BrowsingContextProcessor.#removeContext(contextId);
-    await this.#eventManager.sendEvent(
-      new BrowsingContext.ContextDestroyedEvent(
-        context.serializeToBidiValue(0, true)
-      ),
-      contextId
-    );
+    await this.#removeContext(contextId);
   }
 
   async process_browsingContext_getTree(

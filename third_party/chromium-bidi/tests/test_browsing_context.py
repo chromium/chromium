@@ -145,6 +145,103 @@ async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsRetu
             "url": page_with_nested_iframe}]},
         result)
 
+# TODO(sadym): make offline.
+@pytest.mark.asyncio
+async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
+      websocket, context_id):
+    nested_iframe = 'https://example.com/'
+    another_nested_iframe = 'https://example.org/'
+    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
+                              f'<iframe src="{nested_iframe}" />'
+    another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
+                              f'<iframe src="{another_nested_iframe}" />'
+
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": page_with_nested_iframe,
+            "wait": "complete",
+            "context": context_id}})
+
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": another_page_with_nested_iframe,
+            "wait": "complete",
+            "context": context_id}})
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": any_string,
+                "url": another_nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": another_page_with_nested_iframe}]},
+        result)
+
+@pytest.mark.asyncio
+async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_contextsReturned(
+      websocket, context_id):
+    nested_iframe = 'data:text/html,<h2>IFRAME</h2>'
+    another_nested_iframe = 'data:text/html,<h2>ANOTHER_IFRAME</h2>'
+    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
+                              f'<iframe src="{nested_iframe}" />'
+    another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
+                              f'<iframe src="{another_nested_iframe}" />'
+
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": page_with_nested_iframe,
+            "wait": "complete",
+            "context": context_id}})
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": any_string,
+                "url": nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": page_with_nested_iframe}]},
+        result)
+
+    await execute_command(websocket, {
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": another_page_with_nested_iframe,
+            "wait": "complete",
+            "context": context_id}})
+
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+
+    recursive_compare({
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": any_string,
+                "url": another_nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": another_page_with_nested_iframe}]},
+        result)
+
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_eventContextCreatedEmitted(
