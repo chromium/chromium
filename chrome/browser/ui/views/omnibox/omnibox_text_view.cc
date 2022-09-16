@@ -304,7 +304,9 @@ void OmniboxTextView::OnStyleChanged() {
   font_height_ = std::max(height_normal, height_bold);
   font_height_ += kVerticalPadding;
 
+  render_text_->SetElideBehavior(gfx::NO_ELIDE);
   SetPreferredSize(CalculatePreferredSize());
+  render_text_->SetElideBehavior(gfx::ELIDE_TAIL);
   SchedulePaint();
 }
 
