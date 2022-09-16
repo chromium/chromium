@@ -1223,20 +1223,25 @@ void ServiceWorkerVersion::OnStarted(
   blink::ServiceWorkerStatusCode status =
       mojo::ConvertTo<blink::ServiceWorkerStatusCode>(start_status);
 
-  // TODO(crbug.com/1360324): update the live version if it is feasible.
-  if (status == blink::ServiceWorkerStatusCode::kOk && fetch_handler_type_ &&
-      fetch_handler_type_ != fetch_handler_type) {
-    context_->registry()->UpdateFetchHandlerType(
-        registration_id_, key_, fetch_handler_type,
-        base::BindOnce([](blink::ServiceWorkerStatusCode status) {
+  if (status == blink::ServiceWorkerStatusCode::kOk) {
+    if (fetch_handler_type_ && fetch_handler_type_ != fetch_handler_type) {
+      context_->registry()->UpdateFetchHandlerType(
+          registration_id_, key_, fetch_handler_type,
           // Ignore errors; bumping the update fetch handler type is
           // just best-effort.
-        }));
-    base::UmaHistogramEnumeration(
-        "ServiceWorker.OnStarted.UpdatedFetchHandlerType", fetch_handler_type);
-  }
-  if (status == blink::ServiceWorkerStatusCode::kOk && !fetch_handler_type_) {
-    set_fetch_handler_type(fetch_handler_type);
+          base::DoNothing());
+      base::UmaHistogramEnumeration(
+          "ServiceWorker.OnStarted.UpdatedFetchHandlerType",
+          fetch_handler_type);
+    }
+    if (!fetch_handler_type_) {
+      set_fetch_handler_type(fetch_handler_type);
+    } else if (
+        // Avoid to change live fetch_handler_existence() result.
+        fetch_handler_type != FetchHandlerType::kNoHandler &&
+        fetch_handler_type_ != FetchHandlerType::kNoHandler) {
+      fetch_handler_type_ = fetch_handler_type;
+    }
   }
 
   // Fire all start callbacks.

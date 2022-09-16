@@ -103,6 +103,32 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
     base::RunLoop loader_loop_;
   };
 
+  // A fake instance client for toggling whether a fetch event handler exists.
+  class FetchHandlerInstanceClient : public FakeEmbeddedWorkerInstanceClient {
+   public:
+    explicit FetchHandlerInstanceClient(EmbeddedWorkerTestHelper* helper)
+        : FakeEmbeddedWorkerInstanceClient(helper) {}
+    ~FetchHandlerInstanceClient() override = default;
+
+    void set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType fetch_handler_type) {
+      fetch_handler_type_ = fetch_handler_type;
+    }
+
+   protected:
+    void EvaluateScript() override {
+      host()->OnScriptEvaluationStart();
+      host()->OnStarted(
+          blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
+          fetch_handler_type_, helper()->GetNextThreadId(),
+          blink::mojom::EmbeddedWorkerStartTiming::New());
+    }
+
+   private:
+    ServiceWorkerVersion::FetchHandlerType fetch_handler_type_ =
+        ServiceWorkerVersion::FetchHandlerType::kNoHandler;
+  };
+
   ServiceWorkerControlleeRequestHandlerTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         url_request_context_(
@@ -111,7 +137,19 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
   void SetUp() override { SetUpWithHelper(/*is_parent_frame_secure=*/true); }
 
   void SetUpWithHelper(bool is_parent_frame_secure) {
+    SetUpWithHelperAndFetchHandlerType(
+        is_parent_frame_secure,
+        ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  }
+
+  void SetUpWithHelperAndFetchHandlerType(
+      bool is_parent_frame_secure,
+      ServiceWorkerVersion::FetchHandlerType fetch_handler_type) {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
+    auto* fetch_handler_worker =
+        helper_->AddNewPendingInstanceClient<FetchHandlerInstanceClient>(
+            helper_.get());
+    fetch_handler_worker->set_fetch_handler_type(fetch_handler_type);
 
     // A new unstored registration/version.
     scope_ = GURL("https://host/scope/");
@@ -496,6 +534,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
 }
 
 TEST_F(ServiceWorkerControlleeRequestHandlerTest, HasNotSkippedMetrics) {
+  SetUpWithHelperAndFetchHandlerType(
+      true, ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   base::HistogramTester tester;
 
   version_->set_fetch_handler_type(
@@ -535,6 +575,8 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, HasNotSkippedMetrics) {
 
 TEST_F(ServiceWorkerControlleeRequestHandlerTest,
        HasSkippedForEmptyFetchHandlerMetrics) {
+  SetUpWithHelperAndFetchHandlerType(
+      true, ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler);
   base::HistogramTester tester;
 
   version_->set_fetch_handler_type(
@@ -590,6 +632,8 @@ class ServiceWorkerSkipEmptyFetchHandlerTest
 };
 
 TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest, HasNotSkippedMetrics) {
+  SetUpWithHelperAndFetchHandlerType(
+      true, ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   base::HistogramTester tester;
 
   version_->set_fetch_handler_type(
@@ -629,6 +673,8 @@ TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest, HasNotSkippedMetrics) {
 
 TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest,
        HasSkippedForEmptyFetchHandlerMetrics) {
+  SetUpWithHelperAndFetchHandlerType(
+      true, ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler);
   base::HistogramTester tester;
 
   version_->set_fetch_handler_type(
