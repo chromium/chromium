@@ -408,6 +408,14 @@ bool IsBiometricAuthenticationForFillingEnabled(
          client->GetPrefs()->GetBoolean(
              password_manager::prefs::kBiometricAuthenticationBeforeFilling);
 }
+
+bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
+    const PrefService* local_state) {
+  return local_state->GetBoolean(
+             password_manager::prefs::kHadBiometricsAvailable) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricAuthenticationForFilling);
+}
 #endif
 
 bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,

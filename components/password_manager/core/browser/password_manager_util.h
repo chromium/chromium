@@ -169,6 +169,9 @@ password_manager::PasswordForm MakeNormalizedBlocklistedForm(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 bool IsBiometricAuthenticationForFillingEnabled(
     password_manager::PasswordManagerClient* client);
+
+bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
+    const PrefService* local_state);
 #endif
 
 // Helper which checks if biometric authentication is available.
