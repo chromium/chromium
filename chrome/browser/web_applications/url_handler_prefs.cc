@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/url_handler_prefs.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -723,12 +722,11 @@ void AddWebApp(PrefService* local_state,
         pref_value->GetDict().FindList(origin.Serialize());
     // One or more apps are already associated with this origin.
     if (handlers) {
-      auto it =
-          std::find_if(handlers->begin(), handlers->end(),
-                       [&app_id, &profile_path](const base::Value& handler) {
-                         return IsHandlerForApp(app_id, profile_path,
-                                                /*match_app_id=*/true, handler);
-                       });
+      auto it = base::ranges::find_if(
+          *handlers, [&app_id, &profile_path](const base::Value& handler) {
+            return IsHandlerForApp(app_id, profile_path,
+                                   /*match_app_id=*/true, handler);
+          });
       // If there is already an entry with the same app_id and profile, replace
       // it. Otherwise, add new entry to the end.
       if (it != handlers->end()) {

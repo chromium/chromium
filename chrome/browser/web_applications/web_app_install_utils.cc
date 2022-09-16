@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
-#include <algorithm>
 #include <array>
 #include <iterator>
 #include <map>
@@ -155,8 +154,8 @@ std::vector<WebAppShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
         WebAppShortcutsMenuItemInfo::Icon info;
 
         // Filter out non-square or too large icons.
-        auto valid_size_it = std::find_if(
-            icon.sizes.begin(), icon.sizes.end(), [](const gfx::Size& size) {
+        auto valid_size_it =
+            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
               return size.width() == size.height() &&
                      size.width() <= kMaxIconSize;
             });
@@ -513,11 +512,11 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
       if (!icon.sizes.empty()) {
         // Filter out non-square or too large icons.
-        auto valid_size = std::find_if(icon.sizes.begin(), icon.sizes.end(),
-                                       [](const gfx::Size& size) {
-                                         return size.width() == size.height() &&
-                                                size.width() <= kMaxIconSize;
-                                       });
+        auto valid_size =
+            base::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
+              return size.width() == size.height() &&
+                     size.width() <= kMaxIconSize;
+            });
         if (valid_size == icon.sizes.end())
           continue;
         // TODO(https://crbug.com/1071308): Take the declared icon density and

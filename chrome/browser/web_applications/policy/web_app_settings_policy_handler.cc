@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -39,9 +40,9 @@ bool WebAppSettingsPolicyHandler::CheckPolicySettings(
 
   const auto& web_apps_list =
       policy_entry->value(base::Value::Type::LIST)->GetList();
-  const auto it = std::find_if(
-      web_apps_list.begin(), web_apps_list.end(), [](const base::Value& entry) {
-        return entry.FindKey(kManifestId)->GetString() == kWildcard;
+  const auto it = base::ranges::find(
+      web_apps_list, kWildcard, [](const base::Value& entry) {
+        return entry.FindKey(kManifestId)->GetString();
       });
 
   if (it != web_apps_list.end() && it->is_dict()) {

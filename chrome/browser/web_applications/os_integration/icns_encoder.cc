@@ -94,8 +94,8 @@ bool IcnsEncoder::AddImage(const gfx::Image& image) {
       bitmap.width() != bitmap.height())
     return false;
 
-  const IcnsBlockTypes* block_types = base::ranges::find_if(
-      kIcnsBlockTypes, [&](const auto& t) { return t.size == bitmap.width(); });
+  const IcnsBlockTypes* block_types = base::ranges::find(
+      kIcnsBlockTypes, bitmap.width(), &IcnsBlockTypes::size);
   if (block_types == std::end(kIcnsBlockTypes))
     return false;
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <vector>
@@ -14,6 +13,7 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -417,11 +417,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
 
   const std::vector<apps::PermissionPtr>& permissions =
       mock_app_publisher.get_deltas().back()->permissions;
-  auto camera_permission = std::find_if(
-      permissions.begin(), permissions.end(),
-      [](const apps::PermissionPtr& permission) {
-        return permission->permission_type == apps::PermissionType::kCamera;
-      });
+  auto camera_permission =
+      base::ranges::find(permissions, apps::PermissionType::kCamera,
+                         &apps::Permission::permission_type);
   ASSERT_TRUE(camera_permission != permissions.end());
   EXPECT_TRUE(absl::holds_alternative<apps::TriState>(
       (*camera_permission)->value->value));
