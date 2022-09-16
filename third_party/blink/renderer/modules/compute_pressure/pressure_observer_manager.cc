@@ -129,6 +129,10 @@ void PressureObserverManager::OnUpdate(
   CopyToVector(registered_observers_[source_index], observers);
   for (const auto& observer : observers)
     observer->OnUpdate(state.Clone());
+
+  // Last reported state is saved for next registered observer
+  // if next upcoming state is filtered by the browser.
+  last_reported_state_ = state.Clone();
 }
 
 void PressureObserverManager::Trace(blink::Visitor* visitor) const {
@@ -240,12 +244,16 @@ void PressureObserverManager::DidSetQuantization(
 
   switch (status) {
     case mojom::blink::SetQuantizationStatus::kChanged:
-      // Clear registered observers, then do same steps as kUnchanged.
+      // Clear registered observers, and register latest observer.
       registered_observers_[source_index].clear();
-      [[fallthrough]];
+      registered_observers_[source_index].insert(observer);
+      resolver->Resolve();
+      break;
     case mojom::blink::SetQuantizationStatus::kUnchanged:
       registered_observers_[source_index].insert(observer);
       resolver->Resolve();
+      if (last_reported_state_)
+        observer->OnUpdate(last_reported_state_.Clone());
       break;
   }
 }

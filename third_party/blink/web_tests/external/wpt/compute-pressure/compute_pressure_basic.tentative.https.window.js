@@ -17,3 +17,23 @@ promise_test(async t => {
   assert_in_array(update.cpuUtilization, [0.25, 0.75],
                   'cpuUtilization quantization');
 }, 'An active PressureObserver calls its callback at least once');
+
+promise_test(async t => {
+  const observer1_updates = [];
+  const update = await new Promise(async resolve => {
+    const observer1 = new PressureObserver(
+        update => {observer1_updates.push(update)},
+        {cpuUtilizationThresholds: [0.5]});
+    await observer1.observe('cpu');
+
+    const observer2 =
+        new PressureObserver(resolve, {cpuUtilizationThresholds: [0.5]});
+    await observer2.observe('cpu');
+  });
+
+  assert_in_array(
+      update.cpuUtilization, [0.25, 0.75], 'cpuUtilization quantization')
+  assert_in_array(
+      observer1_updates[0].cpuUtilization, [0.25, 0.75],
+      'cpuUtilization quantization');
+}, 'Same quantization should also update second observer');

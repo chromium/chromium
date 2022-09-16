@@ -82,6 +82,9 @@ class MODULES_EXPORT PressureObserverManager final
 
   constexpr static size_t kPressureSourceSize = V8PressureSource::kEnumSize;
 
+  // Copy of the last reported state from the platform collector.
+  device::mojom::blink::PressureStatePtr last_reported_state_ = nullptr;
+
   // Connection to the browser-side implementation.
   HeapMojoRemote<mojom::blink::PressureService> pressure_service_;
 
