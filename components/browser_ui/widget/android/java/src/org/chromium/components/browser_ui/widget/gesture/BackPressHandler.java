@@ -40,11 +40,11 @@ public interface BackPressHandler {
         int MANUAL_FILLING = 6;
         int FULLSCREEN = 7;
         int BOTTOM_SHEET = 8;
-        int TAB_MODAL_HANDLER = 9;
-        int TAB_SWITCHER_TO_BROWSING = 10; // Removed.
-        int CLOSE_WATCHER = 11;
-        int FIND_TOOLBAR = 12;
-        int LOCATION_BAR = 13;
+        int LOCATION_BAR = 9;
+        int TAB_MODAL_HANDLER = 10;
+        int TAB_SWITCHER_TO_BROWSING = 11; // Removed.
+        int CLOSE_WATCHER = 12;
+        int FIND_TOOLBAR = 13;
         int TOOLBAR_TAB_CONTROLLER = 14;
         int TAB_RETURN_TO_CHROME_START_SURFACE = 15;
         int SHOW_READING_LIST = 16;
