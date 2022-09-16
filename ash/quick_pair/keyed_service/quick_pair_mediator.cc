@@ -179,6 +179,11 @@ void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
 
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
+  // SFUL metrics will cause a crash if Fast Pair is disabled when we
+  // retroactive pair, so prevent a notification from popping up.
+  // TODO(b/247148054): Look into moving this elsewhere.
+  if (!feature_status_tracker_->IsFastPairEnabled())
+    return;
   ui_broker_->ShowAssociateAccount(std::move(device));
 }
 

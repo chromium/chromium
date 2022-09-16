@@ -413,6 +413,12 @@ TEST_F(MediatorTest, InvokesShowAssociateAccount) {
   fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
 }
 
+TEST_F(MediatorTest, DoesntInvokeShowAssociateAccount_FastPairDisabled) {
+  feature_status_tracker_->SetIsFastPairEnabled(false);
+  EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(0);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
+}
+
 TEST_F(MediatorTest, RemoveNotificationOnPaired) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
