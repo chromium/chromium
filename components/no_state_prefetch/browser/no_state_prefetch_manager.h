@@ -234,14 +234,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   base::TimeTicks GetCurrentTimeTicks() const;
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
-  void DisablePageLoadMetricsObserverForTesting() {
-    page_load_metric_observer_disabled_ = true;
-  }
-
-  bool PageLoadMetricsObserverDisabledForTesting() const {
-    return page_load_metric_observer_disabled_;
-  }
-
   void AddObserver(std::unique_ptr<NoStatePrefetchManagerObserver> observer);
 
   // Notification that a prerender has completed and its bytes should be
@@ -534,8 +526,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   PrerenderProcessSet prerender_process_hosts_;
 
   raw_ptr<const base::TickClock> tick_clock_;
-
-  bool page_load_metric_observer_disabled_ = false;
 
   std::vector<std::unique_ptr<NoStatePrefetchManagerObserver>> observers_;
 
