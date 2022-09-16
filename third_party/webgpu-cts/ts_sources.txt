@@ -255,6 +255,7 @@ src/webgpu/api/validation/render_pipeline/fragment_state.spec.ts
 src/webgpu/api/validation/render_pipeline/inter_stage.spec.ts
 src/webgpu/api/validation/render_pipeline/misc.spec.ts
 src/webgpu/api/validation/render_pipeline/multisample_state.spec.ts
+src/webgpu/api/validation/render_pipeline/overrides.spec.ts
 src/webgpu/api/validation/render_pipeline/primitive_state.spec.ts
 src/webgpu/api/validation/render_pipeline/shader_module.spec.ts
 src/webgpu/api/validation/render_pipeline/vertex_state.spec.ts
@@ -264,6 +265,7 @@ src/webgpu/api/validation/resource_usages/texture/in_pass_encoder.spec.ts
 src/webgpu/api/validation/resource_usages/texture/in_render_common.spec.ts
 src/webgpu/api/validation/resource_usages/texture/in_render_misc.spec.ts
 src/webgpu/api/validation/shader_module/entry_point.spec.ts
+src/webgpu/api/validation/shader_module/overrides.spec.ts
 src/webgpu/api/validation/state/device_lost/destroy.spec.ts
 src/webgpu/api/validation/texture/destroy.spec.ts
 src/webgpu/idl/exposed.html.ts
