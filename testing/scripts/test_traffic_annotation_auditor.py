@@ -99,7 +99,7 @@ def main_run(args):
       json.dump(sheet_config, config_file, indent=4)
       config_filename = config_file.name
       config_file.close()
-      vpython_path = 'vpython.bat' if is_windows() else 'vpython'
+      vpython_path = 'vpython3.bat' if is_windows() else 'vpython3'
 
       command_line = [
         vpython_path,
