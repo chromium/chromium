@@ -24,6 +24,7 @@ import "chromeos/services/network_health/public/mojom/network_health.mojom";
 // network-related implementations to the cros_healthd daemon.
 //
 // NextMinVersion: 2, NextIndex: 7
+[Stable]
 interface CrosHealthdServiceFactory {
   // Returns a bound interface to the diagnostics service.
   GetDiagnosticsService@0(pending_receiver<CrosHealthdDiagnosticsService> service);
