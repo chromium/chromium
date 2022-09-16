@@ -35,24 +35,11 @@ bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
 
 absl::optional<bool> g_enable_check_android_management_in_tests;
 
-// Updates UMA with user cancel only if error is not currently shown.
-// TODO(hashimoto): Remove the duplicate in arc_session_manager.cc.
-void MaybeUpdateOptInCancelUMA(const ArcSupportHost* support_host) {
-  if (!support_host ||
-      support_host->ui_page() == ArcSupportHost::UIPage::NO_PAGE ||
-      support_host->ui_page() == ArcSupportHost::UIPage::ERROR) {
-    return;
-  }
-
-  UpdateOptInCancelUMA(OptInCancelReason::USER_CANCEL);
-}
-
 }  // namespace
 
-ArcRequirementChecker::ArcRequirementChecker(Delegate* delegate,
-                                             Profile* profile,
+ArcRequirementChecker::ArcRequirementChecker(Profile* profile,
                                              ArcSupportHost* support_host)
-    : delegate_(delegate), profile_(profile), support_host_(support_host) {
+    : profile_(profile), support_host_(support_host) {
   if (g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
     ArcAndroidManagementChecker::StartClient();
 }
@@ -60,6 +47,14 @@ ArcRequirementChecker::ArcRequirementChecker(Delegate* delegate,
 ArcRequirementChecker::~ArcRequirementChecker() {
   profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
       policy::POLICY_DOMAIN_CHROME, this);
+}
+
+void ArcRequirementChecker::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ArcRequirementChecker::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 // static
@@ -94,13 +89,16 @@ void ArcRequirementChecker::OnBackgroundAndroidManagementCheckedForTesting(
 }
 
 void ArcRequirementChecker::StartRequirementChecks(
-    bool is_terms_of_service_negotiation_needed) {
+    bool is_terms_of_service_negotiation_needed,
+    StartRequirementChecksCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::kStopped);
   DCHECK(profile_);
   DCHECK(!terms_of_service_negotiator_);
+  DCHECK(!requirement_check_callback_);
 
   state_ = State::kNegotiatingTermsOfService;
+  requirement_check_callback_ = std::move(callback);
 
   if (!is_terms_of_service_negotiation_needed) {
     // Moves to next state, Android management check, immediately, as if
@@ -168,14 +166,14 @@ void ArcRequirementChecker::OnTermsOfServiceNegotiated(bool accepted) {
   DCHECK_EQ(state_, State::kNegotiatingTermsOfService);
   DCHECK(profile_);
   DCHECK(terms_of_service_negotiator_ || !g_ui_enabled);
+  DCHECK(requirement_check_callback_);
   terms_of_service_negotiator_.reset();
 
   if (!accepted) {
     VLOG(1) << "Terms of services declined";
     state_ = State::kStopped;
-    // User does not accept the Terms of Service. Disable Google Play Store.
-    MaybeUpdateOptInCancelUMA(support_host_);
-    SetArcPlayStoreEnabledForProfile(profile_, false);
+    std::move(requirement_check_callback_)
+        .Run(RequirementCheckResult::kTermsOfServicesDeclined);
     return;
   }
 
@@ -200,7 +198,8 @@ void ArcRequirementChecker::StartAndroidManagementCheck() {
     support_host_->ShowArcLoading();
   }
 
-  delegate_->OnArcOptInManagementCheckStarted();
+  for (auto& observer : observers_)
+    observer.OnArcOptInManagementCheckStarted();
 
   if (!g_ui_enabled)
     return;
@@ -217,9 +216,24 @@ void ArcRequirementChecker::OnAndroidManagementChecked(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::kCheckingAndroidManagement);
   DCHECK(android_management_checker_ || !g_ui_enabled);
+  DCHECK(requirement_check_callback_);
   android_management_checker_.reset();
   state_ = State::kStopped;
-  delegate_->OnAndroidManagementChecked(result);
+
+  switch (result) {
+    case ArcAndroidManagementChecker::CheckResult::ALLOWED:
+      std::move(requirement_check_callback_).Run(RequirementCheckResult::kOk);
+      return;
+    case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
+      std::move(requirement_check_callback_)
+          .Run(RequirementCheckResult::kDisallowedByAndroidManagement);
+      return;
+    case ArcAndroidManagementChecker::CheckResult::ERROR:
+      std::move(requirement_check_callback_)
+          .Run(RequirementCheckResult::kAndroidManagementCheckError);
+      return;
+  }
+  NOTREACHED();
 }
 
 void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(

@@ -57,7 +57,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
                           public ArcSupportHost::ErrorDelegate,
                           public ash::SessionManagerClient::Observer,
                           public ash::ConciergeClient::VmObserver,
-                          public ArcRequirementChecker::Delegate {
+                          public ArcRequirementChecker::Observer {
  public:
   // Represents each State of ARC session.
   // NOT_INITIALIZED: represents the state that the Profile is not yet ready
@@ -356,10 +356,12 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Otherwise, move to StartAndroidManagementCheck().
   void MaybeStartTermsOfServiceNegotiation();
 
-  // ArcRequirementChecker::Delegate override:
+  // ArcRequirementChecker::Observer override:
   void OnArcOptInManagementCheckStarted() override;
-  void OnAndroidManagementChecked(
-      ArcAndroidManagementChecker::CheckResult result) override;
+
+  // Called when requirement checks are done.
+  void OnRequirementChecksDone(
+      ArcRequirementChecker::RequirementCheckResult result);
 
   void ShutdownSession();
   void ResetArcState();

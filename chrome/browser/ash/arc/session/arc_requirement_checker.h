@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
@@ -27,30 +28,20 @@ class ArcTermsOfServiceNegotiator;
 //   ArcSupportHost.
 class ArcRequirementChecker : public policy::PolicyService::Observer {
  public:
-  // TODO(b/242813462): Make the interface cleaner. (e.g. Using callbacks
-  // instead of delegate methods to communicate the check result. Notifying
-  // events via an observer interface)
-  class Delegate {
+  class Observer : public base::CheckedObserver {
    public:
-    Delegate() = default;
-    virtual ~Delegate() = default;
-
     // Called to notify that checking of Android management status started
     // during the opt-in flow.
     virtual void OnArcOptInManagementCheckStarted() = 0;
-
-    // Called when the Android management check is done for
-    // StartRequirementChecks().
-    virtual void OnAndroidManagementChecked(
-        ArcAndroidManagementChecker::CheckResult result) = 0;
   };
 
-  ArcRequirementChecker(Delegate* delegate,
-                        Profile* profile,
-                        ArcSupportHost* support_host);
+  ArcRequirementChecker(Profile* profile, ArcSupportHost* support_host);
   ArcRequirementChecker(const ArcRequirementChecker&) = delete;
   const ArcRequirementChecker& operator=(const ArcRequirementChecker&) = delete;
   ~ArcRequirementChecker() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   static void SetUiEnabledForTesting(bool enabled);
   static void SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(bool enabled);
@@ -66,7 +57,16 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
   // Starts negotiating the terms of service to user, and checking Android
   // management. This is for first boot case (= Opt-in or OOBE flow case). On a
   // regular boot, use StartBackgroundChecks() instead.
-  void StartRequirementChecks(bool is_terms_of_service_negotiation_needed);
+  enum class RequirementCheckResult {
+    kOk,
+    kTermsOfServicesDeclined,
+    kDisallowedByAndroidManagement,
+    kAndroidManagementCheckError,
+  };
+  using StartRequirementChecksCallback =
+      base::OnceCallback<void(RequirementCheckResult result)>;
+  void StartRequirementChecks(bool is_terms_of_service_negotiation_needed,
+                              StartRequirementChecksCallback callback);
 
   // Starts requirement checks in background (in parallel with starting ARC).
   // This is for a regular boot case.
@@ -109,7 +109,6 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
   // expires.
   void OnFirstPoliciesLoadedOrTimeout();
 
-  Delegate* const delegate_;
   Profile* const profile_;
   ArcSupportHost* const support_host_;
 
@@ -118,11 +117,14 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
   std::unique_ptr<ArcTermsOfServiceNegotiator> terms_of_service_negotiator_;
   std::unique_ptr<ArcAndroidManagementChecker> android_management_checker_;
 
+  StartRequirementChecksCallback requirement_check_callback_;
   StartBackgroundChecksCallback background_check_callback_;
 
   // Timer to wait for policiesin case we are suspecting the user might be
   // transitioning to the managed state.
   base::OneShotTimer wait_for_policy_timer_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ArcRequirementChecker> weak_ptr_factory_{this};
 };

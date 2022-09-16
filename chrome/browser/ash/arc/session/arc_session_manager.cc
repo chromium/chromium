@@ -109,8 +109,6 @@ base::TimeDelta GetArcSignInTimeout() {
 }
 
 // Updates UMA with user cancel only if error is not currently shown.
-// TODO(hashimoto): Move the caller code to arc_requirement_checker.cc to remove
-// this duplicate.
 void MaybeUpdateOptInCancelUMA(const ArcSupportHost* support_host) {
   if (!support_host ||
       support_host->ui_page() == ArcSupportHost::UIPage::NO_PAGE ||
@@ -1183,10 +1181,13 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
     // faster.
     StartMiniArc();
   }
-  requirement_checker_ = std::make_unique<ArcRequirementChecker>(
-      this, profile_, support_host_.get());
+  requirement_checker_ =
+      std::make_unique<ArcRequirementChecker>(profile_, support_host_.get());
+  requirement_checker_->AddObserver(this);
   requirement_checker_->StartRequirementChecks(
-      is_terms_of_service_negotiation_needed);
+      is_terms_of_service_negotiation_needed,
+      base::BindOnce(&ArcSessionManager::OnRequirementChecksDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSessionManager::StartArcForTesting() {
@@ -1211,19 +1212,26 @@ void ArcSessionManager::OnArcOptInManagementCheckStarted() {
     observer.OnArcOptInManagementCheckStarted();
 }
 
-void ArcSessionManager::OnAndroidManagementChecked(
-    ArcAndroidManagementChecker::CheckResult result) {
+void ArcSessionManager::OnRequirementChecksDone(
+    ArcRequirementChecker::RequirementCheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::CHECKING_REQUIREMENTS);
   DCHECK(requirement_checker_);
   requirement_checker_.reset();
 
   switch (result) {
-    case ArcAndroidManagementChecker::CheckResult::ALLOWED:
+    case ArcRequirementChecker::RequirementCheckResult::kOk:
       VLOG(1) << "Starting ARC for first sign in.";
       StartArc();
       break;
-    case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
+    case ArcRequirementChecker::RequirementCheckResult::
+        kTermsOfServicesDeclined:
+      // User does not accept the Terms of Service. Disable Google Play Store.
+      MaybeUpdateOptInCancelUMA(support_host_.get());
+      SetArcPlayStoreEnabledForProfile(profile_, false);
+      break;
+    case ArcRequirementChecker::RequirementCheckResult::
+        kDisallowedByAndroidManagement:
       ShowArcSupportHostError(
           ArcSupportHost::ErrorInfo(
               ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR),
@@ -1231,7 +1239,8 @@ void ArcSessionManager::OnAndroidManagementChecked(
           false /* should_show_run_network_tests */);
       UpdateOptInCancelUMA(OptInCancelReason::ANDROID_MANAGEMENT_REQUIRED);
       break;
-    case ArcAndroidManagementChecker::CheckResult::ERROR:
+    case ArcRequirementChecker::RequirementCheckResult::
+        kAndroidManagementCheckError:
       ShowArcSupportHostError(
           ArcSupportHost::ErrorInfo(
               ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR),
@@ -1253,8 +1262,8 @@ void ArcSessionManager::StartBackgroundRequirementChecks() {
     return;
   }
 
-  requirement_checker_ = std::make_unique<ArcRequirementChecker>(
-      this, profile_, support_host_.get());
+  requirement_checker_ =
+      std::make_unique<ArcRequirementChecker>(profile_, support_host_.get());
   requirement_checker_->StartBackgroundChecks(
       base::BindOnce(&ArcSessionManager::OnBackgroundRequirementChecksDone,
                      weak_ptr_factory_.GetWeakPtr()));
