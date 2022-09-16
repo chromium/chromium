@@ -32,40 +32,41 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBodyText);
 }  // namespace
 
-// Model delegate for the disabled dialog. This class implements the click
-// behavior for the disabled dialog.
-class DisabledDialogModelDelegate : public ui::DialogModelDelegate {
+// Base model delegate for the Tailored Security dialogs. This class implements
+// the click behavior for the dialogs.
+class TailoredSecurityDialogModelDelegate : public ui::DialogModelDelegate {
  public:
+  explicit TailoredSecurityDialogModelDelegate(const char* kOutcomeMetricName)
+      : kOutcomeMetricName_(kOutcomeMetricName) {}
+
   void OnDialogAccepted() {
     // Just count the click.
-    base::UmaHistogramEnumeration(kDisabledDialogOutcome,
+    base::UmaHistogramEnumeration(kOutcomeMetricName_,
                                   TailoredSecurityOutcome::kAccepted);
   }
+
   void OnDialogRejected(Browser* browser) {
     // Redirect to the Chrome safe browsing settings page.
-    base::UmaHistogramEnumeration(kDisabledDialogOutcome,
+    base::UmaHistogramEnumeration(kOutcomeMetricName_,
                                   TailoredSecurityOutcome::kSettings);
 
     chrome::ShowSafeBrowsingEnhancedProtection(browser);
   }
+
+ private:
+  const std::string kOutcomeMetricName_;
 };
 
-// Model delegate for the enabled dialog. This class implements the click
-// behavior for the enabled dialog.
-class EnabledDialogModelDelegate : public ui::DialogModelDelegate {
+class DisabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
  public:
-  void OnDialogAccepted() {
-    // Just count the click.
-    base::UmaHistogramEnumeration(kEnabledDialogOutcome,
-                                  TailoredSecurityOutcome::kAccepted);
-  }
-  void OnDialogRejected(Browser* browser) {
-    // Redirect to the Chrome safe browsing settings page.
-    base::UmaHistogramEnumeration(kEnabledDialogOutcome,
-                                  TailoredSecurityOutcome::kSettings);
+  DisabledDialogModelDelegate()
+      : TailoredSecurityDialogModelDelegate(kDisabledDialogOutcome) {}
+};
 
-    chrome::ShowSafeBrowsingEnhancedProtection(browser);
-  }
+class EnabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
+ public:
+  EnabledDialogModelDelegate()
+      : TailoredSecurityDialogModelDelegate(kEnabledDialogOutcome) {}
 };
 
 void ShowEnabledDialogForBrowser(Browser* browser) {
