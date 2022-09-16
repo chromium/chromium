@@ -2703,7 +2703,7 @@
   {
     "name": "enable-password-manager-branding-update",
     "owners": [ "alionadangla", "bwwilliams", "bling-flags@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "enable-payment-request-basic-card",
