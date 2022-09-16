@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/link_header_util/link_header_util.h"
+#include "components/payments/core/csp_checker.h"
 #include "components/payments/core/error_logger.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
@@ -108,8 +109,11 @@ GURL ParseRedirectUrl(const net::RedirectInfo& redirect_info,
 
 PaymentManifestDownloader::PaymentManifestDownloader(
     std::unique_ptr<ErrorLogger> log,
+    base::WeakPtr<CSPChecker> csp_checker,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : log_(std::move(log)), url_loader_factory_(std::move(url_loader_factory)) {
+    : log_(std::move(log)),
+      csp_checker_(csp_checker),
+      url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK(log_);
   DCHECK(url_loader_factory_);
 }
@@ -122,7 +126,8 @@ void PaymentManifestDownloader::DownloadPaymentMethodManifest(
     PaymentManifestDownloadCallback callback) {
   DCHECK(UrlUtil::IsValidManifestUrl(url));
   // Restrict number of redirects for efficiency and breaking circle.
-  InitiateDownload(merchant_origin, url,
+  InitiateDownload(merchant_origin, url, /*url_before_redirects=*/url,
+                   /*did_follow_redirect=*/false,
                    Download::Type::RESPONSE_BODY_OR_LINK_HEADER,
                    /*allowed_number_of_redirects=*/3, std::move(callback));
 }
@@ -133,7 +138,8 @@ void PaymentManifestDownloader::DownloadWebAppManifest(
     PaymentManifestDownloadCallback callback) {
   DCHECK(UrlUtil::IsValidManifestUrl(url));
   InitiateDownload(payment_method_manifest_origin, url,
-                   Download::Type::RESPONSE_BODY,
+                   /*url_before_redirects=*/url,
+                   /*did_follow_redirect=*/false, Download::Type::RESPONSE_BODY,
                    /*allowed_number_of_redirects=*/0, std::move(callback));
 }
 
@@ -141,9 +147,14 @@ GURL PaymentManifestDownloader::FindTestServerURL(const GURL& url) const {
   return url;
 }
 
-PaymentManifestDownloader::Download::Download() {}
+void PaymentManifestDownloader::SetCSPCheckerForTesting(
+    base::WeakPtr<CSPChecker> csp_checker) {
+  NOTREACHED();
+}
 
-PaymentManifestDownloader::Download::~Download() {}
+PaymentManifestDownloader::Download::Download() = default;
+
+PaymentManifestDownloader::Download::~Download() = default;
 
 void PaymentManifestDownloader::OnURLLoaderRedirect(
     network::SimpleURLLoader* url_loader,
@@ -168,10 +179,13 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
               download->original_url, redirect_url,
               net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
         // Redirects preserve the original request initiator.
-        InitiateDownload(download->request_initiator, redirect_url,
-                         Download::Type::RESPONSE_BODY_OR_LINK_HEADER,
-                         --download->allowed_number_of_redirects,
-                         std::move(download->callback));
+        InitiateDownload(
+            download->request_initiator, redirect_url,
+            /*url_before_redirects=*/download->url_before_redirects,
+            /*did_follow_redirect=*/true,
+            Download::Type::RESPONSE_BODY_OR_LINK_HEADER,
+            --download->allowed_number_of_redirects,
+            std::move(download->callback));
         return;
       }
       error_message = base::ReplaceStringPlaceholders(
@@ -295,7 +309,8 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
       // https://github.com/w3c/webappsec-fetch-metadata/issues/30
       InitiateDownload(
           url::Origin::Create(final_url), payment_method_manifest_url,
-          Download::Type::RESPONSE_BODY,
+          /*url_before_redirects=*/download->url_before_redirects,
+          /*did_follow_redirect=*/false, Download::Type::RESPONSE_BODY,
           /*allowed_number_of_redirects=*/0, std::move(download->callback));
       return;
     }
@@ -318,6 +333,8 @@ GURL PaymentManifestDownloader::GetLoaderOriginalURLForTesting() {
 void PaymentManifestDownloader::InitiateDownload(
     const url::Origin& request_initiator,
     const GURL& url,
+    const GURL& url_before_redirects,
+    bool did_follow_redirect,
     Download::Type download_type,
     int allowed_number_of_redirects,
     PaymentManifestDownloadCallback callback) {
@@ -356,27 +373,50 @@ void PaymentManifestDownloader::InitiateDownload(
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
-  loader->SetOnRedirectCallback(
-      base::BindRepeating(&PaymentManifestDownloader::OnURLLoaderRedirect,
-                          weak_ptr_factory_.GetWeakPtr(), loader.get()));
-
-  loader->DownloadToString(
-      url_loader_factory_.get(),
-      base::BindOnce(&PaymentManifestDownloader::OnURLLoaderComplete,
-                     weak_ptr_factory_.GetWeakPtr(), loader.get()),
-      kMaxManifestSize);
 
   auto download = std::make_unique<Download>();
   download->request_initiator = request_initiator;
   download->type = download_type;
   download->original_url = url;
+  download->url_before_redirects = url_before_redirects;
+  download->did_follow_redirect = did_follow_redirect;
   download->loader = std::move(loader);
   download->callback = std::move(callback);
   download->allowed_number_of_redirects = allowed_number_of_redirects;
 
-  const network::SimpleURLLoader* identifier = download->loader.get();
+  if (!csp_checker_) {  // Can be null when the webpage closes.
+    RespondWithError(errors::kPaymentManifestDownloadFailed,
+                     download->original_url, *log_,
+                     std::move(download->callback));
+    return;
+  }
+
+  csp_checker_->AllowConnectToSource(
+      url, url_before_redirects, did_follow_redirect,
+      base::BindOnce(&PaymentManifestDownloader::OnCSPCheck,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(download)));
+}
+
+void PaymentManifestDownloader::OnCSPCheck(std::unique_ptr<Download> download,
+                                           bool csp_allowed) {
+  if (!csp_allowed) {
+    RespondWithError(errors::kPaymentManifestCSPDenied, download->original_url,
+                     *log_, std::move(download->callback));
+    return;
+  }
+
+  network::SimpleURLLoader* loader = download->loader.get();
+  loader->SetOnRedirectCallback(
+      base::BindRepeating(&PaymentManifestDownloader::OnURLLoaderRedirect,
+                          weak_ptr_factory_.GetWeakPtr(), loader));
+  loader->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&PaymentManifestDownloader::OnURLLoaderComplete,
+                     weak_ptr_factory_.GetWeakPtr(), loader),
+      kMaxManifestSize);
+
   auto insert_result =
-      downloads_.insert(std::make_pair(identifier, std::move(download)));
+      downloads_.insert(std::make_pair(loader, std::move(download)));
   DCHECK(insert_result.second);  // Whether the insert has succeeded.
 }
 

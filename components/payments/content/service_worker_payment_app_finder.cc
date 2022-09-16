@@ -407,6 +407,7 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
   } else {
     downloader = std::make_unique<payments::PaymentManifestDownloader>(
         std::make_unique<DeveloperConsoleLogger>(web_contents),
+        const_csp_checker_.GetWeakPtr(),
         render_frame_host()
             .GetBrowserContext()
             ->GetDefaultStoragePartition()

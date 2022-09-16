@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "components/payments/content/web_app_manifest.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/installed_payment_apps_finder.h"
@@ -110,6 +111,9 @@ class ServiceWorkerPaymentAppFinder
 
   std::set<std::string> ignored_methods_;
   std::unique_ptr<PaymentManifestDownloader> test_downloader_;
+
+  // TODO(https://crbug.com/1349091): Check the CSP in the renderer instead.
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 };
 
 }  // namespace payments

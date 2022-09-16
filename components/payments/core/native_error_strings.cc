@@ -97,6 +97,9 @@ const char kPaymentManifestCrossSiteRedirectNotAllowed[] =
 const char kPaymentManifestDownloadFailed[] =
     "Unable to download payment manifest \"$1\".";
 
+const char kPaymentManifestCSPDenied[] =
+    "Content Security Policy denied the download of payment manifest \"$1\".";
+
 const char kPaymentDetailsNotObject[] =
     "Payment app returned invalid response. \"details\" field is not a "
     "dictionary.";

@@ -104,8 +104,8 @@ void PaymentRequestPlatformBrowserTestBase::
   content::BrowserContext* context =
       GetActiveWebContents()->GetBrowserContext();
   auto downloader = std::make_unique<TestDownloader>(
-      context->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+      GetCSPCheckerForTests(), context->GetDefaultStoragePartition()
+                                   ->GetURLLoaderFactoryForBrowserProcess());
   for (const auto& method : payment_methods) {
     downloader->AddTestServerURL("https://" + method.first + "/",
                                  method.second->GetURL(method.first, "/"));
@@ -180,6 +180,11 @@ void PaymentRequestPlatformBrowserTestBase::ResetEventWaiterForEventSequence(
     std::list<TestEvent> event_sequence) {
   event_waiter_ = std::make_unique<EventWaiter>(
       std::move(event_sequence), false /* wait_for_single_event*/);
+}
+
+base::WeakPtr<CSPChecker>
+PaymentRequestPlatformBrowserTestBase::GetCSPCheckerForTests() {
+  return const_csp_checker_.GetWeakPtr();
 }
 
 void PaymentRequestPlatformBrowserTestBase::WaitForObservedEvent() {

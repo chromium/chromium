@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/test_payment_manifest_downloader.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -55,7 +56,9 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::BrowserContext* context = web_contents->GetBrowserContext();
+    ConstCSPChecker const_csp_checker(/*allow=*/true);
     auto downloader = std::make_unique<TestDownloader>(
+        const_csp_checker.GetWeakPtr(),
         context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://", https_server_->GetURL("/"));

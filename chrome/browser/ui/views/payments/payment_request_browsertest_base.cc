@@ -905,6 +905,11 @@ void PaymentRequestBrowserTestBase::WaitForObservedEvent() {
   event_waiter_->Wait();
 }
 
+base::WeakPtr<CSPChecker>
+PaymentRequestBrowserTestBase::GetCSPCheckerForTests() {
+  return const_csp_checker_.GetWeakPtr();
+}
+
 }  // namespace payments
 
 std::ostream& operator<<(

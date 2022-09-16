@@ -12,6 +12,9 @@ static_library("core") {
     "android_app_description_tools.h",
     "can_make_payment_query.cc",
     "can_make_payment_query.h",
+    "const_csp_checker.cc",
+    "const_csp_checker.h",
+    "csp_checker.h",
     "currency_formatter.cc",
     "currency_formatter.h",
     "error_logger.cc",
@@ -158,6 +161,7 @@ source_set("unit_tests") {
   sources = [
     "android_app_description_tools_unittest.cc",
     "can_make_payment_query_unittest.cc",
+    "const_csp_checker_unittest.cc",
     "currency_formatter_unittest.cc",
     "journey_logger_unittest.cc",
     "payment_currency_amount_unittest.cc",

@@ -76,7 +76,9 @@ class DownloadCallback {
 PaymentManifestDownloaderAndroid::PaymentManifestDownloaderAndroid(
     std::unique_ptr<ErrorLogger> log,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : downloader_(std::move(log), std::move(url_loader_factory)) {}
+    : downloader_(std::move(log),
+                  const_csp_checker_.GetWeakPtr(),
+                  std::move(url_loader_factory)) {}
 
 PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() {}
 

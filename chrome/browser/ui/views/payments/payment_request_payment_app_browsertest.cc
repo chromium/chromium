@@ -126,9 +126,9 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     auto downloader = std::make_unique<TestDownloader>(
-        web_contents->GetBrowserContext()
-            ->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess());
+        GetCSPCheckerForTests(), web_contents->GetBrowserContext()
+                                     ->GetDefaultStoragePartition()
+                                     ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://alicepay.com/",
                                  alicepay_.GetURL("alicepay.com", "/"));
     downloader->AddTestServerURL("https://bobpay.com/",

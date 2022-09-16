@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/payments/content/payment_request.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -285,6 +286,9 @@ class PaymentRequestBrowserTestBase
   // Wait for the event(s) passed to ResetEventWaiter*() to occur.
   void WaitForObservedEvent();
 
+  // Return a weak pointer to a Content Security Policy (CSP) checker for tests.
+  base::WeakPtr<CSPChecker> GetCSPCheckerForTests();
+
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -297,6 +301,7 @@ class PaymentRequestBrowserTestBase
   bool is_browser_window_active_ = true;
   bool skip_ui_for_basic_card_ = false;
   std::vector<base::WeakPtr<PaymentRequest>> requests_;
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 
   base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
 };

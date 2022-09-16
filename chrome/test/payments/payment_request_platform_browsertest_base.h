@@ -17,6 +17,7 @@
 #include "chrome/test/payments/personal_data_manager_test_util.h"
 #include "chrome/test/payments/test_event_waiter.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -98,6 +99,10 @@ class PaymentRequestPlatformBrowserTestBase
   void ResetEventWaiterForSingleEvent(TestEvent event);
   void ResetEventWaiterForEventSequence(std::list<TestEvent> event_sequence);
 
+  // Return a weak pointer to a Content Security Policy (CSP) checker for
+  // tests.
+  base::WeakPtr<CSPChecker> GetCSPCheckerForTests();
+
   // Wait for the event(s) passed to ResetEventWaiter*() to occur.
   void WaitForObservedEvent();
 
@@ -119,6 +124,7 @@ class PaymentRequestPlatformBrowserTestBase
   std::unique_ptr<EventWaiter> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   PaymentRequestTestController test_controller_;
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 };
 
 }  // namespace payments

@@ -140,7 +140,9 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::BrowserContext* context = web_contents->GetBrowserContext();
+    ConstCSPChecker const_csp_checker(/*allow=*/true);
     auto downloader = std::make_unique<TestDownloader>(
+        const_csp_checker.GetWeakPtr(),
         context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://alicepay.com/",

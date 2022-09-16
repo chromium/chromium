@@ -4,10 +4,14 @@
 
 #include "components/payments/core/payment_manifest_downloader.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/error_logger.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -32,24 +36,24 @@ static constexpr char kNoResponseBody[] = "";
 
 }  // namespace
 
-class PaymentMethodManifestDownloaderTest : public testing::Test {
- protected:
+class PaymentManifestDownloaderTestBase : public testing::Test {
+ public:
   enum class Headers {
     kSend,
     kOmit,
   };
 
-  PaymentMethodManifestDownloaderTest()
+  PaymentManifestDownloaderTestBase()
       : test_url_("https://bobpay.com"),
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_factory_)),
-        downloader_(std::make_unique<ErrorLogger>(),
-                    shared_url_loader_factory_) {
-    downloader_.DownloadPaymentMethodManifest(
-        url::Origin::Create(GURL("https://chromium.org")), test_url_,
-        base::BindOnce(&PaymentMethodManifestDownloaderTest::OnManifestDownload,
-                       base::Unretained(this)));
+        const_csp_checker_(std::make_unique<ConstCSPChecker>(/*allow=*/true)) {}
+
+  void InitDownloader() {
+    downloader_ = std::make_unique<PaymentManifestDownloader>(
+        std::make_unique<ErrorLogger>(), const_csp_checker_->GetWeakPtr(),
+        shared_url_loader_factory_);
   }
 
   MOCK_METHOD3(OnManifestDownload,
@@ -74,10 +78,17 @@ class PaymentMethodManifestDownloaderTest : public testing::Test {
         headers->SetHeader("Link", *link_header);
     }
 
-    downloader_.OnURLLoaderCompleteInternal(
-        downloader_.GetLoaderForTesting(),
-        downloader_.GetLoaderOriginalURLForTesting(), response_body, headers,
+    downloader_->OnURLLoaderCompleteInternal(
+        downloader_->GetLoaderForTesting(),
+        downloader_->GetLoaderOriginalURLForTesting(), response_body, headers,
         net_error);
+  }
+
+  void ServerResponse(int response_code,
+                      const std::string& response_body,
+                      int net_error) {
+    ServerResponse(response_code, Headers::kSend, /*link_header=*/absl::nullopt,
+                   response_body, net_error);
   }
 
   void ServerRedirect(int redirect_code, const GURL& new_url) {
@@ -86,19 +97,34 @@ class PaymentMethodManifestDownloaderTest : public testing::Test {
     redirect_info.new_url = new_url;
     std::vector<std::string> to_be_removed_headers;
 
-    downloader_.OnURLLoaderRedirect(
-        downloader_.GetLoaderForTesting(), redirect_info,
+    downloader_->OnURLLoaderRedirect(
+        downloader_->GetLoaderForTesting(), redirect_info,
         network::mojom::URLResponseHead(), &to_be_removed_headers);
   }
 
-  GURL GetOriginalURL() { return downloader_.GetLoaderOriginalURLForTesting(); }
+  GURL GetOriginalURL() {
+    return downloader_->GetLoaderOriginalURLForTesting();
+  }
 
- private:
+ protected:
   GURL test_url_;
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  PaymentManifestDownloader downloader_;
+  std::unique_ptr<ConstCSPChecker> const_csp_checker_;
+  std::unique_ptr<PaymentManifestDownloader> downloader_;
+};
+
+class PaymentMethodManifestDownloaderTest
+    : public PaymentManifestDownloaderTestBase {
+ public:
+  PaymentMethodManifestDownloaderTest() {
+    InitDownloader();
+    downloader_->DownloadPaymentMethodManifest(
+        url::Origin::Create(GURL("https://chromium.org")), test_url_,
+        base::BindOnce(&PaymentMethodManifestDownloaderTest::OnManifestDownload,
+                       base::Unretained(this)));
+  }
 };
 
 TEST_F(PaymentMethodManifestDownloaderTest, FirstHttpResponse404IsFailure) {
@@ -533,52 +559,15 @@ TEST_F(PaymentMethodManifestDownloaderTest, NotAllowCrossSiteRedirects) {
   ServerRedirect(301, GURL("https://alicepay.com"));
 }
 
-class WebAppManifestDownloaderTest : public testing::Test {
+class WebAppManifestDownloaderTest : public PaymentManifestDownloaderTestBase {
  public:
-  WebAppManifestDownloaderTest()
-      : test_url_("https://bobpay.com"),
-        shared_url_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_factory_)),
-        downloader_(std::make_unique<ErrorLogger>(),
-                    shared_url_loader_factory_) {
-    downloader_.DownloadWebAppManifest(
+  WebAppManifestDownloaderTest() {
+    InitDownloader();
+    downloader_->DownloadWebAppManifest(
         url::Origin::Create(test_url_), test_url_,
         base::BindOnce(&WebAppManifestDownloaderTest::OnManifestDownload,
                        base::Unretained(this)));
   }
-
-  WebAppManifestDownloaderTest(const WebAppManifestDownloaderTest&) = delete;
-  WebAppManifestDownloaderTest& operator=(const WebAppManifestDownloaderTest&) =
-      delete;
-
-  ~WebAppManifestDownloaderTest() override {}
-
-  MOCK_METHOD3(OnManifestDownload,
-               void(const GURL& url,
-                    const std::string& content,
-                    const std::string& error_message));
-
-  void ServerResponse(int response_code,
-                      const std::string& response_body,
-                      int net_error) {
-    scoped_refptr<net::HttpResponseHeaders> headers =
-        base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
-    headers->ReplaceStatusLine(base::StringPrintf(
-        "HTTP/1.1 %d %s", response_code,
-        net::GetHttpReasonPhrase(
-            static_cast<net::HttpStatusCode>(response_code))));
-    downloader_.OnURLLoaderCompleteInternal(downloader_.GetLoaderForTesting(),
-                                            test_url_, response_body, headers,
-                                            net_error);
-  }
-
- private:
-  GURL test_url_;
-  base::test::TaskEnvironment task_environment_;
-  network::TestURLLoaderFactory test_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  PaymentManifestDownloader downloader_;
 };
 
 TEST_F(WebAppManifestDownloaderTest, HttpGetResponse404IsFailure) {
@@ -615,6 +604,75 @@ TEST_F(WebAppManifestDownloaderTest, InsufficientResourcesFailure) {
           "Unable to download payment manifest \"https://bobpay.com/\"."));
 
   ServerResponse(200, "manifest content", net::ERR_INSUFFICIENT_RESOURCES);
+}
+
+using PaymentManifestDownloaderCSPTest = PaymentManifestDownloaderTestBase;
+
+// Download fails when CSP checker is gone, e.g., during shutdown.
+TEST_F(PaymentManifestDownloaderCSPTest,
+       PaymentMethodManifestCSPCheckerMissing) {
+  InitDownloader();
+  const_csp_checker_.reset();
+
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.com/\"."));
+
+  downloader_->DownloadPaymentMethodManifest(
+      url::Origin::Create(GURL("https://chromium.org")), test_url_,
+      base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
+                     base::Unretained(this)));
+}
+
+// Download fails when CSP checker is gone, e.g., during shutdown.
+TEST_F(PaymentManifestDownloaderCSPTest, WebAppManifestCSPCheckerMissing) {
+  InitDownloader();
+  const_csp_checker_.reset();
+
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.com/\"."));
+
+  downloader_->DownloadWebAppManifest(
+      url::Origin::Create(test_url_), test_url_,
+      base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
+                     base::Unretained(this)));
+}
+
+// Download fails when CSP checker denies it.
+TEST_F(PaymentManifestDownloaderCSPTest, PaymentMethodManifestCSPDenied) {
+  const_csp_checker_ = std::make_unique<ConstCSPChecker>(/*allow=*/false);
+  InitDownloader();
+
+  EXPECT_CALL(*this, OnManifestDownload(
+                         _, kNoContent,
+                         "Content Security Policy denied the download of "
+                         "payment manifest \"https://bobpay.com/\"."));
+
+  downloader_->DownloadPaymentMethodManifest(
+      url::Origin::Create(GURL("https://chromium.org")), test_url_,
+      base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
+                     base::Unretained(this)));
+}
+
+// Download fails when CSP checker denies it.
+TEST_F(PaymentManifestDownloaderCSPTest, WebAppManifestCSPDenied) {
+  const_csp_checker_ = std::make_unique<ConstCSPChecker>(/*allow=*/false);
+  InitDownloader();
+
+  EXPECT_CALL(*this, OnManifestDownload(
+                         _, kNoContent,
+                         "Content Security Policy denied the download of "
+                         "payment manifest \"https://bobpay.com/\"."));
+
+  downloader_->DownloadWebAppManifest(
+      url::Origin::Create(test_url_), test_url_,
+      base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
+                     base::Unretained(this)));
 }
 
 }  // namespace payments

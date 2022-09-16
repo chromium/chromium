@@ -125,6 +125,11 @@ extern const char kPaymentManifestCrossSiteRedirectNotAllowed[];
 // be used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
 extern const char kPaymentManifestDownloadFailed[];
 
+// Used when Content Security Policy (CSP) denied downloading payment manifest
+// URL A. This format should be used with base::ReplaceStringPlaceholders(fmt,
+// {A}, nullptr).
+extern const char kPaymentManifestCSPDenied[];
+
 // Payment handler passed a non-object field "details" in response to the
 // "paymentrequest" event.
 extern const char kPaymentDetailsNotObject[];

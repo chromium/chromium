@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/ref_counted.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 
 namespace network {
@@ -54,6 +55,9 @@ class PaymentManifestDownloaderAndroid {
                const base::android::JavaParamRef<jobject>& jcaller);
 
  private:
+  // TODO(https://crbug.com/1349091): Check the CSP in the renderer instead.
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
+
   PaymentManifestDownloader downloader_;
 };
 

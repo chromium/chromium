@@ -51,8 +51,8 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
     content::BrowserContext* context =
         GetActiveWebContents()->GetBrowserContext();
     auto downloader = std::make_unique<TestDownloader>(
-        context->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess());
+        GetCSPCheckerForTests(), context->GetDefaultStoragePartition()
+                                     ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://kylepay.com/",
                                  kylepay_server_.GetURL("kylepay.com", "/"));
     downloader->AddTestServerURL("https://google.com/",
