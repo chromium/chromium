@@ -170,24 +170,16 @@ class ColorManagerObserver : public WaylandDisplayObserver {
                        wl_resource* output_resource)
       : wayland_display_handler_(wayland_display_handler),
         color_management_output_resource_(color_management_output_resource),
-        output_resource_(output_resource) {}
+        output_resource_(output_resource) {
+    wayland_display_handler->AddObserver(this);
+  }
 
   ColorManagerObserver(const ColorManagerObserver&) = delete;
   ColorManagerObserver& operator=(const ColorManagerObserver&) = delete;
 
-  ~ColorManagerObserver() = default;
-
-  // Overridden from WaylandDisplayObserver:
-  bool SendDisplayMetrics(const display::Display& display,
-                          uint32_t changed_metrics) override {
-    if (!(changed_metrics &
-          display::DisplayObserver::DISPLAY_METRIC_COLOR_SPACE)) {
-      return false;
-    }
-
-    zcr_color_management_output_v1_send_color_space_changed(
-        color_management_output_resource_);
-    return true;
+  ~ColorManagerObserver() {
+    if (wayland_display_handler_)
+      wayland_display_handler_->RemoveObserver(this);
   }
 
   gfx::ColorSpace GetColorSpace() const {
@@ -207,6 +199,25 @@ class ColorManagerObserver : public WaylandDisplayObserver {
   }
 
   wl_resource* GetOutputResource() { return output_resource_; }
+
+  // Overriden from WaylandDisplayObserver.
+  void OnOutputDestroyed() override {
+    wayland_display_handler_->RemoveObserver(this);
+    wayland_display_handler_ = nullptr;
+  }
+
+  // Overridden from WaylandDisplayObserver.
+  bool SendDisplayMetrics(const display::Display& display,
+                          uint32_t changed_metrics) override {
+    if (!(changed_metrics &
+          display::DisplayObserver::DISPLAY_METRIC_COLOR_SPACE)) {
+      return false;
+    }
+
+    zcr_color_management_output_v1_send_color_space_changed(
+        color_management_output_resource_);
+    return true;
+  }
 
  private:
   WaylandDisplayHandler* wayland_display_handler_;
@@ -475,7 +486,6 @@ void color_manager_get_color_management_output(
       std::make_unique<ColorManagerObserver>(
           display_handler, color_management_output_resource, output);
 
-  display_handler->AddObserver(color_management_output_observer.get());
   SetImplementation(color_management_output_resource,
                     &color_management_output_v1_implementation,
                     std::move(color_management_output_observer));
