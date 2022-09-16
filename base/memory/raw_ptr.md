@@ -224,6 +224,10 @@ Use raw C++ pointers instead of `raw_ptr<T>` in the following scenarios:
   Avoiding the error requires the `raw_ptr<T>` destructor to be explicitly
   called before destroying the union, if the field is holding a value. Doing
   this manual destruction wrong might lead to leaks or double-dereferences.)
+- Pointers whose addresses are used only as identifiers and which are
+  never dereferenced (e.g. keys in a map). There is a performance gain
+  by not using `raw_ptr` in this case; prefer to use `uintptr_t` to
+  emphasize that the entity can dangle and must not be dereferenced.
 
 You don’t have to, but may use `raw_ptr<T>`, in the following scenarios:
 - Pointers that are used as an element type of collections/wrappers. E.g.
