@@ -268,7 +268,6 @@ if (include_polymer && is_chromeos_ash) {
     "cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
     "cr_components/chromeos/quick_unlock/lock_screen_constants.js",
     "cr_components/chromeos/quick_unlock/pin_keyboard_icon.js",
-    "cr_elements/chromeos/cros_color_overrides.m.js",
   ]
 }
 

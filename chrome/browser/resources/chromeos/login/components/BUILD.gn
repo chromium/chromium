@@ -252,10 +252,7 @@ js_library("security_token_pin.m") {
 
 js_library("throbber_notice.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.m.js" ]
-  deps = [
-    "./behaviors:oobe_i18n_behavior.m",
-    "//ui/webui/resources/cr_elements/chromeos:cros_color_overrides_module",
-  ]
+  deps = [ "./behaviors:oobe_i18n_behavior.m" ]
   extra_deps = [ ":throbber_notice_module" ]
 }
 
@@ -415,6 +412,7 @@ polymer_modulizer("throbber_notice") {
   html_file = "throbber_notice.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

@@ -16,18 +16,12 @@ preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_elements"
 
 if (include_polymer) {
   preprocess_src_manifest = "preprocessed_src_manifest.json"
-  if (is_chromeos_ash) {
-    preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-  }
 
   generate_grd("build_grdp") {
     grd_prefix = "cr_elements"
     out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
     public_deps = [ ":preprocess" ]
     manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
-    if (is_chromeos_ash) {
-      manifest_files += [ "$target_gen_dir/$preprocess_gen_manifest" ]
-    }
     resource_path_prefix = "cr_elements"
   }
 }
@@ -44,10 +38,6 @@ group("preprocess") {
       ":html_wrapper_files",
       ":preprocess_src",
     ]
-
-    if (is_chromeos_ash) {
-      public_deps += [ ":preprocess_generated" ]
-    }
   }
 }
 
@@ -83,16 +73,6 @@ if (include_polymer) {
         "policy/cr_policy_indicator_behavior.js",
       ]
     }
-  }
-}
-
-if (is_chromeos_ash) {
-  preprocess_if_expr("preprocess_generated") {
-    deps = [ "chromeos:polymer3_elements" ]
-    in_folder = target_gen_dir
-    out_folder = preprocess_folder
-    out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-    in_files = [ "chromeos/cros_color_overrides.m.js" ]
   }
 }
 
