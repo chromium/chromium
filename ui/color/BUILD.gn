@@ -142,6 +142,8 @@ component("mixers") {
     "native_color_mixers.h",
     "ref_color_mixer.cc",
     "ref_color_mixer.h",
+    "sys_color_mixer.cc",
+    "sys_color_mixer.h",
     "ui_color_mixer.cc",
     "ui_color_mixer.h",
   ]

@@ -92,6 +92,26 @@
   E_CPONLY(kColorRefNeutralVariant99) \
   E_CPONLY(kColorRefNeutralVariant100) \
   \
+  /* UI system color tokens */ \
+  E_CPONLY(kColorSysPrimary) \
+  E_CPONLY(kColorSysOnPrimary) \
+  E_CPONLY(kColorSysPrimaryContainer) \
+  E_CPONLY(kColorSysOnPrimaryContainer) \
+  E_CPONLY(kColorSysSecondary) \
+  E_CPONLY(kColorSysOnSecondary) \
+  E_CPONLY(kColorSysSecondaryContainer) \
+  E_CPONLY(kColorSysOnSecondaryContainer) \
+  E_CPONLY(kColorSysTertiary) \
+  E_CPONLY(kColorSysOnTertiary) \
+  E_CPONLY(kColorSysTertiaryContainer) \
+  E_CPONLY(kColorSysOnTertiaryContainer) \
+  E_CPONLY(kColorSysError) \
+  E_CPONLY(kColorSysOnError) \
+  E_CPONLY(kColorSysErrorContainer) \
+  E_CPONLY(kColorSysOnErrorContainer) \
+  E_CPONLY(kColorSysSurfaceVariant) \
+  E_CPONLY(kColorSysOnSurfaceVariant) \
+  E_CPONLY(kColorSysOutline) \
   /* Core color concepts */ \
   /* The kColorAccent color id is used in color_provider_css_colors_test.ts. \
   If changing the variable name, the variable name in the test needs to be \
