@@ -40,9 +40,6 @@ class WebTestBuilders(builders.Builders):
         if self._fake_ci_builders is None:
             fake_try_builders = {
                 # chromium.fyi
-                'linux-blink-optional-highdpi-rel-dummy': {
-                    'linux-blink-optional-highdpi-rel',
-                },
                 'linux-blink-rel-dummy': {
                     'linux-blink-rel',
                     'v8_linux_blink_rel',

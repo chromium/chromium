@@ -1,15 +1,4 @@
 {
-  "linux-blink-optional-highdpi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "linux-blink-rel": {
     "gn_args": {
       "dcheck_always_on": false,

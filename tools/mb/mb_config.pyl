@@ -885,7 +885,6 @@
       # release trybots must *not* enable dchecks, because that could
       # cause them to produce different baselines than the release
       # waterfall bots, and run_web_tests.py can't handle that (by design).
-      'linux-blink-optional-highdpi-rel': 'release_bot_blink_minimal_symbols',
       'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
       'mac10.13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac10.14-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
@@ -3400,10 +3399,6 @@
 
     'release_bot_blink_arm64_minimal_symbols': [
       'release_bot_blink', 'arm64', 'minimal_symbols',
-    ],
-
-    'release_bot_blink_minimal_symbols': [
-      'release_bot_blink', 'minimal_symbols',
     ],
 
     'release_bot_blink_minimal_symbols_no_nacl': [
