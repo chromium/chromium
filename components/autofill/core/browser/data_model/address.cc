@@ -49,27 +49,11 @@ bool Address::operator==(const Address& other) const {
     return structured_address_.SameAs(other.structured_address_);
   }
 
-  bool are_states_equal = (state_ == other.state_);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap) &&
-      !are_states_equal) {
-    // If the canonical state name exists for |state_| and |other.state_|, they
-    // are compared otherwise.
-    absl::optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_state_name_cur = GetCanonicalizedStateName();
-    absl::optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_state_name_other = other.GetCanonicalizedStateName();
-    if (canonical_state_name_cur && canonical_state_name_other) {
-      are_states_equal =
-          (canonical_state_name_cur == canonical_state_name_other);
-    }
-  }
-
   return street_address_ == other.street_address_ &&
          dependent_locality_ == other.dependent_locality_ &&
          city_ == other.city_ && zip_code_ == other.zip_code_ &&
          sorting_code_ == other.sorting_code_ &&
-         country_code_ == other.country_code_ && are_states_equal &&
+         country_code_ == other.country_code_ && state_ == other.state_ &&
          street_name_ == other.street_name_ &&
          dependent_street_name_ == other.dependent_street_name_ &&
          house_number_ == other.house_number_ &&

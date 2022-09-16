@@ -237,55 +237,6 @@ TEST_P(AddressTest, IsCountry) {
   EXPECT_EQ(0U, matching_types.size());
 }
 
-// Test the equality of two |Address()| objects w.r.t. the state.
-TEST_P(AddressTest, TestAreStatesEqual) {
-  base::test::ScopedFeatureList feature;
-  // The feature
-  // |features::kAutofillEnableSupportForMoreStructureInAddresses| is disabled
-  // since it is incompatible with the feature
-  // |features::kAutofillUseStateMappingCache|.
-  feature.InitWithFeatures(
-      {features::kAutofillUseAlternativeStateNameMap},
-      {features::kAutofillEnableSupportForMoreStructureInAddresses});
-  test::ClearAlternativeStateNameMapForTesting();
-  test::PopulateAlternativeStateNameMapForTesting();
-
-  struct {
-    const char* const country_code;
-    const char* const first;
-    const char* const second;
-    const bool result;
-  } test_cases[] = {
-      {"DE", "Bavaria", "BY", true}, {"DE", "", "", true},
-      {"DE", "", "BY", false},       {"DE", "Bavaria", "Bayern", true},
-      {"DE", "BY", "Bayern", true},  {"DE", "b.y.", "Bayern", true}};
-
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(testing::Message() << "first: " << test_case.first
-                                    << " | second: " << test_case.second);
-
-    Address address1;
-    Address address2;
-
-    // Set the address tokens.
-    address1.SetRawInfo(ADDRESS_HOME_COUNTRY,
-                        base::ASCIIToUTF16(test_case.country_code));
-    address2.SetRawInfo(ADDRESS_HOME_COUNTRY,
-                        base::ASCIIToUTF16(test_case.country_code));
-
-    address1.SetRawInfo(ADDRESS_HOME_STATE,
-                        base::ASCIIToUTF16(test_case.first));
-    address2.SetRawInfo(ADDRESS_HOME_STATE,
-                        base::ASCIIToUTF16(test_case.second));
-
-    if (test_case.result) {
-      EXPECT_TRUE(address1 == address2);
-    } else {
-      EXPECT_FALSE(address1 == address2);
-    }
-  }
-}
-
 // Verifies that Address::GetInfo() correctly combines address lines.
 TEST_P(AddressTest, GetStreetAddress) {
   const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
