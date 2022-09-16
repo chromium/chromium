@@ -78,7 +78,7 @@ function setAutofillAssistantUrl() {
 }
 
 function launchScript(origin) {
-  chrome.send('launch-script', [origin, $('ldap').value, $('bundle-id').value]);
+  chrome.send('launch-script', [origin, $('bundle-id').value, $('ldap').value]);
 }
 
 function onScriptCacheReceived(scriptsCacheInfo) {
