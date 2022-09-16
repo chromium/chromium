@@ -7139,6 +7139,10 @@ crbug.com/1363683 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d
 crbug.com/1364129 [ Mac10.15 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
 crbug.com/1364129 [ Mac11 ] editing/pasteboard/data-transfer-items-image-png.html [ Failure Pass ]
 
+# Disable DOM web flake on debug linux and mac
+crbug.com/1353578 [ Debug Linux ] fast/dom/gc-image-element-2.html [ Failure Pass ]
+crbug.com/1353578 [ Debug Mac ] fast/dom/gc-image-element-2.html [ Failure Pass ]
+
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]
 
