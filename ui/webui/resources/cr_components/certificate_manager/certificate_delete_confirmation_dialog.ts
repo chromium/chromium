@@ -14,7 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {assertNotReached} from '../../js/assert_ts.js';
-import {I18nMixin} from '../../js/i18n_mixin.js';
+import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {getTemplate} from './certificate_delete_confirmation_dialog.html.js';

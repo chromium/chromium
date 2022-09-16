@@ -170,6 +170,17 @@ TEST_F('CrElementsI18nBehaviorTest', 'All', function() {
   mocha.run();
 });
 
+var CrElementsI18nMixinTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/i18n_mixin_test.js';
+  }
+};
+
+TEST_F('CrElementsI18nMixinTest', 'All', function() {
+  mocha.run();
+});
+
 var CrElementsIconButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -200,6 +211,18 @@ var CrElementsLinkRowTest = class extends CrElementsBrowserTest {
 };
 
 TEST_F('CrElementsLinkRowTest', 'All', function() {
+  mocha.run();
+});
+
+var CrElementsListPropertyUpdateMixinTest =
+    class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/list_property_update_mixin_tests.js';
+  }
+};
+
+TEST_F('CrElementsListPropertyUpdateMixinTest', 'All', function() {
   mocha.run();
 });
 
@@ -434,5 +457,16 @@ var CrElementsTreeTest = class extends CrElementsBrowserTest {
 };
 
 TEST_F('CrElementsTreeTest', 'All', function() {
+  mocha.run();
+});
+
+var CrElementsWebUIListenerMixinTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=cr_elements/web_ui_listener_mixin_test.js';
+  }
+};
+
+TEST_F('CrElementsWebUIListenerMixinTest', 'All', function() {
   mocha.run();
 });

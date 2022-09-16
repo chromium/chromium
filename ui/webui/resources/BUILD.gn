@@ -303,10 +303,7 @@ ts_library("library") {
       "cr_components/managed_footnote/managed_footnote.ts",
       "js/cr/ui/focus_row_mixin.ts",
       "js/cr/ui/focus_without_ink.ts",
-      "js/i18n_mixin.ts",
-      "js/list_property_update_mixin.ts",
       "js/search_highlight_utils.ts",
-      "js/web_ui_listener_mixin.ts",
     ]
   }
 

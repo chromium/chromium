@@ -4,7 +4,7 @@
 
 /** @fileoverview Suite of tests for the ListPropertyUpdateMixin.  */
 
-import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

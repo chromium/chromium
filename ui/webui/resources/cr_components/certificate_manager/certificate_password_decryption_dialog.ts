@@ -15,7 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from '../../js/i18n_mixin.js';
+import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './certificate_password_decryption_dialog.html.js';
 import {CertificatesBrowserProxyImpl} from './certificates_browser_proxy.js';

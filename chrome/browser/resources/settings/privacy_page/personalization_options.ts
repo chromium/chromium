@@ -23,7 +23,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from '//resources/js/assert_ts.js';
-import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';

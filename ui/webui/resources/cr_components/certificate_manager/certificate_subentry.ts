@@ -18,7 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_mixin.js';
-import {I18nMixin} from '../../js/i18n_mixin.js';
+import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
 import {getTemplate} from './certificate_subentry.html.js';

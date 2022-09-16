@@ -12,8 +12,8 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from './load_time_data.m.js';
-import {parseHtmlSubset, sanitizeInnerHtml, SanitizeInnerHtmlOpts} from './parse_html_subset.js';
+import {loadTimeData} from '../js/load_time_data.m.js';
+import {parseHtmlSubset, sanitizeInnerHtml, SanitizeInnerHtmlOpts} from '../js/parse_html_subset.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

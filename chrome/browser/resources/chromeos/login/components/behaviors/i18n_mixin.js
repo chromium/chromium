@@ -12,7 +12,7 @@
  * TODO(crbug.com/1319543) - Remove this file once it is possible.
  *
  * This file is essentially a copy of the JavaScript file that is generated
- * from ui/webui/resources/js/i18n_mixin.ts. The generated file cannot be used
+ * from ui/webui/resources/cr_elements/i18n_mixin.ts. The generated file cannot be used
  * in OOBE because it always has JS imports directives. For the Polymer2 OOBE,
  * the directives need to be commented out.
  *

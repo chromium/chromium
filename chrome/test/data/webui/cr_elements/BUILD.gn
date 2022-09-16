@@ -56,7 +56,10 @@ non_preprocessed_files = [
   "cr_view_manager_test.ts",
   "find_shortcut_mixin_test.ts",
   "i18n_behavior_test.js",
+  "i18n_mixin_test.ts",
   "iron_list_focus_test.ts",
+  "list_property_update_mixin_tests.ts",
+  "web_ui_listener_mixin_test.ts",
 ]
 
 if (is_chromeos_ash) {

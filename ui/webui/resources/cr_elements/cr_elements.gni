@@ -103,8 +103,11 @@ if (include_polymer) {
     "cr_scrollable_mixin.ts",
     "cr_search_field/cr_search_field_mixin.ts",
     "find_shortcut_mixin.ts",
+    "i18n_mixin.ts",
+    "list_property_update_mixin.ts",
     "mouse_hoverable_mixin.ts",
     "policy/cr_policy_indicator_mixin.ts",
+    "web_ui_listener_mixin.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

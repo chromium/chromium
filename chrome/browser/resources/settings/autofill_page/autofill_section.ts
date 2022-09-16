@@ -21,7 +21,7 @@ import './address_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
 import '../i18n_setup.js';
 
-import {I18nMixin} from '//resources/js/i18n_mixin.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';

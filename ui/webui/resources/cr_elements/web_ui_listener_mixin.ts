@@ -9,7 +9,7 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {addWebUIListener, removeWebUIListener, WebUIListener} from './cr.m.js';
+import {addWebUIListener, removeWebUIListener, WebUIListener} from '../js/cr.m.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

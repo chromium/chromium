@@ -14,7 +14,7 @@ import './certificate_subentry.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_mixin.js';
-import {I18nMixin} from '../../js/i18n_mixin.js';
+import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './certificate_entry.html.js';
 import {CertificatesOrgGroup, CertificateType} from './certificates_browser_proxy.js';

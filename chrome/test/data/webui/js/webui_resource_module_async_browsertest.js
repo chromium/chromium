@@ -112,28 +112,6 @@ TEST_F('LoadTimeDataModuleTest', 'All', function() {
   mocha.run();
 });
 
-var I18nMixinTest = class extends WebUIResourceModuleAsyncTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=js/i18n_mixin_test.js';
-  }
-};
-
-TEST_F('I18nMixinTest', 'All', function() {
-  mocha.run();
-});
-
-var WebUIListenerMixinTest = class extends WebUIResourceModuleAsyncTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://webui-test/test_loader.html?module=js/web_ui_listener_mixin_test.js';
-  }
-};
-
-TEST_F('WebUIListenerMixinTest', 'All', function() {
-  mocha.run();
-});
-
 var ColorUtilsModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
