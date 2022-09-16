@@ -1,0 +1,20 @@
+caption: Enable advanced battery charge mode
+desc: |-
+  If <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME">DeviceAdvancedBatteryChargeModeDayConfig</ph> is set, setting <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME">DeviceAdvancedBatteryChargeModeEnabled</ph> to Enabled keeps advanced battery charge mode power management policy on (if supported on the device). Using a standard charging algorithm and other techniques outside work hours, this mode lets users maximize battery health. During work hours, the system uses an express charge, which lets the battery charge faster. Specify the time when the system is used most each day by the start time and the duration.
+
+        Setting the policy to Disabled or leaving it unset keeps advanced battery charge mode off.
+
+        Users are unable to change this setting.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- lamzin@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:75-
+tags: []
+type: main

@@ -1,0 +1,10 @@
+PluginVm:
+  caption: PluginVm
+  policies:
+  - PluginVmAllowed
+  - PluginVmDataCollectionAllowed
+  - PluginVmImage
+  - PluginVmLicenseKey
+  - PluginVmRequiredFreeDiskSpace
+  - PluginVmUserId
+  - UserPluginVmAllowed

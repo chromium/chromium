@@ -1,0 +1,24 @@
+caption: Allow screen wake locks
+default: true
+desc: |-
+  Unless <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME">AllowWakeLocks</ph> is set to Disabled, setting <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME">AllowScreenWakeLocks</ph> to Enabled or leaving it unset allows screen wake locks for power management. Extensions can request screen wake locks through the power management extension API and ARC apps.
+
+        Setting the policy to Disabled demotes screen wake lock requests to system wake lock requests.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Allow screen wake locks for power management
+  value: true
+- caption: Demote screen wake lock requests to system wake lock requests
+  value: false
+owners:
+- reinauer@google.com
+- chromeos-power@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:28-
+tags: []
+type: main

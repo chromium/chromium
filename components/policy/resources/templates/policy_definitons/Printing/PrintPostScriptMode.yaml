@@ -1,0 +1,35 @@
+caption: Print PostScript Mode
+default: 0
+desc: |-
+  Controls how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> prints on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>.
+
+        When printing to a PostScript printer on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> different PostScript generation methods can affect printing performance.
+
+        When this policy is set to Default, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use a set of default options when generating PostScript. For text in particular, text will always be rendered using Type 3 fonts.
+
+        When this policy is set to Type42, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will render text using Type 42 fonts if possible. This should increase printing speed for some PostScript printers.
+
+        When this policy is not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will be in Default mode.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Default
+  name: Default
+  value: 0
+- caption: Type42
+  name: Type42
+  value: 1
+owners:
+- thestig@chromium.org
+- file://printing/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- chrome.win:95-
+tags: []
+type: int-enum

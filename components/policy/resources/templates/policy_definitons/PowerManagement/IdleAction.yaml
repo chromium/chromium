@@ -1,0 +1,39 @@
+caption: Action to take when the idle delay is reached
+deprecated: true
+desc: |-
+  Note that this policy is deprecated and will be removed in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 85. Please use <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME">PowerManagementIdleSettings</ph> instead.
+
+            This policy provides a fallback value for the more-specific <ph name="IDLE_ACTION_AC_POLICY_NAME">IdleActionAC</ph> and <ph name="IDLE_ACTION_BATTERY_POLICY_NAME">IdleActionBattery</ph> policies. If this policy is set, its value gets used if the respective more-specific policy is not set.
+
+            When this policy is unset, behavior of the more-specific policies remains unaffected.
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Suspend
+  name: IdleActionSuspend
+  value: 0
+- caption: Log the user out
+  name: IdleActionLogout
+  value: 1
+- caption: Shut down
+  name: IdleActionShutdown
+  value: 2
+- caption: Do nothing
+  name: IdleActionDoNothing
+  value: 3
+owners:
+- reinauer@google.com
+- chromeos-power@google.com
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome_os:26-
+tags: []
+type: int-enum
