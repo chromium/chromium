@@ -324,6 +324,7 @@ DEBIAN_PACKAGES="\
   libwayland-client0
   libwayland-cursor0
   libwayland-dev
+  libwayland-egl-backend-dev
   libwayland-egl1
   libwayland-egl1-mesa
   libwayland-server0

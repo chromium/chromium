@@ -367,6 +367,7 @@ https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-cursor0_1.18.0-2~exp1.1_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-dev_1.18.0-2~exp1.1_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-egl1_1.18.0-2~exp1.1_amd64.deb
+https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-egl-backend-dev_1.18.0-2~exp1.1_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-server0_1.18.0-2~exp1.1_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland-protocols/wayland-protocols_1.20-1_all.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/x/xcb-util-image/libxcb-image0_0.4.0-1+b3_amd64.deb
