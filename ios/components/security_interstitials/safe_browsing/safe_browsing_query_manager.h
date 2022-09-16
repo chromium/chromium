@@ -86,12 +86,6 @@ class SafeBrowsingQueryManager
         SafeBrowsingQueryManager* manager) {}
   };
 
-  static void CreateForWebState(web::WebState* web_state,
-                                SafeBrowsingClient* client);
-
-  SafeBrowsingQueryManager(web::WebState* web_state,
-                           SafeBrowsingClient* client);
-
   ~SafeBrowsingQueryManager() override;
 
   SafeBrowsingQueryManager(const SafeBrowsingQueryManager&) = delete;
@@ -111,6 +105,9 @@ class SafeBrowsingQueryManager
 
  private:
   friend class web::WebStateUserData<SafeBrowsingQueryManager>;
+
+  SafeBrowsingQueryManager(web::WebState* web_state,
+                           SafeBrowsingClient* client);
 
   // Queries the Safe Browsing database using SafeBrowsingUrlCheckerImpls. This
   // class may be constructed on the UI thread but otherwise must only be used

@@ -64,16 +64,6 @@ GURL GetCanonicalizedUrl(const GURL& url) {
 
 #pragma mark - SafeBrowsingTabHelper
 
-// static
-void SafeBrowsingTabHelper::CreateForWebState(web::WebState* web_state,
-                                              SafeBrowsingClient* client) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(UserDataKey(), std::make_unique<SafeBrowsingTabHelper>(
-                                            web_state, client));
-}
-
 SafeBrowsingTabHelper::SafeBrowsingTabHelper(web::WebState* web_state,
                                              SafeBrowsingClient* client)
     : policy_decider_(web_state, client),

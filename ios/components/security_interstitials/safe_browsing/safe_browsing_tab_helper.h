@@ -33,11 +33,6 @@ class SafeBrowsingClient;
 class SafeBrowsingTabHelper
     : public web::WebStateUserData<SafeBrowsingTabHelper> {
  public:
-  static void CreateForWebState(web::WebState* web_state,
-                                SafeBrowsingClient* client);
-
-  SafeBrowsingTabHelper(web::WebState* web_state, SafeBrowsingClient* client);
-
   ~SafeBrowsingTabHelper() override;
 
   SafeBrowsingTabHelper(const SafeBrowsingTabHelper&) = delete;
@@ -52,6 +47,8 @@ class SafeBrowsingTabHelper
 
  private:
   friend class web::WebStateUserData<SafeBrowsingTabHelper>;
+
+  SafeBrowsingTabHelper(web::WebState* web_state, SafeBrowsingClient* client);
 
   // A WebStatePolicyDecider that queries the SafeBrowsing database on each
   // request, always allows the request, but uses the result of the

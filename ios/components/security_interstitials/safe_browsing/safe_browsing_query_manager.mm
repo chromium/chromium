@@ -30,17 +30,6 @@ size_t CreateQueryID() {
 
 #pragma mark - SafeBrowsingQueryManager
 
-// static
-void SafeBrowsingQueryManager::CreateForWebState(web::WebState* web_state,
-                                                 SafeBrowsingClient* client) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(
-      UserDataKey(),
-      std::make_unique<SafeBrowsingQueryManager>(web_state, client));
-}
-
 SafeBrowsingQueryManager::SafeBrowsingQueryManager(web::WebState* web_state,
                                                    SafeBrowsingClient* client)
     : web_state_(web_state),
