@@ -292,9 +292,6 @@ namespace http://www.w3.org/1999/xhtml
     property parentNode
     property part
     property popUp
-    property popUpHideTarget
-    property popUpShowTarget
-    property popUpToggleTarget
     property prefix
     property prepend
     property previousElementSibling
@@ -504,6 +501,9 @@ html element button
     property formTarget
     property labels
     property name
+    property popUpHideTarget
+    property popUpShowTarget
+    property popUpToggleTarget
     property reportValidity
     property setCustomValidity
     property type
@@ -751,6 +751,9 @@ html element input
     property name
     property pattern
     property placeholder
+    property popUpHideTarget
+    property popUpShowTarget
+    property popUpToggleTarget
     property readOnly
     property reportValidity
     property required
@@ -1520,9 +1523,6 @@ namespace http://www.w3.org/2000/svg
     property parentNode
     property part
     property popUp
-    property popUpHideTarget
-    property popUpShowTarget
-    property popUpToggleTarget
     property prefix
     property prepend
     property previousElementSibling

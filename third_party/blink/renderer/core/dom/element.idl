@@ -146,9 +146,6 @@ dictionary CheckVisibilityOptions {
     [MeasureAs=ElementHidePopup,RuntimeEnabled=HTMLPopupAttribute,RaisesException] void hidePopUp();
     [Unscopable,CEReactions,RuntimeEnabled=HTMLPopupAttribute,MeasureAs=AnyPopupAttribute,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popUp;
     [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute boolean defaultOpen;
-    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpToggleTarget;
-    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpHideTarget;
-    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString? popUpShowTarget;
 
     // Experimental accessibility API
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;

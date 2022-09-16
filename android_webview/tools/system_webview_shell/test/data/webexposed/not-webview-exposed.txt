@@ -274,16 +274,10 @@ interface Event
 interface Element : Node
 	  getter popUp
 	  method hidePopUp
-	  getter popUpHideTarget
-	  setter popUpShowTarget
-	  getter popUpShowTarget
 	  setter defaultOpen
-	  setter popUpToggleTarget
-	  getter popUpToggleTarget
 	  method showPopUp
 	  setter popUp
 	  getter defaultOpen
-	  setter popUpHideTarget
 
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential

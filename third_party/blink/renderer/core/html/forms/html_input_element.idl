@@ -111,3 +111,5 @@ enum SelectionMode { "select", "start", "end", "preserve" };
     [Reflect, MeasureAs=PrefixedDirectoryAttribute] attribute boolean webkitdirectory;
     [Reflect, MeasureAs=IncrementalAttribute] attribute boolean incremental;
 };
+
+HTMLInputElement includes PopUpTargetElement;

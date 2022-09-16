@@ -2289,9 +2289,6 @@ interface Element : Node
     getter outerHTML
     getter part
     getter popUp
-    getter popUpHideTarget
-    getter popUpShowTarget
-    getter popUpToggleTarget
     getter prefix
     getter previousElementSibling
     getter role
@@ -2428,9 +2425,6 @@ interface Element : Node
     setter outerHTML
     setter part
     setter popUp
-    setter popUpHideTarget
-    setter popUpShowTarget
-    setter popUpToggleTarget
     setter role
     setter scrollLeft
     setter scrollTop
@@ -3122,6 +3116,9 @@ interface HTMLButtonElement : HTMLElement
     getter formTarget
     getter labels
     getter name
+    getter popUpHideTarget
+    getter popUpShowTarget
+    getter popUpToggleTarget
     getter type
     getter validationMessage
     getter validity
@@ -3138,6 +3135,9 @@ interface HTMLButtonElement : HTMLElement
     setter formNoValidate
     setter formTarget
     setter name
+    setter popUpHideTarget
+    setter popUpShowTarget
+    setter popUpToggleTarget
     setter type
     setter value
 interface HTMLCanvasElement : HTMLElement
@@ -3775,6 +3775,9 @@ interface HTMLInputElement : HTMLElement
     getter name
     getter pattern
     getter placeholder
+    getter popUpHideTarget
+    getter popUpShowTarget
+    getter popUpToggleTarget
     getter readOnly
     getter required
     getter selectionDirection
@@ -3830,6 +3833,9 @@ interface HTMLInputElement : HTMLElement
     setter name
     setter pattern
     setter placeholder
+    setter popUpHideTarget
+    setter popUpShowTarget
+    setter popUpToggleTarget
     setter readOnly
     setter required
     setter selectionDirection
