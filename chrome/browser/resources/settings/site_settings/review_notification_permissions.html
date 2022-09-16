@@ -9,32 +9,75 @@
     flex: 1;
     max-width: 100%;
   }
+
+  .header-with-icon {
+    align-items: center;
+    display: flex;
+  }
+
+  .header-with-icon h2 {
+    padding-bottom: 5px;
+    padding-top: 15px;
+  }
+
+  .header-group-wrapper {
+    margin-inline-start: 15px;
+  }
+
+  .notification-permissions-list {
+    margin-inline-start: 32px;
+  }
+
+  #headerIcon {
+    background-color: rgb(236, 243, 254);
+    border-radius: 50%;
+    fill: rgb(27, 110, 243);
+    height: 20px;
+    padding: 6px;
+    width: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #headerIcon {
+      background-color: rgb(44, 58, 79);
+      fill: rgb(123, 170, 247);
+  }
+}
 </style>
-<h2>$i18n{safetyCheckReviewNotificationPermissionsPrimaryLabel}</h2>
-<div class="secondary">
-  $i18n{safetyCheckReviewNotificationPermissionsSecondaryLabel}
-</div>
-<template id="reviewNotificatioPermissionsList"
-    is="dom-repeat" items="[[reviewNotificationPermissionsList_]]">
-  <div class$="cr-row [[getClassForIndex_(index)]]">
-    <site-favicon url="[[item.origin]]"></site-favicon>
-    <div id="displayName_[[index]]" class="display-name cr-padded-text">
-      <div class="site-representation">
-        <span class="url-directionality">[[getDisplayName_(item)]]</span>
-      </div>
-      <div class="second-line secondary">[[item.notificationInfoString]]</div>
+<div class="header-with-icon">
+  <iron-icon role="img" icon="settings:notifications-none" id="headerIcon">
+  </iron-icon>
+  <div class="header-group-wrapper">
+    <h2>$i18n{safetyCheckReviewNotificationPermissionsPrimaryLabel}</h2>
+    <div class="secondary">
+      $i18n{safetyCheckReviewNotificationPermissionsSecondaryLabel}
     </div>
-    <cr-icon-button iron-icon="cr20:block"
-        aria-label$="[[getDisplayName_(item)]]"
-        aria-describedby$="displayName_[[index]]"
-        focus-row-control focus-type="show-detail"
-        on-pointerenter="onShowTooltip_"
-        actionable></cr-icon-button>
-    <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-        on-click="onShowActionMenuClick_" title="$i18n{moreActions}"
-        focus-row-control focus-type="menu"></cr-icon-button>
   </div>
-</template>
+</div>
+<div class="notification-permissions-list">
+  <template id="reviewNotificatioPermissionsList" is="dom-repeat"
+      items="[[reviewNotificationPermissionsList_]]">
+    <div class$="cr-row [[getClassForIndex_(index)]]">
+      <site-favicon url="[[item.origin]]"></site-favicon>
+      <div id="displayName_[[index]]" class="display-name cr-padded-text">
+        <div class="site-representation">
+          <span class="url-directionality">[[getDisplayName_(item)]]</span>
+        </div>
+        <div class="second-line secondary">[[item.notificationInfoString]]
+        </div>
+      </div>
+      <cr-icon-button iron-icon="cr20:block"
+          aria-label$="[[getDisplayName_(item)]]"
+          aria-describedby$="displayName_[[index]]"
+          focus-row-control focus-type="show-detail"
+          on-pointerenter="onShowTooltip_" actionable></cr-icon-button>
+      <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+          on-click="onShowActionMenuClick_"
+          title="$i18n{moreActions}" focus-row-control focus-type="menu">
+      </cr-icon-button>
+    </div>
+  </template>
+</div>
 <paper-tooltip id="tooltip"
     fit-to-visible-bounds manual-mode position="top">
   $i18n{safetyCheckReviewNotificationPermissionsDontAllowLabel}
