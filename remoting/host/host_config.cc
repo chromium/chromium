@@ -28,40 +28,40 @@ const char kEnableVp9ConfigPath[] = "enable_vp9";
 const char kEnableH264ConfigPath[] = "enable_h264";
 const char kFrameRecorderBufferKbConfigPath[] = "frame-recorder-buffer-kb";
 
-absl::optional<base::Value> HostConfigFromJson(const std::string& json) {
+absl::optional<base::Value::Dict> HostConfigFromJson(const std::string& json) {
   absl::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!value.has_value()) {
-    LOG(ERROR) << "Failed to parse host config from JSON";
+    DLOG(ERROR) << "Failed to parse host config from JSON";
     return absl::nullopt;
   }
 
   if (!value->is_dict()) {
-    LOG(ERROR) << "Parsed host config returned was not a dictionary";
+    DLOG(ERROR) << "Parsed host config returned was not a dictionary";
     return absl::nullopt;
   }
 
-  return value;
+  return std::move(value->GetDict());
 }
 
-std::string HostConfigToJson(const base::Value& host_config) {
+std::string HostConfigToJson(const base::Value::Dict& host_config) {
   std::string data;
   base::JSONWriter::Write(host_config, &data);
   return data;
 }
 
-absl::optional<base::Value> HostConfigFromJsonFile(
+absl::optional<base::Value::Dict> HostConfigFromJsonFile(
     const base::FilePath& config_file) {
   std::string serialized;
   if (!base::ReadFileToString(config_file, &serialized)) {
-    LOG(ERROR) << "Failed to read " << config_file.value();
+    DLOG(ERROR) << "Failed to read " << config_file.value();
     return absl::nullopt;
   }
 
   return HostConfigFromJson(serialized);
 }
 
-bool HostConfigToJsonFile(const base::Value& host_config,
+bool HostConfigToJsonFile(const base::Value::Dict& host_config,
                           const base::FilePath& config_file) {
   std::string serialized = HostConfigToJson(host_config);
   return base::ImportantFileWriter::WriteFileAtomically(config_file,

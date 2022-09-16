@@ -28,11 +28,11 @@ bool GetUsageStatsConsent(bool& allowed, bool& set_by_policy) {
   if (command_line->HasSwitch(kHostConfigSwitchName)) {
     base::FilePath config_file_path =
         command_line->GetSwitchValuePath(kHostConfigSwitchName);
-    absl::optional<base::Value> host_config(
+    absl::optional<base::Value::Dict> host_config(
         HostConfigFromJsonFile(config_file_path));
     if (host_config.has_value()) {
       absl::optional<bool> host_config_value =
-          host_config->FindBoolKey(kUsageStatsConsentConfigPath);
+          host_config->FindBool(kUsageStatsConsentConfigPath);
       if (host_config_value.has_value()) {
         allowed = host_config_value.value();
         return true;

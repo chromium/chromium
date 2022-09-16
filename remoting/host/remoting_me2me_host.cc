@@ -327,10 +327,10 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // Determines whether a new config should be applied and handles starting or
   // restarting the host process as necessary.
-  void OnConfigParsed(base::Value config);
+  void OnConfigParsed(base::Value::Dict config);
 
   // Applies the host config, returning true if successful.
-  bool ApplyConfig(const base::Value& config);
+  bool ApplyConfig(const base::Value::Dict& config);
 
   // Handles policy updates, by calling On*PolicyUpdate methods.
   void OnPolicyUpdate(base::Value::Dict policies);
@@ -381,7 +381,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
 #if BUILDFLAG(IS_WIN)
   // mojom::RemotingHostControl implementation.
-  void ApplyHostConfig(base::Value serialized_config) override;
+  void ApplyHostConfig(base::Value::Dict serialized_config) override;
   void InitializePairingRegistry(
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
@@ -409,7 +409,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
   std::string robot_account_username_;
-  base::Value config_{base::Value::Type::DICTIONARY};
+  base::Value::Dict config_;
   std::string host_owner_;
   bool is_googler_ = false;
   absl::optional<size_t> max_clipboard_size_;
@@ -635,7 +635,8 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
 void HostProcess::OnConfigUpdated(const std::string& serialized_config) {
   HOST_LOG << "Parsing new host configuration.";
 
-  absl::optional<base::Value> config(HostConfigFromJson(serialized_config));
+  absl::optional<base::Value::Dict> config(
+      HostConfigFromJson(serialized_config));
   if (!config.has_value()) {
     LOG(ERROR) << "Invalid configuration.";
     ShutdownHost(kInvalidHostConfigurationExitCode);
@@ -645,7 +646,7 @@ void HostProcess::OnConfigUpdated(const std::string& serialized_config) {
   OnConfigParsed(std::move(config.value()));
 }
 
-void HostProcess::OnConfigParsed(base::Value config) {
+void HostProcess::OnConfigParsed(base::Value::Dict config) {
   if (!context_->network_task_runner()->BelongsToCurrentThread()) {
     context_->network_task_runner()->PostTask(
         FROM_HERE,
@@ -1056,7 +1057,7 @@ void HostProcess::OnHostDeleted() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void HostProcess::ApplyHostConfig(base::Value config) {
+void HostProcess::ApplyHostConfig(base::Value::Dict config) {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
   OnConfigParsed(std::move(config));
 }
@@ -1097,17 +1098,17 @@ void HostProcess::InitializePairingRegistry(
 #endif  // BUILDFLAG(IS_WIN)
 
 // Applies the host config, returning true if successful.
-bool HostProcess::ApplyConfig(const base::Value& config) {
+bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  const std::string* host_id = config.FindStringKey(kHostIdConfigPath);
+  const std::string* host_id = config.FindString(kHostIdConfigPath);
   if (!host_id) {
     LOG(ERROR) << "Config does not define " << kHostIdConfigPath << ".";
     return false;
   }
   host_id_ = *host_id;
 
-  const std::string* key_base64 = config.FindStringKey(kPrivateKeyConfigPath);
+  const std::string* key_base64 = config.FindString(kPrivateKeyConfigPath);
   if (!key_base64) {
     LOG(ERROR) << "Private key couldn't be read from the config file.";
     return false;
@@ -1120,7 +1121,7 @@ bool HostProcess::ApplyConfig(const base::Value& config) {
   }
 
   const std::string* host_secret_hash =
-      config.FindStringKey(kHostSecretHashConfigPath);
+      config.FindString(kHostSecretHashConfigPath);
   if (!host_secret_hash) {
     LOG(ERROR) << "Missing host_secret_hash value in configuration file.";
     return false;
@@ -1133,7 +1134,7 @@ bool HostProcess::ApplyConfig(const base::Value& config) {
 
   // Retrieve robot account to use for signaling and backend communication.
   const std::string* robot_account_username =
-      config.FindStringKey(kXmppLoginConfigPath);
+      config.FindString(kXmppLoginConfigPath);
   if (!robot_account_username) {
     LOG(ERROR) << "Robot account username is not defined in the config.";
     return false;
@@ -1142,7 +1143,7 @@ bool HostProcess::ApplyConfig(const base::Value& config) {
 
   // Retrieve robot account credentials for session signaling.
   const std::string* oauth_refresh_token =
-      config.FindStringKey(kOAuthRefreshTokenConfigPath);
+      config.FindString(kOAuthRefreshTokenConfigPath);
   if (!oauth_refresh_token) {
     LOG(ERROR) << "Robot account credentials are not defined in the config.";
     return false;
@@ -1155,9 +1156,9 @@ bool HostProcess::ApplyConfig(const base::Value& config) {
   // field. We are not generating separate addresses nor using JID any more but
   // we still read host_owner_email first for compatibility reason.
   const std::string* host_owner_ptr =
-      config.FindStringPath(kHostOwnerEmailConfigPath);
+      config.FindString(kHostOwnerEmailConfigPath);
   if (!host_owner_ptr) {
-    host_owner_ptr = config.FindStringPath(kHostOwnerConfigPath);
+    host_owner_ptr = config.FindString(kHostOwnerConfigPath);
   }
   if (!host_owner_ptr) {
     LOG(ERROR) << "Host config has no host_owner or host_owner_email fields.";
@@ -1218,7 +1219,7 @@ void HostProcess::OnPolicyError() {
   if (policy_state_ != POLICY_ERROR_REPORTED) {
     policy_state_ = POLICY_ERROR_REPORT_PENDING;
     if ((state_ == HOST_STARTED) ||
-        (state_ == HOST_STARTING && !config_.DictEmpty())) {
+        (state_ == HOST_STARTING && !config_.empty())) {
       ReportPolicyErrorAndRestartHost();
     }
   }
@@ -1226,7 +1227,7 @@ void HostProcess::OnPolicyError() {
 
 void HostProcess::ReportPolicyErrorAndRestartHost() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-  DCHECK(!config_.DictEmpty());
+  DCHECK(!config_.empty());
 
   DCHECK_EQ(policy_state_, POLICY_ERROR_REPORT_PENDING);
   policy_state_ = POLICY_ERROR_REPORTED;
@@ -1665,7 +1666,7 @@ void HostProcess::StartHostIfReady() {
   DCHECK_EQ(state_, HOST_STARTING);
 
   // Start the host if both the config and the policies are loaded.
-  if (!config_.DictEmpty()) {
+  if (!config_.empty()) {
     if (!report_offline_reason_.empty()) {
       SetState(HOST_GOING_OFFLINE_TO_STOP);
       GoOffline(report_offline_reason_);
@@ -1879,7 +1880,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
     // to directory.
     OnHostOfflineReasonAck(true);
     return;
-  } else if (!config_.DictEmpty()) {
+  } else if (!config_.empty()) {
     if (!signal_strategy_)
       InitializeSignaling();
 

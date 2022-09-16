@@ -171,7 +171,7 @@ void ElevateAndSetConfig(base::Value::Dict config,
   bool service_running = (job_pid > 0);
 
   const char* command = service_running ? "--save-config" : "--enable";
-  std::string input_data = HostConfigToJson(base::Value(std::move(config)));
+  std::string input_data = HostConfigToJson(std::move(config));
   if (!RunHelperAsRoot(command, input_data)) {
     LOG(ERROR) << "Failed to run the helper tool.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
@@ -235,17 +235,18 @@ DaemonController::State DaemonControllerDelegateMac::GetState() {
 
 absl::optional<base::Value::Dict> DaemonControllerDelegateMac::GetConfig() {
   base::FilePath config_path(kHostConfigFilePath);
-  absl::optional<base::Value> host_config(HostConfigFromJsonFile(config_path));
+  absl::optional<base::Value::Dict> host_config(
+      HostConfigFromJsonFile(config_path));
   if (!host_config.has_value())
     return absl::nullopt;
 
   base::Value::Dict config;
-  std::string* value = host_config->FindStringKey(kHostIdConfigPath);
+  std::string* value = host_config->FindString(kHostIdConfigPath);
   if (value) {
     config.Set(kHostIdConfigPath, *value);
   }
 
-  value = host_config->FindStringKey(kXmppLoginConfigPath);
+  value = host_config->FindString(kXmppLoginConfigPath);
   if (value) {
     config.Set(kXmppLoginConfigPath, *value);
   }
@@ -276,17 +277,16 @@ void DaemonControllerDelegateMac::UpdateConfig(
     base::Value::Dict config,
     DaemonController::CompletionCallback done) {
   base::FilePath config_file_path(kHostConfigFilePath);
-  absl::optional<base::Value> host_config(
+  absl::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(config_file_path));
-  if (!host_config.has_value() || !host_config->is_dict()) {
+  if (!host_config.has_value()) {
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }
 
-  base::Value::Dict& host_config_dict = host_config->GetDict();
-
-  host_config_dict.Merge(std::move(config));
-  ElevateAndSetConfig(std::move(host_config_dict), std::move(done));
+  host_config->Merge(std::move(config));
+  ElevateAndSetConfig(std::move(host_config.value()),
+                      std::move(done));
 }
 
 void DaemonControllerDelegateMac::Stop(
@@ -303,11 +303,11 @@ DaemonControllerDelegateMac::GetUsageStatsConsent() {
   consent.set_by_policy = false;
 
   base::FilePath config_file_path(kHostConfigFilePath);
-  absl::optional<base::Value> host_config(
+  absl::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(config_file_path));
   if (host_config.has_value()) {
     absl::optional<bool> host_config_value =
-        host_config->FindBoolKey(kUsageStatsConsentConfigPath);
+        host_config->FindBool(kUsageStatsConsentConfigPath);
     if (host_config_value.has_value()) {
       consent.allowed = host_config_value.value();
     }

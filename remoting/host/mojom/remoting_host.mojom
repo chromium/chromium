@@ -17,7 +17,7 @@ interface RemotingHostControl {
   // This method may be called multiple times as changes are detected in the
   // host configuration file.
   [EnableIf=is_win]
-  ApplyHostConfig(mojo_base.mojom.DeprecatedDictionaryValue config);
+  ApplyHostConfig(mojo_base.mojom.DictionaryValue config);
 
   // Provides the network process with a set of platform handles which are used
   // for pairing functionality. The network process does not have access to the

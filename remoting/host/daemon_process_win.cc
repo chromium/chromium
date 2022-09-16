@@ -286,7 +286,8 @@ void DaemonProcessWin::SendHostConfigToNetworkProcess(
   LOG_IF(ERROR, !remoting_host_control_.is_connected())
       << "IPC channel not connected. HostConfig message will be dropped.";
 
-  absl::optional<base::Value> config(HostConfigFromJson(serialized_config));
+  absl::optional<base::Value::Dict> config(
+      HostConfigFromJson(serialized_config));
   if (!config.has_value()) {
     LOG(ERROR) << "Invalid host config, shutting down.";
     OnPermanentError(kInvalidHostConfigurationExitCode);

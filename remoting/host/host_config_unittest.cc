@@ -53,21 +53,21 @@ TEST_F(HostConfigTest, Read) {
   ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
   base::FilePath test_file = test_dir_.GetPath().AppendASCII("read.json");
   WriteTestFile(test_file);
-  absl::optional<base::Value> target(HostConfigFromJsonFile(test_file));
+  absl::optional<base::Value::Dict> target(HostConfigFromJsonFile(test_file));
   ASSERT_TRUE(target.has_value());
 
-  std::string* value = target->FindStringKey(kXmppLoginConfigPath);
+  std::string* value = target->FindString(kXmppLoginConfigPath);
   EXPECT_EQ("test@gmail.com", *value);
-  value = target->FindStringKey(kOAuthRefreshTokenConfigPath);
+  value = target->FindString(kOAuthRefreshTokenConfigPath);
   EXPECT_EQ("TEST_REFRESH_TOKEN", *value);
-  value = target->FindStringKey(kHostIdConfigPath);
+  value = target->FindString(kHostIdConfigPath);
   EXPECT_EQ("TEST_HOST_ID", *value);
-  value = target->FindStringKey(kHostNameConfigPath);
+  value = target->FindString(kHostNameConfigPath);
   EXPECT_EQ("TEST_MACHINE_NAME", *value);
-  value = target->FindStringKey(kPrivateKeyConfigPath);
+  value = target->FindString(kPrivateKeyConfigPath);
   EXPECT_EQ("TEST_PRIVATE_KEY", *value);
 
-  value = target->FindStringKey("non_existent_value");
+  value = target->FindString("non_existent_value");
   EXPECT_EQ(nullptr, value);
 }
 
@@ -76,26 +76,26 @@ TEST_F(HostConfigTest, Write) {
 
   base::FilePath test_file = test_dir_.GetPath().AppendASCII("write.json");
   WriteTestFile(test_file);
-  absl::optional<base::Value> target(HostConfigFromJsonFile(test_file));
+  absl::optional<base::Value::Dict> target(HostConfigFromJsonFile(test_file));
   ASSERT_TRUE(target.has_value());
 
   std::string new_refresh_token_value = "NEW_REFRESH_TOKEN";
-  target->SetStringKey(kOAuthRefreshTokenConfigPath, new_refresh_token_value);
+  target->Set(kOAuthRefreshTokenConfigPath, new_refresh_token_value);
   ASSERT_TRUE(HostConfigToJsonFile(*target, test_file));
 
   // Now read the file again and check that the value has been written.
   absl::optional<base::Value> reader(HostConfigFromJsonFile(test_file));
   ASSERT_TRUE(reader);
 
-  std::string* value = target->FindStringKey(kXmppLoginConfigPath);
+  std::string* value = target->FindString(kXmppLoginConfigPath);
   EXPECT_EQ("test@gmail.com", *value);
-  value = target->FindStringKey(kOAuthRefreshTokenConfigPath);
+  value = target->FindString(kOAuthRefreshTokenConfigPath);
   EXPECT_EQ(new_refresh_token_value, *value);
-  value = target->FindStringKey(kHostIdConfigPath);
+  value = target->FindString(kHostIdConfigPath);
   EXPECT_EQ("TEST_HOST_ID", *value);
-  value = target->FindStringKey(kHostNameConfigPath);
+  value = target->FindString(kHostNameConfigPath);
   EXPECT_EQ("TEST_MACHINE_NAME", *value);
-  value = target->FindStringKey(kPrivateKeyConfigPath);
+  value = target->FindString(kPrivateKeyConfigPath);
   EXPECT_EQ("TEST_PRIVATE_KEY", *value);
 }
 

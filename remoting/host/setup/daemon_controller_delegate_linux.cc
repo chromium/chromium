@@ -147,18 +147,18 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
 }
 
 absl::optional<base::Value::Dict> DaemonControllerDelegateLinux::GetConfig() {
-  absl::optional<base::Value> host_config(
+  absl::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(GetConfigPath()));
   if (!host_config.has_value())
     return absl::nullopt;
 
   base::Value::Dict result;
-  std::string* value = host_config->FindStringKey(kHostIdConfigPath);
+  std::string* value = host_config->FindString(kHostIdConfigPath);
   if (value) {
     result.Set(kHostIdConfigPath, *value);
   }
 
-  value = host_config->FindStringKey(kXmppLoginConfigPath);
+  value = host_config->FindString(kXmppLoginConfigPath);
   if (value) {
     result.Set(kXmppLoginConfigPath, *value);
   }
@@ -189,7 +189,7 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
   }
 
   // Write config.
-  if (!HostConfigToJsonFile(base::Value(std::move(config)), GetConfigPath())) {
+  if (!HostConfigToJsonFile(std::move(config), GetConfigPath())) {
     LOG(ERROR) << "Failed to update config file.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
@@ -217,18 +217,17 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
 void DaemonControllerDelegateLinux::UpdateConfig(
     base::Value::Dict config,
     DaemonController::CompletionCallback done) {
-  absl::optional<base::Value> new_config(
+  absl::optional<base::Value::Dict> new_config(
       HostConfigFromJsonFile(GetConfigPath()));
-  if (!new_config.has_value() || !new_config->is_dict()) {
+  if (!new_config.has_value()) {
     LOG(ERROR) << "Failed to read existing config file.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }
 
-  new_config->GetDict().Merge(std::move(config));
+  new_config->Merge(std::move(config));
 
-  if (!HostConfigToJsonFile(base::Value(std::move(*new_config)),
-                            GetConfigPath())) {
+  if (!HostConfigToJsonFile(std::move(*new_config), GetConfigPath())) {
     LOG(ERROR) << "Failed to update config file.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
