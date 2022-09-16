@@ -74,7 +74,8 @@ various important responsibilities:
 ### Marshal
 
 * Ensure that all incoming queries to the
-  [security@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security)
+  [security@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security),
+  [security-dev@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/security-dev),
   and
   [chrome-security@google.com](https://groups.google.com/a/google.com/forum/#!forum/chrome-security)
   lists get a reply (by someone; not necessarily the marshal themselves). See
