@@ -5062,6 +5062,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityDictationWithPumpkin)},
+
+    {"enable-experimental-accessibility-dictation-more-commands",
+     flag_descriptions::kExperimentalAccessibilityDictationMoreCommandsName,
+     flag_descriptions::
+         kExperimentalAccessibilityDictationMoreCommandsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kExperimentalAccessibilityDictationMoreCommands)},
+
     {"enable-experimental-accessibility-google-tts-language-packs",
      flag_descriptions::kExperimentalAccessibilityGoogleTtsLanguagePacksName,
      flag_descriptions::

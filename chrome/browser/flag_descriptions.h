@@ -3091,6 +3091,9 @@ extern const char kExoLockNotificationDescription[];
 extern const char kExperimentalAccessibilityDictationWithPumpkinName[];
 extern const char kExperimentalAccessibilityDictationWithPumpkinDescription[];
 
+extern const char kExperimentalAccessibilityDictationMoreCommandsName[];
+extern const char kExperimentalAccessibilityDictationMoreCommandsDescription[];
+
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
 

@@ -2170,9 +2170,14 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-experimental-accessibility-dictation-more-commands",
+    "owners": [ "jeevam","akihiroota"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-experimental-accessibility-dictation-with-pumpkin",
     "owners": [ "akihiroota"],
-    "expiry_milestone": 107
+    "expiry_milestone": 109
   },
   {
     "name": "enable-experimental-accessibility-google-tts-language-packs",

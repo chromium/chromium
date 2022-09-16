@@ -59699,6 +59699,8 @@ from previous Chrome versions.
   <int value="-80353187" label="disable-display-color-calibration"/>
   <int value="-80049694" label="HindiInscriptLayout:disabled"/>
   <int value="-79327236" label="ModeSpecificPowerButton:enabled"/>
+  <int value="-79015588"
+      label="ExperimentalAccessibilityDictationMoreCommands:enabled"/>
   <int value="-78308597" label="DesktopPartialTranslate:enabled"/>
   <int value="-78035185" label="custom_summary"/>
   <int value="-77872983" label="BookmarkAppsMac:disabled"/>
@@ -62858,6 +62860,8 @@ from previous Chrome versions.
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>
   <int value="1871938175" label="FontSrcLocalMatching:disabled"/>
   <int value="1872185826" label="LocationHardReload:enabled"/>
+  <int value="1873688130"
+      label="ExperimentalAccessibilityDictationMoreCommands:disabled"/>
   <int value="1874050287" label="UploadOfficeToCloud:enabled"/>
   <int value="1874195462" label="ChromeHomeMenuItemsExpandSheet:disabled"/>
   <int value="1874604540" label="UseSuggestionsEvenIfFew:disabled"/>

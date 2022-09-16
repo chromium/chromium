@@ -5414,6 +5414,11 @@ const char kExperimentalAccessibilityDictationWithPumpkinDescription[] =
     "Enables the pumpkin semantic parser for the accessibility dictation "
     "feature.";
 
+const char kExperimentalAccessibilityDictationMoreCommandsName[] =
+    "Additional experimental accessibility dictation commands.";
+const char kExperimentalAccessibilityDictationMoreCommandsDescription[] =
+    "Enables experimental dictation commands.";
+
 const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[] =
     "Experimental accessibility Google TTS Langauge Packs.";
 const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[] =

@@ -127,6 +127,16 @@ bool IsExperimentalAccessibilityDictationWithPumpkinEnabled() {
       ::features::kExperimentalAccessibilityDictationWithPumpkin);
 }
 
+const base::Feature kExperimentalAccessibilityDictationMoreCommands{
+    "ExperimentalAccessibilityDictationMoreCommands",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+
+bool IsExperimentalAccessibilityDictationMoreCommandsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityDictationMoreCommands);
+}
+
 const base::Feature kExperimentalAccessibilityGoogleTtsLanguagePacks{
     "ExperimentalAccessibilityGoogleTtsLanguagePacks",
     base::FEATURE_DISABLED_BY_DEFAULT};
