@@ -1972,7 +1972,9 @@
     // See https://crbug.com/1324111
     {
       name: "PermissionsPolicyUnload",
-      status: "experimental"
+      origin_trial_feature_name: "PermissionsPolicyUnload",
+      status: "experimental",
+      base_feature: "PermissionsPolicyUnload",
     },
     {
       name: "PermissionsRequestRevoke",
