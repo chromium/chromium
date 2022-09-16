@@ -21,6 +21,10 @@
 
 namespace ash {
 
+namespace cellular_setup {
+class ESimTestBase;
+}
+
 class CellularESimProfileHandler;
 class CellularInhibitor;
 class NetworkState;
@@ -46,6 +50,7 @@ class NetworkState;
 //   (4) Enable the relevant profile.
 //   (5) Uninhibit cellular scans.
 //   (6) Wait until the associated NetworkState becomes connectable.
+//   (7) Wait until Shill auto connected if the sim slot is switched.
 //
 // Note that if this class receives multiple connection requests, it processes
 // them in FIFO order.
@@ -62,8 +67,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
             CellularInhibitor* cellular_inhibitor,
             CellularESimProfileHandler* cellular_esim_profile_handler);
 
-  // Success callback which receives the network's service path as a parameter.
-  typedef base::OnceCallback<void(const std::string&)> SuccessCallback;
+  // Success callback which receives the network's service path as the first
+  // parameter and a boolean indicates whether the network is autoconnected
+  // as the second parameter.
+  typedef base::OnceCallback<void(const std::string&, bool)> SuccessCallback;
 
   // Error callback which receives the network's service path as the first
   // parameter and an error name as the second parameter. If no service path is
@@ -93,6 +100,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
 
  private:
   friend class CellularConnectionHandlerTest;
+  friend class CellularESimInstallerTest;
+  friend class CellularPolicyHandlerTest;
+  friend class ManagedNetworkConfigurationHandlerTest;
+  friend class cellular_setup::ESimTestBase;
+
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, NoService);
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
                            ServiceAlreadyConnectable);
@@ -104,7 +116,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
                            TimeoutWaitingForConnectable_ESim);
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
                            TimeoutWaitingForConnectable_PSim);
-  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, Success);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
+                           Success_AutoConnected);
+  FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
+                           Success_TimeoutAutoConnected);
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest,
                            Success_AlreadyEnabled);
   FRIEND_TEST_ALL_PREFIXES(CellularConnectionHandlerTest, ConnectToStub);
@@ -127,6 +142,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
     absl::optional<dbus::ObjectPath> euicc_path;
     absl::optional<dbus::ObjectPath> profile_path;
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
+    // A boolean indicating that if the connection switches the SIM profile and
+    // requires enabling the profile first.
+    bool did_connection_require_enabling_profile = false;
     SuccessCallback success_callback;
     ErrorCallback error_callback;
   };
@@ -137,7 +155,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
     kInhibitingScans,
     kRequestingProfilesBeforeEnabling,
     kEnablingProfile,
-    kWaitingForConnectable
+    kWaitingForConnectable,
+    kWaitingForShillAutoConnect,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const ConnectionState& step);
@@ -155,6 +174,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
     kTimeoutWaitingForConnectable = 7,
     kMaxValue = kTimeoutWaitingForConnectable
   };
+
+  // Timeout waiting for a cellular network to auto connect after switch
+  // profile.
+  static const base::TimeDelta kWaitingForAutoConnectTimeout;
   static absl::optional<std::string> ResultToErrorString(
       PrepareCellularConnectionResult result);
 
@@ -165,12 +188,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
                                      const std::string& new_service_path,
                                      const std::string& old_guid,
                                      const std::string& new_guid) override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
 
   void ProcessRequestQueue();
   void TransitionToConnectionState(ConnectionState state);
 
-  // Invokes the success or error callback, depending on |result|.
-  void CompleteConnectionAttempt(PrepareCellularConnectionResult result);
+  // Invokes the success or error callback, depending on |result| and
+  // |auto_connected|.
+  void CompleteConnectionAttempt(PrepareCellularConnectionResult result,
+                                 bool auto_connected);
 
   const NetworkState* GetNetworkStateForCurrentOperation() const;
   absl::optional<dbus::ObjectPath> GetEuiccPathForCurrentOperation() const;
@@ -193,6 +219,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
   void HandleNetworkPropertiesUpdate();
   void CheckForConnectable();
   void OnWaitForConnectableTimeout();
+  void StartWaitingForShillAutoConnect();
+  void CheckForAutoConnected();
+  void OnWaitForAutoConnectTimeout();
 
   base::OneShotTimer timer_;
 

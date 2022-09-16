@@ -94,6 +94,7 @@ class EuiccTest : public ESimTestBase {
     FastForwardProfileRefreshDelay();
 
     if (wait_for_connect) {
+      FastForwardAutoConnectWaiting();
       base::RunLoop().RunUntilIdle();
       EXPECT_LE(1u, network_connection_handler()->connect_calls().size());
       if (fail_connect) {

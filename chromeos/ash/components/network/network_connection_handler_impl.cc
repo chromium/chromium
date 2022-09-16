@@ -425,7 +425,8 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
     // connection. Prepare the network for connection before proceeding.
     cellular_connection_handler_->PrepareExistingCellularNetworkForConnection(
         cellular_network_iccid,
-        base::BindOnce(&NetworkConnectionHandlerImpl::CallShillConnect,
+        base::BindOnce(&NetworkConnectionHandlerImpl::
+                           OnPrepareCellularNetworkForConnectionSuccess,
                        AsWeakPtr()),
         base::BindOnce(&NetworkConnectionHandlerImpl::
                            OnPrepareCellularNetworkForConnectionFailure,
@@ -445,6 +446,18 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
       service_path,
       base::BindOnce(&NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect,
                      AsWeakPtr(), check_error_state));
+}
+
+void NetworkConnectionHandlerImpl::OnPrepareCellularNetworkForConnectionSuccess(
+    const std::string& service_path,
+    bool auto_connected) {
+  // If the cellular network is auto-connected by Shill, there is no need to
+  // call Shill connect.
+  if (auto_connected) {
+    HandleShillConnectSuccess(service_path);
+    return;
+  }
+  CallShillConnect(service_path);
 }
 
 void NetworkConnectionHandlerImpl::DisconnectNetwork(
