@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/web_cache/public/features.h"
 #include "content/public/renderer/render_thread.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_cache.h"
 
 namespace web_cache {
@@ -65,8 +66,10 @@ void WebCacheImpl::ExecutePendingClearCache() {
 }
 
 void WebCacheImpl::SetCacheCapacity(uint64_t capacity64) {
-  size_t capacity = base::checked_cast<size_t>(capacity64);
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
 
+  size_t capacity = base::checked_cast<size_t>(capacity64);
   blink::WebCache::SetCapacity(capacity);
 }
 

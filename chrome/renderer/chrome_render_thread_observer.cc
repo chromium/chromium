@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -46,6 +47,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_module.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -85,7 +87,9 @@ class RendererResourceDelegate
     // No need to update the browser if the WebCache manager doesn't need this
     // information.
     if (base::FeatureList::IsEnabled(
-            web_cache::kTrimWebCacheOnMemoryPressureOnly)) {
+            web_cache::kTrimWebCacheOnMemoryPressureOnly) ||
+        base::FeatureList::IsEnabled(
+            blink::features::kNoCentralWebCacheLimitControl)) {
       return;
     }
     // Rate limit informing the host of our cache stats.
@@ -114,6 +118,8 @@ class RendererResourceDelegate
   void InformHostOfCacheStats() {
     DCHECK(!base::FeatureList::IsEnabled(
         web_cache::kTrimWebCacheOnMemoryPressureOnly));
+    DCHECK(!base::FeatureList::IsEnabled(
+        blink::features::kNoCentralWebCacheLimitControl));
     WebCache::UsageStats stats;
     WebCache::GetUsageStats(&stats);
     if (!cache_stats_recorder_) {

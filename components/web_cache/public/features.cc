@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/web_cache/public/features.h"
+#include "base/feature_list.h"
 
 namespace web_cache {
 

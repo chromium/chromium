@@ -1429,5 +1429,8 @@ const base::Feature kWebRtcMetronome{"WebRtcMetronome",
 const base::Feature kSyncAccessHandleAllSyncSurface{
     "SyncAccessHandleAllSyncSurface", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNoCentralWebCacheLimitControl{
+    "NoCentralWebCacheLimitControl", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
