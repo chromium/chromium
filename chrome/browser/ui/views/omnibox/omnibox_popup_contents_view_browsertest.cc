@@ -548,6 +548,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   match.has_tab_match = true;
   matches.push_back(match);
   controller->result_.AppendMatches(matches);
+  controller->NotifyChanged();
   popup_view()->UpdatePopupAppearance();
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));

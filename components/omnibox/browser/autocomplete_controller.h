@@ -205,7 +205,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   OpenTabProvider* open_tab_provider() const { return open_tab_provider_; }
 
   const AutocompleteInput& input() const { return input_; }
-  const AutocompleteResult& result() const { return result_; }
+  const AutocompleteResult& result() const;
   bool done() const { return done_; }
   bool in_start() const { return in_start_; }
   // TODO(manukh): Once we have a smarter `expire_timer_` that early runs when
@@ -370,6 +370,14 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Data from the autocomplete query.
   AutocompleteResult result_;
+
+  // When debouncing is enabled, `result_` may change without invoking
+  // `NotifyChanged()`. To ensure `result()` is stable between `NotifyChanged()`
+  // calls, `published_result_` snapshots `result_` before invoking
+  // `NotifyChanged()`, and observers only see the stable `published_result_`.
+  // When `kUpdateResultDebounce` is disabled, `published_result_` is always
+  // empty and unused.
+  AutocompleteResult published_result_;
 
   // The most recent time the default match (inline match) changed.  This may
   // be earlier than the most recent keystroke if the recent keystrokes didn't

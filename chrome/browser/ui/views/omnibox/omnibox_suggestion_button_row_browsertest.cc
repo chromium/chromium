@@ -111,6 +111,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     matches.push_back(action_match);
     matches.push_back(multiple_actions_match);
     results.AppendMatches(matches);
+    autocomplete_controller->NotifyChanged();
 
     // The omnibox popup should open with suggestions displayed.
     omnibox_view->model()->OnPopupResultChanged();
