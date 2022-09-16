@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
@@ -27,8 +28,10 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
@@ -41,6 +44,16 @@ namespace ash {
 namespace {
 
 namespace app_runtime = ::extensions::api::app_runtime;
+
+bool HasLockScreenIntentFilter(
+    const std::vector<apps::IntentFilterPtr>& filters) {
+  const auto lock_screen_intent = apps_util::CreateStartOnLockScreenIntent();
+  for (const apps::IntentFilterPtr& filter : filters) {
+    if (lock_screen_intent->MatchFilter(filter))
+      return true;
+  }
+  return false;
+}
 
 bool IsInstalledWebApp(const std::string& app_id, Profile* profile) {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
@@ -62,8 +75,22 @@ bool IsInstalledWebApp(const std::string& app_id, Profile* profile) {
 // screen.
 bool IsLockScreenCapable(Profile* profile, const std::string& app_id) {
   if (IsInstalledWebApp(app_id, profile)) {
-    // TODO(crbug.com/1006642): Add lock screen web app support.
-    return false;
+    if (!base::FeatureList::IsEnabled(features::kWebLockScreenApi))
+      return false;
+    if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+      return false;
+
+    auto& cache = apps::AppServiceProxyFactory::GetForProfile(profile)
+                      ->AppRegistryCache();
+    bool is_ready = false;
+    bool has_lock_screen_intent_filter = false;
+    cache.ForOneApp(app_id, [&has_lock_screen_intent_filter,
+                             &is_ready](const apps::AppUpdate& update) {
+      if (HasLockScreenIntentFilter(update.IntentFilters()))
+        has_lock_screen_intent_filter = true;
+      is_ready = update.Readiness() == apps::Readiness::kReady;
+    });
+    return has_lock_screen_intent_filter && is_ready;
   }
 
   const extensions::Extension* chrome_app =
@@ -118,6 +145,21 @@ std::unique_ptr<std::set<std::string>> GetAllowedLockScreenApps(
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out,
+                         const LockScreenAppSupport& support) {
+  switch (support) {
+    case LockScreenAppSupport::kNotSupported:
+      return out << "NotSupported";
+    case LockScreenAppSupport::kNotAllowedByPolicy:
+      return out << "NotAllowedByPolicy";
+    case LockScreenAppSupport::kSupported:
+      return out << "Supported";
+    case LockScreenAppSupport::kEnabled:
+      return out << "Enabled";
+  }
+}
+
+// static
 LockScreenAppSupport LockScreenApps::GetSupport(Profile* profile,
                                                 const std::string& app_id) {
   LockScreenApps* lock_screen_apps =
@@ -156,6 +198,14 @@ LockScreenAppSupport LockScreenApps::GetSupport(const std::string& app_id) {
     return LockScreenAppSupport::kNotAllowedByPolicy;
   }
 
+  // Lock screen note-taking is currently enabled/disabled for all apps at once,
+  // independent of which app is preferred for note-taking. This affects the
+  // toggle shown in settings UI. Currently only the preferred app can be
+  // launched on the lock screen.
+  // TODO(crbug.com/1006642): Consider changing this so only the preferred app
+  // is reported as enabled.
+  // TODO(crbug.com/1332379): Remove this dependency on note taking code by
+  // migrating to a separate prefs entry.
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kNoteTakingAppEnabledOnLockScreen))
     return LockScreenAppSupport::kEnabled;

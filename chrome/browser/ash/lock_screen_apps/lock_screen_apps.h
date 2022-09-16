@@ -43,6 +43,9 @@ enum class LockScreenAppSupport {
   kEnabled = 3,
 };
 
+// For logging and debug purposes.
+std::ostream& operator<<(std::ostream& out, const LockScreenAppSupport& app);
+
 // Tracks available lock screen apps. Only exists for the primary profile.
 class LockScreenApps : public KeyedService {
  public:

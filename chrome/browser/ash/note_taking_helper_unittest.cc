@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/note_taking_helper.h"
 
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -20,6 +21,7 @@
 #include "ash/public/cpp/note_taking_client.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -63,6 +65,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/api/app_runtime.h"
@@ -107,15 +110,20 @@ const char kDevKeepAppName[] = "Google Keep [dev]";
 
 // Helper functions returning strings that can be used to compare information
 // about available note-taking apps.
-std::string GetAppString(const std::string& id,
-                         const std::string& name,
+std::string ToString(LockScreenAppSupport support) {
+  std::ostringstream os;
+  os << support;
+  return os.str();
+}
+std::string GetAppString(const std::string& name,
+                         const std::string& id,
                          bool preferred,
                          LockScreenAppSupport lock_screen_support) {
-  return base::StringPrintf("{%s, %s, %d, %d}", id.c_str(), name.c_str(),
-                            preferred, static_cast<int>(lock_screen_support));
+  return base::StringPrintf("{%s, %s, %d, %s}", name.c_str(), id.c_str(),
+                            preferred, ToString(lock_screen_support).c_str());
 }
 std::string GetAppString(const NoteTakingAppInfo& info) {
-  return GetAppString(info.app_id, info.name, info.preferred,
+  return GetAppString(info.name, info.app_id, info.preferred,
                       info.lock_screen_support);
 }
 
@@ -165,7 +173,11 @@ class TestObserver : public NoteTakingHelper::Observer {
 
 class NoteTakingHelperTest : public BrowserWithTestWindowTest {
  public:
-  NoteTakingHelperTest() = default;
+  NoteTakingHelperTest() {
+    // `media_router::kMediaRouter` is disabled because it has unmet
+    // dependencies and is unrelated to this unit test.
+    feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
+  }
 
   NoteTakingHelperTest(const NoteTakingHelperTest&) = delete;
   NoteTakingHelperTest& operator=(const NoteTakingHelperTest&) = delete;
@@ -175,9 +187,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_arc_available(true);
-    // `media_router::kMediaRouter` is disabled because it has unmet
-    // dependencies and is unrelated to this unit test.
-    feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
 
     BrowserWithTestWindowTest::SetUp();
     InitExtensionService(profile());
@@ -584,8 +593,7 @@ TEST_F(NoteTakingHelperTest, ListChromeAppsWithLockScreenNotesSupported) {
   EXPECT_TRUE(helper()->GetPreferredAppId(profile()).empty());
 
   // Install additional Keep app - one that supports lock screen note taking.
-  // This app should be reported to support note taking (given that
-  // enable-lock-screen-apps flag is set).
+  // This app should be reported to support note taking.
   scoped_refptr<const extensions::Extension> dev_extension =
       CreateAndInstallLockScreenApp(kDevKeepExtensionId, kDevKeepAppName,
                                     profile());
@@ -656,7 +664,7 @@ TEST_F(NoteTakingHelperTest, PreferredAppWithNoLockScreenPermission) {
 }
 
 TEST_F(NoteTakingHelperTest,
-       PreferredAppWithotLockSupportClearsLockScreenPref) {
+       PreferredAppWithoutLockSupportClearsLockScreenPref) {
   Init(ENABLE_PALETTE);
 
   ASSERT_FALSE(helper()->IsAppAvailable(profile()));
@@ -737,7 +745,7 @@ TEST_F(NoteTakingHelperTest, CustomChromeApps) {
 }
 
 // Web apps with a note_taking_new_note_url show as available note-taking apps.
-TEST_F(NoteTakingHelperTest, CustomWebApps_FlagEnabled) {
+TEST_F(NoteTakingHelperTest, NoteTakingWebAppsListed) {
   Init(ENABLE_PALETTE);
 
   {
@@ -764,6 +772,89 @@ TEST_F(NoteTakingHelperTest, CustomWebApps_FlagEnabled) {
   // Apps with note_taking_new_note_url are listed.
   EXPECT_TRUE(AvailableAppsMatch(
       profile(), {{"Web App 2", app2_id, false /*preferred*/, kNotSupported}}));
+}
+
+// Web apps with a lock_screen_start_url should show as supported on the lock
+// screen only when `kWebLockScreenApi` is enabled.
+// TODO(crbug.com/1332379): Move this to a lock screen apps unittest file.
+TEST_F(NoteTakingHelperTest, LockScreenWebAppsListed) {
+  Init(ENABLE_PALETTE);
+  DCHECK(!base::FeatureList::IsEnabled(features::kWebLockScreenApi));
+
+  std::string app1_id;
+  {
+    auto app_info = std::make_unique<WebAppInstallInfo>();
+    app_info->start_url = GURL("http://some1.url");
+    app_info->scope = GURL("http://some1.url");
+    app_info->title = u"Web App 1";
+    // Currently only note-taking apps can be used on the lock screen.
+    app_info->note_taking_new_note_url = GURL("http://some2.url/new-note");
+    app1_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+  }
+  std::string app2_id;
+  {
+    auto app_info = std::make_unique<WebAppInstallInfo>();
+    app_info->start_url = GURL("http://some2.url");
+    app_info->scope = GURL("http://some2.url");
+    app_info->title = u"Web App 2";
+    app_info->note_taking_new_note_url = GURL("http://some2.url/new-note");
+    // Set a lock_screen_start_url on one app.
+    app_info->lock_screen_start_url =
+        GURL("http://some2.url/lock-screen-start");
+    app2_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+  }
+  // Check apps were installed.
+  auto* provider = web_app::WebAppProvider::GetForTest(profile());
+  EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
+
+  // With the flag disabled, web apps are not supported.
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(), {{"Web App 1", app1_id, /*preferred=*/false, kNotSupported},
+                  {"Web App 2", app2_id, /*preferred=*/false, kNotSupported}}));
+}
+
+class NoteTakingHelperTest_WebLockScreenApiEnabled
+    : public NoteTakingHelperTest {
+  base::test::ScopedFeatureList features_{features::kWebLockScreenApi};
+};
+
+// Web apps with a lock_screen_start_url should show as supported on the lock
+// screen only when `kWebLockScreenApi` is enabled.
+// TODO(crbug.com/1332379): Move this to a lock screen apps unittest file.
+TEST_F(NoteTakingHelperTest_WebLockScreenApiEnabled, LockScreenWebAppsListed) {
+  Init(ENABLE_PALETTE);
+  DCHECK(base::FeatureList::IsEnabled(features::kWebLockScreenApi));
+
+  std::string app1_id;
+  {
+    auto app_info = std::make_unique<WebAppInstallInfo>();
+    app_info->start_url = GURL("http://some1.url");
+    app_info->scope = GURL("http://some1.url");
+    app_info->title = u"Web App 1";
+    // Currently only note-taking apps can be used on the lock screen.
+    app_info->note_taking_new_note_url = GURL("http://some2.url/new-note");
+    app1_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+  }
+  std::string app2_id;
+  {
+    auto app_info = std::make_unique<WebAppInstallInfo>();
+    app_info->start_url = GURL("http://some2.url");
+    app_info->scope = GURL("http://some2.url");
+    app_info->title = u"Web App 2";
+    app_info->note_taking_new_note_url = GURL("http://some2.url/new-note");
+    // Set a lock_screen_start_url on one app.
+    app_info->lock_screen_start_url =
+        GURL("http://some2.url/lock-screen-start");
+    app2_id = web_app::test::InstallWebApp(profile(), std::move(app_info));
+  }
+  // Check apps were installed.
+  auto* provider = web_app::WebAppProvider::GetForTest(profile());
+  EXPECT_EQ(provider->registrar().CountUserInstalledApps(), 2);
+
+  // The web app with a lock screen start URL is supported.
+  EXPECT_TRUE(AvailableAppsMatch(
+      profile(), {{"Web App 1", app1_id, /*preferred=*/false, kNotSupported},
+                  {"Web App 2", app2_id, /*preferred=*/false, kEnabled}}));
 }
 
 // Verify that non-allowlisted apps cannot be enabled on lock screen.
@@ -1330,7 +1421,7 @@ TEST_F(NoteTakingHelperTest, SetAppEnabledOnLockScreen) {
   EXPECT_EQ(std::vector<Profile*>{profile()}, observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
 
-  // Verify dev app is enabled on lock screen.
+  // Verify dev and prod apps are enabled for lock screen, with prod preferred.
   EXPECT_TRUE(AvailableAppsMatch(
       profile(),
       {{kDevKeepAppName, kDevKeepExtensionId, false /*preferred*/, kEnabled},
