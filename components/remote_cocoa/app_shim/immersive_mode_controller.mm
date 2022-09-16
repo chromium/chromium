@@ -60,6 +60,25 @@
 
 @end
 
+@interface ClearTitlebarViewController : NSTitlebarAccessoryViewController
+@end
+
+@implementation ClearTitlebarViewController
+
+- (void)viewWillAppear {
+  [super viewWillAppear];
+  NSSize size = self.view.frame.size;
+  size.height = self.fullScreenMinHeight;
+  [self.view setFrameSize:size];
+
+  // Hide the controller before it is appears but after the view's frame is set.
+  // This will extend the NSTitlebarAccessoryViewController mouse tracking area
+  // over the entirety of the window stopping the Title Bar from auto hiding.
+  self.hidden = YES;
+}
+
+@end
+
 // An NSView that will set the ImmersiveModeDelegate on the AppKit created
 // window that ends up hosting this view via the
 // NSTitlebarAccessoryViewController API.
@@ -224,10 +243,18 @@ void ImmersiveModeController::UpdateToolbarVisibility(bool always_show) {
     immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
         immersive_mode_titlebar_view_controller_.get().view.frame.size.height;
     browser_widget_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;
+
+    // Toggling the controller will allow the content view to resize below Top
+    // Chrome.
+    immersive_mode_titlebar_view_controller_.get().hidden = YES;
+    immersive_mode_titlebar_view_controller_.get().hidden = NO;
   } else {
     immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight = 0;
     browser_widget_.styleMask |= NSWindowStyleMaskFullSizeContentView;
   }
+
+  // Unpin the Title Bar.
+  SetTitleBarPinned(false);
 }
 
 // This function will pin or unpin the Title Bar (holder of the traffic
@@ -236,9 +263,24 @@ void ImmersiveModeController::UpdateToolbarVisibility(bool always_show) {
 // helpful when displaying sub-widgets. When the Title Bar is not pinned it will
 // reveal and auto-hide itself based on mouse movement (controlled by AppKit).
 void ImmersiveModeController::SetTitleBarPinned(bool pinned) {
-  // TODO(bur): Provide a mechanism to acomplish Title Bar pinning that looks
-  // and feels native. The use of a NSToolbar is an option but undesirable
-  // because of the +10 pixel height it adds to the blank Title Bar.
+  // Remove the current, if any, clear controller from the window.
+  [clear_titlebar_view_controller_.get() removeFromParentViewController];
+
+  if (!pinned) {
+    clear_titlebar_view_controller_.reset();
+    return;
+  }
+
+  clear_titlebar_view_controller_.reset(
+      [[ClearTitlebarViewController alloc] init]);
+  clear_titlebar_view_controller_.get().view =
+      [[[NSView alloc] init] autorelease];
+  clear_titlebar_view_controller_.get().layoutAttribute =
+      NSLayoutAttributeBottom;
+  clear_titlebar_view_controller_.get().fullScreenMinHeight =
+      browser_widget_.contentView.frame.size.height;
+  [browser_widget_
+      addTitlebarAccessoryViewController:clear_titlebar_view_controller_];
 }
 
 void ImmersiveModeController::ObserveOverlayChildWindows() {

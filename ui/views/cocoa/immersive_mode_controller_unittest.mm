@@ -101,4 +101,53 @@ TEST_F(CocoaImmersiveModeControllerTest, ChildWindowRevealLock) {
   [handle.overlay close];
 }
 
+// Test that child windows in immersive mode properly balance the revealed lock
+// count.
+TEST_F(CocoaImmersiveModeControllerTest,
+       HiddenTitleBarAccessoryViewController) {
+  ImmersiveModeControllerTestHandle handle =
+      CreateImmersiveModeControllerTestHandle(test_window());
+
+  // Controller under test.
+  auto immersive_mode_controller = std::make_unique<ImmersiveModeController>(
+      handle.browser, handle.overlay, base::DoNothing());
+  immersive_mode_controller->Enable();
+
+  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 0);
+  immersive_mode_controller->RevealLock();
+  immersive_mode_controller->RevealLock();
+  immersive_mode_controller->RevealLock();
+  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 3);
+
+  // One controller for Top Chrome and another hidden controller that pins the
+  // Title Bar.
+  EXPECT_EQ(handle.browser.titlebarAccessoryViewControllers.count, 2u);
+
+  // Ensure the clear controller's view covers the browser view.
+  NSTitlebarAccessoryViewController* clear_controller =
+      handle.browser.titlebarAccessoryViewControllers.lastObject;
+  EXPECT_EQ(clear_controller.view.frame.size.height,
+            handle.browser.contentView.frame.size.height);
+  EXPECT_EQ(clear_controller.view.frame.size.width,
+            handle.browser.contentView.frame.size.width);
+
+  // There is still an outstanding lock, make sure we still have the hidden
+  // controller.
+  immersive_mode_controller->RevealUnlock();
+  immersive_mode_controller->RevealUnlock();
+  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 1);
+  EXPECT_EQ(handle.browser.titlebarAccessoryViewControllers.count, 2u);
+
+  immersive_mode_controller->RevealUnlock();
+  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 0);
+  EXPECT_EQ(handle.browser.titlebarAccessoryViewControllers.count, 1u);
+
+  // Reset immersive_mode_controller before closing the overlay window. Make
+  // sure we have no controllers.
+  immersive_mode_controller.reset();
+  EXPECT_EQ(handle.browser.titlebarAccessoryViewControllers.count, 0u);
+
+  [handle.overlay close];
+}
+
 }  // namespace remote_cocoa

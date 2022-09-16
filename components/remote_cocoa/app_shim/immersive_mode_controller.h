@@ -11,6 +11,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
+@class ClearTitlebarViewController;
 @class ImmersiveModeMapper;
 @class ImmersiveModeTitlebarViewController;
 @class ImmersiveModeWindowObserver;
@@ -58,6 +59,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
 
   base::scoped_nsobject<ImmersiveModeTitlebarViewController>
       immersive_mode_titlebar_view_controller_;
+  base::scoped_nsobject<ClearTitlebarViewController>
+      clear_titlebar_view_controller_;
   base::scoped_nsobject<ImmersiveModeMapper> immersive_mode_mapper_;
   base::scoped_nsobject<ImmersiveModeWindowObserver>
       immersive_mode_window_observer_;
