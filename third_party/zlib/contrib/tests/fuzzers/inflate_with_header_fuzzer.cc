@@ -57,6 +57,13 @@ static void chunked_inflate(gz_header* header,
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  if (size > 250 * 1024) {
+    // Cap the input size so the fuzzer doesn't time out. For example,
+    // crbug.com/1362206 saw timeouts with 450 KB input, so use a limit that's
+    // well below that but still large enough to hit most code.
+    return 0;
+  }
+
   FuzzedDataProvider fdp(data, size);
 
   // Fuzz zlib's inflate() with inflateGetHeader() enabled, various sizes for
