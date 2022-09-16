@@ -21,6 +21,7 @@ namespace web_app {
 constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
     &kMigrateDefaultChromeAppToWebAppsGSuite,
     &kMigrateDefaultChromeAppToWebAppsNonGSuite,
+    &kDefaultCalculatorWebApp,
 #if BUILDFLAG(IS_CHROMEOS)
     &kCursiveManagedStylusPreinstall,
     &kMessagesPreinstall,
@@ -66,6 +67,11 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite{
 const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
     "MigrateDefaultChromeAppToWebAppsNonGSuite",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables installing the PWA version of the chrome os calculator instead of the
+// deprecated chrome app.
+const base::Feature kDefaultCalculatorWebApp{"DefaultCalculatorWebApp",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Whether to allow the MigrateDefaultChromeAppToWebAppsGSuite and
