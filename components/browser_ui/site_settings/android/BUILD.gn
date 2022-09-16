@@ -77,11 +77,12 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateSiteSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/Website.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsiteAddress.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/WebsiteEntry.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsiteGroup.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebsiteGroupPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePermissionsFetcher.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePreferenceBridge.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/WebsiteRowPreference.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.browser_ui.site_settings"

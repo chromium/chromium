@@ -27,9 +27,9 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class WebsiteGroupTest {
-    private WebsiteGroup getGroupWithTitle(List<WebsiteGroup> groups, String title) {
-        for (WebsiteGroup group : groups) {
-            if (group.getTitle().equals(title)) return group;
+    private WebsiteEntry getEntryWithTitle(List<WebsiteEntry> entries, String title) {
+        for (WebsiteEntry entry : entries) {
+            if (entry.getTitleForPreferenceRow().equals(title)) return entry;
         }
         return null;
     }
@@ -42,28 +42,13 @@ public class WebsiteGroupTest {
 
     @Test
     @SmallTest
-    public void testOneOrigin() {
-        Website origin = new Website(WebsiteAddress.create("http://test.google.com"), null);
-        WebsiteGroup group = new WebsiteGroup(
-                origin.getAddress().getDomainAndRegistry(), new ArrayList<>(Arrays.asList(origin)));
-        Assert.assertTrue(group.hasOneOrigin());
-        Assert.assertEquals("google.com", group.getDomainAndRegistry());
-        Assert.assertEquals("test.google.com", group.getTitle());
-        Assert.assertEquals(new GURL("http://test.google.com"), group.getFaviconUrl());
-        Assert.assertTrue(group.matches("goog"));
-        Assert.assertFalse(group.matches("face"));
-    }
-
-    @Test
-    @SmallTest
     public void testLocalhost() {
         Website origin = new Website(WebsiteAddress.create("localhost"), null);
         WebsiteGroup group = new WebsiteGroup(
                 origin.getAddress().getDomainAndRegistry(), new ArrayList<>(Arrays.asList(origin)));
-        Assert.assertTrue(group.hasOneOrigin());
         Assert.assertEquals("localhost", group.getDomainAndRegistry());
-        Assert.assertEquals("localhost", group.getTitle());
-        Assert.assertEquals(new GURL("http://localhost"), group.getFaviconUrl());
+        Assert.assertEquals("localhost", group.getTitleForPreferenceRow());
+        Assert.assertEquals(new GURL("https://localhost"), group.getFaviconUrl());
         Assert.assertTrue(group.matches("local"));
         Assert.assertFalse(group.matches("goog"));
     }
@@ -74,9 +59,8 @@ public class WebsiteGroupTest {
         Website origin = new Website(WebsiteAddress.create("https://1.1.1.1"), null);
         WebsiteGroup group = new WebsiteGroup(
                 origin.getAddress().getDomainAndRegistry(), new ArrayList<>(Arrays.asList(origin)));
-        Assert.assertTrue(group.hasOneOrigin());
         Assert.assertEquals("1.1.1.1", group.getDomainAndRegistry());
-        Assert.assertEquals("1.1.1.1", group.getTitle());
+        Assert.assertEquals("1.1.1.1", group.getTitleForPreferenceRow());
         Assert.assertEquals(new GURL("https://1.1.1.1"), group.getFaviconUrl());
         Assert.assertTrue(group.matches("1.1"));
         Assert.assertFalse(group.matches("goog"));
@@ -89,9 +73,8 @@ public class WebsiteGroupTest {
         Website origin2 = new Website(WebsiteAddress.create("https://two.google.com"), null);
         WebsiteGroup group = new WebsiteGroup(origin1.getAddress().getDomainAndRegistry(),
                 new ArrayList<>(Arrays.asList(origin1, origin2)));
-        Assert.assertFalse(group.hasOneOrigin());
         Assert.assertEquals("google.com", group.getDomainAndRegistry());
-        Assert.assertEquals("google.com", group.getTitle());
+        Assert.assertEquals("google.com", group.getTitleForPreferenceRow());
         Assert.assertEquals(new GURL("https://google.com"), group.getFaviconUrl());
         Assert.assertTrue(group.matches("goog"));
         Assert.assertTrue(group.matches("one"));
@@ -108,23 +91,24 @@ public class WebsiteGroupTest {
                         new Website(WebsiteAddress.create("https://test.com"), null),
                         new Website(WebsiteAddress.create("localhost"), null),
                         new Website(WebsiteAddress.create("1.1.1.1"), null)));
-        List<WebsiteGroup> groups = WebsiteGroup.groupWebsites(websites);
-        Assert.assertEquals(4, groups.size());
+        List<WebsiteEntry> entries = WebsiteGroup.groupWebsites(websites);
+        Assert.assertEquals(4, entries.size());
 
-        WebsiteGroup google = getGroupWithTitle(groups, "google.com");
+        WebsiteEntry google = getEntryWithTitle(entries, "google.com");
         Assert.assertNotNull(google);
-        Assert.assertEquals(2, google.getWebsites().size());
+        Assert.assertTrue(google instanceof WebsiteGroup);
+        Assert.assertEquals(2, ((WebsiteGroup) google).getWebsites().size());
 
-        WebsiteGroup test = getGroupWithTitle(groups, "test.com");
+        WebsiteEntry test = getEntryWithTitle(entries, "test.com");
         Assert.assertNotNull(test);
-        Assert.assertEquals(1, test.getWebsites().size());
+        Assert.assertTrue(test instanceof Website);
 
-        WebsiteGroup localhost = getGroupWithTitle(groups, "localhost");
+        WebsiteEntry localhost = getEntryWithTitle(entries, "localhost");
         Assert.assertNotNull(localhost);
-        Assert.assertEquals(1, localhost.getWebsites().size());
+        Assert.assertTrue(localhost instanceof Website);
 
-        WebsiteGroup ipaddr = getGroupWithTitle(groups, "1.1.1.1");
+        WebsiteEntry ipaddr = getEntryWithTitle(entries, "1.1.1.1");
         Assert.assertNotNull(ipaddr);
-        Assert.assertEquals(1, ipaddr.getWebsites().size());
+        Assert.assertTrue(ipaddr instanceof Website);
     }
 }

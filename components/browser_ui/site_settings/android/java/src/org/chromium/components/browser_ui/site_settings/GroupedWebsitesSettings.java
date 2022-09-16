@@ -8,6 +8,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.format.Formatter;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
@@ -19,6 +22,7 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
     // Preference keys, see grouped_websites_preferences.xml.
     public static final String PREF_SITE_TITLE = "site_title";
     public static final String PREF_CLEAR_DATA = "clear_data";
+    public static final String PREF_SITES_IN_GROUP = "sites_in_group";
 
     private WebsiteGroup mSiteGroup;
 
@@ -32,6 +36,7 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         init();
         super.onActivityCreated(savedInstanceState);
+        setDivider(null);
     }
 
     private void init() {
@@ -53,7 +58,21 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
         // Preferences screen
         SettingsUtils.addPreferencesFromResource(this, R.xml.grouped_websites_preferences);
         findPreference(PREF_SITE_TITLE).setTitle(mSiteGroup.getDomainAndRegistry());
+        findPreference(PREF_SITES_IN_GROUP)
+                .setTitle(String.format(
+                        getContext().getString(R.string.domain_settings_sites_in_group,
+                                mSiteGroup.getDomainAndRegistry())));
         setUpClearDataPreference();
+        updateSitesInGroup();
+    }
+
+    @Override
+    public boolean onPreferenceTreeClick(Preference preference) {
+        if (preference instanceof WebsiteRowPreference) {
+            ((WebsiteRowPreference) preference).handleClick(getArguments());
+        }
+
+        return super.onPreferenceTreeClick(preference);
     }
 
     private void setUpClearDataPreference() {
@@ -70,6 +89,15 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
             // cookie deletion disabled.
         } else {
             getPreferenceScreen().removePreference(preference);
+        }
+    }
+
+    private void updateSitesInGroup() {
+        PreferenceCategory category = findPreference(PREF_SITES_IN_GROUP);
+        category.removeAll();
+        for (Website site : mSiteGroup.getWebsites()) {
+            category.addPreference(new WebsiteRowPreference(
+                    category.getContext(), getSiteSettingsDelegate(), site));
         }
     }
 }

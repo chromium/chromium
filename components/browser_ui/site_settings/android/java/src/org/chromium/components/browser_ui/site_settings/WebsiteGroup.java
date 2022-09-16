@@ -5,10 +5,8 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,7 +16,7 @@ import java.util.Map;
 /**
  * Represents a group of Websites that either share the same eTLD+1 or are embedded on it.
  */
-public class WebsiteGroup implements Serializable {
+public class WebsiteGroup implements WebsiteEntry {
     // The common eTLD+1.
     private final String mDomainAndRegistry;
     // A list of origins associated with the eTLD+1.
@@ -26,27 +24,13 @@ public class WebsiteGroup implements Serializable {
     // Total storage taken up by all the stored websites.
     private final long mTotalUsage;
 
-    private static final String SCHEME_SUFFIX = "://";
-
-    /**
-     * Removes the scheme in a given URL, if present.
-     *
-     * Examples:
-     * - "google.com" -> "google.com"
-     * - "https://google.com" -> "google.com"
-     */
-    public static String omitProtocolIfPresent(String url) {
-        if (url.indexOf(SCHEME_SUFFIX) == -1) return url;
-        return UrlFormatter.formatUrlForDisplayOmitScheme(url);
-    }
-
     /**
      * Groups the websites by eTLD+1.
      *
      * @param websites A collection of {@code Website} objects representing origins.
      * @return A {@code List} of {@code WebsiteGroup} objects, each corresponding to an eTLD+1.
      */
-    public static List<WebsiteGroup> groupWebsites(Collection<Website> websites) {
+    public static List<WebsiteEntry> groupWebsites(Collection<Website> websites) {
         // Put all the sites into an eTLD+1 -> list of origins mapping.
         Map<String, List<Website>> etldMap = new HashMap<>();
         for (Website website : websites) {
@@ -60,11 +44,13 @@ public class WebsiteGroup implements Serializable {
             etldSites.add(website);
         }
         // Convert the mapping to a list of WebsiteGroup objects.
-        List<WebsiteGroup> groups = new ArrayList<>();
+        List<WebsiteEntry> entries = new ArrayList<>();
         for (Map.Entry<String, List<Website>> etld : etldMap.entrySet()) {
-            groups.add(new WebsiteGroup(etld.getKey(), etld.getValue()));
+            entries.add((etld.getValue().size() == 1)
+                            ? etld.getValue().get(0)
+                            : new WebsiteGroup(etld.getKey(), etld.getValue()));
         }
-        return groups;
+        return entries;
     }
 
     public WebsiteGroup(String domainAndRegistry, List<Website> websites) {
@@ -78,51 +64,28 @@ public class WebsiteGroup implements Serializable {
         mTotalUsage = totalUsage;
     }
 
-    public String getDomainAndRegistry() {
+    // WebsiteEntry implementation.
+
+    /** Returns the title to be displayed in a user-friendly way. */
+    @Override
+    public String getTitleForPreferenceRow() {
         return mDomainAndRegistry;
     }
 
-    public List<Website> getWebsites() {
-        return mWebsites;
+    /**
+     * Returns the URL to use for fetching the favicon: https:// + eTLD+1 is returned.
+     */
+    @Override
+    public GURL getFaviconUrl() {
+        return new GURL(UrlConstants.HTTPS_URL_PREFIX + mDomainAndRegistry);
     }
 
+    @Override
     public long getTotalUsage() {
         return mTotalUsage;
     }
 
-    public boolean hasOneOrigin() {
-        return mWebsites.size() == 1;
-    }
-
-    public boolean hasOneHttpOrigin() {
-        return hasOneOrigin()
-                && mWebsites.get(0).getAddress().getOrigin().startsWith(
-                        UrlConstants.HTTP_URL_PREFIX);
-    }
-
-    /** Returns the title to be displayed in a user-friendly way. */
-    public String getTitle() {
-        // If there is only one origin, return the title of that origin without the scheme.
-        if (hasOneOrigin()) {
-            return omitProtocolIfPresent(mWebsites.get(0).getTitle());
-        } else {
-            return mDomainAndRegistry;
-        }
-    }
-
-    /**
-     * Returns the URL to use for fetching the favicon. If only one origin is in the group, it is
-     * returned; otherwise - https + eTLD+1 is returned.
-     */
-    public GURL getFaviconUrl() {
-        return new GURL(hasOneOrigin() ? mWebsites.get(0).getAddress().getOrigin()
-                                       : UrlConstants.HTTPS_URL_PREFIX + mDomainAndRegistry);
-    }
-
-    /**
-     * Returns whether either the eTLD+1 or one of the origins associated with it matches the given
-     * search query.
-     */
+    @Override
     public boolean matches(String search) {
         // eTLD+1 matches.
         if (mDomainAndRegistry.contains(search)) return true;
@@ -132,5 +95,13 @@ public class WebsiteGroup implements Serializable {
         }
         // No matches.
         return false;
+    }
+
+    public String getDomainAndRegistry() {
+        return mDomainAndRegistry;
+    }
+
+    public List<Website> getWebsites() {
+        return mWebsites;
     }
 }

@@ -289,18 +289,8 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             // was populated with data for all permission types.
             website.putSiteIntoExtras(SingleWebsiteSettings.EXTRA_SITE);
             website.getExtras().putInt(extraKey, getNavigationSource());
-        } else if (preference instanceof WebsiteGroupPreference) {
-            WebsiteGroupPreference group = (WebsiteGroupPreference) preference;
-            if (group.representsOneWebsite()) {
-                group.setFragment(SingleWebsiteSettings.class.getName());
-                // EXTRA_SITE re-uses already-fetched permissions, which we can only use if the
-                // Website was populated with data for all permission types.
-                group.putSingleSiteIntoExtras(SingleWebsiteSettings.EXTRA_SITE);
-            } else {
-                group.setFragment(GroupedWebsitesSettings.class.getName());
-                group.putGroupSiteIntoExtras(GroupedWebsitesSettings.EXTRA_GROUP);
-            }
-            group.getExtras().putInt(extraKey, getNavigationSource());
+        } else if (preference instanceof WebsiteRowPreference) {
+            ((WebsiteRowPreference) preference).handleClick(getArguments());
         }
 
         return super.onPreferenceTreeClick(preference);
@@ -354,17 +344,17 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     private boolean addWebsites(Collection<Website> sites) {
         filterSelectedDomains(sites);
         if (isNewAllSitesUiEnabled()) {
-            List<WebsiteGroup> groups = WebsiteGroup.groupWebsites(sites);
-            List<WebsiteGroupPreference> preferences = new ArrayList<>();
-            // Find groups matching the current search.
-            for (WebsiteGroup group : groups) {
-                if (mSearch == null || mSearch.isEmpty() || group.matches(mSearch)) {
-                    preferences.add(new WebsiteGroupPreference(
-                            getStyledContext(), getSiteSettingsDelegate(), group));
+            List<WebsiteEntry> entries = WebsiteGroup.groupWebsites(sites);
+            List<WebsiteRowPreference> preferences = new ArrayList<>();
+            // Find entries matching the current search.
+            for (WebsiteEntry entry : entries) {
+                if (mSearch == null || mSearch.isEmpty() || entry.matches(mSearch)) {
+                    preferences.add(new WebsiteRowPreference(
+                            getStyledContext(), getSiteSettingsDelegate(), entry));
                 }
             }
             Collections.sort(preferences);
-            for (WebsiteGroupPreference preference : preferences) {
+            for (WebsiteRowPreference preference : preferences) {
                 getPreferenceScreen().addPreference(preference);
             }
             return !preferences.isEmpty();

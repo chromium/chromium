@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.format.Formatter;
 import android.widget.ImageView;
 
@@ -15,24 +16,25 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * Used by {@link AllSiteSettings} to display a row for a group of sites or a single site.
  */
-public class WebsiteGroupPreference extends ChromeImageViewPreference {
+public class WebsiteRowPreference extends ChromeImageViewPreference {
     private final SiteSettingsDelegate mSiteSettingsDelegate;
-    private final WebsiteGroup mSiteGroup;
+    private final WebsiteEntry mSiteEntry;
 
     private static final String HTTP = "http";
 
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
 
-    WebsiteGroupPreference(
-            Context context, SiteSettingsDelegate siteSettingsDelegate, WebsiteGroup siteGroup) {
+    WebsiteRowPreference(
+            Context context, SiteSettingsDelegate siteSettingsDelegate, WebsiteEntry siteEntry) {
         super(context);
         mSiteSettingsDelegate = siteSettingsDelegate;
-        mSiteGroup = siteGroup;
+        mSiteEntry = siteEntry;
 
         // To make sure the layout stays stable throughout, we assign a
         // transparent drawable as the icon initially. This is so that
@@ -40,23 +42,22 @@ public class WebsiteGroupPreference extends ChromeImageViewPreference {
         // about the title appearing to jump (http://crbug.com/453626) when the
         // favicon becomes available.
         setIcon(new ColorDrawable(Color.TRANSPARENT));
-        setTitle(mSiteGroup.getTitle());
+        setTitle(mSiteEntry.getTitleForPreferenceRow());
         setImageView(
                 R.drawable.ic_delete_white_24dp, R.string.webstorage_clear_data_dialog_title, null);
         updateSummary();
     }
 
-    public boolean representsOneWebsite() {
-        return mSiteGroup.hasOneOrigin();
-    }
-
-    public void putSingleSiteIntoExtras(String key) {
-        if (!representsOneWebsite()) return;
-        getExtras().putSerializable(key, mSiteGroup.getWebsites().get(0));
-    }
-
-    public void putGroupSiteIntoExtras(String key) {
-        getExtras().putSerializable(key, mSiteGroup);
+    @SuppressWarnings("WrongConstant")
+    public void handleClick(Bundle args) {
+        getExtras().putSerializable(mSiteEntry instanceof Website
+                        ? SingleWebsiteSettings.EXTRA_SITE
+                        : GroupedWebsitesSettings.EXTRA_GROUP,
+                mSiteEntry);
+        setFragment(mSiteEntry instanceof Website ? SingleWebsiteSettings.class.getName()
+                                                  : GroupedWebsitesSettings.class.getName());
+        getExtras().putInt(SettingsNavigationSource.EXTRA_KEY,
+                args.getInt(SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER));
     }
 
     @Override
@@ -70,7 +71,7 @@ public class WebsiteGroupPreference extends ChromeImageViewPreference {
         if (!mFaviconFetched) {
             // Start the favicon fetching. Will respond in onFaviconAvailable.
             mSiteSettingsDelegate.getFaviconImageForURL(
-                    mSiteGroup.getFaviconUrl(), this::onFaviconAvailable);
+                    mSiteEntry.getFaviconUrl(), this::onFaviconAvailable);
             mFaviconFetched = true;
         }
     }
@@ -81,15 +82,22 @@ public class WebsiteGroupPreference extends ChromeImageViewPreference {
         }
     }
 
+    private boolean isSiteEntryASingleHttpOrigin() {
+        if (!(mSiteEntry instanceof Website)) return false;
+        Website website = (Website) mSiteEntry;
+        return website.getAddress().getOrigin().startsWith(UrlConstants.HTTP_URL_PREFIX);
+    }
+
     private void updateSummary() {
         String summary = "";
 
-        long usage = mSiteGroup.getTotalUsage();
+        long usage = mSiteEntry.getTotalUsage();
         if (usage > 0) {
             summary = Formatter.formatShortFileSize(getContext(), usage);
         }
 
-        if (mSiteGroup.hasOneHttpOrigin()) {
+        // When a single HTTP origin is represented, mark it as such.
+        if (isSiteEntryASingleHttpOrigin()) {
             if (summary.isEmpty()) {
                 summary = HTTP;
             } else {
