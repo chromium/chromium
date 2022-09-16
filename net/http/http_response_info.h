@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/alternate_protocol_usage.h"
 #include "net/http/http_vary_data.h"
 #include "net/ssl/ssl_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -218,6 +219,10 @@ class NET_EXPORT HttpResponseInfo {
 
   // Protocol negotiated with the server.
   std::string alpn_negotiated_protocol;
+
+  // The reason why Chrome uses a specific transport protocol for HTTP
+  // semantics.
+  net::AlternateProtocolUsage alternate_protocol_usage;
 
   // The type of connection used for this response.
   ConnectionInfo connection_info = CONNECTION_INFO_UNKNOWN;

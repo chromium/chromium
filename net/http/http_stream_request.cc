@@ -38,13 +38,16 @@ HttpStreamRequest::~HttpStreamRequest() {
   helper_.ExtractAsDangling()->OnRequestComplete();  // May delete `*helper_`;
 }
 
-void HttpStreamRequest::Complete(bool was_alpn_negotiated,
-                                 NextProto negotiated_protocol,
-                                 bool using_spdy) {
+void HttpStreamRequest::Complete(
+    bool was_alpn_negotiated,
+    NextProto negotiated_protocol,
+    AlternateProtocolUsage alternate_protocol_usage,
+    bool using_spdy) {
   DCHECK(!completed_);
   completed_ = true;
   was_alpn_negotiated_ = was_alpn_negotiated;
   negotiated_protocol_ = negotiated_protocol;
+  alternate_protocol_usage_ = alternate_protocol_usage;
   using_spdy_ = using_spdy;
 }
 
@@ -68,6 +71,11 @@ bool HttpStreamRequest::was_alpn_negotiated() const {
 NextProto HttpStreamRequest::negotiated_protocol() const {
   DCHECK(completed_);
   return negotiated_protocol_;
+}
+
+AlternateProtocolUsage HttpStreamRequest::alternate_protocol_usage() const {
+  DCHECK(completed_);
+  return alternate_protocol_usage_;
 }
 
 bool HttpStreamRequest::using_spdy() const {

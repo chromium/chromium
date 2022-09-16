@@ -201,9 +201,7 @@ class HttpStreamFactory::JobController
   void ClearInappropriateJobs();
 
   // Marks completion of the |request_|.
-  void MarkRequestComplete(bool was_alpn_negotiated,
-                           NextProto negotiated_protocol,
-                           bool using_spdy);
+  void MarkRequestComplete(Job* job);
 
   // Called when all Jobs complete. Reports alternative service brokenness to
   // HttpServerProperties if apply and resets net errors afterwards:
@@ -258,10 +256,16 @@ class HttpStreamFactory::JobController
 
   // Records histogram metrics for the usage of alternative protocol. Must be
   // called when |job| has succeeded and the other job will be orphaned.
-  void ReportAlternateProtocolUsage(Job* job) const;
+  void ReportAlternateProtocolUsage(
+      AlternateProtocolUsage alternate_protocol_usage,
+      bool is_google_host) const;
 
   // Returns whether |job| is an orphaned job.
   bool IsJobOrphaned(Job* job) const;
+
+  // Calculates why Chrome uses a specific transport protocol for HTTP semantics
+  // and returns it as an enum.
+  AlternateProtocolUsage CalculateAlternateProtocolUsage(Job* job) const;
 
   // Called when a Job encountered a network error that could be resolved by
   // trying a new proxy configuration. If there is another proxy configuration
