@@ -627,7 +627,9 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getBluetoothConnectDisconnectBtn().textContent.trim());
   });
 
+
   test('Connect/Disconnect/forget states and error message', async function() {
+    loadTimeData.overrideValues({'enableFastPairFlag': false});
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -825,10 +827,56 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
     // Forget device.
     getBluetoothForgetBtn().click();
-    await flushAsync();
-    bluetoothDeviceDetailPage.$$('#forgetDeviceDialog').$$('#forget').click();
 
     await flushAsync();
+    bluetoothConfig.completeForget(/*success=*/ true);
+    await windowPopstatePromise;
+
+    // Device and device Id should be null after navigating backward.
+    assertFalse(!!bluetoothDeviceDetailPage.getDeviceForTest());
+    assertFalse(!!bluetoothDeviceDetailPage.getDeviceIdForTest());
+  });
+
+  test('Forget button with Fast Pair flag', async function() {
+    loadTimeData.overrideValues({'enableFastPairFlag': true});
+    init();
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+    const windowPopstatePromise = eventToPromise('popstate', window);
+
+    const getBluetoothForgetBtn = () =>
+        bluetoothDeviceDetailPage.shadowRoot.querySelector('#forgetBtn');
+    const getBluetoothDialogForgetButton = () =>
+        bluetoothDeviceDetailPage.shadowRoot
+            .querySelector('#forgetDeviceDialog')
+            .shadowRoot.querySelector('#forget');
+    const id = '12//345&6789';
+
+    const device1 = createDefaultBluetoothDevice(
+        /*id=*/ id,
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        DeviceConnectionState.kConnecting,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ DeviceType.kMouse);
+
+    bluetoothConfig.appendToPairedDeviceList([device1]);
+    await flushAsync();
+
+    const params = new URLSearchParams();
+    params.append('id', id);
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
+
+    await flushAsync();
+
+    // Forget device.
+    getBluetoothForgetBtn().click();
+    await flushAsync();
+    getBluetoothDialogForgetButton().click();
+    await flushAsync();
+
     bluetoothConfig.completeForget(/*success=*/ true);
     await windowPopstatePromise;
 
