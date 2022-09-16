@@ -192,10 +192,6 @@ TEST_F(MessageTest, InvalidMessageObjects) {
 }
 
 TEST_F(MessageTest, SendLocalMessageWithContext) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Lazy serialization is not supported by MojoIpcz.";
-  }
-
   // Simple write+read of a message with context. Verifies that such messages
   // are passed through a local pipe without serialization.
   auto message = std::make_unique<NeverSerializedMessage>();
@@ -347,10 +343,6 @@ TEST_F(MessageTest, SerializeSimpleMessageWithHandlesWithContext) {
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(MessageTest, SendLocalSimpleMessageWithHandlesWithContext) {
-  if (IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Lazy serialization is not supported by MojoIpcz.";
-  }
-
   auto message = std::make_unique<SimpleMessage>(kTestMessageWithContext1);
   auto* original_message = message.get();
   mojo::MessagePipe pipes[4];
@@ -387,12 +379,6 @@ TEST_F(MessageTest, SendLocalSimpleMessageWithHandlesWithContext) {
 }
 
 TEST_F(MessageTest, DropUnreadLocalMessageWithContext) {
-  if (IsMojoIpczEnabled()) {
-    // Lazy serialization is not supported on MojoIpcz, and messages are always
-    // serialized within WriteMessage if necessary.
-    GTEST_SKIP() << "Lazy serialization is not supported by MojoIpcz.";
-  }
-
   // Verifies that if a message is sent with context over a pipe and the
   // receiver closes without reading the message, the context is properly
   // cleaned up.
@@ -468,12 +454,6 @@ TEST_F(MessageTest, GetMessageDataWithHandles) {
 }
 
 TEST_F(MessageTest, ReadMessageWithContextAsSerializedMessage) {
-  if (IsMojoIpczEnabled()) {
-    // Lazy serialization is not supported on MojoIpcz, and messages are always
-    // serialized within WriteMessage if necessary.
-    GTEST_SKIP() << "Lazy serialization is not supported by MojoIpcz.";
-  }
-
   bool message_was_destroyed = false;
   std::unique_ptr<TestMessageBase> message =
       std::make_unique<NeverSerializedMessage>(

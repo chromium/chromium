@@ -28,6 +28,8 @@
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
 #include "mojo/core/ipcz_driver/invitation.h"
+#include "mojo/core/ipcz_driver/message_wrapper.h"
+#include "mojo/core/ipcz_driver/mojo_message.h"
 #include "mojo/core/ipcz_driver/mojo_trap.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
@@ -38,254 +40,6 @@
 namespace mojo::core {
 
 namespace {
-
-// The ipcz-based implementation of Mojo message objects. ipcz API exposes no
-// notion of message objects, so this is merely heap storage for data and ipcz
-// handles.
-class MojoMessage {
- public:
-  // Even with an input size of 0, MojoAppendMessageData is expected to allocate
-  // *some* storage for message data. This constant therefore sets a lower bound
-  // on payload allocation size. 32 bytes is chosen since it's the smallest
-  // possible Mojo bindings message size (v0 header + 8 byte payload)
-  static constexpr size_t kMinBufferSize = 32;
-
-  MojoMessage() = default;
-  MojoMessage(std::vector<uint8_t> data, std::vector<IpczHandle> handles) {
-    SetContents(std::move(data), std::move(handles), IPCZ_INVALID_HANDLE);
-  }
-
-  ~MojoMessage() {
-    for (IpczHandle handle : handles_) {
-      if (handle != IPCZ_INVALID_HANDLE) {
-        GetIpczAPI().Close(handle, IPCZ_NO_FLAGS, nullptr);
-      }
-    }
-
-    if (validator_ != IPCZ_INVALID_HANDLE) {
-      GetIpczAPI().Close(validator_, IPCZ_NO_FLAGS, nullptr);
-    }
-
-    if (destructor_) {
-      destructor_(context_);
-    }
-  }
-
-  static MojoMessage* FromHandle(MojoMessageHandle handle) {
-    return reinterpret_cast<MojoMessage*>(handle);
-  }
-
-  static std::unique_ptr<MojoMessage> TakeFromHandle(MojoMessageHandle handle) {
-    return base::WrapUnique(FromHandle(handle));
-  }
-
-  MojoMessageHandle handle() const {
-    return reinterpret_cast<MojoMessageHandle>(this);
-  }
-
-  base::span<uint8_t> data() { return data_; }
-  std::vector<IpczHandle>& handles() { return handles_; }
-  uintptr_t context() const { return context_; }
-
-  IpczHandle validator() const { return validator_; }
-
-  bool SetContents(std::vector<uint8_t> data,
-                   std::vector<IpczHandle> handles,
-                   IpczHandle validator) {
-    const size_t size = data.size();
-    if (size >= kMinBufferSize) {
-      data_storage_ = std::move(data);
-    } else {
-      data_storage_.resize(kMinBufferSize);
-      std::copy(data.begin(), data.end(), data_storage_.begin());
-    }
-
-    validator_ = validator;
-    data_ = base::make_span(data_storage_).first(size);
-    size_committed_ = true;
-    if (handles.empty()) {
-      return true;
-    }
-
-    // If there are any serialized DataPipe objects, accumulate them so we can
-    // pluck their portals off the end of `handles`. Their portals were
-    // attached the end of `handles` when the sender finalized the message in
-    // MojoWriteMessageIpcz().
-    std::vector<ipcz_driver::DataPipe*> data_pipes;
-    for (IpczHandle handle : handles) {
-      if (auto* data_pipe = ipcz_driver::DataPipe::FromBox(handle)) {
-        data_pipes.push_back(data_pipe);
-      }
-    }
-
-    if (handles.size() / 2 < data_pipes.size()) {
-      // There must be at least enough handles for each DataPipe box AND its
-      // portal.
-      return false;
-    }
-
-    // The last N handles are portals for the pipes in `data_pipes`, in order.
-    // Remove them from the message's handles and give them to their data pipes.
-    const size_t first_data_pipe_portal = handles.size() - data_pipes.size();
-    for (size_t i = 0; i < data_pipes.size(); ++i) {
-      const IpczHandle handle = handles[first_data_pipe_portal + i];
-      if (ipcz_driver::ObjectBase::FromBox(handle)) {
-        // The handle in this position needs to be a portal. If it's a driver
-        // object, something is wrong.
-        return false;
-      }
-
-      data_pipes[i]->AdoptPortal(handle);
-    }
-    handles.resize(first_data_pipe_portal);
-    handles_ = std::move(handles);
-    return true;
-  }
-
-  MojoResult AppendData(uint32_t additional_num_bytes,
-                        const MojoHandle* handles,
-                        uint32_t num_handles,
-                        void** buffer,
-                        uint32_t* buffer_size,
-                        bool commit_size) {
-    if (context_ || size_committed_) {
-      return MOJO_RESULT_FAILED_PRECONDITION;
-    }
-
-    const size_t new_data_size = data_.size() + additional_num_bytes;
-    const size_t required_storage_size =
-        std::max(new_data_size, kMinBufferSize);
-    if (required_storage_size > data_storage_.size()) {
-      data_storage_.resize(std::max(data_.size() * 2, required_storage_size));
-    }
-    data_ = base::make_span(data_storage_).first(new_data_size);
-
-    handles_.reserve(handles_.size() + num_handles);
-    for (MojoHandle handle : base::make_span(handles, num_handles)) {
-      handles_.push_back(handle);
-    }
-    if (buffer) {
-      *buffer = data_storage_.data();
-    }
-    if (buffer_size) {
-      *buffer_size = base::checked_cast<uint32_t>(data_storage_.size());
-    }
-    size_committed_ = commit_size;
-    return MOJO_RESULT_OK;
-  }
-
-  IpczResult GetData(void** buffer,
-                     uint32_t* num_bytes,
-                     MojoHandle* handles,
-                     uint32_t* num_handles,
-                     bool consume_handles) {
-    if (context_ || !size_committed_) {
-      return MOJO_RESULT_FAILED_PRECONDITION;
-    }
-    if (consume_handles && handles_consumed_) {
-      return MOJO_RESULT_NOT_FOUND;
-    }
-
-    if (buffer) {
-      *buffer = data_storage_.data();
-    }
-    if (num_bytes) {
-      *num_bytes = base::checked_cast<uint32_t>(data_.size());
-    }
-
-    if (!consume_handles || handles_.empty()) {
-      return MOJO_RESULT_OK;
-    }
-
-    uint32_t capacity = num_handles ? *num_handles : 0;
-    uint32_t required_capacity = base::checked_cast<uint32_t>(handles_.size());
-    if (num_handles) {
-      *num_handles = required_capacity;
-    }
-    if (!handles || capacity < required_capacity) {
-      return MOJO_RESULT_RESOURCE_EXHAUSTED;
-    }
-
-    std::copy(handles_.begin(), handles_.end(), handles);
-    handles_.clear();
-    handles_consumed_ = true;
-    return MOJO_RESULT_OK;
-  }
-
-  // Finalizes the Message by ensuring that any attached DataPipe objects also
-  // attach their portals alongside the existing attachments. This operation is
-  // balanced within SetContents(), where DataPipes extract their portals from
-  // the tail end of the attached handles.
-  void AttachDataPipePortals() {
-    const size_t base_num_handles = handles_.size();
-    for (size_t i = 0; i < base_num_handles; ++i) {
-      if (auto* data_pipe = ipcz_driver::DataPipe::FromBox(handles_[i])) {
-        handles_.push_back(data_pipe->TakePortal());
-      }
-    }
-  }
-
-  MojoResult SetContext(uintptr_t context,
-                        MojoMessageContextSerializer serializer,
-                        MojoMessageContextDestructor destructor) {
-    if (context_) {
-      return MOJO_RESULT_ALREADY_EXISTS;
-    }
-    if (!data_storage_.empty() || !handles_.empty()) {
-      return MOJO_RESULT_FAILED_PRECONDITION;
-    }
-
-    context_ = context;
-    serializer_ = serializer;
-    destructor_ = destructor;
-    return MOJO_RESULT_OK;
-  }
-
-  MojoResult Serialize() {
-    if (!data_storage_.empty() || !handles_.empty()) {
-      return MOJO_RESULT_FAILED_PRECONDITION;
-    }
-    if (!serializer_) {
-      return MOJO_RESULT_NOT_FOUND;
-    }
-
-    const uintptr_t context = std::exchange(context_, 0);
-    const MojoMessageContextSerializer serializer =
-        std::exchange(serializer_, nullptr);
-    const MojoMessageContextDestructor destructor =
-        std::exchange(destructor_, nullptr);
-    serializer(handle(), context);
-    if (destructor) {
-      destructor(context);
-    }
-    return MOJO_RESULT_OK;
-  }
-
- private:
-  IpczHandle validator_ = IPCZ_INVALID_HANDLE;
-  std::vector<uint8_t> data_storage_;
-  base::span<uint8_t> data_;
-  std::vector<IpczHandle> handles_;
-  bool handles_consumed_ = false;
-  bool size_committed_ = false;
-
-  // Unserialized message state. These values are provided by the application
-  // calling MojoSetMessageContext() for lazy serialization. `context_` is an
-  // arbitrary opaque value. `serializer_` is invoked when the application must
-  // produce a serialized message, with `context_` as an input. `destructor_` is
-  // if non-null is called to clean up any application state associated with
-  // `context_`.
-  //
-  // If `context_` is zero, then no unserialized message context has been set by
-  // the application.
-  //
-  // NOTE: Although lazy serialization is technically supported through these
-  // APIs, MojoIpcz always eagerly serializes such messages within
-  // MojoWriteMessageIpcz() even if the peer is local.
-  uintptr_t context_ = 0;
-  MojoMessageContextSerializer serializer_ = nullptr;
-  MojoMessageContextDestructor destructor_ = nullptr;
-};
 
 // Tracks active Mojo memory mappings by base address, since that's how the Mojo
 // API identifies them for unmapping.
@@ -437,16 +191,26 @@ MojoResult MojoCreateMessagePipeIpcz(
 MojoResult MojoWriteMessageIpcz(MojoHandle message_pipe_handle,
                                 MojoMessageHandle message,
                                 const MojoWriteMessageOptions* options) {
-  auto m = MojoMessage::TakeFromHandle(message);
+  auto m = ipcz_driver::MojoMessage::TakeFromHandle(message);
   if (!m || !message_pipe_handle) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  m->Serialize();
-  m->AttachDataPipePortals();
-  IpczResult result = GetIpczAPI().Put(
-      message_pipe_handle, m->data().data(), m->data().size(),
-      m->handles().data(), m->handles().size(), IPCZ_NO_FLAGS, nullptr);
+  IpczResult result;
+  if (m->context()) {
+    // Wrap unserialized messages so that driver serialization can be used to
+    // force serialized message transmission. See MessageWrapper. The parcel
+    // containing this box will be ignored by the receiving endpoint.
+    const IpczHandle box = ipcz_driver::MessageWrapper::MakeBoxed(
+        std::move(m), message_pipe_handle);
+    return GetIpczAPI().Put(message_pipe_handle, nullptr, 0, &box, 1,
+                            IPCZ_NO_FLAGS, nullptr);
+  } else {
+    m->AttachDataPipePortals();
+    result = GetIpczAPI().Put(message_pipe_handle, m->data().data(),
+                              m->data().size(), m->handles().data(),
+                              m->handles().size(), IPCZ_NO_FLAGS, nullptr);
+  }
   if (result == IPCZ_RESULT_NOT_FOUND) {
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
@@ -472,7 +236,7 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
       GetIpczAPI().Get(message_pipe_handle, IPCZ_NO_FLAGS, nullptr, nullptr,
                        &num_bytes, nullptr, &num_handles, &validator);
   if (result == IPCZ_RESULT_OK) {
-    auto new_message = std::make_unique<MojoMessage>();
+    auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
     new_message->SetContents({}, {}, validator);
     *message = new_message.release()->handle();
     return MOJO_RESULT_OK;
@@ -491,12 +255,29 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
     return GetMojoReadResultForIpczGet(result);
   }
 
-  auto m = std::make_unique<MojoMessage>();
-  if (!m->SetContents(std::move(data), std::move(handles), validator)) {
-    return MOJO_RESULT_INVALID_ARGUMENT;
+  std::unique_ptr<ipcz_driver::MojoMessage> mojo_message;
+  if (num_bytes == 0 && num_handles == 1 &&
+      ipcz_driver::MessageWrapper::FromBox(handles[0])) {
+    // This was an unserialized message at transmission time. It may still be.
+    scoped_refptr<ipcz_driver::MessageWrapper> wrapper =
+        ipcz_driver::MessageWrapper::Unbox(handles[0]);
+    mojo_message = wrapper->TakeMessage();
+    if (!mojo_message) {
+      // If the actual message object is gone, then this was just a sentinel
+      // message sent as a result of lazy serialization. The serialized contents
+      // have been transmitted separately and we ignore this message. Instead,
+      // return the result of a new read attempt.
+      return MojoReadMessageIpcz(message_pipe_handle, options, message);
+    }
+  } else {
+    mojo_message = std::make_unique<ipcz_driver::MojoMessage>();
+    if (!mojo_message->SetContents(std::move(data), std::move(handles),
+                                   validator)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
   }
 
-  *message = m.release()->handle();
+  *message = mojo_message.release()->handle();
   return MOJO_RESULT_OK;
 }
 
@@ -525,7 +306,7 @@ MojoResult MojoCreateMessageIpcz(const MojoCreateMessageOptions* options,
   if (!message) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
-  auto new_message = std::make_unique<MojoMessage>();
+  auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
   *message = new_message.release()->handle();
   return MOJO_RESULT_OK;
 }
@@ -534,14 +315,15 @@ MojoResult MojoDestroyMessageIpcz(MojoMessageHandle message) {
   if (message == MOJO_MESSAGE_HANDLE_INVALID) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
-  std::unique_ptr<MojoMessage> scoped_message(MojoMessage::FromHandle(message));
+  std::unique_ptr<ipcz_driver::MojoMessage> scoped_message(
+      ipcz_driver::MojoMessage::FromHandle(message));
   return scoped_message ? MOJO_RESULT_OK : MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult MojoSerializeMessageIpcz(
     MojoMessageHandle message,
     const MojoSerializeMessageOptions* options) {
-  if (auto* m = MojoMessage::FromHandle(message)) {
+  if (auto* m = ipcz_driver::MojoMessage::FromHandle(message)) {
     return m->Serialize();
   }
   return MOJO_RESULT_INVALID_ARGUMENT;
@@ -555,7 +337,7 @@ MojoResult MojoAppendMessageDataIpcz(
     const MojoAppendMessageDataOptions* options,
     void** buffer,
     uint32_t* buffer_size) {
-  if (auto* m = MojoMessage::FromHandle(message)) {
+  if (auto* m = ipcz_driver::MojoMessage::FromHandle(message)) {
     const bool commit_size =
         options && (options->flags & MOJO_APPEND_MESSAGE_DATA_FLAG_COMMIT_SIZE);
     return m->AppendData(additional_payload_size, handles, num_handles, buffer,
@@ -570,7 +352,7 @@ MojoResult MojoGetMessageDataIpcz(MojoMessageHandle message,
                                   uint32_t* num_bytes,
                                   MojoHandle* handles,
                                   uint32_t* num_handles) {
-  if (auto* m = MojoMessage::FromHandle(message)) {
+  if (auto* m = ipcz_driver::MojoMessage::FromHandle(message)) {
     const bool consume_handles =
         !options ||
         ((options->flags & MOJO_GET_MESSAGE_DATA_FLAG_IGNORE_HANDLES) == 0);
@@ -585,7 +367,7 @@ MojoResult MojoSetMessageContextIpcz(
     MojoMessageContextSerializer serializer,
     MojoMessageContextDestructor destructor,
     const MojoSetMessageContextOptions* options) {
-  auto* message = MojoMessage::FromHandle(message_handle);
+  auto* message = ipcz_driver::MojoMessage::FromHandle(message_handle);
   if (!message) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -597,7 +379,7 @@ MojoResult MojoGetMessageContextIpcz(
     MojoMessageHandle message_handle,
     const MojoGetMessageContextOptions* options,
     uintptr_t* context) {
-  auto* message = MojoMessage::FromHandle(message_handle);
+  auto* message = ipcz_driver::MojoMessage::FromHandle(message_handle);
   if (!message) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -613,7 +395,7 @@ MojoResult MojoNotifyBadMessageIpcz(
     const char* error,
     uint32_t error_num_bytes,
     const MojoNotifyBadMessageOptions* options) {
-  auto* message = MojoMessage::FromHandle(message_handle);
+  auto* message = ipcz_driver::MojoMessage::FromHandle(message_handle);
   if (!message) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }

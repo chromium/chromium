@@ -91,39 +91,55 @@ std::string MojoTestBase::ReadMessageWithHandles(
     MojoHandle mp,
     MojoHandle* out_handles,
     uint32_t expected_num_handles) {
-  CHECK_EQ(WaitForSignals(mp, MOJO_HANDLE_SIGNAL_READABLE), MOJO_RESULT_OK);
+  for (;;) {
+    CHECK_EQ(WaitForSignals(mp, MOJO_HANDLE_SIGNAL_READABLE), MOJO_RESULT_OK);
 
-  std::vector<uint8_t> bytes;
-  std::vector<ScopedHandle> handles;
-  CHECK_EQ(MOJO_RESULT_OK,
-           ReadMessageRaw(MessagePipeHandle(mp), &bytes, &handles,
-                          MOJO_READ_MESSAGE_FLAG_NONE));
-  CHECK_EQ(expected_num_handles, handles.size());
-  for (size_t i = 0; i < handles.size(); ++i)
-    out_handles[i] = handles[i].release().value();
+    std::vector<uint8_t> bytes;
+    std::vector<ScopedHandle> handles;
+    MojoResult result = ReadMessageRaw(MessagePipeHandle(mp), &bytes, &handles,
+                                       MOJO_READ_MESSAGE_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      // Spurious read signals are possible when MojoIpcz is used with lazily
+      // serialized messages. Retry.
+      continue;
+    }
 
-  return std::string(bytes.begin(), bytes.end());
+    CHECK_EQ(MOJO_RESULT_OK, result);
+    CHECK_EQ(expected_num_handles, handles.size());
+    for (size_t i = 0; i < handles.size(); ++i)
+      out_handles[i] = handles[i].release().value();
+
+    return std::string(bytes.begin(), bytes.end());
+  }
 }
 
 // static
 std::string MojoTestBase::ReadMessageWithOptionalHandle(MojoHandle mp,
                                                         MojoHandle* handle) {
-  CHECK_EQ(WaitForSignals(mp, MOJO_HANDLE_SIGNAL_READABLE), MOJO_RESULT_OK);
+  for (;;) {
+    CHECK_EQ(WaitForSignals(mp, MOJO_HANDLE_SIGNAL_READABLE), MOJO_RESULT_OK);
 
-  std::vector<uint8_t> bytes;
-  std::vector<ScopedHandle> handles;
-  CHECK_EQ(MOJO_RESULT_OK,
-           ReadMessageRaw(MessagePipeHandle(mp), &bytes, &handles,
-                          MOJO_READ_MESSAGE_FLAG_NONE));
-  CHECK(handles.size() == 0 || handles.size() == 1);
-  CHECK(handle);
+    std::vector<uint8_t> bytes;
+    std::vector<ScopedHandle> handles;
+    MojoResult result = ReadMessageRaw(MessagePipeHandle(mp), &bytes, &handles,
+                                       MOJO_READ_MESSAGE_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      // Spurious read signals are possible when MojoIpcz is used with lazily
+      // serialized messages. Retry.
+      continue;
+    }
 
-  if (handles.size() == 1)
-    *handle = handles[0].release().value();
-  else
-    *handle = MOJO_HANDLE_INVALID;
+    CHECK_EQ(MOJO_RESULT_OK, result);
+    CHECK(handles.size() == 0 || handles.size() == 1);
+    CHECK(handle);
 
-  return std::string(bytes.begin(), bytes.end());
+    if (handles.size() == 1)
+      *handle = handles[0].release().value();
+    else
+      *handle = MOJO_HANDLE_INVALID;
+
+    return std::string(bytes.begin(), bytes.end());
+  }
 }
 
 // static
@@ -133,16 +149,24 @@ std::string MojoTestBase::ReadMessage(MojoHandle mp) {
 
 // static
 void MojoTestBase::ReadMessage(MojoHandle mp, char* data, size_t num_bytes) {
-  CHECK_EQ(WaitForSignals(mp, MOJO_HANDLE_SIGNAL_READABLE), MOJO_RESULT_OK);
+  for (;;) {
+    CHECK_EQ(WaitForSignals(mp, MOJO_HANDLE_SIGNAL_READABLE), MOJO_RESULT_OK);
 
-  std::vector<uint8_t> bytes;
-  std::vector<ScopedHandle> handles;
-  CHECK_EQ(MOJO_RESULT_OK,
-           ReadMessageRaw(MessagePipeHandle(mp), &bytes, &handles,
-                          MOJO_READ_MESSAGE_FLAG_NONE));
-  CHECK_EQ(0u, handles.size());
-  CHECK_EQ(num_bytes, bytes.size());
-  memcpy(data, bytes.data(), bytes.size());
+    std::vector<uint8_t> bytes;
+    std::vector<ScopedHandle> handles;
+    MojoResult result = ReadMessageRaw(MessagePipeHandle(mp), &bytes, &handles,
+                                       MOJO_READ_MESSAGE_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      // Spurious read signals are possible when MojoIpcz is used with lazily
+      // serialized messages. Retry.
+      continue;
+    }
+
+    CHECK_EQ(MOJO_RESULT_OK, result);
+    CHECK_EQ(0u, handles.size());
+    CHECK_EQ(num_bytes, bytes.size());
+    memcpy(data, bytes.data(), bytes.size());
+  }
 }
 
 // static

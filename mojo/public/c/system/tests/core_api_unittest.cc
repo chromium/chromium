@@ -94,40 +94,33 @@ TEST(CoreAPITest, BasicMessagePipe) {
   MojoMessageHandle message;
   EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT, MojoReadMessage(h0, nullptr, &message));
 
-  if (!mojo::core::IsMojoIpczEnabled()) {
-    // This whole block relies on lazy serialization to work, but MojoIpcz does
-    // not support lazy serialization.
+  // Write to |h1|.
+  const uintptr_t kTestMessageContext = 1234;
+  EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(nullptr, &message));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoSetMessageContext(message, kTestMessageContext,
+                                                  nullptr, nullptr, nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoWriteMessage(h1, message, nullptr));
 
-    // Write to |h1|.
-    const uintptr_t kTestMessageContext = 1234;
-    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(nullptr, &message));
-    EXPECT_EQ(MOJO_RESULT_OK,
-              MojoSetMessageContext(message, kTestMessageContext, nullptr,
-                                    nullptr, nullptr));
-    EXPECT_EQ(MOJO_RESULT_OK, MojoWriteMessage(h1, message, nullptr));
+  // |h0| should be readable.
+  size_t result_index = 1;
+  MojoHandleSignalsState states[1];
+  sig = MOJO_HANDLE_SIGNAL_READABLE;
+  Handle handle0(h0);
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo::WaitMany(&handle0, &sig, 1, &result_index, states));
 
-    // |h0| should be readable.
-    size_t result_index = 1;
-    MojoHandleSignalsState states[1];
-    sig = MOJO_HANDLE_SIGNAL_READABLE;
-    Handle handle0(h0);
-    EXPECT_EQ(MOJO_RESULT_OK,
-              mojo::WaitMany(&handle0, &sig, 1, &result_index, states));
+  EXPECT_EQ(0u, result_index);
+  EXPECT_EQ(kSignalReadadableWritable, states[0].satisfied_signals);
+  EXPECT_EQ(kSignalAll, states[0].satisfiable_signals);
 
-    EXPECT_EQ(0u, result_index);
-    EXPECT_EQ(kSignalReadadableWritable, states[0].satisfied_signals);
-    EXPECT_EQ(kSignalAll, states[0].satisfiable_signals);
-
-    // Read from |h0|.
-    EXPECT_EQ(MOJO_RESULT_OK, MojoReadMessage(h0, nullptr, &message));
-    uintptr_t context;
-    EXPECT_EQ(MOJO_RESULT_OK,
-              MojoGetMessageContext(message, nullptr, &context));
-    EXPECT_EQ(MOJO_RESULT_OK,
-              MojoSetMessageContext(message, 0, nullptr, nullptr, nullptr));
-    EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
-    EXPECT_EQ(kTestMessageContext, context);
-  }
+  // Read from |h0|.
+  EXPECT_EQ(MOJO_RESULT_OK, MojoReadMessage(h0, nullptr, &message));
+  uintptr_t context;
+  EXPECT_EQ(MOJO_RESULT_OK, MojoGetMessageContext(message, nullptr, &context));
+  EXPECT_EQ(MOJO_RESULT_OK,
+            MojoSetMessageContext(message, 0, nullptr, nullptr, nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
+  EXPECT_EQ(kTestMessageContext, context);
 
   // |h0| should no longer be readable.
   EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(h0, &state));

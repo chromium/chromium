@@ -472,6 +472,11 @@ IpczResult MojoTrap::ArmTrigger(Trigger& trigger,
     return IPCZ_RESULT_OK;
   }
 
+  if (trigger.signals == 0) {
+    // Triggers which watch for no signals can never be armed by Mojo.
+    return IPCZ_RESULT_FAILED_PRECONDITION;
+  }
+
   const bool watching_writable =
       trigger.conditions.flags &
       (IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES | IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS);

@@ -80,10 +80,6 @@ class ForceSerializeTesterImpl : public test::ForceSerializeTester {
 };
 
 TEST_F(LazySerializationTest, NeverSerialize) {
-  if (mojo::core::IsMojoIpczEnabled()) {
-    GTEST_SKIP() << "Lazy serialization is not supported by MojoIpcz.";
-  }
-
   // Basic sanity check to ensure that no messages are serialized by default in
   // environments where lazy serialization is supported, on an interface which
   // supports lazy serialization, and where both ends of the interface are in
