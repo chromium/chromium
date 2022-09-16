@@ -556,20 +556,18 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         WindowManager.LayoutParams attrs = window.getAttributes();
         if (attrs.y == y) return;
 
+        // If the tab is not resizable then dragging it higher than the initial height will not be
+        // allowed. The tab can still be dragged down in order to be closed.
+        if (isFixedHeight() && y < initialY()) return;
+
         attrs.y = y;
         window.setAttributes(attrs);
         if (mFinishRunnable != null) return;
 
-        int initialY = initialY();
-
-        // If the tab is not resizable then dragging it higher than the initial height will not be
-        // allowed. The tab can still be dragged down in order to be closed.
-        if (isFixedHeight() && y < initialY) return;
-
         // Starting dragging from INITIAL_HEIGHT state, we can hide the spinner if the tab:
         // 1) reaches full height
         // 2) is dragged below the initial height
-        if (mStatus == HeightStatus.INITIAL_HEIGHT && (y <= topY || y > initialY)
+        if (mStatus == HeightStatus.INITIAL_HEIGHT && (y <= topY || y > initialY())
                 && isSpinnerVisible()) {
             hideSpinnerView();
             if (y <= topY) {
