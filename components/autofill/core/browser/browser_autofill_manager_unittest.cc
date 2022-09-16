@@ -387,10 +387,7 @@ class MockAutofillDriver : public TestAutofillDriver {
 
 class BrowserAutofillManagerTest : public testing::Test {
  public:
-  BrowserAutofillManagerTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
-  }
+  BrowserAutofillManagerTest() = default;
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
@@ -821,6 +818,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockIBANManager> iban_manager_;
   std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
   raw_ptr<MockSingleFieldFormFillRouter> single_field_form_fill_router_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TestStrikeDatabase> strike_database_;
   raw_ptr<payments::TestPaymentsClient> payments_client_;
   raw_ptr<TestFormDataImporter> test_form_data_importer_;
@@ -882,9 +880,6 @@ class BrowserAutofillManagerTest : public testing::Test {
     credit_card3.set_guid("00000000-0000-0000-0000-000000000006");
     personal_data().AddCreditCard(credit_card3);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
 };
 
 // Subclass of BrowserAutofillManagerTest that parameterizes the finch flag to
@@ -2719,8 +2714,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowCreditCardsSuggestionsIfCreditCardAutofillDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/false,
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/false,
                              /*for_credit_cards=*/true);
 
   // Set up our form data.
@@ -2738,8 +2732,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        ShouldNotShowAddressSuggestionsIfAddressAutofillDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/true,
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
                              /*for_credit_cards=*/false);
 
   // Set up our form data.
@@ -2826,8 +2819,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
     personal_data().ClearAllLocalData();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/true,
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
                              /*for_credit_cards=*/true);
   TestAutofillTickClock clock(AutofillTickClock::NowTicks());
   base::HistogramTester histogram_tester;
@@ -9671,9 +9663,6 @@ class BrowserAutofillManagerTestForVirtualCardOption
             "Expires on 04/99", kVisaCard,
             browser_autofill_manager_->GetPackedCreditCardID(7)));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensures the "Use a virtual card number" option should not be shown when
@@ -9929,6 +9918,7 @@ class OnFocusOnFormFieldTest : public BrowserAutofillManagerTest,
   }
 
   bool has_active_screen_reader_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
@@ -9983,8 +9973,7 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
 }
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_Ablation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/true,
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/true,
                              /*for_credit_cards=*/false);
 
   // Set up our form data.
@@ -10031,8 +10020,7 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_NonSecureContext) {
 }
 
 TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/false,
+  DisableAutofillViaAblation(scoped_feature_list_, /*for_addresses=*/false,
                              /*for_credit_cards=*/true);
 
   // Set up our form data.
@@ -10235,8 +10223,7 @@ class BrowserAutofillManagerRefillTest
 TEST_P(BrowserAutofillManagerRefillTest,
        RefillModifiedCreditCardExpirationDates) {
   RefillTestCase test_case = GetParam();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillRefillModifiedCreditCardExpirationDates);
 
   // Set up a CC form with name, cc number and expiration date.
