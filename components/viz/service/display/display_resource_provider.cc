@@ -168,9 +168,16 @@ ResourceFormat DisplayResourceProvider::GetResourceFormat(ResourceId id) {
   return resource->transferable.format;
 }
 
-const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(ResourceId id) {
+const gfx::ColorSpace& DisplayResourceProvider::GetOverlayColorSpace(
+    ResourceId id) {
   ChildResource* resource = GetResource(id);
   return resource->transferable.color_space;
+}
+
+gfx::ColorSpace DisplayResourceProvider::GetSamplerColorSpace(ResourceId id) {
+  ChildResource* resource = GetResource(id);
+  return resource->transferable.color_space_when_sampled.value_or(
+      resource->transferable.color_space);
 }
 
 const absl::optional<gfx::HDRMetadata>& DisplayResourceProvider::GetHDRMetadata(
