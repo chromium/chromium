@@ -311,7 +311,7 @@ void WaylandToplevelWindow::SetOpaqueRegion(
     opaque_region_px_ = *region_px;
   else
     opaque_region_px_ = absl::nullopt;
-  root_surface()->SetOpaqueRegion(region_px);
+  root_surface()->set_opaque_region(region_px);
 }
 
 void WaylandToplevelWindow::SetInputRegion(const gfx::Rect* region_px) {
@@ -319,7 +319,7 @@ void WaylandToplevelWindow::SetInputRegion(const gfx::Rect* region_px) {
     input_region_px_ = *region_px;
   else
     input_region_px_ = absl::nullopt;
-  root_surface()->SetInputRegion(region_px);
+  root_surface()->set_input_region(region_px);
 }
 
 void WaylandToplevelWindow::NotifyStartupComplete(
@@ -987,11 +987,11 @@ void WaylandToplevelWindow::SetInitialZOrder() {
 
 void WaylandToplevelWindow::UpdateWindowMask() {
   std::vector<gfx::Rect> region{gfx::Rect({}, visual_size_px())};
-  root_surface()->SetOpaqueRegion(opaque_region_px_.has_value()
-                                      ? &*opaque_region_px_
-                                      : (IsOpaqueWindow() ? &region : nullptr));
-  root_surface()->SetInputRegion(input_region_px_ ? &*input_region_px_
-                                                  : &*region.begin());
+  root_surface()->set_opaque_region(
+      opaque_region_px_.has_value() ? &*opaque_region_px_
+                                    : (IsOpaqueWindow() ? &region : nullptr));
+  root_surface()->set_input_region(input_region_px_ ? &*input_region_px_
+                                                    : &*region.begin());
 }
 
 bool WaylandToplevelWindow::GetTabletMode() {

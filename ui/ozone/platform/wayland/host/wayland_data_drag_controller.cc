@@ -139,10 +139,10 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
     icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
     if (icon_surface_->Initialize()) {
       // Corresponds to actual scale factor of the origin surface.
-      icon_surface_->SetSurfaceBufferScale(origin_window->window_scale());
+      icon_surface_->set_surface_buffer_scale(origin_window->window_scale());
       // Icon surface do not need input.
       const gfx::Rect empty_region_px;
-      icon_surface_->SetInputRegion(&empty_region_px);
+      icon_surface_->set_input_region(&empty_region_px);
       icon_surface_->ApplyPendingState();
 
       auto icon_offset = -data.provider().GetDragImageOffset();

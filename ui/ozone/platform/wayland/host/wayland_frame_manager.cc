@@ -312,22 +312,22 @@ void WaylandFrameManager::ApplySurfaceConfigure(
       &WaylandFrameManager::FeedbackPresented,
       &WaylandFrameManager::FeedbackDiscarded};
 
-  surface->SetBufferTransform(config.transform);
-  surface->SetSurfaceBufferScale(ceil(config.surface_scale_factor));
-  surface->SetViewportSource(config.crop_rect);
-  surface->SetViewportDestination(config.bounds_rect.size());
-  surface->SetOpacity(config.opacity);
-  surface->SetBlending(config.enable_blend);
-  surface->SetRoundedClipBounds(config.rounded_clip_bounds);
-  surface->SetOverlayPriority(config.priority_hint);
-  surface->SetBackgroundColor(config.background_color);
-  surface->SetContainsVideo(
+  surface->set_buffer_transform(config.transform);
+  surface->set_surface_buffer_scale(ceil(config.surface_scale_factor));
+  surface->set_viewport_source(config.crop_rect);
+  surface->set_viewport_destination(config.bounds_rect.size());
+  surface->set_opacity(config.opacity);
+  surface->set_blending(config.enable_blend);
+  surface->set_rounded_clip_bounds(config.rounded_clip_bounds);
+  surface->set_overlay_priority(config.priority_hint);
+  surface->set_background_color(config.background_color);
+  surface->set_contains_video(
       config.priority_hint == gfx::OverlayPriorityHint::kHardwareProtection ||
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
   if (set_opaque_region) {
     std::vector<gfx::Rect> region_px = {
         gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))};
-    surface->SetOpaqueRegion(config.enable_blend ? nullptr : &region_px);
+    surface->set_opaque_region(config.enable_blend ? nullptr : &region_px);
   }
 
   WaylandBufferHandle* buffer_handle =
@@ -340,7 +340,7 @@ void WaylandFrameManager::ApplySurfaceConfigure(
 
   surface->UpdateBufferDamageRegion(config.damage_region);
   if (!config.access_fence_handle.is_null())
-    surface->SetAcquireFence(std::move(config.access_fence_handle));
+    surface->set_acquire_fence(std::move(config.access_fence_handle));
 
   // If it's a solid color buffer, do not set a release callback as it's not
   // required to wait for this buffer - Wayland compositor only uses that to

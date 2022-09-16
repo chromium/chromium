@@ -389,9 +389,9 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
   EXPECT_CALL(*mock_surface, SetBufferScale(2)).Times(0);
 
   std::vector<gfx::Rect> region_px = {gfx::Rect{500, 300}};
-  window_->root_surface()->SetOpaqueRegion(&region_px);
-  window_->root_surface()->SetInputRegion(region_px.data());
-  window_->root_surface()->SetSurfaceBufferScale(2);
+  window_->root_surface()->set_opaque_region(&region_px);
+  window_->root_surface()->set_input_region(region_px.data());
+  window_->root_surface()->set_surface_buffer_scale(2);
 
   Sync();
 
@@ -468,7 +468,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   Sync();
 
   // Pretend we are already rendering using new scale.
-  window_->root_surface()->SetSurfaceBufferScale(kHiDpiScale);
+  window_->root_surface()->set_surface_buffer_scale(kHiDpiScale);
 
   // Set new insets so that rounding does not result in integer.
   constexpr auto kDecorationInsets_2x = gfx::Insets::TLBR(48, 55, 63, 55);
@@ -3473,8 +3473,8 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->SetViewportSource({0.5, 0.5, 0.5, 0.5});
-  surface->SetViewportDestination({800, 600});
+  surface->set_viewport_source({0.5, 0.5, 0.5, 0.5});
+  surface->set_viewport_destination({800, 600});
   surface->ApplyPendingState();
   surface->Commit();
   connection_->Flush();
@@ -3489,8 +3489,8 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->SetViewportSource({0.5, 0.5, 0.5, 0.5});
-  surface->SetViewportDestination({800, 600});
+  surface->set_viewport_source({0.5, 0.5, 0.5, 0.5});
+  surface->set_viewport_destination({800, 600});
   surface->ApplyPendingState();
   surface->Commit();
   connection_->Flush();
@@ -3505,8 +3505,8 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->SetViewportSource({0., 0., 1., 1.});
-  surface->SetViewportDestination({1024, 768});
+  surface->set_viewport_source({0., 0., 1., 1.});
+  surface->set_viewport_destination({1024, 768});
   surface->ApplyPendingState();
   surface->Commit();
   connection_->Flush();
@@ -3521,8 +3521,8 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->AttachBuffer(connection_->buffer_manager_host()->EnsureBufferHandle(
       surface, buffer_id));
 
-  surface->SetViewportSource({0., 0., 1., 1.});
-  surface->SetViewportDestination({1024, 768});
+  surface->set_viewport_source({0., 0., 1., 1.});
+  surface->set_viewport_destination({1024, 768});
   surface->ApplyPendingState();
   surface->Commit();
   connection_->Flush();
