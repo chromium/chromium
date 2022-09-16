@@ -1176,7 +1176,7 @@ TEST_F(WindowOpenByDomTest, DontBlockPopup) {
 
 // Tests that window.close closes the web state.
 // TODO(crbug.com/1307043): Flaky test.
-TEST_F(WindowOpenByDomTest, DISABLED_CloseWindow) {
+TEST_F(WindowOpenByDomTest, CloseWindow) {
   delegate_.allow_popups(opener_url_);
   ASSERT_NSEQ(@"[object Window]", OpenWindowByDom());
 
@@ -1186,6 +1186,7 @@ TEST_F(WindowOpenByDomTest, DISABLED_CloseWindow) {
 
   delegate_.child_windows()[0]->SetDelegate(&delegate_);
   CloseWindow();
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(delegate_.child_windows().empty());
