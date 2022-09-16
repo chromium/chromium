@@ -68,9 +68,9 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   ~FirstPartySetsDatabase();
 
   // Stores the public First-Party Sets into database, and returns true on
-  // success.  Note that calling this method will wipe out the pre-existing
-  // data in the table.
-  [[nodiscard]] bool SetPublicSets(const FlattenedSets& sets);
+  // success.
+  [[nodiscard]] bool SetPublicSets(const std::string& version,
+                                   const FlattenedSets& sets);
 
   // Stores the `sites` to be cleared for the `browser_context_id` into
   // database, and returns true on success.

@@ -210,8 +210,7 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
   DCHECK(enabled_);
   DCHECK(embedder_will_provide_public_sets_);
 
-  // TODO(crbug.com/1219656): Use this value to compute sets diff and then
-  // persisting to DB if valid.
+  // TODO(crbug.com/1219656): Use this value to compute sets diff.
   version_ = version;
   sets_loader_->SetComponentSets(std::move(sets_file));
 }
@@ -297,11 +296,11 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
   DCHECK(public_sets_.has_value());
   DCHECK(!browser_context_id.empty());
 
-  if (!db_helper_.is_null()) {
+  if (!db_helper_.is_null() && version_.has_value() && version_->IsValid()) {
     // TODO(crbug.com/1219656): Call site state clearing.
     db_helper_
         .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistPublicSets)
-        .WithArgs(public_sets_->entries());
+        .WithArgs(version_.value(), public_sets_->entries());
   }
   std::move(callback).Run();
 }

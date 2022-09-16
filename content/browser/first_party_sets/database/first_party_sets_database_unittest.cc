@@ -131,8 +131,8 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   // [idx_marked_at_run_sites], [idx_cleared_at_run_browser_contexts], and
   // [sqlite_autoindex_meta_1].
   EXPECT_EQ(3u, sql::test::CountSQLIndices(&db));
-  // `site`, `primary`, `site_type`.
-  EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "public_sets"));
+  // `version`, `site`, `primary`, `site_type`.
+  EXPECT_EQ(4u, sql::test::CountTableColumns(&db, "public_sets"));
   // `browser_context_id`, `site`, `marked_at_run`.
   EXPECT_EQ(
       3u, sql::test::CountTableColumns(&db, "browser_context_sites_to_clear"));
@@ -241,6 +241,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_InvalidRunCount_Fail) {
 }
 
 TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
+  const std::string version = "0.0.1";
   const std::string site = "https://aaa.test";
   const std::string primary = "https://bbb.test";
 
@@ -254,7 +255,7 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->SetPublicSets(input));
+  EXPECT_TRUE(db()->SetPublicSets(version, input));
   CloseDatabase();
 
   sql::Database db;
@@ -262,17 +263,19 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
 
   static constexpr char kSelectSql[] =
-      "SELECT site,primary_site,site_type FROM public_sets";
+      "SELECT version,site,primary_site,site_type FROM public_sets";
   sql::Statement s(db.GetUniqueStatement(kSelectSql));
   EXPECT_TRUE(s.Step());
-  EXPECT_EQ(site, s.ColumnString(0));
-  EXPECT_EQ(primary, s.ColumnString(1));
-  EXPECT_EQ(1, s.ColumnInt(2));
+  EXPECT_EQ(version, s.ColumnString(0));
+  EXPECT_EQ(site, s.ColumnString(1));
+  EXPECT_EQ(primary, s.ColumnString(2));
+  EXPECT_EQ(1, s.ColumnInt(3));
 
   EXPECT_TRUE(s.Step());
-  EXPECT_EQ(primary, s.ColumnString(0));
+  EXPECT_EQ(version, s.ColumnString(0));
   EXPECT_EQ(primary, s.ColumnString(1));
-  EXPECT_EQ(0, s.ColumnInt(2));
+  EXPECT_EQ(primary, s.ColumnString(2));
+  EXPECT_EQ(0, s.ColumnInt(3));
 
   EXPECT_FALSE(s.Step());
 }
@@ -289,19 +292,21 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
     ASSERT_EQ(2u, CountPublicSetsEntries(&db));
 
     static constexpr char kSelectSql[] =
-        "SELECT site,primary_site,site_type FROM public_sets";
+        "SELECT version,site,primary_site,site_type FROM public_sets";
     sql::Statement s(db.GetUniqueStatement(kSelectSql));
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ("https://aaa.test", s.ColumnString(0));
-    ASSERT_EQ("https://bbb.test", s.ColumnString(1));
-    ASSERT_EQ(1, s.ColumnInt(2));
+    ASSERT_EQ("0.0.1", s.ColumnString(0));
+    ASSERT_EQ("https://aaa.test", s.ColumnString(1));
+    ASSERT_EQ("https://bbb.test", s.ColumnString(2));
+    ASSERT_EQ(1, s.ColumnInt(3));
 
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ("https://bbb.test", s.ColumnString(0));
+    ASSERT_EQ("0.0.1", s.ColumnString(0));
     ASSERT_EQ("https://bbb.test", s.ColumnString(1));
-    ASSERT_EQ(0, s.ColumnInt(2));
+    ASSERT_EQ("https://bbb.test", s.ColumnString(2));
+    ASSERT_EQ(0, s.ColumnInt(3));
   }
-
+  const std::string version = "0.0.2";
   const std::string site = "https://site1.test";
   const std::string primary = "https://site2.test";
 
@@ -315,17 +320,19 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
 
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->SetPublicSets(input));
+  EXPECT_TRUE(db()->SetPublicSets(version, input));
   CloseDatabase();
 
-  // Verify the inserted data overwrote the pre-existing data.
+  // Verify data is inserted.
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
-  EXPECT_EQ(2u, CountPublicSetsEntries(&db));
+  EXPECT_EQ(4u, CountPublicSetsEntries(&db));
 
   static constexpr char kSelectSql[] =
-      "SELECT site,primary_site,site_type FROM public_sets";
+      "SELECT site,primary_site,site_type FROM public_sets "
+      "WHERE version=?";
   sql::Statement s(db.GetUniqueStatement(kSelectSql));
+  s.BindString(0, version);
   EXPECT_TRUE(s.Step());
   EXPECT_EQ(site, s.ColumnString(0));
   EXPECT_EQ(primary, s.ColumnString(1));

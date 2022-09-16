@@ -257,7 +257,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      base::Version(), WritePublicSetsFile(input));
+      base::Version("0.0.1"), WritePublicSetsFile(input));
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
@@ -297,7 +297,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      base::Version(), WritePublicSetsFile(input));
+      base::Version("0.0.1"), WritePublicSetsFile(input));
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{}, LocalSetDeclaration());
@@ -317,6 +317,30 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   env().RunUntilIdle();
 
   EXPECT_THAT(GetPersistedPublicSetsAndWait(), absl::nullopt);
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ClearSiteDataOnChangedSetsForContext_InvalidPublicSetsVersion) {
+  FirstPartySetsHandlerImpl::GetInstance()
+      ->SetEmbedderWillProvidePublicSetsForTesting(true);
+  const base::Version invalid_version = base::Version();
+  DCHECK(!invalid_version.IsValid());
+
+  const std::string input = "";
+  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+      invalid_version, WritePublicSetsFile(input));
+
+  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
+                                                 LocalSetDeclaration());
+  env().RunUntilIdle();
+
+  FirstPartySetsHandlerImpl::GetInstance()
+      ->ClearSiteDataOnChangedSetsForContext(
+          base::BindRepeating(&FakeBrowserContextGetter), "profile",
+          /*context_config=*/nullptr, base::DoNothing());
+
+  // Public sets with invalid version was not persisted.
+  EXPECT_THAT(GetPersistedPublicSetsAndWait(), Optional(IsEmpty()));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,

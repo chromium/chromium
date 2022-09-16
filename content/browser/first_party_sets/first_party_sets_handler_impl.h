@@ -158,6 +158,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // The version of the public First-Party Sets. This is nullopt until the
   // `SetPublicFirstPartySets()` is called.
+  //
+  // TODO(crbug.com/1219656): bundle `version_` with `public_sets_` to
+  // guarantee that we have both or neither.
   absl::optional<base::Version> version_;
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);

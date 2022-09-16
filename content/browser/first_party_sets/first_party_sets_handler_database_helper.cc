@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/version.h"
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -116,9 +117,11 @@ void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(
 }
 
 void FirstPartySetsHandlerDatabaseHelper::PersistPublicSets(
+    const base::Version& version,
     const FirstPartySetsHandlerDatabaseHelper::FlattenedSets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_->SetPublicSets(sets)) {
+  DCHECK(version.IsValid());
+  if (!db_->SetPublicSets(version.GetString(), sets)) {
     DVLOG(1) << "Failed to write public sets into the database.";
   }
 }

@@ -36,10 +36,11 @@ const char kRunCountKey[] = "run_count";
 [[nodiscard]] bool InitSchema(sql::Database& db) {
   static constexpr char kPublicSetsSql[] =
       "CREATE TABLE IF NOT EXISTS public_sets("
+      "version TEXT NOT NULL,"
       "site TEXT NOT NULL,"
       "primary_site TEXT NOT NULL,"
       "site_type INTEGER NOT NULL,"
-      "PRIMARY KEY(site)"
+      "PRIMARY KEY(version,site)"
       ")WITHOUT ROWID";
   if (!db.Execute(kPublicSetsSql))
     return false;
@@ -113,6 +114,7 @@ FirstPartySetsDatabase::~FirstPartySetsDatabase() {
 }
 
 bool FirstPartySetsDatabase::SetPublicSets(
+    const std::string& version,
     const FirstPartySetsDatabase::FlattenedSets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -123,23 +125,18 @@ bool FirstPartySetsDatabase::SetPublicSets(
   if (!transaction.Begin())
     return false;
 
-  static constexpr char kDeleteSql[] = "DELETE FROM public_sets";
-  sql::Statement delete_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
-  if (!delete_statement.Run())
-    return false;
-
   for (const auto& [site, entry] : sets) {
     DCHECK(!site.opaque());
     DCHECK(!entry.primary().opaque());
     static constexpr char kInsertSql[] =
-        "INSERT INTO public_sets(site,primary_site,site_type)"
-        "VALUES(?,?,?)";
+        "INSERT INTO public_sets(version,site,primary_site,site_type)"
+        "VALUES(?,?,?,?)";
     sql::Statement insert_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-    insert_statement.BindString(0, site.Serialize());
-    insert_statement.BindString(1, entry.primary().Serialize());
-    insert_statement.BindInt(2, static_cast<int>(entry.site_type()));
+    insert_statement.BindString(0, version);
+    insert_statement.BindString(1, site.Serialize());
+    insert_statement.BindString(2, entry.primary().Serialize());
+    insert_statement.BindInt(3, static_cast<int>(entry.site_type()));
 
     if (!insert_statement.Run())
       return false;
