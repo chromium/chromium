@@ -17,6 +17,7 @@ import './cellular_setup_icons.js';
 
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -25,7 +26,7 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
+    /** @type {?ESimProfileRemote} */
     profile: {
       type: Object,
       value: null,
@@ -42,7 +43,7 @@ Polymer({
     },
 
     /**
-     * @type {?ash.cellularSetup.mojom.ESimProfileProperties}
+     * @type {?ESimProfileProperties}
      * @private
      */
     profileProperties_: {

@@ -12,6 +12,7 @@ import './os_powerwash_dialog.js';
 import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink_js.js';
+import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -45,7 +46,7 @@ class OsSettingsResetPageElement extends OsSettingsResetPageElementBase {
       showPowerwashDialog_: Boolean,
 
       /**
-       * @type {!Array<!ash.cellularSetup.mojom.ESimProfileRemote>}
+       * @type {!Array<!ESimProfileRemote>}
        * @private
        */
       installedESimProfiles_: {

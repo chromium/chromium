@@ -16,6 +16,7 @@ import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,8 +25,6 @@ import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
-
-
 
 // TODO(crbug.com/1093185): Implement DeepLinkingBehavior and override methods
 // to show the actions for search result.
@@ -162,7 +161,7 @@ class SettingsInternetDetailMenuElement extends
 
   /**
    * ESimManagerListenerBehavior override
-   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {!ESimProfileRemote} profile
    */
   onProfileChanged(profile) {
     this.setESimNetworkState_();

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @implements {ash.cellularSetup.mojom.ESimProfile} */
+import {ESimManagerObserverInterface, ESimOperationResult, ESimProfile, ESimProfileProperties, Euicc, EuiccProperties, ProfileInstallResult, ProfileState, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+
+/** @implements {ESimProfile} */
 class FakeProfile {
   constructor(eid, iccid, fakeEuicc) {
     this.properties = {
@@ -18,7 +20,7 @@ class FakeProfile {
       serviceProvider: {
         data: this.stringToCharCodeArray_('provider' + iccid),
       },
-      state: ash.cellularSetup.mojom.ProfileState.kPending,
+      state: ProfileState.kPending,
     };
 
     this.deferGetProperties_ = false;
@@ -28,8 +30,7 @@ class FakeProfile {
 
   /**
    * @override
-   * @return {!Promise<{properties:
-   *     ash.cellularSetup.mojom.ESimProfileProperties},}>}
+   * @return {!Promise<{properties: ESimProfileProperties},}>}
    */
   getProperties() {
     if (this.deferGetProperties_) {
@@ -62,13 +63,12 @@ class FakeProfile {
    * @override
    * @param {string} confirmationCode
    * @return {!Promise<{result:
-   *     ash.cellularSetup.mojom.ProfileInstallResult},}>}
+   *     ProfileInstallResult},}>}
    */
   installProfile(confirmationCode) {
     if (!this.profileInstallResult_ ||
-        this.profileInstallResult_ ===
-            ash.cellularSetup.mojom.ProfileInstallResult.kSuccess) {
-      this.properties.state = ash.cellularSetup.mojom.ProfileState.kActive;
+        this.profileInstallResult_ === ProfileInstallResult.kSuccess) {
+      this.properties.state = ProfileState.kActive;
     }
     this.fakeEuicc_.notifyProfileChangedForTest(this);
     this.fakeEuicc_.notifyProfileListChangedForTest();
@@ -79,20 +79,20 @@ class FakeProfile {
             () => resolve({
               result: this.profileInstallResult_ ?
                   this.profileInstallResult_ :
-                  ash.cellularSetup.mojom.ProfileInstallResult.kSuccess,
+                  ProfileInstallResult.kSuccess,
             }),
             0));
   }
 
   /**
-   * @param {ash.cellularSetup.mojom.ProfileInstallResult} result
+   * @param {ProfileInstallResult} result
    */
   setProfileInstallResultForTest(result) {
     this.profileInstallResult_ = result;
   }
 
   /**
-   * @param {ash.cellularSetup.mojom.ESimOperationResult} result
+   * @param {ESimOperationResult} result
    */
   setEsimOperationResultForTest(result) {
     this.esimOperationResult_ = result;
@@ -127,13 +127,11 @@ class FakeProfile {
   /**
    * @override
    * @param {?mojoBase.mojom.String16} nickname
-   * @return {!Promise<{result:
-   *     ash.cellularSetup.mojom.ESimOperationResult},}>}
+   * @return {!Promise<{result: ESimOperationResult},}>}
    */
   setProfileNickname(nickname) {
     if (!this.esimOperationResult_ ||
-        this.esimOperationResult_ ===
-            ash.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+        this.esimOperationResult_ === ESimOperationResult.kSuccess) {
       this.properties.nickname = nickname;
     }
 
@@ -144,9 +142,8 @@ class FakeProfile {
   /** @private */
   resolveSetProfileNicknamePromise_() {
     this.deferredSetProfileNicknamePromise_.resolve({
-      result: this.esimOperationResult_ ?
-          this.esimOperationResult_ :
-          ash.cellularSetup.mojom.ESimOperationResult.kSuccess,
+      result: this.esimOperationResult_ ? this.esimOperationResult_ :
+                                          ESimOperationResult.kSuccess,
     });
   }
 
@@ -160,8 +157,7 @@ class FakeProfile {
   /** @return {Promise<void>} */
   async resolveUninstallProfilePromise() {
     if (!this.esimOperationResult_ ||
-        this.esimOperationResult_ ===
-            ash.cellularSetup.mojom.ESimOperationResult.kSuccess) {
+        this.esimOperationResult_ === ESimOperationResult.kSuccess) {
       const removeProfileResult =
           await this.fakeEuicc_.removeProfileForTest(this.properties.iccid);
       this.defferedUninstallProfilePromise_.resolve(removeProfileResult);
@@ -169,14 +165,13 @@ class FakeProfile {
     }
 
     this.defferedUninstallProfilePromise_.resolve({
-      result: this.esimOperationResult_ ?
-          this.esimOperationResult_ :
-          ash.cellularSetup.mojom.ESimOperationResult.kSuccess,
+      result: this.esimOperationResult_ ? this.esimOperationResult_ :
+                                          ESimOperationResult.kSuccess,
     });
   }
 }
 
-/** @implements {ash.cellularSetup.mojom.Euicc} */
+/** @implements {Euicc} */
 class FakeEuicc {
   constructor(eid, numProfiles, fakeESimManager) {
     this.fakeESimManager_ = fakeESimManager;
@@ -185,14 +180,12 @@ class FakeEuicc {
     for (let i = 0; i < numProfiles; i++) {
       this.addProfile();
     }
-    this.requestPendingProfilesResult_ =
-        ash.cellularSetup.mojom.ESimOperationResult.kSuccess;
+    this.requestPendingProfilesResult_ = ESimOperationResult.kSuccess;
   }
 
   /**
    * @override
-   * @return {!Promise<{properties:
-   *     ash.cellularSetup.mojom.EuiccProperties},}>}
+   * @return {!Promise<{properties: EuiccProperties},}>}
    */
   getProperties() {
     return Promise.resolve({properties: this.properties});
@@ -201,7 +194,7 @@ class FakeEuicc {
   /**
    * @override
    * @return {!Promise<{result:
-   *     ash.cellularSetup.mojom.ESimOperationResult},}>}
+   *     ESimOperationResult},}>}
    */
   requestPendingProfiles() {
     return Promise.resolve({
@@ -221,7 +214,7 @@ class FakeEuicc {
 
   /**
    * @override
-   * @return {!Promise<{qrCode: ash.cellularSetup.mojom.QRCode} | null>}
+   * @return {!Promise<{qrCode: QRCode} | null>}
    */
   getEidQRCode() {
     if (this.eidQRCode_) {
@@ -236,35 +229,33 @@ class FakeEuicc {
    * @param {string} activationCode
    * @param {string} confirmationCode
    * @param {boolean} isInstallViaQrCode
-   * @return {!Promise<{result:
-   *     ash.cellularSetup.mojom.ProfileInstallResult},}>}
+   * @return {!Promise<{result: ProfileInstallResult},}>}
    */
   installProfileFromActivationCode(
       activationCode, confirmationCode, isInstallViaQrCode) {
     this.notifyProfileListChangedForTest();
     return Promise.resolve({
-      result: this.profileInstallResult_ ?
-          this.profileInstallResult_ :
-          ash.cellularSetup.mojom.ProfileInstallResult.kSuccess,
+      result: this.profileInstallResult_ ? this.profileInstallResult_ :
+                                           ProfileInstallResult.kSuccess,
     });
   }
 
   /**
-   * @param {ash.cellularSetup.mojom.ESimOperationResult} result
+   * @param {ESimOperationResult} result
    */
   setRequestPendingProfilesResult(result) {
     this.requestPendingProfilesResult_ = result;
   }
 
   /**
-   * @param {ash.cellularSetup.mojom.ProfileInstallResult} result
+   * @param {ProfileInstallResult} result
    */
   setProfileInstallResultForTest(result) {
     this.profileInstallResult_ = result;
   }
 
   /**
-   * @param {ash.cellularSetup.mojom.QRCode} qrcode
+   * @param {QRCode} qrcode
    */
   setEidQRCodeForTest(qrcode) {
     this.eidQRCode_ = qrcode;
@@ -288,9 +279,9 @@ class FakeEuicc {
 
     if (profileRemoved) {
       this.notifyProfileListChangedForTest();
-      return {result: ash.cellularSetup.mojom.ESimOperationResult.kSuccess};
+      return {result: ESimOperationResult.kSuccess};
     }
-    return {result: ash.cellularSetup.mojom.ESimOperationResult.kFailure};
+    return {result: ESimOperationResult.kFailure};
   }
 
   /**
@@ -311,7 +302,7 @@ class FakeEuicc {
   }
 }
 
-/** @implements {ash.cellularSetup.mojom.ESimManagerInterface} */
+/** @implements {ESimManagerInterface} */
 export class FakeESimManagerRemote {
   constructor() {
     this.euiccs_ = [];
@@ -341,7 +332,7 @@ export class FakeESimManagerRemote {
   }
 
   /**
-   * @param {!ash.cellularSetup.mojom.ESimManagerObserverInterface} observer
+   * @param {!ESimManagerObserverInterface} observer
    */
   addObserver(observer) {
     this.observers_.push(observer);

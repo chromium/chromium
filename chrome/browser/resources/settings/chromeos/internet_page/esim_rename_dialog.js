@@ -14,6 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import {getESimProfile} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {ESimOperationResult, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -95,7 +96,7 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
   constructor() {
     super();
 
-    /** @private {?ash.cellularSetup.mojom.ESimProfileRemote} */
+    /** @private {?ESimProfileRemote} */
     this.esimProfileRemote_ = null;
   }
 
@@ -157,12 +158,12 @@ class EsimRenameDialogElement extends EsimRenameDialogElementBase {
   }
 
   /**
-   * @param {ash.cellularSetup.mojom.ESimOperationResult} result
+   * @param {ESimOperationResult} result
    * @private
    */
   handleSetProfileNicknameResponse_(result) {
     this.isRenameInProgress_ = false;
-    if (result === ash.cellularSetup.mojom.ESimOperationResult.kFailure) {
+    if (result === ESimOperationResult.kFailure) {
       const showErrorToastEvent = new CustomEvent('show-error-toast', {
         bubbles: true,
         composed: true,

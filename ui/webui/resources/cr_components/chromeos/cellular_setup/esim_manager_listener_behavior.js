@@ -7,11 +7,13 @@
  * events.
  */
 
+import {ESimManagerObserver, ESimProfileRemote, EuiccRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+
 import {observeESimManager} from './mojo_interface_provider.js';
 
 /** @polymerBehavior */
 export const ESimManagerListenerBehavior = {
-  /** @private {?ash.cellularSetup.mojom.ESimManagerObserver} */
+  /** @private {?ESimManagerObserver} */
   observer_: null,
 
   /** @override */
@@ -24,17 +26,17 @@ export const ESimManagerListenerBehavior = {
   onAvailableEuiccListChanged() {},
 
   /**
-   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!EuiccRemote} euicc
    */
   onProfileListChanged(euicc) {},
 
   /**
-   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!EuiccRemote} euicc
    */
   onEuiccChanged(euicc) {},
 
   /**
-   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {!ESimProfileRemote} profile
    */
   onProfileChanged(profile) {},
 };
@@ -44,17 +46,17 @@ export class ESimManagerListenerBehaviorInterface {
   onAvailableEuiccListChanged() {}
 
   /**
-   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!EuiccRemote} euicc
    */
   onProfileListChanged(euicc) {}
 
   /**
-   * @param {!ash.cellularSetup.mojom.EuiccRemote} euicc
+   * @param {!EuiccRemote} euicc
    */
   onEuiccChanged(euicc) {}
 
   /**
-   * @param {!ash.cellularSetup.mojom.ESimProfileRemote} profile
+   * @param {!ESimProfileRemote} profile
    */
   onProfileChanged(profile) {}
 }
