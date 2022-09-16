@@ -166,13 +166,10 @@ void DriveUploadHandler::OnDestinationDirectoryCreated(
     return;
   }
 
-  // Source URLs.
   std::vector<FileSystemURL> source_urls{source_url_};
-
-  // TODO (b/242685159) Change copy to move.
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-          file_manager::io_task::OperationType::kCopy, std::move(source_urls),
+          file_manager::io_task::OperationType::kMove, std::move(source_urls),
           std::move(destination_folder_url), profile_, file_system_context_,
           /*show_notification=*/false);
 
