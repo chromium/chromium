@@ -229,7 +229,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1335549): Remove once launched.
        features::kAutofillParseIBANFields,
        // TODO(crbug.com/1341387): Remove once launched.
-       features::kAutofillParseVcnCardOnFileStandaloneCvcFields},
+       features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
+       // TODO(crbug.com/1339277): Remove once launched.
+       features::kAutofillImprovedLabelForInference},
       // Disabled
       {});
 }
