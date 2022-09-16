@@ -757,36 +757,6 @@ void PageHandler::CaptureSnapshot(
       std::move(callback));
 }
 
-// Sets a clip with full page dimensions. Calls CaptureScreenshot with updated
-// value to proceed with capturing the full page screenshot.
-// TODO(crbug.com/1363574): at the point this method is called, the page could
-// have changed its size.
-void PageHandler::CaptureFullPageScreenshot(
-    Maybe<std::string> format,
-    Maybe<int> quality,
-    std::unique_ptr<CaptureScreenshotCallback> callback,
-    const gfx::Size& full_page_size) {
-  // check width and height for validity
-  // max_size is needed to respect the limit of 16K of the headless mode
-  const int kMaxDimension = 128 * 1024;
-  if (full_page_size.width() >= kMaxDimension ||
-      full_page_size.height() >= kMaxDimension) {
-    callback->sendFailure(Response::ServerError("Page is too large."));
-    return;
-  }
-
-  auto clip = Page::Viewport::Create()
-                  .SetX(0)
-                  .SetY(0)
-                  .SetWidth(full_page_size.width())
-                  .SetHeight(full_page_size.height())
-                  .SetScale(1)
-                  .Build();
-  CaptureScreenshot(std::move(format), std::move(quality), std::move(clip),
-                    /*from_surface=*/true, /*capture_beyond_viewport=*/true,
-                    std::move(callback));
-}
-
 void PageHandler::CaptureScreenshot(
     Maybe<std::string> format,
     Maybe<int> quality,
@@ -801,17 +771,6 @@ void PageHandler::CaptureScreenshot(
   }
   if (!CanExecuteGlobalCommands(this, callback))
     return;
-
-  // Check if full page screenshot is expected and get dimensions accordingly.
-  if (from_surface.fromMaybe(true) &&
-      capture_beyond_viewport.fromMaybe(false) && !clip.isJust()) {
-    blink::mojom::LocalMainFrame* main_frame =
-        host_->GetAssociatedLocalMainFrame();
-    main_frame->GetFullPageSize(base::BindOnce(
-        &PageHandler::CaptureFullPageScreenshot, weak_factory_.GetWeakPtr(),
-        std::move(format), std::move(quality), std::move(callback)));
-    return;
-  }
   if (clip.isJust()) {
     if (clip.fromJust()->GetWidth() == 0) {
       callback->sendFailure(
