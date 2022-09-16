@@ -435,7 +435,7 @@ Things to consider:
         To save images, tap on Settings to let Chrome add to your photos
       </message>
       <message name="IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING" desc="Helper text above the save credentials modal's primary action button. [Length: unlimited] [iOS only]">
-        Passwords are saved to Google Password Manager on this device only.
+        Passwords are saved to Google Password Manager on this device.
       </message>
       <message name="IDS_IOS_SCANNER_CAMERA_IN_USE_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR scanner but the camera is in use by another application. [Length: 140em] [iOS only]">
         Google Chrome can't use your camera because it's in use by another application
@@ -567,10 +567,10 @@ Things to consider:
         Chrome couldn't check all passwords. Try again later.
       </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
-        Your password was exposed in a data breach. Chrome recommends changing the password now.
+        This password was found in a data breach. Chrome recommends changing your password now.
       </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
-        Your password was exposed in a data breach. Google Password Manager recommends changing it now.
+        This password was found in a data breach. Google Password Manager recommends changing your password now.
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Shows prompts to sign in to Chrome.
