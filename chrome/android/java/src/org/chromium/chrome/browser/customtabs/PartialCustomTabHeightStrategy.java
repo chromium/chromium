@@ -33,10 +33,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsAnimationControlListenerCompat;
+import androidx.core.view.WindowInsetsAnimationControllerCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
@@ -176,6 +179,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // The current height used to trigger onResizedCallback when it is resized.
     // Used in 'window-above-navbar' version only.
     private int mHeight;
+
+    // Class used to control show / hide nav bar.
+    private NavBarTransitionController mNavbarTransitionController =
+            new NavBarTransitionController();
 
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             Integer navigationBarColor, Integer navigationBarDividerColor, boolean isFixedHeight,
@@ -827,6 +834,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             // Can we remove the slow fade-out animation?
             controller.hide(WindowInsetsCompat.Type.navigationBars());
         }
+
+        // Take over the control of insets animation after the #show / #hide. This call needs to
+        // happen after the #show / #hide call to work correctly.
+        mNavbarTransitionController.setShow(show);
+        controller.controlWindowInsetsAnimation(WindowInsetsCompat.Type.navigationBars(),
+                /*durationMillis*/ 1, null, null, mNavbarTransitionController);
     }
 
     // TODO(jinsukkim): Explore the way to use androidx.window.WindowManager or
@@ -1034,5 +1047,26 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // Pass null for context because we don't depend on the GestureDetector inside as we invoke
         // MotionEvents directly in the tests.
         return new PartialCustomTabHandleStrategy(null, this::isFullHeight, () -> mStatus, this);
+    }
+
+    // Reusable class used to control nav bar transitioning, to make the transition instant.
+    private static class NavBarTransitionController
+            implements WindowInsetsAnimationControlListenerCompat {
+        private boolean mShown;
+
+        void setShow(boolean show) {
+            mShown = show;
+        }
+
+        @Override
+        public void onReady(@NonNull WindowInsetsAnimationControllerCompat controller, int types) {
+            controller.finish(mShown);
+        }
+
+        @Override
+        public void onFinished(WindowInsetsAnimationControllerCompat controller) {}
+
+        @Override
+        public void onCancelled(WindowInsetsAnimationControllerCompat controller) {}
     }
 }
