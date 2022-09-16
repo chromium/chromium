@@ -133,6 +133,8 @@ class WaylandPointer::Delegate {
   virtual const gfx::PointF& GetPointerLocation() const = 0;
   virtual bool IsPointerButtonPressed(EventFlags button) const = 0;
   virtual void OnPointerStylusToolChanged(EventPointerType pointer_type) = 0;
+  virtual void OnPointerStylusForceChanged(float force) = 0;
+  virtual void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) = 0;
   virtual const WaylandWindow* GetPointerTarget() const = 0;
 };
 

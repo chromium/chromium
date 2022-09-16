@@ -258,19 +258,26 @@ void WaylandPointer::Tool(void* data,
 
 // static
 void WaylandPointer::Force(void* data,
-                           struct zcr_pointer_stylus_v2* x,
-                           uint32_t y,
-                           wl_fixed_t z) {
-  NOTIMPLEMENTED_LOG_ONCE();
+                           struct zcr_pointer_stylus_v2* obj,
+                           uint32_t time,
+                           wl_fixed_t force) {
+  auto* pointer = static_cast<WaylandPointer*>(data);
+  DCHECK(pointer);
+
+  pointer->delegate_->OnPointerStylusForceChanged(wl_fixed_to_double(force));
 }
 
 // static
 void WaylandPointer::Tilt(void* data,
-                          struct zcr_pointer_stylus_v2* x,
-                          uint32_t y,
-                          wl_fixed_t z,
-                          wl_fixed_t a) {
-  NOTIMPLEMENTED_LOG_ONCE();
+                          struct zcr_pointer_stylus_v2* obj,
+                          uint32_t time,
+                          wl_fixed_t tilt_x,
+                          wl_fixed_t tilt_y) {
+  auto* pointer = static_cast<WaylandPointer*>(data);
+  DCHECK(pointer);
+
+  pointer->delegate_->OnPointerStylusTiltChanged(
+      gfx::Vector2dF(wl_fixed_to_double(tilt_x), wl_fixed_to_double(tilt_y)));
 }
 
 }  // namespace ui

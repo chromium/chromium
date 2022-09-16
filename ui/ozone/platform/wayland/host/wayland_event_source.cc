@@ -682,6 +682,17 @@ void WaylandEventSource::OnPointerStylusToolChanged(
       .force = std::numeric_limits<float>::quiet_NaN()};
 }
 
+void WaylandEventSource::OnPointerStylusForceChanged(float force) {
+  DCHECK(last_pointer_stylus_tool_.has_value());
+  last_pointer_stylus_tool_->force = force;
+}
+
+void WaylandEventSource::OnPointerStylusTiltChanged(
+    const gfx::Vector2dF& tilt) {
+  DCHECK(last_pointer_stylus_tool_.has_value());
+  last_pointer_stylus_tool_->tilt = tilt;
+}
+
 const WaylandWindow* WaylandEventSource::GetPointerTarget() const {
   return window_manager_->GetCurrentPointerFocusedWindow();
 }
