@@ -424,7 +424,7 @@ extern const char kShowUpdatePromotionInfoBar[];
 extern const char kUseCustomChromeFrame[];
 #endif
 #if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kContentSettingsPluginWhitelist[];
+extern const char kContentSettingsPluginAllowlist[];
 #endif
 extern const char kPartitionDefaultZoomLevel[];
 extern const char kPartitionPerHostZoomLevels[];
