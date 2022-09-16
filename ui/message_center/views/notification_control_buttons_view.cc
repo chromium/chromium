@@ -18,7 +18,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/padded_button.h"
+#include "ui/message_center/views/notification_control_button_factory.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
@@ -37,6 +37,10 @@ NotificationControlButtonsView::NotificationControlButtonsView(
   // Use layer to change the opacity.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  if (!notification_control_button_factory_) {
+    notification_control_button_factory_ =
+        std::make_unique<NotificationControlButtonFactory>();
+  }
 }
 
 NotificationControlButtonsView::~NotificationControlButtonsView() = default;
@@ -48,9 +52,10 @@ void NotificationControlButtonsView::OnThemeChanged() {
 
 void NotificationControlButtonsView::ShowCloseButton(bool show) {
   if (show && !close_button_) {
-    close_button_ = AddChildView(std::make_unique<PaddedButton>(
-        base::BindRepeating(&MessageView::OnCloseButtonPressed,
-                            base::Unretained(message_view_))));
+    close_button_ =
+        AddChildView(notification_control_button_factory_->CreateButton(
+            base::BindRepeating(&MessageView::OnCloseButtonPressed,
+                                base::Unretained(message_view_))));
     if (GetWidget()) {
       close_button_->SetImage(
           views::Button::STATE_NORMAL,
@@ -75,11 +80,11 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
   if (show && !settings_button_) {
     // Add the button next right to the snooze button.
     const int position = snooze_button_ ? 1 : 0;
-    settings_button_ =
-        AddChildViewAt(std::make_unique<PaddedButton>(base::BindRepeating(
-                           &MessageView::OnSettingsButtonPressed,
-                           base::Unretained(message_view_))),
-                       position);
+    settings_button_ = AddChildViewAt(
+        notification_control_button_factory_->CreateButton(
+            base::BindRepeating(&MessageView::OnSettingsButtonPressed,
+                                base::Unretained(message_view_))),
+        position);
     if (GetWidget()) {
       settings_button_->SetImage(
           views::Button::STATE_NORMAL,
@@ -103,11 +108,11 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
 void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
   if (show && !snooze_button_) {
     // Snooze button should appear as the first child.
-    snooze_button_ =
-        AddChildViewAt(std::make_unique<PaddedButton>(base::BindRepeating(
-                           &MessageView::OnSnoozeButtonPressed,
-                           base::Unretained(message_view_))),
-                       0);
+    snooze_button_ = AddChildViewAt(
+        notification_control_button_factory_->CreateButton(
+            base::BindRepeating(&MessageView::OnSnoozeButtonPressed,
+                                base::Unretained(message_view_))),
+        0);
     if (GetWidget()) {
       snooze_button_->SetImage(
           views::Button::STATE_NORMAL,
@@ -159,6 +164,13 @@ void NotificationControlButtonsView::SetBackgroundColor(SkColor color) {
 
 void NotificationControlButtonsView::SetMessageView(MessageView* message_view) {
   message_view_ = message_view;
+}
+
+void NotificationControlButtonsView::SetNotificationControlButtonFactory(
+    std::unique_ptr<NotificationControlButtonFactory>
+        notification_control_button_factory) {
+  notification_control_button_factory_ =
+      std::move(notification_control_button_factory);
 }
 
 void NotificationControlButtonsView::UpdateButtonIconColors() {

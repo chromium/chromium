@@ -4,6 +4,8 @@
 
 #include "ui/message_center/views/notification_view.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -13,6 +15,7 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/notification_background_painter.h"
+#include "ui/message_center/views/notification_control_button_factory.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_base.h"
@@ -275,7 +278,11 @@ NotificationView::NotificationView(
                                gfx::Size(GetInsets().width(), 0));
   header_row->SetCallback(base::BindRepeating(
       &NotificationView::HeaderRowPressed, base::Unretained(this)));
-  header_row->AddChildView(CreateControlButtonsBuilder().Build());
+  header_row->AddChildView(
+      CreateControlButtonsBuilder()
+          .SetNotificationControlButtonFactory(
+              std::make_unique<NotificationControlButtonFactory>())
+          .Build());
 
   auto content_row = CreateContentRowBuilder()
                          .SetLayoutManager(std::make_unique<views::BoxLayout>(

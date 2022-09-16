@@ -15,6 +15,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -75,7 +76,7 @@ class NotificationControlButtonsTest : public views::ViewsTestBase {
     return message_view_->GetControlButtonsView();
   }
 
-  bool MatchesIcon(PaddedButton* button,
+  bool MatchesIcon(views::ImageButton* button,
                    const gfx::VectorIcon& icon,
                    SkColor color) {
     SkBitmap expected = *gfx::CreateVectorIcon(icon, color).bitmap();

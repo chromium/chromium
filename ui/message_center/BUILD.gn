@@ -101,6 +101,8 @@ component("message_center") {
         "views/message_view.h",
         "views/notification_background_painter.cc",
         "views/notification_background_painter.h",
+        "views/notification_control_button_factory.cc",
+        "views/notification_control_button_factory.h",
         "views/notification_control_buttons_view.cc",
         "views/notification_control_buttons_view.h",
         "views/notification_header_view.cc",

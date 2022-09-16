@@ -19,6 +19,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/message_center/ash_notification_control_button_factory.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_constants.h"
@@ -469,7 +470,10 @@ AshNotificationView::AshNotificationView(
                                                   ->GetContentLayerColor(
                                                       AshColorProvider::
                                                           ContentLayerType::
-                                                              kIconColorPrimary))))
+                                                              kIconColorPrimary))
+                                          .SetNotificationControlButtonFactory(
+                                              std::make_unique<
+                                                  AshNotificationControlButtonFactory>())))
                           .AddChild(
                               views::Builder<AshNotificationExpandButton>()
                                   .CopyAddressTo(&expand_button_)

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/message_center/ash_notification_control_button_factory.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
@@ -270,6 +271,8 @@ ArcNotificationContentView::ArcNotificationContentView(
       control_buttons_view_(message_view),
       notification_width_(GetNotificationContentViewWidth()) {
   DCHECK(message_view);
+  control_buttons_view_.SetNotificationControlButtonFactory(
+      std::make_unique<AshNotificationControlButtonFactory>());
 
   // |notification_width_| must be 360 (or 344 for refreshed notifications),
   // since this value is separately defined in ArcNotificationWrapperView class

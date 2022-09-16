@@ -5,11 +5,14 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/padded_button.h"
+#include "ui/message_center/views/notification_control_button_factory.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 
 namespace message_center {
@@ -52,10 +55,14 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
 
   void SetMessageView(MessageView* message_view);
 
+  void SetNotificationControlButtonFactory(
+      std::unique_ptr<NotificationControlButtonFactory>
+          notification_control_button_factory);
+
   // Methods for retrieving the control buttons directly.
-  PaddedButton* close_button() { return close_button_; }
-  PaddedButton* settings_button() { return settings_button_; }
-  PaddedButton* snooze_button() { return snooze_button_; }
+  views::ImageButton* close_button() { return close_button_; }
+  views::ImageButton* settings_button() { return settings_button_; }
+  views::ImageButton* snooze_button() { return snooze_button_; }
 
  private:
   // Updates the button icon colors to the value of DetermineButtonIconColor().
@@ -66,10 +73,12 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   SkColor DetermineButtonIconColor() const;
 
   raw_ptr<MessageView> message_view_;
+  std::unique_ptr<NotificationControlButtonFactory>
+      notification_control_button_factory_;
 
-  raw_ptr<PaddedButton> close_button_ = nullptr;
-  raw_ptr<PaddedButton> settings_button_ = nullptr;
-  raw_ptr<PaddedButton> snooze_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
+  raw_ptr<views::ImageButton> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
   absl::optional<SkColor> icon_color_;
@@ -82,6 +91,8 @@ BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT,
                    views::View)
 VIEW_BUILDER_PROPERTY(MessageView*, MessageView)
 VIEW_BUILDER_PROPERTY(SkColor, ButtonIconColors)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<NotificationControlButtonFactory>,
+                      NotificationControlButtonFactory)
 END_VIEW_BUILDER
 
 }  // namespace message_center
