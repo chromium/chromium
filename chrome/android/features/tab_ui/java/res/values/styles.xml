@@ -13,12 +13,10 @@ found in the LICENSE file.
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
 
-    <integer name="view_gone">2</integer> <!-- This is GONE -->
-
     <!-- Theme overlay for theme refactor 2021 -->
     <style name="TabGridCardTopFaviconStyle">
         <item name="android:minWidth">@dimen/tab_grid_card_favicon_padding</item>
-        <item name="android:layout_height">?attr/tabGridHeaderHeight</item>
+        <item name="android:layout_height">@dimen/tab_grid_card_header_height</item>
         <item name="android:layout_width">wrap_content</item>
     </style>
 
@@ -42,7 +40,7 @@ found in the LICENSE file.
         <item name="android:layout_marginEnd">@dimen/tab_grid_card_title_end_margin</item>
         <item name="android:requiresFadingEdge">horizontal</item>
         <item name="android:fadingEdgeLength">@dimen/tab_grid_card_title_fading_length</item>
-        <item name="android:minHeight">?attr/tabGridHeaderHeight</item>
+        <item name="android:minHeight">@dimen/tab_grid_card_header_height</item>
     </style>
 
     <style name="TabGridDialogUngroupBarDivider.Hairline" parent="">
@@ -50,21 +48,8 @@ found in the LICENSE file.
         <item name="android:src">@drawable/toolbar_hairline</item>
     </style>
 
-    <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="">
-        <item name="tabGridDividerVisible">@integer/view_gone</item>
-        <item name="tabGridHeaderHeight">@dimen/tab_grid_card_header_height</item>
-        <item name="tabGridBackground">@drawable/tab_grid_card_background</item>
-        <item name="tabGridMargin">@dimen/tab_grid_card_margin</item>
-
-        <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle</item>
-        <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle</item>
-        <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle</item>
-        <item name="tabGridTitleStyle">@style/TabGridCardTitleStyle</item>
-
-        <item name="tabGridDialogCornerRadius">@dimen/tab_grid_dialog_bg_radius</item>
-        <item name="tabGridDialogAppBarPadding">@dimen/tab_grid_dialog_app_bar_padding</item>
-        <item name="tabGridDialogUngroupBarDividerStyle">@style/TabGridDialogUngroupBarDivider.Hairline</item>
-    </style>
+    <!-- TODO(https://crbug.com/1251194): Remove this empty theme. -->
+    <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="" />
 
     <style name="TabThumbnailPlaceHolderStyle">
         <item name="colorTileBase">?attr/colorSurface</item>

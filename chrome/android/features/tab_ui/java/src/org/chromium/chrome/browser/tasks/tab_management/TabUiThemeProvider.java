@@ -11,7 +11,6 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -627,14 +626,7 @@ public class TabUiThemeProvider {
      * @return The margin between tab cards in float number.
      */
     public static float getTabGridCardMargin(Context context) {
-        int[] attrs = {R.attr.tabGridMargin};
-
-        TypedArray ta = context.obtainStyledAttributes(getThemeOverlayStyleResourceId(), attrs);
-        @DimenRes
-        int marginResourceId = ta.getResourceId(0, -1);
-        ta.recycle();
-
-        return context.getResources().getDimension(marginResourceId);
+        return context.getResources().getDimension(R.dimen.tab_grid_card_margin);
     }
 
     /**

@@ -31,7 +31,7 @@ found in the LICENSE file.
             tools:ignore="UseCompoundDrawables">
             <ImageView
                 android:layout_width="match_parent"
-                style="?attr/tabGridDialogUngroupBarDividerStyle"
+                style="@style/TabGridDialogUngroupBarDivider.Hairline"
                 tools:ignore="ContentDescription" />
             <TextView
                 android:layout_width="match_parent"
