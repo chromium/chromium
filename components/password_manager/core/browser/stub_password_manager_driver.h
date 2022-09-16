@@ -36,7 +36,7 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
                          const std::u16string& password) override;
   void ClearPreviewedForm() override;
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
-  PasswordManager* GetPasswordManager() override;
+  PasswordManagerInterface* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
   bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;

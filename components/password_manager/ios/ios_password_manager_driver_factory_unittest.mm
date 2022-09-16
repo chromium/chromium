@@ -45,7 +45,7 @@ class IOSPasswordManagerDriverFactoryTest : public PlatformTest {
 // driver creation and retrieval and retainable driver creation.
 TEST_F(IOSPasswordManagerDriverFactoryTest, CreateFactoryAndDriver) {
   IOSPasswordManagerDriverFactory::CreateForWebState(
-      password_controller_, password_manager_.get(), &web_state_);
+      &web_state_, password_controller_, password_manager_.get());
 
   IOSPasswordManagerDriverFactory* factory =
       IOSPasswordManagerDriverFactory::FromWebState(&web_state_);
@@ -87,7 +87,7 @@ TEST_F(IOSPasswordManagerDriverFactoryTest, CreateFactoryAndDriver) {
 TEST_F(IOSPasswordManagerDriverFactoryTest,
        CreateDriverFromGetRetainableDriver) {
   IOSPasswordManagerDriverFactory::CreateForWebState(
-      password_controller_, password_manager_.get(), &web_state_);
+      &web_state_, password_controller_, password_manager_.get());
 
   auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
   web::FakeWebFrame* frame = web_frame.get();

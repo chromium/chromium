@@ -9,7 +9,7 @@
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
-#include "components/password_manager/core/browser/password_manager_interface.h"
+#include "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"

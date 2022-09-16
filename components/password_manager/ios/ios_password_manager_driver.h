@@ -48,7 +48,7 @@ class IOSPasswordManagerDriver
   void ClearPreviewedForm() override;
   password_manager::PasswordGenerationFrameHelper* GetPasswordGenerationHelper()
       override;
-  password_manager::PasswordManager* GetPasswordManager() override;
+  password_manager::PasswordManagerInterface* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
   ::ui::AXTreeID GetAxTreeId() const override;
@@ -70,15 +70,16 @@ class IOSPasswordManagerDriver
 
   // To create a new driver, use
   // IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame.
-  IOSPasswordManagerDriver(id<PasswordManagerDriverBridge> bridge,
-                           password_manager::PasswordManager* password_manager,
-                           web::WebFrame* web_frame,
-                           int driver_id);
+  IOSPasswordManagerDriver(
+      id<PasswordManagerDriverBridge> bridge,
+      password_manager::PasswordManagerInterface* password_manager,
+      web::WebFrame* web_frame,
+      int driver_id);
 
   ~IOSPasswordManagerDriver() override;
 
   __weak id<PasswordManagerDriverBridge> bridge_;  // (weak)
-  password_manager::PasswordManager* password_manager_;
+  password_manager::PasswordManagerInterface* password_manager_;
   std::unique_ptr<password_manager::PasswordGenerationFrameHelper>
       password_generation_helper_;
   web::WebFrame* web_frame_;

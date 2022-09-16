@@ -41,7 +41,7 @@ StubPasswordManagerDriver::GetPasswordGenerationHelper() {
   return nullptr;
 }
 
-PasswordManager* StubPasswordManagerDriver::GetPasswordManager() {
+PasswordManagerInterface* StubPasswordManagerDriver::GetPasswordManager() {
   return nullptr;
 }
 

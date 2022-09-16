@@ -7,21 +7,6 @@
 #include "components/password_manager/core/browser/password_manager.h"
 
 // static
-void IOSPasswordManagerDriverFactory::CreateForWebState(
-    id<PasswordManagerDriverBridge> bridge,
-    password_manager::PasswordManagerInterface* password_manager,
-    web::WebState* web_state) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(
-      UserDataKey(),
-      absl::WrapUnique(new IOSPasswordManagerDriverFactory(
-          bridge,
-          static_cast<password_manager::PasswordManager*>(password_manager))));
-}
-
-// static
 IOSPasswordManagerDriver*
 IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
     web::WebState* web_state,
@@ -43,8 +28,9 @@ IOSPasswordManagerDriverFactory::IOSPasswordManagerDriver(
 }
 
 IOSPasswordManagerDriverFactory::IOSPasswordManagerDriverFactory(
+    web::WebState* web_state,
     id<PasswordManagerDriverBridge> bridge,
-    password_manager::PasswordManager* password_manager)
+    password_manager::PasswordManagerInterface* password_manager)
     : bridge_(bridge), password_manager_(password_manager) {}
 
 IOSPasswordManagerDriverFactory::~IOSPasswordManagerDriverFactory() = default;
@@ -66,7 +52,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(IOSPasswordManagerDriverFactory)
 // static
 void IOSPasswordManagerWebFrameDriverHelper::CreateForWebFrame(
     id<PasswordManagerDriverBridge> bridge,
-    password_manager::PasswordManager* password_manager,
+    password_manager::PasswordManagerInterface* password_manager,
     web::WebFrame* web_frame,
     int driver_id) {
   if (!web_frame || FromWebFrame(web_frame))
@@ -80,7 +66,7 @@ void IOSPasswordManagerWebFrameDriverHelper::CreateForWebFrame(
 
 IOSPasswordManagerWebFrameDriverHelper::IOSPasswordManagerWebFrameDriverHelper(
     id<PasswordManagerDriverBridge> bridge,
-    password_manager::PasswordManager* password_manager,
+    password_manager::PasswordManagerInterface* password_manager,
     web::WebFrame* web_frame,
     int driver_id)
     : driver_(

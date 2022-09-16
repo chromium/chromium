@@ -20,7 +20,7 @@ using password_manager::PasswordManager;
 
 IOSPasswordManagerDriver::IOSPasswordManagerDriver(
     id<PasswordManagerDriverBridge> bridge,
-    password_manager::PasswordManager* password_manager,
+    password_manager::PasswordManagerInterface* password_manager,
     web::WebFrame* web_frame,
     int driver_id)
     : bridge_(bridge),
@@ -85,7 +85,8 @@ IOSPasswordManagerDriver::GetPasswordGenerationHelper() {
   return password_generation_helper_.get();
 }
 
-PasswordManager* IOSPasswordManagerDriver::GetPasswordManager() {
+password_manager::PasswordManagerInterface*
+IOSPasswordManagerDriver::GetPasswordManager() {
   return password_manager_;
 }
 

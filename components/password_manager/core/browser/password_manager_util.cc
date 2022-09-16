@@ -138,7 +138,7 @@ bool ManualPasswordGenerationEnabled(
 
 bool ShowAllSavedPasswordsContextMenuEnabled(
     password_manager::PasswordManagerDriver* driver) {
-  password_manager::PasswordManager* password_manager =
+  password_manager::PasswordManagerInterface* password_manager =
       driver ? driver->GetPasswordManager() : nullptr;
   if (!password_manager)
     return false;

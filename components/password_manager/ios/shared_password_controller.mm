@@ -162,8 +162,8 @@ BOOL canProcessCrossOriginIframes() {
   self = [super init];
   if (self) {
     DCHECK(webState);
-    IOSPasswordManagerDriverFactory::CreateForWebState(self, passwordManager,
-                                                       webState);
+    IOSPasswordManagerDriverFactory::CreateForWebState(webState, self,
+                                                       passwordManager);
     _webState = webState;
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);

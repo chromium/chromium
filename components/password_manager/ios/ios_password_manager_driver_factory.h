@@ -19,13 +19,6 @@ class WebState;
 class IOSPasswordManagerDriverFactory
     : public web::WebStateUserData<IOSPasswordManagerDriverFactory> {
  public:
-  // Creates a IOSPasswordManagerDriverFactory object which is tied to the
-  // WebState using WebStateUserData::SetUserData.
-  static void CreateForWebState(
-      id<PasswordManagerDriverBridge> bridge,
-      password_manager::PasswordManagerInterface* password_manager,
-      web::WebState* web_state);
-
   // This method is used to retrieve the correspondent driver of a web frame.
   static IOSPasswordManagerDriver* FromWebStateAndWebFrame(
       web::WebState* web_state,
@@ -56,11 +49,12 @@ class IOSPasswordManagerDriverFactory
   // To create a factory, use the
   // IOSPasswordManagerDriverFactory::CreateForWebState method.
   IOSPasswordManagerDriverFactory(
+      web::WebState* web_state,
       id<PasswordManagerDriverBridge> bridge,
-      password_manager::PasswordManager* password_manager);
+      password_manager::PasswordManagerInterface* password_manager);
 
   id<PasswordManagerDriverBridge> bridge_;
-  password_manager::PasswordManager* password_manager_;
+  password_manager::PasswordManagerInterface* password_manager_;
   int next_free_id = 0;
 
   WEB_STATE_USER_DATA_KEY_DECL();
@@ -90,7 +84,7 @@ class IOSPasswordManagerWebFrameDriverHelper
   // the WebFrame using WebFrameUserData::SetUserData.
   static void CreateForWebFrame(
       id<PasswordManagerDriverBridge> bridge,
-      password_manager::PasswordManager* password_manager,
+      password_manager::PasswordManagerInterface* password_manager,
       web::WebFrame* web_frame,
       int driver_id);
 
@@ -98,7 +92,7 @@ class IOSPasswordManagerWebFrameDriverHelper
   // it in the driver_ field.
   IOSPasswordManagerWebFrameDriverHelper(
       id<PasswordManagerDriverBridge> bridge,
-      password_manager::PasswordManager* password_manager,
+      password_manager::PasswordManagerInterface* password_manager,
       web::WebFrame* web_frame,
       int driver_id);
 

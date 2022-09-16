@@ -46,7 +46,7 @@ class PasswordControllerDriverHelperTest : public PlatformTest {
     password_controller_ = OCMStrictClassMock([SharedPasswordController class]);
 
     IOSPasswordManagerDriverFactory::CreateForWebState(
-        password_controller_, &password_manager_, &web_state_);
+        &web_state_, password_controller_, &password_manager_);
   }
 
  protected:

@@ -107,7 +107,7 @@ class CWVAutofillControllerTest : public web::WebTest {
         password_manager_client.get());
     password_controller_ = OCMClassMock([SharedPasswordController class]);
     IOSPasswordManagerDriverFactory::CreateForWebState(
-        password_controller_, password_manager.get(), &web_state_);
+        &web_state_, password_controller_, password_manager.get());
     password_manager_client_ = password_manager_client.get();
 
     auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(

@@ -27,7 +27,7 @@ namespace password_manager {
 
 class PasswordAutofillManager;
 class PasswordGenerationFrameHelper;
-class PasswordManager;
+class PasswordManagerInterface;
 
 // Interface that allows PasswordManager core code to interact with its driver
 // (i.e., obtain information from it and give information to it).
@@ -111,7 +111,7 @@ class PasswordManagerDriver
   virtual PasswordGenerationFrameHelper* GetPasswordGenerationHelper() = 0;
 
   // Returns the PasswordManager associated with this instance.
-  virtual PasswordManager* GetPasswordManager() = 0;
+  virtual PasswordManagerInterface* GetPasswordManager() = 0;
 
   // Returns the PasswordAutofillManager associated with this instance.
   virtual PasswordAutofillManager* GetPasswordAutofillManager() = 0;
