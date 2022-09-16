@@ -2742,8 +2742,10 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #if BUILDFLAG(IS_ANDROID)
   if (browser_command_line.HasSwitch(
           autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom)) {
-    command_line->AppendSwitch(
-        autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom);
+    command_line->AppendSwitchASCII(
+        autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom,
+        browser_command_line.GetSwitchValueASCII(
+            autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

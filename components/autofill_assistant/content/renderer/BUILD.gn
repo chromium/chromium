@@ -13,6 +13,8 @@ static_library("renderer") {
   sources = [
     "autofill_assistant_agent.cc",
     "autofill_assistant_agent.h",
+    "autofill_assistant_agent_debug_utils.cc",
+    "autofill_assistant_agent_debug_utils.h",
   ]
 
   deps = [
@@ -50,7 +52,10 @@ source_set("unit_tests") {
   sources = []
 
   if (build_with_tflite_lib) {
-    sources += [ "autofill_assistant_model_executor_unittest.cc" ]
+    sources += [
+      "autofill_assistant_agent_debug_utils_unittest.cc",
+      "autofill_assistant_model_executor_unittest.cc",
+    ]
   }
 
   deps = [

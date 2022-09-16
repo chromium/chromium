@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
+#include "components/autofill_assistant/content/renderer/autofill_assistant_agent_debug_utils.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -81,6 +82,8 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                            const std::u16string& attribute_value,
                            const std::u16string& value,
                            bool send_events);
+
+  SemanticLabelsPair semantic_labels;
 
   mojo::AssociatedRemote<mojom::AutofillAssistantDriver> driver_;
 

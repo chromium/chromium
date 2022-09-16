@@ -7,8 +7,6 @@
 #include <ostream>
 
 #include "base/command_line.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "components/autofill_assistant/content/common/switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "content/public/renderer/render_frame.h"
@@ -36,43 +34,6 @@ constexpr char16_t kSemanticPredictionAttributeName[] = u"semantic-prediction";
 
 using OverridesMap = AutofillAssistantModelExecutor::OverridesMap;
 using SparseVector = AutofillAssistantModelExecutor::SparseVector;
-
-std::string NodeSignalsToDebugString(
-    const blink::AutofillAssistantNodeSignals& node_signals) {
-  std::ostringstream out;
-
-  out << "AutofillAssistantNodeSignals {\n"
-      << "\tbackend_node_id: " << node_signals.backend_node_id
-      << "\n\tnode_features {";
-  for (const auto& text : node_signals.node_features.text) {
-    out << "\n\t\ttext: " << text.Utf16();
-  }
-  out << "\n\t\taria: " << node_signals.node_features.aria.Utf16()
-      << "\n\t\thtml_tag: " << node_signals.node_features.html_tag.Utf16()
-      << "\n\t\ttype: " << node_signals.node_features.type.Utf16()
-      << "\n\t\tinvisible_attributes: "
-      << node_signals.node_features.invisible_attributes.Utf16()
-      << "\n\t}\n\tlabel_features {";
-  for (const auto& text : node_signals.label_features.text) {
-    out << "\n\t\ttext: " << text.Utf16();
-  }
-  out << "\n\t}\n\tcontext_features {";
-  for (const auto& header_text : node_signals.context_features.header_text) {
-    out << "\n\t\theader_text: " << header_text.Utf16();
-  }
-  out << "\n\t\tform_type: " << node_signals.context_features.form_type.Utf16()
-      << "\n\t}\n}";
-
-  return out.str();
-}
-
-std::u16string SemanticPredictionResultToDebugString(
-    const std::pair<int, int>& result,
-    bool ignore_objective) {
-  return base::StrCat({u"{role: ", base::NumberToString16(result.first),
-                       u", objective: ", base::NumberToString16(result.second),
-                       (ignore_objective ? u"(ignored)}" : u"}")});
-}
 
 SparseVector KeyCoordinatesToSparseVector(
     const ::google::protobuf::RepeatedPtrField<SparseEncoding>&
@@ -119,6 +80,15 @@ AutofillAssistantAgent::AutofillAssistantAgent(
     : content::RenderFrameObserver(render_frame) {
   registry->AddInterface<mojom::AutofillAssistantAgent>(base::BindRepeating(
       &AutofillAssistantAgent::BindPendingReceiver, base::Unretained(this)));
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutofillAssistantDebugAnnotateDom)) {
+    std::string jsonEncodedSemanticEnums =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom);
+    semantic_labels =
+        DecodeSemanticPredictionLabelsJson(jsonEncodedSemanticEnums);
+  }
 }
 
 // The destructor is not guaranteed to be called. Destruction happens (only)
@@ -229,7 +199,8 @@ void AutofillAssistantAgent::OnGetModelFile(
       VLOG(3) << NodeSignalsToDebugString(node_signal);
       if (result) {
         std::u16string result_string = SemanticPredictionResultToDebugString(
-            result.value(), ignore_objective);
+            semantic_labels.first, semantic_labels.second, result.value(),
+            ignore_objective);
         VLOG(3) << "Result found " << result_string;
 
         SetElementAttribute(node_signal.backend_node_id,
