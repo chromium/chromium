@@ -32,6 +32,8 @@ const char kScriptServerUrl[] = "https://www.fake.backend.com/script_server";
 const char kActionServerUrl[] = "https://www.fake.backend.com/action_server";
 const char kUserDataServerUrl[] =
     "https://www.fake.backend.com/user_data_server";
+const char kReportProgressServerUrl[] =
+    "https://www.fake.backend.com/report_progress";
 const char kFakeUrl[] = "https://www.example.com";
 
 std::string ExpectedGetUserDataRequestBody(uint64_t run_id,
@@ -61,7 +63,7 @@ class ServiceImplTest : public testing::Test {
     service_ = std::make_unique<ServiceImpl>(
         &mock_client_, std::move(mock_request_sender), GURL(kScriptServerUrl),
         GURL(kActionServerUrl), GURL(kUserDataServerUrl),
-        std::move(mock_client_context));
+        GURL(kReportProgressServerUrl), std::move(mock_client_context));
   }
   ~ServiceImplTest() override = default;
 
@@ -276,7 +278,7 @@ TEST_F(ServiceImplTest, ReportProgress) {
       .WillOnce(Return(true));
   EXPECT_CALL(
       *mock_request_sender_,
-      OnSendRequest(GURL(kActionServerUrl),
+      OnSendRequest(GURL(kReportProgressServerUrl),
                     ProtocolUtils::CreateReportProgressRequest(token, payload),
                     _, RpcType::REPORT_PROGRESS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string(""),
@@ -297,7 +299,7 @@ TEST_F(ServiceImplTest, ReportProgressMSBBDisabled) {
 
   EXPECT_CALL(
       *mock_request_sender_,
-      OnSendRequest(GURL(kActionServerUrl),
+      OnSendRequest(GURL(kReportProgressServerUrl),
                     ProtocolUtils::CreateReportProgressRequest(token, payload),
                     _, RpcType::REPORT_PROGRESS))
       .Times(0);
@@ -318,7 +320,7 @@ TEST_F(ServiceImplTest, ReportProgressMetricsDisabled) {
 
   EXPECT_CALL(
       *mock_request_sender_,
-      OnSendRequest(GURL(kActionServerUrl),
+      OnSendRequest(GURL(kReportProgressServerUrl),
                     ProtocolUtils::CreateReportProgressRequest(token, payload),
                     _, RpcType::REPORT_PROGRESS))
       .Times(0);

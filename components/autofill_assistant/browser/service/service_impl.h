@@ -54,6 +54,7 @@ class ServiceImpl : public Service {
               const GURL& script_server_url,
               const GURL& action_server_url,
               const GURL& user_data_url,
+              const GURL& report_progress_url,
               std::unique_ptr<ClientContext> client_context);
   ServiceImpl(const ServiceImpl&) = delete;
   ServiceImpl& operator=(const ServiceImpl&) = delete;
@@ -125,6 +126,7 @@ class ServiceImpl : public Service {
   GURL script_server_url_;
   GURL script_action_server_url_;
   GURL user_data_url_;
+  GURL report_progress_url_;
 
   // The client context to send to the backend.
   std::unique_ptr<ClientContext> client_context_;
