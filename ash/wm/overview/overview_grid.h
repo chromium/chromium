@@ -12,9 +12,9 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
+#include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/overview/rounded_label_widget.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"

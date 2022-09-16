@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_OVERVIEW_ROUNDED_LABEL_WIDGET_H_
-#define ASH_WM_OVERVIEW_ROUNDED_LABEL_WIDGET_H_
+#ifndef ASH_STYLE_ROUNDED_LABEL_WIDGET_H_
+#define ASH_STYLE_ROUNDED_LABEL_WIDGET_H_
 
 #include <string>
 
@@ -50,4 +50,4 @@ class RoundedLabelWidget : public views::Widget {
 
 }  // namespace ash
 
-#endif  // ASH_WM_OVERVIEW_ROUNDED_LABEL_WIDGET_H_
+#endif  // ASH_STYLE_ROUNDED_LABEL_WIDGET_H_
