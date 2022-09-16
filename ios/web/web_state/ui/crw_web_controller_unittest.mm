@@ -1175,7 +1175,8 @@ TEST_F(WindowOpenByDomTest, DontBlockPopup) {
 }
 
 // Tests that window.close closes the web state.
-TEST_F(WindowOpenByDomTest, CloseWindow) {
+// TODO(crbug.com/1307043): Flaky test.
+TEST_F(WindowOpenByDomTest, DISABLED_CloseWindow) {
   delegate_.allow_popups(opener_url_);
   ASSERT_NSEQ(@"[object Window]", OpenWindowByDom());
 
