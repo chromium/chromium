@@ -2633,6 +2633,8 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
     SetIsUpdatingDescendantDependentFlags(true);
 #endif
     ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+      frame_view.Lifecycle().AdvanceTo(
+          DocumentLifecycle::kInCompositingInputsUpdate);
       frame_view.GetLayoutView()->Layer()->UpdateDescendantDependentFlags();
       frame_view.GetLayoutView()->CommitPendingSelection();
     });
