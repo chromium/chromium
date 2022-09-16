@@ -364,47 +364,35 @@ The test verifies functionality of querying style information for document-trans
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : animation-duration
-                                        value : 0.25s
-                                    }
-                                    [1] : {
-                                        name : animation-timing-function
-                                        value : ease
-                                    }
-                                    [2] : {
-                                        name : animation-delay
-                                        value : 0s
-                                    }
-                                    [3] : {
-                                        name : animation-iteration-count
-                                        value : 1
-                                    }
-                                    [4] : {
-                                        name : animation-direction
-                                        value : normal
-                                    }
-                                    [5] : {
-                                        name : animation-fill-mode
-                                        value : both
-                                    }
-                                    [6] : {
-                                        name : animation-play-state
-                                        value : running
-                                    }
-                                    [7] : {
                                         name : animation-name
                                         value : -ua-page-transition-container-anim-shared
                                     }
-                                    [8] : {
-                                        name : animation-timeline
-                                        value : auto
+                                    [1] : {
+                                        name : animation-duration
+                                        value : 0.25s
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : both
+                                    }
+                                    [3] : {
+                                        name : animation-timing-function
+                                        value : ease
+                                    }
+                                    [4] : {
+                                        name : animation-delay
+                                        value : 0s
+                                    }
+                                    [5] : {
+                                        name : animation-iteration-count
+                                        value : 1
+                                    }
+                                    [6] : {
+                                        name : animation-direction
+                                        value : normal
                                     }
                                 ]
                                 shorthandEntries : [
-                                    [0] : {
-                                        name : animation
-                                        value : 0.25s ease 0s 1 normal both running -ua-page-transition-container-anim-shared
-                                    }
                                 ]
                             }
                             supports : [
@@ -2540,47 +2528,35 @@ Dumping styles for : ::page-transition-container with id shared{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : animation-duration
-                                value : 0.25s
-                            }
-                            [1] : {
-                                name : animation-timing-function
-                                value : ease
-                            }
-                            [2] : {
-                                name : animation-delay
-                                value : 0s
-                            }
-                            [3] : {
-                                name : animation-iteration-count
-                                value : 1
-                            }
-                            [4] : {
-                                name : animation-direction
-                                value : normal
-                            }
-                            [5] : {
-                                name : animation-fill-mode
-                                value : both
-                            }
-                            [6] : {
-                                name : animation-play-state
-                                value : running
-                            }
-                            [7] : {
                                 name : animation-name
                                 value : -ua-page-transition-container-anim-shared
                             }
-                            [8] : {
-                                name : animation-timeline
-                                value : auto
+                            [1] : {
+                                name : animation-duration
+                                value : 0.25s
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : both
+                            }
+                            [3] : {
+                                name : animation-timing-function
+                                value : ease
+                            }
+                            [4] : {
+                                name : animation-delay
+                                value : 0s
+                            }
+                            [5] : {
+                                name : animation-iteration-count
+                                value : 1
+                            }
+                            [6] : {
+                                name : animation-direction
+                                value : normal
                             }
                         ]
                         shorthandEntries : [
-                            [0] : {
-                                name : animation
-                                value : 0.25s ease 0s 1 normal both running -ua-page-transition-container-anim-shared
-                            }
                         ]
                     }
                     supports : [

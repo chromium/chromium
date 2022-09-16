@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_content_element.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_pseudo_element_base.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_style_builder.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -1002,57 +1003,10 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
   // animations.
   const bool add_animations = state_ == State::kStarted;
 
-  StringBuilder builder;
-  builder.Append(StaticUAStyles());
+  DocumentTransitionStyleBuilder builder;
+  builder.AddUAStyle(StaticUAStyles());
   if (add_animations)
-    builder.Append(AnimationUAStyles());
-
-  auto append_selector = [&builder](const String& name, const String& tag) {
-    builder.Append(name);
-    builder.Append("(");
-    builder.Append(tag);
-    builder.Append(")");
-  };
-
-  auto add_plus_lighter = [&builder, &append_selector](const String& tag) {
-    append_selector("html::page-transition-image-wrapper", tag);
-    builder.Append("{ isolation: isolate; }");
-
-    append_selector("html::page-transition-incoming-image", tag);
-    builder.Append("{ mix-blend-mode: plus-lighter; }");
-
-    append_selector("html::page-transition-outgoing-image", tag);
-    builder.Append("{ mix-blend-mode: plus-lighter; }");
-  };
-
-  auto add_animation = [&builder, &append_selector, &add_plus_lighter](
-                           const String& tag,
-                           const TransformationMatrix& source_matrix,
-                           const LayoutSize& source_size) {
-    builder.Append("@keyframes -ua-page-transition-container-anim-");
-    builder.Append(tag);
-    builder.AppendFormat(
-        R"CSS({
-          from {
-           transform: %s;
-           width: %.3fpx;
-           height: %.3fpx;
-          }
-        })CSS",
-        ComputedStyleUtils::ValueForTransformationMatrix(source_matrix, 1,
-                                                         false)
-            ->CssText()
-            .Utf8()
-            .c_str(),
-        source_size.Width().ToFloat(), source_size.Height().ToFloat());
-
-    append_selector("html::page-transition-container", tag);
-    builder.Append("{ animation: -ua-page-transition-container-anim-");
-    builder.Append(tag);
-    builder.Append(" 0.25s both }");
-
-    add_plus_lighter(tag);
-  };
+    builder.AddUAStyle(AnimationUAStyles());
 
   // SUBTLETY AHEAD!
   // There are several situations to consider when creating the styles and
@@ -1096,17 +1050,12 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     // changes, but right now we only use the latest layout view size.
     // Note that we don't set the writing-mode since it would inherit from the
     // :root anyway, so there is no reason to put it on the pseudo elements.
-    append_selector("html::page-transition-container", root_tag);
-    builder.Append(
-        R"CSS({
-          right: 0;
-          bottom: 0;
-        })CSS");
+    builder.AddContainerStyles(root_tag, "right: 0; bottom: 0;");
 
     bool tag_is_new_root =
         new_root_data_ && new_root_data_->tags.Contains(root_tag);
     if (tag_is_old_root && tag_is_new_root)
-      add_plus_lighter(root_tag);
+      builder.AddPlusLighter(root_tag);
   }
 
   // Use the document element's effective zoom, since that's what the parent
@@ -1129,30 +1078,13 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     // `element_data_map_`. This is case 1 above.
     DCHECK(!tag_is_old_root || !tag_is_new_root);
 
-    std::ostringstream writing_mode_stream;
-    writing_mode_stream << element_data->container_writing_mode;
-
     // Skipping this if a tag is a new root. This is case 5 above.
     if (!tag_is_new_root) {
       // ::page-transition-container styles using computed properties for each
       // element.
-      append_selector("html::page-transition-container",
-                      document_transition_tag);
-      builder.AppendFormat(
-          R"CSS({
-            width: %.3fpx;
-            height: %.3fpx;
-            transform: %s;
-            writing-mode: %s;
-          })CSS",
-          element_data->border_box_size_in_css_space.Width().ToFloat(),
-          element_data->border_box_size_in_css_space.Height().ToFloat(),
-          ComputedStyleUtils::ValueForTransformationMatrix(
-              element_data->viewport_matrix, 1, false)
-              ->CssText()
-              .Utf8()
-              .c_str(),
-          writing_mode_stream.str().c_str());
+      builder.AddContainerStyles(
+          document_transition_tag, element_data->border_box_size_in_css_space,
+          element_data->viewport_matrix, element_data->container_writing_mode);
 
       // Incoming inset also only makes sense if the tag is a new shared element
       // (not a new root).
@@ -1161,13 +1093,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
           LayoutRect(LayoutPoint(), element_data->border_box_size_in_css_space),
           device_pixel_ratio);
       if (incoming_inset) {
-        append_selector("html::page-transition-incoming-image",
-                        document_transition_tag);
-        builder.AppendFormat(
-            R"CSS({
-              object-view-box: %s;
-            })CSS",
-            incoming_inset->Utf8().c_str());
+        builder.AddIncomingObjectViewBox(document_transition_tag,
+                                         *incoming_inset);
       }
     }
 
@@ -1180,13 +1107,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
                      element_data->cached_border_box_size_in_css_space),
           device_pixel_ratio);
       if (outgoing_inset) {
-        append_selector("html::page-transition-outgoing-image",
-                        document_transition_tag);
-        builder.AppendFormat(
-            R"CSS({
-              object-view-box: %s;
-            })CSS",
-            outgoing_inset->Utf8().c_str());
+        builder.AddOutgoingObjectViewBox(document_transition_tag,
+                                         *outgoing_inset);
       }
     }
 
@@ -1202,9 +1124,9 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       // from the old root, rather than from the cached element data.
       if (element_data->old_snapshot_id.IsValid() &&
           (element_data->new_snapshot_id.IsValid() || tag_is_new_root)) {
-        add_animation(document_transition_tag,
-                      element_data->cached_viewport_matrix,
-                      element_data->cached_border_box_size_in_css_space);
+        builder.AddAnimationAndBlending(
+            document_transition_tag, element_data->cached_viewport_matrix,
+            element_data->cached_border_box_size_in_css_space);
       } else if (element_data->new_snapshot_id.IsValid() && tag_is_old_root) {
         // TODO(vmpstr): Update the size to be the cached one, here and when
         // constructing outgoing pseudos.
@@ -1214,13 +1136,13 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         // the effective zoom.
         layout_view_size.Scale(
             1 / document_->GetLayoutView()->StyleRef().EffectiveZoom());
-        add_animation(document_transition_tag, TransformationMatrix(),
-                      layout_view_size);
+        builder.AddAnimationAndBlending(
+            document_transition_tag, TransformationMatrix(), layout_view_size);
       }
     }
   }
 
-  ua_style_sheet_ = builder.ReleaseString();
+  ua_style_sheet_ = builder.Build();
   return *ua_style_sheet_;
 }
 
