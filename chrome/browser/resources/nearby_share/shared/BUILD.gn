@@ -6,7 +6,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("./nearby_shared.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
 
