@@ -670,7 +670,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void RepaintWallpaper();
 
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
-                                   WallpaperInfo info);
+                                   const WallpaperInfo& info);
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
                                    SetWallpaperCallback callback,
                                    bool success);
@@ -735,7 +735,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void WallpaperSavedToDriveFS(const AccountId& account_id, bool success);
 
   void HandleCustomWallpaperInfoSyncedIn(const AccountId& account_id,
-                                         WallpaperInfo info);
+                                         const WallpaperInfo& info);
 
   void DriveFsWallpaperChanged(const base::FilePath& path, bool error);
 

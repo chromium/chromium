@@ -2849,7 +2849,7 @@ void WallpaperControllerImpl::RepaintWallpaper() {
 
 void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     const AccountId& account_id,
-    WallpaperInfo info) {
+    const WallpaperInfo& info) {
   if (!CanSetUserWallpaper(account_id))
     return;
   // We don't sync for background users because we don't want to update the
@@ -3217,7 +3217,7 @@ void WallpaperControllerImpl::WallpaperSavedToDriveFS(
 
 void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
     const AccountId& account_id,
-    WallpaperInfo info) {
+    const WallpaperInfo& info) {
   base::FilePath drivefs_path =
       wallpaper_controller_client_->GetWallpaperPathFromDriveFs(account_id);
   if (drivefs_path.empty())
