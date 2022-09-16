@@ -95,6 +95,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.START_SURFACE_ANDROID, true)
                     .put(ChromeFeatureList.START_SURFACE_RETURN_TIME, false)
                     .put(ChromeFeatureList.START_SURFACE_REFACTOR, false)
+                    .put(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT, false)
                     .put(ChromeFeatureList.STORE_HOURS, false)
                     .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true)
                     .put(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, true)

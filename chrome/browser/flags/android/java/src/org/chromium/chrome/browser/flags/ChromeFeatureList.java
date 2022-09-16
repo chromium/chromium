@@ -551,6 +551,8 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
     public static final String START_SURFACE_REFACTOR = "StartSurfaceRefactor";
+    public static final String START_SURFACE_DISABLED_FEED_IMPROVEMENT =
+            "StartSurfaceDisabledFeedImprovement";
     public static final String STORE_HOURS = "StoreHoursAndroid";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
@@ -705,6 +707,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(START_SURFACE_RETURN_TIME, false);
     public static final CachedFlag sStartSurfaceRefactor =
             new CachedFlag(START_SURFACE_REFACTOR, false);
+    public static final CachedFlag sStartSurfaceDisabledFeedImprovement =
+            new CachedFlag(START_SURFACE_DISABLED_FEED_IMPROVEMENT, false);
     public static final CachedFlag sStoreHoursAndroid = new CachedFlag(STORE_HOURS, false);
     public static final CachedFlag sSwapPixelFormatToFixConvertFromTranslucent =
             new CachedFlag(SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true);
