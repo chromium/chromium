@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_USER_DATA_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_USER_DATA_H_
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #import "ios/web/public/web_state.h"
@@ -43,9 +44,14 @@ class WebStateUserData : public base::SupportsUserData::Data {
  public:
   // Creates an object of type T, and attaches it to the specified WebState.
   // If an instance is already attached, does nothing.
-  static void CreateForWebState(WebState* web_state) {
-    if (!FromWebState(web_state))
-      web_state->SetUserData(UserDataKey(), base::WrapUnique(new T(web_state)));
+  template <typename... Args>
+  static void CreateForWebState(WebState* web_state, Args&&... args) {
+    DCHECK(web_state);
+    if (!FromWebState(web_state)) {
+      web_state->SetUserData(
+          UserDataKey(),
+          base::WrapUnique(new T(web_state, std::forward<Args>(args)...)));
+    }
   }
 
   // Retrieves the instance of type T that was attached to the specified
