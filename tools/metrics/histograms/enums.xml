@@ -41268,7 +41268,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4205"
       label="OBSOLETE_RTCPeerConnectionLegacyCreateWithMediaConstraints"/>
   <int value="4206" label="ClientHintsSaveData"/>
-  <int value="4207" label="LegacyConstraintGoogIPv6"/>
+  <int value="4207" label="OBSOLETE_LegacyConstraintGoogIPv6"/>
   <int value="4208"
       label="OBSOLETE_LegacyConstraintGoogSuspendBelowMinBitrate"/>
   <int value="4209" label="OBSOLETE_LegacyConstraintGoogCpuOveruseDetection"/>

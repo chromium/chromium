@@ -109,9 +109,6 @@ String SerializeServers(
 String SerializePeerConnectionMediaConstraints(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config) {
   StringBuilder builder;
-  if (config.disable_ipv6) {
-    builder.Append("googIPv6: false");
-  }
 #if BUILDFLAG(IS_FUCHSIA)
   if (config.enable_dtls_srtp.has_value()) {
     if (builder.length())

@@ -3525,7 +3525,7 @@ enum WebFeature {
   kOBSOLETE_LegacyConstraintGoogScreencastMinBitrate = 4204,
   kOBSOLETE_RTCPeerConnectionLegacyCreateWithMediaConstraints = 4205,
   kClientHintsSaveData = 4206,
-  kLegacyConstraintGoogIPv6 = 4207,
+  kOBSOLETE_LegacyConstraintGoogIPv6 = 4207,
   kOBSOLETE_LegacyConstraintGoogSuspendBelowMinBitrate = 4208,
   kOBSOLETE_LegacyConstraintGoogCpuOveruseDetection = 4209,
   kAudioContextOutputLatency = 4210,

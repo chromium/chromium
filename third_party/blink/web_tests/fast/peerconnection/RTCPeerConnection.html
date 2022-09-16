@@ -59,7 +59,7 @@ shouldThrow("new RTCPeerConnection({iceCandidatePoolSize:99999999});");
 shouldThrow("new RTCPeerConnection({iceCandidatePoolSize:256});");
 shouldThrow("new RTCPeerConnection({iceCandidatePoolSize:'foo'});");
 
-// Neither valid or invalid constraints throw.
+// Invalid constraints don't throw, including unshipped feature googIPv6.
 shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:true}});");
 shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googIPv6:false}});");
 shouldNotThrow("new RTCPeerConnection(null, {mandatory:{googInvalid:true}});");

@@ -191,21 +191,6 @@ void CopyConstraintsIntoRtcConfiguration(
   std::vector<const GoogMediaConstraintsSet*> all_constraints_sets =
       AllMediaConstraintSets(media_constraints);
 
-  absl::optional<bool> goog_ipv6;
-  for (auto* constraints_set : all_constraints_sets) {
-    if (constraints_set->hasGoogIPv6()) {
-      goog_ipv6 = constraints_set->googIPv6();
-      break;
-    }
-  }
-  bool enable_ipv6 = goog_ipv6.value_or(true);  // googIPv6 is true by default.
-  if (!enable_ipv6) {
-    // Setting googIPv6 to the non-default value triggers count deprecation.
-    Deprecation::CountDeprecation(context,
-                                  WebFeature::kLegacyConstraintGoogIPv6);
-  }
-  configuration->disable_ipv6 = !enable_ipv6;
-
   // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
   absl::optional<bool> dtls_srtp_key_agreement;
   for (auto* constraints_set : all_constraints_sets) {

@@ -58,7 +58,6 @@ enum class DeprecationIssueType {
   kHostCandidateAttributeGetter,
   kIdentityInCanMakePaymentEvent,
   kInsecurePrivateNetworkSubresourceRequest,
-  kLegacyConstraintGoogIPv6,
   kLocalCSSFileExtensionRejected,
   kMediaSourceAbortRemove,
   kMediaSourceDurationTruncatingBuffered,

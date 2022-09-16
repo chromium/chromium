@@ -503,10 +503,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           InsecurePrivateNetworkSubresourceRequest;
       break;
-    case DeprecationIssueType::kLegacyConstraintGoogIPv6:
-      type =
-          protocol::Audits::DeprecationIssueTypeEnum::LegacyConstraintGoogIPv6;
-      break;
     case DeprecationIssueType::kLocalCSSFileExtensionRejected:
       type = protocol::Audits::DeprecationIssueTypeEnum::
           LocalCSSFileExtensionRejected;

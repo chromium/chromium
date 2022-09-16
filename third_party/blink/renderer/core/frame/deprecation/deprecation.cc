@@ -128,9 +128,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
       return DeprecationInfo::WithTranslation(
           feature,
           DeprecationIssueType::kInsecurePrivateNetworkSubresourceRequest);
-    case WebFeature::kLegacyConstraintGoogIPv6:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kLegacyConstraintGoogIPv6);
     case WebFeature::kLocalCSSFileExtensionRejected:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kLocalCSSFileExtensionRejected);
