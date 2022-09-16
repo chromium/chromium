@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -15,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -44,6 +46,8 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
     https_server_->AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_->Start());
 
+    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+        ->SetPrivacySandboxEnabled(true);
     // Prime the interest groups if the API is enabled.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
     if (HasInterestGroupApi(web_contents()) &&

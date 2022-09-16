@@ -50,6 +50,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -57,6 +58,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/web_package/web_bundle_builder.h"
@@ -6478,6 +6480,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   const char kAddedHeaderValue[] = "Header-Value";
 
   ASSERT_TRUE(https_server()->Start());
+
+  PrivacySandboxSettingsFactory::GetForProfile(profile())
+      ->SetPrivacySandboxEnabled(true);
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/echo")));

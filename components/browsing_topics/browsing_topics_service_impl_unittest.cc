@@ -182,6 +182,7 @@ class BrowsingTopicsServiceImplTest
             std::move(privacy_sandbox_delegate),
             host_content_settings_map_.get(), cookie_settings_, &prefs_,
             /*incognito_profile=*/false);
+    privacy_sandbox_settings_->SetPrivacySandboxEnabled(true);
 
     history_service_ = std::make_unique<history::HistoryService>();
     history_service_->Init(

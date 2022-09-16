@@ -70,6 +70,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
             std::move(privacy_sandbox_delegate),
             host_content_settings_map_.get(), cookie_settings_, &prefs_,
             /*incognito_profile=*/false);
+    privacy_sandbox_settings_->SetPrivacySandboxEnabled(true);
 
     topics_site_data_manager_ =
         std::make_unique<content::TesterBrowsingTopicsSiteDataManager>(

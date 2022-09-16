@@ -8214,7 +8214,6 @@
                         "InterestGroupStorage",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
-                        "PrivacySandboxSettings3",
                         "SharedStorageAPI"
                     ]
                 }
