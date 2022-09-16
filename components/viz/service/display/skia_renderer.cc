@@ -1275,8 +1275,7 @@ void SkiaRenderer::PrepareCanvas(
   }
 
   if (cdt) {
-    SkMatrix m;
-    gfx::TransformToFlattenedSkMatrix(*cdt, &m);
+    SkMatrix m = gfx::TransformToFlattenedSkMatrix(*cdt);
     current_canvas_->concat(m);
   }
 }
@@ -1606,8 +1605,7 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
     // device space, which should always be a scale+translate.
     SkRRect corner_bounds = static_cast<SkRRect>(
         quad->shared_quad_state->mask_filter_info.rounded_corner_bounds());
-    SkMatrix to_device;
-    gfx::TransformToFlattenedSkMatrix(target_to_device, &to_device);
+    SkMatrix to_device = gfx::TransformToFlattenedSkMatrix(target_to_device);
 
     // SkRRect::transform should always succeed here, since we know
     // corner_bounds is not empty and 'to_device' should just be scale+translate
@@ -1667,9 +1665,9 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   // gfx::Transform::IsPositiveScaleAndTranslation in that it also allows zero
   // scales. This is because in the common orthographic case the z scale is 0.
   if (!content_device_transform.IsScaleOrTranslation() ||
-      content_device_transform.matrix().rc(0, 0) < 0.0f ||
-      content_device_transform.matrix().rc(1, 1) < 0.0f ||
-      content_device_transform.matrix().rc(2, 2) < 0.0f) {
+      content_device_transform.rc(0, 0) < 0.0f ||
+      content_device_transform.rc(1, 1) < 0.0f ||
+      content_device_transform.rc(2, 2) < 0.0f) {
     return;
   }
 
@@ -1713,8 +1711,8 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   // device space, it will be contained in in the original scissor.
   // Applying the scissor explicitly means avoiding a clipRect() call and
   // allows more quads to be batched together in a DrawEdgeAAImageSet call
-  float x_epsilon = kAAEpsilon / content_device_transform.matrix().rc(0, 0);
-  float y_epsilon = kAAEpsilon / content_device_transform.matrix().rc(1, 1);
+  float x_epsilon = kAAEpsilon / content_device_transform.rc(0, 0);
+  float y_epsilon = kAAEpsilon / content_device_transform.rc(1, 1);
 
   // The scissor is a non-AA clip, so unset the bit flag for clipped edges.
   if (local_scissor.x() - visible_rect.x() >= x_epsilon)
@@ -1784,10 +1782,8 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // We can't use gfx::Transform.IsInvertible() since that checks the 4x4 matrix
   // and the rest of skia_renderer->Skia flattens to a 3x3 matrix, which can
   // change invertibility.
-  SkMatrix flattened;
-  gfx::TransformToFlattenedSkMatrix(
-      quad->shared_quad_state->quad_to_target_transform,
-      &flattened);
+  SkMatrix flattened = gfx::TransformToFlattenedSkMatrix(
+      quad->shared_quad_state->quad_to_target_transform);
   if (!flattened.invert(nullptr))
     return nullptr;
 
@@ -1845,10 +1841,8 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
   // |rpdq_params| to reflect the change of coordinate system and merge settings
   // between the inner and outer quads.
   SkMatrix rpdq_to_bypass;
-  SkMatrix bypass_to_rpdq;
-  gfx::TransformToFlattenedSkMatrix(
-      bypass_quad->shared_quad_state->quad_to_target_transform,
-      &bypass_to_rpdq);
+  SkMatrix bypass_to_rpdq = gfx::TransformToFlattenedSkMatrix(
+      bypass_quad->shared_quad_state->quad_to_target_transform);
   bool inverted = bypass_to_rpdq.invert(&rpdq_to_bypass);
   // Invertibility was a requirement for being bypassable.
   DCHECK(inverted);
@@ -2025,8 +2019,8 @@ void SkiaRenderer::AddQuadToBatch(const SkImage* image,
     }
   }
 
-  SkMatrix m;
-  gfx::TransformToFlattenedSkMatrix(params->content_device_transform, &m);
+  SkMatrix m =
+      gfx::TransformToFlattenedSkMatrix(params->content_device_transform);
   std::vector<SkMatrix>& cdts = batched_cdt_matrices_;
   if (cdts.empty() || cdts[cdts.size() - 1] != m) {
     cdts.push_back(m);
@@ -2215,8 +2209,8 @@ void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
   SkAutoCanvasRestore acr(current_canvas_, true /* do_save */);
   // We need to apply the matrix manually to have pixel-sized stroke width.
   PrepareCanvas(params->scissor_rect, params->mask_filter_info, nullptr);
-  SkMatrix cdt;
-  gfx::TransformToFlattenedSkMatrix(params->content_device_transform, &cdt);
+  SkMatrix cdt =
+      gfx::TransformToFlattenedSkMatrix(params->content_device_transform);
 
   SkPath path = params->draw_region
                     ? params->draw_region_in_path()
@@ -2501,7 +2495,8 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
 
-  bool translate_only = params->content_device_transform.matrix().isTranslate();
+  bool translate_only =
+      params->content_device_transform.IsIdentityOrTranslation();
   UMA_HISTOGRAM_BOOLEAN(
       "Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly",
       translate_only);
@@ -3403,13 +3398,12 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     if (!result) {
       // Skia cannot transform a SkRRect with a matrix which contains epsilons,
       // workaround the problem by removing epsilons in the matrix.
-      auto matrix = quad_to_target_transform_inverse->matrix();
-      matrix.setRC(0, 0, remove_epsilon(matrix.rc(0, 0)));
-      matrix.setRC(0, 1, remove_epsilon(matrix.rc(0, 1)));
-      matrix.setRC(1, 0, remove_epsilon(matrix.rc(1, 0)));
-      matrix.setRC(1, 1, remove_epsilon(matrix.rc(1, 1)));
-      result =
-          shared_quad_state->mask_filter_info.Transform(gfx::Transform(matrix));
+      gfx::Transform t = *quad_to_target_transform_inverse;
+      t.set_rc(0, 0, remove_epsilon(t.rc(0, 0)));
+      t.set_rc(0, 1, remove_epsilon(t.rc(0, 1)));
+      t.set_rc(1, 0, remove_epsilon(t.rc(1, 0)));
+      t.set_rc(1, 1, remove_epsilon(t.rc(1, 1)));
+      result = shared_quad_state->mask_filter_info.Transform(t);
     }
     DCHECK(result) << "shared_quad_state->mask_filter_info.Transform() failed.";
   }

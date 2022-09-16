@@ -465,7 +465,7 @@ bool MaskFilterInfoFromDict(const base::Value& dict, gfx::MaskFilterInfo* out) {
 base::Value TransformToList(const gfx::Transform& transform) {
   base::Value list(base::Value::Type::LIST);
   float data[16];
-  transform.matrix().getColMajor(data);
+  transform.GetColMajorF(data);
   for (float value : data)
     list.Append(value);
   return list;
@@ -483,7 +483,7 @@ bool TransformFromList(const base::Value& list, gfx::Transform* transform) {
       return false;
     data[ii] = list.GetListDeprecated()[ii].GetDouble();
   }
-  transform->matrix().setColMajor(data);
+  *transform = gfx::Transform::ColMajorF(data);
   return true;
 }
 

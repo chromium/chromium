@@ -5043,7 +5043,7 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
 
     auto* child_noninvertible_sqs =
         child_pass_list[2]->shared_quad_state_list.ElementAt(0u);
-    child_noninvertible_sqs->quad_to_target_transform.matrix().setRC(0, 0, 0.0);
+    child_noninvertible_sqs->quad_to_target_transform.set_rc(0, 0, 0.0);
     EXPECT_FALSE(
         child_noninvertible_sqs->quad_to_target_transform.IsInvertible());
     child_pass_list[2]->quad_list.ElementAt(0)->visible_rect =

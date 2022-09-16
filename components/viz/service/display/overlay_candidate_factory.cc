@@ -95,9 +95,8 @@ OverlayCandidate::CandidateStatus GetReasonForTransformNotAxisAligned(
 
   // The transform has a shear component if the x and y sub-vectors are not
   // perpendicular (have a non-zero dot product).
-  const auto& matrix = transform.matrix();
-  gfx::Vector2dF x_part(matrix.rc(0, 0), matrix.rc(1, 0));
-  gfx::Vector2dF y_part(matrix.rc(0, 1), matrix.rc(1, 1));
+  gfx::Vector2dF x_part(transform.rc(0, 0), transform.rc(1, 0));
+  gfx::Vector2dF y_part(transform.rc(0, 1), transform.rc(1, 1));
   // Normalize to avoid numerical issues.
   x_part.InvScale(x_part.Length());
   y_part.InvScale(y_part.Length());
