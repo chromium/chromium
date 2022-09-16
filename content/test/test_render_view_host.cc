@@ -120,6 +120,8 @@ void TestRenderWidgetHostView::ShowWithVisibility(
 }
 
 void TestRenderWidgetHostView::Hide() {
+  if (!host()->is_hidden())
+    host()->WasHidden();
   is_showing_ = false;
 }
 
@@ -135,6 +137,8 @@ void TestRenderWidgetHostView::WasUnOccluded() {
 }
 
 void TestRenderWidgetHostView::WasOccluded() {
+  if (!host()->is_hidden())
+    host()->WasHidden();
   is_occluded_ = true;
 }
 
@@ -269,6 +273,11 @@ void TestRenderWidgetHostView::NotifyHostAndDelegateOnWasShown(
     case PageVisibilityState::kHidden:
       ADD_FAILURE();
       break;
+  }
+  if (host()->is_hidden()) {
+    // Do not pass on `visible_time_request` because there is no compositing to
+    // measure.
+    host()->WasShown({});
   }
 }
 

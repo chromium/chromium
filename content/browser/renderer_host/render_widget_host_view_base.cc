@@ -1033,9 +1033,9 @@ ui::Compositor* RenderWidgetHostViewBase::GetCompositor() {
 
 VisibleTimeRequestTrigger*
 RenderWidgetHostViewBase::GetVisibleTimeRequestTrigger() {
-  DCHECK(
-      !visible_time_request_trigger_.is_tab_switch_metrics2_feature_enabled());
-  return &visible_time_request_trigger_;
+  return visible_time_request_trigger_.is_tab_switch_metrics2_feature_enabled()
+             ? nullptr
+             : &visible_time_request_trigger_;
 }
 
 bool RenderWidgetHostViewBase::ShouldVirtualKeyboardOverlayContent() {
@@ -1049,8 +1049,13 @@ bool RenderWidgetHostViewBase::IsHTMLFormPopup() const {
 void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     PageVisibilityState page_visibility) {
   auto* visible_time_request_trigger = host_->GetVisibleTimeRequestTrigger();
-  // The only way this should be null is if there is no RenderWidgetHostView.
-  DCHECK(visible_time_request_trigger);
+
+  // The trigger can be null in unit tests.
+  if (!visible_time_request_trigger) {
+    if (host_->is_hidden())
+      NotifyHostAndDelegateOnWasShown(nullptr);
+    return;
+  }
 
   // NB: don't call visible_time_request_trigger->TakeRequest() unless the
   // request will be used. If it isn't used here it must be left in the trigger

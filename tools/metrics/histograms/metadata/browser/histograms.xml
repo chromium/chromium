@@ -39,18 +39,18 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="TabSwitchingType">
-  <variant name=".NoSavedFrames"
-      summary="The time from the input timestamp on a tab switch, until the
-               frame is presented on the screen when there is no saved frame
-               in the cache."/>
   <variant name=".NoSavedFrames_Loaded"
-      summary="Same as NoSavedFrames with the destination tab being loaded
-               (frozen or not frozen)"/>
+      summary="The time from the input timestamp on a tab switch, until the
+               frame is presented on the screen, when there is no saved frame
+               in the cache but the destination tab is already loaded."/>
   <variant name=".NoSavedFrames_NotLoaded"
-      summary="Same as NoSavedFrames with the destination tab being unloaded."/>
+      summary="The time from the input timestamp on a tab switch, until the
+               frame is presented on the screen, when there is no saved frame
+               in the cache and the destination tab is not loaded."/>
   <variant name=".WithSavedFrames"
-      summary="There is a saved frame in the cache when the tab switch
-               starts."/>
+      summary="The time from the input timestamp on a tab switch, until the
+               frame is presented on the screen, when there is a saved frame
+               in the cache."/>
 </variants>
 
 <histogram name="Browser.AnyWindowHasName" enum="Boolean"
@@ -591,6 +591,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.Tabs.TabSwitchResult{TabSwitchingType}"
     enum="TabSwitchResult" expires_after="2023-01-26">
+  <obsolete>
+    Replaced by Browser.Tabs.TabSwitchResult2 in M107. Still logged in parallel
+    until M108 to give automated test suites time to update (see
+    http://shortn/_hpallg5Q7H.)
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -616,6 +621,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration{TabSwitchingType}"
     units="ms" expires_after="2023-01-26">
+  <obsolete>
+    Replaced by Browser.Tabs.TotalIncompleteSwitchDuration2 in M107. Still
+    logged in parallel until M108 to give automated test suites time to update
+    (see http://shortn/_hpallg5Q7H.)
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -643,6 +653,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.Tabs.TotalSwitchDuration{TabSwitchingType}" units="ms"
     expires_after="2023-01-26">
+  <obsolete>
+    Replaced by Browser.Tabs.TotalSwitchDuration2 in M107. Still logged in
+    parallel until M108 to give automated test suites time to update (see
+    http://shortn/_hpallg5Q7H.)
+  </obsolete>
   <owner>ejoe@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>

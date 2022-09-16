@@ -195,25 +195,24 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
         break;
       case TabSwitchResult::kMissedTabHide:
       case TabSwitchResult::kIncomplete:
-      case TabSwitchResult::kUnhandled:
         base::UmaHistogramMediumTimes(
             base::StrCat(
                 {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
             tab_switch_duration);
         break;
       case TabSwitchResult::kPresentationFailure:
+        // Do nothing.
+        break;
+      case TabSwitchResult::DEPRECATED_kUnhandled:
+        NOTREACHED();
         break;
     }
   }
 
-  // TODO(crbug.com/1164477): Remove these once the TabSwitchMetric2 feature
-  // is enabled by default. During the validation experiment, the experiment
-  // group will log TabSwitchResult2 and TabSwitchResult with the same values,
-  // so that it's easy to compare the same TabSwitchResult metrics for the
-  // control group and experiment group. If TabSwitchResult in the experiment
-  // group is ok, so is TabSwitchResult2, and we can then deprecate
-  // TabSwitchResult since the historical data outside the experiment group is
-  // unreliable.
+  // TODO(crbug.com/1164477): Remove these deprecated metrics in M108 after
+  // automated test suites have been updated to use the new metrics. Until then
+  // log them in parallel. (Google-internal details at
+  // http://shortn/_hpallg5Q7H.)
 
   // Record result histogram.
   base::UmaHistogramEnumeration(
@@ -228,7 +227,6 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
           tab_switch_duration);
       break;
     case TabSwitchResult::kMissedTabHide:
-    case TabSwitchResult::kUnhandled:
       // This was not included in the v1 histograms.
       DCHECK(IsTabSwitchMetric2FeatureEnabled());
       [[fallthrough]];
@@ -238,6 +236,10 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
           tab_switch_duration);
       break;
     case TabSwitchResult::kPresentationFailure:
+      // Do nothing.
+      break;
+    case TabSwitchResult::DEPRECATED_kUnhandled:
+      NOTREACHED();
       break;
   }
 }

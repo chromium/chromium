@@ -36,8 +36,8 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
     kMissedTabHide = 3,
     // DEPRECATED: The tab switch couldn't be measured because of an unhandled
     // path in the compositor.
-    kUnhandled = 4,
-    kMaxValue = kUnhandled,
+    DEPRECATED_kUnhandled = 4,
+    kMaxValue = DEPRECATED_kUnhandled,
   };
 
   ContentToVisibleTimeReporter();
