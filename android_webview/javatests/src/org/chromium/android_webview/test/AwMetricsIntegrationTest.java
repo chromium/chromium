@@ -398,6 +398,15 @@ public class AwMetricsIntegrationTest {
         // it's OK to upload the next record.
         mRule.loadUrlAsync(mAwContents, "about:blank");
 
+        // Disregard the second UMA log as well because it is also created very early on
+        // (since we have "fast startup for testing" enabled), and is very likely to have
+        // been opened before the allowlist was loaded.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        // Load a blank page to indicate to the MetricsService that the app is "in use" and
+        // it's OK to upload the next record.
+        mRule.loadUrlAsync(mAwContents, "about:blank");
+
         ChromeUserMetricsExtension log = mPlatformServiceBridge.waitForNextMetricsLog();
         SystemProfileProto systemProfile = log.getSystemProfile();
         assertEquals(appPackageName, systemProfile.getAppPackageName());

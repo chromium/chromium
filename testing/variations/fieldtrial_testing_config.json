@@ -2935,6 +2935,29 @@
             ]
         }
     ],
+    "ConsolidateMetricsServiceInitialLogLogic": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux",
+                "chromeos",
+                "chromeos_lacros",
+                "android",
+                "ios",
+                "android_webview",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ConsolidateMetricsServiceInitialLogLogic"
+                    ]
+                }
+            ]
+        }
+    ],
     "ConsolidatedSiteStorageControls": [
         {
             "platforms": [
