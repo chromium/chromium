@@ -13,8 +13,9 @@ from typing import List
 
 from common import register_common_args, register_device_args, \
                    register_log_args, resolve_packages, resolve_v1_packages
+from compatible_utils import pave
 from ffx_integration import test_connection
-from flash_device import flash, register_flash_args
+from flash_device import register_flash_args, update_required
 from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
@@ -73,9 +74,13 @@ def main():
 
     with ExitStack() as stack:
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
-        if runner_args.device:
-            flash(runner_args.system_image_dir, runner_args.os_check,
-                  runner_args.target_id, runner_args.serial_num)
+        if (runner_args.device and update_required(
+                runner_args.os_check, runner_args.system_image_dir,
+                runner_args.target_id)):
+
+            # TODO(https://fxbug.dev/91843): Switch to flashing the device
+            # when the ffx command is more stable.
+            pave(runner_args.system_image_dir, runner_args.target_id)
         else:
             runner_args.target_id = stack.enter_context(
                 create_emulator_from_args(runner_args))

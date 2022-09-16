@@ -23,7 +23,7 @@ from common import ATTACH_RETRY_SECONDS, EnsurePathExists, \
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'test')))
-from compatible_utils import get_sdk_hash
+from compatible_utils import get_sdk_hash, pave
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
@@ -367,23 +367,7 @@ class DeviceTarget(target.Target):
     return self._ssh_config_path
 
   def _ProvisionDevice(self):
-    _, auth_keys, _ = RunGnSdkFunction('fuchsia-common.sh',
-                                       'get-fuchsia-auth-keys-file')
-    pave_command = [
-        os.path.join(self._system_image_dir, 'pave.sh'), '--authorized-keys',
-        auth_keys.strip()
-    ]
-    if self._node_name:
-      pave_command.extend(['-n', self._node_name, '-1'])
-    logging.info(' '.join(pave_command))
-    try:
-      return_code, stdout, stderr = SubprocessCallWithTimeout(pave_command,
-                                                              timeout_secs=300)
-      if return_code != 0:
-        raise ProvisionDeviceException('Could not pave device.')
-    except TimeoutError as ex:
-      raise ProvisionDeviceException('Timed out while paving device.') from ex
-    self._ParseNodename(stderr)
+    self._ParseNodename(pave(self._system_image_dir, self._node_name).stderr)
 
   def Restart(self):
     """Restart the device."""
