@@ -25,6 +25,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_rendering_environment.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -397,17 +398,17 @@ void CoreTabHelper::DoSearchByImage(
   if (thumbnail_data.empty())
     return;
 
-  std::string additional_query_params_modified = additional_query_params;
-  if (lens::features::GetEnableLatencyLogging() &&
-      src_url.path() == lens::features::GetHomepageURLForLens()) {
-    lens::AppendLogsQueryParam(&additional_query_params_modified,
-                               std::move(log_data));
-  }
-
   TemplateURLService* template_url_service = GetTemplateURLService();
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
   DCHECK(default_provider);
+
+  std::string additional_query_params_modified = additional_query_params;
+  if (lens::features::GetEnableLatencyLogging() &&
+      search::DefaultSearchProviderIsGoogle(template_url_service)) {
+    lens::AppendLogsQueryParam(&additional_query_params_modified,
+                               std::move(log_data));
+  }
 
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
