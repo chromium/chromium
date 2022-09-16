@@ -10,14 +10,14 @@ js_type_check("closure_compile") {
   deps = [
     ":add_supervision_api_server",
     ":add_supervision_ui",
-    "//ui/webui/resources/js:post_message_api_server.m",
+    "//ash/webui/common/resources/post_message_api:post_message_api_server",
   ]
 }
 
 js_library("add_supervision_api_server") {
   deps = [
+    "//ash/webui/common/resources/post_message_api:post_message_api_server",
     "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:post_message_api_server.m",
   ]
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIClient} from 'chrome://resources/js/post_message_api_client.m.js';
-import {RequestHandler} from 'chrome://resources/js/post_message_api_request_handler.m.js';
+import {PostMessageAPIClient} from 'chrome://resources/ash/common/post_message_api/post_message_api_client.js';
+import {RequestHandler} from 'chrome://resources/ash/common/post_message_api/post_message_api_request_handler.js';
 
 import {AnnotatorBrowserProxy, AnnotatorBrowserProxyImpl} from './annotator_browser_proxy.js';
 

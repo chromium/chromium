@@ -43,6 +43,9 @@ non_web_component_files = [
   "multidevice_setup/multidevice_setup_browser_proxy.js",
   "multidevice_setup/multidevice_setup_delegate.js",
   "multidevice_setup/ui_page_container_behavior.js",
+  "post_message_api/post_message_api_client.js",
+  "post_message_api/post_message_api_request_handler.js",
+  "post_message_api/post_message_api_server.js",
 ]
 
 icons_html_files = [
@@ -175,6 +178,7 @@ group("closure_compile") {
     ":closure_compile_local",
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",
+    "post_message_api:closure_compile",
   ]
 }
 
