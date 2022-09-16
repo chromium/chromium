@@ -24,8 +24,8 @@ SkColor GetWallpaperShieldColor(const views::Widget* widget) {
   DCHECK(widget);
   return widget->GetColorProvider()->GetColor(
       Shell::Get()->session_controller()->IsUserSessionBlocked()
-          ? kColorAshShieldAndBase40
-          : kColorAshShieldAndBase80);
+          ? kColorAshShieldAndBase80
+          : kColorAshShieldAndBase40);
 }
 
 }  // namespace
