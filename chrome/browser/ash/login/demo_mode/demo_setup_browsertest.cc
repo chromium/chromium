@@ -435,9 +435,8 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 };
 
-// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_ShowConfirmationDialogAndProceed) {
+                       ShowConfirmationDialogAndProceed) {
   IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
@@ -448,9 +447,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_ShowConfirmationDialogAndCancel) {
+                       ShowConfirmationDialogAndCancel) {
   IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
@@ -462,8 +460,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectHiddenPath(kDemoPreferencesScreen);
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_InvokeWithTaps) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, InvokeWithTaps) {
   // Use fake time to avoid flakiness.
   SetFakeTimeForMultiTapDetector(base::Time::UnixEpoch());
   IsConfirmationDialogHidden();
@@ -472,9 +469,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_InvokeWithTaps) {
   IsConfirmationDialogShown();
 }
 
-// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_DoNotInvokeWithNonConsecutiveTaps) {
+                       DoNotInvokeWithNonConsecutiveTaps) {
   // Use fake time to avoid flakiness.
   const base::Time kFakeTime = base::Time::UnixEpoch();
   SetFakeTimeForMultiTapDetector(kFakeTime);
@@ -534,10 +530,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(
-    DemoSetupArcSupportedTest,
-    DISABLED_OnlineSetupFlowSuccessWithCountryCustomization) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       OnlineSetupFlowSuccessWithCountryCustomization) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -563,9 +557,8 @@ IN_PROC_BROWSER_TEST_F(
   SelectFranceAndFinishSetup();
 }
 
-// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_OnlineSetupFlowSuccessWithRetailerAndStoreId) {
+                       OnlineSetupFlowSuccessWithRetailerAndStoreId) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -604,9 +597,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_OnlineSetupFlowErrorDefault) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -635,9 +626,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_OnlineSetupFlowErrorPowerwashRequired) {
+                       OnlineSetupFlowErrorPowerwashRequired) {
   // Simulate online setup failure that requires powerwash.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -665,9 +655,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_OnlineSetupFlowCrosComponentFailure) {
+                       OnlineSetupFlowCrosComponentFailure) {
   // Simulate failure to load demo resources CrOS component.
   // There is no enrollment attempt, as process fails earlier.
   enrollment_helper_.ExpectNoEnrollment();
@@ -694,9 +683,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_OfflineDemoModeUnavailable) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
   SimulateNetworkDisconnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -704,9 +691,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_ClickNetworkOnNetworkScreen) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
   TriggerDemoModeOnWelcomeScreen();
   test::WaitForNetworkSelectionScreen();
 
@@ -725,9 +710,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   }
 }
 
-// TODO(crbug.com/1341234): flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_ClickConnectedNetworkOnNetworkScreen) {
+                       ClickConnectedNetworkOnNetworkScreen) {
   SimulateNetworkConnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -749,9 +733,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   }
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_BackOnNetworkScreen) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
   SimulateNetworkConnected();
   TriggerDemoModeOnWelcomeScreen();
 
@@ -761,8 +743,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_BackOnTermsScreen) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnTermsScreen) {
   SimulateNetworkConnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -793,8 +774,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_BackOnTermsScreen) {
   OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_BackOnErrorScreen) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -817,8 +797,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_BackOnErrorScreen) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
 
-// TODO(crbug.com/1341234): flaky.
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_RetryOnErrorScreen) {
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, RetryOnErrorScreen) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -886,9 +865,8 @@ class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
   }
 };
 
-// crbug.com/1341073 Disable due to flakiness.
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
-                       DISABLED_SetupProgessStepsDisplayCorrectly) {
+                       SetupProgessStepsDisplayCorrectly) {
   SimulateNetworkConnected();
   TriggerDemoModeOnWelcomeScreen();
   UseOnlineModeOnNetworkScreen();
