@@ -36,25 +36,25 @@ class AX_EXPORT AXTreeFormatterMac : public AXTreeFormatterBase {
       size_t end_index) const;
 
   // AXTreeFormatterMac
-  base::Value BuildNode(const id node) const;
+  base::Value::Dict BuildNode(const id node) const;
 
  protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  base::Value BuildTree(const id root) const;
-  base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
+  base::Value::Dict BuildTree(const id root) const;
+  base::Value::Dict BuildTreeForAXUIElement(AXUIElementRef node) const;
 
   void RecursiveBuildTree(const AXElementWrapper& ax_element,
                           const NSRect& root_rect,
                           const AXTreeIndexerMac* indexer,
-                          base::Value* dict) const;
+                          base::Value::Dict* dict) const;
 
   void AddProperties(const AXElementWrapper& ax_element,
                      const NSRect& root_rect,
                      const AXTreeIndexerMac* indexer,
-                     base::Value* dict) const;
+                     base::Value::Dict* dict) const;
 
   // Invokes an attribute by a property node.
   AXOptionalNSObject InvokeAttributeFor(
