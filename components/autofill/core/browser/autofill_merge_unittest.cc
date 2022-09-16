@@ -42,8 +42,6 @@ namespace autofill {
 namespace {
 const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("merge");
-const base::FilePath::CharType kTestNameStructuredNames[] =
-    FILE_PATH_LITERAL("merge_structured_names");
 const base::FilePath::CharType kFileNamePattern[] = FILE_PATH_LITERAL("*.in");
 
 const char kFieldSeparator[] = ":";
@@ -73,17 +71,10 @@ const base::FilePath& GetTestDataDir() {
   return *dir;
 }
 
-const base::FilePath::StringType GetTestName() {
-  // TODO(crbug.com/1103421): Clean legacy implementation once structured names
-  // are fully launched.
-  bool structured_names = base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-  return structured_names ? kTestNameStructuredNames : kTestName;
-}
 const std::vector<base::FilePath> GetTestFiles() {
   base::FilePath dir = GetTestDataDir();
 
-  dir = dir.AppendASCII("autofill").Append(GetTestName()).AppendASCII("input");
+  dir = dir.AppendASCII("autofill").Append(kTestName).AppendASCII("input");
   base::FileEnumerator input_files(dir, false, base::FileEnumerator::FILES,
                                    kFileNamePattern);
   std::vector<base::FilePath> files;
@@ -217,7 +208,7 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 };
 
 AutofillMergeTest::AutofillMergeTest()
-    : testing::DataDrivenTest(GetTestDataDir(), kFeatureName, GetTestName()) {
+    : testing::DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName) {
   CountryNames::SetLocaleString("en-US");
   for (size_t i = NO_SERVER_DATA; i < MAX_VALID_FIELD_TYPE; ++i) {
     ServerFieldType field_type = ToSafeServerFieldType(i, MAX_VALID_FIELD_TYPE);
