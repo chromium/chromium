@@ -157,7 +157,12 @@ const base::Feature kPasswordChange = {"PasswordChange",
 
 // Enables password change flow from bulk leak check in settings.
 const base::Feature kPasswordChangeInSettings = {
-    "PasswordChangeInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PasswordChangeInSettings",
+#if BUILDFLAG(IS_ANDROID)
+    base::FEATURE_ENABLED_BY_DEFAULT};
+#else
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // Enables .well-known based password change flow from leaked password dialog.
 const base::Feature kPasswordChangeWellKnown = {
