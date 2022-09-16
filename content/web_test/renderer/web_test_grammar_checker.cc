@@ -27,7 +27,7 @@ bool WebTestGrammarChecker::CheckGrammarOfString(
     std::vector<blink::WebTextCheckingResult>* results) {
   DCHECK(results);
   std::u16string string_text = text.Utf16();
-  if (base::ranges::find_if(string_text, IsASCIIAlpha) == string_text.end())
+  if (base::ranges::none_of(string_text, IsASCIIAlpha))
     return true;
 
   // Find matching grammatical errors from known ones. This function has to

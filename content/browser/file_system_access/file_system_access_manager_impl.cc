@@ -233,8 +233,7 @@ bool IsValidIdChar(const char c) {
 }
 
 bool IsValidId(const std::string& id) {
-  return id.size() <= 32 &&
-         base::ranges::find_if_not(id, &IsValidIdChar) == id.end();
+  return id.size() <= 32 && base::ranges::all_of(id, &IsValidIdChar);
 }
 
 ui::SelectFileDialog::Type GetSelectFileDialogType(

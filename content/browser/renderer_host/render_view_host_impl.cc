@@ -169,10 +169,8 @@ class PerProcessRenderViewHostSet : public base::SupportsUserData::Data {
   }
 
   bool HasNonBackForwardCachedInstances() const {
-    return base::ranges::find_if_not(
-               render_view_host_instances_,
-               &RenderViewHostImpl::is_in_back_forward_cache) !=
-           render_view_host_instances_.end();
+    return !base::ranges::all_of(render_view_host_instances_,
+                                 &RenderViewHostImpl::is_in_back_forward_cache);
   }
 
  private:

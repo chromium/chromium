@@ -42,13 +42,13 @@ FakeSubresourceFilter::GetLoadPolicyImpl(const blink::WebURL& url) {
   GURL gurl(url);
   base::StringPiece path(gurl.path_piece());
 
-  auto it = base::ranges::find_if(
-      disallowed_path_suffixes_, [&path](const std::string& suffix) {
-        return base::EndsWith(path, suffix, base::CompareCase::SENSITIVE);
-      });
   // Allows things not listed in |disallowed_path_suffixes_|.
-  if (it == disallowed_path_suffixes_.end())
+  if (base::ranges::none_of(
+          disallowed_path_suffixes_, [&path](const std::string& suffix) {
+            return base::EndsWith(path, suffix, base::CompareCase::SENSITIVE);
+          })) {
     return kAllow;
+  }
   // Disallows everything in |disallowed_path_suffixes_| only if
   // |block_subresources| is true.
   if (block_subresources_)

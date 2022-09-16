@@ -127,11 +127,9 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
     return false;
 
   // Only parse and persist if the Variants headers include Accept-Language.
-  auto variants_accept_lang_iter = base::ranges::find_if(
-      parsed_headers->variants_headers.value(),
-      [](const VariantsHeaderPtr& variants_header) {
-        return variants_header->name == kAcceptLanguageLowerCase;
-      });
+  auto variants_accept_lang_iter = base::ranges::find(
+      parsed_headers->variants_headers.value(), kAcceptLanguageLowerCase,
+      &::network::mojom::VariantsHeader::name);
   if (variants_accept_lang_iter ==
       parsed_headers->variants_headers.value().end()) {
     return false;
@@ -184,12 +182,11 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
   //
   // TODO(crbug.com/1323776) make sure the delegate clears its cache if the
   // user's preferences changed.
-  auto iter = base::ranges::find_if(
-      user_accept_languages, [&](const std::string& language) {
-        return DoesAcceptLanguageMatchContentLanguage(
-            language, preferred_language.value());
-      });
-  return iter != user_accept_languages.end()
+  return base::ranges::any_of(user_accept_languages,
+                              [&](const std::string& language) {
+                                return DoesAcceptLanguageMatchContentLanguage(
+                                    language, preferred_language.value());
+                              })
              ? preferred_language
              : GetFirstUserAcceptLanguage(user_accept_languages);
 }
@@ -241,13 +238,12 @@ ReduceAcceptLanguageUtils::GetLanguageToPersist(
 
   // If the response content-language matches the initial accept language
   // values, no need to resend the request.
-  auto iter = base::ranges::find_if(content_languages, [&](const std::string&
-                                                               language) {
-    return ReduceAcceptLanguageUtils::DoesAcceptLanguageMatchContentLanguage(
-        initial_accept_language, language);
-  });
   std::string selected_language;
-  if (iter != content_languages.end()) {
+  if (base::ranges::any_of(content_languages, [&](const std::string& language) {
+        return ReduceAcceptLanguageUtils::
+            DoesAcceptLanguageMatchContentLanguage(initial_accept_language,
+                                                   language);
+      })) {
     selected_language = initial_accept_language;
   } else {
     // If content-language doesn't match initial accept-language and the site
@@ -262,12 +258,11 @@ ReduceAcceptLanguageUtils::GetLanguageToPersist(
       // Only resend request if the `matched_language` doesn't match any
       // content languages in current response header because otherwise
       // resending the request won't get a better result.
-      auto matched_iter = base::ranges::find_if(
+      result.should_resend_request = base::ranges::none_of(
           content_languages, [&](const std::string& language) {
             return base::EqualsCaseInsensitiveASCII(language,
                                                     matched_language.value());
           });
-      result.should_resend_request = (matched_iter == content_languages.end());
     }
   }
 

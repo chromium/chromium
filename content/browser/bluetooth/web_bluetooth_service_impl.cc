@@ -395,12 +395,11 @@ class WebBluetoothServiceImpl::ScanningClient
 
       // Check to see if there is a service uuid match
       if (filter->services.has_value()) {
-        auto it = base::ranges::find_if(
-            filter->services.value(),
-            [&filtered_event](const BluetoothUUID& filter_uuid) {
-              return base::Contains(filtered_event->uuids, filter_uuid);
-            });
-        if (it == filter->services.value().end())
+        if (base::ranges::none_of(
+                filter->services.value(),
+                [&filtered_event](const BluetoothUUID& filter_uuid) {
+                  return base::Contains(filtered_event->uuids, filter_uuid);
+                }))
           continue;
       }
 

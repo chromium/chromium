@@ -66,10 +66,9 @@ blink::Manifest::ImageResource CreateIcon(const std::string& src,
 
 bool ContainsHeader(const base::flat_map<std::string, std::string>& headers,
                     const std::string& target) {
-  return headers.cend() !=
-         base::ranges::find_if(headers, [target](const auto& pair) {
-           return base::EqualsCaseInsensitiveASCII(pair.first, target);
-         });
+  return base::ranges::any_of(headers, [target](const auto& pair) {
+    return base::EqualsCaseInsensitiveASCII(pair.first, target);
+  });
 }
 
 std::vector<blink::mojom::FetchAPIRequestPtr> CloneRequestVector(
