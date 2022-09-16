@@ -181,6 +181,13 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
 
 void AccessCodeCastIntegrationBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
+  network_connection_tracker_ =
+      network::TestNetworkConnectionTracker::CreateInstance();
+  content::SetNetworkConnectionTrackerForTesting(nullptr);
+  content::SetNetworkConnectionTrackerForTesting(
+      network_connection_tracker_.get());
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_WIFI);
   url_loader_interceptor_ =
       std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
           &AccessCodeCastIntegrationBrowserTest::InterceptRequest,

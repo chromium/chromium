@@ -43,6 +43,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,6 +80,11 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
       delete;
 
   void SetUp() override {
+    content::SetNetworkConnectionTrackerForTesting(
+        network::TestNetworkConnectionTracker::GetInstance());
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_WIFI);
+
     feature_list_.InitWithFeatures({features::kAccessCodeCastRememberDevices},
                                    {});
     GetTestingPrefs()->SetManagedPref(::prefs::kEnableMediaRouter,
@@ -1243,6 +1249,21 @@ TEST_F(AccessCodeCastSinkServiceTest,
           .empty());
   EXPECT_TRUE(
       access_code_cast_sink_service_->pref_updater_->GetDevicesDict().empty());
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, TestOfflineDiscoverSink) {
+  // Test to ensure that discover sink triggers a network error callback if we
+  // are offline.
+  MockAddSinkResultCallback mock_callback;
+
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+  EXPECT_CALL(mock_callback,
+              Run(AddSinkResultCode::SERVICE_NOT_PRESENT, Eq(absl::nullopt)));
+
+  access_code_cast_sink_service_->DiscoverSink("", mock_callback.Get());
+
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
 }  // namespace media_router

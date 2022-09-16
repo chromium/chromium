@@ -32,6 +32,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,6 +139,9 @@ class AccessCodeCastIntegrationBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription subscription_;
+
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
 
  protected:
   raw_ptr<media_router::MockMediaRouter> media_router_ = nullptr;

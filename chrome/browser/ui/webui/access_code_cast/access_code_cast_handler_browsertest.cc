@@ -9,6 +9,7 @@
 #endif
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
@@ -33,12 +34,17 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
                                       browser()->profile());
 
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
   PressSubmit(dialog_contents);
 
   // This error code corresponds to
-  // ErrorMessage.NETWORK::AddSinkResultCode.SERVER_ERROR
+  // ErrorMessage.NETWORK::AddSinkResultCode.SERVICE_NOT_PRESENT. This error
+  // code 3 refers to the ErrorMessage described within
+  // chrome/browser/resources/access_code_cast/error_message/error_message.ts
   EXPECT_EQ(3, WaitForAddSinkErrorCode(dialog_contents));
   CloseDialog(dialog_contents);
 }
@@ -116,7 +122,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   PressSubmit(dialog_contents);
 
   // This error code corresponds to
-  // ErrorMessage.GENERIC::AddSinkResultCode.PROFILE_SYNC_ERROR
+  // ErrorMessage.GENERIC::AddSinkResultCode.PROFILE_SYNC_ERROR. This error code
+  // 1 refers to the ErrorMessage described within
+  // chrome/browser/resources/access_code_cast/error_message/error_message.ts
   EXPECT_EQ(1, WaitForAddSinkErrorCode(dialog_contents));
   CloseDialog(dialog_contents);
 }

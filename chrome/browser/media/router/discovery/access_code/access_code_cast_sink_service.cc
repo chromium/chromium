@@ -30,6 +30,7 @@
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace media_router {
@@ -258,6 +259,15 @@ void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
     // media_router logger. Instead, this will error will be surfaced in
     // AccessCodeCast histograms.
     std::move(callback).Run(AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR,
+                            absl::nullopt);
+    return;
+  }
+  if (content::GetNetworkConnectionTracker()->IsOffline()) {
+    LogWarning(
+        "We are not either not connected to a valid network or not connected "
+        "to any network.",
+        "");
+    std::move(callback).Run(AddSinkResultCode::SERVICE_NOT_PRESENT,
                             absl::nullopt);
     return;
   }
