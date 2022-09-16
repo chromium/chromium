@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/ios/block_types.h"
+#import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -27,6 +28,21 @@ const NSTimeInterval kBubbleEngagementDuration = 30.0;
 
 // Delay before posting the VoiceOver notification.
 const CGFloat kVoiceOverAnnouncementDelay = 1;
+
+// Possible types of dismissal reasons.
+// These enums are persisted as histogram entries, so this enum should be
+// treated as append-only and kept in sync with InProductHelpDismissalReason in
+// enums.xml.
+enum class IPHDismissalReasonType {
+  kUnknown = 0,
+  kTimedOut = 1,
+  kOnKeyboardHide = 2,
+  kTappedIPH = 3,
+  kTappedOutside = 4,
+  kTappedClose = 5,
+  kTappedSnooze = 6,
+  kMaxValue = kTappedSnooze,
+};
 
 }  // namespace
 
@@ -239,6 +255,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 }
 
 - (void)dismissAnimated:(BOOL)animated
+                 reason:(IPHDismissalReasonType)reason
            snoozeAction:(feature_engagement::Tracker::SnoozeAction)action {
   // Because this object must stay in memory to handle the `userEngaged`
   // property correctly, it is possible for `dismissAnimated` to be called
@@ -246,6 +263,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   if (!self.presenting) {
     return;
   }
+
+  UMA_HISTOGRAM_ENUMERATION("InProductHelp.DismissalReason.iOS", reason);
 
   [self.bubbleDismissalTimer invalidate];
   self.bubbleDismissalTimer = nil;
@@ -263,7 +282,12 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 }
 
 - (void)dismissAnimated:(BOOL)animated {
+  [self dismissAnimated:animated reason:IPHDismissalReasonType::kUnknown];
+}
+
+- (void)dismissAnimated:(BOOL)animated reason:(IPHDismissalReasonType)reason {
   [self dismissAnimated:animated
+                 reason:reason
            snoozeAction:feature_engagement::Tracker::SnoozeAction::DISMISSED];
 }
 
@@ -317,12 +341,12 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 #pragma mark - BubbleViewDelegate
 
 - (void)didTapCloseButton {
-  [self dismissAnimated:YES
-           snoozeAction:feature_engagement::Tracker::SnoozeAction::DISMISSED];
+  [self dismissAnimated:YES reason:IPHDismissalReasonType::kTappedClose];
 }
 
 - (void)didTapSnoozeButton {
   [self dismissAnimated:YES
+                 reason:IPHDismissalReasonType::kTappedSnooze
            snoozeAction:feature_engagement::Tracker::SnoozeAction::SNOOZED];
 }
 
@@ -330,12 +354,12 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 // Invoked by tapping inside the bubble. Dismisses the bubble.
 - (void)tapInsideBubbleRecognized:(id)sender {
-  [self dismissAnimated:YES];
+  [self dismissAnimated:YES reason:IPHDismissalReasonType::kTappedIPH];
 }
 
 // Invoked by tapping outside the bubble. Dismisses the bubble.
 - (void)tapOutsideBubbleRecognized:(id)sender {
-  [self dismissAnimated:YES];
+  [self dismissAnimated:YES reason:IPHDismissalReasonType::kTappedOutside];
 }
 
 // Automatically dismisses the bubble view when `bubbleDismissalTimer` fires.
@@ -345,7 +369,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   if (usesScreenReader && !self.bubbleShouldAutoDismissUnderAccessibility) {
     // No-op. Keep the IPH available for screen reader users.
   } else {
-    [self dismissAnimated:YES];
+    [self dismissAnimated:YES reason:IPHDismissalReasonType::kTimedOut];
   }
 }
 
@@ -358,7 +382,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 // Invoked when the keybord is dismissed.
 - (void)onKeyboardHide:(NSNotification*)notification {
-  [self dismissAnimated:YES];
+  [self dismissAnimated:YES reason:IPHDismissalReasonType::kOnKeyboardHide];
 }
 
 // Calculates the frame of the BubbleView. `rect` is the frame of the bubble's

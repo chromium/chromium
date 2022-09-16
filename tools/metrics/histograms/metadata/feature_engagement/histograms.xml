@@ -301,6 +301,15 @@ chromium-metrics-reviews@google.com.
   <token key="IPHDatabase" variants="IPHDatabase"/>
 </histogram>
 
+<histogram name="InProductHelp.DismissalReason.iOS"
+    enum="InProductHelpDismissalReason" expires_after="2023-02-12">
+  <owner>lpromero@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Records how the in-product help bubble was dismissed on iOS.
+  </summary>
+</histogram>
+
 <histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
     enum="BooleanSuccess" expires_after="2022-12-26">
   <owner>nyquist@chromium.org</owner>
