@@ -46,10 +46,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "chromeos-kevin-compile-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
           "builder": "chromeos-kevin-rel",
           "group": "tryserver.chromium.chromiumos"
         }
@@ -71,6 +67,6 @@
   "builder_group": "chromium.chromiumos",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

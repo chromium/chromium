@@ -80,20 +80,6 @@
           "builder": "Android WebView N (dbg)",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-webview-nougat-arm64-dbg",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_arm64_dbg_recipe",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_unswarmed_pixel_aosp",
-          "group": "tryserver.chromium.android"
-        }
       ]
     }
   },
@@ -107,6 +93,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }
