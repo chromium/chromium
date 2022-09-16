@@ -50,7 +50,6 @@ class BatterySaverButton : public ToolbarButton,
   // Handles press events from the button
   void OnClicked();
 
-  void OnFeatureEngagementInitialized(bool);
   void MaybeShowFeaturePromo();
   void CloseFeaturePromo();
 

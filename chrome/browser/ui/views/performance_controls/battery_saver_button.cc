@@ -61,6 +61,8 @@ void BatterySaverButton::Show() {
 }
 
 void BatterySaverButton::Hide() {
+  CloseFeaturePromo();
+
   if (IsBubbleShowing()) {
     // The bubble is closed sync and will be cleared in OnBubbleHidden
     BatterySaverBubbleView::CloseBubble(bubble_);
@@ -88,26 +90,9 @@ void BatterySaverButton::OnClicked() {
   }
 }
 
-void BatterySaverButton::OnFeatureEngagementInitialized(bool initialized) {
-  if (!initialized)
-    return;
-
-  browser_view_->MaybeShowFeaturePromo(
-      feature_engagement::kIPHBatterySaverModeFeature);
-}
-
 void BatterySaverButton::MaybeShowFeaturePromo() {
-  auto* const promo_controller = browser_view_->GetFeaturePromoController();
-  if (!promo_controller)
-    return;
-
-  // Toolbar button could be visible early in browser startup where the feature
-  // engagement tracker might not have fully initialized. So wait for the
-  // initialization to complete before triggering the promo.
-  auto* tracker = promo_controller->feature_engagement_tracker();
-  tracker->AddOnInitializedCallback(
-      base::BindOnce(&BatterySaverButton::OnFeatureEngagementInitialized,
-                     weak_ptr_factory_.GetWeakPtr()));
+  browser_view_->MaybeShowStartupFeaturePromo(
+      feature_engagement::kIPHBatterySaverModeFeature);
 }
 
 void BatterySaverButton::CloseFeaturePromo() {

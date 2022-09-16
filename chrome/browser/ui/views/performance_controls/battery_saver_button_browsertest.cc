@@ -108,6 +108,29 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, ShowPromoOnModeActivation) {
   EXPECT_FALSE(promo_active);
 }
 
+// Check if the battery saver in-product help promo is closed if the promo is
+// active when the mode is deactivated.
+IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, HidePromoOnModeDeactivation) {
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+
+  bool initialized = WaitForFeatureTrackerInitialization();
+  EXPECT_TRUE(initialized);
+
+  SetBatterySaverModeEnabled(true);
+  base::RunLoop().RunUntilIdle();
+
+  bool promo_active = GetFeaturePromoController()->IsPromoActive(
+      feature_engagement::kIPHBatterySaverModeFeature);
+  EXPECT_TRUE(promo_active);
+
+  SetBatterySaverModeEnabled(false);
+  base::RunLoop().RunUntilIdle();
+
+  promo_active = GetFeaturePromoController()->IsPromoActive(
+      feature_engagement::kIPHBatterySaverModeFeature);
+  EXPECT_FALSE(promo_active);
+}
+
 // Confirm that the navigation to the performance settings page happens when
 // custom action button for battery saver promo bubble is clicked.
 IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
@@ -133,8 +156,8 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
   PressButton(custom_action_button);
   navigation_observer.Wait();
 
-  GURL expected(chrome::kChromeUIPerformanceSettingsURL);
-  EXPECT_EQ(expected.host(), navigation_observer.last_navigation_url().host());
+  GURL expected_url(chrome::kChromeUIPerformanceSettingsURL);
+  EXPECT_EQ(expected_url, navigation_observer.last_navigation_url());
 }
 
 class BatterySaverBubbleViewTest : public InProcessBrowserTest {
