@@ -8,7 +8,9 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace ash {
 
@@ -55,9 +57,16 @@ NetworkPortalDetectorTestImpl::GetCaptivePortalStatus() {
 }
 
 bool NetworkPortalDetectorTestImpl::IsEnabled() {
-  return true;
+  return enabled_;
 }
 
-void NetworkPortalDetectorTestImpl::Enable() {}
+void NetworkPortalDetectorTestImpl::Enable() {
+  DVLOG(1) << "NetworkPortalDetectorTestImpl: Enabled.";
+  enabled_ = true;
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
+        NetworkStateHandler::kDefaultCheckPortalList);
+  }
+}
 
 }  // namespace ash

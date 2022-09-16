@@ -41,6 +41,7 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   void Enable() override;
 
  private:
+  bool enabled_ = false;
   std::unique_ptr<NetworkState> default_network_;
   std::map<std::string, CaptivePortalStatus> portal_status_map_;
 };

@@ -2024,8 +2024,6 @@ void WizardController::PerformPostEulaActions() {
 
   // Now that EULA has been accepted (for official builds), enable portal check.
   // ChromiumOS builds would go though this code path too.
-  NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
-      NetworkStateHandler::kDefaultCheckPortalList);
   GetAutoEnrollmentController()->Start();
   network_portal_detector::GetInstance()->Enable();
 }

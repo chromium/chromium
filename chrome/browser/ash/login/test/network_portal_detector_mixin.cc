@@ -104,6 +104,7 @@ void NetworkPortalDetectorMixin::SetUpOnMainThread() {
   // Setup network portal detector to return online for the default network.
   network_portal_detector_ = new NetworkPortalDetectorTestImpl();
   network_portal_detector::InitializeForTesting(network_portal_detector_);
+  network_portal_detector_->Enable();
   SetDefaultNetwork(FakeShillManagerClient::kFakeEthernetNetworkGuid,
                     shill::kTypeEthernet,
                     NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);

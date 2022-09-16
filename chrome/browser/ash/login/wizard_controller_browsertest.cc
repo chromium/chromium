@@ -666,7 +666,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     WizardControllerTest::TearDownOnMainThread();
   }
 
-  void InitTimezoneResolver() {
+  void InitNetworkPortalDetector() {
     network_portal_detector_ = new NetworkPortalDetectorTestImpl();
     network_portal_detector::InitializeForTesting(network_portal_detector_);
 
@@ -730,8 +730,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     CheckCurrentScreen(NetworkScreenView::kScreenId);
     EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
 
-    // Enable TimeZone resolve
-    InitTimezoneResolver();
+    InitNetworkPortalDetector();
 
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
     if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
@@ -923,6 +922,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
+  InitNetworkPortalDetector();
+
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);

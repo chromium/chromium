@@ -290,6 +290,7 @@ void InitializeNetworkPortalDetector() {
     network_portal_detector::SetNetworkPortalDetector(
         new NetworkPortalDetectorImpl());
   }
+  network_portal_detector::GetInstance()->Enable();
 }
 
 void ApplySigninProfileModifications(Profile* profile) {
@@ -1139,17 +1140,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // active networks. Should be called before call to initialize
     // ChromeSessionManager because it depends on NetworkPortalDetector.
     InitializeNetworkPortalDetector();
-    {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      bool is_official_build = true;
-#else
-      bool is_official_build = false;
-#endif
-      // Enable portal detector if EULA was previously accepted or if
-      // this is an unofficial build.
-      if (!is_official_build || StartupUtils::IsEulaAccepted())
-        network_portal_detector::GetInstance()->Enable();
-    }
 
     // Initialize an observer to update NetworkHandler's pref based services.
     network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>();

@@ -219,6 +219,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
 
   network_portal_detector::InitializeForTesting(
       new NetworkPortalDetectorTestImpl());
+  network_portal_detector::GetInstance()->Enable();
 
   static_cast<UpdateRequiredScreen*>(
       WizardController::default_controller()->current_screen())
