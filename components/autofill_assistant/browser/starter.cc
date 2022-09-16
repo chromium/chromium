@@ -201,7 +201,10 @@ void Starter::PrimaryPageChanged(content::Page& page) {
       // Ignore; navigations to the target domain during startup are allowed.
       return;
     }
-    RecordNavigatedAwayMetrics(rfh.GetPageUkmSourceId(), rfh.IsErrorDocument());
+    RecordNavigatedAwayMetrics(rfh.GetPageUkmSourceId(), rfh.IsErrorDocument(),
+                               GetPendingTriggerContext()
+                                   ->GetScriptParameters()
+                                   .GetRequestsTriggerScript());
     // Note: do not early-return here. While the previous startup has failed, we
     // may have navigated to a new supported domain and may need to start
     // implicitly.
@@ -240,7 +243,10 @@ void Starter::DidFinishNavigation(
       return;
     }
     RecordNavigatedAwayMetrics(rfh->GetPageUkmSourceId(),
-                               rfh->IsErrorDocument());
+                               rfh->IsErrorDocument(),
+                               GetPendingTriggerContext()
+                                   ->GetScriptParameters()
+                                   .GetRequestsTriggerScript());
     // Note: do not early-return here. While the previous startup has failed, we
     // may have navigated to a new supported domain and may need to start
     // implicitly.
@@ -254,24 +260,23 @@ void Starter::DidFinishNavigation(
 }
 
 void Starter::RecordNavigatedAwayMetrics(ukm::SourceId source_id,
-                                         bool is_error_document) const {
-  if (GetPendingTriggerContext()
-          ->GetScriptParameters()
-          .GetRequestsTriggerScript()) {
+                                         bool is_error_document,
+                                         bool is_trigger_script) const {
+  if (is_trigger_script) {
     // Note: this will record for the current domain, not the target domain.
     // There seems to be no way to avoid this.
     Metrics::RecordTriggerScriptStarted(
         ukm_recorder_, source_id,
         is_error_document ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
                           : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
-  } else {
-    // Regular startup was interrupted (most likely during the onboarding).
-    Metrics::RecordDropOut(
-        waiting_for_onboarding_ ? Metrics::DropOutReason::ONBOARDING_NAVIGATION
-                                : Metrics::DropOutReason::NAVIGATION,
-        GetPendingTriggerContext()->GetScriptParameters().GetIntent().value_or(
-            std::string()));
+    return;
   }
+  // Regular startup was interrupted (most likely during the onboarding).
+  Metrics::RecordDropOut(
+      waiting_for_onboarding_ ? Metrics::DropOutReason::ONBOARDING_NAVIGATION
+                              : Metrics::DropOutReason::NAVIGATION,
+      GetPendingTriggerContext()->GetScriptParameters().GetIntent().value_or(
+          std::string()));
 }
 
 void Starter::MaybeStartImplicitlyForUrl(const GURL& url,
@@ -534,8 +539,8 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
     return;
   }
 
-  // Record startup metrics for trigger scripts as soon as possible to establish
-  // a baseline.
+  // Record startup metrics for trigger scripts as soon as possible to
+  // establish a baseline.
   if (IsTriggerScriptContext(*pending_trigger_context_)) {
     Metrics::RecordTriggerScriptStarted(
         ukm_recorder_, current_ukm_source_id_, startup_mode,
@@ -751,9 +756,9 @@ void Starter::MaybeShowOnboarding(
     return;
   }
 
-  // Always use bottom sheet onboarding here. Trigger scripts may show a dialog
-  // onboarding, but if we have reached this part, we're already starting the
-  // regular script, where we don't offer dialog onboarding.
+  // Always use bottom sheet onboarding here. Trigger scripts may show a
+  // dialog onboarding, but if we have reached this part, we're already
+  // starting the regular script, where we don't offer dialog onboarding.
   runtime_manager_->SetUIState(UIState::kShown);
   waiting_for_onboarding_ = true;
   platform_delegate_->ShowOnboarding(

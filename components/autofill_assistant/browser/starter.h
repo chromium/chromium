@@ -177,7 +177,8 @@ class Starter : public content::WebContentsObserver,
   void ReportPreconditionsChecked(bool start_script);
 
   void RecordNavigatedAwayMetrics(ukm::SourceId source_id,
-                                  bool is_error_document) const;
+                                  bool is_error_document,
+                                  bool is_trigger_script) const;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
