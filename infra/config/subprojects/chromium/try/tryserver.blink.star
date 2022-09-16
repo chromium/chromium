@@ -152,7 +152,7 @@ blink_mac_builder(
         ),
     ),
     try_settings = builder_config.try_settings(
-        retry_failed_shards = False,
+        retry_failed_shards = True,
     ),
 )
 
@@ -172,7 +172,7 @@ blink_mac_builder(
         ),
     ),
     try_settings = builder_config.try_settings(
-        retry_failed_shards = False,
+        retry_failed_shards = True,
     ),
 )
 
@@ -192,7 +192,7 @@ blink_mac_builder(
         ),
     ),
     try_settings = builder_config.try_settings(
-        retry_failed_shards = False,
+        retry_failed_shards = True,
     ),
 )
 
@@ -212,7 +212,7 @@ blink_mac_builder(
         ),
     ),
     try_settings = builder_config.try_settings(
-        retry_failed_shards = False,
+        retry_failed_shards = True,
     ),
     builderless = False,
 )
@@ -234,7 +234,7 @@ blink_mac_builder(
         build_gs_bucket = "chromium-fyi-archive",
     ),
     try_settings = builder_config.try_settings(
-        retry_failed_shards = False,
+        retry_failed_shards = True,
     ),
 )
 
