@@ -40,7 +40,6 @@ const ERROR_SCREEN_UI_STATE = {
   SIGNIN: 'ui-state-signin',
   KIOSK_MODE: 'ui-state-kiosk-mode',
   AUTO_ENROLLMENT_ERROR: 'ui-state-auto-enrollment-error',
-  ROLLBACK_ERROR: 'ui-state-rollback-error',
   SUPERVISED_USER_CREATION_FLOW: 'ui-state-supervised',
 };
 
@@ -53,7 +52,6 @@ const ErrorMessageUIState = [
   ERROR_SCREEN_UI_STATE.SUPERVISED_USER_CREATION_FLOW,
   ERROR_SCREEN_UI_STATE.KIOSK_MODE,
   ERROR_SCREEN_UI_STATE.AUTO_ENROLLMENT_ERROR,
-  ERROR_SCREEN_UI_STATE.ROLLBACK_ERROR,
 ];
 
 // The help topic linked from the auto enrollment error message.
@@ -203,17 +201,11 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
     };
   }
 
-  constructor() {
-    super();
-  }
-
   /**
    * @suppress {checkTypes} isOneOf_ allows arbitrary number of arguments.
    */
   getDialogTitle_() {
-    if (this.isOneOf_(this.uiState_, 'ui-state-rollback-error')) {
-      return this.i18n('rollbackErrorTitle');
-    } else if (this.isOneOf_(this.uiState_, 'ui-state-auto-enrollment-error') &&
+    if (this.isOneOf_(this.uiState_, 'ui-state-auto-enrollment-error') &&
         this.isOneOf_(this.errorState_, 'offline', 'portal', 'proxy')) {
       return this.i18n('autoEnrollmentErrorMessageTitle');
     } else if (this.isOneOf_(this.errorState_, 'proxy', 'auth-ext-timeout')) {
@@ -277,10 +269,6 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
 
   continueButtonClicked() {
     this.userActed('continue-app-launch');
-  }
-
-  okButtonClicked() {
-    this.userActed('cancel-reset');
   }
 
   onNetworkConnected_() {

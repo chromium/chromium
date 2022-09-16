@@ -98,12 +98,14 @@ class OobeReset extends ResetScreenElementBase {
       /* The current state of the screen as set from the C++ side. */
       screenState_: {
         type: Number,
+        value: RESET_SCREEN_STATE.RESTART_REQUIRED,
         observer: 'onScreenStateChanged_',
       },
 
       /** Whether rollback is available */
       isRollbackAvailable_: {
         type: Boolean,
+        value: false,
         observer: 'updatePowerwashModeBasedOnRollbackOptions_',
       },
 
@@ -112,6 +114,7 @@ class OobeReset extends ResetScreenElementBase {
        */
       isRollbackRequested_: {
         type: Boolean,
+        value: false,
         observer: 'updatePowerwashModeBasedOnRollbackOptions_',
       },
 
@@ -176,35 +179,32 @@ class OobeReset extends ResetScreenElementBase {
       // The chosen powerwash mode
       powerwashMode_: {
         type: Number,
+        value: POWERWASH_MODE.POWERWASH_ONLY,
       },
 
       // Simple variables that reflect the current screen state
       // Only modified by the observer of 'screenState_'
       inRestartRequiredState_: {
         type: Boolean,
+        value: true,
       },
 
       inRevertState_: {
         type: Boolean,
+        value: false,
       },
 
       inPowerwashState_: {
         type: Boolean,
+        value: false,
+      },
+
+      inErrorState_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
-
-  constructor() {
-    super();
-    this.screenState_ = RESET_SCREEN_STATE.RESTART_REQUIRED;
-    this.isRollbackAvailable_ = false;
-    this.isRollbackRequested_ = false;
-    this.powerwashMode_ = POWERWASH_MODE.POWERWASH_ONLY;
-    this.inRestartRequiredState_ = true;
-    this.inRevertState_ = false;
-    this.inPowerwashState_ = false;
-  }
-
 
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
@@ -327,6 +327,7 @@ class OobeReset extends ResetScreenElementBase {
         (this.screenState_ == RESET_SCREEN_STATE.RESTART_REQUIRED);
     this.inPowerwashState_ =
         (this.screenState_ == RESET_SCREEN_STATE.POWERWASH_PROPOSAL);
+    this.inErrorState_ = (this.screenState_ == RESET_SCREEN_STATE.ERROR);
   }
 
   /**

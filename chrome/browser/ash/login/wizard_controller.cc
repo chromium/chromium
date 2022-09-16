@@ -605,7 +605,6 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<ResetScreen>(
       oobe_ui->GetView<ResetScreenHandler>()->AsWeakPtr(),
-      oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnResetScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<DemoSetupScreen>(

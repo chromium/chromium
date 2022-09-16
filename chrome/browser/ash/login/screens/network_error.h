@@ -18,7 +18,6 @@ class NetworkError {
     UI_STATE_SUPERVISED,
     UI_STATE_KIOSK_MODE,
     UI_STATE_AUTO_ENROLLMENT_ERROR,
-    UI_STATE_ROLLBACK_ERROR,
   };
 
   enum ErrorState {

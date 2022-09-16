@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -24,7 +23,6 @@
 class PrefRegistrySimple;
 
 namespace ash {
-class ErrorScreen;
 class ScopedGuestButtonBlocker;
 
 // Representation independent class that controls screen showing reset to users.
@@ -33,7 +31,6 @@ class ScopedGuestButtonBlocker;
 class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
  public:
   ResetScreen(base::WeakPtr<ResetView> view,
-              ErrorScreen* error_screen,
               const base::RepeatingClosure& exit_callback);
 
   ResetScreen(const ResetScreen&) = delete;
@@ -86,7 +83,6 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   void ShowHelpArticle(HelpAppLauncher::HelpTopic topic);
 
   base::WeakPtr<ResetView> view_;
-  ErrorScreen* error_screen_;
   base::RepeatingClosure exit_callback_;
 
   // Help application used for help dialogs.

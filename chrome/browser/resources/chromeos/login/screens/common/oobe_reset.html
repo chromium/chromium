@@ -29,7 +29,7 @@ found in the LICENSE file.
 <link rel="stylesheet" href="chrome://resources/css/throbber.css">
 <oobe-adaptive-dialog id="resetDialog" role="dialog"
     aria-label$="[[i18nDynamic(locale, 'resetScreenAccessibleTitle')]]"
-    footer-shrinkable>
+    footer-shrinkable hidden="[[inErrorState_]]">
   <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
   <h1 slot="title">
     [[i18nDynamic(locale, 'resetWarningTitle')]]
@@ -124,3 +124,23 @@ found in the LICENSE file.
         text-key="confirmResetButton"></oobe-text-button>
   </div>
 </oobe-modal-dialog>
+
+<!-- Rollback attempt error -->
+<oobe-adaptive-dialog id="rollbackError" role="dialog"
+    hidden="[[!inErrorState_]]">
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'resetRollbackErrorTitle')]]
+  </h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'resetRollbackErrorMessageBody')]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/error.svg" class="oobe-illustration">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="okButton" on-click="onCancelTap_"
+        text-key="okButton" class="focus-on-show">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

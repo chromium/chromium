@@ -7,12 +7,9 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "ash/public/cpp/test/shell_test_api.h"
 #include "base/command_line.h"
-#include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -22,26 +19,17 @@
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
-#include "content/public/test/test_utils.h"
 
 namespace ash {
 namespace {
@@ -484,12 +472,14 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
   update_engine::StatusResult error_update_status;
   error_update_status.set_current_operation(update_engine::Operation::ERROR);
   update_engine_client()->NotifyObserversThatStatusChanged(error_update_status);
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {kResetScreen, "rollbackError"})
+      ->Wait();
 
   // Clicking 'ok' on the error screen will either show the previous OOBE screen
   // or show the login screen. Here login screen should appear because there's
   // no previous screen.
-  test::OobeJS().TapOnPath({"error-message", "okButton"});
+  test::OobeJS().TapOnPath({kResetScreen, "okButton"});
 
   OobeWindowVisibilityWaiter(false).Wait();
 }

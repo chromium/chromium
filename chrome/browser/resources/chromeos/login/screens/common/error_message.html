@@ -93,9 +93,6 @@
     <span hidden="[[!isOneOf_(uiState_,'ui-state-auto-enrollment-error')]]">
       [[i18nDynamic(locale, 'autoEnrollmentOfflineMessageBody')]]
     </span>
-    <div hidden="[[!isOneOf_(uiState_, 'ui-state-rollback-error')]]">
-      [[i18nDynamic(locale, 'rollbackErrorMessageBody')]]
-    </div>
     <div id="guestSessionText" hidden="[[!isOneOf_(uiState_,
         'ui-state-update',
         'ui-state-signin',
@@ -156,11 +153,6 @@
         on-click="continueButtonClicked"
         text-key="continueButton"
         hidden="[[!isOneOf_(errorState_, 'kiosk-online')]]">
-    </oobe-text-button>
-    <oobe-text-button id="okButton"
-        on-click="okButtonClicked"
-        text-key="okButton"
-        hidden="[[!isOneOf_(uiState_, 'ui-state-rollback-error')]]">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

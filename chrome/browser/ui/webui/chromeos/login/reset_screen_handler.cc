@@ -7,16 +7,13 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/reset_screen.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
 
@@ -57,6 +54,7 @@ void ResetScreenHandler::DeclareLocalizedValues(
   // Variants for screen title.
   builder->AddF("resetWarningTitle", IDS_RESET_SCREEN_WARNING_MSG,
                 ui::GetChromeOSDeviceName());
+  builder->Add("resetRollbackErrorTitle", IDS_RESET_SCREEN_REVERT_ERROR);
 
   // Variants for screen message.
   builder->AddF("resetPowerwashWarningDetails",
@@ -65,6 +63,9 @@ void ResetScreenHandler::DeclareLocalizedValues(
   builder->AddF("resetPowerwashRollbackWarningDetails",
                 IDS_RESET_SCREEN_WARNING_POWERWASH_AND_ROLLBACK_MSG,
                 ui::GetChromeOSDeviceName());
+  builder->AddF("resetRollbackErrorMessageBody",
+                IDS_RESET_SCREEN_REVERT_ERROR_EXPLANATION,
+                IDS_SHORT_PRODUCT_NAME);
 
   builder->Add("confirmPowerwashTitle", IDS_RESET_SCREEN_POPUP_POWERWASH_TITLE);
   builder->Add("confirmRollbackTitle", IDS_RESET_SCREEN_POPUP_ROLLBACK_TITLE);
@@ -72,6 +73,7 @@ void ResetScreenHandler::DeclareLocalizedValues(
                IDS_RESET_SCREEN_POPUP_POWERWASH_TEXT);
   builder->Add("confirmRollbackMessage", IDS_RESET_SCREEN_POPUP_ROLLBACK_TEXT);
   builder->Add("confirmResetButton", IDS_RESET_SCREEN_POPUP_CONFIRM_BUTTON);
+  builder->Add("okButton", IDS_APP_OK);
 }
 
 void ResetScreenHandler::SetIsRollbackAvailable(bool value) {

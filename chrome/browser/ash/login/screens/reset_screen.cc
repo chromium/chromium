@@ -16,8 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/login/screens/error_screen.h"
-#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
@@ -34,7 +32,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -158,11 +155,9 @@ void ResetScreen::CheckIfPowerwashAllowed(
 }
 
 ResetScreen::ResetScreen(base::WeakPtr<ResetView> view,
-                         ErrorScreen* error_screen,
                          const base::RepeatingClosure& exit_callback)
     : BaseScreen(ResetView::kScreenId, OobeScreenPriority::SCREEN_RESET),
       view_(std::move(view)),
-      error_screen_(error_screen),
       exit_callback_(exit_callback),
       tpm_firmware_update_checker_(
           g_tpm_firmware_update_checker
@@ -449,11 +444,6 @@ void ResetScreen::UpdateStatusChanged(
       status.current_operation() ==
           update_engine::Operation::REPORTING_ERROR_EVENT) {
     view_->SetScreenState(ResetView::State::kError);
-    // Show error screen.
-    error_screen_->SetUIState(NetworkError::UI_STATE_ROLLBACK_ERROR);
-    error_screen_->SetHideCallback(
-        base::BindOnce(&ResetScreen::OnCancel, weak_ptr_factory_.GetWeakPtr()));
-    error_screen_->Show(nullptr);
   } else if (status.current_operation() ==
              update_engine::Operation::UPDATED_NEED_REBOOT) {
     chromeos::PowerManagerClient::Get()->RequestRestart(
