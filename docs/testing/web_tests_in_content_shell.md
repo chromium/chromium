@@ -84,7 +84,7 @@ You need to start a web server first. By default it serves generated files from
 out/Release:
 
 ```bash
-vpython third_party/blink/tools/run_blink_httpd.py -t <build directory>
+vpython3 third_party/blink/tools/run_blink_httpd.py -t <build directory>
 ```
 Then run the test with a localhost URL:
 

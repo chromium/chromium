@@ -211,10 +211,10 @@ in a non-standard output directory. Thus, `out/Release` or `out/Debug` are
 suggested when testing on Android.
 
 **Note:** The tests require some third-party Python packages. Obtaining these
-packages is handled automatically by `vpython`, and the script's shebang should
-use vpython if running the script directly. If you're used to invoking `python`
-to run a script, simply use `vpython` instead, e.g.
-`vpython run_gpu_integration_test.py ...`.
+packages is handled automatically by `vpython3`, and the script's shebang should
+use vpython if running the script directly. If you're used to invoking `python3`
+to run a script, simply use `vpython3` instead, e.g.
+`vpython3 run_gpu_integration_test.py ...`.
 
 You can run a subset of tests with this harness:
 
@@ -463,7 +463,7 @@ the Telemetry-based GPU tests' dependencies, which you can then move
 to another machine for testing:
 
 1. Build Chrome (into `out/Release` in this example).
-1. `vpython tools/mb/mb.py zip out/Release/ telemetry_gpu_integration_test out/telemetry_gpu_integration_test.zip`
+1. `vpython3 tools/mb/mb.py zip out/Release/ telemetry_gpu_integration_test out/telemetry_gpu_integration_test.zip`
 
 Then copy telemetry_gpu_integration_test.zip to another machine. Unzip
 it, and cd into the resulting directory. Invoke
