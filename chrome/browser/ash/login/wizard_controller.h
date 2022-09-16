@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "chrome/browser/ash/login/screens/cryptohome_recovery_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
@@ -234,6 +235,9 @@ class WizardController : public OobeUI::Observer {
   // Show Family Link notice screen.
   void ShowFamilyLinkNoticeScreen();
 
+  // Show Cryptohome recovery screen.
+  void ShowCryptohomeRecoveryScreen(const AccountId& account_id);
+
   // Set pref value for first run.
   void PrepareFirstRunPrefs();
 
@@ -378,6 +382,7 @@ class WizardController : public OobeUI::Observer {
   void OnSmartPrivacyProtectionScreenExit(
       SmartPrivacyProtectionScreen::Result result);
   void OnThemeSelectionScreenExit(ThemeSelectionScreen::Result result);
+  void OnCryptohomeRecoveryScreenExit();
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

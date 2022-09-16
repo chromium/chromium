@@ -1550,6 +1550,10 @@ cr.define('cr.ui.login.debug', function() {
         },
       ],
     },
+    {
+      id: 'cryptohome-recovery',
+      kind: ScreenKind.NORMAL,
+    },
   ];
 
   class DebugButton {

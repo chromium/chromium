@@ -40,6 +40,7 @@ class MockSigninUI : public SigninUI {
               ShowPasswordChangedDialog,
               (const AccountId&, bool),
               (override));
+  MOCK_METHOD(void, StartCryptohomeRecovery, (const AccountId&), (override));
   MOCK_METHOD(void,
               ShowSigninError,
               (SigninError, const std::string&),

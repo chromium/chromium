@@ -2716,6 +2716,8 @@ static_library("ui") {
       "webui/chromeos/login/cookie_waiter.h",
       "webui/chromeos/login/core_oobe_handler.cc",
       "webui/chromeos/login/core_oobe_handler.h",
+      "webui/chromeos/login/cryptohome_recovery_screen_handler.cc",
+      "webui/chromeos/login/cryptohome_recovery_screen_handler.h",
       "webui/chromeos/login/debug/debug_overlay_handler.cc",
       "webui/chromeos/login/debug/debug_overlay_handler.h",
       "webui/chromeos/login/demo_preferences_screen_handler.cc",

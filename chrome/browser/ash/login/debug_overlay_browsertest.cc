@@ -21,7 +21,7 @@ constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
 constexpr int kOobeScreensCount = 45;
-constexpr int kLoginScreensCount = 42;
+constexpr int kLoginScreensCount = 43;
 constexpr int kOsInstallScreensCount = 2;
 
 std::string ElementsInPanel(const std::string& panel) {

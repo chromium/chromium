@@ -208,6 +208,13 @@ void LoginDisplayHostMojo::ShowPasswordChangedDialog(
   ShowDialog();
 }
 
+void LoginDisplayHostMojo::StartCryptohomeRecovery(
+    const AccountId& account_id) {
+  DCHECK(GetOobeUI());
+  wizard_controller_->ShowCryptohomeRecoveryScreen(account_id);
+  ShowDialog();
+}
+
 void LoginDisplayHostMojo::StartBrowserDataMigration() {
   DCHECK(GetOobeUI());
   wizard_controller_->AdvanceToScreen(LacrosDataMigrationScreenView::kScreenId);

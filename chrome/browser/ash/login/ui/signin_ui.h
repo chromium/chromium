@@ -74,6 +74,9 @@ class SigninUI {
   virtual void ShowPasswordChangedDialog(const AccountId& account_id,
                                          bool password_incorrect) = 0;
 
+  // Start Cryptohome recovery flow and show the screen.
+  virtual void StartCryptohomeRecovery(const AccountId& account_id) = 0;
+
   virtual void ShowSigninError(SigninError error,
                                const std::string& details) = 0;
 

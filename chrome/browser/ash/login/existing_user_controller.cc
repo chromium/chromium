@@ -1095,6 +1095,7 @@ void ExistingUserController::OnPasswordChangeDetected(
   for (auto& auth_status_consumer : auth_status_consumers_)
     auth_status_consumer.OnPasswordChangeDetected(user_context);
 
+  // TODO(b/239420386): Start Cryptohome recovery when feature is enabled.
   ShowPasswordChangedDialog(user_context);
 }
 

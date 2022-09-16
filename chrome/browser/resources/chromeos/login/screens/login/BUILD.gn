@@ -21,6 +21,7 @@ js_type_check("closure_compile") {
   deps = [
     ":active_directory_password_change",
     ":checking_downloading_update.m",
+    ":cryptohome_recovery",
     ":encryption_migration",
     ":gaia_password_changed",
     ":lacros_data_backward_migration",
@@ -46,6 +47,18 @@ js_library("active_directory_password_change") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("cryptohome_recovery") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/cryptohome_recovery.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
   extra_deps = [ ":web_components" ]
 }
 
@@ -179,6 +192,7 @@ polymer_modulizer("checking_downloading_update") {
 html_to_js("web_components") {
   js_files = [
     "active_directory_password_change.js",
+    "cryptohome_recovery.js",
     "encryption_migration.js",
     "gaia_password_changed.js",
     "lacros_data_backward_migration.js",

@@ -303,6 +303,7 @@ preprocess_if_expr("preprocess_gen_js_files") {
     "screens/common/tpm_error.js",
     "screens/common/wrong_hwid.js",
     "screens/login/active_directory_password_change.js",
+    "screens/login/cryptohome_recovery.js",
     "screens/login/encryption_migration.js",
     "screens/login/gaia_password_changed.js",
     "screens/login/lacros_data_backward_migration.js",

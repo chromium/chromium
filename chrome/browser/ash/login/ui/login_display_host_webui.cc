@@ -1027,6 +1027,11 @@ void LoginDisplayHostWebUI::ShowPasswordChangedDialog(
   NOTREACHED();
 }
 
+void LoginDisplayHostWebUI::StartCryptohomeRecovery(
+    const AccountId& account_id) {
+  NOTREACHED();
+}
+
 void LoginDisplayHostWebUI::StartBrowserDataMigration() {
   NOTREACHED();
 }

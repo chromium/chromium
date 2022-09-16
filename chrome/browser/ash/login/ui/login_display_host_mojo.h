@@ -97,6 +97,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
   void ShowPasswordChangedDialog(const AccountId& account_id,
                                  bool show_password_error) override;
+  void StartCryptohomeRecovery(const AccountId& account_id) override;
   void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
