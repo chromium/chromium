@@ -59,7 +59,6 @@
 #import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -278,7 +277,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
                                      timeLabel:(NSString*)timeLabel {
-  DCHECK(IsStartSurfaceEnabled());
   self.returnToRecentTabSectionInfo = ReturnToRecentTabSectionInformation();
   if (!self.returnToRecentTabItem) {
     self.returnToRecentTabItem =
@@ -310,7 +308,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)hideRecentTabTile {
-  DCHECK(IsStartSurfaceEnabled());
   if (self.showMostRecentTabStartSurfaceTile) {
     self.showMostRecentTabStartSurfaceTile = NO;
     self.returnToRecentTabItem = nil;
@@ -459,7 +456,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 #pragma mark - StartSurfaceRecentTabObserving
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
-  DCHECK(IsStartSurfaceEnabled());
   [self hideRecentTabTile];
 }
 
