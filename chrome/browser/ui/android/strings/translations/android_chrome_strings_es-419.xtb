@@ -454,6 +454,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="3435465986463792564">¿Tienes muchas ventanas? Puedes administrarlas desde aquí.</translation>
 <translation id="3443221991560634068">Volver a cargar la página actual</translation>
 <translation id="3444179773590444986">¿Deseas compartir comentarios sobre el Tema oscuro para los sitios?</translation>
+<translation id="3452832259067974318">Para proteger tu privacidad, Chrome no completará de forma automática tu contraseña en este campo.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Se programó 1 descarga.}other{Se programaron # descargas.}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puedes elegir tu motor de búsqueda</translation>
@@ -679,6 +680,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Las contraseñas se guardan en el Administrador de contraseñas en este dispositivo</translation>
 <translation id="4766678251456904326">Agregar una cuenta al dispositivo</translation>
+<translation id="4787736314074622408">¿Quieres borrar <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Te ayuda a completar tareas en la Web, como confirmaciones de compras.</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.

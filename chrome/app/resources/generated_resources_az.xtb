@@ -4919,6 +4919,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5658415415603568799">Əlavə təhlükəsizlik üçün Ağıllı Kilid 20 saatdan sonra parol tələb edəcək.</translation>
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5662513737565158057">Linux tətbiqlərinin necə işləyəcəyini dəyişin.</translation>
+<translation id="5663459693447872156">Avtomatik olaraq yarımenə keçirin</translation>
 <translation id="5667293444945855280">Zərərli proqram</translation>
 <translation id="5667546120811588575">Google Play quraşdırılır...</translation>
 <translation id="5668351004957198136">Alınmadı</translation>
@@ -7245,6 +7246,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7903429136755645827">Oyun nəzarətlərinizi fərdiləşdirmək üçün klikləyin</translation>
 <translation id="7903742244674067440">Bu sertifikat təşkilatlarını müəyyən edən sertifikatlarınız var</translation>
 <translation id="7903925330883316394">Utilit: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Linux portlarını şəbəkənizdə digər cihazlar üçün əlçatan edin.</translation>
 <translation id="7906440585529721295">Lokal data silinəcək</translation>
 <translation id="7907837847548254634">Fokuslanmış obyektin üzərində sürətli vurğulama göstərin</translation>
@@ -7665,6 +7667,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8284279544186306258">bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="8284326494547611709">Başlıqlar</translation>
 <translation id="8286036467436129157">Giriş</translation>
+<translation id="8286227656784970313">Sistem lüğətini istifadə edin</translation>
 <translation id="828642162569365647">Bu parol və ya PIN bu <ph name="DEVICE_TYPE" /> cihazındakı məlumatlarınızı və telefonunuzdan giriş etdiyiniz hər hansı məzmunu qoruyur. Hər dəfə <ph name="DEVICE_TYPE" /> yuxudan oyananda kilidi açmalısınız.</translation>
 <translation id="8287902281644548111">API zəngi/Link tərəfindən Axtarış</translation>
 <translation id="8288032458496410887"><ph name="APP" /> tətbiqini sistemdən silin...</translation>
@@ -7775,6 +7778,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8393511274964623038">Plaqini dayandırın</translation>
 <translation id="839363317075970734">Bluetooth cihazının detalları</translation>
 <translation id="8393700583063109961">Mesaj göndərin</translation>
+<translation id="8394212467245680403">Alfanumerik</translation>
 <translation id="8397825320644530257">Qoşulmuş telefonu ayırın</translation>
 <translation id="8398877366907290961">Hər halda davam edin</translation>
 <translation id="8399282673057829204">Parola baxın</translation>

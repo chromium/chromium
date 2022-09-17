@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">Διακοπή</translation>
 <translation id="1275718070701477396">Επιλέχθηκε</translation>
 <translation id="1281818060020671000">Διαχείριση δεδομένων</translation>
+<translation id="1282311502488501110">Να μην γίνει σύνδεση</translation>
 <translation id="1283524564873030414">Τελευταίες 24 ώρες</translation>
 <translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
 <translation id="1291506870746876680">Οι άδειες για τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> θα απενεργοποιηθούν μόλις αποχωρήσετε από τον ιστότοπο.</translation>
@@ -54,6 +55,7 @@
 <translation id="1322735045095424339">Ο οργανισμός σας απαιτεί τη χρήση της κατάστασης ανώνυμης περιήγησης</translation>
 <translation id="1323735185997015385">Διαγραφή</translation>
 <translation id="132683371494960526">Πατήστε δύο φορές για να αλλάξετε τον γονικό φάκελο.</translation>
+<translation id="1335348992705722518">Διαχείριση ρυθμίσεων…</translation>
 <translation id="1340643665687018190">Κλείσιμο μενού</translation>
 <translation id="1358214951266274152">Μετάβαση στον σύνδεσμο που αντιγράψατε</translation>
 <translation id="1360432990279830238">Αποσύνδεση και απενεργοπ. συγχρονισμού;</translation>
@@ -177,6 +179,7 @@
 <translation id="2469960372084740698">Να απενεργοποιηθεί η Ασφαλής περιήγηση;</translation>
 <translation id="2473876017985765807">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Δεν έχει επιλεγεί</translation>
+<translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2500374554657206846">Επιλογές για την αποθήκευση κωδικού πρόσβασης</translation>
 <translation id="2523363575747517183">Αυτός ο ιστότοπος προσπαθεί επανειλημμένως να ανοίξει κάποια άλλη εφαρμογή.</translation>
 <translation id="2529021024822217800">Άνοιγμα όλων</translation>
@@ -381,6 +384,7 @@
 <translation id="4187450337729239226">Επικόλληση και αναζήτηση</translation>
 <translation id="4223967053752765281">Η σύνδεση απενεργοποιήθηκε από τον οργανισμό σας. Μπορείτε ακόμη να δείτε τους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και άλλες ρυθμίσεις σε αυτήν τη συσκευή. Εάν πραγματοποιήσετε αλλαγές, δεν θα συγχρονιστούν στον λογαριασμό σας.</translation>
 <translation id="4233831822770018312">Επεξεργασία αδειών</translation>
+<translation id="4236584471598725073">Παρακολούθηση τιμής</translation>
 <translation id="4237377247299956313">Πατήστε <ph name="BEGIN_BOLD" />Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Εισαγωγή φράσης πρόσβασης</translation>
 <translation id="4249955472157341256">Ταξινόμηση με βάση την πιο πρόσφατη</translation>
@@ -741,6 +745,7 @@
 <translation id="6930799952781667037">Πατήστε για αλλαγή σε αυτήν τη γλώσσα.</translation>
 <translation id="6944369514868857500">Επιλογή άλλου λογαριασμού</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Διαχείριση Λογαριασμού Google</translation>

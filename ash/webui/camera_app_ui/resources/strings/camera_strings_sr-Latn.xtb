@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4×4</translation>
 <translation id="1664224225747386870">Ništa nije snimljeno</translation>
+<translation id="169335673490251151">Skeniraj dodatne stranice</translation>
 <translation id="1838104802459806957">Naginjanje nagore</translation>
 <translation id="1851169887664797861">Dostupne su dodatne kontrole za kameru</translation>
 <translation id="1851616744363735765">PAUZIRANO</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
 <translation id="4281620174117014503">Srednja rezolucija</translation>
 <translation id="4329152592498422850">Pređi na režim za snimanje slika u obliku kvadrata</translation>
+<translation id="4340659173795395806">Sada možete da napravite PDF sa više stranica</translation>
 <translation id="4383571725254449280">Evidencije o učinku štampanja</translation>
 <translation id="4445542136948522167">Zaustavi snimanje slike</translation>
 <translation id="4497569853498380347">Megapikseli: <ph name="MEGAPIXEL" /> (<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />)</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5320594929574852403">Kreće se ulevo</translation>
 <translation id="5444515100983837161">Postavite sve ivice dokumenta u okvir. Skeniranje je najuspešnije ako su dokument i pozadina različite boje.</translation>
+<translation id="5662366948659129155">Skenira se <ph name="COUNT" />. stranica</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5746169159649715125">Sačuvaj kao PDF</translation>
 <translation id="5753488212459587150">Omogući režim za stručnjake</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">Režim za stručnjake</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5869546221129391014">Mreža</translation>
+<translation id="5903928279335207406">Izbriši stranicu</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976160379964388480">Drugi</translation>
@@ -158,6 +162,7 @@ Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzo
 <translation id="8167081290930651932">Sačuvaj kao sliku</translation>
 <translation id="8239780215768881278">Napravite video-snimak</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="839162370397157884">Izaberi stranicu</translation>
 <translation id="8425673304802773841">Naginjanje nadole</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8629662593426079630">360p</translation>

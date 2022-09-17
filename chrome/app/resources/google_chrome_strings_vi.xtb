@@ -59,6 +59,7 @@
 <translation id="2094648590148273905">Điều khoản của ChromeOS Flex</translation>
 <translation id="2094919256425865063">Bạn vẫn muốn thoát khỏi Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Khi bật, Chrome sẽ lấy lại bộ nhớ từ những thẻ mà bạn hiện không sử dụng. Việc này sẽ giải phóng tài nguyên của máy tính để thực hiện các tác vụ khác và giúp Chrome luôn chạy nhanh. Các thẻ không hoạt động sẽ ở trạng thái trống và tự động tải lại khi bạn nhấp vào thẻ. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> hoặc <ph name="BEGIN_LINK_2" />gửi ý kiến phản hồi<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Thao tác này sẽ xóa <ph name="ITEMS_COUNT" /> mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="2123055963409958220">Giúp cải thiện Chrome bằng cách báo cáo <ph name="BEGIN_LINK" />cài đặt hiện tại<ph name="END_LINK" /></translation>
@@ -275,6 +276,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6735387454586646204">Hệ thống ChromeOS Flex</translation>
 <translation id="6739177684496155661">Tiếp tục đăng nhập vào hồ sơ mới trên Chrome?</translation>
 <translation id="6750954913813541382">Để sửa lỗi chính tả, Chrome sẽ gửi văn bản mà bạn nhập vào trình duyệt này cho Google</translation>
+<translation id="6756581345161130259">Khi cần, Chrome sẽ lấy lại bộ nhớ từ những thẻ mà bạn hiện không sử dụng. Bạn có thể thay đổi chế độ cài đặt này bất kỳ lúc nào trong phần cài đặt.</translation>
 <translation id="677276454032249905">Bạn vẫn muốn thoát khỏi Chrome?</translation>
 <translation id="6785872064505734160">Trợ lý Google trong Chrome có thể giúp bạn làm các việc trên trang web</translation>
 <translation id="683440813066116847">Quy tắc kết nối để Google Chrome Canary cho phép lưu lượng truy cập mDNS.</translation>

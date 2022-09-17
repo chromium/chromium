@@ -694,6 +694,7 @@
 <translation id="1640283014264083726">PKCS #1 MD4 RSA အန်ခရစ်ပြုလုပ်ခြင်းဖြင့်</translation>
 <translation id="1641113438599504367">လုံခြုံစွာ ရှာကြည့်မှု</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{မှန်ကန်စွာ ဖော်မက်မလုပ်ထားသည့် အခြားစကားဝှက် ၁ ခုကို ထည့်သွင်းမထားပါ}other{မှန်ကန်စွာ ဖော်မက်မလုပ်ထားသည့် အခြားစကားဝှက် {NUM_PASSWORDS} ခုကို ထည့်သွင်းမထားပါ}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> နှင့် အခြားဘလူးတုသ်သုံးစက် <ph name="NUMBER_OF_DEVICES" /> ခုကို ချိတ်ဆက်ထားသည်</translation>
 <translation id="1642494467033190216">အခြား ချို့ယွင်းချက် ရှာဖွေပြုပြင်ရေးအင်္ဂါရပ်များကို ဖွင့်ရန် rooft အကာအကွယ်အား ဖယ်ရှားရန်နှင့် ပြန်လည်စတင်မှုလုပ်ရန် လိုအပ်သည်။</translation>
 <translation id="1643072738649235303">SHA-1 ဖြင့် X9.62 ECDSA လက်မှတ်</translation>
@@ -1842,6 +1843,7 @@
 <translation id="2673135533890720193">သင်၏ ဘရောင်ဇာ မှတ်တမ်းကို ဖတ်ကြည့်ရန်</translation>
 <translation id="2674764818721168631">ပိတ်ရန်</translation>
 <translation id="2678063897982469759">ပြန်ဖွင့်ထားရန်</translation>
+<translation id="2678100101831051676">ကာစ်လုပ်၍မရပါ။</translation>
 <translation id="268053382412112343">မှတ်&amp;တမ်း</translation>
 <translation id="2681124317993121768">ဧည့်သည်ပရိုဖိုင်များကို ပံ့ပိုးမထားပါ</translation>
 <translation id="2682498795777673382">သင့်မိဘထံမှ အပ်ဒိတ်</translation>
@@ -3875,6 +3877,7 @@
 <translation id="4617019240346358451">“<ph name="EXTENSION_NAME" />” သုံးရန် စာမျက်နှာကို ပြန်လည်စတင်ပါ</translation>
 <translation id="4617270414136722281">နောက်ဆက်တွဲ ရွေးချယ်စရာများ</translation>
 <translation id="4617880081511131945">ချိတ်ဆက်၍မရပါ</translation>
+<translation id="4618195822946934889">URL တွင် ASCII အက္ခရာများသာ ပါဝင်နိုင်သည်</translation>
 <translation id="4619564267100705184">သင်ဖြစ်ကြောင်း အတည်ပြုရန်</translation>
 <translation id="4619615317237390068">အခြားစက်ပစ္စည်းများမှ တဘ်များ</translation>
 <translation id="4620809267248568679">ဤဆက်တင်အား အိတ်စတန်းရှင်းတစ်ခုမှ တွန်းအားပေးခဲ့ခြင်း ဖြစ်သည်။</translation>
@@ -4936,6 +4939,7 @@
 <translation id="5658415415603568799">လုံခြုံ​ရေး ပိုမိုကောင်းမွန်စေရန်အတွက် နာရီ ၂၀ ကြာပြီးသည့်နောက် Smart Lock သည် သင့်ကို စကားဝှက် ထပ်မံထည့်သွင်းခိုင်းမည်ဖြစ်သည်။</translation>
 <translation id="5659593005791499971">အီးမေးလ်</translation>
 <translation id="5662513737565158057">Linux အက်ပ်များ အလုပ်လုပ်ပုံကို ပြောင်းရန်။</translation>
+<translation id="5663459693447872156">အလိုအလျောက် အကျယ်တစ်ဝက်သို့ ပြောင်းရန်</translation>
 <translation id="5667293444945855280">အန္တရာယ်ဝဲ</translation>
 <translation id="5667546120811588575">Google Play ကို စနစ်ထည့်သွင်းနေသည်...</translation>
 <translation id="5668351004957198136">မအောင်မြင်ပါ</translation>
@@ -5074,6 +5078,7 @@
 <translation id="5800351251499368110">ဘေးအကန့်တွင် ရှာဖွေမှုပိတ်ခြင်း။ ဘေးအကန့်တွင် ရှာဖွေမှု ဖွင့်ထားသည်။</translation>
 <translation id="5801568494490449797">ဦးစားပေးမှုများ</translation>
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
+<translation id="5805268472388605531">ဖိရွတ်သံစာလုံးနှင့် အထူးစာလုံးများကို ကြည့်ရန် လက်ကွက်ခလုတ်များကို ဖိနှိပ်ထားပါ</translation>
 <translation id="5805697420284793859">ဝင်းဒိုး မန်နေဂျာ</translation>
 <translation id="5806447147478173900">ပြထားသည့် ဝဘ်ဆိုက်များက အသုံးပြုထားသည့် စုစုပေါင်းသိုလှောင်ခန်း- <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">၀° (မူရင်း)</translation>
@@ -5714,6 +5719,7 @@
 <translation id="642469772702851743">ဤစက်ပစ္စည်း (SN- <ph name="SERIAL_NUMBER" />) ကို ပိုင်ရှင်က လော့ခ်ချထားသည်။</translation>
 <translation id="6425556984042222041">စာ-မှ-စကား မြန်နှုန်း</translation>
 <translation id="642729974267661262">အသံဖွင့်ရန် ခွင့်ပြုမထားပါ</translation>
+<translation id="6427608534767366138">“<ph name="NETWORK_ID" />” အတွက် ပရောက်စီအထောက်အထားစိစစ်ခြင်း လိုအပ်သည်</translation>
 <translation id="6429384232893414837">အပ်ဒိတ်အမှားအယွင်း</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII၊ လက်မှတ် တစ်ခုတည်း</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> က ဒီကွန်ပျူတာ သုံးသူ အားလုံးတို့အတွက် အလိုအလျောက် မွမ်းမံမှုများကို သတ်မှတ်ပေးမည်။</translation>
@@ -7262,6 +7268,7 @@
 <translation id="7903429136755645827">ဂိမ်းထိန်းချုပ်ခလုတ်များကို စိတ်ကြိုက်လုပ်ရန် နှိပ်ပါ</translation>
 <translation id="7903742244674067440">ဤအသိအမှတ်ပြုလက်မှတ် အာဏာပိုင်များ၏ အထောက်အထားအဖြစ် အသိအမှတ်ပြုလက်မှတ်များ သင့်ထံတွင် ရှိပါသည်</translation>
 <translation id="7903925330883316394">ဝန်ဆောင်မှုလုပ်ငန်းများ- <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">ကသကန</translation>
 <translation id="7904526211178107182">သင့်ကွန်ရက်ရှိ အခြားစက်ပစ္စည်းများသည် Linux ပို့တ်များကို အသုံးပြုနိုင်အောင် ပြုလုပ်ပါ။</translation>
 <translation id="7906440585529721295">စက်တွင်းဒေတာကို ဖျက်ပါမည်</translation>
 <translation id="7907837847548254634">ဦးစားပေးသည့်အရာပေါ်တွင် ခဏမြင်သာအောင် ပြရန်</translation>
@@ -7682,6 +7689,7 @@
 <translation id="8284279544186306258">ဆိုက်များ <ph name="WEBSITE_1" />အားလုံး</translation>
 <translation id="8284326494547611709">စာတန်းများ</translation>
 <translation id="8286036467436129157">လက်မှတ်ထိုးဝင်ရန်</translation>
+<translation id="8286227656784970313">စနစ်၏ အဘိဓာန်ကို သုံးရန်</translation>
 <translation id="828642162569365647">ဤစကားဝှက် (သို့) ပင်နံပါတ်က <ph name="DEVICE_TYPE" /> မှ သင့်ဒေတာနှင့် ဖုန်းမှယူသုံးသော အချက်အလက်မှန်သမျှကို ကာကွယ်ပေးသည်။ သင့် <ph name="DEVICE_TYPE" /> နားနေသည်ကို နှိုးသည့်အခါတိုင်း လော့ခ်ဖွင့်ရမည်။</translation>
 <translation id="8287902281644548111">API ခေါ်ဆိုမှု/URL တို့ဖြင့် ရှာရန်</translation>
 <translation id="8288032458496410887"><ph name="APP" /> ကို ဖယ်ရှားပါ...</translation>
@@ -7792,6 +7800,7 @@
 <translation id="8393511274964623038">ပလတ်အင် ရပ်ရန်</translation>
 <translation id="839363317075970734">ဘလူးတုသ်သုံးစက် အသေးစိတ်</translation>
 <translation id="8393700583063109961">စာပို့ရန်</translation>
+<translation id="8394212467245680403">စာလုံးဂဏန်း</translation>
 <translation id="8397825320644530257">ချိတ်ဆက်ထားသောဖုန်းကို ဖြုတ်ရန်</translation>
 <translation id="8398877366907290961">မည်သို့ပင် ဖြစ်စေ ရှေ့ဆက်မည်</translation>
 <translation id="8399282673057829204">စကားဝှက်ကို ကြည့်ရန်</translation>
@@ -7837,6 +7846,7 @@
 <translation id="844063558976952706">ဤဝဘ်ဆိုက်တွင် အမြဲဖွင့်ထားရန်</translation>
 <translation id="8441313165929432954">မိုဘိုင်းသုံးတွဲချိတ်မှု ဖွင့်/ပိတ်ခြင်း</translation>
 <translation id="8443795068008423036">သင့်စက် အပ်ဒိတ်ဖြစ်နေကြောင်း သေချာစစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
+<translation id="8443986842926457191">URL သည် စာလုံးရေ ၂၀၄၈ လုံးထက်များနေသည်</translation>
 <translation id="8446884382197647889">ပိုမို လေ့လာရန်</translation>
 <translation id="8447409163267621480">Ctrl သို့မဟုတ် Alt ကို နှိပ်ပါ</translation>
 <translation id="844850004779619592">ကွန်မန်းများ မရှိပါ</translation>
@@ -7902,6 +7912,7 @@
 <translation id="851263357009351303">ပုံများပြရန် <ph name="HOST" /> ကိုအမြဲတမ်း ခွင့်ပြုမည်</translation>
 <translation id="8513108775083588393">အော်တို-လှည့်</translation>
 <translation id="8514746246728959655">အခြား လုံခြုံရေးကီးနှင့် စမ်းကြည့်ပါ</translation>
+<translation id="8519895319663397036">စကားဝှက်များ ထည့်သွင်း၍မရပါ။ ဖိုင်အရွယ်အစားသည် ၁၅၀ KB အောက် ရှိသင့်သည်။</translation>
 <translation id="8523493869875972733">ပြောင်းလဲမှုများကို သိမ်းရန်</translation>
 <translation id="8523849605371521713">မူဝါဒအရ ထည့်သွင်းထားသည်</translation>
 <translation id="8524783101666974011">သင့် Google အကောင့်တွင် ကတ်များသိမ်းပါ</translation>

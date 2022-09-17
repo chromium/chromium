@@ -4924,6 +4924,7 @@
 <translation id="5658415415603568799">В целях безопасности через 20 часов вам потребуется ввести пароль.</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5662513737565158057">Измените параметры работы приложений для Linux.</translation>
+<translation id="5663459693447872156">Автоматически переключиться на половинную ширину</translation>
 <translation id="5667293444945855280">Вредоносное ПО</translation>
 <translation id="5667546120811588575">Настройка Google Play…</translation>
 <translation id="5668351004957198136">Сбой</translation>
@@ -7258,6 +7259,7 @@
 <translation id="7903429136755645827">Нажмите, чтобы настроить управление игрой</translation>
 <translation id="7903742244674067440">У вас есть сертификаты, которые идентифицируют эти центры сертификации</translation>
 <translation id="7903925330883316394">Утилита: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">Катакана</translation>
 <translation id="7904526211178107182">Предоставьте устройствам в вашей сети доступ к портам Linux.</translation>
 <translation id="7906440585529721295">Локальные данные будут удалены</translation>
 <translation id="7907837847548254634">Быстро выделять выбранный объект</translation>
@@ -7679,6 +7681,7 @@
 <translation id="8284279544186306258">все сайты <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Субтитры</translation>
 <translation id="8286036467436129157">Вход</translation>
+<translation id="8286227656784970313">Использовать системный словарь</translation>
 <translation id="828642162569365647">Этот пароль или PIN-код будет защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, а также информацию, получаемую с телефона. Чтобы выйти из спящего режима, потребуется разблокировать устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>
 <translation id="8288032458496410887">Удалить приложение "<ph name="APP" />"...</translation>
@@ -7789,6 +7792,7 @@
 <translation id="8393511274964623038">Остановить плагин</translation>
 <translation id="839363317075970734">Сведения об устройстве Bluetooth</translation>
 <translation id="8393700583063109961">Отправить сообщение</translation>
+<translation id="8394212467245680403">Буквенно-цифровой ввод</translation>
 <translation id="8397825320644530257">Прервать подключение к телефону</translation>
 <translation id="8398877366907290961">Продолжить все равно</translation>
 <translation id="8399282673057829204">Показать пароль</translation>

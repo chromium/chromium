@@ -81,14 +81,12 @@
 <translation id="6110625574506755980">部分 Chrome 功能將無法再使用。</translation>
 <translation id="6181930887571472871">改為使用 Chrome</translation>
 <translation id="6238746320622508509">讓 Chrome 鎖定你的無痕分頁。</translation>
-<translation id="6387994324662817823">密碼只會儲存至這部裝置上的 Google 密碼管理員。</translation>
 <translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>
 <translation id="6427126399757991875">貴機構正在設定 Chrome...</translation>
 <translation id="6600954340915313787">已複製到 Chrome</translation>
 <translation id="6634107063912726160">登出帳戶後，Chrome 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
-<translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理員建議你立即變更這組密碼。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="701356708427365932">瞭解新版 Chrome 選單</translation>
@@ -107,7 +105,6 @@
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
-<translation id="766361182512894255">你的密碼因為資料侵害事件遭到外洩。Chrome 建議你立即變更密碼。</translation>
 <translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
 <translation id="7754633291442704733">貴機構 <ph name="DOMAIN" /> 將可存取你儲存在這個帳戶中的 Chrome 資料、書籤、歷史記錄、密碼和其他設定。登出帳戶後，系統會清除這部裝置中的資料。不過，你的資料仍會儲存在受管理 Google 帳戶中，並可供貴機構使用。貴機構也可以設定該帳戶專屬的使用者政策，這些政策可以變更 Chrome 的行為。</translation>

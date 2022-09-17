@@ -4937,6 +4937,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5658415415603568799">보안을 강화하기 위해 Smart Lock에서 20시간 후에 비밀번호를 입력하라는 메시지를 표시합니다.</translation>
 <translation id="5659593005791499971">이메일</translation>
 <translation id="5662513737565158057">Linux 앱의 작동방식을 변경합니다.</translation>
+<translation id="5663459693447872156">반각으로 자동 전환</translation>
 <translation id="5667293444945855280">악성 코드</translation>
 <translation id="5667546120811588575">Google Play 설정 중...</translation>
 <translation id="5668351004957198136">실패</translation>
@@ -7267,6 +7268,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7903429136755645827">클릭하여 게임 컨트롤 맞춤설정</translation>
 <translation id="7903742244674067440">다음 인증기관을 식별하는 인증서가 등록되어 있습니다.</translation>
 <translation id="7903925330883316394">유틸리티: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">가타카나</translation>
 <translation id="7904526211178107182">네트워크에 있는 다른 기기에서 Linux 포트를 사용할 수 있도록 설정합니다.</translation>
 <translation id="7906440585529721295">로컬 데이터가 삭제됩니다</translation>
 <translation id="7907837847548254634">포커스된 객체를 빠르게 강조표시</translation>
@@ -7688,6 +7690,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8284279544186306258">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="8284326494547611709">자막</translation>
 <translation id="8286036467436129157">로그인</translation>
+<translation id="8286227656784970313">시스템 사전 사용</translation>
 <translation id="828642162569365647">이 비밀번호 또는 PIN은 이 <ph name="DEVICE_TYPE" />의 데이터와 휴대전화에서 액세스하는 모든 정보를 보호합니다. <ph name="DEVICE_TYPE" /> 기기가 절전 모드에서 해제될 때마다 잠금 해제해야 합니다.</translation>
 <translation id="8287902281644548111">API 호출/URL로 검색</translation>
 <translation id="8288032458496410887"><ph name="APP" /> 제거...</translation>
@@ -7798,6 +7801,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8393511274964623038">플러그인 중지</translation>
 <translation id="839363317075970734">블루투스 기기 세부정보</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
+<translation id="8394212467245680403">영숫자</translation>
 <translation id="8397825320644530257">연결된 휴대전화 연결 해제</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8399282673057829204">비밀번호 보기</translation>

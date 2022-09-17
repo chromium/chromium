@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1275718070701477396">Выбрано</translation>
 <translation id="1281818060020671000">Управление данными</translation>
+<translation id="1282311502488501110">Отмена</translation>
 <translation id="1283524564873030414">Последние 24 часа</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1291506870746876680">Когда вы покинете сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, все разрешения для него будут отключены.</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">Отключить Безопасный просмотр?</translation>
 <translation id="2473876017985765807">Вы уже сохранили пароль для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2476359652512522418">Не выбрано</translation>
+<translation id="2482878487686419369">Уведомления</translation>
 <translation id="2500374554657206846">Параметры сохранения пароля</translation>
 <translation id="2523363575747517183">Этот сайт часто пытается открыть другое приложение.</translation>
 <translation id="2529021024822217800">Открыть все</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">Нажмите, чтобы выбрать этот язык.</translation>
 <translation id="6944369514868857500">Сменить аккаунт</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6965382102122355670">ОК</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6988572888918530647">Перейти в настройки аккаунта Google</translation>

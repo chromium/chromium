@@ -78,7 +78,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1306549533752902673">REKOMMENDERADE APPAR</translation>
 <translation id="1312604459020188865">Signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visa alltid hyllan</translation>
-<translation id="1316811122439383437">Tote: De senaste skärmbilderna och nedladdningarna samt fästa filer</translation>
 <translation id="132346741904777634">Kameran har fästs i det övre vänstra hörnet. Konflikt med systemyta.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> har anslutits</translation>
 <translation id="1341651618736211726">Fler alternativ</translation>
@@ -656,7 +655,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vänster)</translation>
 <translation id="4734965478015604180">Horisontell</translation>
-<translation id="4735498845456076464">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + siffra har ändrats. Nu används <ph name="LAUNCHER_KEY_NAME" />-tangenten + en tangent i översta raden som funktionstangenter.</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4740516757091333363">Vill du radera det sparade skrivbordet?</translation>
 <translation id="4752784485658729358">Högst sex sparade skrivbord tillåts. Du måste ta bort ett skrivbord innan du kan spara ett nytt.</translation>

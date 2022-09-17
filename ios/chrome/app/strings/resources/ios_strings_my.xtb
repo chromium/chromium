@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">ရပ်ရန်</translation>
 <translation id="1275718070701477396">ရွေးထား</translation>
 <translation id="1281818060020671000">ဒေတာ စီမံခြင်း</translation>
+<translation id="1282311502488501110">လက်မှတ်ထိုး မဝင်ပါနှင့်</translation>
 <translation id="1283524564873030414">ပြီးခဲ့သည့် ၂၄ နာရီ</translation>
 <translation id="1285320974508926690">ဒီဆိုက်ကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="1291506870746876680">ဤဝဘ်ဆိုက်မှထွက်သည့်အခါ <ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" /> အတွက် ခွင့်ပြုချက်များပိတ်ရန် ပြင်ဆင်သတ်မှတ်ပါမည်။</translation>
@@ -54,6 +55,7 @@
 <translation id="1322735045095424339">'ရုပ်ဖျက်မုဒ်' အသုံးပြုရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားသည်</translation>
 <translation id="1323735185997015385">ဖျက်ရန်</translation>
 <translation id="132683371494960526">ပင်ရင်းဖိုင်တွဲကိုပြောင်းရန် နှစ်ချက်တို့ပါ။</translation>
+<translation id="1335348992705722518">ဆက်တင်များကို စီမံရန်…</translation>
 <translation id="1340643665687018190">မီနူးကို ပိတ်ရန်</translation>
 <translation id="1358214951266274152">သင်မိတ္တူကူးထားသော လင့်ခ်ကို ဝင်ကြည့်ပါ</translation>
 <translation id="1360432990279830238">ထွက်ပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုသလား။</translation>
@@ -177,6 +179,7 @@
 <translation id="2469960372084740698">ဘေးကင်းစွာ ကြည့်ရှုခြင်းကို ပိတ်မလား။</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> အတွက် စကားဝှက်ကို သိမ်းပြီးဖြစ်သည်</translation>
 <translation id="2476359652512522418">ရွေးမထားပါ</translation>
+<translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2500374554657206846">'စကားဝှက် သိမ်းရန်' ရွေးစရာများ</translation>
 <translation id="2523363575747517183">ဤဝဘ်ဆိုက်က နောက်ထပ် အပလီကေးရှင်းတစ်ခုကို ထပ်တလဲလဲ ဖွင့်နေပါသည်။</translation>
 <translation id="2529021024822217800">အားလုံးကို ဖွင့်ရန်</translation>
@@ -739,6 +742,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6930799952781667037">ဤဘာသာစကားသို့ ပြောင်းရန် တို့ပါ</translation>
 <translation id="6944369514868857500">အခြားအကောင့် ရွေးရန်</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">ဖိုင်တွဲ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">သင့် Google Account ကို စီမံခြင်း</translation>

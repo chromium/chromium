@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Можете също да се придвижвате между различните секции на екрана, като например стартовия панел, лентата и разделите в Chrome. За да се придвижите към следващата секция, прекарайте четири пръста от ляво надясно. Изпробвайте жеста, за да продължите.</translation>
 <translation id="2624431853467395961">Включване на режима за изговаряне на клавишите</translation>
 <translation id="2626530649491650971">с възможност за кликване</translation>
+<translation id="263637551280112393">Натиснете клавиша „търсене“ + Shift + интервал</translation>
 <translation id="2637227747952042642">Математически израз</translation>
 <translation id="2638785836053527382">Изтеглянето на <ph name="FILE_NAME" /> бе възобновено</translation>
 <translation id="2639750663247012216">Модифициращ клавиш за ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Няма следваща секция</translation>
 <translation id="5368000168321181111">Звуковите сигнали са изключени</translation>
 <translation id="5368505757342402527">Изтеглянето на <ph name="FILE_NAME" /> е на етап <ph name="PROGRESS" />%. Оставащо време: около <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">продължително кликване</translation>
 <translation id="5400836586163650660">сиво</translation>
 <translation id="5402367795255837559">Брайлово писмо</translation>
 <translation id="5402791055281059602">Модален сигнал</translation>

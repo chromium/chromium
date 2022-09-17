@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Vous pouvez vous déplacer entre des sections de l'écran, comme le lanceur, l'étagère et vos onglets Chrome. Pour passer à la section suivante, balayez l'écran de gauche à droite avec quatre doigts. Essayez cette opération maintenant pour continuer.</translation>
 <translation id="2624431853467395961">Ouvrir le mode apprentissage</translation>
 <translation id="2626530649491650971">Cliquable</translation>
+<translation id="263637551280112393">Appuyez sur Rechercher+Maj+Espace</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">Reprise du téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">Touche de modification de ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Aucune section suivante</translation>
 <translation id="5368000168321181111">Carillons désactivés</translation>
 <translation id="5368505757342402527">Téléchargement effectué à <ph name="PROGRESS" /> % pour <ph name="FILE_NAME" />. Il reste environ <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">clic long</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Une alerte modale</translation>

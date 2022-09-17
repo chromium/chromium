@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
 <translation id="1281818060020671000">डेटा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="1282311502488501110">साइन इन नगर्नुहोस्</translation>
 <translation id="1283524564873030414">पछिल्ला २४ घन्टा</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="1291506870746876680">तपाईं <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> बाट बाहिरिनुभयो भने यो साइटसम्बन्धी अनुमति रिसेट गरी अफ गरिने छ।</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">Safe Browsing अफ गर्ने हो?</translation>
 <translation id="2473876017985765807">तपाईंले <ph name="WEBSITE" /> को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2476359652512522418">चयन गरिएको छैन</translation>
+<translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2500374554657206846">पासवर्ड सुरक्षित गर्ने विकल्पहरू</translation>
 <translation id="2523363575747517183">यो वेबसाइटले बारम्बार अर्को एप खोल्ने प्रयास गर्दैछ।</translation>
 <translation id="2529021024822217800">सबै खोल्नुहोस्</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">यसलाई यो भाषामा परिवर्तन गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="6944369514868857500">अर्को खाता छनौट गर्नुहोस्‌</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
+<translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6973630695168034713">फोल्डरहरू</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6988572888918530647">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>

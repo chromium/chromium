@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1275718070701477396">Изабрано је</translation>
 <translation id="1281818060020671000">Управљајте подацима</translation>
+<translation id="1282311502488501110">Не пријављуј ме</translation>
 <translation id="1283524564873030414">Последња 24 сата</translation>
 <translation id="1285320974508926690">Никад не преводи овај сајт</translation>
 <translation id="1291506870746876680">Дозволе за <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> ће се ресетовати и искључити кад напустите овај сајт.</translation>
@@ -54,6 +55,7 @@
 <translation id="1322735045095424339">Организација захтева режим без архивирања</translation>
 <translation id="1323735185997015385">Избриши</translation>
 <translation id="132683371494960526">Додирните двапут да бисте променили надређени директоријум.</translation>
+<translation id="1335348992705722518">Управљај подешавањима…</translation>
 <translation id="1340643665687018190">Затвори мени</translation>
 <translation id="1358214951266274152">Посетите линк који сте копирали</translation>
 <translation id="1360432990279830238">Одјављујете се и искључујете синхрониз?</translation>
@@ -177,6 +179,7 @@
 <translation id="2469960372084740698">Желите да искључите Безбедносно прегледање?</translation>
 <translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Није изабрано</translation>
+<translation id="2482878487686419369">Обавештења</translation>
 <translation id="2500374554657206846">Опције за чување лозинке</translation>
 <translation id="2523363575747517183">Овај веб-сајт непрекидно покушава да отвори другу апликацију.</translation>
 <translation id="2529021024822217800">Отвори све</translation>
@@ -381,6 +384,7 @@
 <translation id="4187450337729239226">Налепите и претражите</translation>
 <translation id="4223967053752765281">Организација је искључила пријављивање. И даље можете да видите обележиваче, историју, лозинке и друга подешавања на овом уређају. Ако унесете промене, оне се неће синхронизовати са налогом.</translation>
 <translation id="4233831822770018312">Измените дозволе</translation>
+<translation id="4236584471598725073">Прати се цена</translation>
 <translation id="4237377247299956313">Додирните <ph name="BEGIN_BOLD" />Подразумевана апликација за прегледање<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Унесите приступну фразу</translation>
 <translation id="4249955472157341256">Сортирај према најновијем</translation>
@@ -740,6 +744,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6930799952781667037">Додирните да бисте променили језик на овај.</translation>
 <translation id="6944369514868857500">Одаберите други налог</translation>
 <translation id="6945221475159498467">Изабери</translation>
+<translation id="6965382102122355670">Потврди</translation>
 <translation id="6973630695168034713">Директоријуми</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6988572888918530647">Управљајте Google налогом</translation>

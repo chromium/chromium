@@ -4919,6 +4919,7 @@
 <translation id="5658415415603568799">अतिरिक्त सुरक्षाका खातिर Smart Lock ले तपाईंलाई २० घन्टापछि आफ्नो पासवर्ड प्रविष्ट गर्न लगाउन सक्छ।</translation>
 <translation id="5659593005791499971">इमेल</translation>
 <translation id="5662513737565158057">Linux एपहरूले काम गर्ने तरिका परिवर्तन गर्नुहोस्।</translation>
+<translation id="5663459693447872156">स्वचालित रूपमा अर्ध-चौडाइमा स्विच गर्नुहोस्</translation>
 <translation id="5667293444945855280">मालवेयर</translation>
 <translation id="5667546120811588575">Google Play सेटअप गरिँदै छ…</translation>
 <translation id="5668351004957198136">सफ्टवेयर चलाउनका निम्ति आवश्यक पर्ने जाँच पूरा गर्न सकिएन</translation>
@@ -7247,6 +7248,7 @@
 <translation id="7903429136755645827">आफ्ना गेम कन्ट्रोलहरू कस्टमाइज गर्न क्लिक गर्नुहोस्</translation>
 <translation id="7903742244674067440">तपाईँसँग फाइलमा यी प्रमाणपत्रका प्रधिकरणहरूको पहिचान गर्ने प्रमाणपत्रहरू छन्</translation>
 <translation id="7903925330883316394">उपयोगिता: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">काटाकाना</translation>
 <translation id="7904526211178107182">आफ्नो नेटवर्कका अन्य डिभाइसमा Linux का पोर्टहरू उपलब्ध गराउनुहोस्।</translation>
 <translation id="7906440585529721295">लोकल डेटा मेटाइने छ</translation>
 <translation id="7907837847548254634">केन्द्रित गरिएको वस्तुलाई तुरुन्तै हाइलाइट गरी देखाउनुहोस्</translation>
@@ -7667,6 +7669,7 @@
 <translation id="8284279544186306258">सबै <ph name="WEBSITE_1" /> साइटहरू</translation>
 <translation id="8284326494547611709">क्याप्सन</translation>
 <translation id="8286036467436129157">साइन इन गर्नुहोस्</translation>
+<translation id="8286227656784970313">प्रणाली शब्दकोष प्रयोग गर्नुहोस्</translation>
 <translation id="828642162569365647">यो पासवर्ड वा PIN ले यस <ph name="DEVICE_TYPE" /> मा भएको तपाईंको जानकारी तथा तपाईंले आफ्नो फोनबाट हेर्ने तथा प्रयोग गर्ने सबै जानकारी सुरक्षित राख्छ। तपाईंको <ph name="DEVICE_TYPE" /> हरेक पटक स्लिप मोडबाट सक्रिय हुँदा तपाईंले यो डिभाइस अनलक गर्नु पर्ने हुन्छ।</translation>
 <translation id="8287902281644548111">API कल/URL का आधारमा खोज्नुहोस्</translation>
 <translation id="8288032458496410887"><ph name="APP" /> को स्थापना रद्द गर्नुहोस्...</translation>
@@ -7777,6 +7780,7 @@
 <translation id="8393511274964623038">प्लगइनलाई रोक्नुहोस्</translation>
 <translation id="839363317075970734">ब्लुटुथ डिभाइससम्बन्धी विवरण</translation>
 <translation id="8393700583063109961">सन्देश पठाउनुहोस्</translation>
+<translation id="8394212467245680403">अक्षराङ्कीय</translation>
 <translation id="8397825320644530257">कनेक्ट गरिएको फोन डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="8398877366907290961">जे भए पनि अघि बढ्नुहोस्</translation>
 <translation id="8399282673057829204">पासवर्ड हेर्नुहोस्</translation>

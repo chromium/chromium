@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已選取</translation>
 <translation id="1281818060020671000">管理資料</translation>
+<translation id="1282311502488501110">不登入</translation>
 <translation id="1283524564873030414">過去 24 小時</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />的權限會在你離開該網站後重設為停用。</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">要停用安全瀏覽功能嗎？</translation>
 <translation id="2473876017985765807">你已儲存過 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="2476359652512522418">未選取</translation>
+<translation id="2482878487686419369">通知</translation>
 <translation id="2500374554657206846">儲存密碼的選項</translation>
 <translation id="2523363575747517183">這個網站不斷嘗試開啟其他應用程式。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">輕觸即可變更為這個語言。</translation>
 <translation id="6944369514868857500">選擇其他帳戶</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6965382102122355670">確定</translation>
 <translation id="6973630695168034713">資料夾</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6988572888918530647">管理你的 Google 帳戶</translation>

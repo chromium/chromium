@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
 <translation id="1275718070701477396">বাছনি কৰা আছে</translation>
 <translation id="1281818060020671000">ডেটা পৰিচালনা কৰক</translation>
+<translation id="1282311502488501110">ছাইন ইন নকৰিব</translation>
 <translation id="1283524564873030414">যোৱা ২৪ ঘণ্টাত</translation>
 <translation id="1285320974508926690">এই ছাইটটো কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1291506870746876680">আপুনি এই ছাইটটোৰ পৰা বাহিৰ ওলালে <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />ৰ অনুমতিসমূহ অফ হিচাপে ৰিছেট কৰা হ’ব।</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">সুৰক্ষিত ব্ৰাউজিং অফ কৰিবনে?</translation>
 <translation id="2473876017985765807">আপুনি <ph name="WEBSITE" />ৰ বাবে ইতিমধ্যে এটা পাছৱৰ্ড ছেভ কৰিছে</translation>
 <translation id="2476359652512522418">বাছনি কৰা হোৱা নাই</translation>
+<translation id="2482878487686419369">জাননী</translation>
 <translation id="2500374554657206846">পাছৱৰ্ড ছেভ কৰাৰ বিকল্পসমূহ</translation>
 <translation id="2523363575747517183">এই ৱেবছাইটটোৱে বাৰে বাৰে অন্য এটা এপ্লিকেশ্বন খুলিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="2529021024822217800">সকলো খোলক</translation>
@@ -739,6 +741,7 @@
 <translation id="6930799952781667037">এই ভাষাটোলৈ সলনি কৰিবলৈ টিপক।</translation>
 <translation id="6944369514868857500">অন্য কোনো একাউণ্ট বাছনি কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
+<translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6973630695168034713">ফ’ল্ডাৰ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>

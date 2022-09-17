@@ -4923,6 +4923,7 @@
 <translation id="5658415415603568799">Լրացուցիչ անվտանգության համար Smart Lock-ը ձեզ կխնդրի մուտքագրել գաղտնաբառը 20 ժամ անց։</translation>
 <translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5662513737565158057">Փոխեք Լինուքսի հավելվածների աշխատանքի հետ կապված կարգավորումները։</translation>
+<translation id="5663459693447872156">Ավտոմատ անցնել կիսալայնք տարբերակին</translation>
 <translation id="5667293444945855280">Վնասագիր</translation>
 <translation id="5667546120811588575">Google Play-ի կարգավորում...</translation>
 <translation id="5668351004957198136">Ստուգումը չի հաջողվել</translation>
@@ -7251,6 +7252,7 @@
 <translation id="7903429136755645827">Սեղմեք՝ խաղի կառավարման տարրերը կարգավորելու համար</translation>
 <translation id="7903742244674067440">Ձեր պահված հավաստագրերում նշված են այս հավաստագրման կենտրոնները</translation>
 <translation id="7903925330883316394">Օժանդակ ծրագիր՝ <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">Կատականա</translation>
 <translation id="7904526211178107182">Հասանելի դարձրեք Լինուքսի միացքները ձեր ցանցի մյուս սարքերին։</translation>
 <translation id="7906440585529721295">Սարքի տվյալները կջնջվեն</translation>
 <translation id="7907837847548254634">Կարճ ընդգծել ֆոկուսավորված օբյեկտը</translation>
@@ -7671,6 +7673,7 @@
 <translation id="8284279544186306258">բոլոր <ph name="WEBSITE_1" /> կայքերը</translation>
 <translation id="8284326494547611709">Ենթագրեր</translation>
 <translation id="8286036467436129157">Մուտք գործել</translation>
+<translation id="8286227656784970313">Օգտագործել համակարգի բառացանկը</translation>
 <translation id="828642162569365647">Այս գաղտնաբառը կամ PIN կոդը կպաշտպանի ձեր տվյալները <ph name="DEVICE_TYPE" /> սարքում, այդ թվում՝ տեղեկությունները, որոնք դուք բացում եք ձեր հեռախոսից։ Քնի ռեժիմից դուրս գալու համար ձեզ անհրաժեշտ կլինի ամեն անգամ ապակողպել <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="8287902281644548111">Որոնեք ըստ URL-ի կամ API-ի հարցման</translation>
 <translation id="8288032458496410887">Ապատեղադրել <ph name="APP" /> հավելվածը…</translation>
@@ -7781,6 +7784,7 @@
 <translation id="8393511274964623038">Դադարեցնել փլագինը</translation>
 <translation id="839363317075970734">Տեղեկություններ Bluetooth սարքի մասին</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
+<translation id="8394212467245680403">Տառաթվային</translation>
 <translation id="8397825320644530257">Չեղարկել հեռախոսի հետ կապը</translation>
 <translation id="8398877366907290961">Շարունակել</translation>
 <translation id="8399282673057829204">Ցույց տալ գաղտնաբառը</translation>

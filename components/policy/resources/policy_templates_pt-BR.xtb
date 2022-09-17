@@ -6046,6 +6046,15 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7200364929485466022">O horário em que a verificação de atualização precisa ocorrer, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="7202925763179776247">Permitir restrições de downloads</translation>
 <translation id="7207095846245296855">Forçar o Google SafeSearch</translation>
+<translation id="7208483746373960784">Esta configuração decide quantos dados do usuário são mantidos após a desativação do <ph name="LACROS_NAME" />.
+
+      Quando a política é definida como <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, a migração de dados de versões anteriores não é realizada.
+
+      Quando ela é definida como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, todos os dados do usuário são removidos. Essa é a opção mais segura.
+
+      Quando a política é definida como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, a maioria dos dados do usuário é removida. Apenas arquivos independentes do navegador são mantidos, como os downloads.
+
+      Quando a política é definida como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, todos os dados do usuário são mantidos. Essa opção tem um alto risco de falha, exigindo a execução de um Powerwash para recuperação.</translation>
 <translation id="7211368186050418507">Nunca detectar o fuso horário automaticamente</translation>
 <translation id="7216442368414164495">Permitir que os usuários ativem os relatórios estendidos do Navegação segura</translation>
 <translation id="721970071627370558">Desativar relatórios de status de energia do dispositivo</translation>

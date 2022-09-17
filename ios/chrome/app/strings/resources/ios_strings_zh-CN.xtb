@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已选择</translation>
 <translation id="1281818060020671000">管理数据</translation>
+<translation id="1282311502488501110">不登录</translation>
 <translation id="1283524564873030414">过去 24 小时</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1291506870746876680">您离开<ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" />后，这个网站的权限将重置为停用。</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">关闭“安全浏览”功能？</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="2476359652512522418">未选中</translation>
+<translation id="2482878487686419369">通知</translation>
 <translation id="2500374554657206846">保存密码的选项</translation>
 <translation id="2523363575747517183">该网站屡次尝试打开其他应用。</translation>
 <translation id="2529021024822217800">全部打开</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">点按此行即可更改为对应的语言。</translation>
 <translation id="6944369514868857500">另选一个帐号</translation>
 <translation id="6945221475159498467">选择</translation>
+<translation id="6965382102122355670">确定</translation>
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6988572888918530647">管理 Google 帐号</translation>

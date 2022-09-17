@@ -4926,6 +4926,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5658415415603568799">Za dodatnu sigurnost Smart Lock će tražiti da unesete zaporku nakon 20 sati.</translation>
 <translation id="5659593005791499971">e-pošta</translation>
 <translation id="5662513737565158057">Promijenite način rada Linux aplikacija.</translation>
+<translation id="5663459693447872156">Automatski prijelaz na poluširinu</translation>
 <translation id="5667293444945855280">Zlonamjerni softver</translation>
 <translation id="5667546120811588575">Postavljanje Google Playa...</translation>
 <translation id="5668351004957198136">Pad</translation>
@@ -7259,6 +7260,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7903429136755645827">Kliknite da biste prilagodili kontrole igara</translation>
 <translation id="7903742244674067440">U arhivi imate certifikate koji identificiraju ova tijela za izdavanje certifikata</translation>
 <translation id="7903925330883316394">Uslužni proces: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">katakana</translation>
 <translation id="7904526211178107182">Linux priključke učinite dostupnima drugim uređajima u svojoj mreži.</translation>
 <translation id="7906440585529721295">Izbrisat će se lokalni podaci</translation>
 <translation id="7907837847548254634">Prikaz kratkog isticanja fokusiranog objekta</translation>
@@ -7680,6 +7682,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8284279544186306258">sve web-lokacije <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="8286036467436129157">Prijava</translation>
+<translation id="8286227656784970313">Koristi sistemski rječnik</translation>
 <translation id="828642162569365647">Zaporka ili PIN štiti vaše podatke na ovom uređaju <ph name="DEVICE_TYPE" /> i sve podatke kojima pristupate s telefona. Morat ćete otključati <ph name="DEVICE_TYPE" /> svaki put kada se aktivira nakon mirovanja.</translation>
 <translation id="8287902281644548111">Pretražujte prema pozivu za API/URL-u</translation>
 <translation id="8288032458496410887">Deinstaliranje aplikacije <ph name="APP" />...</translation>
@@ -7790,6 +7793,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8393511274964623038">Zaustavi dodatak</translation>
 <translation id="839363317075970734">Pojedinosti o Bluetooth uređaju</translation>
 <translation id="8393700583063109961">Pošaljite poruku</translation>
+<translation id="8394212467245680403">Alfanumerički</translation>
 <translation id="8397825320644530257">Prekidanje veze povezanog telefona</translation>
 <translation id="8398877366907290961">Svejedno nastavi</translation>
 <translation id="8399282673057829204">Prikaži zaporku</translation>

@@ -78,7 +78,6 @@
 <translation id="1306549533752902673">推薦的應用程式</translation>
 <translation id="1312604459020188865">訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">永遠顯示捷徑列</translation>
-<translation id="1316811122439383437">Tote：最近的螢幕截圖、下載檔案及已固定的檔案</translation>
 <translation id="132346741904777634">攝錄機已經對齊左上角，同系統平台有衝突。</translation>
 <translation id="1333308631814936910">已連接「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="1341651618736211726">展開</translation>
@@ -656,7 +655,6 @@
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
 <translation id="4734965478015604180">橫向</translation>
-<translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 最上排的任一按鍵。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">要刪除已儲存的桌面嗎？</translation>
 <translation id="4752784485658729358">只允許儲存 6 個桌面。請移除一個桌面以儲存新桌面。</translation>

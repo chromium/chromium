@@ -3559,6 +3559,7 @@
 <translation id="4306119971288449206">Додатки мають наповнюватися вмістом типу "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Основні</translation>
 <translation id="4309165024397827958">Надати додаткам і сервісам Android дозвіл на доступ до геоданих вашого пристрою. Google може періодично збирати геодані й анонімно обробляти їх, щоб покращувати точність визначення місцезнаходження та роботу сервісів, що використовують геодані.</translation>
+<translation id="4309183709806093061">Також надати доступ до системного аудіо. Щоб уникнути акустичного зворотного зв’язку, звук на цьому пристрої буде вимкнено.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ у реальному часі)</translation>
 <translation id="4310132194679586591">Щоб відкрити це посилання, виберіть додаток на своєму пристрої</translation>
 <translation id="4310139701823742692">Неправильний формат файлу. Перевірте файл PPD та повторіть спробу.</translation>
@@ -4572,6 +4573,7 @@
 <translation id="5305145881844743843">Цим обліковим записом керують через домен <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Джерело не підтримується</translation>
 <translation id="5307386115243749078">Створити пару з перемикачем Bluetooth</translation>
+<translation id="5307958609248661362">Час очікування Google Менеджера паролів минув</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5309418307557605830">Google Асистент також працює на цьому пристрої</translation>
 <translation id="5311304534597152726">Вхід в обліковий запис</translation>
@@ -4937,6 +4939,7 @@
 <translation id="5658415415603568799">З міркувань безпеки Smart Lock запропонує ввести пароль через 20 годин.</translation>
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5662513737565158057">Налаштуйте роботу додатків Linux.</translation>
+<translation id="5663459693447872156">Автоматично переключитися на половинну ширину</translation>
 <translation id="5667293444945855280">Шкідливі програми</translation>
 <translation id="5667546120811588575">Налаштування Google Play…</translation>
 <translation id="5668351004957198136">Перевірку не пройдено</translation>
@@ -7271,6 +7274,7 @@
 <translation id="7903429136755645827">Натисніть, щоб налаштувати елементи керування іграми</translation>
 <translation id="7903742244674067440">У вас є сертифікати, які ідентифікують ці центри сертифікації</translation>
 <translation id="7903925330883316394">Службовий додаток: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">Катакана</translation>
 <translation id="7904526211178107182">Порти Linux стануть доступними для інших пристроїв у вашій мережі.</translation>
 <translation id="7906440585529721295">Локальні дані буде видалено</translation>
 <translation id="7907837847548254634">Ненадовго виділяти вибраний об'єкт</translation>
@@ -7374,6 +7378,7 @@
 <translation id="7988805580376093356">Не видаляти наявну ОС і запустити <ph name="DEVICE_OS" /> із носія USB.</translation>
 <translation id="7991296728590311172">Налаштування кнопкового доступу</translation>
 <translation id="7992203134935383159">Синтез мовлення</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Пріоритет обробки</translation>
 <translation id="7999229196265990314">Створено такі файли:
         
@@ -7691,6 +7696,7 @@
 <translation id="8284279544186306258">усі сайти <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Субтитри</translation>
 <translation id="8286036467436129157">Вхід</translation>
+<translation id="8286227656784970313">Використовувати системний словник</translation>
 <translation id="828642162569365647">Цей пароль або PIN-код захищає дані на цьому пристрої <ph name="DEVICE_TYPE" /> та інформацію, до якої ви отримуєте доступ із телефона. Розблоковувати пристрій потрібно щоразу, коли <ph name="DEVICE_TYPE" /> виводиться з режиму сну.</translation>
 <translation id="8287902281644548111">Шукати за викликом API чи URL-адресою</translation>
 <translation id="8288032458496410887">Видалити додаток <ph name="APP" />…</translation>
@@ -7801,6 +7807,7 @@
 <translation id="8393511274964623038">Зупинити роботу плагіна</translation>
 <translation id="839363317075970734">Інформація про пристрій із Bluetooth</translation>
 <translation id="8393700583063109961">Надіслати повідомлення</translation>
+<translation id="8394212467245680403">Буквенно-цифровий</translation>
 <translation id="8397825320644530257">Від'єднати підключений телефон</translation>
 <translation id="8398877366907290961">Продовжити</translation>
 <translation id="8399282673057829204">Переглянути пароль</translation>

@@ -61,6 +61,7 @@
 <translation id="2094648590148273905">ChromeOS Flex ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="2094919256425865063">ଯେକୌଣସି ମତେ Chrome ପରିତ୍ୟାଗ କରିବେ?</translation>
 <translation id="2106831557840787829">ChromeOS Flex <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭଲପମେଣ୍ଟ ଏନଭାୟରନମେଣ୍ଟ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
+<translation id="2112742052114331084">ଚାଲୁ ଥିବା ସମୟରେ, Chrome ଆପଣ ସକ୍ରିୟ ଭାବେ ବ୍ୟବହାର କରୁନଥିବା ଟାବଗୁଡ଼ିକରୁ ମେମୋରୀ ପୁଣି ଦାବି କରେ। ଅନ୍ୟ ଟାସ୍କଗୁଡ଼ିକ ପାଇଁ ଏହା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରର ରିସୋର୍ସଗୁଡ଼ିକୁ ଖାଲି କରେ ଏବଂ Chromeକୁ ସ୍ପିଡୀ ରଖେ। ନିଷ୍କ୍ରିୟ ଟାବଗୁଡ଼ିକ ଖାଲି ଦେଖାଯାଏ ଏବଂ ଆପଣ ସେଗୁଡ଼ିକୁ କ୍ଲିକ କଲେ ତାହା ସ୍ୱଚାଳିତ ଭାବେ ପୁଣି ଲୋଡ ହୁଏ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /> କିମ୍ବା <ph name="BEGIN_LINK_2" />ମତାମତ ପଠାନ୍ତୁ<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">ଏହି ଡିଭାଇସ୍‌ରୁ ଏହା <ph name="ITEMS_COUNT" />ଟି ଆଇଟମ୍‌ ଡିଲିଟ୍‌ କରିବ। ପରେ ଆପଣଙ୍କର ଡାଟା ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ, Chromeରେ <ph name="USER_EMAIL" />ଭାବେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="2121284319307530122">&amp;Chrome ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ ସେଟିଂସ୍‌<ph name="END_LINK" />ର ରିପୋର୍ଟ କରି Chromeକୁ ଆହୁରି ଉତ୍ତମ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
@@ -279,6 +280,7 @@
 <translation id="6735387454586646204">ChromeOS Flex ସିଷ୍ଟମ</translation>
 <translation id="6739177684496155661">ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲରେ ଜାରି ରଖିବେ?</translation>
 <translation id="6750954913813541382">ବନାନ ଗତ ତ୍ରୁଟିଗୁଡ଼ିକର ସମାଧାନ ପାଇଁ, Chrome ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଇଥାଏ</translation>
+<translation id="6756581345161130259">ଆବଶ୍ୟକତା ଅନୁସାରେ, Chrome ଆପଣ ସକ୍ରିୟ ଭାବେ ବ୍ୟବହାର କରୁନଥିବା ଟାବଗୁଡ଼ିକରୁ ମେମୋରୀ ପୁଣି ଦାବି କରେ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="677276454032249905">ଯେକୌଣସିମତେ Chromeରୁ ବାହାରିବେ?</translation>
 <translation id="6785872064505734160">Chromeରେ Google Assistant ଆପଣଙ୍କ ପାଇଁ ସମଗ୍ର ୱେବସାଇଟରେ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିପାରିବ</translation>
 <translation id="683440813066116847">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବା ପାଇଁ Google Chrome Canaryରେ ଅନ୍ତର୍ନିହିତ ଥିବା ନିୟମ।</translation>

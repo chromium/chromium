@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Можна також переходити між розділами екрана (наприклад, між панеллю запуску та вкладками Chrome). Щоб перейти в наступний розділ, проведіть чотирма пальцями зліва направо. Зробіть це зараз, щоб продовжити.</translation>
 <translation id="2624431853467395961">Відкрити сторінку "Докладніше"</translation>
 <translation id="2626530649491650971">інтерактивний</translation>
+<translation id="263637551280112393">Натисніть клавішу пошуку + Shift + пробіл</translation>
 <translation id="2637227747952042642">Матем.</translation>
 <translation id="2638785836053527382">Завантаження файлу <ph name="FILE_NAME" /> відновлено</translation>
 <translation id="2639750663247012216">Модифікатор ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Немає наступного розділу</translation>
 <translation id="5368000168321181111">Звуковий ефект вимкнено</translation>
 <translation id="5368505757342402527">Файл <ph name="FILE_NAME" /> завантажено на <ph name="PROGRESS" />%. Залишилося приблизно <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">утримувати</translation>
 <translation id="5400836586163650660">Сірий</translation>
 <translation id="5402367795255837559">Команди Брайля</translation>
 <translation id="5402791055281059602">Сповіщення в модальному вікні</translation>

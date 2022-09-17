@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1275718070701477396">තෝරාගත්</translation>
 <translation id="1281818060020671000">දත්ත කළමනාකරණය කරන්න</translation>
+<translation id="1282311502488501110">පුරන්න එපා</translation>
 <translation id="1283524564873030414">පසුගිය පැය 24</translation>
 <translation id="1285320974508926690">මෙම අඩවිය කිසිවිට පරිවර්තනය නොකරන්න</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> ඔබ මෙම අඩවියෙන් ඉවත් වූ විට අවසර ක්‍රියාවිරහිත වෙත යළි සකසනු ඇත.</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කරන්නද?</translation>
 <translation id="2473876017985765807">ඔබ දැනටමත් <ph name="WEBSITE" /> සඳහා මුරපදයක් සුරැක ඇත</translation>
 <translation id="2476359652512522418">තෝරා නැත</translation>
+<translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="2500374554657206846">මුරපදය සුරැකීමට විකල්ප</translation>
 <translation id="2523363575747517183">මෙම වෙබ් අඩවිය තවත් යෙදුමක් විවෘත කිරීමට නැවත නැවතත් උත්සාහ කරයි.</translation>
 <translation id="2529021024822217800">සියල්ල විවෘත කරන්න</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">මෙම භාෂාවට වෙනස් කිරීමට තට්ටු කරන්න.</translation>
 <translation id="6944369514868857500">වෙනත් ගිණුමක් තෝරා ගන්න</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
+<translation id="6965382102122355670">හරි</translation>
 <translation id="6973630695168034713">ෆෝල්ඩර</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">ඔබේ Google ගිණුම කළමනා කරන්න</translation>

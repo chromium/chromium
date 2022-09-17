@@ -3297,6 +3297,7 @@
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。不过，从 M85 开始，此政策已不再支持主机名中含有“*”或“[*.]”通配符的格式。</translation>
+<translation id="4369307906396795087">适用于工作器（Web Worker、Service Worker 等）的脚本使用宽松的 MIME 类型检查。采用旧版 MIME 类型（例如 <ph name="MIMETYPE_TEXT_ASCII" />）的工作器脚本将会正常运行。</translation>
 <translation id="4370937370030117032">禁止向原生打印机发送用户名和文件名</translation>
 <translation id="4372704773119750918">不允许企业用户成为多用户配置的用户（一级或二级）</translation>
 <translation id="4377599627073874279">允许所有网站显示所有图片</translation>
@@ -6311,6 +6312,11 @@
 
       如果此政策已启用或未设置，系统将启用快速解答单位换算功能。
       如果此政策已停用，系统将停用快速解答单位换算功能。</translation>
+<translation id="7582095958259051083">如果此政策已启用，系统会始终启用以网址为键的匿名化数据收集功能，从而将用户访问的网页网址发送给 Google，以用于改善搜索和浏览体验。
+
+      如果此政策已停用，系统将不会启用以网址为键的匿名化数据收集功能。
+
+      如果此政策未设置，用户将能手动更改此设置。</translation>
 <translation id="7587345076013230465">当登录屏幕上有多份客户端证书与自动选择政策匹配时，提示用户做出选择</translation>
 <translation id="7587921466180902617">为 Family Link 用户启用“屏幕录制”功能 dogfood</translation>
 <translation id="759957074386651883">安全浏览设置</translation>
@@ -7004,6 +7010,7 @@
 <translation id="8337114537412769126">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 来指定在借助 POST 搜索建议时应使用的参数。所指定的内容由一系列以英文逗号分隔的名称-值对组成。如果值为模板参数（例如<ph name="SEARCH_TERM_MARKER" />），系统会将其替换成真实的搜索字词数据。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />，系统将使用 GET 方法发送建议搜索请求。</translation>
+<translation id="8337961007759352651">适用于工作器（Web Worker、Service Worker 等）的脚本需要采用 JavaScript MIME 类型，例如 <ph name="MIMETYPE_TEXT_JAVASCRIPT" />。采用旧版 MIME 类型（例如 <ph name="MIMETYPE_TEXT_ASCII" />）的工作器脚本将被拒绝。</translation>
 <translation id="8339089771335211509">WebRTC 会仅使用连接到公共互联网的接口，且不会使用专用 IP 地址进行连接。</translation>
 <translation id="8339420913453596618">已停用第二重因素</translation>
 <translation id="8344454543174932833">首次运行时，从默认浏览器导入书签</translation>
@@ -7309,12 +7316,23 @@
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会应用它，否则就会应用用户的个人设置。
 
       此政策中的网址不应与通过 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址冲突。如果它们冲突，此政策优先于 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
+<translation id="8667754887193084187">此政策用于为工作器脚本启用严格的 MIME 类型检查。
+
+      如果此政策已启用或未设置，工作器脚本将对 JavaScript 使用严格的 MIME 类型检查，这是新版默认行为。采用旧版 MIME 类型的工作器脚本将被拒绝。
+
+      如果此政策已停用，工作器脚本将使用宽松的 MIME 类型检查，以便系统继续加载和执行采用旧版 MIME 类型（例如 <ph name="MIMETYPE_TEXT_ASCII" />）的工作器脚本。
+
+      过去，浏览器使用宽松的 MIME 类型检查，因此支持那些采用大量旧版 MIME 类型的资源。例如，对于 JavaScript 资源，<ph name="MIMETYPE_TEXT_ASCII" /> 是受支持的旧版 MIME 类型。这会允许系统将资源作为脚本加载以付诸原本从未预期的用途，因此可能会导致出现安全问题。在不久的将来，Chrome 将会改用严格的 MIME 类型检查。届时，已启用的相关政策将会跟踪这一默认行为。如果此政策已停用，管理员将能酌情保留旧版行为。
+
+      如需详细了解 JavaScript/ECMAScript 媒体类型，请参阅 https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage。
+      </translation>
 <translation id="8669313549017524373">如果 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 设为 RestoreOnStartupIsURLs，那么将 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设为一系列网址即可指定哪些网址会在 Chrome 启动时打开。
 
       如果您未设置此政策，“新标签页”页面会在 Chrome 启动时打开。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="8671119576957984818">启用桌面分享中心</translation>
+<translation id="8671193325113134911">为工作器脚本启用严格的 MIME 类型检查</translation>
 <translation id="8671314659400112135">如果此政策已启用或未设置，系统会允许 <ph name="PRODUCT_NAME" /> 采用额外的扩展点安全缓解措施，以屏蔽浏览器进程中的旧版扩展点。
 
       停用此政策会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响，因为如果此政策已停用，不明的潜在恶意代码便可在 <ph name="PRODUCT_NAME" /> 的浏览器进程中加载。仅当那些必须在 <ph name="PRODUCT_NAME" /> 的浏览器进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。

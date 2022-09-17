@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Tidak ada yang direkam</translation>
+<translation id="169335673490251151">Pindai halaman tambahan</translation>
 <translation id="1838104802459806957">Miringkan ke atas</translation>
 <translation id="1851169887664797861">Kontrol kamera tambahan tersedia</translation>
 <translation id="1851616744363735765">DIJEDA</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">Salin URL</translation>
 <translation id="4281620174117014503">Resolusi sedang</translation>
 <translation id="4329152592498422850">Beralih ke mode mengambil foto persegi</translation>
+<translation id="4340659173795395806">Anda kini dapat membuat PDF multi-halaman</translation>
 <translation id="4383571725254449280">Log performa cetak</translation>
 <translation id="4445542136948522167">Berhenti mengambil foto</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5320594929574852403">Berpindah ke arah kiri</translation>
 <translation id="5444515100983837161">Tempatkan semua sisi dokumen ke dalam bingkai. Pemindaian akan berfungsi baik jika dokumen dan latar belakang memiliki warna yang berbeda.</translation>
+<translation id="5662366948659129155">Memindai halaman <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Persegi</translation>
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>
 <translation id="5753488212459587150">Aktifkan mode pakar</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">Mode pakar</translation>
 <translation id="5860033963881614850">Nonaktif</translation>
 <translation id="5869546221129391014">Kisi</translation>
+<translation id="5903928279335207406">Hapus halaman</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5975083100439434680">Perkecil</translation>
 <translation id="5976160379964388480">Yang Lain</translation>
@@ -158,6 +162,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8167081290930651932">Simpan sebagai Foto</translation>
 <translation id="8239780215768881278">Ambil ringkasan video</translation>
 <translation id="8261506727792406068">Hapus</translation>
+<translation id="839162370397157884">Pilih halaman</translation>
 <translation id="8425673304802773841">Miringkan ke bawah</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8629662593426079630">360p</translation>

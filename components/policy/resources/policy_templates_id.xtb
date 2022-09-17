@@ -6072,6 +6072,15 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7200364929485466022">Waktu saat pemeriksaan update harus dilakukan, disesuaikan dengan zona waktu lokal perangkat.</translation>
 <translation id="7202925763179776247">Izinkan batasan download</translation>
 <translation id="7207095846245296855">Paksa Google SafeSearch</translation>
+<translation id="7208483746373960784">Setelan ini menentukan jumlah data pengguna yang disimpan setelah <ph name="LACROS_NAME" /> dinonaktifkan.
+
+      Jika kebijakan disetel ke <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, migrasi data mundur tidak akan dilakukan.
+
+      Jika kebijakan disetel ke <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, semua data pengguna akan dihapus. Ini adalah opsi paling aman.
+
+      Jika kebijakan disetel ke <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, sebagian besar data pengguna akan dihapus. Hanya file yang tidak bergantung pada browser yang akan disimpan (seperti Download).
+
+      Jika kebijakan disetel ke <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, semua data pengguna akan disimpan. Opsi ini memiliki risiko kegagalan yang tinggi, yang mengharuskan powerwash untuk pemulihan.</translation>
 <translation id="7211368186050418507">Jangan pernah deteksi otomatis zona waktu</translation>
 <translation id="7216442368414164495">Memungkinkan pengguna ikut serta dalam pelaporan yang diperluas Safe Browsing</translation>
 <translation id="721970071627370558">Nonaktifkan pelaporan status daya perangkat</translation>

@@ -78,7 +78,6 @@
 <translation id="1306549533752902673">برنامه‌های توصیه‌شده</translation>
 <translation id="1312604459020188865">قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">همیشه قفسه نشان داده شود</translation>
-<translation id="1316811122439383437">نگهدارنده: موارد اخیر ضبط صفحه‌نمایش، بارگیری، و فایل پین‌شده</translation>
 <translation id="132346741904777634">دوربین به گوشه بالا سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> متصل شد</translation>
 <translation id="1341651618736211726">سرریز</translation>
@@ -656,7 +655,6 @@
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (چپ)</translation>
 <translation id="4734965478015604180">افقی</translation>
-<translation id="4735498845456076464">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + عدد» تغییر کرده است. برای استفاده از کلیدهای عملکرد، کلید <ph name="LAUNCHER_KEY_NAME" /> + یکی از کلیدهای ردیف بالا را فشار دهید.</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4740516757091333363">میزکار ذخیره‌شده حذف شود؟</translation>
 <translation id="4752784485658729358">تنها ۶ میزکار ذخیره‌شده مجاز است. برای ذخیره میزکار جدید، یکی‌از میزکارها را بردارید.</translation>

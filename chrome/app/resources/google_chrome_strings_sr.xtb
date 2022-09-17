@@ -61,6 +61,7 @@
 <translation id="2094648590148273905">Chrome OS Flex услови</translation>
 <translation id="2094919256425865063">Желите ли ипак да затворите Chrome?</translation>
 <translation id="2106831557840787829">Chrome OS Flex је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />, као што је <ph name="BEGIN_LINK_LINUX_OSS" />Linux окружење за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Када је укључено, Chrome враћа меморију са картица које не користите активно. Тиме се ослобађају ресурси рачунара за друге задатке и убрзава се рад Chrome-а. Неактивне картице се приказују као празне и аутоматски се поново учитавају када кликнете на њих. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> или <ph name="BEGIN_LINK_2" />пошаљите повратне информације<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Поново покрени да би се &amp;Chrome ажурирао</translation>
 <translation id="2123055963409958220">Помозите да побољшамо Chrome тако што ћете послати извештај о <ph name="BEGIN_LINK" />актуелним подешавањима<ph name="END_LINK" /></translation>
@@ -279,6 +280,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6735387454586646204">Chrome OS Flex систем</translation>
 <translation id="6739177684496155661">Желите да наставите на новом Chrome профилу?</translation>
 <translation id="6750954913813541382">Да би исправио правописне грешке, Chrome Google-у шаље текст који уносите у прегледач</translation>
+<translation id="6756581345161130259">По потреби, Chrome враћа меморију са картица које не користите активно. Ово можете да промените у сваком тренутку у подешавањима.</translation>
 <translation id="677276454032249905">Желите ли ипак да затворите Chrome?</translation>
 <translation id="6785872064505734160">Google помоћник у Chrome-у може да довршава радње за вас на веб-сајтовима</translation>
 <translation id="683440813066116847">Правило за долазни саобраћај за Google Chrome Canary да бисте омогућили mDNS саобраћај.</translation>

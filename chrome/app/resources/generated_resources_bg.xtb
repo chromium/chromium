@@ -3553,6 +3553,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4306119971288449206">Приложенията трябва да се показват с тип съдържание „<ph name="CONTENT_TYPE" />“</translation>
 <translation id="4307992518367153382">Основни положения</translation>
 <translation id="4309165024397827958">Позволете на приложенията и услугите за Android да ползват местоположението на устройството ви, ако имат съответното разрешение. Google може периодично да събира информация за местоположението и да я използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.</translation>
+<translation id="4309183709806093061">Споделяне и на системния звук. Това устройство ще бъде заглушено с цел предотвратяване на акустична обратна връзка.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ активни)</translation>
 <translation id="4310132194679586591">Изберете приложение на устройството си, за да отворите тази връзка</translation>
 <translation id="4310139701823742692">Файловият формат е неправилен. Проверете PPD файла и опитайте отново.</translation>
@@ -4566,6 +4567,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5305145881844743843">Този профил се управлява от <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Източникът не се поддържа</translation>
 <translation id="5307386115243749078">Сдвояване на превключвател с Bluetooth</translation>
+<translation id="5307958609248661362">Времето за изчакване на Google Мениджър на пароли изтече</translation>
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5309418307557605830">Google Асистент работи и тук</translation>
 <translation id="5311304534597152726">Влизате като</translation>
@@ -4934,6 +4936,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5658415415603568799">За допълнителна сигурност Smart Lock ще ви помоли да въведете паролата си след 20 часа.</translation>
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5662513737565158057">Променете начина на работа на приложенията за Linux.</translation>
+<translation id="5663459693447872156">Автоматично да се превключва към половин ширина</translation>
 <translation id="5667293444945855280">Злонамерен софтуер</translation>
 <translation id="5667546120811588575">Google Play се настройва...</translation>
 <translation id="5668351004957198136">Не отговаря на условията</translation>
@@ -7263,6 +7266,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7903429136755645827">Кликнете, за да персонализирате контролите си за игри</translation>
 <translation id="7903742244674067440">Разполагате със сертификати, които идентифицират тези сертифициращи органи</translation>
 <translation id="7903925330883316394">Помощен процес: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">катакана</translation>
 <translation id="7904526211178107182">Портовете в Linux да бъдат достъпни за други устройства в мрежата ви.</translation>
 <translation id="7906440585529721295">Локалните данни ще бъдат изтрити</translation>
 <translation id="7907837847548254634">Бързо открояване на обекта, върху който е поставен фокусът</translation>
@@ -7366,6 +7370,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7988805580376093356">Запазване на операционната ви система и изпълняване на <ph name="DEVICE_OS" /> от USB.</translation>
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
 <translation id="7992203134935383159">Синтезиран говор</translation>
+<translation id="799570308305997052">Изглед в мрежата</translation>
 <translation id="7997826902155442747">Приоритет на процесите</translation>
 <translation id="7999229196265990314">Създадени бяха следните файлове:
 
@@ -7683,6 +7688,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8284279544186306258">всички <ph name="WEBSITE_1" /> сайта</translation>
 <translation id="8284326494547611709">Надписи</translation>
 <translation id="8286036467436129157">Вход</translation>
+<translation id="8286227656784970313">Да се използва системният речник</translation>
 <translation id="828642162569365647">Паролата или ПИН кодът защитават данните ви на това устройство <ph name="DEVICE_TYPE" />, включително информацията, до която осъществявате достъп от телефона си. Ще трябва да отключвате всеки път, когато <ph name="DEVICE_TYPE" /> излезе от спящ режим.</translation>
 <translation id="8287902281644548111">Търсене по извикване на API/по URL адрес</translation>
 <translation id="8288032458496410887">Деинсталиране на <ph name="APP" />...</translation>
@@ -7793,6 +7799,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8393511274964623038">Спиране на приставката</translation>
 <translation id="839363317075970734">Подробности за устройството с Bluetooth</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
+<translation id="8394212467245680403">Букви и цифри</translation>
 <translation id="8397825320644530257">Прекратяване на връзката със свързания телефон</translation>
 <translation id="8398877366907290961">Продължаване напред въпреки това</translation>
 <translation id="8399282673057829204">Преглед на паролата</translation>

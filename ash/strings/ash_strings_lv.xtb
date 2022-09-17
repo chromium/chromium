@@ -78,7 +78,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1306549533752902673">IETEIKTĀS LIETOTNES</translation>
 <translation id="1312604459020188865">Signāla stiprums: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vienmēr rādīt plauktu</translation>
-<translation id="1316811122439383437">Starpliktuve: nesen izveidoti ekrānuzņēmumi, lejupielādes un piespraustie faili</translation>
 <translation id="132346741904777634">Kamera pārnesta uz kreiso augšējo stūri. Konflikts ar sistēmas virsmu.</translation>
 <translation id="1333308631814936910">Izveidots savienojums ar ierīci “<ph name="DISPLAY_NAME" />”.</translation>
 <translation id="1341651618736211726">Pārpilde</translation>
@@ -656,7 +655,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (kreisā)</translation>
 <translation id="4734965478015604180">Horizontāli</translation>
-<translation id="4735498845456076464">Šis īsinājumtaustiņš ir mainījies: <ph name="LAUNCHER_KEY_NAME" /> + cipars. Lai izmantotu funkciju taustiņus, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + jebkurš augšējās rindas taustiņš.</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4740516757091333363">Vai dzēst saglabāto darbvietu?</translation>
 <translation id="4752784485658729358">Var saglabāt ne vairāk kā sešas darbvietas. Lai saglabātu jaunu darbvietu, noņemiet kādu no pašreizējām.</translation>

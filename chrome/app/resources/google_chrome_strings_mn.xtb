@@ -61,6 +61,7 @@
 <translation id="2094648590148273905">ChromeOS Flex-н нөхцөл</translation>
 <translation id="2094919256425865063">Ямар ч байсан Chrome-с гарах уу?</translation>
 <translation id="2106831557840787829">ChromeOS Flex-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
+<translation id="2112742052114331084">Асаалттай үед Chrome таны идэвхтэй ашиглахгүй байгаа табуудаас санах ойг сэргээнэ. Ингэснээр таны компьютерын нөөцийг бусад ажилд зориулж чөлөөлөх бөгөөд Chrome-г хурдтай байлгана. Идэвхгүй табууд хоосон харагдах бөгөөд таныг тэдгээр дээр товшиход автоматаар дахин ачаална. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /> эсвэл <ph name="BEGIN_LINK_2" />санал хүсэлт илгээх<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйлийг устгана. Дараа нь өгөгдлөө сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2121284319307530122">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chrome-г сайжруулахад тусална уу</translation>

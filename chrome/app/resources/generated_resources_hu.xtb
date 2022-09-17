@@ -4938,6 +4938,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5658415415603568799">A nagyobb biztonság érdekében a Smart Lock 20 óra elteltével megkéri, hogy adja meg jelszavát.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662513737565158057">A linuxos alkalmazások működésének módosítása.</translation>
+<translation id="5663459693447872156">Automatikus váltás félszélesség módra</translation>
 <translation id="5667293444945855280">Ártalmas program</translation>
 <translation id="5667546120811588575">A Google Play beállítása…</translation>
 <translation id="5668351004957198136">Sikertelen</translation>
@@ -7266,6 +7267,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7903429136755645827">Kattintson a játékvezérlők személyre szabásához</translation>
 <translation id="7903742244674067440">Vannak olyan tanúsítványok, amelyek azonosítják ezeket a tanúsítványkibocsátókat</translation>
 <translation id="7903925330883316394">Segédprogram: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Az alábbi linuxos portok legyenek hozzáférhetők a hálózaton lévő más eszközök számára.</translation>
 <translation id="7906440585529721295">A helyi adatok törlődnek</translation>
 <translation id="7907837847548254634">A fókuszba kerülő elemek rövid kiemelése</translation>
@@ -7687,6 +7689,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8284279544186306258">minden <ph name="WEBSITE_1" /> webhelyen</translation>
 <translation id="8284326494547611709">Feliratok</translation>
 <translation id="8286036467436129157">Bejelentkezés</translation>
+<translation id="8286227656784970313">Rendszerszótár használata</translation>
 <translation id="828642162569365647">Ez a jelszó vagy PIN-kód megvédi az adatait ezen a(z) <ph name="DEVICE_TYPE" /> eszközön, és minden olyan információt is, amelyhez a telefonjáról fér hozzá. Minden alkalommal fel kell oldania a képernyőzárat, amikor <ph name="DEVICE_TYPE" /> eszköze alvó üzemmódból felébred.</translation>
 <translation id="8287902281644548111">Keresés API-hívás/URL szerint</translation>
 <translation id="8288032458496410887"><ph name="APP" /> eltávolítása…</translation>
@@ -7797,6 +7800,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8393511274964623038">Beépülő modul leállítása</translation>
 <translation id="839363317075970734">Bluetooth-eszköz részletei</translation>
 <translation id="8393700583063109961">Üzenet küldése</translation>
+<translation id="8394212467245680403">Alfanumerikus</translation>
 <translation id="8397825320644530257">Csatlakoztatott telefon leválasztása</translation>
 <translation id="8398877366907290961">Továbblépés</translation>
 <translation id="8399282673057829204">Jelszó megtekintése</translation>

@@ -4927,6 +4927,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5658415415603568799">V rámci zvýšenia zabezpečenia vás Smart Lock po uplynutí 20 hodín požiada o zadanie hesla.</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5662513737565158057">Zmeňte, ako budú aplikácie pre Linux fungovať.</translation>
+<translation id="5663459693447872156">Automaticky prepnúť na polovičnú šírku</translation>
 <translation id="5667293444945855280">Škodlivý softvér</translation>
 <translation id="5667546120811588575">Nastavuje sa služba Google Play...</translation>
 <translation id="5668351004957198136">Nepodarilo sa</translation>
@@ -7261,6 +7262,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7903429136755645827">Kliknutím prispôsobte ovládanie hry</translation>
 <translation id="7903742244674067440">V súbore máte certifikáty, ktoré identifikujú tieto certifikačné autority</translation>
 <translation id="7903925330883316394">Pomôcka: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Sprístupnite porty Linux ďalším zariadeniam vo vašej sieti.</translation>
 <translation id="7906440585529721295">Miestne údaje budú odstránené</translation>
 <translation id="7907837847548254634">Zobrazovať krátke zvýraznenie označeného objektu</translation>
@@ -7682,6 +7684,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8284279544186306258">všetky weby <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="8286036467436129157">Prihlásenie</translation>
+<translation id="8286227656784970313">Použiť systémový slovník</translation>
 <translation id="828642162569365647">Toto heslo alebo PIN chráni vaše údaje v zariadení <ph name="DEVICE_TYPE" /> a všetky informácie, ku ktorým máte prístup v telefóne. <ph name="DEVICE_TYPE" /> budete musieť odomknúť vždy, keď sa prebudí zo spánku.</translation>
 <translation id="8287902281644548111">Hľadajte podľa volania rozhrania API alebo webovej adresy</translation>
 <translation id="8288032458496410887">Odinštalovať aplikáciu <ph name="APP" />…</translation>
@@ -7792,6 +7795,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8393511274964623038">Ukončiť doplnok</translation>
 <translation id="839363317075970734">Podrobnosti o zariadení s rozhraním Bluetooth</translation>
 <translation id="8393700583063109961">Odoslať správu</translation>
+<translation id="8394212467245680403">Alfanumerické</translation>
 <translation id="8397825320644530257">Odpojiť pripojený telefón</translation>
 <translation id="8398877366907290961">Pokračovať!</translation>
 <translation id="8399282673057829204">Zobraziť heslo</translation>

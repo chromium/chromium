@@ -4919,6 +4919,7 @@
 <translation id="5658415415603568799">為了提升安全性，Smart Lock 會在經過 20 小時後要求您輸入密碼。</translation>
 <translation id="5659593005791499971">電子郵件</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
+<translation id="5663459693447872156">自動切換為半形</translation>
 <translation id="5667293444945855280">惡意程式</translation>
 <translation id="5667546120811588575">正在設定 Google Play...</translation>
 <translation id="5668351004957198136">未通過</translation>
@@ -7247,6 +7248,7 @@
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
 <translation id="7903742244674067440">您儲存了這些憑證授權單位的識別憑證</translation>
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">片假名</translation>
 <translation id="7904526211178107182">將 Linux 連接埠提供給網路上的其他裝置使用。</translation>
 <translation id="7906440585529721295">本機資料將遭到刪除</translation>
 <translation id="7907837847548254634">在聚焦的物件上顯示短暫的醒目效果</translation>
@@ -7668,6 +7670,7 @@
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登入</translation>
+<translation id="8286227656784970313">使用系統字典</translation>
 <translation id="828642162569365647">這個密碼或 PIN 碼會保護你在這部 <ph name="DEVICE_TYPE" /> 上的資料，還有你從手機存取的任何資訊。每次要喚醒 <ph name="DEVICE_TYPE" /> 時，你都必須解鎖裝置。</translation>
 <translation id="8287902281644548111">依 API 呼叫/網址搜尋</translation>
 <translation id="8288032458496410887">解除安裝「<ph name="APP" />」...</translation>
@@ -7778,6 +7781,7 @@
 <translation id="8393511274964623038">停止外掛程式</translation>
 <translation id="839363317075970734">藍牙裝置詳細資料</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
+<translation id="8394212467245680403">英數字元</translation>
 <translation id="8397825320644530257">中斷與已連結手機的連線</translation>
 <translation id="8398877366907290961">仍要繼續</translation>
 <translation id="8399282673057829204">查看密碼</translation>

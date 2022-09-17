@@ -78,7 +78,6 @@
 <translation id="1306549533752902673">ԱՌԱՋԱՐԿՎՈՂ ՀԱՎԵԼՎԱԾՆԵՐ</translation>
 <translation id="1312604459020188865">Ազդանշանի հզորությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Միշտ ցուցադրել դարակը</translation>
-<translation id="1316811122439383437">Tote․ վերջին սքրինշոթները, ներբեռնումները և ամրացված ֆայլերը</translation>
 <translation id="132346741904777634">Տեսախցիկի պատկերն ամրացված է վերևի ձախ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
 <translation id="1333308631814936910">Միացված է <ph name="DISPLAY_NAME" /> սարքը</translation>
 <translation id="1341651618736211726">Բացել լրացուցիչ ընտրացանկը</translation>
@@ -656,7 +655,6 @@
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ձախ)</translation>
 <translation id="4734965478015604180">Հորիզոնական</translation>
-<translation id="4735498845456076464">«<ph name="LAUNCHER_KEY_NAME" /> + թիվ» ստեղնային դյուրանցումը փոփոխվել է։ Գործառույթային ստեղների գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ստեղն» դյուրանցումը վերևի շարքում։</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4740516757091333363">Ջնջե՞լ պահված աշխատասեղանը</translation>
 <translation id="4752784485658729358">Թույլատրվում է առավելագույնը 6 պահված աշխատասեղան։ Նոր աշխատասեղան պահելու համար հեռացրեք մեկ ուրիշը։</translation>

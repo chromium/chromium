@@ -695,6 +695,7 @@
 <translation id="1640283014264083726">RSA என்க்ரிப்ஷனுடன் PKCS #1 MD4</translation>
 <translation id="1641113438599504367">பாதுகாப்பாக உலாவுதல்</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" />க்கான கூடுதல் செயல்கள்</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{தவறான வடிவத்தில் உள்ளதால் இன்னும் 1 கடவுச்சொல்லை ஏற்ற முடியவில்லை}other{தவறான வடிவத்தில் உள்ளதால் இன்னும் {NUM_PASSWORDS} கடவுச்சொற்களை ஏற்ற முடியவில்லை}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" />, மேலும் <ph name="NUMBER_OF_DEVICES" /> புளூடூத் சாதனங்களுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="1642494467033190216">வேறு பிழைத் திருத்த அம்சங்களை இயக்கும் முன், rootfs பாதுகாப்பை அகற்றி, மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="1643072738649235303">SHA-1 உடனான X9.62 ECDSA கையொப்பம்</translation>
@@ -1844,6 +1845,7 @@
 <translation id="2673135533890720193">உங்கள் உலாவல் வரலாற்றைப் படித்தல்</translation>
 <translation id="2674764818721168631">ஆஃப்</translation>
 <translation id="2678063897982469759">மீண்டும் இயக்கு</translation>
+<translation id="2678100101831051676">அலைபரப்ப முடியவில்லை.</translation>
 <translation id="268053382412112343">Hi&amp;story</translation>
 <translation id="2681124317993121768">விருந்தினர் சுயவிவரங்களில் பயன்படுத்த முடியாது</translation>
 <translation id="2682498795777673382">பெற்றோர் செய்த மாற்றம்</translation>
@@ -3878,6 +3880,7 @@
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" நீட்டிப்பைப் பயன்படுத்த, பக்கத்தை ரெஃப்ரெஷ் செய்யுங்கள்</translation>
 <translation id="4617270414136722281">நீட்டிப்பு விருப்பங்கள்</translation>
 <translation id="4617880081511131945">இணைப்பை ஏற்படுத்த முடியவில்லை</translation>
+<translation id="4618195822946934889">URLலில் ASCII எழுத்துகள் மட்டுமே இருக்க வேண்டும்</translation>
 <translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
 <translation id="4619615317237390068">பிற சாதனங்களின் தாவல்கள்</translation>
 <translation id="4620809267248568679">இந்த அமைப்பு நீட்டிப்பால் செயல்படுத்தப்படுகிறது.</translation>
@@ -4939,6 +4942,7 @@
 <translation id="5658415415603568799">கூடுதல் பாதுகாப்பிற்கு, 20 மணிநேரம் கழித்து கடவுச்சொல்லை உள்ளிடும்படி Smart Lock உங்களைக் கேட்கும்.</translation>
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5662513737565158057">Linux ஆப்ஸ் வேலை செய்யும் விதத்தை மாற்றுங்கள்.</translation>
+<translation id="5663459693447872156">அரைஅகலத்திற்கு தானாகவே மாற்று</translation>
 <translation id="5667293444945855280">மால்வேர்</translation>
 <translation id="5667546120811588575">Google Playஐ அமைக்கிறது...</translation>
 <translation id="5668351004957198136">சரிபார்க்க முடியவில்லை</translation>
@@ -5077,6 +5081,7 @@
 <translation id="5800351251499368110">பக்கவாட்டுப் பேனலில் தேடலை மூடும். பக்கவாட்டுப் பேனலில் தேடல் திறந்துள்ளது.</translation>
 <translation id="5801568494490449797">விருப்பத்தேர்வுகள்</translation>
 <translation id="5804241973901381774">அனுமதிகள்</translation>
+<translation id="5805268472388605531">உச்சரிப்புக் குறிகளையும் சிறப்பு எழுத்துக்குறிகளையும் பார்க்க கீபோர்டு பட்டன்களை அழுத்திப் பிடித்திருக்கவும்</translation>
 <translation id="5805697420284793859">சாளர நிர்வாகி</translation>
 <translation id="5806447147478173900">காட்டப்படும் தளங்கள் பயன்படுத்தும் மொத்தச் சேமிப்பகம்: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (இயல்புநிலை)</translation>
@@ -5718,6 +5723,7 @@
 <translation id="642469772702851743">இந்தச் சாதனம் (SN: <ph name="SERIAL_NUMBER" />), உரிமையாளரால் பூட்டப்பட்டது.</translation>
 <translation id="6425556984042222041">’உரையிலிருந்து பேச்சு’ வேக விகிதம்</translation>
 <translation id="642729974267661262">ஒலியை இயக்க அனுமதி இல்லாத தளங்கள்</translation>
+<translation id="6427608534767366138">"<ph name="NETWORK_ID" />"க்கு ப்ராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="6429384232893414837">புதுப்பிப்பதில் பிழை</translation>
 <translation id="6430814529589430811">Base64-குறியேற்றப்பட்ட ASCII, ஒற்றைச் சான்றிதழ்</translation>
 <translation id="6431347207794742960">இந்தக் கம்ப்யூட்டரில் எல்லா பயனர்களுக்கும் <ph name="PRODUCT_NAME" /> தானியங்குப் புதுப்பிப்புகளை அமைக்கும்</translation>
@@ -7268,6 +7274,7 @@
 <translation id="7903429136755645827">கேம் கண்ட்ரோல்களைப் பிரத்தியேகமாக்க கிளிக் செய்யவும்</translation>
 <translation id="7903742244674067440">இந்தச் சான்றிதழ் அங்கீகரிப்பாளர்களை அடையாளங்காணும் சான்றிதழ்கள் ஃபைலில் உள்ளன</translation>
 <translation id="7903925330883316394">கருவி: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">கட்டாகனா</translation>
 <translation id="7904526211178107182">உங்கள் நெட்வொர்க்கிலுள்ள பிற சாதனங்களுக்கு Linux போர்ட்டுகள் கிடைக்குமாறு செய்யலாம்.</translation>
 <translation id="7906440585529721295">அகத் தரவு நீக்கப்படும்</translation>
 <translation id="7907837847548254634">ஃபோக்கஸ் செய்யப்படும் பொருள் தெளிவாகத் தெரியும்படி விரைவான ஹைலைட்டைக் காட்டு</translation>
@@ -7689,6 +7696,7 @@
 <translation id="8284279544186306258">எல்லா <ph name="WEBSITE_1" /> தளங்களும்</translation>
 <translation id="8284326494547611709">வசனங்கள்</translation>
 <translation id="8286036467436129157">உள்நுழை</translation>
+<translation id="8286227656784970313">சாதன அகராதியைப் பயன்படுத்துக</translation>
 <translation id="828642162569365647"><ph name="DEVICE_TYPE" /> இல் உள்ள தரவையும் ஃபோனில் இருந்து நீங்கள் அணுகும் தகவல்களையும் இந்தக் கடவுச்சொல் அல்லது பின் (PIN) பாதுகாக்கிறது. ஒவ்வொரு முறையும் <ph name="DEVICE_TYPE" /> ஐ உறக்கப் பயன்முறையில் இருந்து எழுப்பும்போதும் அதை அன்லாக் செய்ய வேண்டும்.</translation>
 <translation id="8287902281644548111">API அழைப்பு/URLபடி தேடு</translation>
 <translation id="8288032458496410887"><ph name="APP" />ஐ நிறுவல்நீக்கு...</translation>
@@ -7799,6 +7807,7 @@
 <translation id="8393511274964623038">செருகுநிரலை நிறுத்து</translation>
 <translation id="839363317075970734">புளூடூத் சாதனத்தின் விவரங்கள்</translation>
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
+<translation id="8394212467245680403">எண்ணெழுத்து</translation>
 <translation id="8397825320644530257">இணைக்கப்பட்டுள்ள மொபைலின் இணைப்பைத் துண்டி</translation>
 <translation id="8398877366907290961">இருப்பினும் தொடர்க</translation>
 <translation id="8399282673057829204">கடவுச்சொல்லைக் காட்டு</translation>
@@ -7844,6 +7853,7 @@
 <translation id="844063558976952706">இந்த தளத்திற்கு எப்போதும்</translation>
 <translation id="8441313165929432954">இணைப்பு முறையை இயக்குதல்/முடக்குதல்</translation>
 <translation id="8443795068008423036">உங்கள் சாதனம் சமீபத்திய பதிப்பில் இயங்குவதை உறுதிசெய்து மீண்டும் முயலவும்</translation>
+<translation id="8443986842926457191">URLலில் 2048 எழுத்துகளுக்கு மேல் உள்ளன</translation>
 <translation id="8446884382197647889">மேலும் அறிக</translation>
 <translation id="8447409163267621480">கன்ட்ரோல் அல்லது ஆல்ட் விசையைப் பயன்படுத்தித் தொடங்கவும்</translation>
 <translation id="844850004779619592">கட்டளைகள் எதுவுமில்லை</translation>
@@ -7909,6 +7919,7 @@
 <translation id="851263357009351303"><ph name="HOST" /> ஐ படங்களைக் காண்பிக்க எப்போதும் அனுமதி</translation>
 <translation id="8513108775083588393">தானாகச் சுழற்று</translation>
 <translation id="8514746246728959655">வேறொரு பாதுகாப்பு விசையைப் பயன்படுத்தவும்</translation>
+<translation id="8519895319663397036">கடவுச்சொற்களை ஏற்ற முடியவில்லை. ஃபைல் 150 கி.பை. அளவைவிடக் குறைவாக இருக்க வேண்டும்</translation>
 <translation id="8523493869875972733">மாற்றங்களை வைத்திரு</translation>
 <translation id="8523849605371521713">கொள்கை மூலம் சேர்க்கப்பட்டது</translation>
 <translation id="8524783101666974011">உங்கள் Google கணக்கில் கார்டுகளைச் சேமியுங்கள்</translation>

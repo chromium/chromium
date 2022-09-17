@@ -81,14 +81,12 @@
 <translation id="6110625574506755980">Algunas funciones de Chrome dejarán de estar disponibles.</translation>
 <translation id="6181930887571472871">Cambiar a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee tus pestañas de incógnito.</translation>
-<translation id="6387994324662817823">Las contraseñas se guardan en el gestor de contraseñas de Google solo en este dispositivo.</translation>
 <translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="6427126399757991875">Tu organización está configurando Chrome...</translation>
 <translation id="6600954340915313787">Copiada a Chrome</translation>
 <translation id="6634107063912726160">Si cierras sesión, Chrome no sincronizará ningún dato nuevo con tu cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
 <translation id="6648150602980899529">Estás iniciando sesión con una cuenta gestionada por <ph name="DOMAIN" />, lo que significa que vas a proporcionar a su administrador el control sobre tus datos de Chrome. Los datos se van a vincular de forma permanente a esta cuenta. Si cierras sesión en Chrome, se eliminarán los datos de este dispositivo pero permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome en este dispositivo?</translation>
-<translation id="6709398533399187136">Tu contraseña se ha visto expuesta en una quiebra de seguridad de datos. El gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora.</translation>
 <translation id="6822673484890854830">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="701356708427365932">Descubre el nuevo menú de Chrome</translation>
@@ -107,7 +105,6 @@
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7662994914830945754">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
-<translation id="766361182512894255">Tu contraseña se ha visto expuesta en una quiebra de seguridad de datos. Chrome recomienda cambiar la contraseña ahora.</translation>
 <translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
 <translation id="7754633291442704733">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, tus marcadores, tu historial, tus contraseñas y otros ajustes de Chrome que almacenes en esta cuenta. Si cierras sesión, tus datos se borrarán de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu cuenta de Google gestionada y estarán disponibles para tu organización. Tu organización también puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>

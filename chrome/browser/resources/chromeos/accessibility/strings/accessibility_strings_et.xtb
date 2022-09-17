@@ -238,6 +238,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2619344480613750862">Saate ka ekraanikuva jaotiste vahel liikuda. Näiteks saate liikuda käivitaja, riiuli ja Chrome'i vahelehtede vahel. Järgmisesse jaotisse liikumiseks pühkige nelja sõrmega vasakult paremale. Jätkamiseks proovige seda kohe.</translation>
 <translation id="2624431853467395961">Õppimisrežiimi avamine</translation>
 <translation id="2626530649491650971">klõpsatav</translation>
+<translation id="263637551280112393">Vajutage klahvikombinatsiooni Otsing + Tõstuklahv + Tühik</translation>
 <translation id="2637227747952042642">Matemaatika</translation>
 <translation id="2638785836053527382">Allalaadimine jätkub: <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVoxi muuteklahv</translation>
@@ -650,6 +651,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="5355014376930441909">Järgmist jaotist ei ole</translation>
 <translation id="5368000168321181111">Helisignaalid on väljas</translation>
 <translation id="5368505757342402527">Allalaadimine on <ph name="PROGRESS" />% valmis: <ph name="FILE_NAME" />. Jäänud on ligikaudu <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">pikk klikk</translation>
 <translation id="5400836586163650660">Hall</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Modaalne teatis</translation>

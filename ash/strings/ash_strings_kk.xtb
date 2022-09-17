@@ -78,7 +78,6 @@
 <translation id="1306549533752902673">ҰСЫНЫЛАТЫН ҚОЛДАНБАЛАР</translation>
 <translation id="1312604459020188865">Сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Сөрені әрқашан көрсету</translation>
-<translation id="1316811122439383437">Tote: экраннан түсірілген соңғы кескіндер, соңғы жүктеп алынған және бекітілген файлдар.</translation>
 <translation id="132346741904777634">Камера жоғарғы сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> қосылған</translation>
 <translation id="1341651618736211726">Қосымша мәзір</translation>
@@ -656,7 +655,6 @@
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (сол)</translation>
 <translation id="4734965478015604180">Көлденең</translation>
-<translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + сан пернелер тіркесімінің функциясы өзгерді. Функциялық пернелерді пайдалану үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + жоғарғы қатар пернесі тіркесімін басыңыз.</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4740516757091333363">Сақталған жұмыс үстелін жою керек пе?</translation>
 <translation id="4752784485658729358">Тек сақталған 6 жұмыс үстеліне рұқсат етіледі. Жаңа жұмыс үстелін сақтау үшін олардың бірін өшіріңіз.</translation>
@@ -743,6 +741,7 @@
 <translation id="5283198616748585639">1 мин қосу</translation>
 <translation id="528468243742722775">Соңы</translation>
 <translation id="5286194356314741248">Ізделуде</translation>
+<translation id="5293671101077843611">Бүгінге ешқандай іс-шара жоқ.</translation>
 <translation id="5297423144044956168">Ешқандай мобильдік құрылғы табылмады.</translation>
 <translation id="5297704307811127955">Өшірулі</translation>
 <translation id="5300589172476337783">Көрсету</translation>

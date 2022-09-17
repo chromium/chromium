@@ -3708,7 +3708,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4477015793815781985">Incluye Ctrl, Alt o ⌘</translation>
 <translation id="4477379360383751882">Buscar dentro de la imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Guardar enlac&amp;e como...</translation>
-<translation id="4479424953165245642">Gestionar aplicaciones del kiosco</translation>
+<translation id="4479424953165245642">Gestionar aplicaciones de kiosco</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Se está configurando la máquina virtual. Esto puede tardar unos minutos.</translation>
 <translation id="4480590691557335796">Chrome puede encontrar software dañino en tu ordenador y eliminarlo</translation>
@@ -4922,6 +4922,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5658415415603568799">Para mayor seguridad, Smart Lock te pedirá que introduzcas la contraseña después de 20 horas.</translation>
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5662513737565158057">Cambia el funcionamiento de las aplicaciones de Linux.</translation>
+<translation id="5663459693447872156">Cambiar automáticamente a ancho medio</translation>
 <translation id="5667293444945855280">Software malicioso</translation>
 <translation id="5667546120811588575">Configurando Google Play...</translation>
 <translation id="5668351004957198136">Error</translation>
@@ -7251,6 +7252,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7903429136755645827">Haz clic para personalizar los controles de juegos</translation>
 <translation id="7903742244674067440">Tienes certificados registrados que identifican a estas entidades</translation>
 <translation id="7903925330883316394">Utilidad: <ph name="UTILITY_TYPE" /></translation>
+<translation id="7903984238293908205">Katakana</translation>
 <translation id="7904526211178107182">Permite que los puertos de Linux estén disponibles para otros dispositivos de tu red.</translation>
 <translation id="7906440585529721295">Los datos locales se eliminarán</translation>
 <translation id="7907837847548254634">Destaca brevemente el objeto seleccionado</translation>
@@ -7672,6 +7674,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
+<translation id="8286227656784970313">Utilizar diccionario del sistema</translation>
 <translation id="828642162569365647">Esta contraseña o este PIN protege los datos que tengas en este <ph name="DEVICE_TYPE" /> y cualquier información a la que accedas desde tu teléfono. Tendrás que desbloquear tu <ph name="DEVICE_TYPE" /> cada vez que se active al salir del modo de suspensión.</translation>
 <translation id="8287902281644548111">Buscar por llamada a la API o URL</translation>
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />...</translation>
@@ -7782,6 +7785,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8393511274964623038">Detener complemento</translation>
 <translation id="839363317075970734">Información del dispositivo Bluetooth</translation>
 <translation id="8393700583063109961">Enviar mensaje</translation>
+<translation id="8394212467245680403">Alfanumérico</translation>
 <translation id="8397825320644530257">Desconectar teléfono conectado</translation>
 <translation id="8398877366907290961">Continuar de todos modos</translation>
 <translation id="8399282673057829204">Ver contraseña</translation>
