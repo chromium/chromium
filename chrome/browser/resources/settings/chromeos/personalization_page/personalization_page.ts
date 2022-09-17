@@ -12,19 +12,15 @@ import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
 import {getTemplate} from './personalization_page.html.js';
 
-const SettingsPersonalizationPageElementBase =
-    mixinBehaviors([], I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface,
-    };
-
+const SettingsPersonalizationPageElementBase = I18nMixin(PolymerElement);
 
 class SettingsPersonalizationPageElement extends
     SettingsPersonalizationPageElementBase {
@@ -49,7 +45,6 @@ class SettingsPersonalizationPageElement extends
   }
 
   private isPersonalizationHubEnabled_: boolean;
-
   private personalizationHubBrowserProxy_: PersonalizationHubBrowserProxy;
 
   constructor() {
@@ -61,6 +56,13 @@ class SettingsPersonalizationPageElement extends
 
   private openPersonalizationHub_() {
     this.personalizationHubBrowserProxy_.openPersonalizationHub();
+  }
+}
+
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-personalization-page': SettingsPersonalizationPageElement;
   }
 }
 
