@@ -3252,7 +3252,6 @@ crbug.com/1050754 external/wpt/mathml/presentation-markup/tables/table-001.html 
 crbug.com/1050754 external/wpt/mathml/presentation-markup/tables/table-002.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/presentation-markup/tables/table-axis-height.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/relations/css-styling/attribute-mapping-001.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/mathml/relations/css-styling/attribute-mapping-002.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/mathml/relations/css-styling/display-2.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/relations/css-styling/display-contents.html [ Failure ]
 crbug.com/1050754 external/wpt/mathml/relations/css-styling/displaystyle-1.html [ Failure ]
