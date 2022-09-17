@@ -191,10 +191,8 @@ class AddressProfileSaveManagerTest
         .did_remove_invalid_phone_number = std::get<2>(GetParam())};
     // Enable both explicit save prompts and structured names.
     // The latter is needed to test the concept of silent updates.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillAddressProfileSavePrompt,
-         features::kAutofillEnableSupportForMoreStructureInNames},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillAddressProfileSavePrompt);
   }
 
   void BlockProfileForUpdates(const std::string& guid) {

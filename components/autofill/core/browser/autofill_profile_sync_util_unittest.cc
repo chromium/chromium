@@ -284,16 +284,13 @@ class AutofillProfileSyncUtilTest : public testing::Test {
 // the server.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   base::test::ScopedFeatureList structured_names_feature;
-  // With those four features enabled, the AutofillProfile supports all tokens
-  // and statuses assignable in the specifics. If one of those features is
+  // With this feature enabled, the AutofillProfile supports all tokens
+  // and statuses assignable in the specifics. If this feature is
   // disabled, for some tokens
   // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
   // identify function. The same is true for the verification status.
-  structured_names_feature.InitWithFeatures(
-      {features::kAutofillEnableSupportForMoreStructureInAddresses,
-       features::kAutofillEnableSupportForMoreStructureInNames,
-       features::kAutofillEnableSupportForHonorificPrefixes},
-      {});
+  structured_names_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForHonorificPrefixes);
 
   AutofillProfile profile = ConstructCompleteProfile();
   AutofillProfileSpecifics specifics = ConstructCompleteSpecifics();
@@ -309,17 +306,6 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
 
 // Test that fields not set for the input are empty in the output.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
-  base::test::ScopedFeatureList structured_names_feature;
-  // With those two features enabled, the AutofillProfile supports all tokens
-  // and statuses assignable in the specifics. If one of those features is
-  // disabled, for some tokens
-  // AutofillProfile::GetRawInfo(AutofillProfile::SetRawInfo()) is not the
-  // identify function. The same is true for the verification status.
-  structured_names_feature.InitWithFeatures(
-      {features::kAutofillEnableSupportForMoreStructureInAddresses,
-       features::kAutofillEnableSupportForMoreStructureInNames},
-      {});
-
   AutofillProfile profile(kGuid, std::string());
   ASSERT_FALSE(profile.HasRawInfo(NAME_FULL));
   ASSERT_FALSE(profile.HasRawInfo(COMPANY_NAME));

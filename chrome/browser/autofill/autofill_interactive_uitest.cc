@@ -203,6 +203,7 @@ std::vector<FieldValue> GetFieldValues(
   content::EvalJsResult r = content::EvalJs(execution_target, script);
   DCHECK(r.value.is_list()) << r.error;
   std::vector<FieldValue> fields;
+
   for (const base::Value& field : r.value.GetListDeprecated()) {
     fields.push_back({.id = *field.FindStringKey("id"),
                       .value = *field.FindStringKey("value")});
@@ -2541,17 +2542,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
-  // In the legacy implementation for names, the initial is always created
-  // without a trailing dot even if the user explicitely used a dot.
-  // For structured names, we leave the choice to the user.
-  // TODO(crbug.com/1103421): Clean legacy implementation once structured names
-  // are fully launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
-    EXPECT_EQ("C.", GetFieldValueById("NAME_MIDDLE"));
-  } else {
-    EXPECT_EQ("C", GetFieldValueById("NAME_MIDDLE"));
-  }
+  EXPECT_EQ("C.", GetFieldValueById("NAME_MIDDLE"));
 }
 
 // Test forms with multiple email addresses are filled properly.

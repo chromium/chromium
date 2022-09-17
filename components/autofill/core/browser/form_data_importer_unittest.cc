@@ -728,10 +728,7 @@ class FormDataImporterTest
         std::get<1>(GetParam());
 
     // Enable all those features by default.
-    std::vector<base::Feature> enabled_features{
-        features::kAutofillEnableSupportForMoreStructureInAddresses,
-        features::kAutofillEnableSupportForMoreStructureInNames};
-
+    std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
 
     (support_for_apartment_numbers_ ? enabled_features : disabled_features)
@@ -899,10 +896,6 @@ TEST_P(FormDataImporterTest, PhoneNumberRegionMetrics) {
 
 // ImportAddressProfiles tests.
 TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
-  base::test::ScopedFeatureList structured_addresses_feature;
-  structured_addresses_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-
   FormData form;
   form.url = GURL("https://wwww.foo.com");
 
@@ -945,10 +938,6 @@ TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
 
 TEST_P(FormDataImporterTest,
        ImportStructuredAddressProfile_StreetNameAndHouseNumber) {
-  base::test::ScopedFeatureList structured_addresses_feature;
-  structured_addresses_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-
   FormData form;
   form.url = GURL("https://wwww.foo.com");
 
@@ -996,11 +985,8 @@ TEST_P(FormDataImporterTest,
 TEST_P(
     FormDataImporterTest,
     ImportStructuredAddressProfile_StreetNameAndHouseNumberAndApartmentNumber) {
-  // This test is only applicable for enabled structured addresses and support
-  // for apartment numbers.
+  // This test is only applicable for enabled support for apartment numbers.
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInAddresses) ||
-      !base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForApartmentNumbers)) {
     return;
   }
@@ -1099,10 +1085,6 @@ TEST_P(FormDataImporterTest,
 
 // ImportAddressProfiles tests.
 TEST_P(FormDataImporterTest, ImportStructuredNameAddressProfile) {
-  base::test::ScopedFeatureList structured_addresses_feature;
-  structured_addresses_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   FormData form;
   form.url = GURL("https://wwww.foo.com");
 
@@ -1765,11 +1747,6 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        IncorporateStructuredNameInformationInVerifiedProfile) {
-  // This test is only applicable to structured names.
-  if (!structured_address::StructuredNamesEnabled()) {
-    return;
-  }
-
   // Start with a verified profile.
   AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
@@ -1855,11 +1832,6 @@ TEST_P(FormDataImporterTest,
 
 TEST_P(FormDataImporterTest,
        IncorporateStructuredAddressInformationInVerififedProfile) {
-  // This test is only applicable to structured addresses.
-  if (!structured_address::StructuredAddressesEnabled()) {
-    return;
-  }
-
   // Start with a verified profile.
   AutofillProfile profile(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",

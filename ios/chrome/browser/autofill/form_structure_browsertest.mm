@@ -198,12 +198,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   web_state_ = web::WebState::Create(params);
   feature_list_.InitWithFeatures(
       // Enabled
-      {// TODO(crbug.com/1098943): Remove once experiment is over.
-       features::kAutofillEnableSupportForMoreStructureInNames,
-       // TODO(crbug.com/1125978): Remove once launched.
-       features::kAutofillEnableSupportForMoreStructureInAddresses,
-       // TODO(crbug.com/1076175) Remove once launched.
-       features::kAutofillUseNewSectioningMethod,
+      {// TODO(crbug.com/1076175) Remove once launched.
+       autofill::features::kAutofillUseNewSectioningMethod,
        // TODO(crbug.com/1150890) Remove once launched
        features::kAutofillEnableAugmentedPhoneCountryCode,
        // TODO(crbug.com/1157405) Remove once launched.

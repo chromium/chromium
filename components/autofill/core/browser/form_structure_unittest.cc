@@ -5104,10 +5104,6 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
 // predictions.
 TEST_F(FormStructureTestImpl,
        ParseQueryResponse_HeuristicsOverrideSpanishLastNameTypes) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   FormData form_data;
   FormFieldData field;
   form_data.url = GURL("http://foo.com");
@@ -5163,39 +5159,12 @@ TEST_F(FormStructureTestImpl,
   EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
   EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_LAST_FIRST);
   EXPECT_EQ(form.field(2)->Type().GetStorableType(), NAME_LAST_SECOND);
-
-  // Now disable the feature and process the query again.
-  scoped_feature.Reset();
-  scoped_feature.InitAndDisableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
-  std::vector<FormStructure*> forms2{&form};
-  FormStructure::ParseApiQueryResponse(response_string, forms2,
-                                       test::GetEncodedSignatures(forms2),
-                                       nullptr, nullptr);
-  ASSERT_EQ(form.field_count(), 3U);
-
-  // Validate the heuristic and server predictions.
-  EXPECT_EQ(NAME_LAST_FIRST, form.field(1)->heuristic_type());
-  EXPECT_EQ(NAME_LAST_SECOND, form.field(2)->heuristic_type());
-  EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
-  EXPECT_EQ(NAME_LAST, form.field(2)->server_type());
-
-  // Validate that the heuristic prediction does not win for the two last name
-  // fields.
-  EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
-  EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_LAST);
-  EXPECT_EQ(form.field(2)->Type().GetStorableType(), NAME_LAST);
 }
 
 // Test the heuristic prediction for ADDRESS_HOME_STREET_NAME and
 // ADDRESS_HOME_HOUSE_NUMBER overrides server predictions.
 TEST_F(FormStructureTestImpl,
        ParseQueryResponse_HeuristicsOverrideStreetNameAndHouseNumberTypes) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-
   FormData form_data;
   FormFieldData field;
   form_data.url = GURL("http://foo.com");
@@ -5257,28 +5226,6 @@ TEST_F(FormStructureTestImpl,
   // number.
   EXPECT_EQ(form.field(1)->Type().GetStorableType(), ADDRESS_HOME_STREET_NAME);
   EXPECT_EQ(form.field(2)->Type().GetStorableType(), ADDRESS_HOME_HOUSE_NUMBER);
-
-  // Now disable the feature and process the query again.
-  scoped_feature.Reset();
-  scoped_feature.InitAndDisableFeature(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-
-  std::vector<FormStructure*> forms2{&form};
-  FormStructure::ParseApiQueryResponse(response_string, forms2,
-                                       test::GetEncodedSignatures(forms2),
-                                       nullptr, nullptr);
-  ASSERT_EQ(form.field_count(), 4U);
-
-  // Validate the heuristic and server predictions.
-  EXPECT_EQ(ADDRESS_HOME_STREET_NAME, form.field(1)->heuristic_type());
-  EXPECT_EQ(ADDRESS_HOME_HOUSE_NUMBER, form.field(2)->heuristic_type());
-  EXPECT_EQ(ADDRESS_HOME_LINE1, form.field(1)->server_type());
-  EXPECT_EQ(ADDRESS_HOME_LINE2, form.field(2)->server_type());
-
-  // Validate that the heuristic prediction does not win for the street name and
-  // house number.
-  EXPECT_EQ(form.field(1)->Type().GetStorableType(), ADDRESS_HOME_LINE1);
-  EXPECT_EQ(form.field(2)->Type().GetStorableType(), ADDRESS_HOME_LINE2);
 }
 
 // Tests proper resolution heuristic, server and html field types when the

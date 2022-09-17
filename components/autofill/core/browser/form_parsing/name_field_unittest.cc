@@ -56,13 +56,6 @@ TEST_P(NameFieldTest, FirstMiddleLast2) {
 
 // Test that a field for a honorific title is parsed correctly.
 TEST_P(NameFieldTest, HonorificPrefixFirstLast) {
-  // With support for two last names, the parsing should find the first name
-  // field and the two last name fields.
-  // TODO(crbug.com/1098943): Remove once launched.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AddTextFormFieldData("salutation", "", NAME_HONORIFIC_PREFIX);
   AddTextFormFieldData("first_name", "", NAME_FIRST);
   AddTextFormFieldData("last_name", "", NAME_LAST);
@@ -159,13 +152,6 @@ TEST_P(NameFieldTest, MiddleInitialNoLastName) {
 // Tests that a website with a first and second surname field is parsed
 // correctly.
 TEST_P(NameFieldTest, HonorificPrefixAndFirstNameAndHispanicLastNames) {
-  // With support for two last names, the parsing should find the first name
-  // field and the two last name fields.
-  // TODO(crbug.com/1098943): Remove once launched.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AddTextFormFieldData("tratamiento", "tratamiento", NAME_HONORIFIC_PREFIX);
   AddTextFormFieldData("nombre", "nombre", NAME_FIRST);
   AddTextFormFieldData("apellido paterno", "apellido_paterno", NAME_LAST_FIRST);
@@ -178,12 +164,6 @@ TEST_P(NameFieldTest, HonorificPrefixAndFirstNameAndHispanicLastNames) {
 // Tests that a website with a first and second surname field is parsed
 // correctly.
 TEST_P(NameFieldTest, FirstNameAndOptionalMiddleNameAndHispanicLastNames) {
-  // With support for two last names, the parsing should find the first name
-  // field and the two last name fields.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AddTextFormFieldData("nombre", "nombre", NAME_FIRST);
   AddTextFormFieldData("middle_name", "middle name", NAME_MIDDLE);
   AddTextFormFieldData("apellido_paterno", "apellido paterno", NAME_LAST_FIRST);

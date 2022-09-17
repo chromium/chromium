@@ -261,16 +261,15 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
 
 }  // namespace
 
-class AutofillProfileSyncBridgeTestBase : public testing::Test {
+class AutofillProfileSyncBridgeTest : public testing::Test {
  public:
-  AutofillProfileSyncBridgeTestBase() = default;
+  AutofillProfileSyncBridgeTest() = default;
 
-  AutofillProfileSyncBridgeTestBase(const AutofillProfileSyncBridgeTestBase&) =
-      delete;
-  AutofillProfileSyncBridgeTestBase& operator=(
-      const AutofillProfileSyncBridgeTestBase&) = delete;
+  AutofillProfileSyncBridgeTest(const AutofillProfileSyncBridgeTest&) = delete;
+  AutofillProfileSyncBridgeTest& operator=(
+      const AutofillProfileSyncBridgeTest&) = delete;
 
-  ~AutofillProfileSyncBridgeTestBase() override = default;
+  ~AutofillProfileSyncBridgeTest() override = default;
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
@@ -382,37 +381,7 @@ class AutofillProfileSyncBridgeTestBase : public testing::Test {
   std::unique_ptr<AutofillProfileSyncBridge> bridge_;
 };
 
-// This class performs the sync bridge test with and without structured names
-// enabled.
-class AutofillProfileSyncBridgeTest : public AutofillProfileSyncBridgeTestBase,
-                                      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    InitializeFeatures();
-    AutofillProfileSyncBridgeTestBase::SetUp();
-  }
-
-  void InitializeFeatures() {
-    bool structured_names_enabled = GetParam();
-    if (structured_names_enabled) {
-      scoped_features_.InitAndEnableFeature(
-          features::kAutofillEnableSupportForMoreStructureInNames);
-    } else {
-      scoped_features_.InitAndDisableFeature(
-          features::kAutofillEnableSupportForMoreStructureInNames);
-    }
-  }
-
-  bool UsingStructuredNames() const {
-    return base::FeatureList::IsEnabled(
-        features::kAutofillEnableSupportForMoreStructureInNames);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
-TEST_P(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Added) {
+TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Added) {
   StartSyncing({});
 
   AutofillProfile local(kGuidA, kHttpsOrigin);
@@ -431,7 +400,7 @@ TEST_P(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Added) {
 }
 
 // Language code in autofill profiles should be synced to the server.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Added_LanguageCodePropagates) {
   StartSyncing({});
 
@@ -450,7 +419,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Validity state bitfield in autofill profiles should be synced to the server.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Added_LocalValidityBitfieldPropagates) {
   StartSyncing({});
 
@@ -468,7 +437,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Local updates should be properly propagated to the server.
-TEST_P(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Updated) {
+TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Updated) {
   StartSyncing({});
 
   AutofillProfile local(kGuidA, kHttpsOrigin);
@@ -486,7 +455,7 @@ TEST_P(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Updated) {
 }
 
 // Usage stats should be updated by the client.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Updated_UsageStatsOverwrittenByClient) {
   // Remote data has a profile with usage stats.
   AutofillProfileSpecifics remote =
@@ -517,7 +486,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Server profile updates should be ignored.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Updated_IgnoreServerProfiles) {
   StartSyncing({});
 
@@ -530,7 +499,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
   bridge()->AutofillProfileChanged(change);
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Deleted) {
+TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Deleted) {
   StartSyncing({});
 
   AutofillProfile local(kGuidB, kHttpsOrigin);
@@ -545,7 +514,7 @@ TEST_P(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Deleted) {
 }
 
 // Server profile updates should be ignored.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        AutofillProfileChanged_Deleted_IgnoreServerProfiles) {
   StartSyncing({});
 
@@ -558,7 +527,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
   bridge()->AutofillProfileChanged(change);
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, GetAllDataForDebugging) {
+TEST_F(AutofillProfileSyncBridgeTest, GetAllDataForDebugging) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpsOrigin);
   local1.SetRawInfo(NAME_FIRST, u"John");
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -572,7 +541,7 @@ TEST_P(AutofillProfileSyncBridgeTest, GetAllDataForDebugging) {
   EXPECT_THAT(GetAllLocalData(), UnorderedElementsAre(local1, local2));
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, GetData) {
+TEST_F(AutofillProfileSyncBridgeTest, GetData) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpsOrigin);
   local1.SetRawInfo(NAME_FIRST, u"John");
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -597,7 +566,7 @@ TEST_P(AutofillProfileSyncBridgeTest, GetData) {
   EXPECT_THAT(data, ElementsAre(local1));
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData) {
+TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpOrigin);
   local1.SetRawInfo(NAME_FIRST, u"John");
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -647,11 +616,7 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData) {
 
 // Tests the profile migration that is performed after specifics are converted
 // to profiles.
-TEST_P(AutofillProfileSyncBridgeTest, ProfileMigration) {
-  // This test is only applicable when structured names are enabled.
-  if (!UsingStructuredNames())
-    return;
-
+TEST_F(AutofillProfileSyncBridgeTest, ProfileMigration) {
   AutofillProfile remote1 = AutofillProfile(kGuidC, kHttpOrigin);
   remote1.SetRawInfo(NAME_FIRST, u"Thomas");
   remote1.SetRawInfo(NAME_MIDDLE, u"Neo");
@@ -690,7 +655,7 @@ TEST_P(AutofillProfileSyncBridgeTest, ProfileMigration) {
 
 // Ensure that all profile fields are able to be synced up from the client to
 // the server.
-TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToServer) {
+TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToServer) {
   AutofillProfile local = ConstructCompleteProfile();
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
@@ -708,7 +673,7 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToServer) {
 
 // Ensure that all profile fields are able to be synced down from the server to
 // the client (and nothing gets uploaded back).
-TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToClient) {
+TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToClient) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({ConstructCompleteSpecifics()});
@@ -717,7 +682,7 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SyncAllFieldsToClient) {
               ElementsAre(WithUsageStats(ConstructCompleteProfile())));
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_IdenticalProfiles) {
+TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData_IdenticalProfiles) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpOrigin);
   local1.SetRawInfoWithVerificationStatus(
       NAME_FIRST, u"John", structured_address::VerificationStatus::kObserved);
@@ -772,7 +737,7 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_IdenticalProfiles) {
                                    CreateAutofillProfile(merged2)));
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_NonSimilarProfiles) {
+TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData_NonSimilarProfiles) {
   AutofillProfile local = ConstructCompleteProfile();
   local.set_guid(kGuidA);
   local.SetRawInfo(NAME_FULL, u"John K. Doe, Jr.");
@@ -806,7 +771,7 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_NonSimilarProfiles) {
               UnorderedElementsAre(local, CreateAutofillProfile(remote)));
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SimilarProfiles) {
+TEST_F(AutofillProfileSyncBridgeTest, MergeSyncData_SimilarProfiles) {
   AutofillProfile local1 = AutofillProfile(kGuidA, kHttpOrigin);
   local1.SetRawInfo(NAME_FIRST, u"John");
   local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
@@ -847,16 +812,9 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SimilarProfiles) {
   // should never overwrite a verified one.
   AutofillProfileSpecifics merged1(remote1_specifics);
   merged1.set_origin(kHttpOrigin);
-  // For the legacy implementation, the full name field gets popluated by the
-  // merging operation and must be added to the expectation.
-  // For structured names, the full name is already populated by calling
-  // |FinalizeAfterImport()|.
-  if (UsingStructuredNames()) {
-    ASSERT_GT(merged1.name_full_size(), 0);
-    ASSERT_EQ(merged1.name_full(0), "John");
-  } else {
-    merged1.set_name_full(0, "John");
-  }
+  ASSERT_GT(merged1.name_full_size(), 0);
+  ASSERT_EQ(merged1.name_full(0), "John");
+
   // Merging two profile takes their max use count.
   merged1.set_use_count(27);
 
@@ -878,7 +836,7 @@ TEST_P(AutofillProfileSyncBridgeTest, MergeSyncData_SimilarProfiles) {
 
 // Tests that MergeSimilarProfiles keeps the most recent use date of the two
 // profiles being merged.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_OlderUseDate) {
   // Different guids, same origin, difference in the phone number.
   AutofillProfile local(kGuidA, kHttpOrigin);
@@ -903,7 +861,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 
 // Tests that MergeSimilarProfiles keeps the most recent use date of the two
 // profiles being merged.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_NewerUseDate) {
   // Different guids, same origin, difference in the phone number.
   AutofillProfile local(kGuidA, kHttpOrigin);
@@ -927,7 +885,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 
 // Tests that MergeSimilarProfiles saves the max of the use counts of the two
 // profiles in |remote|.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_NonZeroUseCounts) {
   // Different guids, same origin, difference in the phone number.
   AutofillProfile local(kGuidA, kHttpOrigin);
@@ -951,7 +909,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 
 // Tests that when merging similar profiles for initial sync, we add the
 // additional information of |local| into |remote|.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_LocalOriginPreserved) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
@@ -980,7 +938,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 
 // Sync data without origin should not overwrite existing origin in local
 // autofill profile.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_LocalExistingOriginPreserved) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   local.FinalizeAfterImport();
@@ -1008,7 +966,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 // Ensure that no Sync events are generated to fill in missing origins from Sync
 // with explicitly present empty ones. This ensures that the migration to add
 // origins to profiles does not generate lots of needless Sync updates.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        MergeSyncData_SimilarProfiles_LocalMissingOriginPreserved) {
   AutofillProfile local = AutofillProfile(kGuidA, std::string());
   local.SetRawInfo(NAME_FIRST, u"John");
@@ -1030,7 +988,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
   EXPECT_THAT(GetAllLocalData(), ElementsAre(local));
 }
 
-TEST_P(AutofillProfileSyncBridgeTest, ApplySyncChanges) {
+TEST_F(AutofillProfileSyncBridgeTest, ApplySyncChanges) {
   AutofillProfile local = AutofillProfile(kGuidA, kHttpsOrigin);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
@@ -1057,7 +1015,7 @@ TEST_P(AutofillProfileSyncBridgeTest, ApplySyncChanges) {
 }
 
 // Ensure that entries with invalid specifics are ignored.
-TEST_P(AutofillProfileSyncBridgeTest, ApplySyncChanges_OmitsInvalidSpecifics) {
+TEST_F(AutofillProfileSyncBridgeTest, ApplySyncChanges_OmitsInvalidSpecifics) {
   StartSyncing({});
 
   AutofillProfileSpecifics remote_valid =
@@ -1081,7 +1039,7 @@ TEST_P(AutofillProfileSyncBridgeTest, ApplySyncChanges_OmitsInvalidSpecifics) {
 
 // Verifies that setting the street address field also sets the (deprecated)
 // address line 1 and line 2 fields.
-TEST_P(AutofillProfileSyncBridgeTest, StreetAddress_SplitAutomatically) {
+TEST_F(AutofillProfileSyncBridgeTest, StreetAddress_SplitAutomatically) {
   AutofillProfile local;
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"123 Example St.\nApt. 42");
   EXPECT_EQ(u"123 Example St.", local.GetRawInfo(ADDRESS_HOME_LINE1));
@@ -1098,7 +1056,7 @@ TEST_P(AutofillProfileSyncBridgeTest, StreetAddress_SplitAutomatically) {
 
 // Verifies that setting the (deprecated) address line 1 and line 2 fields also
 // sets the street address.
-TEST_P(AutofillProfileSyncBridgeTest, StreetAddress_JointAutomatically) {
+TEST_F(AutofillProfileSyncBridgeTest, StreetAddress_JointAutomatically) {
   AutofillProfile local;
   local.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example St.");
   local.SetRawInfo(ADDRESS_HOME_LINE2, u"Apt. 42");
@@ -1115,7 +1073,7 @@ TEST_P(AutofillProfileSyncBridgeTest, StreetAddress_JointAutomatically) {
 // Ensure that the street address field takes precedence over the (deprecated)
 // address line 1 and line 2 fields, even though these are expected to always be
 // in sync in practice.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_StreetAddress_TakesPrecedenceOverAddressLines) {
   // Create remote entry with conflicting address data in the street address
   // field vs. the address line 1 and address line 2 fields.
@@ -1151,7 +1109,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 // the line1 and line2 fields. This ensures that the migration to add the
 // street address field to profiles does not generate lots of needless Sync
 // updates.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_StreetAddress_NoUpdateToEmptyStreetAddressSyncedUp) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   local.SetRawInfoWithVerificationStatus(
@@ -1175,7 +1133,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Missing language code field should not generate sync events.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_MissingCodesNoSync) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   ASSERT_TRUE(local.language_code().empty());
@@ -1194,7 +1152,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Empty language code should be overwritten by sync.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_ExistingRemoteWinsOverMissingLocal) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   ASSERT_TRUE(local.language_code().empty());
@@ -1213,7 +1171,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Local language code should be overwritten by remote one.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_ExistingRemoteWinsOverExistingLocal) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   local.set_language_code("de");
@@ -1233,7 +1191,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 
 // Sync data without language code should not overwrite existing language code
 // in local autofill profile.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_LanguageCode_ExistingLocalWinsOverMissingRemote) {
   // Local autofill profile has "en" language code.
   AutofillProfile local(kGuidA, kHttpsOrigin);
@@ -1261,7 +1219,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Missing validity state bitifield should not generate sync events.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_DefaultValueNoSync) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   AddAutofillProfilesToTable({local});
@@ -1280,7 +1238,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Default validity state bitfield should be overwritten by sync.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverMissingLocal) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   AddAutofillProfilesToTable({local});
@@ -1299,7 +1257,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Local validity state bitfield should be overwritten by sync.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverExistingLocal) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   AddAutofillProfilesToTable({local});
@@ -1319,7 +1277,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 
 // Sync data without a default validity state bitfield should not overwrite
 // an existing validity state bitfield in local autofill profile.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_ValidityState_ExistingLocalWinsOverMissingRemote) {
   AutofillProfile local(kGuidA, kHttpsOrigin);
   AddAutofillProfilesToTable({local});
@@ -1343,7 +1301,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Missing full name field should not generate sync events.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_FullName_MissingValueNoSync) {
   // Local autofill profile has an empty full name.
   AutofillProfile local(kGuidA, kHttpsOrigin);
@@ -1368,7 +1326,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 // However, this is not a valid use case for structured names as name structures
 // must be either merged or fully maintained. For structured names, this test
 // verifies that the names are merged.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_FullName_ExistingLocalWinsOverMissingRemote) {
   // Local autofill profile has a full name.
   AutofillProfile local(kGuidA, kHttpsOrigin);
@@ -1378,16 +1336,14 @@ TEST_P(AutofillProfileSyncBridgeTest,
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
-  if (UsingStructuredNames()) {
-    // After finalization, the first, middle and last name should have the
-    // status |kParsed|.
-    ASSERT_EQ(local.GetVerificationStatus(NAME_FIRST),
-              structured_address::VerificationStatus::kParsed);
-    ASSERT_EQ(local.GetVerificationStatus(NAME_MIDDLE),
-              structured_address::VerificationStatus::kParsed);
-    ASSERT_EQ(local.GetVerificationStatus(NAME_LAST),
-              structured_address::VerificationStatus::kParsed);
-  }
+  // After finalization, the first, middle and last name should have the
+  // status |kParsed|.
+  ASSERT_EQ(local.GetVerificationStatus(NAME_FIRST),
+            structured_address::VerificationStatus::kParsed);
+  ASSERT_EQ(local.GetVerificationStatus(NAME_MIDDLE),
+            structured_address::VerificationStatus::kParsed);
+  ASSERT_EQ(local.GetVerificationStatus(NAME_LAST),
+            structured_address::VerificationStatus::kParsed);
 
   // Remote data does not have a full name value.
   AutofillProfile remote_profile = AutofillProfile(kGuidA, kHttpsOrigin);
@@ -1422,7 +1378,7 @@ TEST_P(AutofillProfileSyncBridgeTest,
 }
 
 // Missing use_count/use_date fields should not generate sync events.
-TEST_P(AutofillProfileSyncBridgeTest,
+TEST_F(AutofillProfileSyncBridgeTest,
        RemoteWithSameGuid_UsageStats_MissingValueNoSync) {
   // Local autofill profile has 0 for use_count/use_date.
   AutofillProfile local(kGuidA, kHttpsOrigin);
@@ -1455,7 +1411,7 @@ struct UpdatesUsageStatsTestCase {
 };
 
 class AutofillProfileSyncBridgeUpdatesUsageStatsTest
-    : public AutofillProfileSyncBridgeTestBase,
+    : public AutofillProfileSyncBridgeTest,
       public testing::WithParamInterface<UpdatesUsageStatsTestCase> {
  public:
   AutofillProfileSyncBridgeUpdatesUsageStatsTest() {}
@@ -1501,9 +1457,6 @@ TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {
   StartSyncing({remote});
   EXPECT_THAT(GetAllLocalData(), ElementsAre(WithUsageStats(merged)));
 }
-
-// Test the sync bridge with and without structured names.
-INSTANTIATE_TEST_SUITE_P(, AutofillProfileSyncBridgeTest, testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillProfileSyncBridgeTest,

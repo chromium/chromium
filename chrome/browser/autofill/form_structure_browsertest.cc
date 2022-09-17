@@ -207,10 +207,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       // Enabled
       {// TODO(crbug.com/1187842): Remove once experiment is over.
        features::kAutofillAcrossIframes,
-       // TODO(crbug.com/1098943): Remove once experiment is over.
-       features::kAutofillEnableSupportForMoreStructureInNames,
-       // TODO(crbug.com/1125978): Remove once launched.
-       features::kAutofillEnableSupportForMoreStructureInAddresses,
        // TODO(crbug.com/1076175) Remove once launched.
        features::kAutofillUseNewSectioningMethod,
        // Remove once launched

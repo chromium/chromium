@@ -7156,10 +7156,6 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
 
 // Test that we log the verification status of name tokens.
 TEST_F(AutofillMetricsTest, LogVerificationStatusesOfNameTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   base::HistogramTester histogram_tester;
   AutofillProfile profile;
   profile.SetRawInfoWithVerificationStatus(
@@ -7201,10 +7197,6 @@ TEST_F(AutofillMetricsTest, LogVerificationStatusesOfNameTokens) {
 
 // Test that we log the verification status of address tokens..
 TEST_F(AutofillMetricsTest, LogVerificationStatusesOfAddressTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-
   base::HistogramTester histogram_tester;
   AutofillProfile profile;
   profile.SetRawInfoWithVerificationStatus(

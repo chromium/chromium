@@ -258,33 +258,18 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   // The resulting bit mask in this test is hard-coded to capture regressions in
   // the calculation of the mask.
 
-  // TODO(crbug.com/1103421): Clean legacy implementation once structured names
-  // are fully launched.
-  // For structured names, there is additional data for new name types present.
-
-  const bool structured_names = base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-  const bool structured_address = base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
   const bool honorific_prefix = base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForHonorificPrefixes);
 
   // Combinations of honorific_prefix without structured_names are omitted
   // because honorific_prefix can only be enabled on top of structured_names.
   std::string data_present;
-  if (structured_names && !structured_address && !honorific_prefix) {
-    data_present = "1f7e0003780000080004000000040018";
-  } else if (structured_names && honorific_prefix && !structured_address) {
-    data_present = "1f7e0003780000080004000000040418";
-  } else if (structured_names && !honorific_prefix && structured_address) {
+  if (!honorific_prefix) {
     data_present = "1f7e0003780000080004000001c40018";
-  } else if (structured_names && honorific_prefix && structured_address) {
-    data_present = "1f7e0003780000080004000001c40418";
-  } else if (!structured_names && !honorific_prefix && structured_address) {
-    data_present = "1f7e0003780000080004000001c00018";
   } else {
-    data_present = "1f7e0003780000080004000000000018";
+    data_present = "1f7e0003780000080004000001c40418";
   }
+
   // TODO(crbug.com/1311937): Additional phone number trunk types are present
   // if AutofillEnableSupportForPhoneNumberTrunkTypes is enabled. Clean-up
   // implementation when launched.

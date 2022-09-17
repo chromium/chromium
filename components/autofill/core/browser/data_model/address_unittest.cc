@@ -20,34 +20,14 @@ using base::ASCIIToUTF16;
 
 namespace autofill {
 
-class AddressTest : public testing::Test,
-                    public testing::WithParamInterface<bool> {
+class AddressTest : public testing::Test {
  public:
   AddressTest() { CountryNames::SetLocaleString("en-US"); }
-
-  bool StructuredAddresses() const { return structured_addresses_enabled_; }
-
- private:
-  void SetUp() override { InitializeFeatures(); }
-
-  void InitializeFeatures() {
-    structured_addresses_enabled_ = GetParam();
-    if (structured_addresses_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kAutofillEnableSupportForMoreStructureInAddresses);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kAutofillEnableSupportForMoreStructureInAddresses);
-    }
-  }
-
-  bool structured_addresses_enabled_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that country data can be properly returned as either a country code or a
 // localized country name.
-TEST_P(AddressTest, GetCountry) {
+TEST_F(AddressTest, GetCountry) {
   Address address;
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
@@ -79,7 +59,7 @@ TEST_P(AddressTest, GetCountry) {
 
 // Test that country data can be properly returned as either a country code or a
 // full country name that can even be localized.
-TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
+TEST_F(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   Address address;
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
@@ -127,7 +107,7 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
 }
 
 // Test that we properly detect country codes appropriate for each country.
-TEST_P(AddressTest, SetCountry) {
+TEST_F(AddressTest, SetCountry) {
   Address address;
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
@@ -186,7 +166,7 @@ TEST_P(AddressTest, SetCountry) {
 }
 
 // Test setting and getting the new structured address tokens
-TEST_P(AddressTest, StructuredAddressTokens) {
+TEST_F(AddressTest, StructuredAddressTokens) {
   Address address;
 
   // Set the address tokens.
@@ -207,7 +187,7 @@ TEST_P(AddressTest, StructuredAddressTokens) {
 }
 
 // Test that we properly match typed values to stored country data.
-TEST_P(AddressTest, IsCountry) {
+TEST_F(AddressTest, IsCountry) {
   Address address;
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
 
@@ -238,7 +218,7 @@ TEST_P(AddressTest, IsCountry) {
 }
 
 // Verifies that Address::GetInfo() correctly combines address lines.
-TEST_P(AddressTest, GetStreetAddress) {
+TEST_F(AddressTest, GetStreetAddress) {
   const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
 
   // Address has no address lines.
@@ -301,7 +281,7 @@ TEST_P(AddressTest, GetStreetAddress) {
 
 // Verifies that overwriting an address with N lines with one that has fewer
 // than N lines does not result in an address with blank lines at the end.
-TEST_P(AddressTest, GetStreetAddressAfterOverwritingLongAddressWithShorterOne) {
+TEST_F(AddressTest, GetStreetAddressAfterOverwritingLongAddressWithShorterOne) {
   // Start with an address that has two lines.
   Address address;
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
@@ -318,7 +298,7 @@ TEST_P(AddressTest, GetStreetAddressAfterOverwritingLongAddressWithShorterOne) {
 }
 
 // Verifies that Address::SetRawInfo() is able to split address lines correctly.
-TEST_P(AddressTest, SetRawStreetAddress) {
+TEST_F(AddressTest, SetRawStreetAddress) {
   const std::u16string empty_street_address;
   const std::u16string short_street_address = u"456 Nowhere Ln.";
   const std::u16string long_street_address =
@@ -349,7 +329,7 @@ TEST_P(AddressTest, SetRawStreetAddress) {
 }
 
 // Street addresses should be set properly.
-TEST_P(AddressTest, SetStreetAddress) {
+TEST_F(AddressTest, SetStreetAddress) {
   const std::u16string empty_street_address;
   const std::u16string multi_line_street_address =
       u"789 Fancy Pkwy.\n"
@@ -393,7 +373,7 @@ TEST_P(AddressTest, SetStreetAddress) {
 
 // Verifies that Address::SetInfio() rejects setting data for
 // ADDRESS_HOME_STREET_ADDRESS if the data has any interior blank lines.
-TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
+TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
   // Start with a non-empty address.
   Address address;
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
@@ -416,7 +396,7 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
 
 // Verifies that Address::SetInfio() rejects setting data for
 // ADDRESS_HOME_STREET_ADDRESS if the data has any leading blank lines.
-TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
+TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
   // Start with a non-empty address.
   Address address;
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
@@ -439,7 +419,7 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
 
 // Verifies that Address::SetInfio() rejects setting data for
 // ADDRESS_HOME_STREET_ADDRESS if the data has any trailing blank lines.
-TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
+TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
   // Start with a non-empty address.
   Address address;
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
@@ -462,11 +442,7 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
 
 // Verifies that the merging-related methods for structured addresses are
 // implemented correctly. This is not a test of the merging logic itself.
-TEST_P(AddressTest, TestMergeStructuredAddresses) {
-  // This test is only applicable for structured addresses.
-  if (!StructuredAddresses())
-    return;
-
+TEST_F(AddressTest, TestMergeStructuredAddresses) {
   Address address1;
   Address address2;
 
@@ -501,11 +477,7 @@ TEST_P(AddressTest, TestMergeStructuredAddresses) {
 // Tests that if only one of the structured addresses in a merge operation has
 // country information, it is used as their common country during comparison and
 // for rewriting rules.
-TEST_P(AddressTest, TestMergeStructuredAddressesMissingCountry) {
-  // This test is only applicable for structured addresses.
-  if (!StructuredAddresses())
-    return;
-
+TEST_F(AddressTest, TestMergeStructuredAddressesMissingCountry) {
   Address address1;
   Address address2;
 
@@ -528,11 +500,7 @@ TEST_P(AddressTest, TestMergeStructuredAddressesMissingCountry) {
 }
 
 // Tests the retrieval of the structured address.
-TEST_P(AddressTest, TestGettingTheStructuredAddress) {
-  // This test is only applicable for structured addresses.
-  if (!StructuredAddresses())
-    return;
-
+TEST_F(AddressTest, TestGettingTheStructuredAddress) {
   // Create the address and set a test value.
   Address address1;
   address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
@@ -545,11 +513,7 @@ TEST_P(AddressTest, TestGettingTheStructuredAddress) {
 
 // For structured address, test that the structured information is wiped
 // correctly when the unstructured street address changes.
-TEST_P(AddressTest, ResetStructuredTokens) {
-  // This test is only applicable for structured addresses.
-  if (!StructuredAddresses())
-    return;
-
+TEST_F(AddressTest, ResetStructuredTokens) {
   Address address;
   // Set a structured address line and call the finalization routine.
   address.SetRawInfoWithVerificationStatus(
@@ -601,11 +565,5 @@ TEST_P(AddressTest, ResetStructuredTokens) {
   EXPECT_EQ(address.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
             structured_address::VerificationStatus::kNoStatus);
 }
-
-// Runs the suite with the feature
-// |kAutofillSupportForStructuredStructuredNames| enabled and disabled.
-// TODO(crbug.com/1130194): Remove parameterized test once structured addresses
-// are fully launched.
-INSTANTIATE_TEST_SUITE_P(, AddressTest, testing::Bool());
 
 }  // namespace autofill

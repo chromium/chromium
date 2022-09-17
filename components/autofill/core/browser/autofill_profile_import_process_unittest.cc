@@ -446,11 +446,6 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
 TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   TestAutofillClock test_clock;
 
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -499,11 +494,6 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
 // existing profile while another already existing profile can be silently
 // updated. In this test, the users accepts the merge.
 TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Accepted) {
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -547,11 +537,6 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Accepted) {
 // existing profile while another already existing profile can be silently
 // updated. In this test, the users declines the merge.
 TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Rejected) {
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -595,11 +580,6 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Rejected) {
 // existing profile for which updates are blocked while another already existing
 // profile can be silently updated.
 TEST_F(AutofillProfileImportProcessTest, BlockedMergeAndSilentUpdate) {
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -644,11 +624,6 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMergeAndSilentUpdate) {
 // Tests the scenario in which an observed profile can be merged with an
 // existing profile for which updates are blocked.
 TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AutofillProfile observed_profile = test::StandardProfile();
   // This profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
@@ -687,11 +662,6 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
 TEST_F(AutofillProfileImportProcessTest,
        SilentlyUpdateProfile_WithIncompleteProfile) {
   TestAutofillClock test_clock;
-
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
 
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
@@ -742,11 +712,6 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
   TestAutofillClock test_clock;
 
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AutofillProfile observed_profile = test::StandardProfile();
 
   std::vector<AutofillProfile> existing_profiles = {};
@@ -778,11 +743,6 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
 // updated since the import process allows for silent update only
 TEST_F(AutofillProfileImportProcessTest,
        SilentlyUpdateProfile_NoMergeOnlySilentUpdate) {
-  // Silent updates need structured names to be enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
   AutofillProfile observed_profile = test::StandardProfile();
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
