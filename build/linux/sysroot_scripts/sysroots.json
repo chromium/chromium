@@ -1,36 +1,36 @@
 {
     "bullseye_amd64": {
-        "Sha1Sum": "5efe368e296831c65e1ff71c5b22da28f9be8fb3",
+        "Sha1Sum": "22c3eb7715cbeee97c444ad931c474744d1e610f",
         "SysrootDir": "debian_bullseye_amd64-sysroot",
         "Tarball": "debian_bullseye_amd64_sysroot.tar.xz"
     },
     "bullseye_arm": {
-        "Sha1Sum": "0eba3437a2f867dac1dcf1ee7be9712db7adf7fd",
+        "Sha1Sum": "3110f2f12f496fee332936b20e5fb85447856b0c",
         "SysrootDir": "debian_bullseye_arm-sysroot",
         "Tarball": "debian_bullseye_arm_sysroot.tar.xz"
     },
     "bullseye_arm64": {
-        "Sha1Sum": "49be3098e14d1991c8b030d5ad065707b0721f20",
+        "Sha1Sum": "3a758cf701a07e2c56be1ea1a434627137775db7",
         "SysrootDir": "debian_bullseye_arm64-sysroot",
         "Tarball": "debian_bullseye_arm64_sysroot.tar.xz"
     },
     "bullseye_armel": {
-        "Sha1Sum": "1fea256f490855a5a0eb30d2f4c6cf09b84ec1e0",
+        "Sha1Sum": "07a4d4d3bafb08cb4ae7277a353dad726a9c983c",
         "SysrootDir": "debian_bullseye_armel-sysroot",
         "Tarball": "debian_bullseye_armel_sysroot.tar.xz"
     },
     "bullseye_i386": {
-        "Sha1Sum": "726545eb6e5ee6ff48f75fd443e21bc660c1c2e8",
+        "Sha1Sum": "6b37074b1c23c3909fcd9efde8d143cc0779984e",
         "SysrootDir": "debian_bullseye_i386-sysroot",
         "Tarball": "debian_bullseye_i386_sysroot.tar.xz"
     },
     "bullseye_mips": {
-        "Sha1Sum": "4a2cb0aeb7611b8e0da7ad5368c6d4386c9915ed",
+        "Sha1Sum": "3ec2e12f3937e2b20a991d5e8326772717d4ead5",
         "SysrootDir": "debian_bullseye_mips-sysroot",
         "Tarball": "debian_bullseye_mips_sysroot.tar.xz"
     },
     "bullseye_mips64el": {
-        "Sha1Sum": "101e7d06c5960f61fb2d6a32e2267e75c178f4d9",
+        "Sha1Sum": "81584ab091a94137ae04073d164a287d0eb2803c",
         "SysrootDir": "debian_bullseye_mips64el-sysroot",
         "Tarball": "debian_bullseye_mips64el_sysroot.tar.xz"
     }
