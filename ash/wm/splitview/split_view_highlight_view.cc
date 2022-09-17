@@ -172,7 +172,7 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
 
   if (window_dragging_state ==
       SplitViewDragIndicators::WindowDraggingState::kNoDrag) {
-    if (previous_preview_position == SplitViewController::NONE) {
+    if (previous_preview_position == SplitViewController::SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(),
                                   SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_OUT);
       return;
@@ -194,7 +194,7 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
         /*use_light_colors=*/false));
   }
 
-  if (preview_position != SplitViewController::NONE) {
+  if (preview_position != SplitViewController::SnapPosition::kNone) {
     DoSplitviewOpacityAnimation(
         layer(),
         is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(
@@ -204,7 +204,7 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  if (previous_preview_position != SplitViewController::NONE) {
+  if (previous_preview_position != SplitViewController::SnapPosition::kNone) {
     // There was a snap preview showing, but now the user has dragged away from
     // the edge of the screen, so that the preview should go away.
     if (is_right_or_bottom_ != SplitViewController::IsPhysicalLeftOrTop(

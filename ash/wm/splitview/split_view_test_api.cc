@@ -27,13 +27,13 @@ void SplitViewTestApi::SnapWindow(
   SplitViewController::SnapPosition position;
   switch (snap_position) {
     case SnapPosition::NONE:
-      position = SplitViewController::NONE;
+      position = SplitViewController::SnapPosition::kNone;
       break;
     case SnapPosition::LEFT:
-      position = SplitViewController::LEFT;
+      position = SplitViewController::SnapPosition::kPrimary;
       break;
     case SnapPosition::RIGHT:
-      position = SplitViewController::RIGHT;
+      position = SplitViewController::SnapPosition::kSecondary;
       break;
   }
   split_view_controller()->SnapWindow(window, position);

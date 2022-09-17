@@ -685,10 +685,10 @@ TEST_F(WindowRestoreControllerTest, ClamshellSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::LEFT, nullptr),
+                SplitViewController::SnapPosition::kPrimary, nullptr),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::RIGHT, nullptr),
+                SplitViewController::SnapPosition::kSecondary, nullptr),
             right_window->GetBoundsInScreen());
 
   // Test that after restoring the snapped windows, they have the bounds we
@@ -780,8 +780,10 @@ TEST_F(WindowRestoreControllerTest, TabletSplitviewWindow) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(window1.get(), SplitViewController::LEFT);
-  split_view_controller->SnapWindow(window2.get(), SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
 
   app_restore::WindowInfo* window1_info = GetWindowInfo(window1.get());
   app_restore::WindowInfo* window2_info = GetWindowInfo(window2.get());
@@ -826,10 +828,10 @@ TEST_F(WindowRestoreControllerTest, TabletSnapWindow) {
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::LEFT, nullptr),
+                SplitViewController::SnapPosition::kPrimary, nullptr),
             left_window->GetBoundsInScreen());
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
-                SplitViewController::RIGHT, nullptr),
+                SplitViewController::SnapPosition::kSecondary, nullptr),
             right_window->GetBoundsInScreen());
   EXPECT_EQ(left_window, split_view_controller->left_window());
   EXPECT_EQ(right_window, split_view_controller->right_window());

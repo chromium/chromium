@@ -242,8 +242,9 @@ bool AboveBottomOfSplitViewDivider(const gfx::Point& location, int origin_y) {
 
   const gfx::Rect bounds_of_bottom_snapped_window =
       split_view_controller->GetSnappedWindowBoundsInScreen(
-          IsCurrentScreenOrientationPrimary() ? SplitViewController::RIGHT
-                                              : SplitViewController::LEFT,
+          IsCurrentScreenOrientationPrimary()
+              ? SplitViewController::SnapPosition::kSecondary
+              : SplitViewController::SnapPosition::kPrimary,
           /*window_for_minimum_size=*/nullptr);
   return bounds_of_bottom_snapped_window.Contains(location) &&
          origin_y < GetSplitViewDividerBoundsInScreen(location).bottom();

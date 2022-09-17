@@ -140,7 +140,7 @@ void ShowAppCannotSnapToast();
 // ignoring any properties of the window itself. The |root_window| is of the
 // current screen. |initial_location_in_screen| is the location at drag start if
 // the drag began in |root_window|, and is empty otherwise. To be snappable
-// (meaning the return value is not |SplitViewController::NONE|),
+// (meaning the return value is not |SplitViewController::SnapPosition::kNone|),
 // |location_in_screen| must be either inside |snap_distance_from_edge| or
 // dragged toward the edge for at least |minimum_drag_distance| distance until
 // it's dragged into a suitable edge of the work area of |root_window| (i.e.,

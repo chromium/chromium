@@ -64,8 +64,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // portrait, we always snap windows on the left and right (see
   // |IsLayoutHorizontal|). The snap positions are swapped in secondary-oriented
   // tablet mode (see |IsLayoutPrimary|).
-  // TODO(crbug.com/1233194): Rename left/right to primary/secondary.
-  enum SnapPosition { NONE, LEFT, RIGHT };
+  enum class SnapPosition { kNone, kPrimary, kSecondary };
 
   // Why splitview was ended.
   enum class EndReason {
@@ -612,7 +611,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // first window was snapped left, then |default_snap_position_| equals LEFT,
   // i.e., all the other windows will open snapped on the right side - and vice
   // versa.
-  SnapPosition default_snap_position_ = NONE;
+  SnapPosition default_snap_position_ = SnapPosition::kNone;
 
   // Whether the previous layout is right-side-up (see |IsLayoutPrimary|).
   // Consistent with |IsLayoutPrimary|, |is_previous_layout_right_side_up_|

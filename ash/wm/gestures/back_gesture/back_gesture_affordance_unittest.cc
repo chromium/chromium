@@ -66,8 +66,8 @@ TEST_F(BackGestureAffordanceTest,
   std::unique_ptr<aura::Window> bottom_window = CreateTestWindow();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(bottom_window.get(),
-                                    SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      bottom_window.get(), SplitViewController::SnapPosition::kSecondary);
 
   // Rotate the screen by 270 degree.
   test_api.SetDisplayRotation(display::Display::ROTATE_270,

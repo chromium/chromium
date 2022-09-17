@@ -212,10 +212,10 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   bool during_window_restoration_callback_ = false;
 
   SplitViewController::SnapPosition initial_snap_position_ =
-      SplitViewController::NONE;
+      SplitViewController::SnapPosition::kNone;
 
   SplitViewController::SnapPosition end_snap_position_ =
-      SplitViewController::NONE;
+      SplitViewController::SnapPosition::kNone;
 
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 

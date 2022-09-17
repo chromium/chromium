@@ -640,8 +640,8 @@ TEST_F(SavedDeskTest, NoAppSplitScreenLabelOnTemplateGridShow) {
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
 
-  split_view_controller->SnapWindow(test_window.get(),
-                                    SplitViewController::LEFT);
+  split_view_controller->SnapWindow(
+      test_window.get(), SplitViewController::SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
   ASSERT_TRUE(unsnappable_overview_item->cannot_snap_widget_for_testing());
   ui::Layer* unsnappable_layer =

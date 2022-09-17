@@ -935,7 +935,7 @@ void OverviewGrid::OnWindowDragContinued(
       GetTargetWindowOnLocation(location_in_screen, /*ignored_item=*/nullptr);
 
   if (SplitViewDragIndicators::GetSnapPosition(window_dragging_state) !=
-      SplitViewController::NONE) {
+      SplitViewController::SnapPosition::kNone) {
     // If the dragged window is currently dragged into preview window area,
     // hide the highlight.
     overview_session_->highlight_controller()->HideTabDragHighlight();

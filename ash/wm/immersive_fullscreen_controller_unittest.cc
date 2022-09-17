@@ -751,7 +751,8 @@ TEST_F(ImmersiveFullscreenControllerTest, WindowsInTabletMode) {
 
   // Top-of-window views will not be revealed for snapped window in splitview
   // mode either.
-  split_view_controller()->SnapWindow(window(), SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(
+      window(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_TRUE(WindowState::Get(window())->IsSnapped());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   AttemptReveal(MODALITY_GESTURE_SCROLL);

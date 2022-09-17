@@ -1894,7 +1894,8 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   // Snap the window to left. Test that the backdrop window is still visible
   // and is the second child in the container. Its bounds should be the same
   // as the snapped window's bounds.
-  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // One of the windows in the default container is the overview
   // no_windows_widget window. Exclude it.
@@ -1922,8 +1923,8 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   // visible but is now the third window in the container. Its bounds should
   // still be the same as the container bounds.
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
-  split_view_controller()->SnapWindow(window2.get(),
-                                      SplitViewController::RIGHT);
+  split_view_controller()->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
 
   EXPECT_EQ(3U, default_container()->children().size());
   for (auto* child : default_container()->children())

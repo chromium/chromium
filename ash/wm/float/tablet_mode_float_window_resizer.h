@@ -40,7 +40,8 @@ class TabletModeFloatWindowResizer : public WindowResizer {
 
   // The snap position computed in `Drag()`. It is then cached for use in
   // `CompleteDrag()`.
-  SplitViewController::SnapPosition snap_position_ = SplitViewController::NONE;
+  SplitViewController::SnapPosition snap_position_ =
+      SplitViewController::SnapPosition::kNone;
 };
 
 }  // namespace ash

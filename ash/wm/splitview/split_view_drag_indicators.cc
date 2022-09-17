@@ -99,11 +99,11 @@ SplitViewController::SnapPosition SplitViewDragIndicators::GetSnapPosition(
     WindowDraggingState window_dragging_state) {
   switch (window_dragging_state) {
     case WindowDraggingState::kToSnapLeft:
-      return SplitViewController::LEFT;
+      return SplitViewController::SnapPosition::kPrimary;
     case WindowDraggingState::kToSnapRight:
-      return SplitViewController::RIGHT;
+      return SplitViewController::SnapPosition::kSecondary;
     default:
-      return SplitViewController::NONE;
+      return SplitViewController::SnapPosition::kNone;
   }
 }
 
@@ -116,11 +116,11 @@ SplitViewDragIndicators::ComputeWindowDraggingState(
   if (!is_dragging || !ShouldAllowSplitView())
     return WindowDraggingState::kNoDrag;
   switch (snap_position) {
-    case SplitViewController::NONE:
+    case SplitViewController::SnapPosition::kNone:
       return non_snap_state;
-    case SplitViewController::LEFT:
+    case SplitViewController::SnapPosition::kPrimary:
       return WindowDraggingState::kToSnapLeft;
-    case SplitViewController::RIGHT:
+    case SplitViewController::SnapPosition::kSecondary:
       return WindowDraggingState::kToSnapRight;
   }
 }
@@ -189,7 +189,8 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
     }
 
     // When a snap preview is shown, any label that is showing shall fade out.
-    if (GetSnapPosition(window_dragging_state) != SplitViewController::NONE) {
+    if (GetSnapPosition(window_dragging_state) !=
+        SplitViewController::SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_TEXT_FADE_OUT);
       return;
     }
@@ -210,7 +211,7 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
 
     // If a snap preview was shown, the labels shall now fade in.
     if (GetSnapPosition(previous_window_dragging_state) !=
-        SplitViewController::NONE) {
+        SplitViewController::SnapPosition::kNone) {
       DoSplitviewOpacityAnimation(layer(), SPLITVIEW_ANIMATION_TEXT_FADE_IN);
       return;
     }
@@ -328,7 +329,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
 
     if (window_dragging_state != WindowDraggingState::kNoDrag ||
         GetSnapPosition(previous_window_dragging_state_) !=
-            SplitViewController::NONE) {
+            SplitViewController::SnapPosition::kNone) {
       Layout(previous_window_dragging_state_ != WindowDraggingState::kNoDrag);
     }
   }
@@ -408,17 +409,18 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     const bool drag_ending_in_snap =
         window_dragging_state_ == WindowDraggingState::kNoDrag &&
         GetSnapPosition(previous_window_dragging_state_) !=
-            SplitViewController::NONE;
+            SplitViewController::SnapPosition::kNone;
 
     SplitViewController::SnapPosition snap_position =
         GetSnapPosition(window_dragging_state_);
-    if (snap_position == SplitViewController::NONE)
+    if (snap_position == SplitViewController::SnapPosition::kNone)
       snap_position = GetSnapPosition(previous_window_dragging_state_);
 
     gfx::Rect preview_area_bounds;
     absl::optional<SplitviewAnimationType> left_highlight_animation_type;
     absl::optional<SplitviewAnimationType> right_highlight_animation_type;
-    if (GetSnapPosition(window_dragging_state_) != SplitViewController::NONE ||
+    if (GetSnapPosition(window_dragging_state_) !=
+            SplitViewController::SnapPosition::kNone ||
         drag_ending_in_snap) {
       // Get the preview area bounds from the split view controller.
       preview_area_bounds =
@@ -482,7 +484,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
         }
       }
     } else if (GetSnapPosition(previous_window_dragging_state_) !=
-                   SplitViewController::NONE &&
+                   SplitViewController::SnapPosition::kNone &&
                animate) {
       if (SplitViewController::IsPhysicalLeftOrTop(snap_position,
                                                    dragged_window_)) {
@@ -545,7 +547,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
 
     ui::Layer* preview_label_layer;
     ui::Layer* other_highlight_label_layer;
-    if (snap_position == SplitViewController::NONE) {
+    if (snap_position == SplitViewController::SnapPosition::kNone) {
       preview_label_layer = nullptr;
       other_highlight_label_layer = nullptr;
     } else if (SplitViewController::IsPhysicalLeftOrTop(snap_position,
@@ -560,7 +562,8 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     // Slide out the labels when a snap preview appears. This code also adjusts
     // the label transforms for things like display rotation while there is a
     // snap preview.
-    if (GetSnapPosition(window_dragging_state_) != SplitViewController::NONE) {
+    if (GetSnapPosition(window_dragging_state_) !=
+        SplitViewController::SnapPosition::kNone) {
       // How far each label shall slide to stay centered in the corresponding
       // highlight as it expands/contracts. Include distance traveled with zero
       // opacity (whence a label still slides, not only for simplicity in
@@ -617,7 +620,7 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     // inward. (Having reached this code, we know that the window is not
     // becoming snapped, because that case is handled earlier and we bail out.)
     if (GetSnapPosition(previous_window_dragging_state_) !=
-        SplitViewController::NONE) {
+        SplitViewController::SnapPosition::kNone) {
       if (animate) {
         // Animate the labels sliding in.
         DoSplitviewTransformAnimation(
@@ -677,7 +680,8 @@ void SplitViewDragIndicators::SetWindowDraggingState(
     return;
 
   // Fire a haptic event if necessary.
-  if (GetSnapPosition(window_dragging_state) != SplitViewController::NONE) {
+  if (GetSnapPosition(window_dragging_state) !=
+      SplitViewController::SnapPosition::kNone) {
     OverviewController* overview_controller =
         Shell::Get()->overview_controller();
     if (overview_controller->InOverviewSession() &&

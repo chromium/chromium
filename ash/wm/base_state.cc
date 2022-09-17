@@ -155,8 +155,9 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
       // restrictive than |WindowState::CanSnap|.
       DCHECK(SplitViewController::Get(window)->IsWindowInSplitView(window));
       SplitViewController::Get(window)->SnapWindow(
-          window, is_desired_primary_snapped ? SplitViewController::LEFT
-                                             : SplitViewController::RIGHT);
+          window, is_desired_primary_snapped
+                      ? SplitViewController::SnapPosition::kPrimary
+                      : SplitViewController::SnapPosition::kSecondary);
     } else {
       const WindowSnapWMEvent wm_event(is_desired_primary_snapped
                                            ? WM_EVENT_SNAP_PRIMARY
@@ -226,8 +227,8 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     bounds_in_parent =
         SplitViewController::Get(window)->GetSnappedWindowBoundsInParent(
             (state_type == WindowStateType::kPrimarySnapped)
-                ? SplitViewController::LEFT
-                : SplitViewController::RIGHT,
+                ? SplitViewController::SnapPosition::kPrimary
+                : SplitViewController::SnapPosition::kSecondary,
             window, snap_ratio);
   } else {
     // Use `window_positioning_utils` to calculate the snapped window bounds.

@@ -633,8 +633,8 @@ TEST_F(ClientControlledStateTest,
       SplitViewController::Get(window_state()->window());
 
   widget_delegate()->EnableSnap();
-  split_view_controller->SnapWindow(window_state()->window(),
-                                    SplitViewController::SnapPosition::RIGHT);
+  split_view_controller->SnapWindow(
+      window_state()->window(), SplitViewController::SnapPosition::kSecondary);
 
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
   EXPECT_FALSE(window_state()->IsSnapped());

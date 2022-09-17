@@ -357,10 +357,10 @@ TEST_F(ScreenOrientationControllerTest, SplitViewPreventsLock) {
   Lock(child_window2.get(), chromeos::OrientationType::kPortrait);
   ASSERT_TRUE(RotationLocked());
 
-  split_view_controller()->SnapWindow(focus_window1.get(),
-                                      SplitViewController::LEFT);
-  split_view_controller()->SnapWindow(focus_window1.get(),
-                                      SplitViewController::RIGHT);
+  split_view_controller()->SnapWindow(
+      focus_window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(
+      focus_window1.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_FALSE(RotationLocked());
 
   split_view_controller()->EndSplitView();
@@ -873,7 +873,7 @@ TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
 
   // Once `win0` is snapped in splitview, it can no longer lock the rotation.
   SplitViewController::Get(win0->GetRootWindow())
-      ->SnapWindow(win0.get(), SplitViewController::RIGHT);
+      ->SnapWindow(win0.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_EQ(
       chromeos::OrientationType::kAny,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());

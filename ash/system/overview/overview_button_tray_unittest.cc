@@ -400,9 +400,10 @@ TEST_F(OverviewButtonTrayTest, SplitviewModeQuickSwitch) {
   // Enter splitview mode. Snap |window1| to the left, this will be the default
   // splitview window.
   EnterOverview();
-  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  split_view_controller()->SnapWindow(window2.get(),
-                                      SplitViewController::RIGHT);
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
   ASSERT_EQ(window1.get(), split_view_controller()->GetDefaultSnappedWindow());
 
   // Verify that after double tapping, we have switched to |window3|, even

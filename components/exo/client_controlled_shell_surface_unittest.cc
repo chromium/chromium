@@ -975,29 +975,31 @@ TEST_F(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   // Snap window to left.
   ash::SplitViewController* split_view_controller =
       ash::SplitViewController::Get(ash::Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(window1, ash::SplitViewController::LEFT);
+  split_view_controller->SnapWindow(
+      window1, ash::SplitViewController::SnapPosition::kPrimary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SplitViewController::LEFT, window1));
+      ash::SplitViewController::SnapPosition::kPrimary, window1));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
-                ash::SplitViewController::LEFT,
+                ash::SplitViewController::SnapPosition::kPrimary,
                 shell_surface1->GetWidget()->GetNativeWindow()));
   EXPECT_TRUE(HasBackdrop());
   split_view_controller->EndSplitView();
 
   // Snap window to right.
-  split_view_controller->SnapWindow(window1, ash::SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      window1, ash::SplitViewController::SnapPosition::kSecondary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SplitViewController::RIGHT, window1));
+      ash::SplitViewController::SnapPosition::kSecondary, window1));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kSecondarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
-                ash::SplitViewController::RIGHT,
+                ash::SplitViewController::SnapPosition::kSecondary,
                 shell_surface1->GetWidget()->GetNativeWindow()));
   EXPECT_TRUE(HasBackdrop());
 }
@@ -2122,9 +2124,9 @@ TEST_F(ClientControlledShellSurfaceTest,
   auto window_right = CreateTestWindow();
 
   split_view_controller->SnapWindow(
-      window_left.get(), ash::SplitViewController::SnapPosition::LEFT);
+      window_left.get(), ash::SplitViewController::SnapPosition::kPrimary);
   split_view_controller->SnapWindow(
-      window_right.get(), ash::SplitViewController::SnapPosition::RIGHT);
+      window_right.get(), ash::SplitViewController::SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Should end split view.
@@ -2150,9 +2152,9 @@ TEST_F(ClientControlledShellSurfaceTest,
   auto window_right = CreateTestWindow();
 
   split_view_controller->SnapWindow(
-      window_left.get(), ash::SplitViewController::SnapPosition::LEFT);
+      window_left.get(), ash::SplitViewController::SnapPosition::kPrimary);
   split_view_controller->SnapWindow(
-      window_right.get(), ash::SplitViewController::SnapPosition::RIGHT);
+      window_right.get(), ash::SplitViewController::SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Should not end split-view.

@@ -94,12 +94,14 @@ gfx::Rect GetBoundsInTabletMode(WindowState* state_object) {
 
   if (state_object->GetStateType() == WindowStateType::kPrimarySnapped) {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow())
-        ->GetSnappedWindowBoundsInParent(SplitViewController::LEFT, window);
+        ->GetSnappedWindowBoundsInParent(
+            SplitViewController::SnapPosition::kPrimary, window);
   }
 
   if (state_object->GetStateType() == WindowStateType::kSecondarySnapped) {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow())
-        ->GetSnappedWindowBoundsInParent(SplitViewController::RIGHT, window);
+        ->GetSnappedWindowBoundsInParent(
+            SplitViewController::SnapPosition::kSecondary, window);
   }
 
   if (chromeos::wm::features::IsFloatWindowEnabled() &&
@@ -347,10 +349,12 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       DoTabletSnap(window_state, event->type());
       return;
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
-      CycleTabletSnap(window_state, SplitViewController::LEFT);
+      CycleTabletSnap(window_state,
+                      SplitViewController::SnapPosition::kPrimary);
       return;
     case WM_EVENT_CYCLE_SNAP_SECONDARY:
-      CycleTabletSnap(window_state, SplitViewController::RIGHT);
+      CycleTabletSnap(window_state,
+                      SplitViewController::SnapPosition::kSecondary);
       return;
     case WM_EVENT_MINIMIZE:
       UpdateWindow(window_state, WindowStateType::kMinimized,
@@ -583,7 +587,7 @@ void TabletModeWindowState::CycleTabletSnap(
   if (split_view_controller->CanSnapWindow(window)) {
     split_view_controller->SnapWindow(window, snap_position);
     window_state->ReadOutWindowCycleSnapAction(
-        snap_position == SplitViewController::LEFT
+        snap_position == SplitViewController::SnapPosition::kPrimary
             ? IDS_WM_SNAP_WINDOW_TO_LEFT_ON_SHORTCUT
             : IDS_WM_SNAP_WINDOW_TO_RIGHT_ON_SHORTCUT);
     return;

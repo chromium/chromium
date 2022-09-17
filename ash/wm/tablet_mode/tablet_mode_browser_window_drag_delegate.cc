@@ -182,7 +182,7 @@ void TabletModeBrowserWindowDragDelegate::UpdateSourceWindow(
     SplitViewController::SnapPosition snap_position =
         GetSnapPosition(location_in_screen);
 
-    if (snap_position == SplitViewController::NONE) {
+    if (snap_position == SplitViewController::SnapPosition::kNone) {
       // Scale down the source window if the event location passes the vertical
       // |kIndicatorThresholdRatio| threshold.
       expected_bounds.ClampToCenteredSize(
@@ -191,9 +191,9 @@ void TabletModeBrowserWindowDragDelegate::UpdateSourceWindow(
     } else {
       // Put the source window on the other side of the split screen.
       expected_bounds = split_view_controller_->GetSnappedWindowBoundsInScreen(
-          snap_position == SplitViewController::LEFT
-              ? SplitViewController::RIGHT
-              : SplitViewController::LEFT,
+          snap_position == SplitViewController::SnapPosition::kPrimary
+              ? SplitViewController::SnapPosition::kSecondary
+              : SplitViewController::SnapPosition::kPrimary,
           source_window);
     }
   }
@@ -244,7 +244,7 @@ void TabletModeBrowserWindowDragDelegate::MergeBackToSourceWindowIfApplicable(
   // If splitscreen is not active, do not merge back if the dragged window is
   // in the drag-to-snap preview area.
   if (!split_view_controller_->InSplitViewMode() &&
-      desired_snap_position != SplitViewController::NONE) {
+      desired_snap_position != SplitViewController::SnapPosition::kNone) {
     return;
   }
 

@@ -320,7 +320,7 @@ void OverviewWindowDragController::StartNormalDragMode(
         SplitViewDragIndicators::ComputeWindowDraggingState(
             /*is_dragging=*/true,
             SplitViewDragIndicators::WindowDraggingState::kFromOverview,
-            SplitViewController::NONE));
+            SplitViewController::SnapPosition::kNone));
     item_->HideCannotSnapWarning(/*animate=*/true);
 
     // Update the split view divider bar status if necessary. If splitview is
@@ -407,8 +407,8 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
   } else if (split_view_controller->CanSnapWindow(item_->GetWindow())) {
     SnapWindow(split_view_controller,
                split_state == SplitViewController::State::kLeftSnapped
-                   ? SplitViewController::RIGHT
-                   : SplitViewController::LEFT);
+                   ? SplitViewController::SnapPosition::kSecondary
+                   : SplitViewController::SnapPosition::kPrimary);
   } else {
     split_view_controller->EndSplitView();
     overview_session_->SelectWindow(item_);
@@ -607,7 +607,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
        SplitViewDragIndicators::GetSnapPosition(
            overview_grid->split_view_drag_indicators()
                ->current_window_dragging_state()) ==
-           SplitViewController::NONE)) {
+           SplitViewController::SnapPosition::kNone)) {
     overview_grid->AddDropTargetNotForDraggingFromThisGrid(item_->GetWindow(),
                                                            /*animate=*/true);
   }
@@ -686,7 +686,8 @@ OverviewWindowDragController::CompleteNormalDrag(
   }
 
   // Snap a window if appropriate.
-  if (should_allow_split_view_ && snap_position_ != SplitViewController::NONE) {
+  if (should_allow_split_view_ &&
+      snap_position_ != SplitViewController::SnapPosition::kNone) {
     // Overview grid will be updated after window is snapped in splitview.
     SnapWindow(SplitViewController::Get(target_root), snap_position_);
     RecordNormalDrag(kToSnap, is_dragged_to_other_display);
@@ -776,7 +777,7 @@ SplitViewController::SnapPosition OverviewWindowDragController::GetSnapPosition(
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window);
   if (!split_view_controller->CanSnapWindow(item_->GetWindow()))
-    return SplitViewController::NONE;
+    return SplitViewController::SnapPosition::kNone;
   if (split_view_controller->InSplitViewMode()) {
     const int position =
         base::ClampRound(SplitViewController::IsLayoutHorizontal(root_window)
@@ -809,7 +810,7 @@ SplitViewController::SnapPosition OverviewWindowDragController::GetSnapPosition(
 void OverviewWindowDragController::SnapWindow(
     SplitViewController* split_view_controller,
     SplitViewController::SnapPosition snap_position) {
-  DCHECK_NE(snap_position, SplitViewController::NONE);
+  DCHECK_NE(snap_position, SplitViewController::SnapPosition::kNone);
 
   DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
               ->IsDividerAnimating());

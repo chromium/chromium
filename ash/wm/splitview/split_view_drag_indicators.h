@@ -71,26 +71,32 @@ class ASH_EXPORT SplitViewDragIndicators {
     // snapping region but not snappable.
     kFromFloat,
 
-    // Currently dragging in the |SplitViewController::LEFT| snap area, and the
-    // dragged window is eligible to be snapped in split view.
+    // Currently dragging in the |SplitViewController::SnapPosition::kPrimary|
+    // snap area, and the dragged window is eligible to be snapped in split
+    // view.
     kToSnapLeft,
 
-    // Currently dragging in the |SplitViewController::RIGHT| snap area, and the
-    // dragged window is eligible to be snapped in split view.
+    // Currently dragging in the |SplitViewController::SnapPosition::kSecondary|
+    // snap area, and the dragged window is eligible to be snapped in split
+    // view.
     kToSnapRight
   };
 
-  // |SplitViewController::LEFT|, if |window_dragging_state| is |kToSnapLeft|
-  // |SplitViewController::RIGHT|, if |window_dragging_state| is |kToSnapRight|
-  // |SplitViewController::NONE| otherwise
+  // |SplitViewController::SnapPosition::kPrimary|, if |window_dragging_state|
+  // is |kToSnapLeft| |SplitViewController::SnapPosition::kSecondary|, if
+  // |window_dragging_state| is |kToSnapRight|
+  // |SplitViewController::SnapPosition::kNone| otherwise
   static SplitViewController::SnapPosition GetSnapPosition(
       WindowDraggingState window_dragging_state);
 
   // |kNoDrag| if |is_dragging| is false or split view is unsupported. If
   // |is_dragging| is true and split view is supported, then:
-  // |non_snap_state|, if |snap_position| is |SplitViewController::NONE|
-  // |kToSnapLeft|, if |snap_position| is |SplitViewController::LEFT|
-  // |kToSnapRight|, if |snap_position| is |SplitViewController::RIGHT|
+  // |non_snap_state|, if |snap_position| is
+  // |SplitViewController::SnapPosition::kNone|
+  // |kToSnapLeft|, if |snap_position| is
+  // |SplitViewController::SnapPosition::kPrimary|
+  // |kToSnapRight|, if |snap_position| is
+  // |SplitViewController::SnapPosition::kSecondary|
   static WindowDraggingState ComputeWindowDraggingState(
       bool is_dragging,
       WindowDraggingState non_snap_state,

@@ -97,7 +97,7 @@ void TabletModeFloatWindowResizer::CompleteDrag() {
   }
 
   aura::Window* float_window = GetTarget();
-  if (snap_position_ != SplitViewController::NONE) {
+  if (snap_position_ != SplitViewController::SnapPosition::kNone) {
     // Let `SplitViewController` handle windows that should be snapped.
     auto* split_view_controller =
         SplitViewController::Get(Shell::GetPrimaryRootWindow());

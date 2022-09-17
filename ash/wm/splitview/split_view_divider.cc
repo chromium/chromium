@@ -272,8 +272,8 @@ SplitViewDivider::SplitViewDivider(SplitViewController* controller)
                                    divider_widget_->GetNativeWindow()));
 
   // Observe currently snapped windows.
-  for (auto snap_pos : {SplitViewController::SnapPosition::LEFT,
-                        SplitViewController::SnapPosition::RIGHT}) {
+  for (auto snap_pos : {SplitViewController::SnapPosition::kPrimary,
+                        SplitViewController::SnapPosition::kSecondary}) {
     auto* window = controller_->GetSnappedWindow(snap_pos);
     if (window)
       AddObservedWindow(window);

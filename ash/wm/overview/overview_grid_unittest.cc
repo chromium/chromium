@@ -290,11 +290,12 @@ TEST_F(OverviewGridTest, SnappedWindow) {
   wm::ActivateWindow(window2.get());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
 
   // Snap |window2| and check that |window3| is maximized.
-  split_view_controller()->SnapWindow(window2.get(),
-                                      SplitViewController::RIGHT);
+  split_view_controller()->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_TRUE(WindowState::Get(window3.get())->IsMaximized());
 
   // We cannot create a grid object like in the other tests because creating a

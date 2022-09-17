@@ -238,7 +238,8 @@ class ASH_EXPORT OverviewWindowDragController {
   // Records the presentation time of window drag operation in overview mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
-  SplitViewController::SnapPosition snap_position_ = SplitViewController::NONE;
+  SplitViewController::SnapPosition snap_position_ =
+      SplitViewController::SnapPosition::kNone;
 };
 
 }  // namespace ash

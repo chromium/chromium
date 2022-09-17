@@ -219,18 +219,19 @@ gfx::Rect GetGridBoundsInScreen(
   gfx::Rect bounds;
   gfx::Rect work_area =
       WorkAreaInsets::ForWindow(target_root)->ComputeStableWorkArea();
-  absl::optional<SplitViewController::SnapPosition> opposite_position =
-      absl::nullopt;
+  absl::optional<SplitViewController::SnapPosition> opposite_position;
   switch (state) {
     case SplitViewController::State::kLeftSnapped:
       bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-          SplitViewController::RIGHT, /*window_for_minimum_size=*/nullptr);
-      opposite_position = absl::make_optional(SplitViewController::RIGHT);
+          SplitViewController::SnapPosition::kSecondary,
+          /*window_for_minimum_size=*/nullptr);
+      opposite_position = SplitViewController::SnapPosition::kSecondary;
       break;
     case SplitViewController::State::kRightSnapped:
       bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-          SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr);
-      opposite_position = absl::make_optional(SplitViewController::LEFT);
+          SplitViewController::SnapPosition::kPrimary,
+          /*window_for_minimum_size=*/nullptr);
+      opposite_position = SplitViewController::SnapPosition::kPrimary;
       break;
     case SplitViewController::State::kNoSnap:
       bounds = work_area;
@@ -321,15 +322,15 @@ absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
           ->current_window_dragging_state();
   if (!SplitViewController::Get(root_window)->InSplitViewMode() &&
       SplitViewDragIndicators::GetSnapPosition(window_dragging_state) ==
-          SplitViewController::NONE) {
+          SplitViewController::SnapPosition::kNone) {
     return absl::nullopt;
   }
 
   // The hotseat bounds do not affect splitview after a window is snapped, so
   // the aspect ratio should reflect it and not worry about the hotseat.
-  return absl::make_optional(gfx::RectF(GetGridBoundsInScreen(
-      root_window, absl::make_optional(window_dragging_state),
-      /*divider_changed=*/false, /*account_for_hotseat=*/false)));
+  return gfx::RectF(GetGridBoundsInScreen(root_window, window_dragging_state,
+                                          /*divider_changed=*/false,
+                                          /*account_for_hotseat=*/false));
 }
 
 bool ShouldUseTabletModeGridLayout() {

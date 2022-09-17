@@ -77,8 +77,8 @@ void DoSplitViewTransition(
   for (auto& iter : windows) {
     split_view_controller->SnapWindow(
         iter.first, iter.second == WindowStateType::kPrimarySnapped
-                        ? SplitViewController::LEFT
-                        : SplitViewController::RIGHT);
+                        ? SplitViewController::SnapPosition::kPrimary
+                        : SplitViewController::SnapPosition::kSecondary);
   }
 
   // For clamshell split view mode, end splitview mode if we're in single
