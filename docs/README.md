@@ -230,7 +230,7 @@ used when committed.
 *   [Linux Crash Dumping](linux/crash_dumping.md) - How Breakpad uploads crash
     reports to Google crash servers.
 *   [Linux Minidump to Core](linux/minidump_to_core.md) - How to convert a
-    Breakpad-generated minidump files to a core file readable by most debuggersx
+    Breakpad-generated minidump files to a core file readable by most debuggers.
 *   [Linux Sandbox IPC](linux/sandbox_ipc.md) - The lower level UPC system used
     to route requests from the bottom of the call stack up into the browser.
 *   [Linux Dev Build as Default Browser](linux/dev_build_as_default_browser.md) -
