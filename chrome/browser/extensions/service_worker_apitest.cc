@@ -900,8 +900,7 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
       return;
     }
 
-    const bool is_lazy_listener = details.browser_context == nullptr;
-    if (is_lazy_listener) {
+    if (details.is_lazy) {
       // Wait for the non-lazy listener as we want to exercise the code to
       // dispatch the event right after the Service Worker registration is
       // completing.

@@ -553,7 +553,8 @@ void EventRouter::OnListenerAdded(const EventListener* listener) {
   const EventListenerInfo details(
       listener->event_name(), listener->extension_id(),
       listener->listener_url(), listener->GetBrowserContext(),
-      listener->worker_thread_id(), listener->service_worker_version_id());
+      listener->worker_thread_id(), listener->service_worker_version_id(),
+      listener->IsLazy());
   std::string base_event_name = GetBaseEventName(listener->event_name());
   auto it = observer_map_.find(base_event_name);
   if (it != observer_map_.end()) {
@@ -574,7 +575,8 @@ void EventRouter::OnListenerRemoved(const EventListener* listener) {
   const EventListenerInfo details(
       listener->event_name(), listener->extension_id(),
       listener->listener_url(), listener->GetBrowserContext(),
-      listener->worker_thread_id(), listener->service_worker_version_id());
+      listener->worker_thread_id(), listener->service_worker_version_id(),
+      listener->IsLazy());
   std::string base_event_name = GetBaseEventName(listener->event_name());
   auto it = observer_map_.find(base_event_name);
   if (it != observer_map_.end()) {
@@ -1327,6 +1329,9 @@ std::unique_ptr<Event> Event::DeepCopy() const {
   return copy;
 }
 
+// This constructor is only used by tests, for non-ServiceWorker context
+// (background page, popup, tab, etc).
+// is_lazy flag default to false.
 EventListenerInfo::EventListenerInfo(const std::string& event_name,
                                      const std::string& extension_id,
                                      const GURL& listener_url,
@@ -1336,19 +1341,22 @@ EventListenerInfo::EventListenerInfo(const std::string& event_name,
       listener_url(listener_url),
       browser_context(browser_context),
       worker_thread_id(kMainThreadId),
-      service_worker_version_id(blink::mojom::kInvalidServiceWorkerVersionId) {}
+      service_worker_version_id(blink::mojom::kInvalidServiceWorkerVersionId),
+      is_lazy(false) {}
 
 EventListenerInfo::EventListenerInfo(const std::string& event_name,
                                      const std::string& extension_id,
                                      const GURL& listener_url,
                                      content::BrowserContext* browser_context,
                                      int worker_thread_id,
-                                     int64_t service_worker_version_id)
+                                     int64_t service_worker_version_id,
+                                     bool is_lazy)
     : event_name(event_name),
       extension_id(extension_id),
       listener_url(listener_url),
       browser_context(browser_context),
       worker_thread_id(worker_thread_id),
-      service_worker_version_id(service_worker_version_id) {}
+      service_worker_version_id(service_worker_version_id),
+      is_lazy(is_lazy) {}
 
 }  // namespace extensions

@@ -677,7 +677,7 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
   // `details`).
   base::OnceClosure remove_listener;
 
-  if (!details.browser_context) {
+  if (details.is_lazy) {
     // This is a removed lazy listener. This happens when an extension uses
     // removeListener() in its lazy context to forceably remove a listener
     // registration (as opposed to when the context is torn down, in which case

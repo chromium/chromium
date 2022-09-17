@@ -1419,7 +1419,7 @@ void InputImeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
 }
 
 void InputImeAPI::OnListenerAdded(const EventListenerInfo& details) {
-  if (!details.browser_context)
+  if (details.is_lazy)
     return;
 
   // Other listeners may trigger this function, but only reactivate the IME
@@ -1438,7 +1438,7 @@ void InputImeAPI::OnListenerAdded(const EventListenerInfo& details) {
 }
 
 void InputImeAPI::OnListenerRemoved(const EventListenerInfo& details) {
-  if (!details.browser_context)
+  if (details.is_lazy)
     return;
 
   // If a key event listener was removed, cancel all the pending key events

@@ -149,7 +149,7 @@ void BluetoothPrivateAPI::Shutdown() {
 void BluetoothPrivateAPI::OnListenerAdded(const EventListenerInfo& details) {
   // This function can be called multiple times for the same JS listener, for
   // example, once for the addListener call and again if it is a lazy listener.
-  if (!details.browser_context)
+  if (details.is_lazy)
     return;
 
   BluetoothAPI::Get(browser_context_)
@@ -160,7 +160,7 @@ void BluetoothPrivateAPI::OnListenerAdded(const EventListenerInfo& details) {
 void BluetoothPrivateAPI::OnListenerRemoved(const EventListenerInfo& details) {
   // This function can be called multiple times for the same JS listener, for
   // example, once for the addListener call and again if it is a lazy listener.
-  if (!details.browser_context)
+  if (details.is_lazy)
     return;
 
   BluetoothAPI::Get(browser_context_)
