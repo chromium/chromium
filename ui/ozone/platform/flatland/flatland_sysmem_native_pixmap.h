@@ -14,7 +14,8 @@ class FlatlandSysmemNativePixmap : public gfx::NativePixmap {
  public:
   FlatlandSysmemNativePixmap(
       scoped_refptr<FlatlandSysmemBufferCollection> collection,
-      gfx::NativePixmapHandle handle);
+      gfx::NativePixmapHandle handle,
+      gfx::Size size);
 
   FlatlandSysmemNativePixmap(const FlatlandSysmemNativePixmap&) = delete;
   FlatlandSysmemNativePixmap& operator=(const FlatlandSysmemNativePixmap&) =
@@ -52,6 +53,8 @@ class FlatlandSysmemNativePixmap : public gfx::NativePixmap {
   // Keep reference to the collection to make sure it outlives the pixmap.
   scoped_refptr<FlatlandSysmemBufferCollection> collection_;
   gfx::NativePixmapHandle handle_;
+
+  gfx::Size size_;
 };
 
 }  // namespace ui

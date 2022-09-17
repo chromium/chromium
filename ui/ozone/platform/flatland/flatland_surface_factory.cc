@@ -173,7 +173,7 @@ scoped_refptr<gfx::NativePixmap> FlatlandSurfaceFactory::CreateNativePixmap(
   if (!collection)
     return nullptr;
 
-  return collection->CreateNativePixmap(0);
+  return collection->CreateNativePixmap(0, size);
 }
 
 void FlatlandSurfaceFactory::CreateNativePixmapAsync(
@@ -198,7 +198,7 @@ FlatlandSurfaceFactory::CreateNativePixmapFromHandle(
   if (!collection)
     return nullptr;
 
-  return collection->CreateNativePixmap(handle.buffer_index);
+  return collection->CreateNativePixmap(handle.buffer_index, size);
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

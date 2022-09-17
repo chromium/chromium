@@ -103,7 +103,7 @@ TEST_F(FlatlandSurfaceTest, PresentPrimaryPlane) {
       buffer_collection_id);
   collection->InitializeForTesting(gfx::BufferUsage::SCANOUT);
   auto primary_plane_pixmap = base::MakeRefCounted<FlatlandSysmemNativePixmap>(
-      collection, std::move(handle));
+      collection, std::move(handle), gfx::Size(1, 1));
   surface->Present(
       primary_plane_pixmap, std::vector<ui::OverlayPlane>(),
       std::vector<gfx::GpuFenceHandle>(), std::vector<gfx::GpuFenceHandle>(),
