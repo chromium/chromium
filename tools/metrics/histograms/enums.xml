@@ -58509,8 +58509,6 @@ from previous Chrome versions.
       label="AutofillEnforceDelaysInStrikeDatabase:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
-  <int value="-825747847"
-      label="AutofillEnableSupportForMoreStructureInAddresses:enabled"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-824829316" label="UsbDeviceDefaultAttachToArcVm:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
@@ -58738,8 +58736,6 @@ from previous Chrome versions.
   <int value="-694943768" label="ContextualSearchSuppressShortView:disabled"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
-  <int value="-693881124"
-      label="AutofillEnableSupportForMoreStructureInNames:disabled"/>
   <int value="-690660906" label="ProductivityLauncherAnimation:disabled"/>
   <int value="-688003116" label="FocusFollowsCursor:enabled"/>
   <int value="-687302378" label="BluetoothFixA2dpPacketSize:enabled"/>
@@ -61575,8 +61571,6 @@ from previous Chrome versions.
   <int value="1070449228" label="ContextualSuggestionsCarousel:enabled"/>
   <int value="1070840417" label="ChromeColors:enabled"/>
   <int value="1071520357" label="WebAuthenticationTouchId:enabled"/>
-  <int value="1071962531"
-      label="AutofillEnableSupportForMoreStructureInAddresses:disabled"/>
   <int value="1072010558" label="NTPModernLayout:disabled"/>
   <int value="1072517479" label="ImprovedCookieControls:enabled"/>
   <int value="1073699828" label="ScrollUpdateOptimizations:enabled"/>
@@ -62593,8 +62587,6 @@ from previous Chrome versions.
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
   <int value="1708689134" label="PWAsDefaultOfflinePage:disabled"/>
   <int value="1709255374" label="DragAndDropAndroid:enabled"/>
-  <int value="1710630380"
-      label="AutofillEnableSupportForMoreStructureInNames:enabled"/>
   <int value="1710663404" label="CastForceEnableRemotingQuery:disabled"/>
   <int value="1711037950"
       label="AutofillVisualImprovementsForSuggestionUi:disabled"/>
