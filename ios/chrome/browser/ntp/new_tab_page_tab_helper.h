@@ -28,8 +28,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   ~NewTabPageTabHelper() override;
 
-  static void CreateForWebState(web::WebState* web_state);
-
   // Sets the NTP's NavigationItem title and virtualURL to the appropriate
   // string and chrome://newtab respectively.
   static void UpdateItem(web::NavigationItem* item);

@@ -44,14 +44,6 @@ NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
 
 #pragma mark - Static
 
-void NewTabPageTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(), base::WrapUnique(new NewTabPageTabHelper(web_state)));
-  }
-}
-
 void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
   if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
     item->SetVirtualURL(GURL(kChromeUINewTabURL));
