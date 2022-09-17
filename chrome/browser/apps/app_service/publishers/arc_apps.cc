@@ -966,16 +966,27 @@ void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
                                   LaunchCallback callback) {
   auto event_flags = apps::GetEventFlags(params.disposition,
                                          /*prefer_container=*/false);
-  auto window_info = apps::MakeWindowInfo(params.display_id);
   if (params.intent) {
-    LaunchAppWithIntent(
-        params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
-        ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-        std::move(window_info), base::DoNothing());
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                          params.launch_source,
+                          std::make_unique<WindowInfo>(params.display_id),
+                          base::DoNothing());
+    } else {
+      LaunchAppWithIntent(
+          params.app_id, event_flags, ConvertIntentToMojomIntent(params.intent),
+          ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
+          apps::MakeWindowInfo(params.display_id), base::DoNothing());
+    }
   } else {
-    Launch(params.app_id, event_flags,
-           ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-           std::move(window_info));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      Launch(params.app_id, event_flags, params.launch_source,
+             std::make_unique<WindowInfo>(params.display_id));
+    } else {
+      Launch(params.app_id, event_flags,
+             ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
+             apps::MakeWindowInfo(params.display_id));
+    }
   }
   // TODO(crbug.com/1244506): Add launch return value.
   std::move(callback).Run(LaunchResult());
