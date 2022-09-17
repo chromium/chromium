@@ -54,6 +54,8 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_high_dynamic_range_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -440,8 +442,37 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
 void HTMLCanvasElement::configureHighDynamicRange(
     const CanvasHighDynamicRangeOptions* options,
     ExceptionState& exception_state) {
-  // TODO(https://crbug.com/1274220): Implement this.
-  NOTIMPLEMENTED();
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
+  if (options->hasSmpteSt2086Metadata()) {
+    hdr_metadata = gfx::HDRMetadata();
+    auto& color_volume_metadata = hdr_metadata->color_volume_metadata;
+    const auto* v8_metadata = options->smpteSt2086Metadata();
+    color_volume_metadata.primary_r.set_x(v8_metadata->redPrimaryX());
+    color_volume_metadata.primary_r.set_y(v8_metadata->redPrimaryY());
+    color_volume_metadata.primary_g.set_x(v8_metadata->greenPrimaryX());
+    color_volume_metadata.primary_g.set_y(v8_metadata->greenPrimaryY());
+    color_volume_metadata.primary_b.set_x(v8_metadata->bluePrimaryX());
+    color_volume_metadata.primary_b.set_y(v8_metadata->bluePrimaryY());
+    color_volume_metadata.white_point.set_x(v8_metadata->whitePointX());
+    color_volume_metadata.white_point.set_y(v8_metadata->whitePointY());
+    color_volume_metadata.luminance_min = v8_metadata->minimumLuminance();
+    color_volume_metadata.luminance_max = v8_metadata->maximumLuminance();
+  }
+
+  if (IsOffscreenCanvasRegistered()) {
+    // TODO(https://crbug.com/1274220): Implement HDR support for offscreen
+    // canvas.
+    NOTIMPLEMENTED();
+  }
+
+  CanvasResourceHost::SetHDRMetadata(hdr_metadata);
+  if (context_ && (IsWebGL() || IsWebGPU())) {
+    // TODO(https://crbug.com/1274220): Implement HDR support for WebGL and
+    // WebGPU.
+    NOTIMPLEMENTED();
+  } else if (canvas2d_bridge_) {
+    canvas2d_bridge_->SetHDRMetadata(hdr_metadata);
+  }
 }
 
 ScriptPromise HTMLCanvasElement::convertToBlob(

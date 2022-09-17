@@ -316,6 +316,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
     layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     layer_->SetNearestNeighbor(resource_host_->FilterQuality() ==
                                cc::PaintFlags::FilterQuality::kNone);
+    layer_->SetHDRMetadata(resource_host_->GetHDRMetadata());
   }
   // After the page becomes visible and successfully restored the canvas
   // resource provider, set |lose_context_in_background_| to false.
@@ -366,6 +367,12 @@ void Canvas2DLayerBridge::SetFilterQuality(
   if (layer_)
     layer_->SetNearestNeighbor(filter_quality ==
                                cc::PaintFlags::FilterQuality::kNone);
+}
+
+void Canvas2DLayerBridge::SetHDRMetadata(
+    absl::optional<gfx::HDRMetadata> hdr_metadata) {
+  if (layer_)
+    layer_->SetHDRMetadata(hdr_metadata);
 }
 
 void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
