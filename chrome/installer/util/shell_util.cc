@@ -1142,19 +1142,19 @@ ShellUtil::DefaultState ProbeAppIsDefaultHandlers(
       continue;
 
     // Search for a different install mode that is the default handler.
-    const auto* it =
-        std::find_if(std::cbegin(other_app_names), std::cend(other_app_names),
-                     [&registration, protocol](const std::wstring& app_name) {
-                       if (app_name.empty())
-                         return false;
-                       BOOL result = TRUE;
-                       HRESULT hr = registration->QueryAppIsDefault(
-                           protocol, AT_URLPROTOCOL, AL_EFFECTIVE,
-                           app_name.c_str(), &result);
-                       return SUCCEEDED(hr) && result;
-                     });
-    if (it == std::end(other_app_names))
+    if (base::ranges::none_of(
+            other_app_names,
+            [&registration, protocol](const std::wstring& app_name) {
+              if (app_name.empty())
+                return false;
+              BOOL result = TRUE;
+              HRESULT hr = registration->QueryAppIsDefault(
+                  protocol, AT_URLPROTOCOL, AL_EFFECTIVE, app_name.c_str(),
+                  &result);
+              return SUCCEEDED(hr) && result;
+            })) {
       return ShellUtil::NOT_DEFAULT;
+    }
     other_mode_is_default = true;
   }
 

@@ -14,6 +14,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
@@ -859,13 +860,10 @@ TEST_F(DeleteRegistryKeyPartialTest, NonEmptyKeyWithPreserve) {
   {
     base::win::RegistryKeyIterator it(root_, path_.c_str());
     ASSERT_EQ(to_preserve_.size(), it.SubkeyCount());
+    std::wstring (*to_lower)(base::WStringPiece) = &base::ToLowerASCII;
     for (; it.Valid(); ++it) {
-      ASSERT_NE(to_preserve_.end(),
-                std::find_if(to_preserve_.begin(), to_preserve_.end(),
-                             [&it](const std::wstring& key_name) {
-                               return base::ToLowerASCII(it.Name()) ==
-                                      base::ToLowerASCII(key_name);
-                             }))
+      ASSERT_TRUE(
+          base::Contains(to_preserve_, base::ToLowerASCII(it.Name()), to_lower))
           << it.Name();
     }
   }

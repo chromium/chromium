@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/v8_unwinder.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -14,6 +13,7 @@
 #include "base/location.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -564,12 +564,11 @@ TEST(V8UnwinderTest, MAYBE_UnwindThroughV8Frames) {
                                scenario.GetOuterFunctionAddressRange()});
 
   // The stack should contain a frame from a JavaScript module.
-  auto loc =
-      std::find_if(sample.begin(), sample.end(), [&](const base::Frame& frame) {
+  EXPECT_TRUE(
+      base::ranges::any_of(sample, [&](const base::Frame& frame) {
         return frame.module &&
                (frame.module->GetId() ==
                     V8Unwinder::kV8EmbeddedCodeRangeBuildId ||
                 frame.module->GetId() == V8Unwinder::kV8CodeRangeBuildId);
-      });
-  EXPECT_NE(sample.end(), loc);
+      }));
 }
