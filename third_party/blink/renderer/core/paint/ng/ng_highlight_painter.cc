@@ -789,18 +789,6 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
   if (fragment_item_.GetNode()->GetDocument().Printing())
     return;
 
-  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-    return DocumentMarkerPainter::PaintDocumentMarker(
-        paint_info_, box_origin_, style_, marker_type,
-        MarkerRectForForeground(fragment_item_, text, paint_start_offset,
-                                paint_end_offset),
-        HighlightPaintingUtils::HighlightTextDecorationColor(
-            layout_object_->GetDocument(), style_, node_,
-            originating_text_style_.current_color,
-            marker_type == DocumentMarker::kSpelling ? kPseudoIdSpellingError
-                                                     : kPseudoIdGrammarError));
-  }
-
   PseudoId pseudo;
   TextDecorationLine line;
   HighlightLayerType layer_type;
@@ -818,6 +806,29 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
     default:
       NOTREACHED();
       return;
+  }
+
+  // If the new ::spelling-error and ::grammar-error pseudos are not enabled,
+  // not yet implemented (as they are for SVG), or there are no styles for those
+  // pseudos (as there can be for non-HTML content or for HTML content with the
+  // wrong root), use the old marker-based decorations for now.
+  // TODO(crbug.com/1163436) synthesise a default TextDecorationInfo instead
+  // SVG painting currently ignores ::selection styles, and will malfunction
+  // or crash if asked to paint decorations introduced by highlight pseudos.
+  // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
+  // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
+  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
+      text_painter_.GetSvgState() ||
+      !HighlightPaintingUtils::HighlightPseudoStyle(node_, style_, pseudo)) {
+    return DocumentMarkerPainter::PaintDocumentMarker(
+        paint_info_, box_origin_, style_, marker_type,
+        MarkerRectForForeground(fragment_item_, text, paint_start_offset,
+                                paint_end_offset),
+        HighlightPaintingUtils::HighlightTextDecorationColor(
+            layout_object_->GetDocument(), style_, node_,
+            originating_text_style_.current_color,
+            marker_type == DocumentMarker::kSpelling ? kPseudoIdSpellingError
+                                                     : kPseudoIdGrammarError));
   }
 
   auto style =
@@ -1043,6 +1054,7 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     // SVG painting currently ignores ::selection styles, and will malfunction
     // or crash if asked to paint decorations introduced by highlight pseudos.
     // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
+    // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
     if (text_painter_.GetSvgState() &&
         decoration_layer_id.type != HighlightLayerType::kOriginating) {
       continue;
@@ -1095,6 +1107,7 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
     // SVG painting currently ignores ::selection styles, and will malfunction
     // or crash if asked to paint decorations introduced by highlight pseudos.
     // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
+    // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
     if (text_painter_.GetSvgState() &&
         decoration_layer_id.type != HighlightLayerType::kOriginating) {
       continue;
