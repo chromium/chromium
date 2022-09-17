@@ -14,11 +14,18 @@
 
 namespace ash::auth {
 
+namespace mojom {
+class AuthFactorConfigAsyncWaiter;
+class RecoveryFactorEditorAsyncWaiter;
+}  // namespace mojom
+
 void BindToAuthFactorConfig(
     mojo::PendingReceiver<mojom::AuthFactorConfig> receiver);
+mojom::AuthFactorConfigAsyncWaiter GetAuthFactorConfigForTesting();
 
 void BindToRecoveryFactorEditor(
     mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver);
+mojom::RecoveryFactorEditorAsyncWaiter GetRecoveryFactorEditorForTesting();
 
 }  // namespace ash::auth
 

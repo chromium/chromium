@@ -13,6 +13,7 @@
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 class TestChromeWebUIControllerFactory;
 
@@ -44,6 +45,10 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
   // Returns the mojo remote that can be used in C++ browser tests to
   // manipulate the os settings UI.
   mojom::OSSettingsDriverAsyncWaiter OSSettingsDriver();
+
+  // mojom::OSSettingsDriver functions, with return type wrapped into an
+  // AsyncWaiter.
+  mojom::LockScreenSettingsAsyncWaiter GoToLockScreenSettings();
 
  private:
   class BrowserProcessServer : public mojom::OSSettingsBrowserProcess {
@@ -102,6 +107,14 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
   TestChromeWebUIControllerFactory test_factory_;
   content::ScopedWebUIControllerFactoryRegistration
       web_ui_factory_registration_{&test_factory_};
+
+  // The set of LockScreenSettings remotes obtained during calls to
+  // GoToLockScreenSettings. AsyncWaiter does not own the LockScreenSettings
+  // remote passed to it, so we store the remotes here. This remote set is only
+  // cleaned up when the mixin object is destroyed. Since it will usually not
+  // contain more than perhaps a single digit number of remotes, this shouldn't
+  // be a problem. mojo::RemoteSet<mojom::LockScreenSettings>
+  mojo::RemoteSet<mojom::LockScreenSettings> lock_screen_settings_remotes_;
 };
 
 }  // namespace chromeos::settings

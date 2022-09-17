@@ -8,10 +8,35 @@ module chromeos.settings.mojom;
 // C++ browser tests to manipulate the settings UI. Browser tests that want to
 // use this test api should instantiate OSSettingsBrowserTestMixin.
 
+// The interface to control the lock screen page.
+interface LockScreenSettings {
+  // Unlocks the lock screen page. The page should be locked before calling
+  // this. Crashes if authentication fails.
+  Authenticate(string password) => ();
+
+  // Checks whether a control for recovery is visible or not.
+  AssertRecoveryControlVisibility(bool is_visible) => ();
+
+  // Checks whether recovery is configured or not according to the recovery
+  // control.
+  AssertRecoveryConfigured(bool is_configured) => ();
+
+  // Toggles whether recovery is configured or not . Crashes if the control
+  // does not eventually show that recovery configuration has changed as
+  // expected.
+  ToggleRecoveryConfiguration() => ();
+};
+
 // An interface that allows clients to manipulate the os settings ui. Served by
 // Javascript injected into the os settings page. Consumed by C++ running in
 // the browser process during tests.
-interface OSSettingsDriver {};
+interface OSSettingsDriver {
+  // Navigate to lock screen settings. The settings page must be in its initial
+  // state before calling this. The return value can be used to manipulate lock
+  // screen settings.
+  GoToLockScreenSettings() =>
+      (pending_remote<LockScreenSettings> lock_screen_settings);
+};
 
 // The interface served from within the browser process in tests. Consumed by
 // the os settings webui.

@@ -6,6 +6,7 @@
 #include <utility>
 #include "base/no_destructor.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
+#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-test-utils.h"
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
 
 namespace ash::auth {
@@ -27,9 +28,17 @@ void BindToAuthFactorConfig(
   auth_factor_config->BindReceiver(std::move(receiver));
 }
 
+mojom::AuthFactorConfigAsyncWaiter GetAuthFactorConfigForTesting() {
+  return mojom::AuthFactorConfigAsyncWaiter(auth_factor_config.get());
+}
+
 void BindToRecoveryFactorEditor(
     mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver) {
   recovery_factor_editor->BindReceiver(std::move(receiver));
+}
+
+mojom::RecoveryFactorEditorAsyncWaiter GetRecoveryFactorEditorForTesting() {
+  return mojom::RecoveryFactorEditorAsyncWaiter(recovery_factor_editor.get());
 }
 
 }  // namespace ash::auth

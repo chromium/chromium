@@ -126,4 +126,12 @@ OSSettingsBrowserTestMixin::OSSettingsDriver() {
       browser_process_server_.OSSettingsDriver());
 }
 
+mojom::LockScreenSettingsAsyncWaiter
+OSSettingsBrowserTestMixin::GoToLockScreenSettings() {
+  auto pending_remote = OSSettingsDriver().GoToLockScreenSettings();
+  const auto id = lock_screen_settings_remotes_.Add(std::move(pending_remote));
+  return mojom::LockScreenSettingsAsyncWaiter(
+      lock_screen_settings_remotes_.Get(id));
+}
+
 }  // namespace chromeos::settings
