@@ -221,6 +221,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
     return tracks_.size();
   }
 
+  using WebPlatformMediaStreamSource::GetTaskRunner;
+
   virtual base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const = 0;
 
  protected:

@@ -82,10 +82,12 @@ class MediaStreamVideoTrack::FrameDeliverer
  public:
   using VideoSinkId = WebMediaStreamSink*;
 
-  FrameDeliverer(scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-                 base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
-                 bool enabled,
-                 uint32_t crop_version);
+  FrameDeliverer(
+      scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
+      bool enabled,
+      uint32_t crop_version);
 
   FrameDeliverer(const FrameDeliverer&) = delete;
   FrameDeliverer& operator=(const FrameDeliverer&) = delete;
@@ -220,13 +222,13 @@ class MediaStreamVideoTrack::FrameDeliverer
 };
 
 MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
+    scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
     bool enabled,
     uint32_t crop_version)
     : io_task_runner_(std::move(io_task_runner)),
-      // TODO(crbug.com/1223353, crbug.com/624696): Move to WebFrameScheduler.
-      main_render_task_runner_(Thread::MainThread()->GetDeprecatedTaskRunner()),
+      main_render_task_runner_(main_render_task_runner),
       media_stream_video_track_(media_stream_video_track),
       enabled_(enabled),
       emit_frame_drop_events_(true),
@@ -267,7 +269,7 @@ void MediaStreamVideoTrack::FrameDeliverer::SetNotifyFrameDroppedCallback(
       CrossThreadBindOnce(&FrameDeliverer::SetNotifyFrameDroppedCallbackOnIO,
                           WrapRefCounted(this), WTF::CrossThreadUnretained(id),
                           CrossThreadBindRepeating(std::move(callback)),
-                          Thread::Current()->GetDeprecatedTaskRunner()));
+                          main_render_task_runner_));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::SetNotifyFrameDroppedCallbackOnIO(
@@ -314,7 +316,7 @@ void MediaStreamVideoTrack::FrameDeliverer::RemoveCallback(VideoSinkId id) {
       *io_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::RemoveCallbackOnIO,
                           WrapRefCounted(this), WTF::CrossThreadUnretained(id),
-                          Thread::Current()->GetDeprecatedTaskRunner()));
+                          main_render_task_runner_));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::RemoveCallbackOnIO(
@@ -345,7 +347,7 @@ void MediaStreamVideoTrack::FrameDeliverer::RemoveEncodedCallback(
       *io_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&FrameDeliverer::RemoveEncodedCallbackOnIO,
                           WrapRefCounted(this), WTF::CrossThreadUnretained(id),
-                          Thread::Current()->GetDeprecatedTaskRunner()));
+                          main_render_task_runner_));
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::RemoveEncodedCallbackOnIO(
@@ -610,8 +612,8 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       source_(source->GetWeakPtr()) {
   frame_deliverer_ =
       base::MakeRefCounted<MediaStreamVideoTrack::FrameDeliverer>(
-          source->io_task_runner(), weak_factory_.GetWeakPtr(), enabled,
-          source->GetCropVersion());
+          source->GetTaskRunner(), source->io_task_runner(),
+          weak_factory_.GetWeakPtr(), enabled, source->GetCropVersion());
   source->AddTrack(
       this, VideoTrackAdapterSettings(),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
@@ -659,8 +661,8 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
       source_(source->GetWeakPtr()) {
   frame_deliverer_ =
       base::MakeRefCounted<MediaStreamVideoTrack::FrameDeliverer>(
-          source->io_task_runner(), weak_factory_.GetWeakPtr(), enabled,
-          source->GetCropVersion());
+          source->GetTaskRunner(), source->io_task_runner(),
+          weak_factory_.GetWeakPtr(), enabled, source->GetCropVersion());
   source->AddTrack(
       this, adapter_settings,
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
