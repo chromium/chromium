@@ -3174,12 +3174,12 @@
       'android-code-coverage': {
         'mixins': [
           'has_native_resultdb_integration',
-          'bullhead',
           'isolate_profile_data',
-          'marshmallow',
+          'pie_fleet',
+          'walleye',
         ],
         'test_suites': {
-          'gtest_tests': 'android_marshmallow_coverage_gtests',
+          'gtest_tests': 'android_pie_coverage_gtests',
           'junit_tests': 'chromium_junit_tests',
         },
         'os_type': 'android',

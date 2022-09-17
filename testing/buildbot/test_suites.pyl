@@ -5362,25 +5362,6 @@
       'android_trichrome_smoke_tests',
     ],
 
-    # This is the same as 'android_marshmallow_gtests'
-    # with the addition of 'webview_cts_tests_gtest' and
-    # 'webview_ui_instrumentation_tests'
-    'android_marshmallow_coverage_gtests': [
-      'android_modern_smoke_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chrome_public_tests',
-      'linux_flavor_specific_chromium_gtests',
-      'vr_android_specific_chromium_tests',
-      'vr_platform_specific_chromium_gtests',
-      'weblayer_android_gtests',
-      'weblayer_gtests',
-      'webview_cts_tests_gtest',
-      'webview_ui_instrumentation_tests',
-    ],
-
     # List gtests that run on android-marshmallow-arm64-rel builder.
     # TODO(crbug.com/1127110): Use android_marshmallow_gtests when
     # android-marshmallow-x86-rel is not mirrored to CQ.
@@ -5480,6 +5461,26 @@
       'android_monochrome_smoke_tests',
       'android_oreo_standard_gtests',
       'android_smoke_tests',
+    ],
+
+    # This is the same as 'chromium_android_gtests'
+    # with the addition of 'android_modern_smoke_tests',
+    # 'webview_cts_tests_gtest', 'webview_ui_instrumentation_tests',
+    # 'weblayer_android_gtests', and 'weblayer_gtests'.
+    'android_pie_coverage_gtests': [
+      'android_modern_smoke_tests',
+      'android_smoke_tests',
+      'android_specific_chromium_gtests',  # Already includes gl_gtests.
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'chrome_public_tests',
+      'linux_flavor_specific_chromium_gtests',
+      'vr_android_specific_chromium_tests',
+      'vr_platform_specific_chromium_gtests',
+      'weblayer_android_gtests',
+      'weblayer_gtests',
+      'webview_cts_tests_gtest',
+      'webview_ui_instrumentation_tests',
     ],
 
     'android_pie_gtests': [

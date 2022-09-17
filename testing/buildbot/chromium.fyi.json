@@ -16768,9 +16768,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -16812,9 +16813,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -16857,9 +16859,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -16901,9 +16904,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -16939,9 +16943,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -16974,9 +16979,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17018,9 +17024,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17062,9 +17069,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17106,9 +17114,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17151,9 +17160,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17196,9 +17206,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17240,9 +17251,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17285,9 +17297,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17329,9 +17342,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17373,9 +17387,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17417,9 +17432,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17461,9 +17477,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17511,9 +17528,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17558,9 +17576,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17609,9 +17628,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17654,9 +17674,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17698,9 +17719,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17742,9 +17764,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17787,9 +17810,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17832,9 +17856,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17877,9 +17902,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17922,9 +17948,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -17966,9 +17993,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18010,9 +18038,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18054,9 +18083,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18098,9 +18128,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18142,9 +18173,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18186,9 +18218,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18230,9 +18263,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18276,9 +18310,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18320,9 +18355,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18364,9 +18400,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18408,9 +18445,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18452,9 +18490,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18496,9 +18535,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18540,9 +18580,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18584,9 +18625,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18628,9 +18670,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18672,9 +18715,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18716,9 +18760,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18760,9 +18805,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18804,9 +18850,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18848,9 +18895,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18893,9 +18941,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18937,9 +18986,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -18981,9 +19031,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19025,9 +19076,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19069,9 +19121,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19113,9 +19166,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19157,9 +19211,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19201,9 +19256,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19245,9 +19301,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19289,9 +19346,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19334,9 +19392,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19378,9 +19437,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19422,9 +19482,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19466,9 +19527,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19510,9 +19572,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19554,9 +19617,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19598,9 +19662,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19642,9 +19707,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19686,9 +19752,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19730,9 +19797,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19781,9 +19849,10 @@
           ],
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19826,9 +19895,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19871,9 +19941,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19915,9 +19986,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
@@ -19959,9 +20031,10 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "PQ3A.190801.002",
+              "device_os_flavor": "google",
               "device_os_type": "userdebug",
-              "device_type": "bullhead",
+              "device_type": "walleye",
               "os": "Android"
             }
           ],
