@@ -660,6 +660,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kAccountsPrefTransferSAMLCookies
     //   kDeviceAttestationEnabled
     //   kDeviceOwner
+    //   kDeviceReportXDREvents
     //   kHeartbeatEnabled
     //   kHeartbeatFrequency
     //   kReleaseChannelDelegated

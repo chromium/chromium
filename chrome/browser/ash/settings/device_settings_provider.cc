@@ -174,6 +174,7 @@ const char* const kKnownSettings[] = {
     kUsbDetachableAllowlist,
     kVariationsRestrictParameter,
     kVirtualMachinesAllowed,
+    kDeviceReportXDREvents,
 };
 
 constexpr char InvalidCombinationsOfAllowedUsersPoliciesHistogram[] =
@@ -1243,6 +1244,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.device_encrypted_reporting_pipeline_enabled());
     if (container.has_enabled()) {
       new_values_cache->SetValue(kDeviceEncryptedReportingPipelineEnabled,
+                                 base::Value(container.enabled()));
+    }
+  }
+
+  if (policy.has_device_report_xdr_events()) {
+    const em::DeviceReportXDREventsProto& container(
+        policy.device_report_xdr_events());
+    if (container.has_enabled()) {
+      new_values_cache->SetValue(kDeviceReportXDREvents,
                                  base::Value(container.enabled()));
     }
   }

@@ -32496,6 +32496,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1013" label="StrictMimetypeCheckForWorkerScriptsEnabled"/>
   <int value="1014" label="RecoveryFactorBehavior"/>
   <int value="1015" label="CalendarIntegrationEnabled"/>
+  <int value="1016" label="DeviceReportXDREvents"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

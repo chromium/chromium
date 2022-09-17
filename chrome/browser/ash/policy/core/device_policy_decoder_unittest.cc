@@ -449,4 +449,17 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceAutofillSAMLUsername) {
                                std::move(autofill_saml_username_value));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceReportXDREvents) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy, key::kDeviceReportXDREvents);
+
+  base::Value device_report_xdr_events_value(true);
+  device_policy.mutable_device_report_xdr_events()->set_enabled(
+      device_report_xdr_events_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceReportXDREvents,
+                               std::move(device_report_xdr_events_value));
+}
+
 }  // namespace policy

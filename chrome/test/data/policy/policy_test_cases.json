@@ -12390,6 +12390,9 @@
   "ReportDeviceSignalStrengthEventDrivenTelemetry": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "DeviceReportXDREvents": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "DeviceAllowNewUsers": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

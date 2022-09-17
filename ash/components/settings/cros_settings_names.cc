@@ -578,4 +578,7 @@ const char kRevenEnableDeviceHWDataUsage[] = "cros.reven.enable_hw_data_usage";
 const char kDeviceEncryptedReportingPipelineEnabled[] =
     "cros.device.encrypted_reporting_pipeline_enabled";
 
+// A boolean pref that indicates whether reporting XDR events is enabled or not.
+const char kDeviceReportXDREvents[] = "cros.device.device_report_xdr_events";
+
 }  // namespace ash

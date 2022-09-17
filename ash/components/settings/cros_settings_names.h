@@ -327,6 +327,9 @@ extern const char kRevenEnableDeviceHWDataUsage[];
 COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kDeviceEncryptedReportingPipelineEnabled[];
 
+COMPONENT_EXPORT(ASH_SETTINGS)
+extern const char kDeviceReportXDREvents[];
+
 }  // namespace ash
 
 namespace chromeos {

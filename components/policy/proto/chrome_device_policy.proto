@@ -1700,6 +1700,10 @@ message EncryptedReportingPipelineConfigurationProto {
   optional bool enabled = 1 [default = true];
 }
 
+message DeviceReportXDREventsProto {
+  optional bool enabled = 1 [default = false];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1879,4 +1883,5 @@ message ChromeDeviceSettingsProto {
   optional StringListPolicyProto
       device_login_screen_context_aware_access_signals_allowlist = 136;
   optional StringPolicyProto device_printing_client_name_template = 137;
+  optional DeviceReportXDREventsProto device_report_xdr_events = 138;
 }

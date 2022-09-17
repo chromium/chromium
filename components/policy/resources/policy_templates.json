@@ -1005,6 +1005,7 @@
         'ReportDeviceNetworkTelemetryEventCheckingRateMs',
         'ReportDeviceAudioStatusCheckingRateMs',
         'ReportDeviceSignalStrengthEventDrivenTelemetry',
+        'DeviceReportXDREvents'
       ],
     },
     {
@@ -3963,6 +3964,37 @@
       This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain or Windows 10 Pro or Enterprise instances that are enrolled for device management, and macOS instances that are managed via MDM or joined to a domain via MCX.
 
       (For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, see DeviceMetricsReportingEnabled.)''',
+    },
+    {
+      'name': 'DeviceReportXDREvents',
+      'owners': ['cros-reporting-team@google.com', 'jrhilke@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'default': False,
+      'items': [
+        {
+          'value': True,
+          'caption': 'Report information about extended detection and response (XDR) events',
+        },
+        {
+          'value': False,
+          'caption': 'Do not report information about about extended detection and response (XDR) events',
+        },
+      ],
+      'example_value': False,
+      'id': 1016,
+      'caption': '''Report extended detection and response (XDR) events''',
+      'tags': ['admin-sharing'],
+      'desc': '''Setting the policy to True has enrolled devices report information related to extended detection and response (XDR) events.
+
+      Setting the policy to False or leaving it unset means enrolled devices don't report extended detection and response (XDR) events.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
       'name': 'PasswordManagerEnabled',
@@ -33850,6 +33882,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceAutofillSAMLUsername': 'saml_username.url_parameter_to_autofill_saml_username',
     'DeviceLoginScreenContextAwareAccessSignalsAllowlist': 'device_login_screen_context_aware_access_signals_allowlist.value',
     'DevicePrintingClientNameTemplate': 'device_printing_client_name_template.client_name_template',
+    'DeviceReportXDREvents': 'device_report_xdr_events.enabled',
   },
   'policy_atomic_group_definitions': [
     {
@@ -34263,6 +34296,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'HeartbeatFrequency',
         'LogUploadEnabled',
         'DeviceMetricsReportingEnabled',
+        'DeviceReportXDREvents'
       ],
     },
     {
@@ -34382,6 +34416,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1015,
+  'highest_id_currently_used': 1016,
   'highest_atomic_group_id_currently_used': 43
 }
