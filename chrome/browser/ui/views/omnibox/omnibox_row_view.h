@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/omnibox_proto/group_id.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

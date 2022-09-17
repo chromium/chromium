@@ -240,11 +240,11 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
         /*input_text=*/base::ASCIIToUTF16(std::string()));
 
     // Only provide a group ID, as the client does not know the header or the
-    // priority for omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST. The suggestion
+    // priority for omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST. The suggestion
     // group info will either be provided by the server (i.e., on SRP/Web) or
     // this group ID will be dropped (i.e., on NTP).
     suggestion.set_suggestion_group_id(
-        omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST);
+        omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST);
 
     AutocompleteMatch match = BaseSearchProvider::CreateSearchSuggestion(
         this, input, /*in_keyword_mode=*/false, suggestion,

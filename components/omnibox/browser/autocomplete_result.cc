@@ -982,7 +982,7 @@ std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
     omnibox::GroupId suggestion_group_id) const {
   const auto& it = suggestion_groups_map_.find(suggestion_group_id);
   DCHECK(it != suggestion_groups_map_.end());
-  return base::UTF8ToUTF16(it->second.group_config_info.header_text());
+  return base::UTF8ToUTF16(it->second.group_config.header_text());
 }
 
 bool AutocompleteResult::IsSuggestionGroupHidden(
@@ -1004,8 +1004,8 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
     return false;
 
   DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
-  return it->second.group_config_info.visibility() ==
-         omnibox::GroupConfigInfo_Visibility_HIDDEN;
+  return it->second.group_config.visibility() ==
+         omnibox::GroupConfig_Visibility_HIDDEN;
 }
 
 void AutocompleteResult::SetSuggestionGroupHidden(

@@ -6,7 +6,7 @@
 
 omnibox::GroupId GroupIdForNumber(int value) {
   if (!omnibox::GroupId_IsValid(value)) {
-    return omnibox::GroupId::INVALID;
+    return omnibox::GROUP_INVALID;
   }
   return static_cast<omnibox::GroupId>(value);
 }
@@ -19,11 +19,11 @@ void SuggestionGroup::MergeFrom(const SuggestionGroup& other) {
   if (!original_group_id.has_value() && other.original_group_id.has_value()) {
     original_group_id = *other.original_group_id;
   }
-  group_config_info.MergeFrom(other.group_config_info);
+  group_config.MergeFrom(other.group_config);
 }
 
 void SuggestionGroup::Clear() {
   priority = SuggestionGroupPriority::kDefault;
   original_group_id.reset();
-  group_config_info.Clear();
+  group_config.Clear();
 }

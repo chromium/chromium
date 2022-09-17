@@ -246,7 +246,7 @@ class OmniboxRowView::HeaderView : public views::View {
   raw_ptr<views::ToggleImageButton> header_toggle_button_;
 
   // The group ID associated with this header.
-  omnibox::GroupId suggestion_group_id_ = omnibox::GroupId::INVALID;
+  omnibox::GroupId suggestion_group_id_ = omnibox::GROUP_INVALID;
 
   // The unmodified header text for this header.
   std::u16string header_text_;

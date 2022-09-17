@@ -1862,8 +1862,8 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
       {{omnibox::kDynamicMaxAutocomplete,
         omnibox::kRetainSuggestionsWithHeaders}});
 
-  const auto group_1 = omnibox::GroupId::POLARIS_RESERVED_1;
-  const auto group_2 = omnibox::GroupId::POLARIS_RESERVED_2;
+  const auto group_1 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED;
+  const auto group_2 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS;
   TestData data[] = {
       {0, 4, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
       {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
@@ -1879,8 +1879,8 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
   // Suggestion groups have SuggestionGroupPriority::kDefault priority by
   // default.
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[group_1].group_config_info.set_header_text("1");
-  suggestion_groups_map[group_2].group_config_info.set_header_text("2");
+  suggestion_groups_map[group_1].group_config.set_header_text("1");
+  suggestion_groups_map[group_2].group_config.set_header_text("2");
 
   {
     AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
@@ -1998,8 +1998,8 @@ TEST_F(AutocompleteResultTest,
        {omnibox::kRetainSuggestionsWithHeaders, {}}},
       {{omnibox::kDynamicMaxAutocomplete}});
 
-  const auto group_1 = omnibox::GroupId::POLARIS_RESERVED_1;
-  const auto group_2 = omnibox::GroupId::POLARIS_RESERVED_2;
+  const auto group_1 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED;
+  const auto group_2 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS;
   TestData data[] = {
       {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
@@ -2018,8 +2018,8 @@ TEST_F(AutocompleteResultTest,
   // Suggestion groups have SuggestionGroupPriority::kDefault priority by
   // default.
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[group_1].group_config_info.set_header_text("1");
-  suggestion_groups_map[group_2].group_config_info.set_header_text("2");
+  suggestion_groups_map[group_1].group_config.set_header_text("1");
+  suggestion_groups_map[group_2].group_config.set_header_text("2");
 
   {
     AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
@@ -2076,8 +2076,8 @@ TEST_F(AutocompleteResultTest,
        {omnibox::kRetainSuggestionsWithHeaders, {}}},
       {});
 
-  const auto group_1 = omnibox::GroupId::POLARIS_RESERVED_1;
-  const auto group_2 = omnibox::GroupId::POLARIS_RESERVED_2;
+  const auto group_1 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED;
+  const auto group_2 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS;
   TestData data[] = {
       {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
@@ -2095,10 +2095,10 @@ TEST_F(AutocompleteResultTest,
 
   // Set priorities that contradict the scores of the matches in groups.
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[group_1].group_config_info.set_header_text("1");
+  suggestion_groups_map[group_1].group_config.set_header_text("1");
   suggestion_groups_map[group_1].priority =
       SuggestionGroupPriority::kRemoteZeroSuggest2;
-  suggestion_groups_map[group_2].group_config_info.set_header_text("2");
+  suggestion_groups_map[group_2].group_config.set_header_text("2");
   suggestion_groups_map[group_2].priority =
       SuggestionGroupPriority::kRemoteZeroSuggest1;
 

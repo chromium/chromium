@@ -25,7 +25,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/omnibox_proto/group_id.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
@@ -685,7 +685,7 @@ struct AutocompleteMatch {
   // such as the header text this match must appear under from ACResult.
   //
   // This is converted to a primitive int type in Java and JavaScript; with -1
-  // (omnibox::GroupId::INVALID) used as a sentinel value.
+  // (omnibox::GROUP_INVALID) used as a sentinel value.
   absl::optional<omnibox::GroupId> suggestion_group_id;
 
   // If true, UI-level code should swap the contents and description fields

@@ -218,7 +218,7 @@ class SearchSuggestionParser {
     // suggestion_config.proto. Used to look up the suggestion group info this
     // suggestion belong to such as the header text this suggestion must appear
     // under.
-    // Note: Use omnibox::GroupId::INVALID in place of a missing suggestion
+    // Note: Use omnibox::GROUP_INVALID in place of a missing suggestion
     // group Id when this is to be converted to a primitive type.
     absl::optional<omnibox::GroupId> suggestion_group_id_;
 

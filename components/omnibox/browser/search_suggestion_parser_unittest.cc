@@ -377,52 +377,52 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
 
     ASSERT_EQ(
         "Recent Searches",
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
-            .group_config_info.header_text());
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
+            .group_config.header_text());
     ASSERT_EQ(
         40000,
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
             .original_group_id.value());
     ASSERT_EQ(
         SuggestionGroupPriority::kRemoteZeroSuggest1,
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
             .priority);
     ASSERT_EQ(
-        omnibox::GroupConfigInfo_Visibility_HIDDEN,
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
-            .group_config_info.visibility());
+        omnibox::GroupConfig_Visibility_HIDDEN,
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
+            .group_config.visibility());
 
-    ASSERT_EQ(
-        "Recommended for you",
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .group_config_info.header_text());
-    ASSERT_EQ(
-        40008,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .original_group_id.value());
-    ASSERT_EQ(
-        omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .group_config_info.visibility());
-    ASSERT_EQ(
-        SuggestionGroupPriority::kRemoteZeroSuggest2,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .priority);
+    ASSERT_EQ("Recommended for you",
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .group_config.header_text());
+    ASSERT_EQ(40008,
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .original_group_id.value());
+    ASSERT_EQ(omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .group_config.visibility());
+    ASSERT_EQ(SuggestionGroupPriority::kRemoteZeroSuggest2,
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .priority);
 
     ASSERT_EQ(u"los angeles", results.suggest_results[0].suggestion());
     // This suggestion does not belong to a group.
     ASSERT_EQ(absl::nullopt, results.suggest_results[0].suggestion_group_id());
 
     ASSERT_EQ(u"san diego", results.suggest_results[1].suggestion());
-    ASSERT_EQ(omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST,
+    ASSERT_EQ(omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
               *results.suggest_results[1].suggestion_group_id());
 
     ASSERT_EQ(u"las vegas", results.suggest_results[2].suggestion());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_2,
+    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS,
               *results.suggest_results[2].suggestion_group_id());
 
     ASSERT_EQ(u"san francisco", results.suggest_results[3].suggestion());
@@ -479,52 +479,48 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
 
     ASSERT_EQ(
         "Recommended for you",
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
-            .group_config_info.header_text());
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
+            .group_config.header_text());
     ASSERT_EQ(
         40008,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
             .original_group_id.value());
     ASSERT_EQ(
-        omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
-            .group_config_info.visibility());
+        omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
+            .group_config.visibility());
     ASSERT_EQ(
         SuggestionGroupPriority::kRemoteZeroSuggest1,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
             .priority);
 
     ASSERT_EQ(
         "Recent Searches",
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
-            .group_config_info.header_text());
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
+            .group_config.header_text());
     ASSERT_EQ(
         40000,
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
             .original_group_id.value());
     ASSERT_EQ(
         SuggestionGroupPriority::kRemoteZeroSuggest2,
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
             .priority);
     ASSERT_EQ(
-        omnibox::GroupConfigInfo_Visibility_HIDDEN,
-        results
-            .suggestion_groups_map[omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST]
-            .group_config_info.visibility());
+        omnibox::GroupConfig_Visibility_HIDDEN,
+        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
+            .group_config.visibility());
 
     ASSERT_EQ(u"los angeles", results.suggest_results[0].suggestion());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_1,
+    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED,
               *results.suggest_results[0].suggestion_group_id());
 
     ASSERT_EQ(u"san diego", results.suggest_results[1].suggestion());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_1,
+    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED,
               *results.suggest_results[1].suggestion_group_id());
 
     ASSERT_EQ(u"las vegas", results.suggest_results[2].suggestion());
-    ASSERT_EQ(omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST,
+    ASSERT_EQ(omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
               *results.suggest_results[2].suggestion_group_id());
 
     ASSERT_EQ(u"san francisco", results.suggest_results[3].suggestion());
@@ -581,65 +577,63 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
 
     ASSERT_EQ(
         "Recommended for you",
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
-            .group_config_info.header_text());
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
+            .group_config.header_text());
     ASSERT_EQ(
         40008,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
             .original_group_id.value());
     ASSERT_EQ(
         SuggestionGroupPriority::kRemoteZeroSuggest1,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
             .priority);
     ASSERT_EQ(
-        omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_1]
-            .group_config_info.visibility());
+        omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
+        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
+            .group_config.visibility());
 
-    ASSERT_EQ(
-        "Related Searches",
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .group_config_info.header_text());
-    ASSERT_EQ(
-        40007,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .original_group_id.value());
-    ASSERT_EQ(
-        omnibox::GroupConfigInfo_Visibility_HIDDEN,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .group_config_info.visibility());
-    ASSERT_EQ(
-        SuggestionGroupPriority::kRemoteZeroSuggest2,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_2]
-            .priority);
+    ASSERT_EQ("Related Searches",
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .group_config.header_text());
+    ASSERT_EQ(40007,
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .original_group_id.value());
+    ASSERT_EQ(omnibox::GroupConfig_Visibility_HIDDEN,
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .group_config.visibility());
+    ASSERT_EQ(SuggestionGroupPriority::kRemoteZeroSuggest2,
+              results
+                  .suggestion_groups_map
+                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
+                  .priority);
 
-    ASSERT_EQ(
-        "NOT RECOMMENDED FOR YOU",
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_3]
-            .group_config_info.header_text());
-    ASSERT_EQ(
-        40009,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_3]
-            .original_group_id.value());
-    ASSERT_EQ(
-        omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_3]
-            .group_config_info.visibility());
-    ASSERT_EQ(
-        SuggestionGroupPriority::kRemoteZeroSuggest3,
-        results.suggestion_groups_map[omnibox::GroupId::POLARIS_RESERVED_3]
-            .priority);
+    ASSERT_EQ("NOT RECOMMENDED FOR YOU",
+              results.suggestion_groups_map[omnibox::GROUP_TRENDS]
+                  .group_config.header_text());
+    ASSERT_EQ(40009, results.suggestion_groups_map[omnibox::GROUP_TRENDS]
+                         .original_group_id.value());
+    ASSERT_EQ(omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
+              results.suggestion_groups_map[omnibox::GROUP_TRENDS]
+                  .group_config.visibility());
+    ASSERT_EQ(SuggestionGroupPriority::kRemoteZeroSuggest3,
+              results.suggestion_groups_map[omnibox::GROUP_TRENDS].priority);
 
     ASSERT_EQ(u"los angeles", results.suggest_results[0].suggestion());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_1,
+    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED,
               *results.suggest_results[0].suggestion_group_id());
 
     ASSERT_EQ(u"san diego", results.suggest_results[1].suggestion());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_2,
+    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS,
               *results.suggest_results[1].suggestion_group_id());
 
     ASSERT_EQ(u"las vegas", results.suggest_results[2].suggestion());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_1,
+    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED,
               *results.suggest_results[2].suggestion_group_id());
 
     ASSERT_EQ(u"san francisco", results.suggest_results[3].suggestion());
@@ -656,17 +650,9 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
       "4",
       "5",
       "6",
-      "7",
-      "8",
-      "9",
-      "10",
-      "11"
+      "7"
     ],
     [
-      "",
-      "",
-      "",
-      "",
       "",
       "",
       "",
@@ -689,15 +675,11 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
           "40003":"4",
           "40004":"5",
           "40005":"6",
-          "40006":"7",
-          "40007":"8",
-          "40008":"9",
-          "40009":"10",
-          "40010":"11"
+          "40006":"7"
         },
         "h":[
-          40007,
-          "40008",
+          40005,
+          "40006",
           "garbage_non_int"
         ]
       },
@@ -722,18 +704,6 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
         },
         {
           "zl":40006
-        },
-        {
-          "zl":40007
-        },
-        {
-          "zl":40008
-        },
-        {
-          "zl":40009
-        },
-        {
-          "zl":40010
         }
       ],
       "google:suggestrelevance":[
@@ -743,17 +713,9 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
         608,
         607,
         606,
-        605,
-        604,
-        603,
-        602,
-        601
+        605
       ],
       "google:suggesttype":[
-        "QUERY",
-        "QUERY",
-        "QUERY",
-        "QUERY",
         "QUERY",
         "QUERY",
         "QUERY",
@@ -773,29 +735,19 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
 
     // Suggestion group headers, original group ids, priorities, and default
     // visibilities are correctly parsed and populated.
-    ASSERT_EQ(10U, results.suggestion_groups_map.size());
-    ASSERT_EQ(11U, results.suggest_results.size());
-    ASSERT_EQ(omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST,
+    ASSERT_EQ(6U, results.suggestion_groups_map.size());
+    ASSERT_EQ(7U, results.suggest_results.size());
+    ASSERT_EQ(omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
               *results.suggest_results[0].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_2,
+    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS,
               *results.suggest_results[1].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_3,
-              *results.suggest_results[2].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_4,
+    ASSERT_EQ(omnibox::GROUP_TRENDS_ENTITY_CHIPS,
               *results.suggest_results[3].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_5,
+    ASSERT_EQ(omnibox::GROUP_RELATED_QUERIES,
               *results.suggest_results[4].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_6,
+    ASSERT_EQ(omnibox::GROUP_VISITED_DOC_RELATED,
               *results.suggest_results[5].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_7,
-              *results.suggest_results[6].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_8,
-              *results.suggest_results[7].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_9,
-              *results.suggest_results[8].suggestion_group_id());
-    ASSERT_EQ(omnibox::GroupId::POLARIS_RESERVED_10,
-              *results.suggest_results[9].suggestion_group_id());
-    ASSERT_EQ(absl::nullopt, results.suggest_results[10].suggestion_group_id());
+    ASSERT_EQ(absl::nullopt, results.suggest_results[6].suggestion_group_id());
   }
 }
 

@@ -9,8 +9,7 @@ if (is_android) {
 }
 
 _proto_files = [
-  "group_config_info.proto",
-  "group_id.proto",
+  "groups.proto",
   "types.proto",
 ]
 

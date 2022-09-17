@@ -931,9 +931,9 @@ TEST_F(ShortcutsProviderTest, HistoryClusterSuggestions) {
   EXPECT_EQ(matches[0].suggestion_group_id, absl::nullopt);
   EXPECT_EQ(matches[1].suggestion_group_id, absl::nullopt);
   EXPECT_EQ(matches[2].suggestion_group_id, absl::nullopt);
-  EXPECT_EQ(matches[3].suggestion_group_id, omnibox::GroupId::HISTORY_CLUSTER);
-  EXPECT_EQ(matches[4].suggestion_group_id, omnibox::GroupId::HISTORY_CLUSTER);
-  EXPECT_EQ(matches[5].suggestion_group_id, omnibox::GroupId::HISTORY_CLUSTER);
-  EXPECT_EQ(matches[6].suggestion_group_id, omnibox::GroupId::HISTORY_CLUSTER);
+  EXPECT_EQ(matches[3].suggestion_group_id, omnibox::GROUP_HISTORY_CLUSTER);
+  EXPECT_EQ(matches[4].suggestion_group_id, omnibox::GROUP_HISTORY_CLUSTER);
+  EXPECT_EQ(matches[5].suggestion_group_id, omnibox::GROUP_HISTORY_CLUSTER);
+  EXPECT_EQ(matches[6].suggestion_group_id, omnibox::GROUP_HISTORY_CLUSTER);
 }
 #endif  // !BUILDFLAG(IS_IOS)
