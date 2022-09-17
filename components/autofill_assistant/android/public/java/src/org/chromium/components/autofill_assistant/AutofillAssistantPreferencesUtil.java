@@ -12,22 +12,22 @@ import org.chromium.base.ContextUtils;
 // TODO(crbug.com/1069897): Use SharedPreferencesManager again.
 public class AutofillAssistantPreferencesUtil {
     /** Whether Autofill Assistant is enabled */
-    private static final String ENABLED_PREFERENCE_KEY = "autofill_assistant_switch";
+    private static final String AUTOFILL_ASSISTANT_ENABLED = "autofill_assistant_switch";
     /** Whether the Autofill Assistant onboarding has been accepted. */
-    private static final String ONBOARDING_ACCEPTED_PREFERENCE_KEY =
+    private static final String AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED =
             "AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED";
     /** Whether the user has seen a lite-script before or is a first-time user. */
-    private static final String FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY =
+    private static final String AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER =
             "Chrome.AutofillAssistant.LiteScriptFirstTimeUser";
     /** Whether proactive help is enabled. */
-    private static final String PROACTIVE_HELP_PREFERENCE_KEY =
+    private static final String AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED =
             "Chrome.AutofillAssistant.ProactiveHelp";
     /**
      * @Deprecated preference indicating whether "do not show again" was checked in the autofill
      * assistant onboarding
      */
     @Deprecated
-    private static final String SKIP_INIT_SCREEN_PREFERENCE_KEY =
+    private static final String AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN =
             "AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN";
 
     /** Checks whether the Autofill Assistant switch preference in settings is on. */
@@ -82,58 +82,58 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     public static boolean getAssistantEnabledPreference(boolean defaultValue) {
-        return readBoolean(ENABLED_PREFERENCE_KEY, defaultValue);
+        return readBoolean(AUTOFILL_ASSISTANT_ENABLED, defaultValue);
     }
 
     public static void setAssistantEnabledPreference(boolean value) {
-        writeBoolean(ENABLED_PREFERENCE_KEY, value);
+        writeBoolean(AUTOFILL_ASSISTANT_ENABLED, value);
     }
 
     public static boolean containsAssistantEnabledPreference() {
-        return contains(ENABLED_PREFERENCE_KEY);
+        return contains(AUTOFILL_ASSISTANT_ENABLED);
     }
 
     public static boolean getOnboardingAcceptedPreference(boolean defaultValue) {
-        return readBoolean(ONBOARDING_ACCEPTED_PREFERENCE_KEY, defaultValue);
+        return readBoolean(AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, defaultValue);
     }
 
     public static void setOnboardingAcceptedPreference(boolean value) {
-        writeBoolean(ONBOARDING_ACCEPTED_PREFERENCE_KEY, value);
+        writeBoolean(AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, value);
     }
 
     public static void removeOnboardingAcceptedPreference() {
-        remove(ONBOARDING_ACCEPTED_PREFERENCE_KEY);
+        remove(AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED);
     }
 
     /** Returns whether the user has seen a trigger script before or not. */
     public static boolean isAutofillAssistantFirstTimeTriggerScriptUser() {
-        return readBoolean(FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY, true);
+        return readBoolean(AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, true);
     }
 
     /** Marks a user as having seen a trigger script at least once before. */
     public static void setFirstTimeTriggerScriptUserPreference(boolean firstTimeUser) {
-        writeBoolean(FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY, firstTimeUser);
+        writeBoolean(AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, firstTimeUser);
     }
 
     public static void onClearBrowserHistory() {
-        remove(FIRST_TIME_LITE_SCRIPT_USER_PREFERENCE_KEY);
+        remove(AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER);
     }
 
     public static boolean getProactiveHelpPreference(boolean defaultValue) {
-        return readBoolean(PROACTIVE_HELP_PREFERENCE_KEY, defaultValue);
+        return readBoolean(AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED, defaultValue);
     }
 
     /** Enables or disables the proactive help setting. */
     public static void setProactiveHelpPreference(boolean enabled) {
-        writeBoolean(PROACTIVE_HELP_PREFERENCE_KEY, enabled);
+        writeBoolean(AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED, enabled);
     }
 
     public static boolean getSkipInitScreenPreference(boolean defaultValue) {
-        return readBoolean(SKIP_INIT_SCREEN_PREFERENCE_KEY, defaultValue);
+        return readBoolean(AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN, defaultValue);
     }
 
     public static void removeSkipInitScreenPreference() {
-        remove(SKIP_INIT_SCREEN_PREFERENCE_KEY);
+        remove(AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN);
     }
 
     private static boolean readBoolean(String key, boolean defaultValue) {
