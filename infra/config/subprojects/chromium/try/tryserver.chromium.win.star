@@ -233,6 +233,10 @@ try_.builder(
     mirrors = ["ci/win-fieldtrial-rel"],
 )
 
+try_.builder(
+    name = "win-perfetto-rel",
+)
+
 try_.gpu.optional_tests_builder(
     name = "win_optional_gpu_tests_rel",
     builder_spec = builder_config.builder_spec(

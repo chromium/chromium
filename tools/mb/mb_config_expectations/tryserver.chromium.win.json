@@ -164,6 +164,16 @@
       "use_libfuzzer": true
     }
   },
+  "win-perfetto-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_goma": true,
+      "use_perfetto_client_library": true
+    }
+  },
   "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {
     "gn_args": {
       "dcheck_always_on": true,

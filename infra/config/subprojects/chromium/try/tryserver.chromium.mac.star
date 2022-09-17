@@ -80,6 +80,10 @@ try_.builder(
     builderless = False,
 )
 
+try_.builder(
+    name = "mac-perfetto-rel",
+)
+
 try_.orchestrator_builder(
     name = "mac-rel",
     compilator = "mac-rel-compilator",

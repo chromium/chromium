@@ -706,6 +706,19 @@
       "use_remoteexec": true
     }
   },
+  "android-perfetto-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_cpu": "x64",
+      "target_os": "android",
+      "use_perfetto_client_library": true,
+      "use_remoteexec": true
+    }
+  },
   "build-perf-android": {
     "gn_args": {
       "android_static_analysis": "off",
@@ -1553,6 +1566,15 @@
       "use_goma": true
     }
   },
+  "mac-perfetto-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_perfetto_client_library": true,
+      "use_remoteexec": true
+    }
+  },
   "mac-upload-perfetto": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -1617,6 +1639,15 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
+  "win-perfetto-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_perfetto_client_library": true,
       "use_remoteexec": true
     }
   },

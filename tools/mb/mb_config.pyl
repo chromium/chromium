@@ -398,6 +398,7 @@
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient',
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
+      'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
       # Keep in sync with android-pie-arm64-rel, but with reclient.
       'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
       # Keep in sync with linux-rel, but with reclient.
@@ -473,12 +474,14 @@
       'mac-code-coverage': 'clang_code_coverage',
       'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-hermetic-upgrade-rel': 'release_bot',
+      'mac-perfetto-rel': 'perfetto_release_bot_reclient',
       'mac-upload-perfetto': 'release_bot_perfetto_zlib',
       'win-annotator-rel': 'release_bot_reclient',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
       'win-celab-builder-rel': 'release_bot_minimal_symbols_reclient',
       'win-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
+      'win-perfetto-rel': 'perfetto_release_bot_reclient',
       'win-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
       'win10-code-coverage': 'clang_code_coverage_reclient',
       'win10-rel-no-external-ip': 'gpu_tests_release_bot_minimal_symbols_reclient',
@@ -1001,6 +1004,7 @@
       'android-opus-arm-rel': 'android_release_trybot',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64',
+      'android-perfetto-rel': 'perfetto_release_trybot_android',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
       'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage',
@@ -1265,6 +1269,7 @@
       'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot',
+      'mac-perfetto-rel': 'perfetto_release_trybot',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
@@ -1355,6 +1360,7 @@
       'win-celab-try-rel': 'release_bot_minimal_symbols',
       'win-fieldtrial-rel': 'release_bot_minimal_symbols',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot',
+      'win-perfetto-rel': 'perfetto_release_trybot',
       'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials',
       'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot',
       'win10_chromium_x64_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
@@ -3372,8 +3378,16 @@
       'perfetto', 'release_bot_reclient',
     ],
 
+    'perfetto_release_bot_reclient_android': [
+      'perfetto', 'release_bot_reclient', 'android', 'x64'
+    ],
+
     'perfetto_release_trybot': [
       'perfetto', 'release_trybot',
+    ],
+
+    'perfetto_release_trybot_android': [
+      'perfetto', 'release_trybot', 'android', 'x64'
     ],
 
     'presubmit': [

@@ -518,6 +518,16 @@
       "use_goma": true
     }
   },
+  "mac-perfetto-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_goma": true,
+      "use_perfetto_client_library": true
+    }
+  },
   "mac-rel": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",

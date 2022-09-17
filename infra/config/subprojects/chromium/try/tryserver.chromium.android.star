@@ -374,6 +374,10 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-perfetto-rel",
+)
+
+try_.builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
