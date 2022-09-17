@@ -117,6 +117,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/display/screen_info.h"
 
 #ifndef LOG_MEDIA_EVENTS
@@ -2792,11 +2793,22 @@ void HTMLMediaElement::PlayInternal() {
 void HTMLMediaElement::pause() {
   DVLOG(2) << "pause(" << *this << ")";
 
+  // When updating pause, be sure to update PauseToLetDescriptionFinish().
   autoplay_policy_->StopAutoplayMutedWhenVisible();
   PauseInternal(PlayPromiseError::kPaused_PauseCalled);
 }
 
-void HTMLMediaElement::PauseInternal(PlayPromiseError code) {
+void HTMLMediaElement::PauseToLetDescriptionFinish() {
+  DVLOG(2) << "pauseExceptSpeech(" << *this << ")";
+
+  autoplay_policy_->StopAutoplayMutedWhenVisible();
+
+  // Passing in pause_speech as false to pause everything except the speech.
+  PauseInternal(PlayPromiseError::kPaused_PauseCalled, false);
+}
+
+void HTMLMediaElement::PauseInternal(PlayPromiseError code,
+                                     bool pause_speech /* = true */) {
   DVLOG(3) << "pauseInternal(" << *this << ")";
 
   if (network_state_ == kNetworkEmpty)
@@ -2818,7 +2830,7 @@ void HTMLMediaElement::PauseInternal(PlayPromiseError code) {
     ScheduleRejectPlayPromises(code);
   }
 
-  UpdatePlayState();
+  UpdatePlayState(pause_speech);
 }
 
 bool HTMLMediaElement::preservesPitch() const {
@@ -3808,7 +3820,7 @@ bool HTMLMediaElement::StoppedDueToErrors() const {
   return false;
 }
 
-void HTMLMediaElement::UpdatePlayState() {
+void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
   bool is_playing = GetWebMediaPlayer() && !GetWebMediaPlayer()->Paused();
   bool should_be_playing = PotentiallyPlaying();
 
@@ -3827,6 +3839,8 @@ void HTMLMediaElement::UpdatePlayState() {
       GetWebMediaPlayer()->SetRate(playbackRate());
       GetWebMediaPlayer()->SetVolume(EffectiveMediaVolume());
       GetWebMediaPlayer()->Play();
+      if (::features::IsTextBasedAudioDescriptionEnabled())
+        SpeechSynthesis()->Resume();
 
       // These steps should not be necessary, but if `play()` is called before
       // a source change, we may get into a state where `paused_ == false` and
@@ -3842,6 +3856,9 @@ void HTMLMediaElement::UpdatePlayState() {
   } else {  // Should not be playing right now
     if (is_playing) {
       GetWebMediaPlayer()->Pause();
+
+      if (pause_speech && ::features::IsTextBasedAudioDescriptionEnabled())
+        SpeechSynthesis()->Pause();
     }
 
     playback_progress_timer_.Stop();

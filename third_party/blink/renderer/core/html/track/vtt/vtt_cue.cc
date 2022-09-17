@@ -750,14 +750,22 @@ void VTTCue::RemoveDisplayTree(RemovalNotification removal_notification) {
 void VTTCue::OnEnter(HTMLMediaElement& video) {
   if (!track()->IsSpokenKind())
     return;
+
+  // Clear the queue of utterances before speaking a current cue.
+  video.SpeechSynthesis()->Cancel();
+
   video.SpeechSynthesis()->Speak(text_, track()->Language());
 }
 
 void VTTCue::OnExit(HTMLMediaElement& video) {
   if (!track()->IsSpokenKind())
     return;
+
+  // If SpeechSynthesis is speaking audio descriptions at the end time
+  // specified (when onExit runs), call PauseToLetDescriptionFinish so that only
+  // the video is paused and the audio descriptions can finish.
   if (video.SpeechSynthesis()->Speaking())
-    video.pause();
+    video.PauseToLetDescriptionFinish();
 }
 
 void VTTCue::UpdateDisplay(HTMLDivElement& container) {

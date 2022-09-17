@@ -241,6 +241,10 @@ class CORE_EXPORT HTMLMediaElement
   void SetLoop(bool);
   ScriptPromise playForBindings(ScriptState*);
   absl::optional<DOMExceptionCode> Play();
+
+  // Called when the video should pause to let audio descriptions finish.
+  void PauseToLetDescriptionFinish();
+
   void pause();
   double latencyHint() const;
   void setLatencyHint(double);
@@ -646,9 +650,12 @@ class CORE_EXPORT HTMLMediaElement
   void PlayInternal();
 
   // This does not stop autoplay visibility observation.
-  void PauseInternal(PlayPromiseError code);
+  // By default, will pause the video and speech.
+  void PauseInternal(PlayPromiseError code, bool pause_speech = true);
 
-  void UpdatePlayState();
+  // By default, will pause the video and speech.
+  void UpdatePlayState(bool pause_speech = true);
+
   bool PotentiallyPlaying() const;
   bool StoppedDueToErrors() const;
   bool CouldPlayIfEnoughData() const override;
