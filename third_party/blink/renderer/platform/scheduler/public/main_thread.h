@@ -16,8 +16,12 @@ class MainThreadTaskRunnerRestricted {
  private:
   // Permitted users of `MainThread::GetTaskRunner`.
   friend class CachedStorageArea;
+  friend class CategorizedWorkerPoolImpl;
   friend class RendererResourceCoordinatorImpl;
+  friend class SharedGpuContext;
   friend class ThreadedIconLoader;
+  friend class WebGLWebCodecsVideoFrame;
+  friend class WebRtcVideoFrameAdapter;
   friend class V8WorkerMemoryReporter;
 
   MainThreadTaskRunnerRestricted() = default;
