@@ -173,10 +173,10 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
                        views::style::CONTEXT_DIALOG_BODY_TEXT);
   share_link_label->SetLineHeight(kLabelLineHeight);
   share_link_label->SetMultiLine(true);
-  share_link_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  share_link_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   share_link_label->SizeToFit(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   share_link_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, kIndent, 0, 0)));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, kIndent, 0, kIndent)));
   share_link_label_ = action_list_view->AddChildView(share_link_label);
 
   for (const auto& action : third_party_actions) {
