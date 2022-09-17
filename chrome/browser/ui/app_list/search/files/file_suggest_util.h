@@ -23,6 +23,12 @@ enum class DriveSuggestValidationStatus {
   kMaxValue = kDriveDisabled,
 };
 
+// The types of the file suggestion data.
+enum class FileSuggestionType {
+  // The drive file suggestion.
+  kDriveFile
+};
+
 // The data of an individual file suggested by `FileSuggestKeyedService`.
 struct FileSuggestData {
   FileSuggestData();

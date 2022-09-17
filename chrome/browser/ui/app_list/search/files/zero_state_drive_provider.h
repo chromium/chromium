@@ -28,6 +28,7 @@ class Profile;
 
 namespace app_list {
 struct FileSuggestData;
+enum class FileSuggestionType;
 class SearchController;
 
 class ZeroStateDriveProvider : public SearchProvider,
@@ -83,8 +84,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   void MaybeUpdateCache();
 
   // FileSuggestKeyedService::Observer:
-  void OnFileSuggestionUpdated(
-      FileSuggestKeyedService::SuggestionType type) override;
+  void OnFileSuggestionUpdated(FileSuggestionType type) override;
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;

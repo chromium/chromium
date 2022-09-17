@@ -181,7 +181,7 @@ void ZeroStateDriveProvider::StartZeroState() {
   weak_factory_.InvalidateWeakPtrs();
 
   file_suggest_service_->GetSuggestFileData(
-      FileSuggestKeyedService::SuggestionType::kItemSuggest,
+      FileSuggestionType::kDriveFile,
       base::BindOnce(&ZeroStateDriveProvider::OnSuggestFileDataFetched,
                      weak_factory_.GetWeakPtr()));
 }
@@ -238,9 +238,8 @@ void ZeroStateDriveProvider::MaybeUpdateCache() {
   }
 }
 
-void ZeroStateDriveProvider::OnFileSuggestionUpdated(
-    FileSuggestKeyedService::SuggestionType type) {
-  DCHECK_EQ(FileSuggestKeyedService::SuggestionType::kItemSuggest, type);
+void ZeroStateDriveProvider::OnFileSuggestionUpdated(FileSuggestionType type) {
+  DCHECK_EQ(FileSuggestionType::kDriveFile, type);
   StartZeroState();
 }
 

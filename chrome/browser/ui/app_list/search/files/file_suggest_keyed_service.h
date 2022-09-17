@@ -20,6 +20,7 @@ class DriveIntegrationService;
 namespace app_list {
 enum class DriveSuggestValidationStatus;
 struct FileSuggestData;
+enum class FileSuggestionType;
 class ZeroStateDriveProvider;
 
 // The keyed service that queries for the file suggestions (for both the drive
@@ -31,16 +32,10 @@ class FileSuggestKeyedService : public KeyedService {
   using GetSuggestDataCallback =
       base::OnceCallback<void(absl::optional<std::vector<FileSuggestData>>)>;
 
-  // The types of the managed suggestion data.
-  enum class SuggestionType {
-    // The drive file suggestion.
-    kItemSuggest
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     // Called when file suggestions change.
-    virtual void OnFileSuggestionUpdated(SuggestionType type) {}
+    virtual void OnFileSuggestionUpdated(FileSuggestionType type) {}
   };
 
   explicit FileSuggestKeyedService(Profile* profile);
@@ -53,7 +48,8 @@ class FileSuggestKeyedService : public KeyedService {
   // the callback. The returned suggestions have been filtered by the file
   // last modification time. Only the files that have been modified more
   // recently than a threshold are returned.
-  void GetSuggestFileData(SuggestionType type, GetSuggestDataCallback callback);
+  void GetSuggestFileData(FileSuggestionType type,
+                          GetSuggestDataCallback callback);
 
   // Adds/Removes an observer.
   void AddObserver(Observer* observer);

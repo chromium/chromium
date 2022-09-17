@@ -100,14 +100,13 @@ FileSuggestKeyedService::FileSuggestKeyedService(Profile* profile)
 FileSuggestKeyedService::~FileSuggestKeyedService() = default;
 
 void FileSuggestKeyedService::GetSuggestFileData(
-    SuggestionType type,
+    FileSuggestionType type,
     GetSuggestDataCallback callback) {
   switch (type) {
-    case SuggestionType::kItemSuggest:
+    case FileSuggestionType::kDriveFile:
       GetDriveSuggestFileData(std::move(callback));
       return;
   }
-
   NOTREACHED();
 }
 
@@ -126,7 +125,7 @@ void FileSuggestKeyedService::MaybeUpdateItemSuggestCache(
 
 void FileSuggestKeyedService::OnItemSuggestCacheUpdated() {
   for (auto& observer : observers_)
-    observer.OnFileSuggestionUpdated(SuggestionType::kItemSuggest);
+    observer.OnFileSuggestionUpdated(FileSuggestionType::kDriveFile);
 }
 
 void FileSuggestKeyedService::GetDriveSuggestFileData(

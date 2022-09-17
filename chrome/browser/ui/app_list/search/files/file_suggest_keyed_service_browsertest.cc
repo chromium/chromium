@@ -42,13 +42,11 @@ class MockObserver : public FileSuggestKeyedService::Observer {
   }
 
   // FileSuggestKeyedService::Observer:
-  void OnFileSuggestionUpdated(
-      FileSuggestKeyedService::SuggestionType type) override {
-    EXPECT_EQ(FileSuggestKeyedService::SuggestionType::kItemSuggest, type);
+  void OnFileSuggestionUpdated(FileSuggestionType type) override {
+    EXPECT_EQ(FileSuggestionType::kDriveFile, type);
     file_suggest_service_->GetSuggestFileData(
-        FileSuggestKeyedService::SuggestionType::kItemSuggest,
-        base::BindOnce(&MockObserver::OnSuggestFileDataFetched,
-                       base::Unretained(this)));
+        type, base::BindOnce(&MockObserver::OnSuggestFileDataFetched,
+                             base::Unretained(this)));
   }
 
   FileSuggestKeyedService* const file_suggest_service_;
@@ -116,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
       app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           browser()->profile());
   service->GetSuggestFileData(
-      FileSuggestKeyedService::SuggestionType::kItemSuggest,
+      FileSuggestionType::kDriveFile,
       base::BindOnce(
           [](absl::optional<std::vector<FileSuggestData>> suggest_data) {
             EXPECT_FALSE(suggest_data.has_value());

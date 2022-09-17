@@ -30,7 +30,7 @@ class FileSuggestKeyedServiceTest : public testing::Test {
 TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
   base::HistogramTester tester;
   file_suggest_service_->GetSuggestFileData(
-      FileSuggestKeyedService::SuggestionType::kItemSuggest,
+      FileSuggestionType::kDriveFile,
       base::BindOnce(
           [](absl::optional<std::vector<FileSuggestData>> suggest_data) {
             EXPECT_FALSE(suggest_data.has_value());
