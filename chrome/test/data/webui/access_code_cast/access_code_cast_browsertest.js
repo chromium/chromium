@@ -62,13 +62,15 @@ TEST_F('AccessCodeCastErrorMessageTest', 'All', function() {
   mocha.run();
 });
 
-var AccessCodeCastPasscodeInputTest = class extends AccessCodeCastBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/passcode_input_test.js';
-  }
-};
+// PasscodeInputTest has started acting flaky (crbug/1363398). Disabling for now pending investigation.
 
-TEST_F('AccessCodeCastPasscodeInputTest', 'All', function() {
-  mocha.run();
-});
+// var AccessCodeCastPasscodeInputTest = class extends AccessCodeCastBrowserTest {
+//   /** @override */
+//   get browsePreload() {
+//     return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/passcode_input_test.js';
+//   }
+// };
+
+// TEST_F('AccessCodeCastPasscodeInputTest', 'All', function() {
+//   mocha.run();
+// });
