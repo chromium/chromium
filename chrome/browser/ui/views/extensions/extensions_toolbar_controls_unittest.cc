@@ -302,9 +302,6 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_FALSE(IsSiteAccessButtonVisible());
 }
 
-// TODO(crbug.com/3671898): Add a test that checks the correct dialog is open
-// when clicking on request access button.
-
 // Tests that extensions with activeTab and requested url with withheld access
 // are taken into account for the request access button visibility, but not the
 // ones with just activeTab.
