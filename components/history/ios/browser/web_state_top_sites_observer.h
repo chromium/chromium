@@ -23,8 +23,6 @@ class WebStateTopSitesObserver
 
   ~WebStateTopSitesObserver() override;
 
-  static void CreateForWebState(web::WebState* web_state, TopSites* top_sites);
-
  private:
   friend class web::WebStateUserData<WebStateTopSitesObserver>;
 
