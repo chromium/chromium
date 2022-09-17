@@ -22,6 +22,11 @@ struct Config;
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     content::BrowserContext* context);
 
+// Finds a list of configs from experiments and appends to `out_configs`.
+// Public for testing.
+void AppendConfigsFromExperiments(
+    std::vector<std::unique_ptr<Config>>& out_configs);
+
 // Implementation of FieldTrialRegister that uses synthetic field trials to
 // record segmentation groups.
 class FieldTrialRegisterImpl : public FieldTrialRegister {

@@ -397,19 +397,6 @@ std::unique_ptr<Config> GetConfigForCrossDeviceSegments() {
   return config;
 }
 
-void AppendConfigsFromExperiments(
-    std::vector<std::unique_ptr<Config>>& out_configs) {
-  // TODO(crbug.com/1346389): Add logic to find segmentation param from field
-  // trials.
-  std::vector<std::string> params;
-  for (const std::string& param : params) {
-    auto config = ParseConfigFromString(param);
-    if (config) {
-      out_configs.push_back(std::move(config));
-    }
-  }
-}
-
 }  // namespace
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
@@ -459,6 +446,30 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
 
   AppendConfigsFromExperiments(configs);
   return configs;
+}
+
+void AppendConfigsFromExperiments(
+    std::vector<std::unique_ptr<Config>>& out_configs) {
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  std::vector<std::string> param_values;
+
+  for (const auto& active_group : active_groups) {
+    base::FieldTrialParams params;
+    if (base::GetFieldTrialParams(active_group.trial_name, &params)) {
+      const auto& it = params.find("segmentation_platform_add_config_param");
+      if (it == params.end())
+        continue;
+      param_values.push_back(it->second);
+    }
+  }
+
+  for (const std::string& param : param_values) {
+    auto config = ParseConfigFromString(param);
+    if (config) {
+      out_configs.push_back(std::move(config));
+    }
+  }
 }
 
 FieldTrialRegisterImpl::FieldTrialRegisterImpl() = default;
