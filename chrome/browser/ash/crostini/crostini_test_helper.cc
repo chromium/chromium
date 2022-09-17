@@ -93,11 +93,6 @@ void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
   // client. These requests are merely queued, not executed, so without further
   // action, D-Bus can be ignored.
   //
-  // Separately, the App Service is a Mojo IPC service, and explicit
-  // RunUntilIdle or FlushMojoCallsForTesting calls are required to pump the
-  // IPCs, not just during this method, but also during the actual test code.
-  // Those calls have a side effect of executing those icon loading requests.
-  //
   // It is simpler if those RunUntilIdle calls are unconditional, so we require
   // Cicerone to be initialized by this point, whether or not the App Service
   // is enabled. Note that we can't initialize it ourselves here because once it
@@ -121,7 +116,6 @@ void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
   // is enabled for this profile.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->ReInitializeCrostiniForTesting();
-  proxy->FlushMojoCallsForTesting();
 }
 
 void CrostiniTestHelper::UpdateAppKeywords(

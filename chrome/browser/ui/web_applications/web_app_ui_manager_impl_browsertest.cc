@@ -232,8 +232,6 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   // Install a new app to migrate the old one to.
   AppId new_app_id = InstallWebApp(GURL("https://new.app.com"));
   ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->FlushMojoCallsForTesting();
 
   EXPECT_TRUE(os_integration_manager_->did_add_to_desktop());
   auto options = os_integration_manager_->get_last_install_options();
@@ -262,8 +260,6 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, DoubleMigration) {
     waiter.BeginListening({old_app_id});
     ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
     waiter.Wait();
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->FlushMojoCallsForTesting();
   }
 
   // New app should acquire old app's pin position.
@@ -277,8 +273,6 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest, DoubleMigration) {
 
   // Do migration again. New app should not move.
   ui_manager().UninstallAndReplaceIfExists({old_app_id}, new_app_id);
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->FlushMojoCallsForTesting();
   EXPECT_EQ(app_list_service->GetSyncItem(new_app_id)
                 ->item_pin_ordinal.ToDebugString(),
             "positionnew");

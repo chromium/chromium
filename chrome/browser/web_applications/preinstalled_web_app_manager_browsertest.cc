@@ -1106,7 +1106,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
 
   // Wait for app service to see the newly installed app.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-  proxy->FlushMojoCallsForTesting();
 
   apps::InstallReason install_reason = apps::InstallReason::kUnknown;
   proxy->AppRegistryCache().ForOneApp(app_id,
@@ -1260,9 +1259,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   AppId user_app_id =
       web_app::test::InstallWebApp(profile(), std::move(install_info));
 
-  // Ensure the UI receives these apps.
-  proxy->FlushMojoCallsForTesting();
-
   // Put apps in app list folder.
   std::string folder_id = app_list_test_api.CreateFolderWithApps(
       {preinstalled_app_id, user_app_id});
@@ -1275,9 +1271,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // Uninstall default app.
   proxy->UninstallSilently(preinstalled_app_id,
                            apps::UninstallSource::kUnknown);
-
-  // Ensure the UI receives the app uninstall.
-  proxy->FlushMojoCallsForTesting();
 
   // Default app should be removed from local app list but remain in sync list.
   EXPECT_FALSE(registrar().IsInstalled(preinstalled_app_id));

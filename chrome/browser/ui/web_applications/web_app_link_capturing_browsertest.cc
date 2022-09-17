@@ -163,7 +163,6 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   void TurnOnLinkCapturing() {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->SetSupportedLinksPreference(app_id_);
-    proxy->FlushMojoCallsForTesting();
   }
 
   absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {

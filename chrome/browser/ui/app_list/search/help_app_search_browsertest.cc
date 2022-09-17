@@ -328,10 +328,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
   ASSERT_TRUE(result);
   result->Open(ui::EF_NONE);
 
-  // Wait for app service to see the newly launched app.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
-
   web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [](apps::AppLaunchParams&& params) -> content::WebContents* {

@@ -117,7 +117,6 @@ class SystemFeaturesPolicyTest : public PolicyTest {
                       const VisibilityFlags& expected_visibility) {
     auto* profile = browser()->profile();
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    proxy->FlushMojoCallsForTesting();
 
     bool exist = proxy->AppRegistryCache().ForOneApp(
         app_id, [&expected_readiness, &blocked_icon,
@@ -150,9 +149,6 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     web_app::AppId installed_app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
     EXPECT_EQ(app_id, installed_app_id);
-    // Wait for app service to see the newly installed app.
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->FlushMojoCallsForTesting();
   }
 
   VisibilityFlags GetVisibilityFlags(bool is_hidden) {

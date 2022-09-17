@@ -265,11 +265,6 @@ class PreinstalledWebAppMigrationBrowserTest
         kExtensionId, extensions::ExtensionRegistry::EVERYTHING);
   }
 
-  void FlushAppService() {
-    apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->FlushMojoCallsForTesting();
-  }
-
   bool IsUninstallSilentlySupported() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     DCHECK(IsWebAppsCrosapiEnabled());
@@ -311,7 +306,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/false);
-    FlushAppService();
 
     EXPECT_FALSE(IsWebAppInstalled());
     EXPECT_TRUE(IsExtensionAppInstalled());
@@ -347,7 +341,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
       scoped_refptr<const extensions::Extension> uninstalled_app =
           uninstall_observer.WaitForExtensionUninstalled();
       EXPECT_EQ(uninstalled_app->id(), kExtensionId);
-      FlushAppService();
 
       EXPECT_TRUE(IsWebAppInstalled());
       EXPECT_FALSE(IsExtensionAppInstalled());
@@ -381,7 +374,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false, /*expect_uninstall=*/true);
-    FlushAppService();
 
     EXPECT_TRUE(IsExtensionAppInstalled());
     EXPECT_FALSE(IsWebAppInstalled());
@@ -402,7 +394,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     scoped_refptr<const extensions::Extension> uninstalled_app =
         uninstall_observer.WaitForExtensionUninstalled();
     EXPECT_EQ(uninstalled_app->id(), kExtensionId);
-    FlushAppService();
 
     EXPECT_TRUE(IsWebAppInstalled());
     EXPECT_FALSE(IsExtensionAppInstalled());

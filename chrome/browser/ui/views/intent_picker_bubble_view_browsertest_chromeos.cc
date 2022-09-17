@@ -183,7 +183,6 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     app_info->sticky = false;
     app_infos.push_back(std::move(app_info));
     app_host()->OnAppListRefreshed(std::move(app_infos));
-    WaitForAppService();
     std::string app_id = ArcAppListPrefs::GetAppId(app_name, kTestAppActivity);
     auto test_app_info = app_prefs()->GetApp(app_id);
     EXPECT_TRUE(test_app_info);
@@ -207,7 +206,6 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
     auto app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-    WaitForAppService();
     return app_id;
   }
 

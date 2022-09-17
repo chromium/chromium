@@ -283,10 +283,6 @@ class FullRestoreAppLaunchHandlerBrowserTest
     web_app_install_info->start_url = GURL("https://example.org");
     web_app::AppId app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_install_info));
-
-    // Wait for app service to see the newly installed app.
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->FlushMojoCallsForTesting();
   }
 
   aura::Window* FindWebAppWindow() {

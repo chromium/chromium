@@ -41,7 +41,6 @@ IN_PROC_BROWSER_TEST_F(LinkCapturingPrefMigrationBrowserTest,
   web_app_info->capture_links =
       blink::mojom::CaptureLinks::kExistingClientNavigate;
   AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
-  proxy->FlushMojoCallsForTesting();
 
   EXPECT_EQ(proxy->PreferredAppsList().FindPreferredAppForUrl(
                 GURL("https://example.org/some/path")),

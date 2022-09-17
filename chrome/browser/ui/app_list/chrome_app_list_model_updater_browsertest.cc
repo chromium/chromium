@@ -177,13 +177,6 @@ class ChromeAppListModelUpdaterProductivityLauncherTest
 IN_PROC_BROWSER_TEST_F(OemAppPositionTest, ValidOemAppPosition) {
   LoginUser(login_mixin_.users()[0].account_id);
 
-  // Ensure apps that are installed upon sign-in are registered with the App
-  // Service, resolving any pending messages as a result of running async
-  // callbacks.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->FlushMojoCallsForTesting();
-
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   ASSERT_TRUE(client);
   client->UpdateProfile();
@@ -519,9 +512,6 @@ IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
       GURL("https://mail.google.com/mail/?usp=installed_webapp");
   gmail_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::test::InstallWebApp(profile(), std::move(gmail_info));
-  // Flush app service so app installation gets handled.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
 
   std::set<std::string> app_filter({app_constants::kChromeAppId,
                                     web_app::kGmailAppId,
@@ -550,10 +540,6 @@ IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
   messages_info->start_url = GURL("https://messages.google.com/web/");
   messages_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::test::InstallWebApp(profile(), std::move(messages_info));
-
-  // Flush app service so app installation gets handled.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
 
   std::set<std::string> app_filter({app_constants::kChromeAppId,
                                     web_app::kGmailAppId,

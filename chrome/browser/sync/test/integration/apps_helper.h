@@ -58,9 +58,6 @@ void UninstallApp(Profile* profile, int index);
 // App Service to settle.
 void InstallAppsPendingForSync(Profile* profile);
 
-// Waits for the App Service state for |profile| to settle.
-void WaitForAppService(Profile* profile);
-
 // Enables the app for the given index on |profile|.
 void EnableApp(Profile* profile, int index);
 

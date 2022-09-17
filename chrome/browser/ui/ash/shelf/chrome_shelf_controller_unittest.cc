@@ -3894,8 +3894,6 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // A v2 app for user #1 should be shown first and get hidden when switching
   // to desktop #2.
   extension_service1->AddExtension(extension1_.get());
-  apps::AppServiceProxyFactory::GetForProfile(profile1)
-      ->FlushMojoCallsForTesting();
   V2App v2_app_1(profile1, extension1_.get());
   EXPECT_TRUE(v2_app_1.window()->GetNativeWindow()->IsVisible());
   SwitchActiveUser(account_id2);

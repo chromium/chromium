@@ -427,10 +427,6 @@ class AppServiceAppWindowBorealisBrowserTest
     guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
         ->UpdateApplicationList(list);
 
-    // We need to propagate the newly created app to the various registries
-    // before it can be used.
-    app_service_proxy_->FlushMojoCallsForTesting();
-
     return guest_os::GuestOsRegistryService::GenerateAppId(name, vm, container);
   }
 };

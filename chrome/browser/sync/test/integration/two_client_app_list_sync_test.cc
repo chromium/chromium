@@ -35,7 +35,6 @@ using apps_helper::InstallHostedApp;
 using apps_helper::IsAppEnabled;
 using apps_helper::IsIncognitoEnabled;
 using apps_helper::UninstallApp;
-using apps_helper::WaitForAppService;
 using syncer::SyncUserSettings;
 using syncer::UserSelectableOsType;
 using syncer::UserSelectableOsTypeSet;
@@ -439,8 +438,6 @@ IN_PROC_BROWSER_TEST_P(RemoveDefaultAppSyncTest, Remove) {
   // with a certain number of apps, lets say N.
   InstallHostedApp(GetProfile(0), 0);
   InstallHostedApp(GetProfile(1), 0);
-  WaitForAppService(GetProfile(0));
-  WaitForAppService(GetProfile(1));
   size_t number_of_apps = 0;
   ASSERT_TRUE(AllProfilesHaveSameAppList(&number_of_apps));
   const size_t initial_number_of_apps = number_of_apps;
@@ -489,12 +486,9 @@ IN_PROC_BROWSER_TEST_P(RemoveDefaultAppSyncTest, Remove) {
   // Re-Install the same app in Profile 0.
   std::string app_id2 = InstallHostedApp(GetProfile(0), default_app_index);
   EXPECT_EQ(default_app_id, app_id2);
-  WaitForAppService(GetProfile(0));
 
   // Ensure that the TYPE_REMOVE_DEFAULT_APP SyncItem (if present) was replaced
-  // with an TYPE_APP entry, for at least Profile 0. Whether or not Profile 1
-  // has synchronized this change might depend on what side effects (such as
-  // pumping the event loop) calling WaitForAppService has.
+  // with an TYPE_APP entry, for at least Profile 0.
   {
     const ALSS::SyncItem* sync_item = GetSyncItem(GetProfile(0), app_id2);
     ASSERT_TRUE(sync_item);

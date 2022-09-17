@@ -251,10 +251,6 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
   const web_app::AppId app_id = web_app::kHelpAppId;
 
-  // Wait for app service to see the newly installed apps.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
-
   auto help_app = std::make_unique<apps::App>(apps::AppType::kWeb, app_id);
   apps::AppUpdate app_update(/*state=*/nullptr, /*delta=*/help_app.get(),
                              EmptyAccountId());
@@ -263,10 +259,6 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   app_item.SetChromePosition(app_item.CalculateDefaultPositionForTest());
 
   app_item.PerformActivate(ui::EF_NONE);
-
-  // Wait for app service to see the newly launched app.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
 
   web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(

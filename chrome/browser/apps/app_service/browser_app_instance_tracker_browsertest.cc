@@ -295,7 +295,6 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
     info->user_display_mode = user_display_mode;
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     auto app_id = web_app::test::InstallWebApp(profile, std::move(info));
-    FlushAppService();
     return app_id;
   }
 
@@ -310,13 +309,6 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
   void UninstallWebApp(const web_app::AppId& app_id) {
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     web_app::test::UninstallWebApp(profile, app_id);
-    FlushAppService();
-  }
-
-  void FlushAppService() {
-    Profile* profile = ProfileManager::GetPrimaryUserProfile();
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->FlushMojoCallsForTesting();
   }
 
   uint64_t GetId(content::WebContents* contents) {

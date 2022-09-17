@@ -1064,7 +1064,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
 
   auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  app_service_proxy->FlushMojoCallsForTesting();
 
   bool swa_found = false;
   app_service_proxy->AppRegistryCache().ForEachApp(
@@ -1448,7 +1447,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     base::Value* list = update.Get();
     list->ClearList();
   }
-  GetAppServiceProxy(browser()->profile())->FlushMojoCallsForTesting();
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);
@@ -1471,8 +1469,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     list->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
 
-  auto* proxy = GetAppServiceProxy(browser()->profile());
-  proxy->FlushMojoCallsForTesting();
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy, GetAppReadiness(*settings_id));
   EXPECT_TRUE(apps::IconEffects::kBlocked &
               GetAppIconKey(*settings_id)->icon_effects);
@@ -1483,7 +1479,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     base::Value* list = update.Get();
     list->ClearList();
   }
-  proxy->FlushMojoCallsForTesting();
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);
@@ -1507,10 +1502,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
           .value();
   Browser* browser;
   EXPECT_TRUE(LaunchApp(SystemWebAppType::SHORTCUT_CUSTOMIZATION, &browser));
-
-  // Wait for app service to see the newly installed apps.
-  apps::AppServiceProxyFactory::GetForProfile(browser->profile())
-      ->FlushMojoCallsForTesting();
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
   {

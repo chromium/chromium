@@ -350,9 +350,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     extensions::ExtensionSystem::Get(profile)
         ->extension_service()
         ->AddExtension(extension);
-
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    proxy->FlushMojoCallsForTesting();
   }
   void UninstallExtension(const extensions::Extension* extension,
                           Profile* profile) {
@@ -362,9 +359,6 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
         ->UninstallExtension(
             extension->id(),
             extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
-
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    proxy->FlushMojoCallsForTesting();
   }
 
   scoped_refptr<const extensions::Extension> CreateAndInstallLockScreenApp(

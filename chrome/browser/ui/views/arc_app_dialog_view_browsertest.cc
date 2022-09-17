@@ -141,7 +141,6 @@ class ArcAppPermissionDialogViewBrowserTest
     auto* app_service_proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile());
     ASSERT_TRUE(app_service_proxy);
-    app_service_proxy->FlushMojoCallsForTesting();
   }
 
   void set_accepted(bool accepted) { accepted_ = accepted; }

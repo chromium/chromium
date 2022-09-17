@@ -596,9 +596,6 @@ TEST_F(AppSearchProviderTest, FetchInternalApp) {
 }
 
 TEST_F(AppSearchProviderTest, WebApp) {
-  apps::AppServiceProxyFactory::GetForProfile(testing_profile())
-      ->FlushMojoCallsForTesting();
-
   const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
       testing_profile(), kWebAppName, GURL(kWebAppUrl));
 

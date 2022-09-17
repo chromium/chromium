@@ -86,19 +86,11 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   web_app::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
-
   // Activate open in window menu item.
   absl::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
-
-  // Wait for app service to set the display mode.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
 
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
             1);
@@ -119,18 +111,11 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   web_app::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
-
   // Set app to open in tabbed window.
   absl::optional<MenuSection> menu_section = GetContextMenuSectionForAppCommand(
       app_id, ash::USE_LAUNCH_TYPE_TABBED_WINDOW);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
-
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
 
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tabbed"),
             1);
@@ -150,19 +135,11 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   web_app::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
-
   // Set app to open in browser tab.
   absl::optional<MenuSection> menu_section =
       GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_REGULAR);
   ASSERT_TRUE(menu_section);
   menu_section->sub_model->ActivatedAt(menu_section->command_index);
-
-  // Wait for app service to set the display mode.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
 
   EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tab"), 1);
 }

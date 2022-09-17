@@ -67,10 +67,6 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
       web_app::InstallWebAppFromPage(browser(), app_url);
   LaunchWebAppBrowser(app_id);
 
-  // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
-
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
   {
     ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();

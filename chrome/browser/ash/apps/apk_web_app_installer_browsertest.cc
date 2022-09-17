@@ -613,11 +613,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithShelfControllerBrowserTest,
     base::RunLoop run_loop;
     service->SetWebAppInstalledCallbackForTesting(base::BindLambdaForTesting(
         [&](const std::string& package_name, const web_app::AppId& web_app_id) {
-          // Web apps update the shelf asynchronously, so flush the App
-          // Service's mojo calls to ensure that happens.
-          auto* proxy =
-              apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-          proxy->FlushMojoCallsForTesting();
           keep_web_app_id = web_app_id;
           EXPECT_EQ(1u, installed_web_app_names_.size());
           EXPECT_EQ(1u, installed_web_app_ids_.size());

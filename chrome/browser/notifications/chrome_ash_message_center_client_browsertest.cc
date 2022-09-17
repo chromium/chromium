@@ -55,8 +55,6 @@ class ChromeAshMessageCenterClientBrowserTest : public InProcessBrowserTest {
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    app_id),
         enabled);
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->FlushMojoCallsForTesting();
   }
 
   int GetNumberOfNotifiers() { return test_observer_->notifiers().size(); }
@@ -74,9 +72,6 @@ class ChromeAshMessageCenterClientBrowserTest : public InProcessBrowserTest {
     // Install a PWA and wait for app service to see it.
     web_app::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
-    apps::AppServiceProxy* service =
-        apps::AppServiceProxyFactory::GetForProfile(profile);
-    service->FlushMojoCallsForTesting();
     // Inform notifier controller it should begin observing |profile|'s'
     // AppRegistryCache.
     RefreshNotifiers();

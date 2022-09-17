@@ -458,10 +458,6 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
     const web_app::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
-    // Wait for app service to see the newly installed app.
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->FlushMojoCallsForTesting();
-
     return launch_in_browser
                ? web_app::LaunchBrowserForWebAppInTab(profile(), app_id)
                : web_app::LaunchWebAppBrowserAndWait(profile(), app_id);

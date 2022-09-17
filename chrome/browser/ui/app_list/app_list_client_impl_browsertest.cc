@@ -165,9 +165,6 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   base::RunLoop run_loop;
   client->UninstallApp(profile(), app->id());
 
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
-
   run_loop.RunUntilIdle();
   EXPECT_FALSE(wm::GetTransientChildren(client->GetAppListWindow()).empty());
 

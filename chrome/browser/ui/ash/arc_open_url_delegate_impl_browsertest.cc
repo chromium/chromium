@@ -185,8 +185,6 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest,
   web_app_info->share_target = share_target;
   std::string id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
 
   const char* arc_transition_key =
       arc::ArcWebContentsData::ArcWebContentsData::kArcTransitionFlag;
