@@ -419,7 +419,7 @@ void ArcNotificationManager::SendNotificationRemovedFromChrome(
 
 void ArcNotificationManager::SendNotificationClickedOnChrome(
     const std::string& key) {
-  if (items_.find(key) == items_.end()) {
+  if (!base::Contains(items_, key)) {
     VLOG(3) << "Chrome requests to fire a click event on notification (key: "
             << key << "), but it is gone.";
     return;
@@ -442,7 +442,7 @@ void ArcNotificationManager::SendNotificationClickedOnChrome(
 void ArcNotificationManager::SendNotificationActivatedInChrome(
     const std::string& key,
     bool activated) {
-  if (items_.find(key) == items_.end()) {
+  if (!base::Contains(items_, key)) {
     VLOG(3)
         << "Chrome requests to fire an activation event on notification (key: "
         << key << "), but it is gone.";
@@ -465,7 +465,7 @@ void ArcNotificationManager::SendNotificationActivatedInChrome(
 }
 
 void ArcNotificationManager::CreateNotificationWindow(const std::string& key) {
-  if (items_.find(key) == items_.end()) {
+  if (!base::Contains(items_, key)) {
     VLOG(3) << "Chrome requests to create window on notification (key: " << key
             << "), but it is gone.";
     return;
@@ -480,7 +480,7 @@ void ArcNotificationManager::CreateNotificationWindow(const std::string& key) {
 }
 
 void ArcNotificationManager::CloseNotificationWindow(const std::string& key) {
-  if (items_.find(key) == items_.end()) {
+  if (!base::Contains(items_, key)) {
     VLOG(3) << "Chrome requests to close window on notification (key: " << key
             << "), but it is gone.";
     return;
@@ -495,7 +495,7 @@ void ArcNotificationManager::CloseNotificationWindow(const std::string& key) {
 }
 
 void ArcNotificationManager::OpenNotificationSettings(const std::string& key) {
-  if (items_.find(key) == items_.end()) {
+  if (!base::Contains(items_, key)) {
     DVLOG(3) << "Chrome requests to fire a click event on the notification "
              << "settings button (key: " << key << "), but it is gone.";
     return;
@@ -537,7 +537,7 @@ bool ArcNotificationManager::IsOpeningSettingsSupported() const {
 
 void ArcNotificationManager::SendNotificationToggleExpansionOnChrome(
     const std::string& key) {
-  if (items_.find(key) == items_.end()) {
+  if (!base::Contains(items_, key)) {
     VLOG(3) << "Chrome requests to fire a click event on notification (key: "
             << key << "), but it is gone.";
     return;
