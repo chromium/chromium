@@ -7,8 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
+#include "base/strings/string_util.h"
 #include "ui/base/buildflags.h"
 #include "ui/color/system_theme.h"
 #include "ui/linux/linux_ui.h"
@@ -24,6 +26,8 @@
 namespace ui {
 
 namespace {
+
+const char kUiToolkitFlag[] = "ui-toolkit";
 
 std::unique_ptr<LinuxUiAndTheme> CreateGtkUi() {
 #if BUILDFLAG(USE_GTK)
@@ -62,8 +66,18 @@ LinuxUiAndTheme* GetQtUi() {
 }
 
 LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
-  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  std::string ui_toolkit =
+      base::ToLowerASCII(cmd_line->GetSwitchValueASCII(kUiToolkitFlag));
+  if (ui_toolkit == "gtk") {
+    if (auto* gtk_ui = GetGtkUi())
+      return gtk_ui;
+  } else if (ui_toolkit == "qt") {
+    if (auto* qt_ui = GetQtUi())
+      return qt_ui;
+  }
 
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
   switch (GetDefaultSystemTheme()) {
     case SystemTheme::kQt:
       if (auto* qt_ui = GetQtUi())
