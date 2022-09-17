@@ -143,6 +143,9 @@ ASH_EXPORT void RotateActiveWindow();
 // Rotate pane focus on next/previous pane.
 ASH_EXPORT void RotatePaneFocus(FocusCycler::Direction direction);
 
+// Rotate screen 90 degrees.
+ASH_EXPORT void RotateScreen();
+
 // Change primary display to the secondary display next to current primary
 // display
 ASH_EXPORT void ShiftPrimaryDisplay();

@@ -16,6 +16,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -62,6 +63,7 @@
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "components/prefs/pref_service.h"
@@ -76,6 +78,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget.h"
@@ -92,6 +95,95 @@ using ::base::UserMetricsAction;
 constexpr double kStepPercentage = 4.0;
 constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
 
+// These values are written to logs.  New enum values can be added, but existing
+// enums must never be renumbered or deleted and reused.
+// Records the result of triggering the rotation accelerator.
+enum class RotationAcceleratorAction {
+  kCancelledDialog = 0,
+  kAcceptedDialog = 1,
+  kAlreadyAcceptedDialog = 2,
+  kMaxValue = kAlreadyAcceptedDialog,
+};
+
+void RecordRotationAcceleratorAction(const RotationAcceleratorAction& action) {
+  UMA_HISTOGRAM_ENUMERATION("Ash.Accelerators.Rotation.Usage", action);
+}
+
+void RecordWindowSnapAcceleratorAction(WindowSnapAcceleratorAction action) {
+  UMA_HISTOGRAM_ENUMERATION(kAccelWindowSnap, action);
+}
+
+display::Display::Rotation GetNextRotationInClamshell(
+    display::Display::Rotation current) {
+  switch (current) {
+    case display::Display::ROTATE_0:
+      return display::Display::ROTATE_90;
+    case display::Display::ROTATE_90:
+      return display::Display::ROTATE_180;
+    case display::Display::ROTATE_180:
+      return display::Display::ROTATE_270;
+    case display::Display::ROTATE_270:
+      return display::Display::ROTATE_0;
+  }
+  NOTREACHED() << "Unknown rotation:" << current;
+  return display::Display::ROTATE_0;
+}
+
+display::Display::Rotation GetNextRotationInTabletMode(
+    int64_t display_id,
+    display::Display::Rotation current) {
+  Shell* shell = Shell::Get();
+  DCHECK(shell->tablet_mode_controller()->InTabletMode());
+
+  if (!display::HasInternalDisplay() ||
+      display_id != display::Display::InternalDisplayId()) {
+    return GetNextRotationInClamshell(current);
+  }
+
+  const chromeos::OrientationType app_requested_lock =
+      shell->screen_orientation_controller()
+          ->GetCurrentAppRequestedOrientationLock();
+
+  bool add_180_degrees = false;
+  switch (app_requested_lock) {
+    case chromeos::OrientationType::kCurrent:
+    case chromeos::OrientationType::kLandscapePrimary:
+    case chromeos::OrientationType::kLandscapeSecondary:
+    case chromeos::OrientationType::kPortraitPrimary:
+    case chromeos::OrientationType::kPortraitSecondary:
+    case chromeos::OrientationType::kNatural:
+      // Do not change the current orientation.
+      return current;
+
+    case chromeos::OrientationType::kLandscape:
+    case chromeos::OrientationType::kPortrait:
+      // App allows both primary and secondary orientations in either landscape
+      // or portrait, therefore switch to the next one by adding 180 degrees.
+      add_180_degrees = true;
+      break;
+
+    default:
+      break;
+  }
+
+  switch (current) {
+    case display::Display::ROTATE_0:
+      return add_180_degrees ? display::Display::ROTATE_180
+                             : display::Display::ROTATE_90;
+    case display::Display::ROTATE_90:
+      return add_180_degrees ? display::Display::ROTATE_270
+                             : display::Display::ROTATE_180;
+    case display::Display::ROTATE_180:
+      return add_180_degrees ? display::Display::ROTATE_0
+                             : display::Display::ROTATE_270;
+    case display::Display::ROTATE_270:
+      return add_180_degrees ? display::Display::ROTATE_90
+                             : display::Display::ROTATE_0;
+  }
+  NOTREACHED() << "Unknown rotation:" << current;
+  return display::Display::ROTATE_0;
+}
+
 views::Widget* FindPipWidget() {
   return Shell::Get()->focus_cycler()->FindWidget(
       base::BindRepeating([](views::Widget* widget) {
@@ -105,6 +197,54 @@ PaletteTray* GetPaletteTray() {
       ->palette_tray();
 }
 
+bool ShouldLockRotation(int64_t display_id) {
+  return display::HasInternalDisplay() &&
+         display_id == display::Display::InternalDisplayId() &&
+         Shell::Get()->screen_orientation_controller()->IsAutoRotationAllowed();
+}
+
+int64_t GetDisplayIdForRotation() {
+  const gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::GetScreen()->GetDisplayNearestPoint(point).id();
+}
+
+void RotateScreenImpl() {
+  auto* shell = Shell::Get();
+  const bool in_tablet_mode =
+      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const int64_t display_id = GetDisplayIdForRotation();
+  const display::ManagedDisplayInfo& display_info =
+      shell->display_manager()->GetDisplayInfo(display_id);
+  const auto active_rotation = display_info.GetActiveRotation();
+  const auto next_rotation =
+      in_tablet_mode ? GetNextRotationInTabletMode(display_id, active_rotation)
+                     : GetNextRotationInClamshell(active_rotation);
+  if (active_rotation == next_rotation)
+    return;
+
+  // When the auto-rotation is allowed in the device, display rotation requests
+  // of the internal display are treated as requests to lock the user rotation.
+  if (ShouldLockRotation(display_id)) {
+    shell->screen_orientation_controller()->SetLockToRotation(next_rotation);
+    return;
+  }
+
+  shell->display_configuration_controller()->SetDisplayRotation(
+      display_id, next_rotation, display::Display::RotationSource::USER);
+}
+
+void OnRotationDialogAccepted() {
+  RecordRotationAcceleratorAction(RotationAcceleratorAction::kAcceptedDialog);
+  RotateScreenImpl();
+  Shell::Get()
+      ->accessibility_controller()
+      ->SetDisplayRotationAcceleratorDialogBeenAccepted();
+}
+
+void OnRotationDialogCancelled() {
+  RecordRotationAcceleratorAction(RotationAcceleratorAction::kCancelledDialog);
+}
+
 // Return false if the accessibility shortcuts have been disabled, or if
 // the accessibility feature itself associated with |accessibility_pref_name|
 // is being enforced by the administrator.
@@ -115,10 +255,6 @@ bool IsAccessibilityShortcutEnabled(
          !shell->session_controller()
               ->GetActivePrefService()
               ->IsManagedPreference(accessibility_pref_name);
-}
-
-void RecordWindowSnapAcceleratorAction(WindowSnapAcceleratorAction action) {
-  UMA_HISTOGRAM_ENUMERATION(kAccelWindowSnap, action);
 }
 
 void SetDockedMagnifierEnabled(bool enabled) {
@@ -504,6 +640,28 @@ void RotatePaneFocus(FocusCycler::Direction direction) {
   Shell::Get()->focus_cycler()->RotateFocus(direction);
 }
 
+void RotateScreen() {
+  if (Shell::Get()->display_manager()->IsInUnifiedMode())
+    return;
+
+  base::RecordAction(UserMetricsAction("Accel_Rotate_Screen"));
+  const bool dialog_ever_accepted =
+      Shell::Get()
+          ->accessibility_controller()
+          ->HasDisplayRotationAcceleratorDialogBeenAccepted();
+
+  if (!dialog_ever_accepted) {
+    Shell::Get()->accelerator_controller()->MaybeShowConfirmationDialog(
+        IDS_ASH_ROTATE_SCREEN_TITLE, IDS_ASH_ROTATE_SCREEN_BODY,
+        base::BindOnce(&OnRotationDialogAccepted),
+        base::BindOnce(&OnRotationDialogCancelled));
+  } else {
+    RecordRotationAcceleratorAction(
+        RotationAcceleratorAction::kAlreadyAcceptedDialog);
+    RotateScreenImpl();
+  }
+}
+
 void ShiftPrimaryDisplay() {
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
 
@@ -669,6 +827,11 @@ void ToggleFloating() {
 }
 
 void ToggleFullscreen() {
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  // Disable fullscreen while overview animation is running due to
+  // http://crbug.com/1094739
+  if (overview_controller->IsInStartAnimation())
+    return;
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
     return;
