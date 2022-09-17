@@ -2569,6 +2569,13 @@
        null,
        {}
       ]
+     ],
+     "spelling-error-004-crash.html": [
+      "d8222233d51ebeb4f07bb31da0bf936a710518c5",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-scroll-anchoring": {
@@ -118686,8 +118693,8 @@
        {}
       ]
      ],
-     "font-variant-ligatures-11.html": [
-      "8fce1612c91d6a0e4316c0ff8f462ed360e750d7",
+     "font-variant-ligatures-11.optional.html": [
+      "f7cf0ecd08968e604a239ea4bdac3d1c01869a47",
       [
        null,
        [
@@ -298370,7 +298377,7 @@
       []
      ],
      "exp-log-compute-expected.txt": [
-      "1764e8e252ccd42753f222768151f9f0589fad66",
+      "957334bd597735f39da1b79fbcd7c6108b7b70a8",
       []
      ],
      "exp-log-serialize-expected.txt": [
@@ -411693,7 +411700,7 @@
       ]
      ],
      "exp-log-compute.html": [
-      "05ceadc5d1938a21730edc2bb520fe1a96382379",
+      "8812253bf10bb940e855b9b0af5a57ab62fbf216",
       [
        null,
        {}

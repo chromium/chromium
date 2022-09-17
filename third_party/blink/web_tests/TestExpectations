@@ -3304,6 +3304,11 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-fonts/font-variant-ligatures-11.optional.html [ Failure ]
+crbug.com/626703 [ Mac11 ] external/wpt/css/css-fonts/font-variant-ligatures-11.optional.html [ Failure ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-fonts/font-variant-ligatures-11.optional.html [ Failure ]
+crbug.com/626703 [ Mac12 ] external/wpt/css/css-fonts/font-variant-ligatures-11.optional.html [ Failure ]
+crbug.com/626703 [ Mac12-arm64 ] external/wpt/css/css-fonts/font-variant-ligatures-11.optional.html [ Failure ]
 crbug.com/626703 [ Win11 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/api/redirect/redirect-upload.h2.any.sharedworker.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/infrastructure/server/http2-context.sub.h2.any.html [ Timeout ]

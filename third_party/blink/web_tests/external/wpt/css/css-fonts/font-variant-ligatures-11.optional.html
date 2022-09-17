@@ -6,25 +6,22 @@
 <link rel="help" href="https://www.w3.org/TR/css-fonts-3/#font-variant-ligatures-prop">
 <link rel="help" href="https://www.w3.org/TR/css-fonts-3/#font-feature-settings-prop">
 <link rel="match" href="font-variant-ligatures-11-ref.html">
-<meta name="assert" content="Required ligatures, needed for correctly rendering complex scripts, are not affected by the settings above, including ‘none’ (OpenType feature: rlig)">
+<meta name="assert" content="Required ligatures, needed for correctly rendering complex scripts, are not affected by the settings above, including ‘none’ (OpenType feature: rlig). Note: platforms are not required to allow disabling rlig.">
 <style>
-  .test {
-	  font-family: serif;
-	  font-size: 3em;
-	  line-height: 1.1;
-  }
-  .high {
-	font-variant-ligatures: none;
-  }
-  .low {
-	font-feature-settings: "rlig" off;
-  }
-.ref {
-
-}
-.test :lang(ar) {
-  font-family: serif;
-}
+	.test {
+		font-family: serif;
+		font-size: 3em;
+		line-height: 1.1;
+	}
+	.high {
+		font-variant-ligatures: none;
+	}
+	.low {
+		font-feature-settings: "rlig" off;
+	}
+	.test :lang(ar) {
+		font-family: serif;
+	}
 </style>
 <body>
 <p>Test passes if the first line shows a lam-alef ligature (<span lang="ar">لا</span>)
