@@ -232,6 +232,26 @@ void SubscriptionsManager::HandleManageSubscriptionsResponse(
   }
 }
 
+void SubscriptionsManager::VerifyIfSubscriptionExists(
+    CommerceSubscription subscription,
+    bool should_exist) {
+  storage_->IsSubscribed(
+      std::move(subscription),
+      base::BindOnce(
+          &SubscriptionsManager::HandleCheckLocalSubscriptionResponse,
+          weak_ptr_factory_.GetWeakPtr(), should_exist));
+}
+
+void SubscriptionsManager::HandleCheckLocalSubscriptionResponse(
+    bool should_exist,
+    bool is_subscribed) {
+  // Don't init if there is already a request running to avoid redundant server
+  // calls.
+  if (should_exist != is_subscribed && !has_request_running_) {
+    InitSubscriptions();
+  }
+}
+
 void SubscriptionsManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   InitSubscriptions();

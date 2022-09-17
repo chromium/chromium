@@ -226,4 +226,17 @@ void SubscriptionsStorage::PerformUpdateStorage(
   std::move(callback).Run(all_succeeded);
 }
 
+void SubscriptionsStorage::IsSubscribed(
+    CommerceSubscription subscription,
+    base::OnceCallback<void(bool)> callback) {
+  proto_db_->LoadOneEntry(
+      GetSubscriptionKey(subscription),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback, bool succeeded,
+             CommerceSubscriptions data) {
+            std::move(callback).Run(succeeded && data.size() > 0);
+          },
+          std::move(callback)));
+}
+
 }  // namespace commerce

@@ -39,6 +39,14 @@ std::unique_ptr<std::vector<commerce::CommerceSubscription>> BuildSubscriptions(
   return subscriptions;
 }
 
+// Return one subscription with given id.
+commerce::CommerceSubscription BuildSubscription(std::string subscription_id) {
+  return commerce::CommerceSubscription(
+      commerce::SubscriptionType::kPriceTrack,
+      commerce::IdentifierType::kProductClusterId, subscription_id,
+      commerce::ManagementType::kUserManaged);
+}
+
 // Check whether the passing subscription list contains exactly one subscription
 // with |expected_id|.
 MATCHER_P(AreExpectedSubscriptions, expected_id, "") {
@@ -128,6 +136,11 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
        std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions),
       (override));
   MOCK_METHOD(void, DeleteAll, (), (override));
+  MOCK_METHOD(void,
+              IsSubscribed,
+              (CommerceSubscription subscription,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 
   // Mock the local fetch responses for Get* requests. |subscription_id| is used
   // to generate a CommerceSubscription to be returned.
@@ -157,6 +170,15 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
                         std::unique_ptr<std::vector<CommerceSubscription>>
                             remote_subscriptions) {
               std::move(callback).Run(succeeded);
+            });
+  }
+
+  void MockIsSubscribedResponses(bool is_subscribed) {
+    ON_CALL(*this, IsSubscribed)
+        .WillByDefault(
+            [is_subscribed](CommerceSubscription subscription,
+                            base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(is_subscribed);
             });
   }
 };
@@ -538,6 +560,67 @@ TEST_F(SubscriptionsManagerTest, TestIdentityChange) {
   CreateManagerAndVerify(true);
   identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
                                                  signin::ConsentLevel::kSync);
+}
+
+TEST_F(SubscriptionsManagerTest, TestVerifyIfSubscriptionExists_Consistent) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+  mock_storage_->MockIsSubscribedResponses(true);
+
+  EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
+  EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
+  EXPECT_CALL(*mock_storage_,
+              UpdateStorage(_, _, AreExpectedSubscriptions("111")))
+      .Times(1);
+
+  CreateManagerAndVerify(true);
+  subscriptions_manager_->VerifyIfSubscriptionExists(BuildSubscription("222"),
+                                                     true);
+}
+
+TEST_F(SubscriptionsManagerTest, TestVerifyIfSubscriptionExists_Inconsistent) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+  mock_storage_->MockIsSubscribedResponses(false);
+
+  {
+    InSequence s;
+    // First init on manager instantiation.
+    EXPECT_CALL(*mock_storage_, DeleteAll);
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    // Second init since local subscriptions are out of sync.
+    EXPECT_CALL(*mock_storage_, DeleteAll);
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+  }
+
+  CreateManagerAndVerify(true);
+  subscriptions_manager_->VerifyIfSubscriptionExists(BuildSubscription("222"),
+                                                     true);
+}
+
+TEST_F(SubscriptionsManagerTest,
+       TestVerifyIfSubscriptionExists_InconsistentWithRunningRequest) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+  mock_storage_->MockIsSubscribedResponses(false);
+
+  EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
+  EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
+  EXPECT_CALL(*mock_storage_,
+              UpdateStorage(_, _, AreExpectedSubscriptions("111")))
+      .Times(1);
+
+  CreateManagerAndVerify(true);
+  MockHasRequestRunning(true);
+  subscriptions_manager_->VerifyIfSubscriptionExists(BuildSubscription("222"),
+                                                     true);
 }
 
 }  // namespace commerce

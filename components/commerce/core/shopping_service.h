@@ -336,6 +336,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   std::unique_ptr<AccountChecker> account_checker_;
 
+  std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
+
   raw_ptr<power_bookmarks::PowerBookmarkService> power_bookmark_service_;
 
   // The service's means of observing the bookmark model which is automatically
@@ -353,8 +355,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   std::unordered_map<std::string,
                      std::tuple<uint32_t, bool, std::unique_ptr<ProductInfo>>>
       product_info_cache_;
-
-  std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
 
   std::unique_ptr<BookmarkUpdateManager> bookmark_update_manager_;
 

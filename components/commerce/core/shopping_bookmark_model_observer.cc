@@ -13,6 +13,7 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
@@ -21,8 +22,10 @@ namespace commerce {
 
 ShoppingBookmarkModelObserver::ShoppingBookmarkModelObserver(
     bookmarks::BookmarkModel* model,
-    ShoppingService* shopping_service)
-    : shopping_service_(shopping_service) {
+    ShoppingService* shopping_service,
+    SubscriptionsManager* subscriptions_manager)
+    : shopping_service_(shopping_service),
+      subscriptions_manager_(subscriptions_manager) {
   scoped_observation_.Observe(model);
 }
 
@@ -40,17 +43,30 @@ void ShoppingBookmarkModelObserver::OnWillChangeBookmarkNode(
 void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  if (node_to_url_map_[node->id()] != node->url()) {
-    // If the URL did change, clear the power bookmark shopping meta and
-    // unsubscribe if needed.
-    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-        power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
 
-    if (meta && meta->has_shopping_specifics()) {
-      power_bookmarks::ShoppingSpecifics* specifics =
-          meta->mutable_shopping_specifics();
+  if (meta && meta->has_shopping_specifics()) {
+    power_bookmarks::ShoppingSpecifics* specifics =
+        meta->mutable_shopping_specifics();
+    uint64_t cluster_id = specifics->product_cluster_id();
 
-      uint64_t cluster_id = specifics->product_cluster_id();
+    // If the changed bookmark is a shopping item, we check its tracking status
+    // with local subscriptions and if inconsistent, we need to sync local
+    // subscriptions with the server. This is mainly used to keep local
+    // subscriptions up to date when users operate on multiple devices.
+    if (subscriptions_manager_) {
+      CommerceSubscription sub(
+          SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+          base::NumberToString(cluster_id), ManagementType::kUserManaged);
+
+      subscriptions_manager_->VerifyIfSubscriptionExists(
+          std::move(sub), specifics->is_price_tracked());
+    }
+
+    if (node_to_url_map_[node->id()] != node->url()) {
+      // If the URL did change, clear the power bookmark shopping meta and
+      // unsubscribe if needed.
       meta->clear_shopping_specifics();
       power_bookmarks::SetNodePowerBookmarkMeta(model, node, std::move(meta));
 

@@ -193,6 +193,22 @@ class MockProtoStorage
               std::move(callback).Run(succeeded);
             });
   }
+
+  void MockLoadOneEntryResponse(bool succeeded, bool empty_response) {
+    ON_CALL(*this, LoadOneEntry)
+        .WillByDefault(
+            [succeeded, empty_response](
+                const std::string& key,
+                SessionProtoStorage<commerce::CommerceSubscriptionProto>::
+                    LoadCallback callback) {
+              std::move(callback).Run(
+                  succeeded,
+                  empty_response
+                      ? std::vector<SessionProtoStorage<
+                            commerce::CommerceSubscriptionProto>::KeyAndValue>()
+                      : MockDbLoadResponse());
+            });
+  }
 };
 
 }  // namespace
@@ -337,6 +353,63 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_OperationFailed) {
                               },
                               &run_loop),
                           MockRemoteSubscriptions());
+  run_loop.Run();
+}
+
+TEST_F(SubscriptionsStorageTest, TestIsSubscribed) {
+  proto_db_->MockLoadOneEntryResponse(true, false);
+  EXPECT_CALL(*proto_db_, LoadOneEntry(kKey1, _)).Times(1);
+
+  base::RunLoop run_loop;
+  storage_->IsSubscribed(
+      CommerceSubscription(SubscriptionType::kPriceTrack,
+                           IdentifierType::kProductClusterId, kMockId1,
+                           ManagementType::kUserManaged),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool is_subscribed) {
+            ASSERT_EQ(true, is_subscribed);
+
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(SubscriptionsStorageTest, TestIsSubscribed_Failed) {
+  proto_db_->MockLoadOneEntryResponse(false, false);
+  EXPECT_CALL(*proto_db_, LoadOneEntry(kKey1, _)).Times(1);
+
+  base::RunLoop run_loop;
+  storage_->IsSubscribed(
+      CommerceSubscription(SubscriptionType::kPriceTrack,
+                           IdentifierType::kProductClusterId, kMockId1,
+                           ManagementType::kUserManaged),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool is_subscribed) {
+            ASSERT_EQ(false, is_subscribed);
+
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(SubscriptionsStorageTest, TestIsSubscribed_EmptyResponse) {
+  proto_db_->MockLoadOneEntryResponse(true, true);
+  EXPECT_CALL(*proto_db_, LoadOneEntry(kKey1, _)).Times(1);
+
+  base::RunLoop run_loop;
+  storage_->IsSubscribed(
+      CommerceSubscription(SubscriptionType::kPriceTrack,
+                           IdentifierType::kProductClusterId, kMockId1,
+                           ManagementType::kUserManaged),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool is_subscribed) {
+            ASSERT_EQ(false, is_subscribed);
+
+            run_loop->Quit();
+          },
+          &run_loop));
   run_loop.Run();
 }
 

@@ -57,6 +57,13 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
 
+  // If a |subscription| should exist but we cannot find it in local
+  // subscriptions, or vice versa, we should sync local subscriptions with the
+  // server. This is mainly used to keep local subscriptions up to date when
+  // users operate on multiple devices.
+  void VerifyIfSubscriptionExists(CommerceSubscription subscription,
+                                  bool should_exist);
+
   // For tests only, return init_succeeded_.
   bool GetInitSucceededForTesting();
 
@@ -95,6 +102,7 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
 
   // Fetch all backend subscriptions and sync with local storage. This should
   // only be called on manager instantiation and user primary account changed.
+  // TODO(crbug.com/1364806): Rename to SyncSubscriptions.
   void InitSubscriptions();
 
   // Check if there is any request running. If not, process the next request in
@@ -125,6 +133,9 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
       SubscriptionType type,
       base::OnceCallback<void(bool)> callback,
       bool succeeded);
+
+  void HandleCheckLocalSubscriptionResponse(bool should_exisit,
+                                            bool is_subscribed);
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
