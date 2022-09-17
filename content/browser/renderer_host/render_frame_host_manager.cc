@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/trace_event/base_tracing.h"
@@ -50,6 +51,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -1388,25 +1390,28 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost() {
   } else {
     DCHECK_EQ(speculative_render_frame_host_->lifecycle_state(),
               LifecycleStateImpl::kPendingCommit);
-    // The browser process already asked the renderer to commit the navigation.
-    // The renderer is guaranteed to commit the navigation and swap in the
-    // provisional `RenderFrame` to replace the current `blink::RemoteFrame`
-    // unless the frame is detached: see `AssertNavigationCommits` in
-    // `RenderFrameImpl` for more details about this enforcement.
-    //
-    // Instead of simply deleting the `RenderFrame`, the browser process must
-    // unwind the renderer's state by sending it another IPC to "undo" the
-    // commit by immediately swapping it out for a proxy again.
+    if (!base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit)) {
+      // The browser process already asked the renderer to commit the
+      // navigation. The renderer is guaranteed to commit the navigation and
+      // swap in the provisional `RenderFrame` to replace the current
+      // `blink::RemoteFrame` unless the frame is detached: see
+      // `AssertNavigationCommits` in `RenderFrameImpl` for more details about
+      // this enforcement.
+      //
+      // Instead of simply deleting the `RenderFrame`, the browser process must
+      // unwind the renderer's state by sending it another IPC to "undo" the
+      // commit by immediately swapping it out for a proxy again.
 
-    // The renderer hasn't acknowledged the `CommitNavigation()` yet so the
-    // `RenderFrameProxyHost` should still be alive. Reuse it.
-    RenderFrameProxyHost* proxy =
-        speculative_render_frame_host_->browsing_context_state()
-            ->GetRenderFrameProxyHost(
-                speculative_render_frame_host_->GetSiteInstance()->group());
-    DCHECK(proxy);
-    speculative_render_frame_host_->UndoCommitNavigation(
-        *proxy, frame_tree_node_->IsLoading());
+      // The renderer hasn't acknowledged the `CommitNavigation()` yet so the
+      // `RenderFrameProxyHost` should still be alive. Reuse it.
+      RenderFrameProxyHost* proxy =
+          speculative_render_frame_host_->browsing_context_state()
+              ->GetRenderFrameProxyHost(
+                  speculative_render_frame_host_->GetSiteInstance()->group());
+      DCHECK(proxy);
+      speculative_render_frame_host_->UndoCommitNavigation(
+          *proxy, frame_tree_node_->IsLoading());
+    }
   }
   return std::move(speculative_render_frame_host_);
 }
