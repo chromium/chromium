@@ -145,6 +145,7 @@ src/webgpu/api/operation/command_buffer/render/dynamic_state.spec.ts
 src/webgpu/api/operation/command_buffer/render/state_tracking.spec.ts
 src/webgpu/api/operation/compute/basic.spec.ts
 src/webgpu/api/operation/compute_pipeline/entry_point_name.spec.ts
+src/webgpu/api/operation/compute_pipeline/overrides.spec.ts
 src/webgpu/api/operation/device/lost.spec.ts
 src/webgpu/api/operation/memory_sync/operation_context_helper.ts
 src/webgpu/api/operation/memory_sync/buffer/buffer_sync_test.ts
@@ -160,6 +161,7 @@ src/webgpu/api/operation/render_pass/storeOp.spec.ts
 src/webgpu/api/operation/render_pass/storeop2.spec.ts
 src/webgpu/api/operation/render_pipeline/alpha_to_coverage.spec.ts
 src/webgpu/api/operation/render_pipeline/culling_tests.spec.ts
+src/webgpu/api/operation/render_pipeline/overrides.spec.ts
 src/webgpu/util/shader.ts
 src/webgpu/util/texture/texture_ok.ts
 src/webgpu/api/operation/render_pipeline/pipeline_output_targets.spec.ts
