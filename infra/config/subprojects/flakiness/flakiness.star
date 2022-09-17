@@ -16,6 +16,9 @@ ci.defaults.set(
     # below for bucket ACL
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     free_space = builders.free_space.standard,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 luci.bucket(

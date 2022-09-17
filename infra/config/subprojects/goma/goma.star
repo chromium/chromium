@@ -38,6 +38,9 @@ defaults.service_account.set(
 )
 defaults.triggered_by.set(["chromium-gitiles-trigger"])
 
+# TODO(crbug.com/1362440): remove this.
+defaults.omit_python2.set(False)
+
 # Builders appear after the function used to define them, with all builders
 # defined using the same function ordered lexicographically by name
 # Builder functions are defined in lexicographic order by name ignoring the

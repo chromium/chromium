@@ -23,6 +23,9 @@ try_.defaults.set(
 
     # Make each bot specify its own OS, since we have a variety of these in this
     # file.
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 consoles.list_view(

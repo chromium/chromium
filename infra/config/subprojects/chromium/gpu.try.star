@@ -27,6 +27,8 @@ try_.defaults.set(
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 # Builders appear after the function used to define them, with all builders

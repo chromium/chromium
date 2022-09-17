@@ -23,9 +23,6 @@ ci.defaults.set(
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 consoles.console_view(
@@ -351,8 +348,7 @@ ci.builder(
     ),
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 12 * time.hour,
+
     # TODO(https://crbug.com/1362440): remove this and use default value.
-    experiments = {
-        "luci.buildbucket.omit_python2": 0,
-    },
+    omit_python2 = False,
 )

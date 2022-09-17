@@ -37,6 +37,9 @@ defaults.set(
     bucket = "reviver",
     list_view = "reviver",
     service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 def target_builder(*, name, dimensions):

@@ -10,6 +10,8 @@ builders.defaults.set(
     build_numbers = True,
     cores = 8,
     cpu = cpu.X86_64,
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 consoles.console_view(

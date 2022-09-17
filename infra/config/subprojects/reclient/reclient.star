@@ -42,6 +42,9 @@ ci.defaults.set(
     ),
     triggered_by = ["chromium-gitiles-trigger"],
     free_space = builders.free_space.standard,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 consoles.console_view(

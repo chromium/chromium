@@ -21,6 +21,9 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     ssd = True,
+
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
 )
 
 def ios_builder(*, name, **kwargs):

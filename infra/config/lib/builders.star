@@ -369,6 +369,10 @@ defaults = args.defaults(
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
 
+    # This is to enable luci.buildbucket.omit_python2 experiment.
+    # TODO(crbug.com/1362440): remove this after enabling this in all builders.
+    omit_python2 = True,
+
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
     bucket = args.COMPUTE,
@@ -426,6 +430,7 @@ def builder(
         reclient_publish_trace = args.DEFAULT,
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
+        omit_python2 = args.DEFAULT,
         **kwargs):
     """Define a builder.
 
@@ -597,6 +602,9 @@ def builder(
             remote caching. Has no effect if reclient_instance is not set.
         reclient_ensure_verified: If True, it verifies build artifacts. Has no
             effect if reclient_instance is not set.
+        omit_python2: If True, set luci.buildbucket.omit_python2 experiment.
+            TODO(crbug.com/1362440): remove this after enabling this in all
+            builders.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -778,6 +786,13 @@ def builder(
     if triggered_by != args.COMPUTE:
         kwargs["triggered_by"] = triggered_by
 
+    experiments = kwargs.pop("experiments", None) or {}
+
+    # TODO: remove this after this experiment is removed from
+    # cr-buildbucket/settings.cfg (http://shortn/_cz2s9ql61X).
+    if defaults.get_value("omit_python2", omit_python2):
+        experiments["luci.buildbucket.omit_python2"] = 100
+
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
@@ -791,6 +806,7 @@ def builder(
             ),
             history_options = history_options,
         ),
+        experiments = experiments,
         **kwargs
     )
 

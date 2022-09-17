@@ -23,9 +23,6 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     thin_tester_cores = 8,
     tree_closing = True,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 consoles.console_view(
