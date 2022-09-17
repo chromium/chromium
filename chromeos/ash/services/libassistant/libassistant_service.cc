@@ -32,9 +32,7 @@ class LibassistantFactoryImpl : public LibassistantFactory {
   // LibassistantFactory implementation:
   std::unique_ptr<assistant_client::AssistantManager> CreateAssistantManager(
       const std::string& lib_assistant_config) override {
-    // If V2 flag is enabled, will fallback to load libassistant.so from rootfs.
-    if (chromeos::assistant::features::IsLibAssistantV2Enabled() ||
-        !chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
+    if (!chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
       return base::WrapUnique(assistant_client::AssistantManager::Create(
           platform_api_, lib_assistant_config));
     }
@@ -47,9 +45,7 @@ class LibassistantFactoryImpl : public LibassistantFactory {
 
   assistant_client::AssistantManagerInternal* UnwrapAssistantManagerInternal(
       assistant_client::AssistantManager* assistant_manager) override {
-    // If V2 flag is enabled, will fallback to load libassistant.so from rootfs.
-    if (chromeos::assistant::features::IsLibAssistantV2Enabled() ||
-        !chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
+    if (!chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
       return assistant_client::UnwrapAssistantManagerInternal(
           assistant_manager);
     }

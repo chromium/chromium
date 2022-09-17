@@ -46,11 +46,18 @@ constexpr char kLibassistantDlcId[] = "assistant-dlc";
 // On linux-chromeos, will load from `root_out_dir`.
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
 inline constexpr char kLibassistantPath[] = "opt/google/chrome/libassistant.so";
+inline constexpr char kLibassistantV2Path[] =
+    "opt/google/chrome/libassistant_v2.so";
 #else
 inline constexpr char kLibassistantPath[] = "libassistant.so";
+inline constexpr char kLibassistantV2Path[] = "libassistant_v2.so";
 #endif
 
 base::FilePath GetLibassisantPath(const std::string& dlc_path) {
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    return base::FilePath(dlc_path).Append(kLibassistantV2Path);
+  }
+
   return base::FilePath(dlc_path).Append(kLibassistantPath);
 }
 
@@ -88,10 +95,7 @@ void RecordLibassistantDlcLoadStatus(const LoadStatus& status) {
 }  // namespace
 
 void LibassistantLoaderImpl::Load(LoadCallback callback) {
-  // If V2 flag is enabled or libassistant DLC flag is not enabled, will
-  // fallback to load libassistant.so from rootfs.
-  if (chromeos::assistant::features::IsLibAssistantV2Enabled() ||
-      !chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
+  if (!chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
     std::move(callback).Run(/*success=*/true);
     return;
   }
