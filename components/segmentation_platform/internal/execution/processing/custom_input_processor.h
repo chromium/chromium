@@ -79,6 +79,12 @@ class CustomInputProcessor : public QueryProcessor {
   bool AddTimeRangeBeforePrediction(const proto::CustomInput& custom_input,
                                     std::vector<ProcessedValue>& out_tensor);
 
+  // Add a tensor value for CustomInput::FILL_FROM_INPUT_CONTEXT and return
+  // whether it succeeded.
+  bool AddFromInputContext(const proto::CustomInput& custom_input,
+                           FeatureProcessorState* feature_processor_state,
+                           std::vector<ProcessedValue>& out_tensor);
+
   const raw_ptr<InputDelegateHolder> input_delegate_holder_;
 
   // List of custom inputs to process into input tensors.

@@ -187,6 +187,12 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
       feature_processor_state->SetError(
           stats::FeatureProcessingError::kCustomInputError);
   } else if (custom_input.fill_policy() ==
+             proto::CustomInput::FILL_FROM_INPUT_CONTEXT) {
+    if (!AddFromInputContext(custom_input, feature_processor_state,
+                             tensor_result))
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kCustomInputError);
+  } else if (custom_input.fill_policy() ==
              proto::CustomInput::PRICE_TRACKING_HINTS) {
     feature_processor_state->SetError(
         stats::FeatureProcessingError::kCustomInputError);
@@ -194,6 +200,29 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
   }
 
   return tensor_result;
+}
+
+bool CustomInputProcessor::AddFromInputContext(
+    const proto::CustomInput& custom_input,
+    FeatureProcessorState* feature_processor_state,
+    std::vector<ProcessedValue>& out_tensor) {
+  if (custom_input.tensor_length() != 1) {
+    return false;
+  }
+  const auto& input_context = feature_processor_state->input_context();
+  auto custom_input_iter = custom_input.additional_args().find("name");
+  if (custom_input_iter == custom_input.additional_args().end()) {
+    return false;
+  }
+
+  auto input_context_iter =
+      input_context->metadata_args.find(custom_input_iter->second);
+  if (input_context_iter == input_context->metadata_args.end()) {
+    return false;
+  }
+
+  out_tensor.emplace_back(input_context_iter->second);
+  return true;
 }
 
 bool CustomInputProcessor::AddPredictionTime(

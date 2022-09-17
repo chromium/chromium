@@ -113,8 +113,16 @@ message CustomInput {
     TIME_RANGE_BEFORE_PREDICTION = 2;
 
     // Used to determine whether a given page is a product details page and can
-    // be price tracked..
+    // be price tracked.
     PRICE_TRACKING_HINTS = 3;
+
+    // This type of custom input is used directly to fill the input tensor to
+    // the model.
+    // Output type: ProcessedValue
+    // Output length: 1
+    // Additional arg:
+    //   `name`: The name of the field to be looked up in input context.
+    FILL_FROM_INPUT_CONTEXT = 4;
   }
 
   // The fill type of the custom input.
