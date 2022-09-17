@@ -58,8 +58,12 @@ bool TCPClientSocketBrokered::SetNoDelay(bool no_delay) {
 
 void TCPClientSocketBrokered::SetBeforeConnectCallback(
     const BeforeConnectCallback& before_connect_callback) {
-  // TODO(liza): Implement this.
-  NOTREACHED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!before_connect_callback_);
+  DCHECK(!IsConnected());
+  DCHECK(!is_connect_in_progress_);
+
+  before_connect_callback_ = before_connect_callback;
 }
 
 int TCPClientSocketBrokered::Connect(net::CompletionOnceCallback callback) {
@@ -128,6 +132,16 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
   brokered_socket_ = std::make_unique<net::TCPClientSocket>(
       std::move(tcp_socket), addresses_, network_quality_estimator_);
   brokered_socket_->ApplySocketTag(tag_);
+
+  if (before_connect_callback_) {
+    int callback_result = before_connect_callback_.Run();
+    DCHECK_NE(net::ERR_IO_PENDING, callback_result);
+    if (callback_result != net::OK) {
+      std::move(callback).Run(callback_result);
+      return;
+    }
+  }
+
   brokered_socket_->Connect(base::BindOnce(
       &TCPClientSocketBrokered::DidCompleteConnect,
       brokered_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

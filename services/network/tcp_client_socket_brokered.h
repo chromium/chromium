@@ -15,6 +15,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_tag.h"
+#include "net/socket/stream_socket.h"
 #include "net/socket/tcp_socket.h"
 #include "net/socket/transport_client_socket.h"
 
@@ -125,6 +126,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
 
   // State to track whether socket is currently attempting to connect.
   bool is_connect_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  BeforeConnectCallback before_connect_callback_;
 
   // Need to store the tag in case ApplySocketTag() is called before Connect().
   net::SocketTag tag_ GUARDED_BY_CONTEXT(sequence_checker_);

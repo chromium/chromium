@@ -146,18 +146,28 @@ void OnConnected(base::OnceClosure quit_closure,
 }
 
 // Creates a TCPConnectedSocket that attempts one GET request to
-// `embedded_test_server`.
+// `embedded_test_server`. If `use_options` is true then a set of options are
+// set for the socket.
 void RunTcpEndToEndTest(
     network::mojom::NetworkContext* network_context,
-    net::test_server::EmbeddedTestServer& embedded_test_server) {
+    net::test_server::EmbeddedTestServer& embedded_test_server,
+    bool use_options) {
   mojo::PendingRemote<network::mojom::TCPConnectedSocket>
       tcp_connected_socket_remote;
   net::AddressList addr;
   ASSERT_TRUE(embedded_test_server.GetAddressList(&addr));
 
+  network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
+      network::mojom::TCPConnectedSocketOptions::New();
+
+  tcp_connected_socket_options->send_buffer_size = 32 * 1024;
+  tcp_connected_socket_options->receive_buffer_size = 64 * 1024;
+  tcp_connected_socket_options->no_delay = false;
+
   base::RunLoop run_loop;
   network_context->CreateTCPConnectedSocket(
-      absl::nullopt, addr, nullptr,
+      absl::nullopt, addr,
+      use_options ? std::move(tcp_connected_socket_options) : nullptr,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       tcp_connected_socket_remote.InitWithNewPipeAndPassReceiver(),
       mojo::NullRemote(), base::BindOnce(&OnConnected, run_loop.QuitClosure()));
@@ -174,7 +184,22 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
           ->GetNetworkContext();
   ASSERT_TRUE(network_context);
 
-  RunTcpEndToEndTest(network_context, embedded_test_server_);
+  RunTcpEndToEndTest(network_context, embedded_test_server_,
+                     /*use_options=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
+                       TcpEndToEndDefaultContextWithOptions) {
+  network::mojom::NetworkContext* network_context =
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  ASSERT_TRUE(network_context);
+
+  RunTcpEndToEndTest(network_context, embedded_test_server_,
+                     /*use_options=*/true);
 }
 
 // Implementation of network::mojom::SocketBroker that tracks the number of
@@ -221,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
       network_context.BindNewPipeAndPassReceiver(),
       std::move(network_context_params));
 
-  RunTcpEndToEndTest(network_context.get(), embedded_test_server_);
+  RunTcpEndToEndTest(network_context.get(), embedded_test_server_,
+                     /*use_options=*/false);
   EXPECT_EQ(socket_broker.tcp_socket_count(), 1);
 }
 
@@ -235,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
   ASSERT_TRUE(network_context.is_bound());
 
   // Run test on the first network context.
-  RunTcpEndToEndTest(network_context.get(), embedded_test_server_);
+  RunTcpEndToEndTest(network_context.get(), embedded_test_server_,
+                     /*use_options=*/false);
 
   SimulateNetworkServiceCrash();
 
@@ -243,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
   ASSERT_TRUE(network_context2.is_bound());
 
   // Run the test again, in the new network service.
-  RunTcpEndToEndTest(network_context2.get(), embedded_test_server_);
+  RunTcpEndToEndTest(network_context2.get(), embedded_test_server_,
+                     /*use_options=*/false);
 }
 
 }  // namespace

@@ -397,6 +397,28 @@ TEST_F(TCPClientSocketBrokeredTest, FullDuplex_WriteFirst) {
   EXPECT_GT(rv, 0);
 }
 
+// Tests that setting a socket option in the BeforeConnectCallback works. With
+// real sockets, socket options often have to be set before the connect() call,
+// and the BeforeConnectCallback is the only way to do that, with a
+// TCPClientSocket.
+TEST_F(TCPClientSocketBrokeredTest, BeforeConnectCallback) {
+  net::TestCompletionCallback callback;
+
+  EXPECT_FALSE(socket_->IsConnected());
+  EXPECT_FALSE(socket_->IsConnectedAndIdle());
+
+  bool callback_was_called = false;
+  socket_->SetBeforeConnectCallback(base::BindLambdaForTesting([&] {
+    EXPECT_FALSE(socket_->IsConnected());
+    callback_was_called = true;
+    return int{net::OK};
+  }));
+
+  ConnectClientSocket(&callback);
+
+  EXPECT_TRUE(callback_was_called);
+}
+
 // Duplicated from tcp_client_socket_unittest.cc since tests in //net can't
 // depend on anything outside of //net.
 //
