@@ -144,11 +144,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // after starting.
   static void SetSkipPageResetTimerForTesting(bool enabled);
 
-  // Returns the app list transition progress value associated with a app list
-  // view state. This matches the values GetAppListTransitionProgress() is
-  // expected to return when app list view is exactly in the provided state.
-  static float GetTransitionProgressForState(AppListViewState state);
-
   // Initializes the view, only done once per session.
   void InitView(gfx::NativeView parent);
 
@@ -263,33 +258,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Returns current app list height above display bottom.
   int GetCurrentAppListHeight() const;
-
-  // Flags that can be passed to GetAppListTransitionProgress(). For more
-  // details, see GetAppListTransitionProgress() documentation.
-  static constexpr int kProgressFlagNone = 0;
-  static constexpr int kProgressFlagSearchResults = 1;
-  static constexpr int kProgressFlagWithTransform = 1 << 1;
-
-  // The progress of app list height transitioning from closed to fullscreen
-  // state. [0.0, 1.0] means the progress between closed and peeking state,
-  // while [1.0, 2.0] means the progress between peeking and fullscreen state.
-  //
-  // By default, this calculates progress for drag operation while app list
-  // is AppListState::kApps state, relative to the current app list view bounds.
-  // The |flags| argument can be used to amend this behavior:
-  // *   Use |kProgressFlagNone| for default behavior.
-  // *   If |kProgressFlagSearchResult| flag is set, the progress will be
-  //     calculated using kHalf state height as baseline. This should be used
-  //     when calculating contents layout for search results state.
-  // *   If |kProgressFlagWithTransform| is set, the progress will be calculated
-  //     for the app list height offset by the current app list view transform.
-  //     This should be used when setting up transform animations for views
-  //     whose bounds depend on the app list height - in particular when the
-  //     animation is implemented by setting up target bounds first, and then
-  //     animating view layer transform from one that matches current bounds to
-  //     an identity transform. This flag is needed to properly calculate the
-  //     initial animation transform.
-  float GetAppListTransitionProgress(int flags) const;
 
   // Returns the expected app list view height (measured from the screen bottom)
   // in the provided state.

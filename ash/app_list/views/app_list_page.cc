@@ -47,7 +47,7 @@ views::View* AppListPage::GetLastFocusableView() {
       this, GetWidget(), true /* reverse */, false /* dont_loop */);
 }
 
-void AppListPage::AnimateOpacity(float current_progress,
+void AppListPage::AnimateOpacity(AppListViewState current_view_state,
                                  AppListViewState target_view_state,
                                  const OpacityAnimator& animator) {
   animator.Run(this, target_view_state != AppListViewState::kClosed);

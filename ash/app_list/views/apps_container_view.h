@@ -143,7 +143,7 @@ class ASH_EXPORT AppsContainerView
       AppListState state,
       const gfx::Rect& contents_bounds,
       const gfx::Rect& search_box_bounds) const override;
-  void AnimateOpacity(float current_progress,
+  void AnimateOpacity(AppListViewState current_view_state,
                       AppListViewState target_view_state,
                       const OpacityAnimator& animator) override;
   void AnimateYPosition(AppListViewState target_view_state,
@@ -261,23 +261,24 @@ class ASH_EXPORT AppsContainerView
 
   // Updates the opacity of the apps container elements for the current app list
   // view position.
-  // |progress| - The current app list view drag progress.
-  // |restore_opacity| - Whether the opacity should be restored to the non-drag
-  //     state.
-  void UpdateContentsOpacity(float progress, bool restore_opacity);
+  // |restore_opacity| - Whether the opacity should be restored.
+
+  // TODO(crbug.com/1356674): Maybe remove this method or remove
+  // |restore_opacity| as parameter.
+  void UpdateContentsOpacity(bool restore_opacity);
 
   // Updates the y position of the apps container elements for the current app
   // list view position.
-  // |progress| - The current app list view drag progress.
-  void UpdateContentsYPosition(float progress);
+  // |view_state| - The app list view state.
+  void UpdateContentsYPosition(AppListViewState view_state);
 
   // Suggestion chips and apps grid view become unfocusable if |disabled| is
   // true. This is used to trap focus within the folder when it is opened.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
   // Returns expected suggestion chip container's y position based on the app
-  // list transition progress.
-  int GetExpectedSuggestionChipY(float progress);
+  // list view_state.
+  int GetExpectedSuggestionChipY(AppListViewState view_state);
 
   struct GridLayout {
     int columns;

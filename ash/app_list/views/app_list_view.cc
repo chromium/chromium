@@ -573,22 +573,6 @@ AppListView::~AppListView() {
 }
 
 // static
-float AppListView::GetTransitionProgressForState(AppListViewState state) {
-  switch (state) {
-    case AppListViewState::kClosed:
-      return 0.0f;
-    case AppListViewState::kPeeking:
-    case AppListViewState::kHalf:
-      return 1.0f;
-    case AppListViewState::kFullscreenAllApps:
-    case AppListViewState::kFullscreenSearch:
-      return 2.0f;
-  }
-  NOTREACHED();
-  return 0.0f;
-}
-
-// static
 void AppListView::SetSkipPageResetTimerForTesting(bool enabled) {
   skip_page_reset_timer_for_testing = enabled;
 }
@@ -1699,60 +1683,6 @@ int AppListView::GetCurrentAppListHeight() const {
   }
 
   return current_height;
-}
-
-float AppListView::GetAppListTransitionProgress(int flags) const {
-  // During transition between home and overview in tablet mode, the app list
-  // widget gets scaled down from full screen state - if this is the case,
-  // the app list layout should match the current app list state, so return
-  // the progress for the current app list state.
-  const gfx::Transform transform = GetWidget()->GetLayer()->transform();
-  if (delegate_->IsInTabletMode() && transform.IsScaleOrTranslation() &&
-      !transform.IsIdentityOrTranslation()) {
-    return GetTransitionProgressForState(app_list_state_);
-  }
-
-  int current_height = GetCurrentAppListHeight();
-  if (flags & kProgressFlagWithTransform) {
-    current_height -=
-        GetWidget()->GetLayer()->transform().To2dTranslation().y();
-  }
-
-  const int fullscreen_height = GetFullscreenStateHeight();
-  const int baseline_height = std::min(
-      fullscreen_height,
-      (flags & kProgressFlagSearchResults) ? kHalfHeight : kPeekingHeight);
-
-  // If vertical space is limited, the baseline and fullscreen height might be
-  // the same. To handle this case, if the height has reached the
-  // baseline/fullscreen height, return either 1.0 or 2.0 progress, depending on
-  // the current target state.
-  if (baseline_height == fullscreen_height &&
-      current_height >= fullscreen_height) {
-    return GetTransitionProgressForState(app_list_state_);
-  }
-
-  if (current_height <= baseline_height) {
-    // Currently transition progress is between closed and peeking state.
-    // Calculate the progress of this transition.
-    const float shelf_height =
-        GetScreenBottom() - GetDisplayNearestView().work_area().bottom();
-
-    // When screen is rotated, the current height might be smaller than shelf
-    // height for just one moment, which results in negative progress. So force
-    // the progress to be non-negative.
-    return std::max(0.0f, (current_height - shelf_height) /
-                              (baseline_height - shelf_height));
-  }
-
-  // Currently transition progress is between peeking and fullscreen state.
-  // Calculate the progress of this transition.
-  const float fullscreen_height_above_baseline =
-      fullscreen_height - baseline_height;
-  const float current_height_above_baseline = current_height - baseline_height;
-  DCHECK_GT(fullscreen_height_above_baseline, 0);
-  DCHECK_LE(current_height_above_baseline, fullscreen_height_above_baseline);
-  return 1 + current_height_above_baseline / fullscreen_height_above_baseline;
 }
 
 int AppListView::GetHeightForState(AppListViewState state) const {

@@ -96,11 +96,10 @@ class ASH_EXPORT AppListPage : public views::View {
 
   // Called when the app list view state changes to |target_view_state| to
   // animate the app list page opacity.
-  // |current_progress| - the current app list transition progress.
   // |animator| - callback that when run starts the opacity animation.
   using OpacityAnimator =
       base::RepeatingCallback<void(views::View* view, bool target_visibility)>;
-  virtual void AnimateOpacity(float current_progress,
+  virtual void AnimateOpacity(AppListViewState current_view_state,
                               AppListViewState target_view_state,
                               const OpacityAnimator& animator);
 
