@@ -593,22 +593,23 @@ INSTANTIATE_TEST_SUITE_P(IsWhereForgiving,
                          testing::ValuesIn(is_where_forgiving_data));
 namespace {
 
-const auto TagLocalName = [](const CSSSelector* selector) {
+AtomicString TagLocalName(const CSSSelector* selector) {
   return selector->TagQName().LocalName();
-};
+}
 
-const auto AttributeLocalName = [](const CSSSelector* selector) {
+AtomicString AttributeLocalName(const CSSSelector* selector) {
   return selector->Attribute().LocalName();
-};
+}
 
-const auto SelectorValue = [](const CSSSelector* selector) {
+AtomicString SelectorValue(const CSSSelector* selector) {
   return selector->Value();
-};
+}
 
 struct ASCIILowerTestCase {
   const char* input;
   const char16_t* expected;
-  std::function<AtomicString(const CSSSelector*)> getter;
+  using GetterFn = AtomicString(const CSSSelector*);
+  GetterFn* getter;
 };
 
 }  // namespace
