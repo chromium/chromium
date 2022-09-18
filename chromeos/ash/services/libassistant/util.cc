@@ -164,10 +164,7 @@ bool ShouldLogToFile() {
 }  // namespace
 
 base::FilePath GetBaseAssistantDir() {
-  if (base::SysInfo::IsRunningOnChromeOS())
-    return base::FilePath(FILE_PATH_LITERAL(kAssistantBaseDirPath));
-
-  return base::FilePath(FILE_PATH_LITERAL(kAssistantTempBaseDirPath));
+  return base::FilePath(FILE_PATH_LITERAL(kAssistantBaseDirPath));
 }
 
 std::string CreateLibAssistantConfig(

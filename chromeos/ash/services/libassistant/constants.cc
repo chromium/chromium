@@ -5,17 +5,42 @@
 #include "chromeos/ash/services/libassistant/constants.h"
 
 #include "base/files/file_util.h"
+#include "build/chromeos_buildflags.h"
 
 #define ASSISTANT_DIR_STRING "google-assistant-library"
+#define ASSISTANT_TEMP_DIR "/tmp/libassistant/"
+#define LIBASSISTANT_DLC_DIR "opt/google/chrome/"
+#define LIBASSISTANT_V1_NAME "libassistant.so"
+#define LIBASSISTANT_V2_NAME "libassistant_v2.so"
 
 namespace chromeos {
 namespace libassistant {
 
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 const base::FilePath::CharType kAssistantBaseDirPath[] =
     FILE_PATH_LITERAL("/home/chronos/user/" ASSISTANT_DIR_STRING);
 
-const base::FilePath::CharType kAssistantTempBaseDirPath[] =
-    FILE_PATH_LITERAL("/tmp/" ASSISTANT_DIR_STRING);
+const char kLibAssistantDlcRootPath[] =
+    "/run/imageloader/assistant-dlc/package/root";
+
+const base::FilePath::CharType kLibAssistantV1DlcPath[] =
+    FILE_PATH_LITERAL(LIBASSISTANT_DLC_DIR LIBASSISTANT_V1_NAME);
+
+const base::FilePath::CharType kLibAssistantV2DlcPath[] =
+    FILE_PATH_LITERAL(LIBASSISTANT_DLC_DIR LIBASSISTANT_V2_NAME);
+#else
+// Directory and files used in gLinux simulation.
+const base::FilePath::CharType kAssistantBaseDirPath[] =
+    FILE_PATH_LITERAL(ASSISTANT_TEMP_DIR ASSISTANT_DIR_STRING);
+
+const char kLibAssistantDlcRootPath[] = "";
+
+const base::FilePath::CharType kLibAssistantV1DlcPath[] =
+    FILE_PATH_LITERAL(LIBASSISTANT_V1_NAME);
+
+const base::FilePath::CharType kLibAssistantV2DlcPath[] =
+    FILE_PATH_LITERAL(LIBASSISTANT_V2_NAME);
+#endif
 
 }  // namespace libassistant
 }  // namespace chromeos

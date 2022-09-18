@@ -61,6 +61,7 @@ source_set("loader") {
   public_deps = [ "//dbus" ]
 
   deps = [
+    ":constants",
     "//base",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/dlcservice",
@@ -81,6 +82,7 @@ source_set("sandbox_hook") {
 
   deps = [
     ":constants",
+    ":loader",
     "//base",
     "//chromeos/assistant/internal:internal",
     "//sandbox/linux:sandbox_services",

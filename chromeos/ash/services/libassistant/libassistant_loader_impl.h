@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_LOADER) LibassistantLoaderImpl
   // Load libassistant.so. Will skip if the library has been loaded.
   void Load(LoadCallback callback);
 
+  // Load libassistant.so for sandbox. This is a blocking method.
+  void LoadBlocking(const std::string& root_path);
+
   // Return the LibassistantEntrypoint.
   EntryPoint* GetEntryPoint();
 

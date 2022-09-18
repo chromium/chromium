@@ -16,10 +16,10 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/libassistant/constants.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace chromeos::libassistant {
@@ -41,24 +41,17 @@ inline constexpr char kDlcLoadStatusHistogram[] =
     "Assistant.Libassistant.DlcLoadStatus";
 
 // The DLC ID of Libassistant.so, used to download and mount the library.
-constexpr char kLibassistantDlcId[] = "assistant-dlc";
+inline constexpr char kLibassistantDlcId[] = "assistant-dlc";
 
-// On linux-chromeos, will load from `root_out_dir`.
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
-inline constexpr char kLibassistantPath[] = "opt/google/chrome/libassistant.so";
-inline constexpr char kLibassistantV2Path[] =
-    "opt/google/chrome/libassistant_v2.so";
-#else
-inline constexpr char kLibassistantPath[] = "libassistant.so";
-inline constexpr char kLibassistantV2Path[] = "libassistant_v2.so";
-#endif
-
-base::FilePath GetLibassisantPath(const std::string& dlc_path) {
+base::FilePath GetLibassisantPath(const std::string& root_path) {
+  DCHECK(root_path == kLibAssistantDlcRootPath);
+  base::FilePath libassistant_dlc_root =
+      base::FilePath(root_path).AsEndingWithSeparator();
   if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
-    return base::FilePath(dlc_path).Append(kLibassistantV2Path);
+    return libassistant_dlc_root.Append(base::FilePath(kLibAssistantV2DlcPath));
   }
 
-  return base::FilePath(dlc_path).Append(kLibassistantPath);
+  return libassistant_dlc_root.Append(base::FilePath(kLibAssistantV1DlcPath));
 }
 
 void RecordLibassistantDlcInstallResult(
@@ -108,7 +101,18 @@ void LibassistantLoaderImpl::Load(LoadCallback callback) {
   InstallDlc(std::move(callback));
 }
 
+void LibassistantLoaderImpl::LoadBlocking(const std::string& root_path) {
+  // We will load the libassistant before the sandbox initializes.
+  // Since we are not in the main thread, we can call the blocking method.
+  DCHECK(!entry_point_);
+
+  base::FilePath path = GetLibassisantPath(root_path);
+  base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
+  OnLibraryLoaded(std::move(library));
+}
+
 EntryPoint* LibassistantLoaderImpl::GetEntryPoint() {
+  DCHECK(entry_point_);
   return entry_point_.get();
 }
 
@@ -145,6 +149,12 @@ void LibassistantLoaderImpl::OnInstallDlcComplete(
   if (result.error != dlcservice::kErrorNone) {
     DVLOG(1) << "Failed to install libassistant.so from DLC: " << result.error;
     RunCallback(/*success=*/false);
+    return;
+  }
+
+  if (chromeos::assistant::features::IsLibAssistantSandboxEnabled()) {
+    // Will load the library later in the utility process.
+    RunCallback(/*success=*/true);
     return;
   }
 
@@ -190,7 +200,9 @@ void LibassistantLoaderImpl::OnLibraryLoaded(
 }
 
 void LibassistantLoaderImpl::RunCallback(bool success) {
-  std::move(callback_).Run(success);
+  if (callback_) {
+    std::move(callback_).Run(success);
+  }
 }
 
 // static

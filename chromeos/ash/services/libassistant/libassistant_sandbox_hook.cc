@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/services/libassistant/constants.h"
+#include "chromeos/ash/services/libassistant/libassistant_loader_impl.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
@@ -33,15 +34,8 @@ sandbox::syscall_broker::BrokerCommandSet GetLibassistantBrokerCommandSet() {
 }
 
 std::vector<BrokerFilePermission> GetLibassistantFilePermissions() {
-  base::FilePath assistant_path;
-  const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
-  if (is_chromeos_device) {
-    assistant_path =
-        base::FilePath(kAssistantBaseDirPath).AsEndingWithSeparator();
-  } else {
-    assistant_path =
-        base::FilePath(kAssistantTempBaseDirPath).AsEndingWithSeparator();
-  }
+  base::FilePath assistant_path =
+      base::FilePath(kAssistantBaseDirPath).AsEndingWithSeparator();
   CHECK(base::CreateDirectory(assistant_path));
   // Save Libassistant logs.
   base::FilePath log_path =
@@ -49,6 +43,7 @@ std::vector<BrokerFilePermission> GetLibassistantFilePermissions() {
   CHECK(base::CreateDirectory(log_path));
 
   // Socket files used for gRPC.
+  const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
   base::FilePath assistant_socket = base::FilePath(
       chromeos::assistant::GetAssistantSocketFileName(is_chromeos_device));
   base::FilePath libassistant_socket = base::FilePath(
@@ -71,8 +66,10 @@ std::vector<BrokerFilePermission> GetLibassistantFilePermissions() {
 
 bool LibassistantPreSandboxHook(
     sandbox::policy::SandboxLinux::Options options) {
-  auto* instance = sandbox::policy::SandboxLinux::GetInstance();
+  // Load libassistant DLC before the sandbox initializes.
+  LibassistantLoaderImpl::GetInstance()->LoadBlocking(kLibAssistantDlcRootPath);
 
+  auto* instance = sandbox::policy::SandboxLinux::GetInstance();
   instance->StartBrokerProcess(
       GetLibassistantBrokerCommandSet(), GetLibassistantFilePermissions(),
       sandbox::policy::SandboxLinux::PreSandboxHook(), options);
