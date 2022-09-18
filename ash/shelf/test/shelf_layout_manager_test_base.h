@@ -49,7 +49,7 @@ class ShelfLayoutManagerTestBase : public AshTestBase {
 
   int64_t GetPrimaryDisplayId();
   void StartScroll(gfx::Point start);
-  void UpdateScroll(float delta_y);
+  void UpdateScroll(const gfx::Vector2d& delta);
   void EndScroll(bool is_fling, float velocity_y);
   void IncreaseTimestamp();
   WorkspaceWindowState GetWorkspaceWindowState() const;

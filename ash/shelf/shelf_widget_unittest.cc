@@ -858,6 +858,40 @@ TEST_F(ShelfWidgetTest, NoAnimatingBackgroundOnLockScreen) {
                    ->is_animating());
 }
 
+TEST_F(ShelfWidgetTest, NoAnimationAfterDragPastIdealBounds) {
+  UpdateDisplay("800x700");
+
+  // Enable shelf auto-hide (shelf should still be visible until a widget is
+  // shown).
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ASSERT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Create a widget to make sure that the shelf does auto-hide.
+  auto widget = CreateTestWidget();
+  ASSERT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Enable animations, and swipe up across the whole screen to bring up the
+  // shelf.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  const gfx::Point start(display_bounds.bottom_center());
+  const gfx::Point end(display_bounds.top_center());
+  const base::TimeDelta kTimeDelta = base::Milliseconds(100);
+  const int kNumScrollSteps = 4;
+  GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
+                                             kNumScrollSteps);
+  ASSERT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // The shelf should not be animating when the drag is complete.
+  EXPECT_FALSE(GetShelfWidget()->GetLayer()->GetAnimator()->is_animating());
+}
+
 // Tests the shelf widget animations for hotseat transitions are stopped when
 // the screen is locked.
 TEST_F(ShelfWidgetTest, ScreenLockStopsHotseatTransitionAnimation) {

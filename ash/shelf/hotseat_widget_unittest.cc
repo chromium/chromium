@@ -1802,16 +1802,16 @@ TEST_P(HotseatWidgetTest, ExitingOverviewHidesHotseat) {
   StartScroll(bottom_shelf_bounds.CenterPoint());
   // Ensure swipe goes past the top of the hotseat first to activate the window
   // drag controller.
-  UpdateScroll(
-      -GetPrimaryShelf()->hotseat_widget()->GetHotseatFullDragAmount());
+  UpdateScroll(gfx::Vector2d(
+      0, -GetPrimaryShelf()->hotseat_widget()->GetHotseatFullDragAmount()));
   // Drag upward, to the center of the screen, and release (this should enter
   // the overview).
   const gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  UpdateScroll(display_bounds.CenterPoint().y() -
-               bottom_shelf_bounds.CenterPoint().y());
+  UpdateScroll(gfx::Vector2d(0, display_bounds.CenterPoint().y() -
+                                    bottom_shelf_bounds.CenterPoint().y()));
   // Small scroll update, to simulate the user holding the pointer.
-  UpdateScroll(2);
+  UpdateScroll(gfx::Vector2d(0, 2));
   DragWindowFromShelfController* window_drag_controller =
       GetShelfLayoutManager()->window_drag_controller_for_testing();
   ASSERT_TRUE(window_drag_controller);
@@ -1864,11 +1864,13 @@ TEST_P(HotseatWidgetTest, FailingOverviewDragResultsInExtendedHotseat) {
     // Drag upward, a bit below the hotseat extended height, to ensure that the
     // bottom of the dragged window doesn't go past the top of the hotseat, so
     // that it doesn't go into overview.
-    UpdateScroll(-extended_hotseat_distance_from_top_of_shelf + 20);
+    UpdateScroll(
+        gfx::Vector2d(0, -extended_hotseat_distance_from_top_of_shelf + 20));
   } else {
     // Drag upward, a bit past the hotseat extended height so that the window
     // drag controller is activated, but not enough to go to overview.
-    UpdateScroll(-extended_hotseat_distance_from_top_of_shelf - 30);
+    UpdateScroll(
+        gfx::Vector2d(0, -extended_hotseat_distance_from_top_of_shelf - 30));
   }
   EndScroll(/*is_fling=*/false, 0.f);
 

@@ -1038,7 +1038,8 @@ void ShelfWidget::UpdateLayout(bool animate) {
   SetBounds(
       screen_util::SnapBoundsToDisplayEdge(target_bounds_, GetNativeWindow()));
 
-  {
+  // There is no need to animate if the shelf already has the desired transform.
+  if (!shelf_widget_target_transform.IsIdentity()) {
     ui::ScopedLayerAnimationSettings shelf_animation_setter(
         GetLayer()->GetAnimator());
 

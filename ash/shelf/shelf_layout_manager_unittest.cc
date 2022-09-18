@@ -1609,6 +1609,66 @@ TEST_F(ShelfLayoutManagerTest, GestureDragForProductivityLauncher) {
   RunGestureDragTests(bottom_center, shelf_bounds.top_center());
 }
 
+// Tests that the shelf does not "overscroll", that is, dragging the shelf in
+// does not bring it past its ideal bounds.
+TEST_F(ShelfLayoutManagerTest, ShelfDoesNotOverscrollDuringGestureDragIn) {
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ShelfLayoutManager* layout_manager = GetShelfLayoutManager();
+
+  // Note: A window must be visible in order to hide the shelf.
+  CreateTestWidget();
+  {
+    SCOPED_TRACE("BOTTOM");
+    shelf->SetAlignment(ShelfAlignment::kBottom);
+    gfx::Rect ideal_bounds = layout_manager->GetIdealBounds();
+    ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+    // Scroll past the shelf's ideal bounds.
+    gfx::Point start = GetPrimaryDisplay().bounds().bottom_center();
+    StartScroll(start);
+    UpdateScroll(gfx::Vector2d(0, -ideal_bounds.height() - 50));
+
+    // The shelf should not extend past its ideal bounds.
+    EXPECT_EQ(ideal_bounds, shelf->GetShelfBoundsInScreen());
+
+    // End the scroll so as not to interfere with future tests.
+    EndScroll(/*is_fling=*/false, 0.f);
+  }
+  {
+    SCOPED_TRACE("LEFT");
+    shelf->SetAlignment(ShelfAlignment::kLeft);
+    gfx::Rect ideal_bounds = layout_manager->GetIdealBounds();
+    ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+    // Scroll past the shelf's ideal bounds.
+    gfx::Point start = GetPrimaryDisplay().bounds().left_center();
+    StartScroll(start);
+    UpdateScroll(gfx::Vector2d(ideal_bounds.width() + 50, 0));
+
+    EXPECT_EQ(ideal_bounds, shelf->GetShelfBoundsInScreen());
+
+    // End the scroll so as not to interfere with future tests.
+    EndScroll(/*is_fling=*/false, 0.f);
+  }
+  {
+    SCOPED_TRACE("RIGHT");
+    shelf->SetAlignment(ShelfAlignment::kRight);
+    gfx::Rect ideal_bounds = layout_manager->GetIdealBounds();
+    ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+    // Scroll past the shelf's ideal bounds.
+    gfx::Point start = GetPrimaryDisplay().bounds().right_center();
+    StartScroll(start);
+    UpdateScroll(gfx::Vector2d(-ideal_bounds.width() - 50, 0));
+
+    EXPECT_EQ(ideal_bounds, shelf->GetShelfBoundsInScreen());
+
+    // End the scroll so as not to interfere with future tests.
+    EndScroll(/*is_fling=*/false, 0.f);
+  }
+}
+
 // Swiping on shelf when fullscreen app list is opened should have no effect.
 TEST_F(ShelfLayoutManagerTest, SwipingOnShelfIfAppListOpened) {
   Shelf* shelf = GetPrimaryShelf();
@@ -1755,7 +1815,9 @@ TEST_F(ShelfLayoutManagerTest, ShelfAnimatesToVisibleWhenGestureInComplete) {
     display::Display display =
         display::Screen::GetScreen()->GetPrimaryDisplay();
     gfx::Point start = display.bounds().bottom_center();
-    gfx::Point end(start.x(), start.y() - 100);
+    gfx::Point end(
+        start.x(),
+        start.y() - (Shell::Get()->shelf_config()->shelf_size() - 1));
     ui::test::EventGenerator* generator = GetEventGenerator();
 
     views::WidgetAnimationWaiter waiter(GetShelfWidget(), visible_bounds);
@@ -1775,7 +1837,6 @@ TEST_F(ShelfLayoutManagerTest,
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
-  gfx::Rect visible_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
 
   // Create a visible window, otherwise the shelf will not hide.
   CreateTestWidget();
@@ -1790,10 +1851,8 @@ TEST_F(ShelfLayoutManagerTest,
     ui::test::EventGenerator* generator = GetEventGenerator();
 
     // Show the shelf first.
-    views::WidgetAnimationWaiter waiter1(GetShelfWidget(), visible_bounds);
     SwipeUpOnShelf();
-    waiter1.WaitForAnimation();
-    EXPECT_TRUE(waiter1.WasValidAnimation());
+    EXPECT_FALSE(GetShelfWidget()->GetLayer()->GetAnimator()->is_animating());
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
     gfx::Point start = GetShelfWidget()->GetWindowBoundsInScreen().top_center();
@@ -1822,7 +1881,6 @@ TEST_F(ShelfLayoutManagerTest,
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
-  gfx::Rect visible_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
 
   // Create a visible window, otherwise the shelf will not hide.
   CreateTestWidget();
@@ -1837,10 +1895,8 @@ TEST_F(ShelfLayoutManagerTest,
     ui::test::EventGenerator* generator = GetEventGenerator();
 
     // Show the shelf first.
-    views::WidgetAnimationWaiter waiter1(GetShelfWidget(), visible_bounds);
     SwipeUpOnShelf();
-    waiter1.WaitForAnimation();
-    EXPECT_TRUE(waiter1.WasValidAnimation());
+    EXPECT_FALSE(GetShelfWidget()->GetLayer()->GetAnimator()->is_animating());
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
     gfx::Point start = GetShelfWidget()->GetWindowBoundsInScreen().top_center();
@@ -3093,7 +3149,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
     // ensure the drag starts from the bottom of the shelf.
     gfx::Point start(widget_bounds.CenterPoint().x(), shelf_widget_bottom);
     StartScroll(start);
-    UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+    UpdateScroll(
+        gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
     // We need at least one window to work with.
     EXPECT_FALSE(IsWindowDragInProgress());
     EndScroll(/*is_fling=*/false, 0.f);
@@ -3103,12 +3160,13 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
     wm::ActivateWindow(window.get());
 
     StartScroll(start);
-    UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+    UpdateScroll(
+        gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
     DragWindowFromShelfController* window_drag_controller =
         GetShelfLayoutManager()->window_drag_controller_for_testing();
     EXPECT_TRUE(IsWindowDragInProgress());
     EXPECT_EQ(window_drag_controller->dragged_window(), window.get());
-    UpdateScroll(-shelf_widget_height - hotseat_size);
+    UpdateScroll(gfx::Vector2d(0, -shelf_widget_height - hotseat_size));
     EXPECT_FALSE(window->transform().IsIdentityOrTranslation());
     EXPECT_TRUE(window->transform().IsScaleOrTranslation());
     EndScroll(/*is_fling=*/false, 0.f);
@@ -3118,7 +3176,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
     // The window needs to be visible to drag up.
     window->Hide();
     StartScroll(start);
-    UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+    UpdateScroll(
+        gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
     EXPECT_FALSE(IsWindowDragInProgress());
     EXPECT_TRUE(window->transform().IsIdentity());
     EndScroll(/*is_fling=*/false, 0.f);
@@ -3134,7 +3193,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
     split_view_controller->SnapWindow(
         window2.get(), SplitViewController::SnapPosition::kSecondary);
     StartScroll(gfx::Point(widget_bounds.x(), shelf_widget_bottom));
-    UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+    UpdateScroll(
+        gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
     window_drag_controller =
         GetShelfLayoutManager()->window_drag_controller_for_testing();
     EXPECT_TRUE(IsWindowDragInProgress());
@@ -3144,7 +3204,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
     // No window transform at the point where the window drag starts.
     EXPECT_TRUE(drag_window->transform().IsIdentity());
     // The window is expected to be scaled down as the drag progresses.
-    UpdateScroll(-10);
+    UpdateScroll(gfx::Vector2d(0, -10));
     EXPECT_FALSE(drag_window->transform().IsIdentityOrTranslation());
     EXPECT_TRUE(drag_window->transform().IsScaleOrTranslation());
     EndScroll(/*is_fling=*/false, 0.f);
@@ -3152,7 +3212,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
     EXPECT_TRUE(drag_window->transform().IsIdentity());
 
     StartScroll(gfx::Point(widget_bounds.right(), shelf_widget_bottom));
-    UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+    UpdateScroll(
+        gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
     window_drag_controller =
         GetShelfLayoutManager()->window_drag_controller_for_testing();
     EXPECT_TRUE(IsWindowDragInProgress());
@@ -3185,11 +3246,11 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
-  UpdateScroll(shelf_bounds.height() / 2);
+  UpdateScroll(gfx::Vector2d(0, shelf_bounds.height() / 2));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
-  UpdateScroll(shelf_bounds.height() / 2);
+  UpdateScroll(gfx::Vector2d(0, shelf_bounds.height() / 2));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
@@ -3206,11 +3267,11 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
-  UpdateScroll(shelf_bounds.height() / 2);
+  UpdateScroll(gfx::Vector2d(0, shelf_bounds.height() / 2));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
-  UpdateScroll(shelf_bounds.height() / 2);
+  UpdateScroll(gfx::Vector2d(0, shelf_bounds.height() / 2));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
@@ -3236,7 +3297,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoOpInOverview) {
   EnterOverview();
   gfx::Point start = shelf_widget_bounds.bottom_center();
   StartScroll(start);
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EXPECT_FALSE(IsWindowDragInProgress());
   EndScroll(/*is_fling=*/false, 0.f);
 
@@ -3252,7 +3314,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoOpInOverview) {
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   StartScroll(shelf_widget_bounds.bottom_right());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EXPECT_FALSE(IsWindowDragInProgress());
   EndScroll(/*is_fling=*/false, 0.f);
 }
@@ -3277,7 +3340,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, SwipeToExitOverview) {
 
   // Fling up from the center of the shelf's bottom.
   StartScroll(shelf_widget_bounds.bottom_center());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   // Hotseat should move as it is in the |kShownHomeLauncher| state.
   EXPECT_EQ(hotseat_bounds, GetHotseatWidget()->GetTargetBounds());
   EndScroll(
@@ -3306,7 +3370,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverview) {
 
   // Fling up from the center of the shelf's bottom.
   StartScroll(shelf_widget_bounds.bottom_center());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3343,7 +3408,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverviewHomeShelf) {
 
   // Fling up from the center of the shelf's bottom.
   StartScroll(shelf_widget_bounds.bottom_center());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3386,7 +3452,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   // Short fling (little longer than the drag required to show the extended
   // hotseat).
   StartScroll(shelf_widget_bounds.bottom_right());
-  UpdateScroll(-shelf_size - 1.5f * hotseat_size - hotseat_padding_size);
+  UpdateScroll(gfx::Vector2d(
+      0, -shelf_size - 1.5f * hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3401,7 +3468,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   // The same fling gesture should transition to overview since the hotseat is
   // in extended state.
   StartScroll(shelf_widget_bounds.bottom_right());
-  UpdateScroll(-shelf_size - 1.5f * hotseat_size - hotseat_padding_size);
+  UpdateScroll(gfx::Vector2d(
+      0, -shelf_size - 1.5f * hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3414,7 +3482,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   // The same fling gesture should transition to home since overview mode
   // is active.
   StartScroll(shelf_widget_bounds.bottom_right());
-  UpdateScroll(-shelf_size - 1.5f * hotseat_size - hotseat_padding_size);
+  UpdateScroll(gfx::Vector2d(
+      0, -shelf_size - 1.5f * hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3463,7 +3532,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitModeWithOverview) {
   // Longer fling, one that significantly exceeds the distance required to show
   // the hotseat (by 2 hotseat heights).
   StartScroll(shelf_widget_bounds.bottom_right());
-  UpdateScroll(-shelf_size - 3 * hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - 3 * hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3511,8 +3581,9 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
   StartScroll(shelf_widget_bounds.bottom_left());
   // Ensure swipe goes past the top of the hotseat first to activate the window
   // drag controller
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size - 10);
-  UpdateScroll(-2 * hotseat_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size - 10));
+  UpdateScroll(gfx::Vector2d(0, -2 * hotseat_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3555,7 +3626,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, ShortFlingInSplitView) {
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
   StartScroll(shelf_widget_bounds.bottom_left());
-  UpdateScroll(-shelf_size - 1.5f * hotseat_size - hotseat_padding_size);
+  UpdateScroll(gfx::Vector2d(
+      0, -shelf_size - 1.5f * hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3618,7 +3690,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   StartScroll(shelf_widget_bounds.bottom_right());
   keyboard_controller->HideKeyboard(HideReason::kUser);
 
-  UpdateScroll(-shelf_size - 3 * hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - 3 * hotseat_size - hotseat_padding_size));
   EndScroll(
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
@@ -3653,7 +3726,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DISABLED_NoOpForHiddenShelf) {
       GetShelfWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
   StartScroll(shelf_widget_bounds.bottom_center());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EXPECT_TRUE(IsWindowDragInProgress());
   EXPECT_FALSE(window->transform().IsIdentityOrTranslation());
   EndScroll(/*is_fling=*/false, 0.f);
@@ -3668,7 +3742,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DISABLED_NoOpForHiddenShelf) {
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   StartScroll(display_bounds.bottom_center());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
   EndScroll(/*is_fling=*/false, 0.f);
@@ -3677,7 +3752,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DISABLED_NoOpForHiddenShelf) {
   SwipeUpOnShelf();
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
   StartScroll(display_bounds.bottom_center());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EXPECT_TRUE(IsWindowDragInProgress());
   EXPECT_FALSE(window->transform().IsIdentityOrTranslation());
   EXPECT_TRUE(window->transform().IsScaleOrTranslation());
@@ -3687,7 +3763,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DISABLED_NoOpForHiddenShelf) {
   SetState(GetShelfLayoutManager(), SHELF_HIDDEN);
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
   StartScroll(display_bounds.bottom_center());
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
   EndScroll(/*is_fling=*/false, 0.f);
@@ -3709,13 +3786,14 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   const int hotseat_y =
       GetPrimaryShelf()->hotseat_widget()->GetWindowBoundsInScreen().y();
 
   // Drag down, the hotseat should not move because it was extended when the
   // window drag began.
-  UpdateScroll(10);
+  UpdateScroll(gfx::Vector2d(0, 10));
 
   EXPECT_EQ(hotseat_y,
             GetPrimaryShelf()->hotseat_widget()->GetWindowBoundsInScreen().y());
@@ -3738,13 +3816,14 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   const int hotseat_y =
       GetPrimaryShelf()->hotseat_widget()->GetWindowBoundsInScreen().y();
 
   // Drag down, the hotseat should not move because it was extended when the
   // window drag began.
-  UpdateScroll(10);
+  UpdateScroll(gfx::Vector2d(0, 10));
 
   EXPECT_EQ(hotseat_y,
             GetPrimaryShelf()->hotseat_widget()->GetWindowBoundsInScreen().y());
@@ -3796,12 +3875,12 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   const gfx::Vector2d vector_from_hotseat_to_shelf_center =
       hotseat_bounds.CenterPoint() -
       GetShelfWidget()->GetWindowBoundsInScreen().CenterPoint();
-  UpdateScroll(vector_from_hotseat_to_shelf_center.y());
+  UpdateScroll(gfx::Vector2d(0, vector_from_hotseat_to_shelf_center.y()));
 
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
-  UpdateScroll(-vector_from_hotseat_to_shelf_center.y());
+  UpdateScroll(gfx::Vector2d(0, -vector_from_hotseat_to_shelf_center.y()));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
 
@@ -3829,18 +3908,18 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, StartsDragAfterHotseatIsUp) {
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
   // Continues the drag until the hotseat should have been fully dragged up.
-  UpdateScroll(-shelf_size);
+  UpdateScroll(gfx::Vector2d(0, -shelf_size));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
-  UpdateScroll(-hotseat_padding_size);
+  UpdateScroll(gfx::Vector2d(0, -hotseat_padding_size));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
-  UpdateScroll(-hotseat_size);
+  UpdateScroll(gfx::Vector2d(0, -hotseat_size));
   EXPECT_TRUE(IsWindowDragInProgress());
   // The window should not be transformed at the point where the drag starts.
   EXPECT_TRUE(window->transform().IsIdentity());
   // The window is expected to be scaled down as the drag progresses.
-  UpdateScroll(-10);
+  UpdateScroll(gfx::Vector2d(0, -10));
   EXPECT_FALSE(window->transform().IsIdentityOrTranslation());
   EXPECT_TRUE(window->transform().IsScaleOrTranslation());
   EndScroll(/*is_fling=*/false, 0.f);
@@ -3864,7 +3943,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoDragForDownwardEvent) {
   StartScroll(hotseat_bounds.CenterPoint());
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
-  UpdateScroll(hotseat_bounds.height() + hotseat_padding_size);
+  UpdateScroll(
+      gfx::Vector2d(0, hotseat_bounds.height() + hotseat_padding_size));
   EXPECT_FALSE(IsWindowDragInProgress());
   EXPECT_TRUE(window->transform().IsIdentity());
   EndScroll(/*is_fling=*/false, 0.f);
