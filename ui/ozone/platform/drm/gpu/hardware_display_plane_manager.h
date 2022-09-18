@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/crtc_commit_request.h"
@@ -58,7 +58,8 @@ struct HardwareDisplayPlaneList {
 
   ScopedDrmAtomicReqPtr atomic_property_set;
 
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 };
 
 class HardwareDisplayPlaneManager {

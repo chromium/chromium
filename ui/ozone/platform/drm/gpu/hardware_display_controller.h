@@ -16,7 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/swap_result.h"
@@ -179,7 +179,8 @@ class HardwareDisplayController {
       DrmOverlayPlaneList pending_planes,
       const gfx::PresentationFeedback& presentation_feedback);
 
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   // These values are persisted to logs. Entries should not be

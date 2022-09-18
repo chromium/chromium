@@ -86,12 +86,13 @@ void CrtcController::MoveCursor(const gfx::Point& location) {
   drm_->MoveCursor(crtc_, location);
 }
 
-void CrtcController::AsValueInto(base::trace_event::TracedValue* value) const {
-  value->SetInteger("crtc_id", crtc_);
-  value->SetInteger("connector", connector_);
-  {
-    auto mode_dict = value->BeginDictionaryScoped("mode");
-    DrmAsValueIntoHelper(state_.mode, value);
-  }
+void CrtcController::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("crtc_id", crtc_);
+  dict.Add("connector", connector_);
+
+  DrmWriteIntoTraceHelper(state_.mode, dict.AddItem("mode"));
 }
+
 }  // namespace ui

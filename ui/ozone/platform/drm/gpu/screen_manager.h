@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
@@ -101,7 +101,8 @@ class ScreenManager {
   // controller will be associated with at most one window.
   void UpdateControllerToWindowMapping();
 
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   using HardwareDisplayControllers =

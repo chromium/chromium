@@ -17,10 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/trace_event/trace_conversion_helper.h"
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/traced_value.h"
-#include "base/trace_event/traced_value_support.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -106,30 +103,33 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
   return nullptr;
 }
 
-std::unique_ptr<base::trace_event::TracedValue> ParamsToTracedValue(
+void ParamsToTracedValue(
+    perfetto::TracedValue context,
     const ScreenManager::ControllerConfigsList& controllers_params,
     uint32_t modeset_flag) {
-  auto value = std::make_unique<base::trace_event::TracedValue>();
-  auto scoped_array = value->BeginArrayScoped("param");
-  value->SetInteger("modeset_flag", modeset_flag);
+  auto dict = std::move(context).WriteDictionary();
+  dict.AddItem("modeset_flag").WriteUInt64(modeset_flag);
+
+  auto array = dict.AddArray("param");
   for (const auto& param : controllers_params) {
-    auto scoped_dict = value->AppendDictionaryScoped();
-    value->SetInteger("display_id", param.display_id);
-    value->SetInteger("crtc", param.crtc);
-    value->SetInteger("connector", param.connector);
-    value->SetString("origin", param.origin.ToString());
+    auto param_dict = array.AppendDictionary();
+    param_dict.Add("display_id", param.display_id);
+    param_dict.Add("crtc", param.crtc);
+    param_dict.Add("connector", param.connector);
+    param_dict.Add("origin", param.origin.ToString());
+
     {
-      auto mode_dict = value->BeginDictionaryScoped("drm");
+      auto drm_dict = param_dict.AddItem("drm");
       if (param.drm)
-        param.drm->AsValueInto(value.get());
+        param.drm->WriteIntoTrace(std::move(drm_dict));
     }
+
     {
-      auto mode_dict = value->BeginDictionaryScoped("mode");
+      auto mode_dict = param_dict.AddItem("mode");
       if (param.mode)
-        DrmAsValueIntoHelper(*param.mode, value.get());
+        DrmWriteIntoTraceHelper(*param.mode, std::move(mode_dict));
     }
   }
-  return value;
 }
 
 // Returns a JSON-format log for a DRM configuration request represented by
@@ -318,10 +318,14 @@ void ScreenManager::RemoveDisplayControllers(
 bool ScreenManager::ConfigureDisplayControllers(
     const ControllerConfigsList& controllers_params,
     uint32_t modeset_flag) {
-  TRACE_EVENT_BEGIN2("drm", "ScreenManager::ConfigureDisplayControllers",
-                     "params",
-                     ParamsToTracedValue(controllers_params, modeset_flag),
-                     "before", base::trace_event::ToTracedValue(this));
+  TRACE_EVENT_BEGIN2(
+      "drm", "ScreenManager::ConfigureDisplayControllers", "params",
+      ([modeset_flag,
+        &controllers_params](perfetto::TracedValue context) -> void {
+        ParamsToTracedValue(std::move(context), controllers_params,
+                            modeset_flag);
+      }),
+      "before", this);
 
   // At least one of these flags must be set.
   DCHECK(modeset_flag & (display::kCommitModeset | display::kTestModeset));
@@ -378,8 +382,7 @@ bool ScreenManager::ConfigureDisplayControllers(
     UpdateControllerToWindowMapping();
 
   TRACE_EVENT_END2("drm", "ScreenManager::ConfigureDisplayControllers", "after",
-                   base::trace_event::ToTracedValue(this), "success",
-                   config_success);
+                   this, "success", config_success);
   return config_success;
 }
 
@@ -827,23 +830,25 @@ void ScreenManager::UpdateControllerToWindowMapping() {
   }
 }
 
-void ScreenManager::AsValueInto(base::trace_event::TracedValue* value) const {
+void ScreenManager::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
   {
-    auto scoped_array = value->BeginArrayScoped("hardware_display_controllers");
+    auto array = dict.AddArray("hardware_display_controllers");
     for (const auto& controller : controllers_) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      controller->AsValueInto(value);
+      controller->WriteIntoTrace(array.AppendItem());
     }
   }
+
   {
-    auto scoped_array = value->BeginArrayScoped("drm_devices");
+    auto array = dict.AddArray("drm_devices");
     base::flat_set<base::FilePath> seen_devices;
     for (const auto& controller : controllers_) {
       if (seen_devices.contains(controller->GetDrmDevice()->device_path()))
         continue;
+
       seen_devices.insert(controller->GetDrmDevice()->device_path());
-      auto scoped_dict = value->AppendDictionaryScoped();
-      controller->GetDrmDevice()->AsValueInto(value);
+      controller->GetDrmDevice()->WriteIntoTrace(array.AppendItem());
     }
   }
 

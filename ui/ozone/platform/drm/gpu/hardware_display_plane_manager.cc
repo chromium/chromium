@@ -37,20 +37,19 @@ HardwareDisplayPlaneList::PageFlipInfo::PageFlipInfo(
 
 HardwareDisplayPlaneList::PageFlipInfo::~PageFlipInfo() = default;
 
-void HardwareDisplayPlaneList::AsValueInto(
-    base::trace_event::TracedValue* value) const {
+void HardwareDisplayPlaneList::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
   {
-    auto scoped_array = value->BeginArrayScoped("plane_list");
+    auto array = dict.AddArray("plane_list");
     for (const auto* plane : plane_list) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      plane->AsValueInto(value);
+      plane->WriteIntoTrace(array.AppendItem());
     }
   }
   {
-    auto scoped_array = value->BeginArrayScoped("old_plane_list");
+    auto array = dict.AddArray("old_plane_list");
     for (const auto* plane : old_plane_list) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      plane->AsValueInto(value);
+      plane->WriteIntoTrace(array.AppendItem());
     }
   }
 }

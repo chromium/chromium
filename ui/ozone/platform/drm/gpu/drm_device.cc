@@ -618,13 +618,15 @@ bool DrmDevice::DropMaster() {
   return (drmDropMaster(file_.GetPlatformFile()) == 0);
 }
 
-void DrmDevice::AsValueInto(base::trace_event::TracedValue* value) const {
-  value->SetString("device_path", device_path_.value());
+void DrmDevice::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("device_path", device_path_.value());
+
   {
-    auto scoped_array = value->BeginArrayScoped("planes");
+    auto array = dict.AddArray("planes");
     for (const auto& plane : plane_manager_->planes()) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      plane->AsValueInto(value);
+      plane->WriteIntoTrace(array.AppendItem());
     }
   }
 }

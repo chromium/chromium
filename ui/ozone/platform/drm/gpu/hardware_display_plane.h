@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
@@ -36,7 +36,8 @@ class HardwareDisplayPlane {
 
   bool CanUseForCrtcId(uint32_t crtc_id) const;
 
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   bool in_use() const { return in_use_; }
   void set_in_use(bool in_use) { in_use_ = in_use; }

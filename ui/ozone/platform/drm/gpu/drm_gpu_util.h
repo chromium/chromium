@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 
-#include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/ozone/platform/drm/common//drm_util.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -43,9 +43,8 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
 // that weren't picked as preferred CRTCs.
 HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(int fd);
 
-void DrmAsValueIntoHelper(const drmModeModeInfo& mode_info,
-                          base::trace_event::TracedValue* value);
-
+void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
+                             perfetto::TracedValue context);
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_

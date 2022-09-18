@@ -16,9 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/trace_conversion_helper.h"
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/traced_value.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -467,31 +465,29 @@ void HardwareDisplayController::OnPageFlipComplete(
   page_flip_request_ = nullptr;
 }
 
-void HardwareDisplayController::AsValueInto(
-    base::trace_event::TracedValue* value) const {
-  using base::trace_event::ValueToString;
+void HardwareDisplayController::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
 
-  value->SetString("origin", ValueToString(origin_));
-  value->SetString("cursor_location", ValueToString(cursor_location_));
-  value->SetBoolean("has_page_flip_request", page_flip_request_ != nullptr);
+  dict.Add("origin", origin_.ToString());
+  dict.Add("cursor_location", cursor_location_.ToString());
+  dict.Add("has_page_flip_request", page_flip_request_ != nullptr);
+
+  owned_hardware_planes_.WriteIntoTrace(dict.AddItem("owned_hardware_planes"));
 
   {
-    auto scoped_dict = value->BeginDictionaryScoped("owned_hardware_planes");
-    owned_hardware_planes_.AsValueInto(value);
+    auto array = dict.AddArray("crtc_controllers");
+    for (const auto& crtc : crtc_controllers_)
+      crtc->WriteIntoTrace(array.AppendItem());
   }
+
   {
-    auto scoped_array = value->BeginArrayScoped("crtc_controllers");
-    for (const auto& crtc : crtc_controllers_) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      crtc->AsValueInto(value);
-    }
-  }
-  {
-    auto scoped_array = value->BeginArrayScoped("preferred_format_modifiers");
+    auto array = dict.AddArray("preferred_format_modifiers");
     for (const auto& format_modifier : preferred_format_modifier_) {
-      auto scoped_dict = value->AppendDictionaryScoped();
-      value->SetString("format", NumberToHexString(format_modifier.first));
-      value->SetString("modifier", NumberToHexString(format_modifier.second));
+      auto format_dict = array.AppendDictionary();
+
+      format_dict.Add("format", NumberToHexString(format_modifier.first));
+      format_dict.Add("modifier", NumberToHexString(format_modifier.second));
     }
   }
 }

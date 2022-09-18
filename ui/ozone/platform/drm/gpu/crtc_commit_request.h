@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
-#include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
@@ -50,7 +50,8 @@ class CrtcCommitRequest {
   HardwareDisplayPlaneList* plane_list() const { return plane_list_; }
   const DrmOverlayPlaneList& overlays() const { return overlays_; }
 
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   CrtcCommitRequest(uint32_t crtc_id,
