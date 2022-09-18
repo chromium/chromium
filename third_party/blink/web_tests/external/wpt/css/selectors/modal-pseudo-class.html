@@ -11,49 +11,49 @@
 
 <dialog id="dialog">Just another dialog.</dialog>
 <div id="container">
-	<button id="btn"/>
+  <button id="btn"/>
 </div>
 
 <script>
-  setup({ single_test: true });
+  test(() => {
+    const dialog = document.getElementById("dialog");
+    assert_false(dialog.matches(":modal"), "dialog is initially closed (does not match :modal)");
 
-  // dialog element test
-  const dialog = document.getElementById("dialog");
-  assert_false(dialog.matches(":modal"), "dialog is initially closed (does not match :modal)");
+    dialog.showModal();
+    assert_true(dialog.matches(":modal"), "dialog should match :modal after showModal() call");
 
-  dialog.showModal();
-  assert_true(dialog.matches(":modal"), "dialog should match :modal after showModal() call");
+    dialog.close();
+    assert_false(dialog.matches(":modal"), "dialog should no longer match :modal after close() call");
 
-  dialog.close();
-  assert_false(dialog.matches(":modal"), "dialog should no longer match :modal after close() call");
+    dialog.show();
+    assert_false(dialog.matches(":modal"), "dialog shouldn't match :modal after show() call");
 
-  dialog.show();
-  assert_false(dialog.matches(":modal"), "dialog shouldn't match :modal after show() call");
+    dialog.close();
+    dialog.showModal();
+    assert_true(dialog.matches(":modal"), "dialog should match :modal after showModal() call");
 
-  dialog.close();
-  dialog.showModal();
-  assert_true(dialog.matches(":modal"), "dialog should match :modal after showModal() call");
+    dialog.remove();
+    assert_false(dialog.matches(":modal"), "dialog shouldn't match :modal after being removed from document");
+    document.body.append(dialog);
+    assert_false(dialog.matches(":modal"), "dialog shouldn't match :modal after being re-appended to document");
 
-  dialog.remove();
-  assert_false(dialog.matches(":modal"), "dialog shouldn't match :modal after being removed from document");
-  document.body.append(dialog);
-  assert_false(dialog.matches(":modal"), "dialog shouldn't match :modal after being re-appended to document");
+    dialog.close();
+  }, "Test that :modal matches modal <dialog>");
 
-  dialog.close();
+  promise_test(async () => {
+    const container = document.getElementById("container");
+    const btn = document.getElementById("btn");
 
-  // fullscreen element test
-  const container = document.getElementById("container");
-  const btn = document.getElementById("btn");
+    assert_false(container.matches(":modal"), "before requestFullscreen (does not match :modal)");
 
-  assert_false(container.matches(":modal"), "before requestFullscreen (does not match :modal)");
+    await test_driver.click(btn);
 
-  test_driver.click(btn).then(() => {
-      return container.requestFullscreen();
-    }).then(() => {
-      assert_true(container.matches(":modal"), ":fullscreen should match :modal");
-      return document.exitFullscreen();
-    }).then(() => {
-      assert_false(container.matches(":modal"), "after exitFullscreen (does not match :modal)");
-      done();
-    });
+    await container.requestFullscreen();
+
+    assert_true(container.matches(":modal"), ":fullscreen should match :modal");
+
+    await document.exitFullscreen();
+
+    assert_false(container.matches(":modal"), "after exitFullscreen (does not match :modal)");
+  }, "Test that :modal matches the fullscreen element");
 </script>
