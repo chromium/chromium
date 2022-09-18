@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -24,13 +25,10 @@
 
 namespace blink {
 
-BlinkLeakDetector& GetLeakDetector() {
-  DEFINE_STATIC_LOCAL(BlinkLeakDetector, leak_detector, ());
-  return leak_detector;
-}
-
-BlinkLeakDetector::BlinkLeakDetector()
-    : delayed_gc_timer_(Thread::Current()->GetDeprecatedTaskRunner(),
+BlinkLeakDetector::BlinkLeakDetector(
+    base::PassKey<BlinkLeakDetector> pass_key,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : delayed_gc_timer_(std::move(task_runner),
                         this,
                         &BlinkLeakDetector::TimerFiredGC) {}
 
@@ -38,10 +36,12 @@ BlinkLeakDetector::~BlinkLeakDetector() = default;
 
 // static
 void BlinkLeakDetector::Bind(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<mojom::blink::LeakDetector> receiver) {
-  // This should be called only once per process on RenderProcessWillLaunch.
-  DCHECK(!GetLeakDetector().receiver_.is_bound());
-  GetLeakDetector().receiver_.Bind(std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BlinkLeakDetector>(base::PassKey<BlinkLeakDetector>(),
+                                          task_runner),
+      std::move(receiver), task_runner);
 }
 
 void BlinkLeakDetector::PerformLeakDetection(

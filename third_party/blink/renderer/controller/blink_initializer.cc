@@ -261,8 +261,8 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
 #endif
 
   binders.Add<mojom::blink::LeakDetector>(
-      ConvertToBaseRepeatingCallback(
-          CrossThreadBindRepeating(&BlinkLeakDetector::Bind)),
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          &BlinkLeakDetector::Bind, WTF::RetainedRef(main_thread_task_runner))),
       main_thread_task_runner);
 
   binders.Add<mojom::blink::DiskAllocator>(
