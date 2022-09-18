@@ -74,6 +74,10 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   MemoryCache& operator=(const MemoryCache&) = delete;
   ~MemoryCache() override;
 
+  // Return the memory cache.
+  // TODO(crbug.com/1127971): This should be per AgentCluster.
+  static MemoryCache* Get();
+
   void Trace(Visitor*) const override;
 
   struct TypeStatistic {
@@ -199,9 +203,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   friend class MemoryCacheTest;
 };
-
-// Returns the global cache.
-PLATFORM_EXPORT MemoryCache* GetMemoryCache();
 
 // Sets the global cache, used to swap in a test instance. Returns the old
 // MemoryCache object.

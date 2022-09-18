@@ -91,7 +91,7 @@ namespace blink {
 namespace {
 
 void RemoveURLFromMemoryCacheInternal(const KURL& url) {
-  GetMemoryCache()->RemoveURLFromCache(url);
+  MemoryCache::Get()->RemoveURLFromCache(url);
 }
 
 scoped_refptr<SecurityOrigin> CreateSecurityOrigin(
@@ -639,8 +639,8 @@ void WorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
 void WorkerGlobalScope::RemoveURLFromMemoryCache(const KURL& url) {
   // MemoryCache can be accessed only from the main thread.
   PostCrossThreadTask(
-      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&RemoveURLFromMemoryCacheInternal, url));
+      *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
+      FROM_HERE, CrossThreadBindOnce(&RemoveURLFromMemoryCacheInternal, url));
 }
 
 NOINLINE void WorkerGlobalScope::InitializeURL(const KURL& url) {

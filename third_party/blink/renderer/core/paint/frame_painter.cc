@@ -98,7 +98,7 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
   if (is_top_level_painter) {
     // Everything that happens after paintContents completions is considered
     // to be part of the next frame.
-    GetMemoryCache()->UpdateFramePaintTimestamp();
+    MemoryCache::Get()->UpdateFramePaintTimestamp();
     in_paint_contents_ = false;
   }
 }

@@ -89,7 +89,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     return resource;
   }
   void AddResourceToMemoryCache(Resource* resource) {
-    GetMemoryCache()->Add(resource);
+    MemoryCache::Get()->Add(resource);
   }
   // TODO(toyoshim): Consider to use MockResource for all tests instead of
   // RawResource.
@@ -137,7 +137,7 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     Resource::SetClockForTesting(platform_->test_task_runner()->GetMockClock());
   }
   void TearDown() override {
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
 
     Resource::SetClockForTesting(nullptr);
 

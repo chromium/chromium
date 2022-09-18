@@ -381,7 +381,7 @@ void ImageResource::DecodeError(bool all_data_received) {
     DCHECK_EQ(result, ImageResourceContent::UpdateImageResult::kNoDecodeError);
   }
 
-  GetMemoryCache()->Remove(this);
+  MemoryCache::Get()->Remove(this);
 }
 
 void ImageResource::UpdateImageAndClearBuffer() {

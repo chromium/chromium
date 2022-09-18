@@ -882,7 +882,7 @@ bool Internals::isLoading(const String& url) {
   const String cache_identifier =
       document_->Fetcher()->GetCacheIdentifier(full_url);
   Resource* resource =
-      GetMemoryCache()->ResourceForURL(full_url, cache_identifier);
+      MemoryCache::Get()->ResourceForURL(full_url, cache_identifier);
   // We check loader() here instead of isLoading(), because a multipart
   // ImageResource lies isLoading() == false after the first part is loaded.
   return resource && resource->Loader();
@@ -895,7 +895,7 @@ bool Internals::isLoadingFromMemoryCache(const String& url) {
   const String cache_identifier =
       document_->Fetcher()->GetCacheIdentifier(full_url);
   Resource* resource =
-      GetMemoryCache()->ResourceForURL(full_url, cache_identifier);
+      MemoryCache::Get()->ResourceForURL(full_url, cache_identifier);
   return resource && resource->GetStatus() == ResourceStatus::kCached;
 }
 
@@ -2553,7 +2553,7 @@ DOMRectList* Internals::nonFastScrollableRects(
 }
 
 void Internals::evictAllResources() const {
-  GetMemoryCache()->EvictResources();
+  MemoryCache::Get()->EvictResources();
 }
 
 String Internals::counterValue(Element* element) {

@@ -118,7 +118,7 @@ TEST_F(FontResourceTest,
   EXPECT_TRUE(resource2->IsLoaded());
   EXPECT_FALSE(resource2->ErrorOccurred());
 
-  GetMemoryCache()->Remove(resource1);
+  MemoryCache::Get()->Remove(resource1);
 }
 
 // Tests if cache-aware font loading works correctly.
@@ -191,7 +191,7 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   EXPECT_TRUE(client3->FontLoadLongLimitExceededCalled());
 
   url_test_helpers::ServeAsynchronousRequests();
-  GetMemoryCache()->Remove(&resource);
+  MemoryCache::Get()->Remove(&resource);
 }
 
 }  // namespace blink

@@ -280,7 +280,7 @@ TransformationMatrix DevToolsEmulator::EnableDeviceEmulation(
   }
   if (emulation_params_.device_scale_factor != params.device_scale_factor ||
       !device_metrics_enabled_)
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
 
   emulation_params_ = params;
   device_metrics_enabled_ = true;
@@ -315,7 +315,7 @@ void DevToolsEmulator::DisableDeviceEmulation() {
   if (!device_metrics_enabled_)
     return;
 
-  GetMemoryCache()->EvictResources();
+  MemoryCache::Get()->EvictResources();
   device_metrics_enabled_ = false;
   web_view_->GetPage()->GetSettings().SetDeviceScaleAdjustment(
       embedder_device_scale_adjustment_);

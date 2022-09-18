@@ -489,7 +489,7 @@ void CSSStyleSheetResource::SaveParsedStyleSheet(StyleSheetContents* sheet) {
   DCHECK(sheet);
   DCHECK(sheet->IsCacheableForResource());
 
-  if (!GetMemoryCache()->Contains(this)) {
+  if (!MemoryCache::Get()->Contains(this)) {
     // This stylesheet resource did conflict with another resource and was not
     // added to the cache.
     SetParsedStyleSheetCache(nullptr);

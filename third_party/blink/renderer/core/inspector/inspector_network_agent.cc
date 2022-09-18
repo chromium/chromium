@@ -2082,7 +2082,7 @@ Response InspectorNetworkAgent::setCacheDisabled(bool cache_disabled) {
   // queried from FrameLoader and other places.
   cache_disabled_.Set(cache_disabled);
   if (cache_disabled && IsMainThread())
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
   return Response::Success();
 }
 
@@ -2123,7 +2123,7 @@ void InspectorNetworkAgent::DidCommitLoad(LocalFrame* frame,
     return;
 
   if (cache_disabled_.Get())
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
 
   resources_data_->Clear(IdentifiersFactory::LoaderId(loader));
 }
@@ -2215,7 +2215,7 @@ bool InspectorNetworkAgent::FetchResourceContent(Document* document,
   // First try to fetch content from the cached resource.
   Resource* cached_resource = document->Fetcher()->CachedResource(url);
   if (!cached_resource) {
-    cached_resource = GetMemoryCache()->ResourceForURL(
+    cached_resource = MemoryCache::Get()->ResourceForURL(
         url, document->Fetcher()->GetCacheIdentifier(url));
   }
   if (cached_resource && InspectorPageAgent::CachedResourceContent(

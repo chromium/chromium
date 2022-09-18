@@ -331,7 +331,7 @@ void Resource::FinishAsError(const ResourceError& error,
   is_revalidating_ = false;
 
   if (IsMainThread())
-    GetMemoryCache()->Remove(this);
+    MemoryCache::Get()->Remove(this);
 
   bool failed_during_start = status_ == ResourceStatus::kNotStarted;
   if (!ErrorOccurred()) {
@@ -552,7 +552,7 @@ String Resource::ReasonNotDeletable() const {
       builder.Append(' ');
     builder.Append("loader_");
   }
-  if (IsMainThread() && GetMemoryCache()->Contains(this)) {
+  if (IsMainThread() && MemoryCache::Get()->Contains(this)) {
     if (!builder.IsEmpty())
       builder.Append(' ');
     builder.Append("in_memory_cache");
@@ -664,7 +664,7 @@ void Resource::DidRemoveClientOrObserver() {
     // "... History buffers MAY store such responses as part of their normal
     // operation."
     if (HasCacheControlNoStoreHeader() && IsMainThread()) {
-      GetMemoryCache()->Remove(this);
+      MemoryCache::Get()->Remove(this);
     }
   }
 }
@@ -680,7 +680,7 @@ void Resource::SetDecodedSize(size_t decoded_size) {
   size_t old_size = size();
   decoded_size_ = decoded_size;
   if (IsMainThread())
-    GetMemoryCache()->Update(this, old_size, size());
+    MemoryCache::Get()->Update(this, old_size, size());
 }
 
 void Resource::SetEncodedSize(size_t encoded_size) {
@@ -691,7 +691,7 @@ void Resource::SetEncodedSize(size_t encoded_size) {
   encoded_size_ = encoded_size;
   encoded_size_memory_usage_ = encoded_size;
   if (IsMainThread())
-    GetMemoryCache()->Update(this, old_size, size());
+    MemoryCache::Get()->Update(this, old_size, size());
 }
 
 void Resource::FinishPendingClients() {

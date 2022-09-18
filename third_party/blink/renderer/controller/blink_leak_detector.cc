@@ -62,7 +62,7 @@ void BlinkLeakDetector::PerformLeakDetection(
   // here.
   V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
 
-  GetMemoryCache()->EvictResources();
+  MemoryCache::Get()->EvictResources();
 
   // FIXME: HTML5 Notification should be closed because notification affects
   // the result of number of DOM objects.

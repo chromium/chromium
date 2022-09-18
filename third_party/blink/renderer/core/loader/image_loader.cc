@@ -726,7 +726,7 @@ bool ImageLoader::ShouldLoadImmediately(const KURL& url) const {
   // asynchronous path so that we can add the shadow DOM for the alt-text
   // content when style recalc is over and DOM mutation is allowed again.
   if (!url.IsNull()) {
-    Resource* resource = GetMemoryCache()->ResourceForURL(
+    Resource* resource = MemoryCache::Get()->ResourceForURL(
         url, element_->GetDocument().Fetcher()->GetCacheIdentifier(url));
 
     if (resource && !resource->ErrorOccurred() &&

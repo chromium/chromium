@@ -49,18 +49,8 @@ static const base::TimeDelta kCMaxPruneDeferralDelay = base::Milliseconds(500);
 // again.
 static const float kCTargetPrunePercentage = .95f;
 
-MemoryCache* GetMemoryCache() {
-  DCHECK(WTF::IsMainThread());
-  if (!g_memory_cache) {
-    g_memory_cache =
-        new Persistent<MemoryCache>(MakeGarbageCollected<MemoryCache>(
-            Thread::MainThread()->GetDeprecatedTaskRunner()));
-  }
-  return g_memory_cache->Get();
-}
-
 MemoryCache* ReplaceMemoryCacheForTesting(MemoryCache* cache) {
-  GetMemoryCache();
+  MemoryCache::Get();
   MemoryCache* old_cache = g_memory_cache->Release();
   *g_memory_cache = cache;
   MemoryCacheDumpProvider::Instance()->SetMemoryCache(cache);
@@ -75,8 +65,19 @@ void MemoryCacheEntry::Trace(Visitor* visitor) const {
 void MemoryCacheEntry::ClearResourceWeak(const LivenessBroker& info) {
   if (!resource_ || info.IsHeapObjectAlive(resource_))
     return;
-  GetMemoryCache()->Remove(resource_.Get());
+  MemoryCache::Get()->Remove(resource_.Get());
   resource_.Clear();
+}
+
+// static
+MemoryCache* MemoryCache::Get() {
+  DCHECK(WTF::IsMainThread());
+  if (!g_memory_cache) {
+    g_memory_cache = new Persistent<MemoryCache>(
+        MakeGarbageCollected<MemoryCache>(Thread::MainThread()->GetTaskRunner(
+            MainThreadTaskRunnerRestricted())));
+  }
+  return g_memory_cache->Get();
 }
 
 MemoryCache::MemoryCache(

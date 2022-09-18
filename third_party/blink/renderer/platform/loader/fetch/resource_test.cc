@@ -106,7 +106,7 @@ TEST_F(ResourceTest, RevalidationFailed) {
   const char kData[5] = "abcd";
   resource->AppendData(kData, 4);
   resource->FinishForTest();
-  GetMemoryCache()->Add(resource);
+  MemoryCache::Get()->Add(resource);
 
   // Simulate revalidation start.
   resource->SetRevalidatingRequest(ResourceRequest(url));
@@ -122,7 +122,7 @@ TEST_F(ResourceTest, RevalidationFailed) {
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_FALSE(resource->ResourceBuffer());
-  EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
 
   resource->AppendData(kData, 4);
 
@@ -147,7 +147,7 @@ TEST_F(ResourceTest, RevalidationSucceeded) {
   const char kData[5] = "abcd";
   resource->AppendData(kData, 4);
   resource->FinishForTest();
-  GetMemoryCache()->Add(resource);
+  MemoryCache::Get()->Add(resource);
 
   // Simulate a successful revalidation.
   resource->SetRevalidatingRequest(ResourceRequest(url));
@@ -163,9 +163,9 @@ TEST_F(ResourceTest, RevalidationSucceeded) {
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_EQ(4u, resource->ResourceBuffer()->size());
-  EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
 
-  GetMemoryCache()->Remove(resource);
+  MemoryCache::Get()->Remove(resource);
 
   resource->RemoveClient(client);
   EXPECT_FALSE(resource->IsAlive());
@@ -181,7 +181,7 @@ TEST_F(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
   resource->FinishForTest();
-  GetMemoryCache()->Add(resource);
+  MemoryCache::Get()->Add(resource);
 
   // Simulate a successful revalidation.
   resource->SetRevalidatingRequest(ResourceRequest(url));
@@ -196,8 +196,8 @@ TEST_F(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_FALSE(resource->ResourceBuffer());
-  EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url));
-  GetMemoryCache()->Remove(resource);
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
+  MemoryCache::Get()->Remove(resource);
 
   resource->RemoveClient(client);
   EXPECT_FALSE(resource->IsAlive());
@@ -219,7 +219,7 @@ TEST_F(ResourceTest, RevalidationSucceededUpdateHeaders) {
   response.AddHttpHeaderField("x-custom", "custom value");
   resource->ResponseReceived(response);
   resource->FinishForTest();
-  GetMemoryCache()->Add(resource);
+  MemoryCache::Get()->Add(resource);
 
   // Simulate a successful revalidation.
   resource->SetRevalidatingRequest(ResourceRequest(url));
@@ -293,7 +293,7 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   const char kData[5] = "abcd";
   resource->AppendData(kData, 4);
   resource->FinishForTest();
-  GetMemoryCache()->Add(resource);
+  MemoryCache::Get()->Add(resource);
 
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
@@ -335,7 +335,7 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_EQ(3u, resource->ResourceBuffer()->size());
-  EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
 
   EXPECT_TRUE(client->NotifyFinishedCalled());
 
@@ -350,7 +350,7 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
 
   EXPECT_TRUE(client2->NotifyFinishedCalled());
 
-  GetMemoryCache()->Remove(resource);
+  MemoryCache::Get()->Remove(resource);
 
   resource->RemoveClient(client);
   resource->RemoveClient(client2);
@@ -456,7 +456,7 @@ TEST_F(ResourceTest, GarbageCollection) {
   ResourceResponse response(url);
   resource->ResponseReceived(response);
   resource->FinishForTest();
-  GetMemoryCache()->Add(resource);
+  MemoryCache::Get()->Add(resource);
 
   // Add a client.
   Persistent<MockResourceClient> client =

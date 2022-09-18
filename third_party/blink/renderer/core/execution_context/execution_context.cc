@@ -542,7 +542,7 @@ std::unique_ptr<PolicyContainer> ExecutionContext::TakePolicyContainer() {
 }
 
 void ExecutionContext::RemoveURLFromMemoryCache(const KURL& url) {
-  GetMemoryCache()->RemoveURLFromCache(url);
+  MemoryCache::Get()->RemoveURLFromCache(url);
 }
 
 void ExecutionContext::Trace(Visitor* visitor) const {

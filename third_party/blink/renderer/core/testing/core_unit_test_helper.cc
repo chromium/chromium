@@ -143,7 +143,7 @@ void RenderingTest::TearDown() {
   PageTestBase::TearDown();
 
   // Clear memory cache, otherwise we can leak pruned resources.
-  GetMemoryCache()->EvictResources();
+  MemoryCache::Get()->EvictResources();
 }
 
 void RenderingTest::SetChildFrameHTML(const String& html) {

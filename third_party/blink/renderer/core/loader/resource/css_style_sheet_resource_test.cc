@@ -126,7 +126,7 @@ class CSSStyleSheetResourceTest : public PageTestBase {
         CSSStyleSheetResource::CreateForTest(css_url, UTF8Encoding());
     css_resource->ResponseReceived(response);
     css_resource->FinishForTest();
-    GetMemoryCache()->Add(css_resource);
+    MemoryCache::Get()->Add(css_resource);
     return css_resource;
   }
 
@@ -144,8 +144,8 @@ TEST_F(CSSStyleSheetResourceTest, DuplicateResourceNotCached) {
 
   Resource* image_resource = ImageResource::CreateForTest(image_url);
   ASSERT_TRUE(image_resource);
-  GetMemoryCache()->Add(image_resource);
-  ASSERT_TRUE(GetMemoryCache()->Contains(image_resource));
+  MemoryCache::Get()->Add(image_resource);
+  ASSERT_TRUE(MemoryCache::Get()->Contains(image_resource));
 
   CSSStyleSheetResource* css_resource =
       CSSStyleSheetResource::CreateForTest(css_url, UTF8Encoding());
@@ -164,8 +164,8 @@ TEST_F(CSSStyleSheetResourceTest, DuplicateResourceNotCached) {
   // Verify that the cache will have a mapping for |imageResource| at |url|.
   // The underlying |contents| for the stylesheet resource must have a
   // matching reference status.
-  EXPECT_TRUE(GetMemoryCache()->Contains(image_resource));
-  EXPECT_FALSE(GetMemoryCache()->Contains(css_resource));
+  EXPECT_TRUE(MemoryCache::Get()->Contains(image_resource));
+  EXPECT_FALSE(MemoryCache::Get()->Contains(css_resource));
   EXPECT_FALSE(contents->IsReferencedFromResource());
   EXPECT_FALSE(css_resource->CreateParsedStyleSheetFromCache(parser_context));
 }
@@ -185,7 +185,7 @@ TEST_F(CSSStyleSheetResourceTest, CreateFromCacheRestoresOriginalSheet) {
   EXPECT_TRUE(contents->IsCacheableForResource());
 
   css_resource->SaveParsedStyleSheet(contents);
-  EXPECT_TRUE(GetMemoryCache()->Contains(css_resource));
+  EXPECT_TRUE(MemoryCache::Get()->Contains(css_resource));
   EXPECT_TRUE(contents->IsReferencedFromResource());
 
   StyleSheetContents* parsed_stylesheet =
@@ -213,7 +213,7 @@ TEST_F(CSSStyleSheetResourceTest,
   EXPECT_TRUE(contents->HasRuleSet());
 
   css_resource->SaveParsedStyleSheet(contents);
-  EXPECT_TRUE(GetMemoryCache()->Contains(css_resource));
+  EXPECT_TRUE(MemoryCache::Get()->Contains(css_resource));
   EXPECT_TRUE(contents->IsReferencedFromResource());
 
   StyleSheetContents* parsed_stylesheet =

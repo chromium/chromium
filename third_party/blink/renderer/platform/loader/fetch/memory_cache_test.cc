@@ -133,8 +133,8 @@ class MemoryCacheTest : public testing::Test {
 TEST_F(MemoryCacheTest, CapacityAccounting) {
   const size_t kSizeMax = ~static_cast<size_t>(0);
   const size_t kTotalCapacity = kSizeMax / 4;
-  GetMemoryCache()->SetCapacity(kTotalCapacity);
-  EXPECT_EQ(kTotalCapacity, GetMemoryCache()->Capacity());
+  MemoryCache::Get()->SetCapacity(kTotalCapacity);
+  EXPECT_EQ(kTotalCapacity, MemoryCache::Get()->Capacity());
 }
 
 TEST_F(MemoryCacheTest, VeryLargeResourceAccounting) {
@@ -142,7 +142,7 @@ TEST_F(MemoryCacheTest, VeryLargeResourceAccounting) {
   const size_t kTotalCapacity = kSizeMax / 4;
   const size_t kResourceSize1 = kSizeMax / 16;
   const size_t kResourceSize2 = kSizeMax / 20;
-  GetMemoryCache()->SetCapacity(kTotalCapacity);
+  MemoryCache::Get()->SetCapacity(kTotalCapacity);
   Persistent<MockResourceClient> client =
       MakeGarbageCollected<MockResourceClient>();
   // Here and below, use an image MIME type. This is because on Android
@@ -156,14 +156,14 @@ TEST_F(MemoryCacheTest, VeryLargeResourceAccounting) {
       FakeDecodedResource::Fetch(params, fetcher_, client);
   cached_resource->FakeEncodedSize(kResourceSize1);
 
-  EXPECT_TRUE(GetMemoryCache()->Contains(cached_resource));
-  EXPECT_EQ(cached_resource->size(), GetMemoryCache()->size());
+  EXPECT_TRUE(MemoryCache::Get()->Contains(cached_resource));
+  EXPECT_EQ(cached_resource->size(), MemoryCache::Get()->size());
 
   client->RemoveAsClient();
-  EXPECT_EQ(cached_resource->size(), GetMemoryCache()->size());
+  EXPECT_EQ(cached_resource->size(), MemoryCache::Get()->size());
 
   cached_resource->FakeEncodedSize(kResourceSize2);
-  EXPECT_EQ(cached_resource->size(), GetMemoryCache()->size());
+  EXPECT_EQ(cached_resource->size(), MemoryCache::Get()->size());
 }
 
 static void RunTask(Resource* resource1, Resource* resource2) {
@@ -172,20 +172,20 @@ static void RunTask(Resource* resource1, Resource* resource2) {
   EXPECT_GT(resource1->size(), 0u);
   EXPECT_GT(resource2->size(), 0u);
 
-  EXPECT_EQ(0u, GetMemoryCache()->size());
+  EXPECT_EQ(0u, MemoryCache::Get()->size());
 
-  GetMemoryCache()->Add(resource1);
-  GetMemoryCache()->Add(resource2);
+  MemoryCache::Get()->Add(resource1);
+  MemoryCache::Get()->Add(resource2);
 
   size_t total_size = resource1->size() + resource2->size();
-  EXPECT_EQ(total_size, GetMemoryCache()->size());
+  EXPECT_EQ(total_size, MemoryCache::Get()->size());
   EXPECT_GT(resource1->DecodedSize(), 0u);
   EXPECT_GT(resource2->DecodedSize(), 0u);
 
   // We expect actual pruning doesn't occur here synchronously but deferred,
   // due to the previous pruning invoked in TestResourcePruningLater().
-  GetMemoryCache()->Prune();
-  EXPECT_EQ(total_size, GetMemoryCache()->size());
+  MemoryCache::Get()->Prune();
+  EXPECT_EQ(total_size, MemoryCache::Get()->size());
   EXPECT_GT(resource1->DecodedSize(), 0u);
   EXPECT_GT(resource2->DecodedSize(), 0u);
 }
@@ -196,25 +196,25 @@ static void TestResourcePruningLater(ResourceFetcher* fetcher,
   auto* platform = static_cast<TestingPlatformSupportWithMockScheduler*>(
       Platform::Current());
 
-  GetMemoryCache()->SetDelayBeforeLiveDecodedPrune(base::TimeDelta());
+  MemoryCache::Get()->SetDelayBeforeLiveDecodedPrune(base::TimeDelta());
 
   // Enforce pruning by adding |dummyResource| and then call prune().
   Resource* dummy_resource = RawResource::CreateForTest(
       KURL("http://dummy"), SecurityOrigin::CreateUniqueOpaque(),
       ResourceType::kRaw);
-  GetMemoryCache()->Add(dummy_resource);
-  EXPECT_GT(GetMemoryCache()->size(), 1u);
+  MemoryCache::Get()->Add(dummy_resource);
+  EXPECT_GT(MemoryCache::Get()->size(), 1u);
   const unsigned kTotalCapacity = 1;
-  GetMemoryCache()->SetCapacity(kTotalCapacity);
-  GetMemoryCache()->Prune();
-  GetMemoryCache()->Remove(dummy_resource);
-  EXPECT_EQ(0u, GetMemoryCache()->size());
+  MemoryCache::Get()->SetCapacity(kTotalCapacity);
+  MemoryCache::Get()->Prune();
+  MemoryCache::Get()->Remove(dummy_resource);
+  EXPECT_EQ(0u, MemoryCache::Get()->size());
 
   const char kData[6] = "abcde";
   FetchParameters params1 = FetchParameters::CreateForTest(
       ResourceRequest("data:image/jpeg,resource1"));
   Resource* resource1 = FakeDecodedResource::Fetch(params1, fetcher, nullptr);
-  GetMemoryCache()->Remove(resource1);
+  MemoryCache::Get()->Remove(resource1);
   if (!identifier1.IsEmpty())
     resource1->SetCacheIdentifier(identifier1);
   resource1->AppendData(kData, 3u);
@@ -224,7 +224,7 @@ static void TestResourcePruningLater(ResourceFetcher* fetcher,
   Persistent<MockResourceClient> client =
       MakeGarbageCollected<MockResourceClient>();
   Resource* resource2 = FakeDecodedResource::Fetch(params2, fetcher, client);
-  GetMemoryCache()->Remove(resource2);
+  MemoryCache::Get()->Remove(resource2);
   if (!identifier2.IsEmpty())
     resource2->SetCacheIdentifier(identifier2);
   resource2->AppendData(kData, 4u);
@@ -239,7 +239,7 @@ static void TestResourcePruningLater(ResourceFetcher* fetcher,
   size_t size_without_decode =
       resource1->EncodedSize() + resource1->OverheadSize() +
       resource2->EncodedSize() + resource2->OverheadSize();
-  EXPECT_EQ(size_without_decode, GetMemoryCache()->size());
+  EXPECT_EQ(size_without_decode, MemoryCache::Get()->size());
 }
 
 // Verified that when ordering a prune in a runLoop task, the prune is deferred.
@@ -250,11 +250,11 @@ TEST_F(MemoryCacheTest, ResourcePruningLater_Basic) {
 TEST_F(MemoryCacheTest, ResourcePruningLater_MultipleResourceMaps) {
   {
     TestResourcePruningLater(fetcher_, "foo", "");
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
   }
   {
     TestResourcePruningLater(fetcher_, "foo", "bar");
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
   }
 }
 
@@ -265,7 +265,7 @@ TEST_F(MemoryCacheTest, ResourcePruningLater_MultipleResourceMaps) {
 static void TestClientRemoval(ResourceFetcher* fetcher,
                               const String& identifier1,
                               const String& identifier2) {
-  GetMemoryCache()->SetCapacity(0);
+  MemoryCache::Get()->SetCapacity(0);
   const char kData[6] = "abcde";
   Persistent<MockResourceClient> client1 =
       MakeGarbageCollected<MockResourceClient>();
@@ -280,41 +280,41 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   resource1->AppendData(kData, 4u);
   resource2->AppendData(kData, 4u);
 
-  GetMemoryCache()->SetCapacity(0);
+  MemoryCache::Get()->SetCapacity(0);
   // Remove and re-Add the resources, with proper cache identifiers.
-  GetMemoryCache()->Remove(resource1);
-  GetMemoryCache()->Remove(resource2);
+  MemoryCache::Get()->Remove(resource1);
+  MemoryCache::Get()->Remove(resource2);
   if (!identifier1.IsEmpty())
     resource1->SetCacheIdentifier(identifier1);
   if (!identifier2.IsEmpty())
     resource2->SetCacheIdentifier(identifier2);
-  GetMemoryCache()->Add(resource1);
-  GetMemoryCache()->Add(resource2);
+  MemoryCache::Get()->Add(resource1);
+  MemoryCache::Get()->Add(resource2);
 
   size_t original_total_size = resource1->size() + resource2->size();
 
   // Call prune. There is nothing to prune, but this will initialize
   // the prune timestamp, allowing future prunes to be deferred.
-  GetMemoryCache()->Prune();
+  MemoryCache::Get()->Prune();
   EXPECT_GT(resource1->DecodedSize(), 0u);
   EXPECT_GT(resource2->DecodedSize(), 0u);
-  EXPECT_EQ(original_total_size, GetMemoryCache()->size());
+  EXPECT_EQ(original_total_size, MemoryCache::Get()->size());
 
   // Removing the client from resource1 should not trigger pruning.
   client1->RemoveAsClient();
   EXPECT_GT(resource1->DecodedSize(), 0u);
   EXPECT_GT(resource2->DecodedSize(), 0u);
-  EXPECT_EQ(original_total_size, GetMemoryCache()->size());
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource1));
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource2));
+  EXPECT_EQ(original_total_size, MemoryCache::Get()->size());
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource1));
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource2));
 
   // Removing the client from resource2 should not trigger pruning.
   client2->RemoveAsClient();
   EXPECT_GT(resource1->DecodedSize(), 0u);
   EXPECT_GT(resource2->DecodedSize(), 0u);
-  EXPECT_EQ(original_total_size, GetMemoryCache()->size());
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource1));
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource2));
+  EXPECT_EQ(original_total_size, MemoryCache::Get()->size());
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource1));
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource2));
 
   WeakPersistent<Resource> resource1_weak = resource1;
   WeakPersistent<Resource> resource2_weak = resource2;
@@ -325,7 +325,7 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   // from MemoryCache.
   EXPECT_FALSE(resource1_weak);
   EXPECT_FALSE(resource2_weak);
-  EXPECT_EQ(0u, GetMemoryCache()->size());
+  EXPECT_EQ(0u, MemoryCache::Get()->size());
 }
 
 TEST_F(MemoryCacheTest, ClientRemoval_Basic) {
@@ -335,105 +335,105 @@ TEST_F(MemoryCacheTest, ClientRemoval_Basic) {
 TEST_F(MemoryCacheTest, ClientRemoval_MultipleResourceMaps) {
   {
     TestClientRemoval(fetcher_, "foo", "");
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
   }
   {
     TestClientRemoval(fetcher_, "", "foo");
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
   }
   {
     TestClientRemoval(fetcher_, "foo", "bar");
-    GetMemoryCache()->EvictResources();
+    MemoryCache::Get()->EvictResources();
   }
 }
 
 TEST_F(MemoryCacheTest, RemoveDuringRevalidation) {
   auto* resource1 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
-  GetMemoryCache()->Add(resource1);
+  MemoryCache::Get()->Add(resource1);
 
   auto* resource2 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
-  GetMemoryCache()->Remove(resource1);
-  GetMemoryCache()->Add(resource2);
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource2));
-  EXPECT_FALSE(GetMemoryCache()->Contains(resource1));
+  MemoryCache::Get()->Remove(resource1);
+  MemoryCache::Get()->Add(resource2);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource2));
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource1));
 
   auto* resource3 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
-  GetMemoryCache()->Remove(resource2);
-  GetMemoryCache()->Add(resource3);
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource3));
-  EXPECT_FALSE(GetMemoryCache()->Contains(resource2));
+  MemoryCache::Get()->Remove(resource2);
+  MemoryCache::Get()->Add(resource3);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource3));
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource2));
 }
 
 TEST_F(MemoryCacheTest, ResourceMapIsolation) {
   auto* resource1 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
-  GetMemoryCache()->Add(resource1);
+  MemoryCache::Get()->Add(resource1);
 
   auto* resource2 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
   resource2->SetCacheIdentifier("foo");
-  GetMemoryCache()->Add(resource2);
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource1));
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource2));
+  MemoryCache::Get()->Add(resource2);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource1));
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource2));
 
   const KURL url = KURL("http://test/resource");
-  EXPECT_EQ(resource1, GetMemoryCache()->ResourceForURL(url));
-  EXPECT_EQ(resource1, GetMemoryCache()->ResourceForURL(
-                           url, GetMemoryCache()->DefaultCacheIdentifier()));
-  EXPECT_EQ(resource2, GetMemoryCache()->ResourceForURL(url, "foo"));
-  EXPECT_EQ(nullptr, GetMemoryCache()->ResourceForURL(NullURL()));
+  EXPECT_EQ(resource1, MemoryCache::Get()->ResourceForURL(url));
+  EXPECT_EQ(resource1, MemoryCache::Get()->ResourceForURL(
+                           url, MemoryCache::Get()->DefaultCacheIdentifier()));
+  EXPECT_EQ(resource2, MemoryCache::Get()->ResourceForURL(url, "foo"));
+  EXPECT_EQ(nullptr, MemoryCache::Get()->ResourceForURL(NullURL()));
 
   auto* resource3 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
   resource3->SetCacheIdentifier("foo");
-  GetMemoryCache()->Remove(resource2);
-  GetMemoryCache()->Add(resource3);
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource1));
-  EXPECT_FALSE(GetMemoryCache()->Contains(resource2));
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource3));
+  MemoryCache::Get()->Remove(resource2);
+  MemoryCache::Get()->Add(resource3);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource1));
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource2));
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource3));
 
   HeapVector<Member<Resource>> resources =
-      GetMemoryCache()->ResourcesForURL(url);
+      MemoryCache::Get()->ResourcesForURL(url);
   EXPECT_EQ(2u, resources.size());
 
-  GetMemoryCache()->EvictResources();
-  EXPECT_FALSE(GetMemoryCache()->Contains(resource1));
-  EXPECT_FALSE(GetMemoryCache()->Contains(resource3));
+  MemoryCache::Get()->EvictResources();
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource1));
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource3));
 }
 
 TEST_F(MemoryCacheTest, FragmentIdentifier) {
   const KURL url1 = KURL("http://test/resource#foo");
   auto* resource = MakeGarbageCollected<FakeResource>(url1, ResourceType::kRaw);
-  GetMemoryCache()->Add(resource);
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource));
+  MemoryCache::Get()->Add(resource);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
 
-  EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url1));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url1));
 
   const KURL url2 = MemoryCache::RemoveFragmentIdentifierIfNeeded(url1);
-  EXPECT_EQ(resource, GetMemoryCache()->ResourceForURL(url2));
+  EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url2));
 }
 
 TEST_F(MemoryCacheTest, RemoveURLFromCache) {
   const KURL url1 = KURL("http://test/resource1");
   Persistent<FakeResource> resource1 =
       MakeGarbageCollected<FakeResource>(url1, ResourceType::kRaw);
-  GetMemoryCache()->Add(resource1);
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource1));
+  MemoryCache::Get()->Add(resource1);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource1));
 
-  GetMemoryCache()->RemoveURLFromCache(url1);
-  EXPECT_FALSE(GetMemoryCache()->Contains(resource1));
+  MemoryCache::Get()->RemoveURLFromCache(url1);
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource1));
 
   const KURL url2 = KURL("http://test/resource2#foo");
   auto* resource2 =
       MakeGarbageCollected<FakeResource>(url2, ResourceType::kRaw);
-  GetMemoryCache()->Add(resource2);
-  EXPECT_TRUE(GetMemoryCache()->Contains(resource2));
+  MemoryCache::Get()->Add(resource2);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource2));
 
-  GetMemoryCache()->RemoveURLFromCache(url2);
-  EXPECT_FALSE(GetMemoryCache()->Contains(resource2));
+  MemoryCache::Get()->RemoveURLFromCache(url2);
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource2));
 }
 
 }  // namespace blink

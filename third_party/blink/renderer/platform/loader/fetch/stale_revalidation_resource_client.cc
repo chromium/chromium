@@ -18,7 +18,7 @@ StaleRevalidationResourceClient::~StaleRevalidationResourceClient() = default;
 void StaleRevalidationResourceClient::NotifyFinished(Resource* resource) {
   // After the load is finished
   if (stale_resource_ && IsMainThread())
-    GetMemoryCache()->Remove(stale_resource_);
+    MemoryCache::Get()->Remove(stale_resource_);
   ClearResource();
 }
 

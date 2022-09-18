@@ -657,12 +657,12 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
   // this point, but off-main-thread module fetches might.
   if (IsMainThread()) {
     if (Resource* old_resource =
-            GetMemoryCache()->ResourceForURL(url, cache_identifier)) {
+            MemoryCache::Get()->ResourceForURL(url, cache_identifier)) {
       // There's no reason to re-parse if we saved the data from the previous
       // parse.
       if (params.Options().data_buffering_policy != kDoNotBufferData)
         return old_resource;
-      GetMemoryCache()->Remove(old_resource);
+      MemoryCache::Get()->Remove(old_resource);
     }
   }
 
@@ -1110,7 +1110,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
           !in_cached_resources_map) {
         resource = nullptr;
       } else {
-        resource = GetMemoryCache()->ResourceForURL(
+        resource = MemoryCache::Get()->ResourceForURL(
             params.Url(), GetCacheIdentifier(params.Url()));
       }
       if (resource) {
@@ -1131,7 +1131,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   switch (policy) {
     case RevalidationPolicy::kReload:
-      GetMemoryCache()->Remove(resource);
+      MemoryCache::Get()->Remove(resource);
       [[fallthrough]];
     case RevalidationPolicy::kLoad:
       resource = CreateResourceForLoading(params, factory);
@@ -1247,7 +1247,7 @@ void ResourceFetcher::InitializeRevalidation(
     ResourceRequest& revalidating_request,
     Resource* resource) {
   DCHECK(resource);
-  DCHECK(GetMemoryCache()->Contains(resource));
+  DCHECK(MemoryCache::Get()->Contains(resource));
   DCHECK(resource->IsLoaded());
   DCHECK(resource->CanUseCacheValidator());
   DCHECK(!resource->IsCacheValidator());
@@ -1312,7 +1312,7 @@ void ResourceFetcher::AddToMemoryCacheIfNeeded(const FetchParameters& params,
   if (!ShouldResourceBeAddedToMemoryCache(params, resource))
     return;
 
-  GetMemoryCache()->Add(resource);
+  MemoryCache::Get()->Add(resource);
 }
 
 Resource* ResourceFetcher::CreateResourceForLoading(
@@ -1323,8 +1323,8 @@ Resource* ResourceFetcher::CreateResourceForLoading(
   if (!base::FeatureList::IsEnabled(
           blink::features::kScopeMemoryCachePerContext)) {
     DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
-           !GetMemoryCache()->ResourceForURL(params.GetResourceRequest().Url(),
-                                             cache_identifier));
+           !MemoryCache::Get()->ResourceForURL(
+               params.GetResourceRequest().Url(), cache_identifier));
   }
 
   RESOURCE_LOADING_DVLOG(1) << "Loading Resource for "
@@ -1867,7 +1867,7 @@ void ResourceFetcher::ClearPreloads(ClearPreloadsPolicy policy) {
   for (const auto& pair : preloads_) {
     Resource* resource = pair.value;
     if (policy == kClearAllPreloads || !resource->IsLinkPreload()) {
-      GetMemoryCache()->Remove(resource);
+      MemoryCache::Get()->Remove(resource);
       keys_to_be_removed.push_back(pair.key);
     }
   }
@@ -2071,7 +2071,7 @@ bool ResourceFetcher::StartLoad(
     ScriptForbiddenScope script_forbidden_scope;
 
     if (properties_->ShouldBlockLoadingSubResource() && IsMainThread()) {
-      GetMemoryCache()->Remove(resource);
+      MemoryCache::Get()->Remove(resource);
       return false;
     }
 
