@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Voit myös siirtyä näytön osiosta toiseen. Voit esimerkiksi siirtyä käynnistysohjelman, hyllyn ja Chrome-välilehtien välillä. Siirry seuraavaan osioon pyyhkäisemällä vasemmalta oikealle neljällä sormella. Kokeile tätä jatkaaksesi.</translation>
 <translation id="2624431853467395961">Avaa opettelutila</translation>
 <translation id="2626530649491650971">klikattava</translation>
+<translation id="263637551280112393">Paina Haku + vaihto + välilyönti</translation>
 <translation id="2637227747952042642">Matematiikka</translation>
 <translation id="2638785836053527382">Tiedoston <ph name="FILE_NAME" /> latausta jatkettu</translation>
 <translation id="2639750663247012216">ChromeVox-muokkaaja</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Ei seuraavia osioita</translation>
 <translation id="5368000168321181111">Earcon-äänimerkit pois käytöstä</translation>
 <translation id="5368505757342402527">Lataus <ph name="PROGRESS" /> % valmis: <ph name="FILE_NAME" />. Noin <ph name="TIME" /> <ph name="UNITS" /> jäljellä.</translation>
+<translation id="5381388086899614489">pitkä klikkaus</translation>
 <translation id="5400836586163650660">Harmaa</translation>
 <translation id="5402367795255837559">Pistekirjoitus</translation>
 <translation id="5402791055281059602">Modaalinen ilmoitus</translation>

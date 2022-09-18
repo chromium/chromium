@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">Зупинити</translation>
 <translation id="1275718070701477396">Вибрано</translation>
 <translation id="1281818060020671000">Керувати даними</translation>
+<translation id="1282311502488501110">Не входити</translation>
 <translation id="1283524564873030414">Останні 24 години</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1291506870746876680">Коли ви закриєте сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, усі дозволи для нього буде скинуто.</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">Вимкнути Безпечний перегляд?</translation>
 <translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не вибрано</translation>
+<translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2500374554657206846">Опції для збереження паролів</translation>
 <translation id="2523363575747517183">Цей веб-сайт періодично намагається відкрити інший додаток.</translation>
 <translation id="2529021024822217800">Відкрити всі</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">Натисніть, щоб змінити на цю мову.</translation>
 <translation id="6944369514868857500">Вибрати інший обліковий запис</translation>
 <translation id="6945221475159498467">Вибрати</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6988572888918530647">Керуйте обліковим записом Google</translation>

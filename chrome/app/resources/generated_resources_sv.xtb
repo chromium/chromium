@@ -3556,6 +3556,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4306119971288449206">Apparna måste visas med content-type <ph name="CONTENT_TYPE" /></translation>
 <translation id="4307992518367153382">Grunderna</translation>
 <translation id="4309165024397827958">Tillåt att Android-appar och Android-tjänster med platsbehörighet använder enhetens plats. Google kan med jämna mellanrum samla in platsdata som används anonymt i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster.</translation>
+<translation id="4309183709806093061">Dela även systemljud. Ljudet stängs av på enheten för att undvika rundgång.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K aktiva)</translation>
 <translation id="4310132194679586591">Välj en app på enheten för att öppna den här länken</translation>
 <translation id="4310139701823742692">Filen har fel format. Kontrollera PPD-filen och försök igen.</translation>
@@ -4569,6 +4570,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5305145881844743843">Det här kontot hanteras av <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Källan stöds inte</translation>
 <translation id="5307386115243749078">Parkoppla Bluetooth-brytare</translation>
+<translation id="5307958609248661362">Tidsgränsen har nåtts för Google Lösenordshantering</translation>
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5309418307557605830">Google Assistent kan användas här också</translation>
 <translation id="5311304534597152726">Loggar in som</translation>
@@ -7368,6 +7370,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7988805580376093356">Behåll ditt operativsystem och kör <ph name="DEVICE_OS" /> från USB.</translation>
 <translation id="7991296728590311172">Inställningar för brytarstyrning</translation>
 <translation id="7992203134935383159">Talsyntes</translation>
+<translation id="799570308305997052">Webbvy</translation>
 <translation id="7997826902155442747">Prioriteringsprocess</translation>
 <translation id="7999229196265990314">Följande filer har skapats:
 

@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1275718070701477396">נבחר</translation>
 <translation id="1281818060020671000">ניהול נתונים</translation>
+<translation id="1282311502488501110">אני לא רוצה להיכנס</translation>
 <translation id="1283524564873030414">מ-24 השעות האחרונות</translation>
 <translation id="1285320974508926690">איני רוצה לקבל תרגום של אתר זה</translation>
 <translation id="1291506870746876680">ההרשאות לאתר <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> יאופסו לאחר היציאה ממנו.</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="2473876017985765807">כבר שמרת סיסמה לאתר <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">לא נבחר</translation>
+<translation id="2482878487686419369">התראות</translation>
 <translation id="2500374554657206846">אפשרויות לשמירת סיסמה</translation>
 <translation id="2523363575747517183">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
 <translation id="2529021024822217800">פתיחת הכול</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">יש להקיש כדי לעבור לשפה הזו.</translation>
 <translation id="6944369514868857500">בחירת חשבון אחר</translation>
 <translation id="6945221475159498467">בחירה</translation>
+<translation id="6965382102122355670">אישור</translation>
 <translation id="6973630695168034713">תיקיות</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">‏ניהול חשבון Google שלך</translation>

@@ -60,6 +60,7 @@
 <translation id="2094648590148273905">Condicións de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Queres saír de Chrome de todas formas?</translation>
 <translation id="2106831557840787829">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Se activas esta opción, Chrome recuperará a memoria das pestanas que non esteas a usar de maneira activa. Deste xeito libéranse os recursos do ordenador para outras tarefas e mantense a rapidez de Chrome. As pestanas inactivas aparecen baleiras e volven cargar automaticamente ao facer clic nelas. Consulta <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envía os teus comentarios<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Esta acción eliminará <ph name="ITEMS_COUNT" /> elementos deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>

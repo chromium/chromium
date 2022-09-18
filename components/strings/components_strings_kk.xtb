@@ -297,7 +297,6 @@
 <translation id="1662550410081243962">Төлеу әдістерін сақтау және толтыру</translation>
 <translation id="1663943134801823270">Карталар мен мекенжайлар Chrome браузерінен алынған. Оларды <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде басқара аласыз.</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер <ph name="TARGET_LANGUAGE" /> тіліне аударылатын болады.</translation>
-<translation id="1673886523110456987">Ұсынысты пайдалану үшін <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тілінен <ph name="TARGET_LANGUAGE" /> тіліне</translation>
 <translation id="1682696192498422849">Алдымен қысқа беті</translation>
 <translation id="168693727862418163">Бұл саясат мәні осы схемаға қатысты тексерілмеді және ол еленбейді.</translation>
@@ -2338,6 +2337,7 @@
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google аккаунтыңыздың құпия сөзін өзгерту үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="7292031607255951991">Алушының аты-жөні</translation>
 <translation id="7298195798382681320">Ұсынылған</translation>
+<translation id="7299471494012161875">Дисплей перифериялық құрылғыларының жалғанғаны;</translation>
 <translation id="7300012071106347854">Көкпеңбек</translation>
 <translation id="7304030187361489308">Жоғары</translation>
 <translation id="7304562222803846232">Google аккаунтының құпиялылық параметрлерін басқару</translation>

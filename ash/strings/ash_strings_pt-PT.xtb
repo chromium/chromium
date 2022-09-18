@@ -1157,6 +1157,7 @@ Nova instalação</translation>
 <translation id="7633755430369750696">Mostre as definições da funcionalidade Partilhar na proximidade.</translation>
 <translation id="7634648064048557203">Câmara ajustada ao canto inferior direito</translation>
 <translation id="7641938616688887143">Gravar</translation>
+<translation id="7642106959537987271">modo de inversão de cores</translation>
 <translation id="7642647758716480637">Abrir as definições da rede <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
 <translation id="7647488630410863958">Desbloquear o dispositivo para ver as notificações</translation>
@@ -1262,6 +1263,7 @@ Nova instalação</translation>
 <translation id="8209010265547628927">Repor</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">O Chromebook tem de permanecer ativo e ligado à alimentação durante este período. Certifique-se de que os cabos do carregador ou transformador estão completamente ligados à tomada elétrica e à respetiva entrada do Chromebook. Não desligue o Chromebook.</translation>
+<translation id="8230305195727960608">Modo de inversão de cores</translation>
 <translation id="8236042855478648955">Hora de fazer uma pausa</translation>
 <translation id="8246282815785366524">Damos-lhe as boas-vindas de volta, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
@@ -1388,6 +1390,7 @@ Nova instalação</translation>
 <translation id="8982906748181120328">Vis. na prox.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">A utilizar <ph name="IME_NAME" />…</translation>
+<translation id="8991617137207906966">Modo de inversão de cores ativado. Prima novamente Ctrl + Pesquisa + H para o desativar.</translation>
 <translation id="899350903320462459">Desbloqueie o dispositivo como <ph name="LOGIN_ID" /> para realizar a ação de notificação.</translation>
 <translation id="9000771174482730261">GERIR ARMAZENAMENTO</translation>
 <translation id="9017320285115481645">Introduza o código de acesso parental do Family Link.</translation>
@@ -1436,6 +1439,7 @@ Nova instalação</translation>
 <translation id="921989828232331238">Os teus pais bloquearam o dispositivo para o resto do dia</translation>
 <translation id="9220525904950070496">Remover conta</translation>
 <translation id="923686485342484400">Prima Control Shift Q duas vezes para terminar sessão.</translation>
+<translation id="92580429198593979">Premiu o atalho de teclado da inversão de cores. Quer ativá-la?</translation>
 <translation id="925832987464884575">Ocultar pré-visualizações</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> exige que atualize o dispositivo <ph name="DEVICE_TYPE" /> imediatamente</translation>
 <translation id="938963181863597773">O que está no meu calendário?</translation>

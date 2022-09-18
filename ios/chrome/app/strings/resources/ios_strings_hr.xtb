@@ -46,6 +46,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="1272079795634619415">Zaustavi</translation>
 <translation id="1275718070701477396">Odabrano</translation>
 <translation id="1281818060020671000">Upravljanje podacima</translation>
+<translation id="1282311502488501110">Ne prijavljuj se</translation>
 <translation id="1283524564873030414">Posljednja 24 sata</translation>
 <translation id="1285320974508926690">Nikad nemoj prevoditi ovu web-lokaciju</translation>
 <translation id="1291506870746876680">Dopuštenja <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vratit će se na isključeno kad napustite ovu web-lokaciju.</translation>
@@ -178,6 +179,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2469960372084740698">Želite li isključiti sigurno pregledavanje?</translation>
 <translation id="2473876017985765807">Već ste spremili zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nije odabrano</translation>
+<translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2500374554657206846">Opcije za spremanje zaporki</translation>
 <translation id="2523363575747517183">Ova web-lokacija opetovano pokušava otvoriti neku drugu aplikaciju.</translation>
 <translation id="2529021024822217800">Otvori sve</translation>
@@ -741,6 +743,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6930799952781667037">Dodirnite da biste promijenili jezik.</translation>
 <translation id="6944369514868857500">Odaberite neki drugi račun</translation>
 <translation id="6945221475159498467">Odaberi</translation>
+<translation id="6965382102122355670">U redu</translation>
 <translation id="6973630695168034713">Mape</translation>
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6988572888918530647">Upravljajte svojim Google računom</translation>

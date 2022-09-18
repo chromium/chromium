@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">หยุด</translation>
 <translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="1281818060020671000">จัดการข้อมูล</translation>
+<translation id="1282311502488501110">ไม่ต้องลงชื่อเข้าใช้</translation>
 <translation id="1283524564873030414">24 ชั่วโมงที่ผ่านมา</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
@@ -178,6 +179,7 @@
 <translation id="2469960372084740698">ปิด Google Safe Browsing ใช่ไหม</translation>
 <translation id="2473876017985765807">คุณบันทึกรหัสผ่านสำหรับ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2476359652512522418">ไม่ได้เลือก</translation>
+<translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2500374554657206846">ตัวเลือกในการบันทึกรหัสผ่าน</translation>
 <translation id="2523363575747517183">เว็บไซต์นี้พยายามเปิดแอปพลิเคชันอื่นอยู่เรื่อยๆ</translation>
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
@@ -741,6 +743,7 @@
 <translation id="6930799952781667037">แตะเพื่อเปลี่ยนเป็นภาษานี้</translation>
 <translation id="6944369514868857500">เลือกบัญชีอื่น</translation>
 <translation id="6945221475159498467">เลือก</translation>
+<translation id="6965382102122355670">ตกลง</translation>
 <translation id="6973630695168034713">โฟลเดอร์</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6988572888918530647">จัดการบัญชี Google</translation>

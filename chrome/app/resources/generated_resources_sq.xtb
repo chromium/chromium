@@ -3539,6 +3539,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4306119971288449206">Aplikacionet duhet të shërbehen me llojin "<ph name="CONTENT_TYPE" />" të përmbajtjes</translation>
 <translation id="4307992518367153382">Bazat</translation>
 <translation id="4309165024397827958">Jepu aplikacioneve dhe shërbimeve të Android leje për të përdorur vendndodhjen e pajisjes sate. Google mund të mbledhë të dhëna të vendndodhjes në mënyrë periodike dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara në vendndodhje.</translation>
+<translation id="4309183709806093061">Ndaj po ashtu audion e sistemit. Kjo pajisje do të vendoset në heshtje për të parandaluar reagimet.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB të drejtpërdrejta)</translation>
 <translation id="4310132194679586591">Zgjidh një aplikacion në pajisjen tënde për të hapur këtë lidhje</translation>
 <translation id="4310139701823742692">Skedari është në formatin e gabuar. Kontrollo skedarin PPD dhe provo përsëri.</translation>
@@ -4551,6 +4552,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5305145881844743843">Kjo llogari menaxhohet nga <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Burimi nuk mbështetet</translation>
 <translation id="5307386115243749078">Çifto çelësin me Bluetooth</translation>
+<translation id="5307958609248661362">Koha për "Menaxherin e fjalëkalimeve të Google" skadoi</translation>
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="5309418307557605830">"Asistenti i Google" punon edhe këtu</translation>
 <translation id="5311304534597152726">Identifikuar si</translation>
@@ -7348,6 +7350,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7988805580376093356">Mbaj sistemin tënd operativ dhe ekzekuto <ph name="DEVICE_OS" /> nga USB-ja.</translation>
 <translation id="7991296728590311172">Cilësimet e "Qasjes me çelës"</translation>
 <translation id="7992203134935383159">Sinteza e ligjërimit</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Përparësia e procesit</translation>
 <translation id="7999229196265990314">Krijoi skedarët e mëposhtëm:
 

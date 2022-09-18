@@ -215,6 +215,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2132302418721800944">Rekam dalam layar penuh</translation>
 <translation id="2135456203358955318">Kaca pembesar tersemat</translation>
 <translation id="2148716181193084225">Hari ini</translation>
+<translation id="2161132820593978283">Coba framing kamera agar Anda berada di tengah layar saat melakukan panggilan video. Aktifkan di Setelan Cepat.</translation>
 <translation id="2170530631236737939">Geser ke bawah dengan tiga jari untuk keluar dari Ringkasan</translation>
 <translation id="219905428774326614">Peluncur, semua aplikasi</translation>
 <translation id="2201071101391734388">Foto terbaru <ph name="INDEX" /> dari <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2405664212338326887">Tidak terhubung</translation>
 <translation id="2408955596600435184">Masukkan PIN</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
+<translation id="2426051945783024481">Bingkai kamera dipusatkan secara otomatis</translation>
 <translation id="2427507373259914951">Klik kiri</translation>
 <translation id="2429753432712299108">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Sebelum menerima, konfirmasikan bahwa kunci sandi ini ditampilkan pada perangkat tersebut: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
@@ -1040,6 +1042,7 @@ Baru diinstal</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi operator.</translation>
 <translation id="6961121602502368900">Fitur senyapkan ponsel tidak tersedia di profil kerja</translation>
 <translation id="6961840794482373852">Pintasan keyboard Alt + Panah Atas telah diubah. Untuk menggunakan tombol Page Up, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Atas.</translation>
+<translation id="696267987219125751">Framing kamera nonaktif.</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6972754398087986839">Mulai</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1133,7 @@ Baru diinstal</translation>
 <translation id="7513922695575567867">Kalender, minggu <ph name="DATE" />, <ph name="SELECTED_DATE" /> saat ini dipilih.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Framing kamera aktif.</translation>
 <translation id="7526573455193969409">Jaringan mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikasi Linux dan jendela Samaran saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
@@ -1148,6 +1152,7 @@ Baru diinstal</translation>
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7609951632080598826">Tampilan kalender, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera dihubungkan kembali.</translation>
+<translation id="761736749114493194">Aktifkan/nonaktifkan framing kamera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Tampilkan setelan Berbagi Langsung.</translation>
 <translation id="7634648064048557203">Kamera dipaskan ke pojok kanan bawah</translation>
@@ -1308,6 +1313,7 @@ Baru diinstal</translation>
 <translation id="851458219935658693">Menampilkan jendela dari desktop saat ini, tombol pilihan dipilih</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>
 <translation id="8535393432370007982">Urungkan tata urutan menurut warna</translation>
+<translation id="8541078764854166027">Framing kamera</translation>
 <translation id="8542053257095774575">Tidak ada desktop atau template tersimpan</translation>
 <translation id="8546059259582788728">Berhasil mengurungkan pengurutan</translation>
 <translation id="8551588720239073785">Setelan tanggal dan waktu</translation>

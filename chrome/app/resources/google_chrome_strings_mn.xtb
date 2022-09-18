@@ -61,6 +61,7 @@
 <translation id="2094648590148273905">ChromeOS Flex-н нөхцөл</translation>
 <translation id="2094919256425865063">Ямар ч байсан Chrome-с гарах уу?</translation>
 <translation id="2106831557840787829">ChromeOS Flex-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
+<translation id="2112742052114331084">Асаалттай үед Chrome таны идэвхтэй ашиглахгүй байгаа табуудаас санах ойг сэргээнэ. Ингэснээр таны компьютерын нөөцийг бусад ажилд зориулж чөлөөлөх бөгөөд Chrome-г хурдтай байлгана. Идэвхгүй табууд хоосон харагдах бөгөөд таныг тэдгээр дээр товшиход автоматаар дахин ачаална. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /> эсвэл <ph name="BEGIN_LINK_2" />санал хүсэлт илгээх<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйлийг устгана. Дараа нь өгөгдлөө сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2121284319307530122">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chrome-г сайжруулахад тусална уу</translation>
@@ -279,6 +280,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6735387454586646204">ChromeOS Flex-н систем</translation>
 <translation id="6739177684496155661">Chrome-н шинэ профайлд үргэлжлүүлэх үү?</translation>
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
+<translation id="6756581345161130259">Шаардлагатай бол Chrome таны идэвхтэй ашиглаагүй байгаа табуудаас санах ойг сэргээнэ. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
 <translation id="6785872064505734160">Chrome-н Google Туслах нь вебсайт дээрх үйлдлүүдийг танд зориулан гүйцээх боломжтой</translation>
 <translation id="683440813066116847">mDNS-ийг зөвшөөрөх Google Chrome Canary-ийн гадаад дүрэм.</translation>

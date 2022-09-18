@@ -6722,6 +6722,7 @@
 <translation id="7404065585741198296">連接 USB 連接線的手機</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{1 小時前已執行安全檢查}other{{NUM_HOURS} 小時前已執行安全檢查}}</translation>
 <translation id="740624631517654988">已封鎖彈出式視窗</translation>
+<translation id="7406912950279255498">色彩反轉模式</translation>
 <translation id="7407430846095439694">匯入並繫結</translation>
 <translation id="7407504355934009739">大多數使用者封鎖了此網站傳送的通知</translation>
 <translation id="740810853557944681">新增列印伺服器</translation>
@@ -7668,6 +7669,7 @@
 <ph name="BEGIN_PARAGRAPH3" />擁有者可前往「設定」&gt;「進階」&gt;「自動將診斷和使用情況資料傳送給 Google」，以控制此功能。<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />如果您已為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。您可以前往 families.google.com 瞭解這些設定的詳情和調整方法。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">用戶端憑證無效</translation>
+<translation id="8270162672241199380">Steam 安裝程式</translation>
 <translation id="827097179112817503">顯示 [主頁] 按鈕</translation>
 <translation id="8271268254812352141">按住文字或在文字上按一下右鍵後，就能取得定義、翻譯或單位轉換結果。請在<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />中自訂翻譯語言。</translation>
 <translation id="8271379370373330993">後續幾個步驟須由家長完成。您可在帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給子女。</translation>

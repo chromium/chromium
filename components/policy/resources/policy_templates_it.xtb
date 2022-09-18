@@ -3330,6 +3330,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       Se non viene configurato, viene applicato il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuttavia, a partire dalla versione M85, i pattern con caratteri jolly "*" e "[*.]" nell'host non sono più supportati per questo criterio.</translation>
+<translation id="4369307906396795087">Gli script worker (web worker, service worker ecc.) utilizzano il controllo non rigoroso del tipo MIME. Funzioneranno gli script worker con tipi MIME precedenti, come <ph name="MIMETYPE_TEXT_ASCII" />.</translation>
 <translation id="4370937370030117032">Viene disattivato l'invio di nome utente e nome file alle stampanti native</translation>
 <translation id="4372704773119750918">Non permettere all'utente aziendale di far parte del profilo multiplo (principale o secondario)</translation>
 <translation id="4377599627073874279">Consenti la visualizzazione di tutte le immagini in tutti i siti</translation>
@@ -6358,6 +6359,11 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio è attivato o non impostato, la funzionalità di conversione delle unità di Risposte rapide sarà attiva.
       Se il criterio è disattivato, la funzionalità di conversione delle unità di Risposte rapide sarà disattivata.</translation>
+<translation id="7582095958259051083">Se il criterio viene impostato su Attivato, la raccolta di dati anonimizzati con chiave URL, che invia gli URL delle pagine visitate dagli utenti a Google per migliorare le esperienze di ricerca e navigazione, è sempre attiva.
+
+      Se viene impostato su Disattivato, non viene attivata alcuna raccolta di dati anonimizzati con chiave URL.
+
+      Se questo criterio non viene configurato, l'utente potrà modificare manualmente questa impostazione.</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>
@@ -7056,6 +7062,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8337114537412769126">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di suggerimenti con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca di suggerimenti vengono inviate utilizzando il metodo Get.</translation>
+<translation id="8337961007759352651">Gli script worker (web worker, service worker ecc.) richiedono un tipo MIME JavaScript, ad esempio <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Gli script worker con tipi MIME precedenti, come <ph name="MIMETYPE_TEXT_ASCII" />, verranno rifiutati.</translation>
 <translation id="8339089771335211509">WebRTC utilizzerà l'interfaccia solo se si connette a una rete pubblica, ma non potrà connettersi utilizzando indirizzi IP privati.</translation>
 <translation id="8339420913453596618">Autenticazione a due fattori disattivata</translation>
 <translation id="8344454543174932833">Importa Preferiti dal browser predefinito alla prima esecuzione</translation>
@@ -7361,12 +7368,23 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Gli URL in questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza su <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="8667754887193084187">Questo criterio consente di controllare in modo rigoroso il tipo MIME per gli script worker.
+
+      Se il criterio è attivato o non configurato, gli script worker utilizzeranno un controllo rigoroso del tipo MIME per JavaScript, ovvero il nuovo comportamento predefinito. Gli script worker con tipi MIME precedenti verranno rifiutati.
+
+      Se il criterio è disattivato, gli script worker utilizzeranno un controllo non rigoroso del tipo MIME, pertanto quelli con tipi MIME precedenti, ad esempio <ph name="MIMETYPE_TEXT_ASCII" />, continueranno a essere caricati ed eseguiti.
+
+      Tradizionalmente, i browser usavano il controllo non rigoroso del tipo MIME, per cui erano supportate risorse con vari tipi MIME precedenti. Ad esempio, per le risorse JavaScript <ph name="MIMETYPE_TEXT_ASCII" /> è un tipo MIME supportato precedente. In questo scenario, le risorse vengono caricate come script, un comportamento non previsto che può causare rischi per la sicurezza. A breve Chrome introdurrà il controllo rigoroso del tipo MIME. Il criterio attivato monitorerà il comportamento predefinito. La disattivazione di questo criterio consente agli amministratori di mantenere il comportamento precedente, se necessario.
+
+      Per informazioni dettagliate sui tipi di multimediali JavaScript/ECMAScript, consulta la pagina https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
+      </translation>
 <translation id="8669313549017524373">Se il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> viene impostato su RestoreOnStartupIsURLs e per il criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> viene impostato un elenco di URL, è possibile specificare quali URL aprire.
 
       Se non viene impostato, all'avvio viene aperta la pagina Nuova scheda.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="8671119576957984818">Attiva hub di condivisione desktop</translation>
+<translation id="8671193325113134911">Attiva il controllo rigoroso del tipo MIME per gli script worker</translation>
 <translation id="8671314659400112135">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> potrà applicare la riduzione dei rischi di sicurezza dei punti di estensioni aggiuntivi per bloccare i punti di estensioni precedenti nel processo del browser.
 
       Se il criterio viene impostato su Disattivato, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, perché sarà possibile caricare codice sconosciuto e potenzialmente dannoso all'interno del processo del browser di <ph name="PRODUCT_NAME" />. Disattiva il criterio soltanto se si verificano problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno del processo del browser di <ph name="PRODUCT_NAME" />.

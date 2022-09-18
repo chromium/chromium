@@ -61,6 +61,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2094648590148273905">Imigomo ye-ChromeOS Flex</translation>
 <translation id="2094919256425865063">Yekela i-Chrome yize kunjalo?</translation>
 <translation id="2106831557840787829">I-ChromeOS Flex yenzeka <ph name="BEGIN_LINK_CROS_OSS" />ngenxa yesofthiwe yomthombo ovulekile eyengeziwe<ph name="END_LINK_CROS_OSS" />, njengoba kunjalo <ph name="BEGIN_LINK_LINUX_OSS" />ngendawo yokuthuthukiswa kwe-Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Uma ivuliwe, i-Chrome ithola inkumbulo kumathebhu ongawasebenzisi ngokugcwele. Lokhu kukhulula izinsiza zekhompyutha yakho kweminye imisebenzi futhi kugcina i-Chrome ishesha. Amathebhu angasebenzi avela engenalutho futhi alayisha ngokuzenzakalelayo uma uwachofoza. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /> noma <ph name="BEGIN_LINK_2" />thumela impendulo<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Lokhu kuzosusa izinto ezingu-<ph name="ITEMS_COUNT" /> kusuka kule divayisi. kuze uthole idatha yakho emuva kwesikhathi, ngena ngemvume ku-Chrome njengo-<ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Qalisa kabusha ukuze Ubuyekeze i-&amp;Chrome</translation>
 <translation id="2123055963409958220">Siza ukwenza i-Chrome ibengcono ngokubika <ph name="BEGIN_LINK" />izilungiselelo zamanje<ph name="END_LINK" /></translation>
@@ -279,6 +280,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6735387454586646204">Isistimu ye-ChromeOS Flex</translation>
 <translation id="6739177684496155661">Qhubeka kuphrofayela entsha ye-Chrome?</translation>
 <translation id="6750954913813541382">Ukuze kulungiswe amaphutha okupeletwa, i-Chrome ithumela umbhalo owuthayiphayo kusiphequluli ku-Google</translation>
+<translation id="6756581345161130259">Njengoba kudingekile, i-Chrome ithola inkumbulo kumathebhu ongawasebenzisi njalo. Ungashintsha lokhu noma kunini kokuthi Amasethingi.</translation>
 <translation id="677276454032249905">Phuma ku-Chrome noma kunjalo?</translation>
 <translation id="6785872064505734160">Umsizi we-Google ku-Chrome angakuqedelela izenzo kuwo wonke amawebhusayithi</translation>
 <translation id="683440813066116847">Umyalo wokubophezeleka ngaphakathi kwe-Google Chrome Canary ukuze kuvunyelwe ithrafikhi ye-mDNS.</translation>

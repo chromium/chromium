@@ -297,7 +297,6 @@
 <translation id="1662550410081243962">ذخیره و تکمیل روش‌های پرداخت</translation>
 <translation id="1663943134801823270">‏کارت‌ها و نشانی‌ها از Chrome‌ هستند. می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="1671391448414634642">از این به بعد، صفحه‌های <ph name="SOURCE_LANGUAGE" />، به <ph name="TARGET_LANGUAGE" /> ترجمه خواهند شد.</translation>
-<translation id="1673886523110456987">برای استفاده از پیشنهاد، با <ph name="CARD_DETAIL" /> تماس بگیرید</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">ابتدا لبه کوتاه</translation>
 <translation id="168693727862418163">این مقدار خط‌مشی در رابطه با طرح آن تأیید نشده است و نادیده گرفته می‌شود.</translation>
@@ -422,6 +421,7 @@
 <translation id="2034971124472263449">درهرصورت ذخیره شود</translation>
 <translation id="2035400064145347639">راهنمای سفر و سفرنامه</translation>
 <translation id="2036983605131262583">رول جایگزین</translation>
+<translation id="2040463897538655645">فضای ذخیره‌سازی جداشدنی</translation>
 <translation id="2040894699575719559">مکان مسدود شد</translation>
 <translation id="2042213636306070719">سینی ۷</translation>
 <translation id="204357726431741734">‏ورود به سیستم برای استفاده از گذرواژه‌های ذخیره‌شده در «حساب Google»</translation>

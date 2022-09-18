@@ -454,6 +454,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3435465986463792564">Vous pouvez gérer toutes vos fenêtres depuis ce menu</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
 <translation id="3444179773590444986">Envoyer des commentaires sur le thème sombre pour les sites ?</translation>
+<translation id="3452832259067974318">Pour protéger votre confidentialité, Chrome ne saisit pas automatiquement votre mot de passe dans ce champ.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 téléchargement planifié}one{# téléchargement planifié}other{# téléchargements planifiés}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Vous pouvez choisir votre moteur de recherche</translation>
@@ -679,6 +680,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4763480195061959176">vidéo</translation>
 <translation id="4766313118839197559">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe sur cet appareil</translation>
 <translation id="4766678251456904326">Ajouter un compte à l'appareil</translation>
+<translation id="4787736314074622408">Voulez-vous supprimer <ph name="ITEM_TITLE" /> ?</translation>
 <translation id="4791358705705538979">Vous aide à effectuer des tâches sur le Web (des paiements, par exemple)</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay.

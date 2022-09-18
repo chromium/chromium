@@ -46,6 +46,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1275718070701477396">Selezionato</translation>
 <translation id="1281818060020671000">Gestisci i dati</translation>
+<translation id="1282311502488501110">Non accedere</translation>
 <translation id="1283524564873030414">Ultime 24 ore</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1291506870746876680">Le autorizzazioni del sito <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> verranno disattivate quando uscirai dal sito.</translation>
@@ -177,6 +178,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2469960372084740698">Vuoi disattivare Navigazione sicura?</translation>
 <translation id="2473876017985765807">Hai già salvato una password per <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Non selezionata</translation>
+<translation id="2482878487686419369">Notifiche</translation>
 <translation id="2500374554657206846">Opzioni per salvare la password</translation>
 <translation id="2523363575747517183">Questo sito web sta cercando ripetutamente di aprire un'altra applicazione.</translation>
 <translation id="2529021024822217800">Apri tutto</translation>
@@ -740,6 +742,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6930799952781667037">Tocca per passare a questa lingua.</translation>
 <translation id="6944369514868857500">Scegli un altro account</translation>
 <translation id="6945221475159498467">Seleziona</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Cartelle</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Gestisci il tuo Account Google</translation>

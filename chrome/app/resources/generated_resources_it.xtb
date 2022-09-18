@@ -3541,6 +3541,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4306119971288449206">Le app devono essere installate con il tipo di contenuto "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Impostazioni di base</translation>
 <translation id="4309165024397827958">Consenti ai servizi Android e alle app che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
+<translation id="4309183709806093061">Condividi anche l'audio di sistema. Per evitare feedback, l'audio di questo dispositivo verrà disattivato.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB effettivi)</translation>
 <translation id="4310132194679586591">Seleziona un'app sul dispositivo per aprire questo link</translation>
 <translation id="4310139701823742692">Il formato del file è sbagliato. Controlla il file PPD e riprova.</translation>
@@ -4553,6 +4554,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5305145881844743843">Questo account è gestito da <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Fonte non supportata</translation>
 <translation id="5307386115243749078">Accoppia un sensore Bluetooth</translation>
+<translation id="5307958609248661362">Timeout del Gestore delle password di Google</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5309418307557605830">L'Assistente Google funziona anche qui</translation>
 <translation id="5311304534597152726">Accesso come</translation>
@@ -7349,6 +7351,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7988805580376093356">Mantieni il tuo sistema operativo ed esegui <ph name="DEVICE_OS" /> da USB.</translation>
 <translation id="7991296728590311172">Impostazioni Switch Access</translation>
 <translation id="7992203134935383159">Sintesi vocale</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Priorità processo</translation>
 <translation id="7999229196265990314">Sono stati creati i file seguenti:
         

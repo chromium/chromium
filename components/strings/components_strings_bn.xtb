@@ -297,7 +297,6 @@
 <translation id="1662550410081243962">পেমেন্টের পদ্ধতিগুলি পূরণ করে সেভ করুন</translation>
 <translation id="1663943134801823270">Chrome থেকে কার্ড এবং ঠিকানাগুলি এসেছে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> এ এগুলি পরিচালনা করতে পারবেন।</translation>
 <translation id="1671391448414634642">এখন থেকে <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠা <ph name="TARGET_LANGUAGE" /> ভাষায় অনুবাদ করা হবে।</translation>
-<translation id="1673886523110456987">উপলভ্য অফার ব্যবহার করতে <ph name="CARD_DETAIL" />-এর মাধ্যমে করে চেক করুন</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> থেকে <ph name="TARGET_LANGUAGE" />-এ</translation>
 <translation id="1682696192498422849">আগে ছোট প্রান্ত</translation>
 <translation id="168693727862418163">এই নীতির মান সেটির স্কিমার সাথে যাচাই করা যায়নি, তাই সেটি উপেক্ষা করা হবে।</translation>
@@ -423,6 +422,7 @@
 <translation id="2034971124472263449">যাই হোক সেভ করুন</translation>
 <translation id="2035400064145347639">ভ্রমণের নির্দেশিকা ও ভ্রমণ বৃত্তান্ত</translation>
 <translation id="2036983605131262583">বিকল্প রোল</translation>
+<translation id="2040463897538655645">সরিয়ে দেওয়া যায় এমন স্টোরেজ</translation>
 <translation id="2040894699575719559">লোকেশন ব্লক করা হয়েছে</translation>
 <translation id="2042213636306070719">ট্রে ৭</translation>
 <translation id="204357726431741734">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ব্যবহার করতে সাইন-ইন করুন</translation>

@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
 <translation id="1281818060020671000">ഡാറ്റ മാനേജ് ചെയ്യുക</translation>
+<translation id="1282311502488501110">സൈൻ ഇൻ ചെയ്യരുത്</translation>
 <translation id="1283524564873030414">അവസാന 24 മണിക്കൂർ</translation>
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="1291506870746876680">നിങ്ങൾ സൈറ്റിൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ "<ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> അനുമതികൾ ഓഫാക്കി റീസെറ്റ് ചെയ്യും.</translation>
@@ -54,6 +55,7 @@
 <translation id="1322735045095424339">അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു</translation>
 <translation id="1323735185997015385">ഇല്ലാതാക്കുക</translation>
 <translation id="132683371494960526">പാരന്റ് ഫോൾഡർ മാറ്റാൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="1335348992705722518">ക്രമീകരണം മാനേജ് ചെയ്യുക...</translation>
 <translation id="1340643665687018190">മെനു അടയ്‌ക്കുക</translation>
 <translation id="1358214951266274152">നിങ്ങൾ പകർത്തിയ ലിങ്ക് സന്ദർശിക്കുക</translation>
 <translation id="1360432990279830238">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കണോ?</translation>
@@ -177,6 +179,7 @@
 <translation id="2469960372084740698">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാക്കണോ?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> എന്നതിനുള്ള പാസ്‌വേഡ് നിങ്ങൾ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="2476359652512522418">തിരഞ്ഞെടുത്തിട്ടില്ല</translation>
+<translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2500374554657206846">പാസ്‌വേഡ് സംരക്ഷിക്കാനുള്ള ഓപ്‌ഷനുകൾ</translation>
 <translation id="2523363575747517183">മറ്റൊരു ആപ്പ് തുറക്കാൻ ഈ വെബ്‌സൈറ്റ് ആവർത്തിച്ച് ശ്രമിക്കുന്നു.</translation>
 <translation id="2529021024822217800">എല്ലാം തുറക്കുക</translation>
@@ -381,6 +384,7 @@
 <translation id="4187450337729239226">ഒട്ടിക്കുക, തിരയുക</translation>
 <translation id="4223967053752765281">നിങ്ങളുടെ സ്ഥാപനം, സൈൻ ഇൻ ചെയ്യൽ ഓഫാക്കി. ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവും നിങ്ങൾക്ക് തുടർന്നും കാണാം. മാറ്റങ്ങൾ വരുത്തിയാൽ, അവ നിങ്ങളുടെ അക്കൗണ്ടിൽ സമന്വയിപ്പിക്കില്ല.</translation>
 <translation id="4233831822770018312">അനുമതികൾ എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="4236584471598725073">നിരക്ക് ട്രാക്ക് ചെയ്യൽ</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ്<ph name="END_BOLD" /> ടാപ്പ് ചെയ്യുക</translation>
 <translation id="424315890655130736">പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="4249955472157341256">ഏറ്റവും പുതിയത് അനുസരിച്ച് അടുക്കുക</translation>
@@ -740,6 +744,7 @@
 <translation id="6930799952781667037">ഈ ഭാഷയിലേക്ക് മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6944369514868857500">മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6965382102122355670">ശരി</translation>
 <translation id="6973630695168034713">ഫോൾഡറുകൾ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">നിങ്ങളുടെ Google അക്കൗണ്ട് മാനേജ് ചെയ്യുക</translation>

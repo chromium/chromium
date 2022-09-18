@@ -3345,6 +3345,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> s'applique à tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sachez toutefois qu'à partir de la version M85, les formats contenant les caractères génériques "*" et "[*.]" dans l'hôte ne sont plus acceptés pour cette règle.</translation>
+<translation id="4369307906396795087">Les scripts pour les nœuds de calcul (nœuds de calcul Web, service workers, etc.) utilisent la vérification laxiste du type MIME. Les scripts de nœuds de calcul avec d'anciens types MIME, tels que <ph name="MIMETYPE_TEXT_ASCII" />, fonctionneront.</translation>
 <translation id="4370937370030117032">Désactivez l'envoi du nom d'utilisateur et du nom de fichier aux imprimantes en natif</translation>
 <translation id="4372704773119750918">Ne pas autoriser l'utilisateur d'entreprise à participer aux sessions à plusieurs profils, que ce soit en tant qu'utilisateur principal ou secondaire</translation>
 <translation id="4377599627073874279">Autoriser tous les sites à afficher toutes les images</translation>
@@ -6372,6 +6373,11 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
       Si elle est activée ou si elle n'est pas configurée, la conversion d'unités pour Réponses rapides est activée.
       Si elle est désactivée, la conversion d'unités pour Réponses rapides est désactivée.</translation>
+<translation id="7582095958259051083">Si vous activez cette règle, la collecte de données anonymes incluant les URL, qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation, est toujours active.
+
+      Si vous la désactivez, les données anonymes incluant les URL ne sont pas collectées.
+
+      Si cette règle n'est pas configurée, l'utilisateur peut modifier ce paramètre manuellement.</translation>
 <translation id="7587345076013230465">Demander à l'utilisateur de sélectionner le certificat client chaque fois que la règle de sélection automatique établit une correspondance avec plusieurs certificats sur l'écran de connexion</translation>
 <translation id="7587921466180902617">Active la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
 <translation id="759957074386651883">Paramètres de navigation sécurisée</translation>
@@ -7078,6 +7084,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8337114537412769126">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> vous permet de définir les paramètres d'une recherche suggérée à l'aide de la méthode POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur correspond à un paramètre modèle, comme <ph name="SEARCH_TERM_MARKER" />, elle est remplacée par des termes de recherches réels.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> n'est pas configurée, les requêtes de recherche suggérée sont envoyées à l'aide de la méthode GET.</translation>
+<translation id="8337961007759352651">Les scripts pour les nœuds de calcul (nœuds de calcul Web, service workers, etc.) nécessitent un type MIME JavaScript, comme <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Les scripts de nœuds de calcul avec d'anciens types MIME, tels que <ph name="MIMETYPE_TEXT_ASCII" />, seront refusés.</translation>
 <translation id="8339089771335211509">WebRTC utilisera uniquement l'interface pour se connecter à l'Internet public, et ne se connectera pas à l'aide d'adresses IP privées.</translation>
 <translation id="8339420913453596618">Deuxième facteur désactivé</translation>
 <translation id="8344454543174932833">Importer les favoris du navigateur par défaut à la première exécution</translation>
@@ -7383,12 +7390,23 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
 
       Les URL de cette règle ne doivent pas entrer en conflit avec celles configurées via <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="8667754887193084187">Cette règle active la vérification stricte du type MIME pour les scripts de nœuds de calcul.
+
+      Si cette règle est activée ou n'est pas configurée, les scripts de nœuds de calcul utiliseront une vérification stricte du type MIME pour JavaScript, qui est le nouveau comportement par défaut. Les scripts de nœuds de calcul avec d'anciens types MIME seront refusés.
+
+      Si cette règle est désactivée, les scripts de nœuds de calcul utilisent la vérification laxiste du type MIME pour que les scripts de nœuds de calcul avec d'anciens types MIME (ex. : <ph name="MIMETYPE_TEXT_ASCII" />) continuent d'être chargés et exécutés.
+
+      Les navigateurs utilisaient traditionnellement la vérification laxiste du type MIME pour que les ressources comportant un certain nombre d'anciens types MIME puissent être compatibles. Par exemple, <ph name="MIMETYPE_TEXT_ASCII" /> est un ancien type MIME compatible avec les ressources JavaScript. Cela peut entraîner des problèmes de sécurité en autorisant le chargement de ressources en tant que scripts qui n'ont jamais été conçus pour être utilisés comme tels. Chrome passera prochainement à la vérification stricte du type MIME. La règle activée suit le comportement par défaut. La désactivation de cette règle permet aux administrateurs de conserver l'ancien comportement, s'ils le souhaitent.
+
+      Pour en savoir plus sur les types de contenus JavaScript/ECMAScript, consultez https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
+      </translation>
 <translation id="8669313549017524373">Si la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> est définie sur RestoreOnStartupIsURLs, configurer la règle <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> sur une liste d'URL permet de spécifier les URL à ouvrir.
 
       Si elle n'est pas configurée, la page "Nouvel onglet" s'affiche au démarrage.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="8671119576957984818">Activer le hub de partage du bureau</translation>
+<translation id="8671193325113134911">Activer la vérification stricte du type MIME pour les scripts de nœuds de calcul</translation>
 <translation id="8671314659400112135">Si cette règle est activée ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut appliquer l'atténuation supplémentaire de la sécurité du point d'extension pour bloquer les anciens points d'extension du processus du navigateur.
 
       Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du navigateur <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du navigateur <ph name="PRODUCT_NAME" />.

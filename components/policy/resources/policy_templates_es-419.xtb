@@ -3375,6 +3375,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si no la estableces, se aplicará <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, a partir de la versión M85, ya no serán compatibles para esta política los patrones que incluyan comodines "*" y "[*.]" en el host.</translation>
+<translation id="4369307906396795087">Las secuencias de comandos para workers (web workers, service workers, etc.) usan la verificación laxa de tipos de MIME. Las secuencias de comandos para workers con tipos de MIME heredados, como <ph name="MIMETYPE_TEXT_ASCII" />, funcionarán.</translation>
 <translation id="4370937370030117032">Inhabilitar el envío de nombres de usuarios y nombres de archivos a impresoras nativas</translation>
 <translation id="4372704773119750918">No permitir que el usuario de empresa forme parte de la función de varios perfiles (usuario principal o secundario)</translation>
 <translation id="4377599627073874279">Permitir a todos los sitios que muestren todas las imágenes</translation>
@@ -6421,6 +6422,11 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si habilitas la política o no la estableces, se habilitará la conversión de unidades de Respuestas rápidas.
       Si inhabilitas la política, se inhabilitará la conversión de unidades de Respuestas rápidas.</translation>
+<translation id="7582095958259051083">Si habilitas la política, la recopilación de datos anónimos con URL estará siempre activa. Esta recopilación envía a Google las URLs de las páginas que visita el usuario para mejorar la búsqueda y la exploración.
+
+      Si inhabilitas la política, no se recopilarán datos anónimos con URL.
+
+      Si no la estableces, el usuario podrá cambiar esta configuración de forma manual.</translation>
 <translation id="7587345076013230465">Notificar al usuario que debe seleccionar el certificado de cliente cada vez que la política de selección automática coincida con varios certificados en la pantalla de acceso</translation>
 <translation id="7587921466180902617">Habilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
@@ -7135,6 +7141,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8337114537412769126">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros durante la búsqueda de sugerencias con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se enviarán las solicitudes de búsqueda de sugerencias con el método GET.</translation>
+<translation id="8337961007759352651">Las secuencias de comandos para workers (web workers, service workers, etc.) requieren un tipo de MIME de JavaScript, como <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Se rechazarán las secuencias de comandos para workers con tipos de MIME heredados, como <ph name="MIMETYPE_TEXT_ASCII" />.</translation>
 <translation id="8339089771335211509">WebRTC solo utilizará la interfaz mediante una conexión pública, pero no se conectará mediante direcciones IP privadas.</translation>
 <translation id="8339420913453596618">Se inhabilitó el segundo factor</translation>
 <translation id="8344454543174932833">Importar favoritos del navegador predeterminado en la primera ejecución</translation>
@@ -7452,12 +7459,23 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no estableces la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (si se establece). De lo contrario, se aplicará la configuración personal del usuario.
 
       Las URLs que se especifiquen en esta política no deben entrar en conflicto con las que se configuren a través de <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Si ese es el caso, prevalecerá esta política por sobre <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="8667754887193084187">Esta política habilita la verificación estricta del tipo de MIME para secuencias de comandos para workers.
+
+      Si la habilitas o no la estableces, las secuencias de comandos para workers usarán una verificación estricta del tipo de MIME para JavaScript, que es el nuevo comportamiento predeterminado. Se rechazarán las secuencias de comandos para workers con tipos de MIME heredados.
+
+      Si la inhabilitas, las secuencias de comandos para workers usarán la verificación laxa de tipos de MIME, de modo que las secuencias de comandos para workers con tipos de MIME heredados, p. ej. <ph name="MIMETYPE_TEXT_ASCII" />, se seguirán cargando y ejecutando.
+
+      Tradicionalmente, los navegadores usaban verificaciones laxas de tipos de MIME, de modo que se admitían recursos con varios tipos de MIME heredados; p. ej., para los recursos de JavaScript, <ph name="MIMETYPE_TEXT_ASCII" /> es un tipo de MIME heredado admitido. Este comportamiento puede causar problemas de seguridad, ya que permite cargar recursos como secuencias de comandos que no serían usados con ese fin. Próximamente, Chrome comenzará a utilizar una verificación estricta de los tipos de MIME. La política habilitada hará un seguimiento del comportamiento predeterminado. Si inhabilitas esta política, los administradores podrán conservar el comportamiento heredado si lo desean.
+
+      Consulta https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage para obtener detalles sobre los tipos de medios JavaScript y ECMAScript.
+      </translation>
 <translation id="8669313549017524373">Si estableces <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> como RestoreOnStartupIsURLs, configurar <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> con una lista de URL determinará qué URL se abrirán.
 
       Si no la estableces, se abrirá la página Nueva pestaña al iniciar el navegador.
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="8671119576957984818">Habilitar el centro para compartir el escritorio</translation>
+<translation id="8671193325113134911">Habilitar la verificación estricta del tipo de MIME para secuencias de comandos para workers</translation>
 <translation id="8671314659400112135">Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> podrá aplicar la mitigación adicional de seguridad del punto de extensión para bloquear los puntos de extensión heredados en el proceso del navegador.
 
       Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se permitirá cargar código desconocido y potencialmente hostil en el proceso del navegador de <ph name="PRODUCT_NAME" />. Desactiva la política solo si hay problemas de compatibilidad con software de terceros que deba ejecutarse en el proceso del navegador de <ph name="PRODUCT_NAME" />.

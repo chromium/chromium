@@ -454,6 +454,7 @@
 <translation id="3435465986463792564">कई विंडो खुली हैं? उन सभी को यहां से मैनेज किया जा सकता है</translation>
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
 <translation id="3444179773590444986">क्या आप साइटों के लिए गहरे रंग वाली थीम से जुड़े सुझाव, शिकायत या राय शेयर करना चाहते हैं?</translation>
+<translation id="3452832259067974318">आपकी निजता की सुरक्षा के लिए, Chrome इस फ़ील्ड में आपके पासवर्ड को ऑटोमैटिक तरीके से नहीं भरेगा.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 डाउनलोड शेड्यूल किया गया}one{# डाउनलोड शेड्यूल किया गया}other{# डाउनलोड शेड्यूल किए गए}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> के रूप में जारी रखें</translation>
 <translation id="3478363558367712427">आप अपना सर्च इंजन चुन सकते हैं</translation>
@@ -679,6 +680,7 @@
 <translation id="4763480195061959176">वीडियो</translation>
 <translation id="4766313118839197559">पासवर्ड, इस डिवाइस पर Password Manager में सेव किए गए हैं</translation>
 <translation id="4766678251456904326">डिवाइस पर खाता जोड़ें</translation>
+<translation id="4787736314074622408">क्या आपको <ph name="ITEM_TITLE" /> मिटाना है?</translation>
 <translation id="4791358705705538979">वेब पर, चेकआउट करने जैसे टास्क पूरे करने में आपकी मदद करती है</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">लंबा पासवर्ड सुरक्षित करने में Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.

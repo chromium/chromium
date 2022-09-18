@@ -46,6 +46,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1281818060020671000">Gerenciar dados</translation>
+<translation id="1282311502488501110">Não fazer login</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1291506870746876680">As permissões de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> serão redefinidas como desativadas quando você sair desse site.</translation>
@@ -54,6 +55,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1322735045095424339">Sua organização requer o uso do modo de navegação anônima</translation>
 <translation id="1323735185997015385">Excluir</translation>
 <translation id="132683371494960526">Toque duas vezes para alterar a pasta pai.</translation>
+<translation id="1335348992705722518">Gerenciar configurações…</translation>
 <translation id="1340643665687018190">Fechar menu</translation>
 <translation id="1358214951266274152">Visitar o link que você copiou</translation>
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
@@ -177,6 +179,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2469960372084740698">Desativar o recurso Navegação segura?</translation>
 <translation id="2473876017985765807">Você já salvou uma senha em <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Não selecionada</translation>
+<translation id="2482878487686419369">Notificações</translation>
 <translation id="2500374554657206846">Opções para salvar senha</translation>
 <translation id="2523363575747517183">Este site está tentando repetidamente abrir outro aplicativo.</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
@@ -381,6 +384,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4187450337729239226">Colar e pesquisar</translation>
 <translation id="4223967053752765281">Sua organização desativou o processo de login. Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua conta.</translation>
 <translation id="4233831822770018312">Editar permissões</translation>
+<translation id="4236584471598725073">Monitorando preço</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegação padrão<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Informar senha longa</translation>
 <translation id="4249955472157341256">Ordenar por mais recentes</translation>
@@ -740,6 +744,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6930799952781667037">Toque para mudar para esse idioma.</translation>
 <translation id="6944369514868857500">Escolher outra conta</translation>
 <translation id="6945221475159498467">Selecionar</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Pastas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Gerenciar sua Conta do Google</translation>

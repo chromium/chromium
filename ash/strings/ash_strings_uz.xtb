@@ -215,6 +215,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2132302418721800944">Butun ekranni yozib olish</translation>
 <translation id="2135456203358955318">Mahkamlangan lupa</translation>
 <translation id="2148716181193084225">Bugun</translation>
+<translation id="2161132820593978283">Video chaqiruvlarda ekran markazida boʻlish uchun kamerani freymlash funksiyasini sinang. Uni Tezkor sozlamalar orqali yoqish mumkin.</translation>
 <translation id="2170530631236737939">Umumiy nazarni yopish uchun 3 ta barmoq bilan pastga suring</translation>
 <translation id="219905428774326614">Launcher, barcha ilovalar</translation>
 <translation id="2201071101391734388">Oxirgi <ph name="INDEX" />/<ph name="TOTAL_COUNT" /> ta rasm.</translation>
@@ -253,6 +254,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2405664212338326887">Ulanmagan</translation>
 <translation id="2408955596600435184">PIN kodni kiriting</translation>
 <translation id="2412593942846481727">Yangilanish chiqdi</translation>
+<translation id="2426051945783024481">Kamera freymi avtomatik markazga olinadi</translation>
 <translation id="2427507373259914951">Chap klik</translation>
 <translation id="2429753432712299108">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali ulanishga ruxsat so‘ramoqda. Uning ekranida quyidagi kod ko‘rinaytganligini tekshiring: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
@@ -1040,6 +1042,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6960565108681981554">Faollashtirilmagan. Aloqa operatoringizga murojaat qiling.</translation>
 <translation id="6961121602502368900">Telefon ish profilida sukut qilinmaydi</translation>
 <translation id="6961840794482373852">Alt + Tepaga strelka tezkor tugmasi oʻzgardi. Page Up tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Tepaga strelkani bosing.</translation>
+<translation id="696267987219125751">Kamerani freymlash yoqilmagan.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Boshlash</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1133,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7513922695575567867">Taqvim, <ph name="DATE" /> haftasi, hozir <ph name="SELECTED_DATE" /> tanlangan.</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kamera freyming yoniq.</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux ilovalari va inkognito oynalarida ishlamaydi. Boshqa ilovalar saqlanadi.</translation>
@@ -1148,6 +1152,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
 <translation id="7609951632080598826">Taqvim shaklida, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera qayta ulandi.</translation>
+<translation id="761736749114493194">Kamerani freymlash tugmasi. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Nearby Share sozlamalarini ochish.</translation>
 <translation id="7634648064048557203">Kamera pastki oʻng burchakka joylandi</translation>
@@ -1308,6 +1313,7 @@ yangi oʻrnatilgan</translation>
 <translation id="851458219935658693">Joriy ish stoli oynalarini chiqarish, radio tugma tanlandi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> qurilmasi yoniqligida uni quvvatlab bo‘lmaydi.</translation>
 <translation id="8535393432370007982">Rangi asosida saralanishini bekor qilish</translation>
+<translation id="8541078764854166027">Kamerani freymlash</translation>
 <translation id="8542053257095774575">Saqlangan ish stoli yoki andozalar topilmadi</translation>
 <translation id="8546059259582788728">Saralash bekor qilindi</translation>
 <translation id="8551588720239073785">Sana va vaqt sozlamalari</translation>

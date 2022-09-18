@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
 <translation id="2094919256425865063">Sair do Chrome mesmo assim?</translation>
 <translation id="2106831557840787829">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de desenvolvimento do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Quando essa opção está ativada, o Chrome recupera a memória das guias que você não está usando ativamente. Isso libera os recursos do seu computador para outras tarefas e mantém a velocidade do Chrome. As guias inativas aparecem vazias e são atualizadas automaticamente quando você clica nelas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envie um feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Essa ação excluirá <ph name="ITEMS_COUNT" /> itens desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="2123055963409958220">Ajude a melhorar o Chrome informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6739177684496155661">Continuar em um novo perfil do Chrome?</translation>
 <translation id="6750954913813541382">Para corrigir erros de ortografia, o Chrome envia o texto digitado no navegador para o Google</translation>
+<translation id="6756581345161130259">Conforme necessário, o Chrome recupera a memória das guias que você não está usando ativamente. É possível mudar isso a qualquer momento nas configurações.</translation>
 <translation id="677276454032249905">Sair do Chrome mesmo assim?</translation>
 <translation id="6785872064505734160">O Google Assistente no Chrome pode concluir ações em sites para você</translation>
 <translation id="683440813066116847">Regra interna do Google Chrome Canary para permitir tráfego mDNS.</translation>

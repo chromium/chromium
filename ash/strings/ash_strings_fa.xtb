@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">ضبط تمام صفحه</translation>
 <translation id="2135456203358955318">ذره‌بین متصل</translation>
 <translation id="2148716181193084225">امروز</translation>
+<translation id="2161132820593978283">برای اینکه درحین تماس‌های ویدیویی در مرکز صفحه قرار داشته باشید، از قاب‌بندی دوربین استفاده کنید. آن را در «تنظیمات فوری» روشن کنید.</translation>
 <translation id="2170530631236737939">برای خروج از «نمای کلی»، با سه انگشت تند به پایین بکشید</translation>
 <translation id="219905428774326614">راه‌انداز، همه برنامه‌ها</translation>
 <translation id="2201071101391734388">عکس اخیر <ph name="INDEX" /> از <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">متصل نیست</translation>
 <translation id="2408955596600435184">پین را وارد کنید</translation>
 <translation id="2412593942846481727">به‌روزرسانی دردسترس است</translation>
+<translation id="2426051945783024481">قاب دوربین به‌طور خودکار در مرکز قرار گرفت</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این گذرکلید در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
@@ -1040,6 +1042,7 @@
 <translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="6961121602502368900">«بی‌صدا کردن تلفن» در نمایه کاری دردسترس نیست</translation>
 <translation id="6961840794482373852">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه قبلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای بالا» را فشار دهید.</translation>
+<translation id="696267987219125751">قاب‌بندی دوربین خاموش است.</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6972754398087986839">شروع به کار</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1133,7 @@
 <translation id="7513922695575567867">تقویم، هفته <ph name="DATE" />، درحال‌حاضر <ph name="SELECTED_DATE" /> انتخاب شده است.</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">قاب‌بندی دوربین روشن است.</translation>
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">‏درحال‌حاضر از برنامه‌های Linux و پنجره‌های «ناشناس» پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
@@ -1148,6 +1152,7 @@
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7609951632080598826">نمای «تقویم» ،<ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">دوربین دوباره متصل شد.</translation>
+<translation id="761736749114493194">روشن/خاموش کردن قاب‌بندی دوربین. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجه فارنهایت</translation>
 <translation id="7633755430369750696">نمایش تنظیمات «هم‌رسانی با اطراف».</translation>
 <translation id="7634648064048557203">دوربین به گوشه پایین سمت راست چسبید</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">نمایش پنجره‌ها از میزکار فعلی، دکمه رادیو انتخاب شد</translation>
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
 <translation id="8535393432370007982">واگرد کردن مرتب‌سازی براساس رنگ</translation>
+<translation id="8541078764854166027">قاب‌بندی دوربین</translation>
 <translation id="8542053257095774575">میزکار یا الگوی ذخیره‌شده‌ای ندارید</translation>
 <translation id="8546059259582788728">مرتب‌سازی واگرد شد</translation>
 <translation id="8551588720239073785">تنظیمات تاریخ و ساعت</translation>

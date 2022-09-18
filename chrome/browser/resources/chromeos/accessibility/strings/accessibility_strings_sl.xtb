@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Prav tako se lahko pomikate po razdelkih na zaslonu. Pomikate se lahko na primer po zaganjalniku, polici in zavihkih v Chromu. Če se želite pomakniti na naslednji razdelek, s štirimi prsti povlecite z leve proti desni. Preizkusite zdaj, če želite nadaljevati.</translation>
 <translation id="2624431853467395961">Odpiranje načina za učenje</translation>
 <translation id="2626530649491650971">omogoča klikanje</translation>
+<translation id="263637551280112393">Pritisnite tipko za iskanje + tipko Shift + preslednico</translation>
 <translation id="2637227747952042642">Mat</translation>
 <translation id="2638785836053527382">Prenos se nadaljuje (<ph name="FILE_NAME" />)</translation>
 <translation id="2639750663247012216">Modifikator ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Ni naslednjega razdelka</translation>
 <translation id="5368000168321181111">Zvočne ikone izklopljene</translation>
 <translation id="5368505757342402527">Prenos je <ph name="PROGRESS" />-% dokončan (<ph name="FILE_NAME" />). Še približno <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">dolgi klik</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="5402367795255837559">Braillova pisava</translation>
 <translation id="5402791055281059602">Modalno opozorilo</translation>

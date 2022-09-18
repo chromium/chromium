@@ -692,6 +692,7 @@
 <translation id="1640283014264083726">‏PKCS #1 MD4 مع RSA مرموز کاری</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> کے لیے مزید کارروائیاں</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 دوسرا پاس ورڈ درآمد نہیں کیا گیا کیونکہ اسے غلط طریقے سے فارمیٹ کیا گیا ہے}other{{NUM_PASSWORDS} دوسرے پاس ورڈز درآمد نہیں کیے گئے کیونکہ وہ غلط طریقے سے فارمیٹ کیے گئے ہیں}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> اور <ph name="NUMBER_OF_DEVICES" /> دیگر بلوٹوتھ آلات سے منسلک کیا گیا</translation>
 <translation id="1642494467033190216">‏ڈیبگ کی دیگر خصوصیات فعال کرنے سے پہلے rootfs کا تحفظ ہٹائے جانے اور دوبارہ شروع کرنے کی ضرورت ہے۔</translation>
 <translation id="1643072738649235303">‏X9.62 ECDSA SHA-1 والا دستخط</translation>
@@ -1831,6 +1832,7 @@
 <translation id="2673135533890720193">اپنی براؤزنگ سرگزشت پڑھیں</translation>
 <translation id="2674764818721168631">آف</translation>
 <translation id="2678063897982469759">دوبارہ فعال کریں</translation>
+<translation id="2678100101831051676">کاسٹ کرنے سے قاصر۔</translation>
 <translation id="268053382412112343">سر&amp;گزشت</translation>
 <translation id="2681124317993121768">مہمان پروفائلز تعاون یافتہ نہیں ہیں</translation>
 <translation id="2682498795777673382">آپ کے والدین کی جانب سے اپ ڈیٹ</translation>
@@ -3543,6 +3545,7 @@
 <translation id="4306119971288449206">ایپس کو مواد کی قسم "<ph name="CONTENT_TYPE" />" کے ساتھ پیش کیا جانا ضروری ہے</translation>
 <translation id="4307992518367153382">بنیادی باتیں</translation>
 <translation id="4309165024397827958">‏مقام کی اجازت والی Android ایپس اور سروسز کو اپنے آلہ کا مقام استعمال کرنے کی اجازت دیں۔ Google وقفے وقفے سے مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
+<translation id="4309183709806093061">سسٹم آڈیو کا بھی اشتراک کریں۔ تاثرات کو روکنے کے لیے اس آلہ کو خاموش کر دیا جائے گا۔</translation>
 <translation id="4309420042698375243">‏‎<ph name="NUM_KILOBYTES" />کلو بائٹس (<ph name="NUM_KILOBYTES_LIVE" />کلو بائٹس لائیو)‎</translation>
 <translation id="4310132194679586591">یہ لنک کھولنے کے لیے اپنے آلے پر ایک ایپ منتخب کریں</translation>
 <translation id="4310139701823742692">‏فائل غلط فارمیٹ میں ہے۔ PPD فائل چیک کر کے دوبارہ کوشش کریں۔</translation>
@@ -3863,6 +3866,7 @@
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />" کا استعمال کرنے کیلئے صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="4617270414136722281">ایکسٹینشنز کے اختیارات</translation>
 <translation id="4617880081511131945">کنکشن قائم نہیں کیا جا سکتا</translation>
+<translation id="4618195822946934889">‏URL میں صرف ASCII حروف شامل ہو سکتے ہیں</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="4619615317237390068">دیگر آلات کے ٹیبز</translation>
 <translation id="4620809267248568679">ایک ایکسٹینشن یہ ترتیب نافذ کرتی ہے۔</translation>
@@ -4555,6 +4559,7 @@
 <translation id="5305145881844743843">یہ اکاؤنٹ <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> کے زیر انتظام ہے</translation>
 <translation id="5307030433605830021">ماخذ تعاون یافتہ نہیں ہے</translation>
 <translation id="5307386115243749078">بلوٹوتھ سوئچ کا جوڑا بنائیں</translation>
+<translation id="5307958609248661362">‏Google پاس ورڈ مینیجر کا وقت ختم ہو گیا</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5309418307557605830">‏Google اسسٹنٹ یہاں بھی کام کرتی ہے</translation>
 <translation id="5311304534597152726">اس کے بطور سائن ان کرنا</translation>
@@ -5059,6 +5064,7 @@
 <translation id="5800351251499368110">سائیڈ پینل میں تلاش ٹول بار کو بند کریں۔ سائیڈ پینل میں تلاش ٹول بار کھلا ہے۔</translation>
 <translation id="5801568494490449797">ترجیحات</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
+<translation id="5805268472388605531">لہجے کے نشانات اور مخصوص حروف دیکھنے کے لیے کی بورڈ کی کلیدوں کو چھوئیں اور دبائے رکھیں</translation>
 <translation id="5805697420284793859">ونڈو مینیجر</translation>
 <translation id="5806447147478173900">ڈسپلے کردہ سائٹس کے ذریعہ استعمال کی گئی کل اسٹوریج: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ڈیفالٹ)</translation>
@@ -5700,6 +5706,7 @@
 <translation id="642469772702851743">‏اس آلہ (SN: <ph name="SERIAL_NUMBER" />‎) کو مالک نے مقفل کیا تھا۔</translation>
 <translation id="6425556984042222041">ٹیکسٹ ٹو اسپیچ کی شرح</translation>
 <translation id="642729974267661262">آواز چلانے کی اجازت نہیں ہے</translation>
+<translation id="6427608534767366138">"<ph name="NETWORK_ID" />" کے لیے پراکسی کی تصدیق درکار ہے</translation>
 <translation id="6429384232893414837">اپ ڈیٹ کی خرابی</translation>
 <translation id="6430814529589430811">‏Base64-ان کوڈ کردہ ASCII، واحد سرٹیفیکیٹ</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> اس کمپیوٹر کے سبھی صارفین کیلئے خودکار اپ ڈیٹس کو ترتیب دے گا۔</translation>
@@ -7352,6 +7359,7 @@
 <translation id="7988805580376093356">‏اپنا OS برقرار رکھیں اور USB سے <ph name="DEVICE_OS" /> چلائیں۔</translation>
 <translation id="7991296728590311172">سوئچ رسائی کی ترتیبات</translation>
 <translation id="7992203134935383159">اسپیچ سنتھیسس</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">کارروائی کی ترجیح</translation>
 <translation id="7999229196265990314">مندرجہ ذیل فائلز بنائی گئیں:
 
@@ -7823,6 +7831,7 @@
 <translation id="844063558976952706">ہمیشہ اس سائٹ پر</translation>
 <translation id="8441313165929432954">ٹیدرنگ کو فعال/غیر فعال کریں</translation>
 <translation id="8443795068008423036">براہ کرم یقینی بنائیں کہ آپ کا آلہ اپ ٹو ڈیٹ ہے اور دوبارہ کوشش کریں</translation>
+<translation id="8443986842926457191">‏URL ‏2048 حروف سے زیادہ ہے</translation>
 <translation id="8446884382197647889">مزید جانیں</translation>
 <translation id="8447409163267621480">‏Ctrl یا Alt شامل کریں</translation>
 <translation id="844850004779619592">کوئی کمانڈ نہیں ملی</translation>
@@ -7888,6 +7897,7 @@
 <translation id="851263357009351303"><ph name="HOST" /> کو تصاویر دکھانے کی ہمیشہ اجازت دیں</translation>
 <translation id="8513108775083588393">خودکار گھمائیں</translation>
 <translation id="8514746246728959655">کوئی مختلف سیکیورٹی کلید آزمائیں</translation>
+<translation id="8519895319663397036">‏پاس ورڈز درآمد نہیں کر سکتے۔ فائل کا سائز ‎150 KB سے کم ہونا چاہیے۔</translation>
 <translation id="8523493869875972733">تبدیلیاں برقرار رکھیں</translation>
 <translation id="8523849605371521713">پالیسی کے ذریعے شامل کیا گیا</translation>
 <translation id="8524783101666974011">‏کارڈز کو اپنے Google اکاؤنٹ میں محفوظ کریں</translation>

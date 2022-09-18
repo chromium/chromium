@@ -60,6 +60,7 @@
 <translation id="2094648590148273905">ChromeOS Flex-ის პირობები</translation>
 <translation id="2094919256425865063">მაინც გსურთ Chrome-იდან გასვლა?</translation>
 <translation id="2106831557840787829">ChromeOS Flex და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო<ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
+<translation id="2112742052114331084">ჩართვის შემთხვევაში, Chrome დაიბრუნებს მეხსიერებას ჩანართებიდან, რომლებსაც აქტიურად არ იყენებთ. აღნიშნული გამოათავისუფლებს თქვენი კომპიუტერის რესურსებს სხვა ამოცანებისთვის და Chrome-ის უფრო სწრაფი მუშაობისთვის. არააქტიური ჩანართები ცარიელად გამოჩნდება და ავტომატურად გადაიტვირთება, როცა მათზე დააწკაპუნებთ. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> ან <ph name="BEGIN_LINK_2" />გამოგვეხმაურეთ<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">ეს მოქმედება წაშლის <ph name="ITEMS_COUNT" /> ერთეულს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">ხელახლა გაშვება &amp;Chrome-ის გასაახლებლად</translation>
 <translation id="2123055963409958220">ხელი შეუწყვეთ Chrome-ის გაუმჯობესებას <ph name="BEGIN_LINK" />მიმდინარე პარამეტრების<ph name="END_LINK" /> გამოგზავნის მეშვეობით</translation>

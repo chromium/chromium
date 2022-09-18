@@ -692,6 +692,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1640283014264083726">PKCS #1 MD4 amb encriptació RSA</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="1641496881756082050">Més accions per a <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{No s'ha importat 1 contrasenya més perquè té un format incorrecte}other{No s'han importat {NUM_PASSWORDS} contrasenyes més perquè tenen un format incorrecte}}</translation>
 <translation id="1642492862748815878">Connectat a <ph name="DEVICE" /> i <ph name="NUMBER_OF_DEVICES" /> dispositius Bluetooth més.</translation>
 <translation id="1642494467033190216">Abans d'activar altres funcions de depuració, heu d'eliminar la protecció del sistema de fitxers rootfs i reiniciar el sistema.</translation>
 <translation id="1643072738649235303">Signatura d'ECDSA X9.62 amb SHA-1</translation>
@@ -1829,6 +1830,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2673135533890720193">Llegir l'historial de navegació</translation>
 <translation id="2674764818721168631">Desactivat</translation>
 <translation id="2678063897982469759">Torna a activar</translation>
+<translation id="2678100101831051676">No es pot emetre.</translation>
 <translation id="268053382412112343">Hi&amp;storial</translation>
 <translation id="2681124317993121768">Els perfils de convidat no s'admeten</translation>
 <translation id="2682498795777673382">El pare o la mare han introduït un canvi</translation>
@@ -3861,6 +3863,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4617019240346358451">Torna a carregar la pàgina per utilitzar <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Opcions d'extensió</translation>
 <translation id="4617880081511131945">No es pot establir la connexió</translation>
+<translation id="4618195822946934889">L'URL només pot contenir caràcters ASCII</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4619615317237390068">Pestanyes d'altres dispositius</translation>
 <translation id="4620809267248568679">Aquesta configuració està gestionada per una extensió.</translation>
@@ -5059,6 +5062,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5800351251499368110">Tanca la cerca al tauler lateral. La cerca està oberta al tauler lateral.</translation>
 <translation id="5801568494490449797">Preferències</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5805268472388605531">Mantén premuda qualsevol tecla del teclat per veure'n marques d'èmfasi i caràcters especials</translation>
 <translation id="5805697420284793859">Gestor de finestres</translation>
 <translation id="5806447147478173900">Emmagatzematge total utilitzat pels llocs web mostrats: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (valor predeterminat)</translation>
@@ -5699,6 +5703,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="642469772702851743">El propietari ha bloquejat aquest dispositiu (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Velocitat de text a parla</translation>
 <translation id="642729974267661262">Sense permís per reproduir so</translation>
+<translation id="6427608534767366138">Es requereix l'autenticació del servidor intermediari per a "<ph name="NETWORK_ID" />"</translation>
 <translation id="6429384232893414837">Error d'actualització</translation>
 <translation id="6430814529589430811">ASCII codificat en Base64, certificat únic</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurarà les actualitzacions automàtiques per a tots els usuaris d'aquest equip.</translation>
@@ -7826,6 +7831,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="844063558976952706">Sempre en aquest lloc</translation>
 <translation id="8441313165929432954">Activa o desactiva la compartició de xarxa</translation>
 <translation id="8443795068008423036">Comprova que el dispositiu estigui actualitzat i torna-ho a provar</translation>
+<translation id="8443986842926457191">L'URL conté més de 2.048 caràcters</translation>
 <translation id="8446884382197647889">Més informació</translation>
 <translation id="8447409163267621480">Inclou la tecla Ctrl o Alt</translation>
 <translation id="844850004779619592">No s'ha trobat cap ordre</translation>
@@ -7891,6 +7897,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="851263357009351303">Permet sempre que <ph name="HOST" /> mostri imatges</translation>
 <translation id="8513108775083588393">Rotació autom.</translation>
 <translation id="8514746246728959655">Prova una altra clau de seguretat</translation>
+<translation id="8519895319663397036">No es poden importar les contrasenyes. La mida del fitxer ha de ser inferior a 150 kB.</translation>
 <translation id="8523493869875972733">Mantén els canvis</translation>
 <translation id="8523849605371521713">Afegida per la política</translation>
 <translation id="8524783101666974011">Desa targetes al Compte de Google</translation>

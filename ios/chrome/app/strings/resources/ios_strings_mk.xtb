@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1275718070701477396">Избран</translation>
 <translation id="1281818060020671000">Управувајте со податоците</translation>
+<translation id="1282311502488501110">Не се најавувај</translation>
 <translation id="1283524564873030414">Изминатите 24 часа</translation>
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
 <translation id="1291506870746876680">Дозволите за <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> ќе се исклучат кога ќе го напуштите сајтов.</translation>
@@ -54,6 +55,7 @@
 <translation id="1322735045095424339">Вашата организација бара режим „Инкогнито“</translation>
 <translation id="1323735185997015385">Избриши</translation>
 <translation id="132683371494960526">Допрете двапати за променување на изворна папка.</translation>
+<translation id="1335348992705722518">Управувајте со „Поставките“…</translation>
 <translation id="1340643665687018190">Затвори мени</translation>
 <translation id="1358214951266274152">Посетете го линкот што го копиравте</translation>
 <translation id="1360432990279830238">Одјавете се и исклучете синхронизација?</translation>
@@ -177,6 +179,7 @@
 <translation id="2469960372084740698">Да се исклучи „Безбедно прелистување“?</translation>
 <translation id="2473876017985765807">Веќе зачувавте лозинка за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не е избрано</translation>
+<translation id="2482878487686419369">Известувања</translation>
 <translation id="2500374554657206846">Опции за зачувување лозинка</translation>
 <translation id="2523363575747517183">Веб-сајтов постојано се обидува да отвори друга апликација.</translation>
 <translation id="2529021024822217800">Отвори ги сите</translation>
@@ -381,6 +384,7 @@
 <translation id="4187450337729239226">Залепи и пребарувај</translation>
 <translation id="4223967053752765281">Вашата организација го исклучи најавувањето. Сѐ уште може да ги гледате вашите обележувачи, историја, лозинки и другите поставки на уредов. Промените нема да се синхронизираат со вашата сметка.</translation>
 <translation id="4233831822770018312">Изменете ги дозволите</translation>
+<translation id="4236584471598725073">Цената се следи</translation>
 <translation id="4237377247299956313">Допрете <ph name="BEGIN_BOLD" />Стандардна апликација за прелистување<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Внесете лозинка</translation>
 <translation id="4249955472157341256">Подредете според последни</translation>
@@ -740,6 +744,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6930799952781667037">Допрете за да се промени на овој јазик.</translation>
 <translation id="6944369514868857500">Изберете друга сметка</translation>
 <translation id="6945221475159498467">Избери</translation>
+<translation id="6965382102122355670">Во ред</translation>
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6988572888918530647">Управувајте со сметката на Google</translation>

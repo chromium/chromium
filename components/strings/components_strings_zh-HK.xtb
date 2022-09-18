@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">三折頁</translation>
 <translation id="138218114945450791">淺藍色</translation>
 <translation id="1382194467192730611">系統管理員允許使用的 USB 裝置</translation>
+<translation id="1382378825779654399">如果產品在任何網站上降價，系統將向您傳送電郵警示。此網頁將會儲存至「<ph name="LAST_BOOKMARKS_FOLDER" />」。</translation>
 <translation id="1382912999714108023">目前的資料不正確？請通知銀行更新。</translation>
 <translation id="1384725838384960382">安全付款憑證驗證工作表</translation>
 <translation id="1386623374109090026">註解</translation>
@@ -297,7 +298,6 @@
 <translation id="1662550410081243962">儲存和填入付款方法</translation>
 <translation id="1663943134801823270">信用卡和地址選項均來自 Chrome。您可在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中管理這些選項。</translation>
 <translation id="1671391448414634642">從現在開始，來源語言為<ph name="SOURCE_LANGUAGE" />的網頁一律會翻譯成<ph name="TARGET_LANGUAGE" />。</translation>
-<translation id="1673886523110456987">使用 <ph name="CARD_DETAIL" /> 結帳即可享有優惠</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">此政策的值無法通過其綱要 (schema) 的驗證，因此會被忽略。</translation>
@@ -1519,6 +1519,7 @@
 <translation id="5018422839182700155">無法開啟此網頁</translation>
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
 <translation id="5020776957610079374">世界音樂</translation>
+<translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
 <translation id="5023310440958281426">請查看您的管理員政策</translation>
 <translation id="5029568752722684782">清除副本</translation>
 <translation id="5030338702439866405">發行者：</translation>
@@ -2240,6 +2241,7 @@
 <translation id="6993898126790112050">6x9 (信封)</translation>
 <translation id="6996312675313362352">一律翻譯<ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">娛樂業</translation>
+<translation id="7003335073762455340">您正在追蹤此產品。此網頁已儲存在「<ph name="LAST_BOOKMARKS_FOLDER" />」中。</translation>
 <translation id="7004583254764674281">使用 Windows Hello 可加快確認付款卡</translation>
 <translation id="7006930604109697472">仍要傳送</translation>
 <translation id="7012363358306927923">中國銀聯</translation>
@@ -3034,6 +3036,7 @@
 <translation id="9174623988242579721">改裝車和性能車</translation>
 <translation id="9174917557437862841">分頁切換按鈕，㩒一下 Enter 鍵就可以轉去呢個分頁</translation>
 <translation id="9179703756951298733">在 Chrome 設定中管理付款和信用卡資料</translation>
+<translation id="9179907736442194268">如果產品在任何網站上降價，系統將向您傳送電郵警示</translation>
 <translation id="9183302530794969518">Google 文件</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> 使用不支援的通訊協定。</translation>
 <translation id="9187461866967718678">極限運動</translation>

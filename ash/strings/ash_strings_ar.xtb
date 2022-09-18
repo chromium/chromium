@@ -216,6 +216,7 @@
 <translation id="2132302418721800944">تسجيل فيديو في وضع ملء الشاشة</translation>
 <translation id="2135456203358955318">المكبّر الذي تم إرساؤه</translation>
 <translation id="2148716181193084225">اليوم</translation>
+<translation id="2161132820593978283">جرِّب استخدام ميزة "تكبير تلقائي" حتى تظهر صورة وجهك في وسط الشاشة أثناء مكالمات الفيديو. يمكنك تفعيل هذه الميزة من خلال قائمة "الإعدادات السريعة".</translation>
 <translation id="2170530631236737939">يمكنك التمرير سريعًا لأسفل الشاشة بثلاثة أصابع للخروج من وضع "النظرة العامة".</translation>
 <translation id="219905428774326614">‏Launcher، جميع التطبيقات</translation>
 <translation id="2201071101391734388">الصورة الحديثة رقم <ph name="INDEX" /> من إجمالي <ph name="TOTAL_COUNT" /></translation>
@@ -254,6 +255,7 @@
 <translation id="2405664212338326887">غير متصلة</translation>
 <translation id="2408955596600435184">إدخال رقم التعريف الشخصي</translation>
 <translation id="2412593942846481727">هناك تحديث جديد</translation>
+<translation id="2426051945783024481">تم توسيط إطار الكاميرا تلقائيًا.</translation>
 <translation id="2427507373259914951">النقر بالزر الأيسر</translation>
 <translation id="2429753432712299108">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. قبل القبول، يُرجى التأكد أن مفتاح المرور هذا يظهر في هذا الجهاز: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
@@ -1042,6 +1044,7 @@
 <translation id="6960565108681981554">لم يتم تفعيل الشبكة. يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="6961121602502368900">لا تتوفّر ميزة "كتم صوت الهاتف" على الملف الشخصي للعمل.</translation>
 <translation id="6961840794482373852">‏تم تغيير اختصارات لوحة المفاتيح "Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Page Up، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأعلى".</translation>
+<translation id="696267987219125751">ميزة "تكبير تلقائي" غير مفعّلة.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6972754398087986839">البدء</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1132,6 +1135,7 @@
 <translation id="7513922695575567867">التقويم، الأسبوع الذي يبدأ من <ph name="DATE" />، التاريخ المُحدّد حاليًا هو <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">ميزة "تكبير تلقائي" مفعّلة.</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">‏تطبيقات Linux ونوافذ التصفّح المتخفي غير متوافقة حاليًا، ولكن سيتم حفظ التطبيقات الأخرى.</translation>
@@ -1150,6 +1154,7 @@
 <translation id="7607002721634913082">تعليق التحميل</translation>
 <translation id="7609951632080598826">عرض التقويم، <ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">تمت إعادة توصيل الكاميرا.</translation>
+<translation id="761736749114493194">إيقاف/تفعيل ميزة "تكبير تلقائي". <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجة فهرنهايت</translation>
 <translation id="7633755430369750696">عرض إعدادات ميزة "المشاركة عن قرب"</translation>
 <translation id="7634648064048557203">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى.</translation>
@@ -1310,6 +1315,7 @@
 <translation id="851458219935658693">عرض النوافذ المفتوحة في سطح المكتب الحالي، تم النقر على زر الاختيار.</translation>
 <translation id="8517041960877371778">قد يتعذر شحن <ph name="DEVICE_TYPE" /> أثناء التشغيل.</translation>
 <translation id="8535393432370007982">عكس نظام الترتيب حسب اللون</translation>
+<translation id="8541078764854166027">تكبير تلقائي</translation>
 <translation id="8542053257095774575">ما مِن أسطح مكتب أو نماذج محفوظة.</translation>
 <translation id="8546059259582788728">تم بنجاح التراجع عن إجراء الترتيب.</translation>
 <translation id="8551588720239073785">إعدادات التاريخ والوقت</translation>

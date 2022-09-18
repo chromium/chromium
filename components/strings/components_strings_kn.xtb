@@ -296,7 +296,6 @@
 <translation id="1662550410081243962">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಉಳಿಸಿ ಮತ್ತು ಭರ್ತಿ ಮಾಡಿ</translation>
 <translation id="1663943134801823270">ಕಾರ್ಡ್‌ಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು Chrome ನಿಂದ ಪಡೆಯಲಾಗಿದೆ. ನೀವು ಅವುಗಳನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="1671391448414634642">ಇಂದಿನಿಂದ <ph name="SOURCE_LANGUAGE" />ಭಾಷೆಯಲ್ಲಿರುವ ಪುಟಗಳನ್ನು <ph name="TARGET_LANGUAGE" />ಭಾಷೆಗೆ ಅನುವಾದ ಮಾಡಲಾಗುವುದು.</translation>
-<translation id="1673886523110456987">ಆಫರ್ ಅನ್ನು ಬಳಸಲು <ph name="CARD_DETAIL" /> ಮೂಲಕ ಚೆಕ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ನಿಂದ <ph name="TARGET_LANGUAGE" /> ಗೆ</translation>
 <translation id="1682696192498422849">ಚಿಕ್ಕ ಅಂಚು ಮೊದಲು</translation>
 <translation id="168693727862418163">ಈ ನೀತಿ ಮೌಲ್ಯವನ್ನು ಅದರ ರೂಪುರೇಷೆ ವಿರುದ್ಧ ಮೌಲ್ಯೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ ಮತ್ತು ಅದನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತದೆ.</translation>
@@ -421,6 +420,7 @@
 <translation id="2034971124472263449">ಹೇಗಾದರೂ ಉಳಿಸಿ</translation>
 <translation id="2035400064145347639">ಪ್ರವಾಸ ಗೈಡ್‌ಗಳು ಮತ್ತು ಪ್ರವಾಸಕಥನಗಳು</translation>
 <translation id="2036983605131262583">ಪರ್ಯಾಯ ರೋಲ್</translation>
+<translation id="2040463897538655645">ತೆಗೆದುಹಾಕಬಹುದಾದ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="2040894699575719559">ಸ್ಥಳವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2042213636306070719">ಟ್ರೇ 7</translation>
 <translation id="204357726431741734">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>

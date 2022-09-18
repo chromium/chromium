@@ -302,6 +302,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7682601070171973634">O Chromium está a explorar novas funcionalidades que permitem que os sites forneçam a mesma experiência de navegação com uma menor utilização dos seus dados</translation>
 <translation id="7686590090926151193">O Chromium não é o seu navegador predefinido.</translation>
 <translation id="7689606757190482937">Sincronizar e personalizar o Chromium em todos os dispositivos</translation>
+<translation id="7714577916146996629">Quando a definição está ativada, o Chromium recupera a memória dos separadores que não está a usar ativamente. Esta ação liberta os recursos do computador para outras tarefas e mantém o Chromium rápido. Os separadores inativos aparecem vazios e são atualizados automaticamente quando clica nos mesmos. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envie feedback<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Esta ação elimina os dados de navegação deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">O programa de instalação não conseguiu criar um directório temporário. Verifique se há espaço livre no disco e permissão para a instalação do software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>

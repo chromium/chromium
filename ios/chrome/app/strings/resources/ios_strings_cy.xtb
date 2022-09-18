@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">Stopio</translation>
 <translation id="1275718070701477396">Wedi'i ddewis</translation>
 <translation id="1281818060020671000">Rheoli Data</translation>
+<translation id="1282311502488501110">Peidio â Mewngofnodi</translation>
 <translation id="1283524564873030414">24 awr ddiwethaf</translation>
 <translation id="1285320974508926690">Peidio byth â chyfieithu'r wefan hon</translation>
 <translation id="1291506870746876680">Bydd caniatadau <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> yn ailosod i wedi'u diffodd pan fyddwch yn gadael y wefan hon.</translation>
@@ -177,6 +178,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2469960372084740698">Diffodd Pori'n Ddiogel?</translation>
 <translation id="2473876017985765807">Rydych eisoes wedi cadw cyfrinair ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Heb ei dewis</translation>
+<translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2500374554657206846">Dewisiadau ar gyfer Cadw Cyfrinair</translation>
 <translation id="2523363575747517183">Mae'r wefan hon yn ceisio agor rhaglen arall tro ar ôl tro.</translation>
 <translation id="2529021024822217800">Agor y Cyfan</translation>
@@ -739,6 +741,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6930799952781667037">Tapiwch i newid i'r iaith hon.</translation>
 <translation id="6944369514868857500">Dewis cyfrif arall</translation>
 <translation id="6945221475159498467">Dewis</translation>
+<translation id="6965382102122355670">Iawn</translation>
 <translation id="6973630695168034713">Ffolderi</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Rheoli'ch Cyfrif Google</translation>

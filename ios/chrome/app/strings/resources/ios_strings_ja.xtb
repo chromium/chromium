@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">中止</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1281818060020671000">データの管理</translation>
+<translation id="1282311502488501110">ログインしない</translation>
 <translation id="1283524564873030414">過去 24 時間</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />権限は、このサイトから離れるとオフにリセットされます。</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">セーフ ブラウジングをオフにしますか？</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> のパスワードは保存済みです</translation>
 <translation id="2476359652512522418">選択されていません</translation>
+<translation id="2482878487686419369">通知</translation>
 <translation id="2500374554657206846">パスワードの保存オプション</translation>
 <translation id="2523363575747517183">このウェブサイトは別のアプリケーションを繰り返し開こうとしています。</translation>
 <translation id="2529021024822217800">すべて開く</translation>
@@ -740,6 +742,7 @@
 <translation id="6930799952781667037">タップしてこの言語を変更できます。</translation>
 <translation id="6944369514868857500">別のアカウントを選択</translation>
 <translation id="6945221475159498467">選択</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">フォルダ</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6988572888918530647">Google アカウントを管理する</translation>

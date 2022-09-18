@@ -1150,6 +1150,7 @@
 <translation id="7633755430369750696">顯示「咫尺共享」設定。</translation>
 <translation id="7634648064048557203">攝錄機已經對齊右下角</translation>
 <translation id="7641938616688887143">錄影</translation>
+<translation id="7642106959537987271">色彩反轉模式</translation>
 <translation id="7642647758716480637">打開<ph name="NETWORK_NAME" />嘅設定，<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7647488630410863958">解鎖裝置即可查看您的通知</translation>
@@ -1255,6 +1256,7 @@
 <translation id="8209010265547628927">重設</translation>
 <translation id="8214996719228530800">Canary 版本</translation>
 <translation id="8219451629189078428">Chromebook 在這段期間需要保持開啟並接上電源。請確保充電器或適配器連接線完全插入 Chromebook 和電源插座。請勿關閉 Chromebook。</translation>
+<translation id="8230305195727960608">色彩反轉模式</translation>
 <translation id="8236042855478648955">休息時間到了</translation>
 <translation id="8246282815785366524"><ph name="GIVEN_NAME" />，歡迎回來</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，手機電量係 <ph name="BATTERY_STATUS" /></translation>
@@ -1380,6 +1382,7 @@
 <translation id="8982906748181120328">「咫尺共享」分享設定</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">正在使用<ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">已啟用「色彩反轉模式」。再次按下 Ctrl+Search+H 鍵便可停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解鎖裝置即可執行有關通知的動作</translation>
 <translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
@@ -1428,6 +1431,7 @@
 <translation id="921989828232331238">您的家長今天已鎖定此裝置</translation>
 <translation id="9220525904950070496">移除帳戶</translation>
 <translation id="923686485342484400">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
+<translation id="92580429198593979">您已按下色彩反轉的鍵盤快速鍵。確定要啟用色彩反轉嗎？</translation>
 <translation id="925832987464884575">隱藏預覽</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">我日曆有咩活動？</translation>

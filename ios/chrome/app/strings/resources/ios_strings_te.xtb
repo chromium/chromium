@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">ఆపు</translation>
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
 <translation id="1281818060020671000">డేటాను మేనేజ్ చేయండి</translation>
+<translation id="1282311502488501110">సైన్ ఇన్ చేయవద్దు</translation>
 <translation id="1283524564873030414">గత 24 గంటలు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1291506870746876680">మీరు ఈ సైట్‌ను వదిలి వెళ్లినప్పుడు <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> అనుమతులు ఆఫ్‌కు రీసెట్ చేయబడతాయి.</translation>
@@ -178,6 +179,7 @@
 <translation id="2469960372084740698">సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" />లో మీరు ఇప్పటికే పాస్‌వర్డ్‌ను సేవ్ చేశారు</translation>
 <translation id="2476359652512522418">ఎంచుకోబడలేదు</translation>
+<translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2500374554657206846">పాస్‌వర్డ్‌ను సేవ్ చేసే ఎంపికలు</translation>
 <translation id="2523363575747517183">ఈ వెబ్‌సైట్ మరో అప్లికేషన్‌ను తెరవడానికి పలుసార్లు ప్రయత్నిస్తోంది.</translation>
 <translation id="2529021024822217800">అన్నీ తెరువు</translation>
@@ -382,6 +384,7 @@
 <translation id="4187450337729239226">పేస్ట్ చేసి, సెర్చ్ చేయండి</translation>
 <translation id="4223967053752765281">సైన్ ఇన్‌ను మీ సంస్థ ఆఫ్ చేసింది. ఈ పరికరంలో మీరు ఇప్పటికీ మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, అలాగే ఇతర సెట్టింగ్‌లను చూడవచ్చు. మీరు మార్పులు చేస్తే, అవి మీ ఖాతాకు సింక్ చేయబడవు.</translation>
 <translation id="4233831822770018312">అనుమతులను ఎడిట్ చేయండి</translation>
+<translation id="4236584471598725073">ధరను ట్రాక్ చేయడం</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ఆటోమేటిక్ బ్రౌజర్ యాప్<ph name="END_BOLD" />‌ను ట్యాప్ చేయండి</translation>
 <translation id="424315890655130736">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="4249955472157341256">ఇటీవలి లేబుల్ టెక్స్ట్ ఆధారంగా క్రమపద్ధతిలో అమర్చండి</translation>
@@ -741,6 +744,7 @@
 <translation id="6930799952781667037">ఈ భాషకు మార్చడానికి నొక్కండి.</translation>
 <translation id="6944369514868857500">మరొక ఖాతాను ఎంచుకోండి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
+<translation id="6965382102122355670">సరే</translation>
 <translation id="6973630695168034713">ఫోల్డర్‌లు</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>

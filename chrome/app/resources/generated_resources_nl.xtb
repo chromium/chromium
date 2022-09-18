@@ -243,7 +243,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />De locatieservice van Google gebruikt bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van dit apparaat te schatten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je kunt Locatie uitzetten door de hoofdinstelling Locatie op dit apparaat uit te zetten. Je kunt het gebruik van wifi, mobiele netwerken en sensoren voor locatie ook uitzetten via de locatie-instellingen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="122082903575839559">Algoritme voor handtekening van certificaat</translation>
-<translation id="1221024147024329929">PKCS nr. 1 MD2 met RSA-encryptie</translation>
+<translation id="1221024147024329929">PKCS nr. 1 MD2 met RSA-versleuteling</translation>
 <translation id="1221825588892235038">Alleen selectie</translation>
 <translation id="1223484782328004593">Je hebt een licentie nodig voor <ph name="APP_NAME" /></translation>
 <translation id="1223853788495130632">Je beheerder raadt een specifieke waarde aan voor deze instelling.</translation>
@@ -689,9 +689,10 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1637765355341780467">Er is iets misgegaan bij het openen van je profiel. Mogelijk zijn sommige functies niet beschikbaar.</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> werkt nog niet in Linux-apps</translation>
-<translation id="1640283014264083726">PKCS nr. 1 MD4 met RSA-encryptie</translation>
+<translation id="1640283014264083726">PKCS nr. 1 MD4 met RSA-versleuteling</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050">Meer acties voor <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 ander wachtwoord is niet geïmporteerd omdat het niet de juiste indeling heeft}other{{NUM_PASSWORDS} andere wachtwoorden zijn niet geïmporteerd omdat ze niet de juiste indeling hebben}}</translation>
 <translation id="1642492862748815878">Verbonden met <ph name="DEVICE" /> en <ph name="NUMBER_OF_DEVICES" /> andere bluetooth-apparaten</translation>
 <translation id="1642494467033190216">Je moet rootfs-beveiliging verwijderen en opnieuw opstarten voordat je andere foutopsporingsfuncties kunt aanzetten.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-handtekening met SHA-1</translation>
@@ -1829,6 +1830,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2673135533890720193">Je browsegeschiedenis lezen</translation>
 <translation id="2674764818721168631">Uit</translation>
 <translation id="2678063897982469759">Opnieuw aanzetten</translation>
+<translation id="2678100101831051676">Kan niet casten.</translation>
 <translation id="268053382412112343">Geschi&amp;edenis</translation>
 <translation id="2681124317993121768">Gastprofielen worden niet ondersteund</translation>
 <translation id="2682498795777673382">Update van je ouder</translation>
@@ -3561,7 +3563,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4330191372652740264">IJswater</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> nooit vertalen</translation>
 <translation id="4332976768901252016">Ouderlijk toezicht instellen</translation>
-<translation id="4333854382783149454">PKCS nr. 1 SHA-1 met RSA-encryptie</translation>
+<translation id="4333854382783149454">PKCS nr. 1 SHA-1 met RSA-versleuteling</translation>
 <translation id="4336434711095810371">Alle gegevens wissen</translation>
 <translation id="4339203724549370495">App verwijderen</translation>
 <translation id="4340125850502689798">Ongeldige gebruikersnaam</translation>
@@ -3861,6 +3863,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4617019240346358451">Laad de pagina opnieuw om <ph name="EXTENSION_NAME" /> te gebruiken</translation>
 <translation id="4617270414136722281">Opties voor extensies</translation>
 <translation id="4617880081511131945">Kan geen verbinding maken</translation>
+<translation id="4618195822946934889">De URL mag alleen ASCII-tekens bevatten</translation>
 <translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
 <translation id="4619615317237390068">Tabbladen van andere apparaten</translation>
 <translation id="4620809267248568679">Deze instelling wordt door een extensie afgedwongen.</translation>
@@ -4328,7 +4331,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5086874064903147617">Standaardhomepage herstellen?</translation>
 <translation id="5087249366037322692">Toegevoegd door een derde partij</translation>
 <translation id="5087580092889165836">Pas toevoegen</translation>
-<translation id="5088534251099454936">PKCS nr. 1 SHA-512 met RSA-encryptie</translation>
+<translation id="5088534251099454936">PKCS nr. 1 SHA-512 met RSA-versleuteling</translation>
 <translation id="5089763948477033443">Handgreep voor wijziging van het formaat van het zijvenster</translation>
 <translation id="5090637338841444533">Geen toestemming om je camerapositie bij te houden</translation>
 <translation id="5093569275467863761">Incognitosubframe in Back-Forward Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -4671,7 +4674,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
-<translation id="5434065355175441495">PKCS nr. 1 met RSA-encryptie</translation>
+<translation id="5434065355175441495">PKCS nr. 1 met RSA-versleuteling</translation>
 <translation id="5435779377906857208"><ph name="HOST" /> altijd toegang tot je locatie geven</translation>
 <translation id="5436492226391861498">Wachten op proxytunnel...</translation>
 <translation id="5436510242972373446">Zoeken op <ph name="SITE_NAME" />:</translation>
@@ -5056,6 +5059,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5800351251499368110">Zoeken in zijvenster sluiten. Zoeken is geopend in het zijvenster.</translation>
 <translation id="5801568494490449797">Voorkeuren</translation>
 <translation id="5804241973901381774">Rechten</translation>
+<translation id="5805268472388605531">Houd de toetsenbordtoetsen ingedrukt om accenttekens en speciale tekens te bekijken</translation>
 <translation id="5805697420284793859">Vensterbeheer</translation>
 <translation id="5806447147478173900">Totale opslagruimte gebruikt door getoonde sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standaard)</translation>
@@ -5317,7 +5321,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6054284857788651331">Recent gesloten tabbladgroep</translation>
 <translation id="6054961935262556546">Zichtbaarheid wijzigen</translation>
 <translation id="6055171183283175969">Het opgegeven wachtwoord is onjuist.</translation>
-<translation id="6055392876709372977">PKCS nr. 1 SHA-256 met RSA-encryptie</translation>
+<translation id="6055392876709372977">PKCS nr. 1 SHA-256 met RSA-versleuteling</translation>
 <translation id="6055544610007596637">Installeer apps voor je <ph name="DEVICE_TYPE" /> via de Google Play Store</translation>
 <translation id="6056710589053485679">Normaal opnieuw laden</translation>
 <translation id="6057312498756061228">Dit bestand is te groot voor een beveiligingscontrole. Je kunt bestanden tot 50 MB openen.</translation>
@@ -5695,6 +5699,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="642469772702851743">Dit apparaat (serienummer: <ph name="SERIAL_NUMBER" />) is vergrendeld door de eigenaar.</translation>
 <translation id="6425556984042222041">Snelheid voor tekst-naar-spraak</translation>
 <translation id="642729974267661262">Geen toestemming om geluid af te spelen</translation>
+<translation id="6427608534767366138">Proxyverificatie is vereist voor <ph name="NETWORK_ID" /></translation>
 <translation id="6429384232893414837">Updatefout</translation>
 <translation id="6430814529589430811">Base64 Encoded ASCII, één certificaat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> stelt automatische updates in voor alle gebruikers van deze computer.</translation>
@@ -5881,7 +5886,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 Je hebt nog # gehackt wachtwoord. Google Wachtwoordmanager raadt je aan dit wachtwoord nu te checken.}other{Het gehackte wachtwoord is gewijzigd.
 
 Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze wachtwoorden nu te checken.}}</translation>
-<translation id="6596325263575161958">Opties voor encryptie</translation>
+<translation id="6596325263575161958">Opties voor versleuteling</translation>
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6597017209724497268">Voorbeelden</translation>
 <translation id="6597331566371766302">De volgende extensies zijn geblokkeerd door je beheerder:</translation>
@@ -6394,7 +6399,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7070484045139057854">Hiermee kun je sitegegevens lezen en wijzigen</translation>
 <translation id="7072010813301522126">Naam van snelkoppeling</translation>
 <translation id="7074066049407662839">Log in om wachtwoorden op te slaan</translation>
-<translation id="7075513071073410194">PKCS nr. 1 MD5 met RSA-encryptie</translation>
+<translation id="7075513071073410194">PKCS nr. 1 MD5 met RSA-versleuteling</translation>
 <translation id="7075625805486468288">HTTPS/SSL-certificaten en -instellingen beheren</translation>
 <translation id="7076875098323397992">Kan upgrade niet starten</translation>
 <translation id="7077829361966535409">De inlogpagina kan niet worden geladen met de huidige proxyinstellingen. <ph name="GAIA_RELOAD_LINK_START" />Probeer opnieuw in te loggen<ph name="GAIA_RELOAD_LINK_END" /> of gebruik andere <ph name="PROXY_SETTINGS_LINK_START" />proxyinstellingen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
@@ -7321,7 +7326,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernetgegevens</translation>
 <translation id="7970882136539140748">Kaart kan nu niet worden opgeslagen</translation>
-<translation id="7972714317346275248">PKCS nr. 1 SHA-384 met RSA-encryptie</translation>
+<translation id="7972714317346275248">PKCS nr. 1 SHA-384 met RSA-versleuteling</translation>
 <translation id="7973776233567882054">Welke beschrijving past het beste bij je netwerk?</translation>
 <translation id="797394244396603170">Selecteer het apparaat waarmee je bestanden wilt delen</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> opnieuw proberen te gebruiken</translation>
@@ -7817,6 +7822,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="844063558976952706">Altijd op deze site</translation>
 <translation id="8441313165929432954">Tethering aan-/uitzetten</translation>
 <translation id="8443795068008423036">Zorg dat je apparaat up-to-date is en probeer het opnieuw</translation>
+<translation id="8443986842926457191">De URL is langer dan 2048 tekens</translation>
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8447409163267621480">Neem Ctrl of Alt op</translation>
 <translation id="844850004779619592">Geen opdrachten gevonden</translation>
@@ -7882,6 +7888,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="851263357009351303"><ph name="HOST" /> altijd toestaan afbeeldingen te bekijken</translation>
 <translation id="8513108775083588393">Autom. draaien</translation>
 <translation id="8514746246728959655">Probeer een andere beveiligingssleutel</translation>
+<translation id="8519895319663397036">Kan wachtwoorden niet importeren. Het bestand moet kleiner zijn dan 150 KB.</translation>
 <translation id="8523493869875972733">Wijzigingen behouden</translation>
 <translation id="8523849605371521713">Toegevoegd door beleid</translation>
 <translation id="8524783101666974011">Passen opslaan in je Google-account</translation>

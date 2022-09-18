@@ -3558,6 +3558,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4306119971288449206">Rhaid cyflwyno apiau gyda'r math o gynnwys "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Hanfodion</translation>
 <translation id="4309165024397827958">Caniatáu i apiau Android a gwasanaethau sydd â chaniatâd lleoliad ddefnyddio lleoliad y ddyfais hon. Mae'n bosib y bydd Google yn casglu data lleoliad o bryd i'w gilydd ac yn defnyddio'r data hyn mewn ffordd anhysbys i wella cywirdeb lleoliad a gwasanaethau sy'n seiliedig ar leoliad.</translation>
+<translation id="4309183709806093061">Rhannu sain system hefyd. Bydd y ddyfais hon yn cael ei thewi i atal adborth.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K byw)</translation>
 <translation id="4310132194679586591">Dewiswch ap ar eich dyfais i agor y ddolen hon</translation>
 <translation id="4310139701823742692">Mae'r ffeil yn y fformat anghywir. Gwiriwch y ffeil PPD a rhowch gynnig arall arni.</translation>
@@ -4571,6 +4572,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5305145881844743843">Rheolir y cyfrif hwn gan <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /></translation>
 <translation id="5307030433605830021">Ni chefnogir y ffynhonnell</translation>
 <translation id="5307386115243749078">Switsh Paru Bluetooth</translation>
+<translation id="5307958609248661362">Mae Rheolwr Cyfrineiriau Google wedi darfod</translation>
 <translation id="5308380583665731573">Cysylltu</translation>
 <translation id="5309418307557605830">Mae Google Assistant yn gweithio yma hefyd</translation>
 <translation id="5311304534597152726">Wrthi'n mewngofnodi fel</translation>
@@ -7377,6 +7379,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7988805580376093356">Cadw eich OS a rhedeg <ph name="DEVICE_OS" /> o USB.</translation>
 <translation id="7991296728590311172">Newid gosodiadau Mynediad</translation>
 <translation id="7992203134935383159">Synthesis lleferydd</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Blaenoriaeth Prosesau</translation>
 <translation id="7999229196265990314">Crëwyd y ffeiliau canlynol:
 

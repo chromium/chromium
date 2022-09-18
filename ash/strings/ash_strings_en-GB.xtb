@@ -215,6 +215,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
 <translation id="2148716181193084225">Today</translation>
+<translation id="2161132820593978283">Try camera framing so that you’ll be in the centre of the screen on video calls. Turn it on in Quick Settings.</translation>
 <translation id="2170530631236737939">Swipe down with three fingers to exit Overview.</translation>
 <translation id="219905428774326614">Launcher, all apps</translation>
 <translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2405664212338326887">Not connected</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2412593942846481727">Update available</translation>
+<translation id="2426051945783024481">Camera frame automatically centred</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Show password</translation>
@@ -1040,6 +1042,7 @@ New install</translation>
 <translation id="6960565108681981554">Not activated. Contact your operator.</translation>
 <translation id="6961121602502368900">Silence phone is not available on work profile</translation>
 <translation id="6961840794482373852">The Alt + up arrow keyboard shortcut has changed. To use the page up key, press the <ph name="LAUNCHER_KEY_NAME" /> key + up arrow.</translation>
+<translation id="696267987219125751">Camera framing is off.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Get started</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1133,7 @@ New install</translation>
 <translation id="7513922695575567867">Calendar, week of <ph name="DATE" />, <ph name="SELECTED_DATE" /> is currently selected.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Camera framing is on.</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux apps and incognito windows aren’t currently supported. Other apps will be saved.</translation>
@@ -1148,10 +1152,12 @@ New install</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7609951632080598826">Calendar view, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera reconnected.</translation>
+<translation id="761736749114493194">Toggle camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Show Nearby Share settings.</translation>
 <translation id="7634648064048557203">Camera snapped to the bottom-right corner</translation>
 <translation id="7641938616688887143">Record</translation>
+<translation id="7642106959537987271">colour inversion mode</translation>
 <translation id="7642647758716480637">Open settings for <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (owner)</translation>
 <translation id="7647488630410863958">Unlock device to view your notifications</translation>
@@ -1257,6 +1263,7 @@ New install</translation>
 <translation id="8209010265547628927">Reset</translation>
 <translation id="8214996719228530800">Canary channel</translation>
 <translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
+<translation id="8230305195727960608">Colour inversion mode</translation>
 <translation id="8236042855478648955">Time for a break</translation>
 <translation id="8246282815785366524">Welcome back, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
@@ -1308,6 +1315,7 @@ New install</translation>
 <translation id="851458219935658693">Show windows from the current desk, radio button selected</translation>
 <translation id="8517041960877371778">Your <ph name="DEVICE_TYPE" /> may not charge while it is turned on.</translation>
 <translation id="8535393432370007982">Undo sort order by colour</translation>
+<translation id="8541078764854166027">Camera framing</translation>
 <translation id="8542053257095774575">No saved desks or templates</translation>
 <translation id="8546059259582788728">Sort undo successful</translation>
 <translation id="8551588720239073785">Date and time settings</translation>
@@ -1382,6 +1390,7 @@ New install</translation>
 <translation id="8982906748181120328">Nearby visibility</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Colour inversion mode enabled. Press Ctrl+Search+H again to toggle it off.</translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
 <translation id="9000771174482730261">MANAGE STORAGE</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
@@ -1430,6 +1439,7 @@ New install</translation>
 <translation id="921989828232331238">Your parent locked your device for the day</translation>
 <translation id="9220525904950070496">Remove account</translation>
 <translation id="923686485342484400">Press Control Shift Q twice to sign out.</translation>
+<translation id="92580429198593979">You pressed the keyboard shortcut for colour inversion. Do you want to turn it on?</translation>
 <translation id="925832987464884575">Hide previews</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately</translation>
 <translation id="938963181863597773">What's on my calendar?</translation>

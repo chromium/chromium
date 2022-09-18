@@ -3556,6 +3556,7 @@
 <translation id="4306119971288449206">ऐप्लिकेशन को सामग्री-प्रकार "<ph name="CONTENT_TYPE" />" के साथ दिया जाना चाहिए</translation>
 <translation id="4307992518367153382">बुनियादी चीज़ें</translation>
 <translation id="4309165024397827958">जिन Android ऐप्लिकेशन और सेवाओं को आपके डिवाइस की जगह की जानकारी की ज़रूरत होती है उन्हें इसके इस्तेमाल की अनुमति दें. Google, जगह की जानकारी को ज़्यादा सटीक बनाने और उससे जुड़ी सेवाओं को बेहतर बनाने के लिए, समय-समय पर जगह से जुड़ा डेटा इकट्ठा कर सकता है. साथ ही, वह आपकी पहचान ज़ाहिर किए बिना इस डेटा का इस्तेमाल कर सकता है.</translation>
+<translation id="4309183709806093061">सिस्टम का ऑडियो भी शेयर करें. ऑडियो फ़ीडबैक को रोकने के लिए, इस डिवाइस को म्यूट किया जाएगा.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K लाइव)</translation>
 <translation id="4310132194679586591">यह लिंक खोलने के लिए, अपने डिवाइस पर कोई ऐप्लिकेशन चुनें</translation>
 <translation id="4310139701823742692">फ़ाइल का फ़ॉर्मैट गलत है. PPD फ़ाइल देखें और फिर से कोशिश करें.</translation>
@@ -4569,6 +4570,7 @@
 <translation id="5305145881844743843">इस खाते को <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> मैनेज करता है</translation>
 <translation id="5307030433605830021">स्रोत काम नहीं करता है</translation>
 <translation id="5307386115243749078">ब्लूटूथ स्विच को दूसरे डिवाइस से जोड़ें</translation>
+<translation id="5307958609248661362">Google Password Manager पर पुष्टि करने का समय खत्म हो गया</translation>
 <translation id="5308380583665731573">कनेक्ट करें</translation>
 <translation id="5309418307557605830">Google Assistant यहां भी काम करती है</translation>
 <translation id="5311304534597152726">इसके रूप में प्रवेश हो रहा है</translation>
@@ -7369,6 +7371,7 @@
 <translation id="7988805580376093356">अपना ओएस न हटाएं और <ph name="DEVICE_OS" /> को यूएसबी से चलाएं.</translation>
 <translation id="7991296728590311172">ऐक्सेस का तरीका बदलने की सेटिंग</translation>
 <translation id="7992203134935383159">लिखाई को बोली में बदलने से जुड़ी सेटिंग पर जाएं</translation>
+<translation id="799570308305997052">वेबव्यू</translation>
 <translation id="7997826902155442747">प्राथमिकता संसाधित करें</translation>
 <translation id="7999229196265990314">निम्न फ़ाइलें बनाई गईं:
 

@@ -454,6 +454,7 @@
 <translation id="3435465986463792564">Адкрылі шмат акон? Кіраваць імі можна тут</translation>
 <translation id="3443221991560634068">Перазагрузіць бягучую старонку</translation>
 <translation id="3444179773590444986">Пакінуць водгук на цёмную тэму для сайтаў?</translation>
+<translation id="3452832259067974318">У мэтах аховы вашай прыватнасці Chrome не будзе аўтаматычна запаўняць пароль у гэтым полі.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Запланавана 1 спампоўка}one{Запланавана # спампоўка}few{Запланавана # спампоўкі}many{Запланавана # спамповак}other{Запланавана # спампоўкі}}</translation>
 <translation id="3474624961160222204">Працягнуць як <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Вы можаце выбраць пошукавую сістэму</translation>
@@ -679,6 +680,7 @@
 <translation id="4763480195061959176">відэа</translation>
 <translation id="4766313118839197559">Паролі захоўваюцца ў Менеджары пароляў на гэтай прыладзе.</translation>
 <translation id="4766678251456904326">Дадаць уліковы запіс на прыладу</translation>
+<translation id="4787736314074622408">Выдаліць файл "<ph name="ITEM_TITLE" />"?</translation>
 <translation id="4791358705705538979">Дапамагае вам выконваць задачы ў інтэрнэце (напрыклад, афармляць заказы)</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Шыфраванне фразы-пароля не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.
@@ -1085,6 +1087,7 @@
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, укладка, выбрана</translation>
 <translation id="6828070228333235514">Спыніць адсочванне цаны</translation>
+<translation id="6830728435402077660">Не абаронена</translation>
 <translation id="6833996806551876956">Пробны перыяд Privacy Sandbox</translation>
 <translation id="6836206421467243968">Аднавіць групу ўкладак "<ph name="TITLE_OF_GROUP" />" як новую фонавую групу ўкладак.</translation>
 <translation id="6846298663435243399">Ідзе загрузка…</translation>

@@ -215,6 +215,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2132302418721800944">Snimi ceo ekran</translation>
 <translation id="2135456203358955318">Montirana lupa ekrana</translation>
 <translation id="2148716181193084225">Danas</translation>
+<translation id="2161132820593978283">Probajte uokvirivanje kamere da biste bili u centru ekrana tokom video poziva. Uključite ga u Brzim podešavanjima.</translation>
 <translation id="2170530631236737939">Prevucite nadole pomoću tri prsta da biste izašli iz Pregleda</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna slika od <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
+<translation id="2426051945783024481">Okvir kamere je automatski centriran</translation>
 <translation id="2427507373259914951">Levi klik</translation>
 <translation id="2429753432712299108">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Pre nego što mu je date, uverite se da je ova šifra prikazana na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
@@ -1041,6 +1043,7 @@ Novo instaliranje</translation>
 <translation id="6960565108681981554">Nije aktivirano. Obratite se mobilnom operateru.</translation>
 <translation id="6961121602502368900">Isključivanje zvuka telefona nije dostupno na poslovnom profilu</translation>
 <translation id="6961840794482373852">Tasterska prečica Ctrl + strelica nagore je promenjena. Da biste koristili taster Page Up, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nagore.</translation>
+<translation id="696267987219125751">Uokvirivanje kamere je isključeno.</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="6972754398087986839">Započnimo</translation>
 <translation id="6979158407327259162">Google disk</translation>
@@ -1131,6 +1134,7 @@ Novo instaliranje</translation>
 <translation id="7513922695575567867">Kalendar, sedmica kada je <ph name="DATE" />, <ph name="SELECTED_DATE" /> je trenutno izabran.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Uokvirivanje kamere je uključeno.</translation>
 <translation id="7526573455193969409">Mreža se možda nadgleda</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux aplikacije i prozori bez arhiviranja trenutno nisu podržani. Druge aplikacije će biti sačuvane.</translation>
@@ -1149,6 +1153,7 @@ Novo instaliranje</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7609951632080598826">Prikaz kalendara, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
+<translation id="761736749114493194">Uključite uokvirivanje kamere. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Prikažite podešavanja Deljenja u blizini.</translation>
 <translation id="7634648064048557203">Kamera je uklopljena u donji levi ugao</translation>
@@ -1309,6 +1314,7 @@ Novo instaliranje</translation>
 <translation id="851458219935658693">Prikazujte prozore sa aktuelne radne površine, dugme za izbor je izabrano</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
 <translation id="8535393432370007982">Opozovite redosled sortiranja prema boji</translation>
+<translation id="8541078764854166027">Uokvir. kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina niti šablona</translation>
 <translation id="8546059259582788728">Opozvali ste sortiranje</translation>
 <translation id="8551588720239073785">Podešavanja datuma i vremena</translation>

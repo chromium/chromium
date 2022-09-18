@@ -3532,6 +3532,7 @@
 <translation id="4306119971288449206">应用必须以“<ph name="CONTENT_TYPE" />”这种内容类型提供</translation>
 <translation id="4307992518367153382">基本</translation>
 <translation id="4309165024397827958">允许有位置信息权限的 Android 应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
+<translation id="4309183709806093061">同时共享系统音频。此设备会被静音，以免收到反馈。</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K（实际大小为 <ph name="NUM_KILOBYTES_LIVE" /> K）</translation>
 <translation id="4310132194679586591">请在您的设备上选择一款应用以打开此链接</translation>
 <translation id="4310139701823742692">文件格式有误。请检查 PPD 文件，然后重试。</translation>
@@ -4542,6 +4543,7 @@
 <translation id="5305145881844743843">此帐号由 <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> 管理</translation>
 <translation id="5307030433605830021">来源不受支持</translation>
 <translation id="5307386115243749078">为蓝牙开关配对</translation>
+<translation id="5307958609248661362">Google 密码管理工具已超时</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5309418307557605830">在此设备上也能使用 Google 助理</translation>
 <translation id="5311304534597152726">正在使用以下身份登录：</translation>
@@ -7337,6 +7339,7 @@
 <translation id="7988805580376093356">请从 USB（而非您的操作系统）中运行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7992203134935383159">语音合成</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">进程优先级</translation>
 <translation id="7999229196265990314">已创建以下文件：
 

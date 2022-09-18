@@ -454,6 +454,7 @@
 <translation id="3435465986463792564">खूप विंडो उघडल्या आहेत का? तुम्ही त्या येथे व्यवस्थापित करू शकता</translation>
 <translation id="3443221991560634068">वर्तमान पृष्‍ठ रीलोड करा</translation>
 <translation id="3444179773590444986">साइटसाठीच्या गडद थीमबाबत फीडबॅक शेअर करायचा आहे का?</translation>
+<translation id="3452832259067974318">तुमच्‍या गोपनीयतेचे संरक्षण करण्‍यासाठी, या फील्‍डमध्‍ये Chrome तुमचा पासवर्ड ऑटोफिल करणार नाही.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केला}other{# डाउनलोड शेड्युल केले}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="3478363558367712427">तुम्ही तुमचे शोध इंजीन निवडू शकता</translation>
@@ -679,6 +680,7 @@
 <translation id="4763480195061959176">व्हिडिओ</translation>
 <translation id="4766313118839197559">पासवर्ड हे या डिव्हाइसवर पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जातात</translation>
 <translation id="4766678251456904326">डिव्हाइसवर खाते जोडा</translation>
+<translation id="4787736314074622408">तुम्हाला <ph name="ITEM_TITLE" /> का हटवायची आहे?</translation>
 <translation id="4791358705705538979">तुम्हाला संपूर्ण वेबवर चेकआउटसारखी कार्ये पूर्ण करण्यात मदत करते</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.

@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">您还可在屏幕上的各部分之间移动。例如，您可在启动器、任务栏和 Chrome 标签页之间移动。若要移至下一部分，请用 4 根手指从左向右滑动屏幕。请立即尝试此手势以继续。</translation>
 <translation id="2624431853467395961">打开学习模式</translation>
 <translation id="2626530649491650971">可点击</translation>
+<translation id="263637551280112393">按搜索键+Shift+空格键</translation>
 <translation id="2637227747952042642">数学对象</translation>
 <translation id="2638785836053527382">“<ph name="FILE_NAME" />”已恢复下载</translation>
 <translation id="2639750663247012216">ChromeVox辅助键</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">没有下一个章节</translation>
 <translation id="5368000168321181111">已关闭耳标</translation>
 <translation id="5368505757342402527">“<ph name="FILE_NAME" />”已下载 <ph name="PROGRESS" />%。大约还需 <ph name="TIME" /> <ph name="UNITS" />即可下载完毕。</translation>
+<translation id="5381388086899614489">长按</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5402367795255837559">盲文</translation>
 <translation id="5402791055281059602">模态提醒</translation>

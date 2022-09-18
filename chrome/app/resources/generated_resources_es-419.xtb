@@ -3538,6 +3538,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4306119971288449206">Las apps deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4309165024397827958">Permite que los servicios y las apps para Android habilitadas usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos periódicamente y los use para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
+<translation id="4309183709806093061">Compartir también el audio del sistema. Se silenciará este dispositivo para evitar acoples.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K en vivo)</translation>
 <translation id="4310132194679586591">Elige un app de tu dispositivo para abrir este vínculo</translation>
 <translation id="4310139701823742692">El archivo no tiene el formato correcto. Verifica el archivo PPD y vuelve a intentarlo.</translation>
@@ -4550,6 +4551,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> administra esta cuenta</translation>
 <translation id="5307030433605830021">No se admite la fuente</translation>
 <translation id="5307386115243749078">Sincronizar el interruptor Bluetooth</translation>
+<translation id="5307958609248661362">Se agotó el tiempo de espera del Administrador de contraseñas de Google</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5309418307557605830">Asistente de Google también funciona aquí</translation>
 <translation id="5311304534597152726">Accediendo como</translation>
@@ -7349,6 +7351,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7988805580376093356">Conserva tu SO y ejecuta <ph name="DEVICE_OS" /> desde una unidad USB.</translation>
 <translation id="7991296728590311172">Configuración de Accesibilidad con interruptores</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
+<translation id="799570308305997052">WebView</translation>
 <translation id="7997826902155442747">Prioridad de proceso</translation>
 <translation id="7999229196265990314">Los siguientes archivos fueron creados:
 

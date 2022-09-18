@@ -59,6 +59,7 @@
 <translation id="2094648590148273905">ChromeOS Flex-এর শর্তাবলী</translation>
 <translation id="2094919256425865063">তা স্বত্তেও Chrome বন্ধ করবেন?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS Flex তৈরি করা সম্ভব হয়েছে।</translation>
+<translation id="2112742052114331084">চালু থাকলে, আপনি সক্রিয়ভাবে ব্যবহার করছেন না এমন ট্যাব থেকে Chrome মেমরি পুনরুদ্ধার করে। এর ফলে আপনার কম্পিউটারের রিসোর্স অন্যান্য কাজের জন্য খালি থাকে এবং Chrome দ্রুত কাজ করতে পারে। অ্যাক্টিভ না থাকা ট্যাব খালি দেখায় ও আপনি এগুলিতে ক্লিক করলে অটোমেটিক আবার লোড হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /> বা <ph name="BEGIN_LINK_2" />মতামত পাঠান<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">এটি এই ডিভাইস থেকে <ph name="ITEMS_COUNT" />টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="2121284319307530122">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />বর্তমান সেটিংস<ph name="END_LINK" />-এর রিপোর্ট করে Chrome-কে আরও ভাল করে তুলতে সাহায্য করুন</translation>

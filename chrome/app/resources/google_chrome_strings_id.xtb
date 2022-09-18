@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">Persyaratan ChromeOS Flex</translation>
 <translation id="2094919256425865063">Tetap tutup Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Jika diaktifkan, Chrome menggunakan kembali memori dari tab yang tidak digunakan secara aktif. Tindakan ini akan membebaskan resource komputer Anda untuk melakukan tugas-tugas lain dan menjaga Chrome tetap cepat. Tab yang tidak aktif tampak kosong dan otomatis dimuat ulang saat Anda mengkliknya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> atau <ph name="BEGIN_LINK_2" />kirim masukan<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Tindakan ini akan menghapus <ph name="ITEMS_COUNT" /> item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Luncurkan kembali untuk Mengupdate &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu Chrome jadi lebih baik dengan melaporkan <ph name="BEGIN_LINK" />setelan saat ini<ph name="END_LINK" /></translation>
@@ -271,6 +272,7 @@
 <translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
 <translation id="6739177684496155661">Lanjutkan di profil Chrome baru?</translation>
 <translation id="6750954913813541382">Untuk memperbaiki kesalahan ejaan, Chrome mengirim teks yang Anda ketikkan di browser ke Google</translation>
+<translation id="6756581345161130259">Sesuai kebutuhan, Chrome menggunakan kembali memori dari tab yang tidak digunakan secara aktif. Anda dapat mengubahnya kapan saja di setelan.</translation>
 <translation id="677276454032249905">Tetap tutup Chrome?</translation>
 <translation id="6785872064505734160">Asisten Google di Chrome dapat menyelesaikan tindakan di seluruh situs untuk Anda</translation>
 <translation id="683440813066116847">Inbound rule untuk Google Chrome Canary guna mengizinkan lalu lintas mDNS.</translation>

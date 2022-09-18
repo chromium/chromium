@@ -297,7 +297,6 @@
 <translation id="1662550410081243962">Чувај и уноси начине плаћања</translation>
 <translation id="1663943134801823270">Картице и адресе су из Chrome-а. Њима можете да управљате у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Странице на језику <ph name="SOURCE_LANGUAGE" /> се од сада преводе на <ph name="TARGET_LANGUAGE" />.</translation>
-<translation id="1673886523110456987">Платите помоћу картице <ph name="CARD_DETAIL" /> да бисте искористили понуду</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Прво кратка ивица</translation>
 <translation id="168693727862418163">Валидација шеме ове вредности за смернице није успела и занемариће се.</translation>
@@ -422,6 +421,7 @@
 <translation id="2034971124472263449">Ипак сачувај</translation>
 <translation id="2035400064145347639">Туристички водичи и каталози</translation>
 <translation id="2036983605131262583">Алтернативни котур</translation>
+<translation id="2040463897538655645">Преносива меморија</translation>
 <translation id="2040894699575719559">Локација је блокирана</translation>
 <translation id="2042213636306070719">7. фиока</translation>
 <translation id="204357726431741734">Пријавите се да бисте користили лозинке сачуване на Google налогу</translation>

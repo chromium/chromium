@@ -46,6 +46,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1272079795634619415">Interrumpir</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1281818060020671000">Administrar datos</translation>
+<translation id="1282311502488501110">No acceder</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> se desactivarán cuando abandones este sitio.</translation>
@@ -177,6 +178,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2469960372084740698">¿Quieres desactivar la Navegación segura?</translation>
 <translation id="2473876017985765807">Ya guardaste una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Sin seleccionar</translation>
+<translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2500374554657206846">Opciones para guardar contraseñas</translation>
 <translation id="2523363575747517183">Este sitio web está intentando abrir otra app de forma reiterada.</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
@@ -740,6 +742,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6930799952781667037">Presiona aquí para cambiar a este idioma.</translation>
 <translation id="6944369514868857500">Elegir otra cuenta</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6965382102122355670">Aceptar</translation>
 <translation id="6973630695168034713">Carpetas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Administrar tu Cuenta de Google</translation>

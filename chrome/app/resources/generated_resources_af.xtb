@@ -695,6 +695,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1640283014264083726">PKCS #1 MD4 met RSA-enkripsie</translation>
 <translation id="1641113438599504367">Veiligblaai</translation>
 <translation id="1641496881756082050">Meer handelinge vir <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Nog 1 wagwoord is nie ingevoer nie, want dit is verkeerd geformateer}other{Nog {NUM_PASSWORDS} wagwoorde is nie ingevoer nie, want hulle is verkeerd geformateer}}</translation>
 <translation id="1642492862748815878">Gekoppel aan <ph name="DEVICE" /> en <ph name="NUMBER_OF_DEVICES" /> ander Bluetooth-toestelle</translation>
 <translation id="1642494467033190216">Die verwydering van rootfs-beskerming en 'n herbegin is nodig voordat ander ontfoutingkenmerke geaktiveer word.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-handtekening met SHA-1</translation>
@@ -1844,6 +1845,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2673135533890720193">Lees jou blaaigeskiedenis</translation>
 <translation id="2674764818721168631">Af</translation>
 <translation id="2678063897982469759">Heraktiveer</translation>
+<translation id="2678100101831051676">Kan nie uitsaai nie.</translation>
 <translation id="268053382412112343">Geskiedenis</translation>
 <translation id="2681124317993121768">Gasteprofiele word nie gesteun nie</translation>
 <translation id="2682498795777673382">Opdatering van jou ouer af</translation>
@@ -3878,6 +3880,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4617019240346358451">Herlaai die bladsy om "<ph name="EXTENSION_NAME" />" te gebruik</translation>
 <translation id="4617270414136722281">Uitbreidingopsies</translation>
 <translation id="4617880081511131945">Kan nie verbinding vestig nie</translation>
+<translation id="4618195822946934889">URL kan slegs ASCII-karakters bevat</translation>
 <translation id="4619564267100705184">Verifieer dis jy</translation>
 <translation id="4619615317237390068">Oortjies van ander toestelle af</translation>
 <translation id="4620809267248568679">Hierdie instelling word deur 'n uitbreiding afgedwing.</translation>
@@ -5077,6 +5080,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5800351251499368110">Maak soekbladsy in kantpaneel toe Soekbladsy is oop in die kantpaneel.</translation>
 <translation id="5801568494490449797">Voorkeure</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
+<translation id="5805268472388605531">Druk en hou sleutelbordsleutels om aksentmerke en spesiale karakters te sien</translation>
 <translation id="5805697420284793859">Vensterbestuurder</translation>
 <translation id="5806447147478173900">Totale berginggebruik deur vertoonde werwe: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Verstek)</translation>
@@ -5718,6 +5722,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="642469772702851743">Hierdie toestel (SN: <ph name="SERIAL_NUMBER" />) is deur die eienaar gesluit.</translation>
 <translation id="6425556984042222041">Teks-na-spraak-tempo</translation>
 <translation id="642729974267661262">Mag nie klank speel nie</translation>
+<translation id="6427608534767366138">Instaanstawing word vir "<ph name="NETWORK_ID" />" vereis</translation>
 <translation id="6429384232893414837">Kon nie opdateer nie</translation>
 <translation id="6430814529589430811">Base64-geënkodeerde ASCII, enkele sertifikaat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> wil outomatiese opdaterings vir alle gebruikers van hierdie rekening opstel.</translation>
@@ -7843,6 +7848,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="844063558976952706">Altyd op hierdie werf</translation>
 <translation id="8441313165929432954">Aktiveer/deaktiveer verbinding</translation>
 <translation id="8443795068008423036">Maak asseblief seker dat jou toestel bygewerk is en probeer weer</translation>
+<translation id="8443986842926457191">URL is meer as 2 048 karakters.</translation>
 <translation id="8446884382197647889">Kom meer te wete</translation>
 <translation id="8447409163267621480">Sluit óf Ctrl óf Alt in</translation>
 <translation id="844850004779619592">Geen opdragte gekry nie</translation>
@@ -7908,6 +7914,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="851263357009351303">Laat <ph name="HOST" /> altyd toe om prente te wys</translation>
 <translation id="8513108775083588393">Outodraai</translation>
 <translation id="8514746246728959655">Probeer 'n ander sekuriteitsleutel</translation>
+<translation id="8519895319663397036">Kan nie wagwoorde invoer nie. Die lêer moet minder as 150 KB groot wees.</translation>
 <translation id="8523493869875972733">Hou veranderings</translation>
 <translation id="8523849605371521713">Bygevoeg volgens beleid</translation>
 <translation id="8524783101666974011">Stoor kaarte in jou Google-rekening</translation>

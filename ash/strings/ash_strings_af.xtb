@@ -215,6 +215,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2132302418721800944">Neem volskerm op</translation>
 <translation id="2135456203358955318">Gedokte vergrootglas</translation>
 <translation id="2148716181193084225">Vandag</translation>
+<translation id="2161132820593978283">Probeer kamera se raamfunksie sodat jy met video-oproepe in die middel van die skerm is. Skakel dit aan in Kitsinstellings.</translation>
 <translation id="2170530631236737939">Swiep met drie vingers af om Oorsig te verlaat</translation>
 <translation id="219905428774326614">Lanseerder, alle programme</translation>
 <translation id="2201071101391734388">Onlangse foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2405664212338326887">Nie gekoppel nie</translation>
 <translation id="2408955596600435184">Voer jou PIN in</translation>
 <translation id="2412593942846481727">Opdatering is beskikbaar</translation>
+<translation id="2426051945783024481">Kamera se raam is outomaties gesentreer</translation>
 <translation id="2427507373259914951">Linksklik</translation>
 <translation id="2429753432712299108">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voor jy aanvaar, bevestig asseblief dat hierdie wagwoordsleutel op daardie toestel gewys word: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
@@ -1041,6 +1043,7 @@ Nuwe installasie</translation>
 <translation id="6960565108681981554">Nie geaktiveer nie. Kontak jou diensverskaffer.</translation>
 <translation id="6961121602502368900">Maak Foon Stil is nie op werkprofiel beskikbaar nie</translation>
 <translation id="6961840794482373852">Die kortpadsleutel Alt + oppyl het verander. Om die Page Up-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + oppyl druk.</translation>
+<translation id="696267987219125751">Kamera se raamfunksie is af.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom aan die gang</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1131,6 +1134,7 @@ Nuwe installasie</translation>
 <translation id="7513922695575567867">Kalender, week van <ph name="DATE" />, <ph name="SELECTED_DATE" /> is tans gekies.</translation>
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kamera se raamfunksie is af.</translation>
 <translation id="7526573455193969409">Netwerk kan gemonitor word</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-programme en Incognito-vensters word nie tans gesteun nie. Ander programme sal gestoor word.</translation>
@@ -1149,6 +1153,7 @@ Nuwe installasie</translation>
 <translation id="7607002721634913082">Laat wag</translation>
 <translation id="7609951632080598826">Kalenderaansig, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera is herkoppel.</translation>
+<translation id="761736749114493194">Kamera se raamfunksie. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Wys Nabydeling-instellings.</translation>
 <translation id="7634648064048557203">Kamera is geglip na hoek onder regs</translation>
@@ -1309,6 +1314,7 @@ Nuwe installasie</translation>
 <translation id="851458219935658693">Wys vensters van die huidige lessenaar af; radioknoppie is gekies</translation>
 <translation id="8517041960877371778">Jou <ph name="DEVICE_TYPE" /> mag nie laai terwyl dit aangeskakel is nie.</translation>
 <translation id="8535393432370007982">Ontdoen sorteervolgorde volgens kleur</translation>
+<translation id="8541078764854166027">Kamera se raamfunksie</translation>
 <translation id="8542053257095774575">Geen gestoorde lessenaars of template nie</translation>
 <translation id="8546059259582788728">Sortering is suksesvol ontdoen</translation>
 <translation id="8551588720239073785">Datum- en tydinstellings</translation>

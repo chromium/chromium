@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">ឈប់</translation>
 <translation id="1275718070701477396">បានជ្រើសរើស</translation>
 <translation id="1281818060020671000">គ្រប់គ្រង​ទិន្នន័យ</translation>
+<translation id="1282311502488501110">កុំ​ចូលគណនី</translation>
 <translation id="1283524564873030414">24 ម៉ោងមុន</translation>
 <translation id="1285320974508926690">មិនបកប្រែគេហទំព័រនេះទៀតឡើយ</translation>
 <translation id="1291506870746876680">ការអនុញ្ញាត <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> នឹងកំណត់ឡើងវិញទៅបិទ នៅពេលអ្នកចេញពីគេហទំព័រនេះ។</translation>
@@ -54,6 +55,7 @@
 <translation id="1322735045095424339">ស្ថាប័នរបស់អ្នកតម្រូវឱ្យប្រើមុខងារ​ឯកជន</translation>
 <translation id="1323735185997015385">លុប</translation>
 <translation id="132683371494960526">ប៉ះពីរដងដើម្បីផ្លាស់ប្តូរថតមេ</translation>
+<translation id="1335348992705722518">គ្រប់គ្រង​ការកំណត់...</translation>
 <translation id="1340643665687018190">បិទម៉ឺនុយ</translation>
 <translation id="1358214951266274152">ចូល​ទៅកាន់​តំណ​ដែលអ្នក​បានចម្លង</translation>
 <translation id="1360432990279830238">ចាកចេញ ហើយបិទការធ្វើសមកាលកម្ម?</translation>
@@ -177,6 +179,7 @@
 <translation id="2469960372084740698">បិទ​ការរុករក​ដោយសុវត្ថិភាពឬ?</translation>
 <translation id="2473876017985765807">អ្នកបាន​រក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់ <ph name="WEBSITE" /> រួចហើយ</translation>
 <translation id="2476359652512522418">មិនបាន​ជ្រើសរើសទេ</translation>
+<translation id="2482878487686419369">ការជូនដំណឹង</translation>
 <translation id="2500374554657206846">ជម្រើស​សម្រាប់​រក្សាទុក​ពាក្យសម្ងាត់</translation>
 <translation id="2523363575747517183">គេហទំព័រ​នេះកំពុង​ព្យាយាម​បើកកម្មវិធី​ផ្សេងទៀត​ម្តង​ហើយ​ម្តងទៀត។</translation>
 <translation id="2529021024822217800">បើកទាំងអស់</translation>
@@ -381,6 +384,7 @@
 <translation id="4187450337729239226">ដាក់ចូល ហើយស្វែងរក</translation>
 <translation id="4223967053752765281">ស្ថាប័នរបស់អ្នកបានបិទការចូលគណនី។ អ្នកនៅតែ​អាចមើលឃើញ​ចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់​ផ្សេងទៀត​របស់អ្នក​នៅលើ​ឧបករណ៍នេះដដែល។ ប្រសិនបើ​អ្នកធ្វើការផ្លាស់ប្ដូរ នោះចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់​ផ្សេងទៀត​របស់អ្នកនឹងមិនធ្វើសមកាលកម្ម​ទៅគណនី​របស់អ្នកទេ។</translation>
 <translation id="4233831822770018312">កែ​ការ​អនុញ្ញាត</translation>
+<translation id="4236584471598725073">កំពុង​តាមដាន​តម្លៃ</translation>
 <translation id="4237377247299956313">ចុច<ph name="BEGIN_BOLD" />កម្មវិធីរុករកតាមអ៊ីនធឺណិត​លំនាំដើម<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">បញ្ចូលឃ្លាសម្ងាត់</translation>
 <translation id="4249955472157341256">តម្រៀបតាមថ្មីបំផុត</translation>
@@ -740,6 +744,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6930799952781667037">ចុចដើម្បីប្ដូរ​ទៅភាសានេះ។</translation>
 <translation id="6944369514868857500">ជ្រើសរើស​គណនី​ផ្សេងទៀត</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
+<translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="6973630695168034713">ថតឯកសារ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">គ្រប់គ្រង​គណនី Google របស់​អ្នក</translation>

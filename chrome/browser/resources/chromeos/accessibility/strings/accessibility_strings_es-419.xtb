@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">También puedes moverte entre secciones de la pantalla. Por ejemplo, puedes alternar entre el selector, la barra y las pestañas de Chrome. Para moverte a la próxima sección, desliza cuatro dedos de izquierda a derecha. Pruébalo ahora para continuar.</translation>
 <translation id="2624431853467395961">Abrir el modo de aprendizaje</translation>
 <translation id="2626530649491650971">elemento en el que se puede hacer clic</translation>
+<translation id="263637551280112393">Presiona la tecla de búsqueda + Mayúsculas + barra espaciadora</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">Se reanudó la descarga <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">Tecla modificadora de ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">No hay secciones siguientes</translation>
 <translation id="5368000168321181111">Sonido desactivado</translation>
 <translation id="5368505757342402527">Se completó el <ph name="PROGRESS" />% de la descarga de <ph name="FILE_NAME" />. Quedan <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">clic prolongado</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Una alerta modal</translation>

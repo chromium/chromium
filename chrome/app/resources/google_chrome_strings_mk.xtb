@@ -61,6 +61,7 @@
 <translation id="2094648590148273905">Услови за ChromeOS Flex</translation>
 <translation id="2094919256425865063">Сепак да се напушти Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />Linux-околината за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Кога е вклучено, Chrome ја зема меморијата на картичките што активно не ги користите. Така се ослободуваат ресурсите на компјутерот за други задачи и Chrome ја задржува брзината. Неактивните картички се прикажуваат празни и автоматски се вчитуваат повторно кога ќе кликнете на нив. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /> или <ph name="BEGIN_LINK_2" />испратете повратни информации<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете да го подобриме Chrome со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
@@ -279,6 +280,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6735387454586646204">Системот ChromeOS Flex</translation>
 <translation id="6739177684496155661">Сакате да продолжите на нов профил на Chrome?</translation>
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
+<translation id="6756581345161130259">Кога е потребно, Chrome ја зема меморијата на картичките што активно не ги користите. Ова може да го промените во секое време во поставките.</translation>
 <translation id="677276454032249905">Сепак да се излезе од Chrome?</translation>
 <translation id="6785872064505734160">„Помошникот на Google“ во Chrome може да извршува дејства за вас на веб-сајтовите</translation>
 <translation id="683440813066116847">Дојдовно правило за Google Chrome Canary за да овозможи сообраќај mDNS.</translation>

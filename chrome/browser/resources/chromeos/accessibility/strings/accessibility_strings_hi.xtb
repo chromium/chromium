@@ -238,6 +238,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2619344480613750862">आप स्क्रीन के एक सेक्शन से दूसरे सेक्शन पर भी जा सकते हैं. उदाहरण के लिए, आप लॉन्चर, शेल्फ़, और Chrome के एक टैब से दूसरे टैब पर जा सकते हैं. अगले सेक्शन पर जाने के लिए, चार उंगलियों से बाईं से दाईं ओर स्वाइप करें. जारी रखने के लिए, इसे अभी आज़माएं.</translation>
 <translation id="2624431853467395961">जानें मोड खोलें</translation>
 <translation id="2626530649491650971">क्‍लिक करने योग्‍य</translation>
+<translation id="263637551280112393">Search+Shift+Space दबाएं</translation>
 <translation id="2637227747952042642">गणित</translation>
 <translation id="2638785836053527382">डाउनलोड फिर से शुरू हो गया <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox संशोधक</translation>
@@ -650,6 +651,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5355014376930441909">आगे कोई सेक्शन नहीं है</translation>
 <translation id="5368000168321181111">ईयरकॉन बंद हैं</translation>
 <translation id="5368505757342402527">डाउनलोड <ph name="PROGRESS" />% पूरा हुआ है <ph name="FILE_NAME" />. करीब <ph name="TIME" /> <ph name="UNITS" /> बाकी हैं.</translation>
+<translation id="5381388086899614489">क्लिक करके रखें</translation>
 <translation id="5400836586163650660">स्लेटी</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
 <translation id="5402791055281059602">मॉडल सूचना</translation>

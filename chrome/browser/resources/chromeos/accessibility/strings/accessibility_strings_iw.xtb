@@ -237,6 +237,7 @@
 <translation id="2619344480613750862">‏אפשר גם לעבור בין קטעים שונים במסך. למשל, ניתן לעבור בין מרכז האפליקציות למדף ולכרטיסיות Chrome. כדי לעבור לקטע הבא, מחליקים מימין לשמאל בעזרת ארבע אצבעות. כדי להמשיך, יש לנסות זאת עכשיו.</translation>
 <translation id="2624431853467395961">פתיחת מצב למידה</translation>
 <translation id="2626530649491650971">לחיץ</translation>
+<translation id="263637551280112393">‏צריך להקיש על מקש החיפוש + Shift + מקש הרווח</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">ההורדה של <ph name="FILE_NAME" /> נמשכת</translation>
 <translation id="2639750663247012216">‏מקש צירוף של ChromeVox</translation>
@@ -649,6 +650,7 @@
 <translation id="5355014376930441909">אין עוד קטעים</translation>
 <translation id="5368000168321181111">‏Earcons כבוי</translation>
 <translation id="5368505757342402527">‏הושלמו ‎<ph name="PROGRESS" />%‎ מההורדה של <ph name="FILE_NAME" />. נותרו עוד כ-<ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">לחיצה ארוכה</translation>
 <translation id="5400836586163650660">אפור</translation>
 <translation id="5402367795255837559">ברייל</translation>
 <translation id="5402791055281059602">התראה שמוצגת בחלון קופץ</translation>

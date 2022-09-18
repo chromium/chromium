@@ -59,6 +59,7 @@
 <translation id="2094648590148273905">Όροι ChromeOS Flex</translation>
 <translation id="2094919256425865063">Να τερματιστεί η λειτουργία του Chrome ούτως ή άλλως;</translation>
 <translation id="2106831557840787829">Το ChromeOS Flex υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Όταν είναι ενεργή, το Chrome ανακτά τη μνήμη από καρτέλες που δεν χρησιμοποιείτε ενεργά. Αυτό αποδεσμεύει τους πόρους του υπολογιστή σας για άλλες εργασίες και διατηρεί το Chrome γρήγορο. Οι ανενεργές καρτέλες εμφανίζονται κενές και φορτώνονται εκ νέου αυτόματα όταν κάνετε κλικ σε αυτές. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> ή <ph name="BEGIN_LINK_2" />στείλτε σχόλια<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Με αυτήν την ενέργεια θα διαγραφούν <ph name="ITEMS_COUNT" /> στοιχεία από αυτήν τη συσκευή. Για να ανακτήσετε τα δεδομένα σας αργότερα, συνδεθείτε στο Chrome ως <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Επανεκκίνηση για ενημέρωση του &amp;Chrome</translation>
 <translation id="2123055963409958220">Συμβάλετε στη βελτίωση του Chrome, αναφέροντας τις <ph name="BEGIN_LINK" />τρέχουσες ρυθμίσεις<ph name="END_LINK" /></translation>
@@ -275,6 +276,7 @@
 <translation id="6735387454586646204">Σύστημα ChromeOS Flex</translation>
 <translation id="6739177684496155661">Συνέχεια σε νέο προφίλ Chrome;</translation>
 <translation id="6750954913813541382">Για τη διόρθωση ορθογραφικών λαθών, το Chrome στέλνει στην Google το κείμενο που πληκτρολογείτε στο πρόγραμμα περιήγησης</translation>
+<translation id="6756581345161130259">Το Chrome ανακτά τη μνήμη από τις καρτέλες που δεν χρησιμοποιείτε ενεργά, όταν είναι απαραίτητο. Μπορείτε να αλλάξετε αυτήν τη ρύθμιση ανά πάσα στιγμή από τις ρυθμίσεις.</translation>
 <translation id="677276454032249905">Να γίνει έξοδος από το Chrome ούτως ή άλλως;</translation>
 <translation id="6785872064505734160">Ο Βοηθός Google στο Chrome μπορεί να εκτελέσει ενέργειες σε ιστοτόπους για εσάς.</translation>
 <translation id="683440813066116847">Εισερχόμενος κανόνας για το Google Chrome Canary για να επιτρέπεται η κυκλοφορία του mDNS.</translation>

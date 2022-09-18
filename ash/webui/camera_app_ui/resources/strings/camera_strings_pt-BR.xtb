@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nada gravado</translation>
+<translation id="169335673490251151">Digitalizar mais páginas</translation>
 <translation id="1838104802459806957">Inclinar para cima</translation>
 <translation id="1851169887664797861">Novos controles de câmera disponíveis</translation>
 <translation id="1851616744363735765">PAUSADA</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4281620174117014503">Resolução média</translation>
 <translation id="4329152592498422850">Alternar para tirar foto quadrada</translation>
+<translation id="4340659173795395806">Agora você pode criar PDFs com várias páginas</translation>
 <translation id="4383571725254449280">Registros de desempenho de impressão</translation>
 <translation id="4445542136948522167">Parar de tirar foto</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5320594929574852403">Movendo para a esquerda</translation>
 <translation id="5444515100983837161">Posicione todas as bordas do documento dentro do quadro. A digitalização funciona melhor quando o documento e o plano de fundo têm cores diferentes.</translation>
+<translation id="5662366948659129155">Digitalizando a página <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrado</translation>
 <translation id="5746169159649715125">Salvar como PDF</translation>
 <translation id="5753488212459587150">Ativar o modo Especialista</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">Modo Especialista</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5869546221129391014">Grade</translation>
+<translation id="5903928279335207406">Excluir página</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976160379964388480">Outros</translation>
@@ -158,6 +162,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8167081290930651932">Salvar como foto</translation>
 <translation id="8239780215768881278">Fazer um instantâneo de vídeo</translation>
 <translation id="8261506727792406068">Excluir</translation>
+<translation id="839162370397157884">Selecionar página</translation>
 <translation id="8425673304802773841">Inclinar para baixo</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8629662593426079630">360 p</translation>

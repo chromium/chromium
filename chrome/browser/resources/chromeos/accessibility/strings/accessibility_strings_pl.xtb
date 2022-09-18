@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Możesz też przechodzić między sekcjami ekranu. Na przykład możesz przechodzić między Menu z aplikacjami, półką a kartami Chrome. Aby przejść do następnej sekcji, przesuń z lewej do prawej czterema palcami. Zrób to teraz, aby przejść dalej.</translation>
 <translation id="2624431853467395961">Otwórz tryb informacyjny</translation>
 <translation id="2626530649491650971">klikalny</translation>
+<translation id="263637551280112393">Naciśnij Wyszukaj + Shift + Spacja</translation>
 <translation id="2637227747952042642">Matematyczny</translation>
 <translation id="2638785836053527382">Pobieranie wznowione: <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">Modyfikator ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Nie ma następnej sekcji</translation>
 <translation id="5368000168321181111">Ikony akustyczne są wyłączone</translation>
 <translation id="5368505757342402527">Pobrano <ph name="PROGRESS" />% pliku <ph name="FILE_NAME" />. Pozostało około <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">kliknąć i przytrzymać</translation>
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5402367795255837559">Pismo Braille'a</translation>
 <translation id="5402791055281059602">Alert w oknie modalnym</translation>

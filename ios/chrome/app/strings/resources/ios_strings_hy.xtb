@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1281818060020671000">Տվյալների կառավարում</translation>
+<translation id="1282311502488501110">Մուտք չգործել</translation>
 <translation id="1283524564873030414">Վերջին 24 ժամվա</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1291506870746876680">Երբ դուրս գաք <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> կայքից, դրա բոլոր թույլտվությունները կանջատվեն։</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="2473876017985765807">Դուք <ph name="WEBSITE" /> կայքի համար արդեն պահել եք գաղտնաբառ։</translation>
 <translation id="2476359652512522418">Ընտրված չէ</translation>
+<translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2500374554657206846">Գաղտնաբառը պահելու տարբերակներ</translation>
 <translation id="2523363575747517183">Այս կայքը բազմիցս փորձում է բացել մեկ այլ հավելված։</translation>
 <translation id="2529021024822217800">Բացել բոլորը</translation>
@@ -740,6 +742,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6930799952781667037">Հպեք՝ այս լեզուն փոխելու համար։</translation>
 <translation id="6944369514868857500">Ընտրել այլ հաշիվ</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
+<translation id="6965382102122355670">Եղավ</translation>
 <translation id="6973630695168034713">Պանակներ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Կառավարել Google հաշիվը</translation>

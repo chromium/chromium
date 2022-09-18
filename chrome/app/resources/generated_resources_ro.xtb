@@ -693,6 +693,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1640283014264083726">PKCS # 1 MD4 cu criptare RSA</translation>
 <translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="1641496881756082050">Mai multe acțiuni pentru <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Încă o parolă nu a fost importată, deoarece este formatată incorect}few{{NUM_PASSWORDS} alte parole nu au fost importate, deoarece sunt formatate incorect}other{{NUM_PASSWORDS} de alte parole nu au fost importate, deoarece sunt formatate incorect}}</translation>
 <translation id="1642492862748815878">Conectat la <ph name="DEVICE" /> și încă <ph name="NUMBER_OF_DEVICES" /> dispozitive Bluetooth</translation>
 <translation id="1642494467033190216">Înainte de activarea altor funcții de remediere a erorilor, trebuie să elimini protecția sistemului rootfs și să repornești.</translation>
 <translation id="1643072738649235303">Semnătură X9.62 ECDSA cu SHA-1</translation>
@@ -1830,6 +1831,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2673135533890720193">Citește istoricul de navigare</translation>
 <translation id="2674764818721168631">Dezactivat</translation>
 <translation id="2678063897982469759">Reactivează</translation>
+<translation id="2678100101831051676">Nu se poate proiecta.</translation>
 <translation id="268053382412112343">Is&amp;toric</translation>
 <translation id="2681124317993121768">Profilurile de invitat nu sunt acceptate</translation>
 <translation id="2682498795777673382">Actualizare de la părintele tău</translation>
@@ -3863,6 +3865,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4617019240346358451">Reîncarcă pagina pentru a folosi <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Opțiuni pentru extensie</translation>
 <translation id="4617880081511131945">Nu se poate stabili conexiunea</translation>
+<translation id="4618195822946934889">Adresa URL poate conține numai caractere ASCII</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4619615317237390068">File de pe alte dispozitive</translation>
 <translation id="4620809267248568679">Această setare este impusă de o extensie.</translation>
@@ -5061,6 +5064,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5800351251499368110">Închide căutarea în panoul lateral. Căutarea este deschisă în panoul lateral.</translation>
 <translation id="5801568494490449797">Preferințe</translation>
 <translation id="5804241973901381774">Permisiuni</translation>
+<translation id="5805268472388605531">Apasă lung pe tastele de pe tastatură pentru a vedea semnele de evidențiere și caracterele speciale</translation>
 <translation id="5805697420284793859">Managerul de ferestre</translation>
 <translation id="5806447147478173900">Spațiul total de stocare folosit de site-urile afișate: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (prestabilit)</translation>
@@ -5702,6 +5706,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="642469772702851743">Dispozitivul (NS: <ph name="SERIAL_NUMBER" />) a fost blocat de proprietar.</translation>
 <translation id="6425556984042222041">Viteza de redare vocală a textului</translation>
 <translation id="642729974267661262">Nu au permisiunea de a reda sunet</translation>
+<translation id="6427608534767366138">Este necesară autentificarea la proxy pentru <ph name="NETWORK_ID" /></translation>
 <translation id="6429384232893414837">Eroare de actualizare</translation>
 <translation id="6430814529589430811">ASCII codificat Base64, certificat unic</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> va configura actualizările automate pentru toți utilizatorii acestui computer.</translation>
@@ -7829,6 +7834,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="844063558976952706">Întotdeauna pe acest site</translation>
 <translation id="8441313165929432954">Activează / dezactivează tetheringul</translation>
 <translation id="8443795068008423036">Asigură-te că dispozitivul este actualizat și încearcă din nou</translation>
+<translation id="8443986842926457191">Adresa URL are peste 2.048 de caractere.</translation>
 <translation id="8446884382197647889">Află mai multe</translation>
 <translation id="8447409163267621480">Include Ctrl sau Alt</translation>
 <translation id="844850004779619592">Nu s-a găsit nicio comandă</translation>
@@ -7894,6 +7900,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="851263357009351303">Permite întotdeauna afișarea de imagini de la <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotire autom.</translation>
 <translation id="8514746246728959655">Încearcă altă cheie de securitate</translation>
+<translation id="8519895319663397036">Nu se pot importa parolele. Dimensiunea fișierelor trebuie să fie de maximum 150 KB.</translation>
 <translation id="8523493869875972733">Păstrează modificările</translation>
 <translation id="8523849605371521713">Adăugată de politică</translation>
 <translation id="8524783101666974011">Salvează carduri în Contul tău Google</translation>

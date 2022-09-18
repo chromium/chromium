@@ -454,6 +454,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="3435465986463792564">Vai esat atvēris daudz logu? Šeit varat tos pārvaldīt.</translation>
 <translation id="3443221991560634068">Atkārtoti ielādēt pašreizējo lapu</translation>
 <translation id="3444179773590444986">Vai kopīgot atsauksmi par tumšā motīva lietošanu vietnēs?</translation>
+<translation id="3452832259067974318">Lai aizsargātu jūsu konfidencialitāti, Chrome neveiks šī lauka automātisko aizpildi ar jūsu paroli.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Ir ieplānota 1 lejupielāde.}zero{Ir ieplānotas # lejupielādes.}one{Ir ieplānota # lejupielāde.}other{Ir ieplānotas # lejupielādes.}}</translation>
 <translation id="3474624961160222204">Turpināt kā: <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Varat izvēlēties savu meklētājprogrammu.</translation>
@@ -679,6 +680,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Paroles tiek saglabātas Paroļu pārvaldniekā šajā ierīcē</translation>
 <translation id="4766678251456904326">Pievienot kontu ierīcei</translation>
+<translation id="4787736314074622408">Vai vēlaties dzēst failu <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Palīdz veikt uzdevumus visā tīmeklī, piemēram, norēķināšanos</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay.

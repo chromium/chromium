@@ -297,7 +297,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1662550410081243962">Gardar e autocompletar métodos de pago</translation>
 <translation id="1663943134801823270">As tarxetas e enderezos proceden de Chrome. Podes xestionalos en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora.</translation>
-<translation id="1673886523110456987">Paga coa tarxeta <ph name="CARD_DETAIL" /> para usar a oferta</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
 <translation id="168693727862418163">Non puido cotexarse o valor desta política co seu esquema para levar a cabo a súa validación, así que se ignorará.</translation>
@@ -422,6 +421,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2034971124472263449">Gardar de todas formas</translation>
 <translation id="2035400064145347639">Guías e diarios de viaxe</translation>
 <translation id="2036983605131262583">Rolo alternativo</translation>
+<translation id="2040463897538655645">Almacenamento extraíble</translation>
 <translation id="2040894699575719559">Bloqueouse a localización</translation>
 <translation id="2042213636306070719">Bandexa 7</translation>
 <translation id="204357726431741734">Iniciar sesión para utilizar contrasinais gardados na túa Conta de Google</translation>

@@ -46,6 +46,7 @@
 <translation id="1272079795634619415">중지</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1281818060020671000">데이터 관리</translation>
+<translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1283524564873030414">지난 24시간</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1291506870746876680">사이트를 나가면 <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> 권한이 사용 안함으로 재설정됩니다.</translation>
@@ -177,6 +178,7 @@
 <translation id="2469960372084740698">세이프 브라우징을 사용 중지하시겠습니까?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2476359652512522418">선택되지 않음</translation>
+<translation id="2482878487686419369">알림</translation>
 <translation id="2500374554657206846">비밀번호 저장 옵션</translation>
 <translation id="2523363575747517183">다른 애플리케이션을 열려는 반복적인 시도가 실행되는 웹사이트입니다.</translation>
 <translation id="2529021024822217800">모두 열기</translation>
@@ -740,6 +742,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6930799952781667037">이 언어로 변경하려면 탭하세요.</translation>
 <translation id="6944369514868857500">다른 계정 선택</translation>
 <translation id="6945221475159498467">선택</translation>
+<translation id="6965382102122355670">확인</translation>
 <translation id="6973630695168034713">폴더</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Google 계정 관리</translation>

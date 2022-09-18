@@ -454,6 +454,7 @@
 <translation id="3435465986463792564">打开了许多窗口？您可在此处管理它们</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
+<translation id="3452832259067974318">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已排定 1 项下载}other{已排定 # 项下载}}</translation>
 <translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
 <translation id="3478363558367712427">您可自行选择要使用的搜索引擎</translation>
@@ -679,6 +680,7 @@
 <translation id="4763480195061959176">视频</translation>
 <translation id="4766313118839197559">系统会将密码保存到此设备上的密码管理工具中</translation>
 <translation id="4766678251456904326">向设备添加帐号</translation>
+<translation id="4787736314074622408">是否要删除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4791358705705538979">帮助您在网上完成结算等任务</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">密码加密不包括 Google Pay 中的付款方式和地址。

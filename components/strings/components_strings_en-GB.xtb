@@ -174,6 +174,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1380591466760231819">Letter fold</translation>
 <translation id="138218114945450791">Light blue</translation>
 <translation id="1382194467192730611">USB device allowed by your administrator</translation>
+<translation id="1382378825779654399">You’ll get email alerts if the price drops on any site. This page will be saved to <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Not seeing your current info? Please contact your bank to update it.</translation>
 <translation id="1384725838384960382">Secure payment credential authentication sheet</translation>
 <translation id="1386623374109090026">Annotations</translation>
@@ -297,7 +298,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1662550410081243962">Save and fill payment methods</translation>
 <translation id="1663943134801823270">Cards and addresses are from Chrome. You can manage them in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on.</translation>
-<translation id="1673886523110456987">Check out with <ph name="CARD_DETAIL" /> to use offer</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Short edge first</translation>
 <translation id="168693727862418163">This policy value failed to validate against its schema and will be ignored.</translation>
@@ -422,6 +422,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2034971124472263449">Save anyway</translation>
 <translation id="2035400064145347639">Travel guides and travelogues</translation>
 <translation id="2036983605131262583">Alternative roll</translation>
+<translation id="2040463897538655645">Removable storage</translation>
 <translation id="2040894699575719559">Location blocked</translation>
 <translation id="2042213636306070719">Tray 7</translation>
 <translation id="204357726431741734">Sign in to use passwords saved in your Google Account</translation>
@@ -1520,6 +1521,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5018422839182700155">Can't open this page</translation>
 <translation id="5019198164206649151">Backing store in bad state</translation>
 <translation id="5020776957610079374">World music</translation>
+<translation id="5021557570875267742">Track prices with Chrome</translation>
 <translation id="5023310440958281426">Check your administrator's policies</translation>
 <translation id="5029568752722684782">Clear copy</translation>
 <translation id="5030338702439866405">Issued By</translation>
@@ -2241,6 +2243,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352">Always translate <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Entertainment industry</translation>
+<translation id="7003335073762455340">You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Use Windows Hello to confirm cards faster</translation>
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3035,6 +3038,7 @@ Additional details:
 <translation id="9174623988242579721">Custom and performance vehicles</translation>
 <translation id="9174917557437862841">Tab switch button, press Enter to switch to this tab</translation>
 <translation id="9179703756951298733">Manage your payments and credit card info in Chrome settings</translation>
+<translation id="9179907736442194268">Get email alerts if the price drops on any site</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> uses an unsupported protocol.</translation>
 <translation id="9187461866967718678">Extreme sports</translation>

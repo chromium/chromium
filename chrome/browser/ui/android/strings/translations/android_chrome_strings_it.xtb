@@ -454,6 +454,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
 <translation id="3444179773590444986">Vuoi condividere un feedback sul tema scuro per i siti?</translation>
+<translation id="3452832259067974318">Per proteggere la tua privacy, Chrome non compilerà automaticamente questo campo con la tua password.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download programmato}other{# download programmati}}</translation>
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
@@ -679,6 +680,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Le password vengono salvate in Gestore delle password su questo dispositivo</translation>
 <translation id="4766678251456904326">Aggiungi un account al dispositivo</translation>
+<translation id="4787736314074622408">Eliminare il file <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Ti aiuta a completare le attività sul Web, come i pagamenti</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay.

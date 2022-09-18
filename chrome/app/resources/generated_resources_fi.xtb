@@ -3552,6 +3552,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4306119971288449206">Sovellusten näyttämiseen tulee käyttää sisältötyyppiä <ph name="CONTENT_TYPE" />.</translation>
 <translation id="4307992518367153382">Perustiedot</translation>
 <translation id="4309165024397827958">Salli laitteen sijainnin käyttäminen Android-sovelluksille ja ‑palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>
+<translation id="4309183709806093061">Jaa myös järjestelmän audio. Laite mykistetään palautteen estämiseksi.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kt (<ph name="NUM_KILOBYTES_LIVE" /> kt live)</translation>
 <translation id="4310132194679586591">Avaa linkki valitsemalla sovellus laitteella</translation>
 <translation id="4310139701823742692">Tiedostomuoto on virheellinen. Tarkasta PPD-tiedosto ja yritä uudelleen.</translation>
@@ -4565,6 +4566,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5305145881844743843">Tätä tiliä hoitaa <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />.</translation>
 <translation id="5307030433605830021">Lähdettä ei tueta</translation>
 <translation id="5307386115243749078">Muodosta laitepari Bluetooth-kytkimen kanssa</translation>
+<translation id="5307958609248661362">Googlen Salasanat on aikakatkaistu</translation>
 <translation id="5308380583665731573">Muodosta yhteys</translation>
 <translation id="5309418307557605830">Google Assistant toimii myös täällä</translation>
 <translation id="5311304534597152726">Kirjaudutaan sisään käyttäjänä</translation>
@@ -7363,6 +7365,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7988805580376093356">Säilytä käyttöjärjestelmäsi ja käytä laitetta (<ph name="DEVICE_OS" />) USB:n kautta.</translation>
 <translation id="7991296728590311172">Kytkimen käytön asetukset</translation>
 <translation id="7992203134935383159">Puhesynteesi</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Prosessien tärkeysjärjestys</translation>
 <translation id="7999229196265990314">Luotiin seuraavat tiedostot:
         

@@ -61,6 +61,7 @@
 <translation id="2094648590148273905">ChromeOS Flex നിബന്ധനകൾ</translation>
 <translation id="2094919256425865063">എന്തായാലും Chrome-ൽ നിന്ന് പുറത്തുകടക്കണോ?</translation>
 <translation id="2106831557840787829">ChromeOS Flex സാധ്യമാക്കിയത് <ph name="BEGIN_LINK_LINUX_OSS" />Linux വികസന പരിതസ്ഥിതി<ph name="END_LINK_LINUX_OSS" /> പോലുള്ള അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
+<translation id="2112742052114331084">ഓണായിരിക്കുമ്പോൾ, നിങ്ങൾ സജീവമായി ഉപയോഗിക്കാത്ത ടാബുകളിൽ നിന്ന് Chrome മെമ്മറി വീണ്ടെടുക്കുന്നു. ഇത് മറ്റ് ടാസ്‌കുകൾക്കായി നിങ്ങളുടെ കമ്പ്യൂട്ടറിന്റെ റിസോഴ്‌സുകളിൽ ഇടം സൃഷ്ടിക്കുകയും Chrome വേഗതയുള്ളതായി നിലനിർത്തുകയും ചെയ്യും. നിഷ്ക്രിയ ടാബുകളിൽ ഒന്നുമുണ്ടാകില്ല, നിങ്ങൾ ക്ലിക്ക് ചെയ്യുമ്പോൾ അവ സ്വയമേവ വീണ്ടും ലോഡ് ആകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /> അല്ലെങ്കിൽ <ph name="BEGIN_LINK_2" />ഫീഡ്ബാക്ക് അയയ്ക്കുക<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">ഇത് ഈ ഉപകരണത്തിൽ നിന്ന് <ph name="ITEMS_COUNT" /> ഇനങ്ങൾ ഇല്ലാതാക്കും. പിന്നീട് നിങ്ങളുടെ വിവരങ്ങൾ വീണ്ടെടുക്കാൻ, <ph name="USER_EMAIL" /> എന്നയാളായി Chrome‌-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="2121284319307530122">&amp;Chrome അപ്‌ഡേറ്റ് ചെയ്യാൻ വീണ്ടും ആരംഭിക്കുക</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />നിലവിലെ ക്രമീകരണം<ph name="END_LINK" /> റിപ്പോർട്ട് ചെയ്‌തുകൊണ്ട് Chrome മികച്ചതാക്കാൻ സഹായിക്കുക</translation>
@@ -279,6 +280,7 @@
 <translation id="6735387454586646204">ChromeOS Flex സിസ്റ്റം</translation>
 <translation id="6739177684496155661">പുതിയ Chrome പ്രൊഫൈലിൽ തുടരണോ?</translation>
 <translation id="6750954913813541382">അക്ഷരത്തെറ്റുകൾ പരിഹരിക്കാൻ നിങ്ങൾ ബ്രൗസറിൽ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Chrome Google ലേക്ക് അയയ്ക്കുന്നു</translation>
+<translation id="6756581345161130259">ആവശ്യാനുസരണം, നിങ്ങൾ സജീവമായി ഉപയോഗിക്കാത്ത ടാബുകളിൽ നിന്ന് Chrome മെമ്മറി വീണ്ടെടുക്കുന്നു. ക്രമീകരണത്തിൽ ഏതുസമയത്തും ഇത് മാറ്റാം.</translation>
 <translation id="677276454032249905">എന്തായാലും Chrome-ൽ നിന്ന് പുറത്തുകടക്കണോ?</translation>
 <translation id="6785872064505734160">Chrome-ലെ Google Assistant-ന് വെബ്‌സൈറ്റുകളിലുടനീളം നിങ്ങൾക്കായി പ്രവർത്തനങ്ങൾ പൂർത്തിയാക്കാനാവും</translation>
 <translation id="683440813066116847">mDNS ട്രാഫിക് അനുവദിക്കാൻ Google Chrome കാനറിയ്‌ക്കുള്ള ഇൻബൗണ്ട് റൂൾ.</translation>
