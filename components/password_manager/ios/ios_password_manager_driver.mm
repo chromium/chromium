@@ -43,7 +43,7 @@ int IOSPasswordManagerDriver::GetId() const {
 
 void IOSPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
-  [bridge_ fillPasswordForm:form_data inFrame:web_frame_ completionHandler:nil];
+  [bridge_ processPasswordFormFillData:form_data inFrame:web_frame_];
 }
 
 void IOSPasswordManagerDriver::InformNoSavedCredentials(

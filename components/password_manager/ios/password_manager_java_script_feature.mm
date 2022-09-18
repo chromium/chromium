@@ -83,17 +83,6 @@ std::unique_ptr<base::Value> SerializeFillData(
                            fill_data.password_value);
 }
 
-// Serializes |fill_data| so it can be used by the JS side of
-// PasswordController.
-std::unique_ptr<base::Value> SerializePasswordFormFillData(
-    const autofill::PasswordFormFillData& fill_data) {
-  return SerializeFillData(fill_data.url, fill_data.form_renderer_id,
-                           fill_data.username_field.unique_renderer_id,
-                           fill_data.username_field.value,
-                           fill_data.password_field.unique_renderer_id,
-                           fill_data.password_field.value);
-}
-
 }  // namespace
 
 // static
@@ -147,31 +136,11 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     const std::string& username,
     const std::string& password,
     base::OnceCallback<void(BOOL)> callback) {
+  DCHECK(!callback.is_null());
+
   std::unique_ptr<base::Value> form_value =
       SerializeFillData(fill_data, fill_username);
-  FillPasswordForm(frame, std::move(form_value), username, password,
-                   std::move(callback));
-}
 
-void PasswordManagerJavaScriptFeature::FillPasswordForm(
-    web::WebFrame* frame,
-    const autofill::PasswordFormFillData& fill_data,
-    const std::string& username,
-    const std::string& password,
-    base::OnceCallback<void(BOOL)> callback) {
-  std::unique_ptr<base::Value> form_value =
-      SerializePasswordFormFillData(fill_data);
-  FillPasswordForm(frame, std::move(form_value), username, password,
-                   std::move(callback));
-}
-
-void PasswordManagerJavaScriptFeature::FillPasswordForm(
-    web::WebFrame* frame,
-    std::unique_ptr<base::Value> form_value,
-    const std::string& username,
-    const std::string& password,
-    base::OnceCallback<void(BOOL)> callback) {
-  DCHECK(!callback.is_null());
   std::vector<base::Value> parameters;
   parameters.push_back(std::move(*form_value));
   parameters.emplace_back(std::move(username));

@@ -10,10 +10,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
-namespace autofill {
-struct PasswordFormFillData;
-}  // namespace autofill
-
 namespace web {
 class WebFrame;
 }  // namespace web
@@ -59,17 +55,6 @@ class PasswordManagerJavaScriptFeature : public web::JavaScriptFeature {
   void FillPasswordForm(web::WebFrame* frame,
                         const password_manager::FillData& form,
                         BOOL fill_username,
-                        const std::string& username,
-                        const std::string& password,
-                        base::OnceCallback<void(BOOL)> callback);
-
-  // Fills in the form specified by |fill_data| with the given |username| and
-  // |password|. Assumes JavaScript has been injected previously by calling
-  // |FindPasswordFormsInFrame| or |ExtractForm|. Calls |callback|
-  // with YES if the filling of the password was successful, NO otherwise.
-  // |callback| cannot be null.
-  void FillPasswordForm(web::WebFrame* frame,
-                        const autofill::PasswordFormFillData& fill_data,
                         const std::string& username,
                         const std::string& password,
                         base::OnceCallback<void(BOOL)> callback);

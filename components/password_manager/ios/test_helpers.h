@@ -31,7 +31,6 @@ void SetPasswordFormFillData(const std::string& origin,
                              const char* password_value,
                              const char* additional_username,
                              const char* additional_password,
-                             bool wait_for_username,
                              autofill::PasswordFormFillData* form_data);
 
 // Populates |fill_data| with test values.

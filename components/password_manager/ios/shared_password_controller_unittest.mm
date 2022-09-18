@@ -863,13 +863,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       form.url.spec(), "", form.unique_renderer_id.value(), "",
       form.fields[0].unique_renderer_id.value(), "john.doe@gmail.com", "",
       form.fields[1].unique_renderer_id.value(), "super!secret", nullptr,
-      nullptr, false, &form_fill_data);
-  OCMExpect([form_helper_ fillPasswordForm:form_fill_data
-                                   inFrame:frame
-                         completionHandler:nil]);
-  [controller_ fillPasswordForm:form_fill_data
-                        inFrame:frame
-              completionHandler:nil];
+      nullptr, &form_fill_data);
+
+  [controller_ processPasswordFormFillData:form_fill_data inFrame:frame];
   // Check that completion handler was called.
   EXPECT_TRUE(completion_was_called);
 }
@@ -949,14 +945,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       form.url.spec(), "", form.unique_renderer_id.value(), "",
       form.fields[0].unique_renderer_id.value(), "john.doe@gmail.com", "",
       form.fields[1].unique_renderer_id.value(), "super!secret", nullptr,
-      nullptr, false, &form_fill_data);
+      nullptr, &form_fill_data);
 
-  OCMExpect([form_helper_ fillPasswordForm:form_fill_data
-                                   inFrame:frame
-                         completionHandler:nil]);
-  [controller_ fillPasswordForm:form_fill_data
-                        inFrame:frame
-              completionHandler:nil];
+  [controller_ processPasswordFormFillData:form_fill_data inFrame:frame];
 
   // Check that completion handler was called for the second form query.
   EXPECT_FALSE(completion_was_called1);
@@ -990,15 +981,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       kTestURL, "", form.unique_renderer_id.value(), "",
       form.fields[0].unique_renderer_id.value(), "john.doe@gmail.com", "",
       form.fields[1].unique_renderer_id.value(), "super!secret", nullptr,
-      nullptr, false, &form_fill_data);
+      nullptr, &form_fill_data);
 
-  OCMExpect([form_helper_ fillPasswordForm:form_fill_data
-                                   inFrame:frame
-                         completionHandler:nil]);
-
-  [controller_ fillPasswordForm:form_fill_data
-                        inFrame:frame
-              completionHandler:nil];
+  [controller_ processPasswordFormFillData:form_fill_data inFrame:frame];
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"

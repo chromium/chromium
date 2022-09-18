@@ -41,7 +41,7 @@ class AccountSelectFillDataTest : public PlatformTest {
           kUrl, kFormNames[i], kFormUniqueIDs[i], kUsernameElements[i],
           kUsernameUniqueIDs[i], kUsernames[i], kPasswordElements[i],
           kPasswordUniqueIDs[i], kPasswords[i], kAdditionalUsernames[i],
-          kAdditionalPasswords[i], false, &form_data_[i]);
+          kAdditionalPasswords[i], &form_data_[i]);
     }
   }
 

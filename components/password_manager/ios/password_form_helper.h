@@ -75,13 +75,6 @@ class WebState;
                    (nullable void (^)(const std::vector<autofill::FormData>&,
                                       uint32_t))completionHandler;
 
-// Autofills credentials into the page. Credentials and input fields are
-// specified by |formData|. Invokes |completionHandler| when finished with YES
-// if successful and NO otherwise.
-- (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
-                 inFrame:(web::WebFrame*)frame
-       completionHandler:(nullable void (^)(BOOL))completionHandler;
-
 // Fills new password field for (optional as @"") |newPasswordIdentifier| and
 // for (optional as @"") confirm password field |confirmPasswordIdentifier| in
 // the form identified by |formData|. Invokes |completionHandler| with true if

@@ -23,13 +23,11 @@ class GURL;
 
 @property(readonly, nonatomic) const GURL& lastCommittedURL;
 
-// Finds and fills the password form using the supplied |formData| to
-// match the password form and to populate the field values. Calls
-// |completionHandler| with YES if a form field has been filled, NO otherwise.
-// |completionHandler| can be nil.
-- (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
-                 inFrame:(web::WebFrame*)frame
-       completionHandler:(void (^)(BOOL))completionHandler;
+// Prepares fill data with given password form data.
+// This method calls suggestions helper's processWithPasswordFormFillData.
+- (void)processPasswordFormFillData:
+            (const autofill::PasswordFormFillData&)formData
+                            inFrame:(web::WebFrame*)frame;
 
 // Informs delegate that there are no saved credentials for the current page.
 - (void)onNoSavedCredentials;

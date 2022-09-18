@@ -107,9 +107,9 @@ TEST_F(IOSPasswordManagerDriverTest, IsInPrimaryMainFrame) {
 TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
   autofill::PasswordFormFillData form_data;
 
-  OCMExpect([password_controller_ fillPasswordForm:form_data
-                                           inFrame:driver_->web_frame()
-                                 completionHandler:nil]);
+  OCMExpect([password_controller_
+      processPasswordFormFillData:form_data
+                          inFrame:driver_->web_frame()]);
   driver_->SetPasswordFillData(form_data);
   [password_controller_ verify];
 }

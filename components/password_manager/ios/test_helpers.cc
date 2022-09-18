@@ -30,7 +30,6 @@ void SetPasswordFormFillData(const std::string& url,
                              const char* password_value,
                              const char* additional_username,
                              const char* additional_password,
-                             bool wait_for_username,
                              PasswordFormFillData* form_data) {
   form_data->url = GURL(url);
   form_data->name = base::UTF8ToUTF16(form_name);
@@ -52,7 +51,7 @@ void SetPasswordFormFillData(const std::string& url,
     additional_password_data.realm.clear();
     form_data->additional_logins.push_back(additional_password_data);
   }
-  form_data->wait_for_username = wait_for_username;
+  form_data->wait_for_username = true;
 }
 
 void SetFillData(const std::string& origin,

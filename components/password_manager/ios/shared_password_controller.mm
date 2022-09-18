@@ -557,14 +557,14 @@ BOOL canProcessCrossOriginIframes() {
   return _webState ? _webState->GetLastCommittedURL() : GURL::EmptyGURL();
 }
 
-- (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
-                 inFrame:(web::WebFrame*)frame
-       completionHandler:(void (^)(BOOL))completionHandler {
+- (void)processPasswordFormFillData:
+            (const autofill::PasswordFormFillData&)formData
+                            inFrame:(web::WebFrame*)frame {
+  // Biometric auth is always enabled on iOS so wait_for_username is
+  // specifically set to prevent filling without user confirmation.
+  DCHECK(formData.wait_for_username);
   [self.suggestionHelper processWithPasswordFormFillData:formData
                                                  inFrame:frame];
-  [self.formHelper fillPasswordForm:formData
-                            inFrame:frame
-                  completionHandler:completionHandler];
 }
 
 - (void)onNoSavedCredentials {

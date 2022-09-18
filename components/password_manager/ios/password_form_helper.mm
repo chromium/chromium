@@ -294,58 +294,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
           }));
 }
 
-// TODO(crbug.com/1350997): Filling on page load doesn't happen anymore
-// so this method should be deleted.
-- (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
-                 inFrame:(web::WebFrame*)frame
-       completionHandler:(nullable void (^)(BOOL))completionHandler {
-  // Necessary copy so the values can be used inside a block.
-  FieldRendererId usernameID = formData.username_field.unique_renderer_id;
-  FieldRendererId passwordID = formData.password_field.unique_renderer_id;
-  std::u16string usernameValue = formData.username_field.value;
-  std::u16string passwordValue = formData.password_field.value;
-
-  // Don't fill if:
-  // 1. Waiting for the user to type a username.
-  // 2. |formData|'s origin is not matching the origin of the last commited URL.
-  // 3. If a field has user typed input or input filled on user trigger.
-  if (formData.wait_for_username ||
-      formData.url.DeprecatedGetOriginAsURL() !=
-          self.lastCommittedURL.DeprecatedGetOriginAsURL() ||
-      self.fieldDataManager->WasAutofilledOnUserTrigger(passwordID) ||
-      self.fieldDataManager->DidUserType(passwordID)) {
-    if (completionHandler) {
-      completionHandler(NO);
-    }
-    return;
-  }
-
-  // Send JSON over to the web view.
-  __weak PasswordFormHelper* weakSelf = self;
-
-  password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-      ->FillPasswordForm(frame, formData, UTF16ToUTF8(usernameValue),
-                         UTF16ToUTF8(passwordValue),
-                         base::BindOnce(^(BOOL success) {
-                           PasswordFormHelper* strongSelf = weakSelf;
-                           if (!strongSelf) {
-                             return;
-                           }
-                           [strongSelf recordFormFillingSuccessMetrics:success];
-                           if (success) {
-                             strongSelf.fieldDataManager->UpdateFieldDataMap(
-                                 usernameID, usernameValue,
-                                 FieldPropertiesFlags::kAutofilledOnPageLoad);
-                             strongSelf.fieldDataManager->UpdateFieldDataMap(
-                                 passwordID, passwordValue,
-                                 FieldPropertiesFlags::kAutofilledOnPageLoad);
-                           }
-                           if (completionHandler) {
-                             completionHandler(success);
-                           }
-                         }));
-}
-
 - (void)fillPasswordForm:(FormRendererId)formIdentifier
                       inFrame:(web::WebFrame*)frame
         newPasswordIdentifier:(FieldRendererId)newPasswordIdentifier

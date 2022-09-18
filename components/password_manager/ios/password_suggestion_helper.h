@@ -93,7 +93,7 @@ class WebState;
 // Prepares fill data with given password form data. Triggers callback for
 // -checkIfSuggestionsAvailableForForm... if needed.
 // This method should be called in password controller's
-// -fillPasswordForm:completionHandler:.
+// -processPasswordFormFillData.
 - (void)processWithPasswordFormFillData:
             (const autofill::PasswordFormFillData&)formData
                                 inFrame:(web::WebFrame*)frame;
