@@ -314,10 +314,9 @@ void CellularESimProfileHandlerImpl::ResetESimProfileCache() {
 
 void CellularESimProfileHandlerImpl::DisableActiveESimProfile() {
   std::vector<CellularESimProfile> esim_profiles = GetESimProfiles();
-  const auto iter = base::ranges::find_if(
-      esim_profiles, [&](const auto& esim_profile) -> bool {
-        return esim_profile.state() == CellularESimProfile::State::kActive;
-      });
+  const auto iter =
+      base::ranges::find(esim_profiles, CellularESimProfile::State::kActive,
+                         &CellularESimProfile::state);
   if (iter == esim_profiles.end()) {
     NET_LOG(EVENT) << "No active eSIM profile is found.";
     return;

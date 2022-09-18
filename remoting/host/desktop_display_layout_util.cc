@@ -32,10 +32,9 @@ DisplayLayoutDiff CalculateDisplayLayoutDiff(
       diff.new_displays.push_back(track_layout);
       continue;
     }
-    auto current_display_it = base::ranges::find_if(
-        current_displays, [&track_layout](const auto& display) {
-          return display.layout.screen_id() == track_layout.screen_id();
-        });
+    auto current_display_it = base::ranges::find(
+        current_displays, track_layout.screen_id(),
+        [](const auto& display) { return display.layout.screen_id(); });
     if (current_display_it == current_displays.end()) {
       LOG(ERROR) << "Ignoring unknown screen_id " << track_layout.screen_id();
       continue;

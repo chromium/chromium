@@ -27,18 +27,13 @@ const std::vector<base::Feature>* g_feature_flags_test_override = nullptr;
 
 const base::Feature* GetFeature(const std::string& feature_flag) {
   if (g_feature_flags_test_override) {
-    auto iter =
-        base::ranges::find_if(*g_feature_flags_test_override,
-                              [feature_flag](const base::Feature& feature) {
-                                return feature.name == feature_flag;
-                              });
+    auto iter = base::ranges::find(*g_feature_flags_test_override, feature_flag,
+                                   &base::Feature::name);
     return iter == g_feature_flags_test_override->end() ? nullptr : &(*iter);
   }
 
-  const base::Feature** feature = base::ranges::find_if(
-      kFeatureFlags, [feature_flag](const base::Feature* feature) {
-        return feature->name == feature_flag;
-      });
+  const base::Feature** feature =
+      base::ranges::find(kFeatureFlags, feature_flag, &base::Feature::name);
 
   return feature == std::end(kFeatureFlags) ? nullptr : *feature;
 }

@@ -201,8 +201,7 @@ const mojom::HidCollectionInfo* HidDeviceInfo::FindCollectionWithReport(
     // nullptr if there is no report of that type.
     auto find_it = base::ranges::find_if(
         device_->collections, [=](const auto& collection) {
-          const auto& reports = ReportsForType(collection, report_type);
-          return !reports.empty();
+          return !ReportsForType(collection, report_type).empty();
         });
     if (find_it == device_->collections.end())
       return nullptr;
@@ -219,10 +218,9 @@ const mojom::HidCollectionInfo* HidDeviceInfo::FindCollectionWithReport(
   // `report_type`, or nullptr if it is not in any collection.
   auto find_it =
       base::ranges::find_if(device_->collections, [=](const auto& collection) {
-        const auto& reports = ReportsForType(collection, report_type);
-        return base::Contains(reports, report_id, [](const auto& report) {
-          return report->report_id;
-        });
+        return base::Contains(ReportsForType(collection, report_type),
+                              report_id,
+                              &mojom::HidReportDescription::report_id);
       });
   if (find_it == device_->collections.end())
     return nullptr;

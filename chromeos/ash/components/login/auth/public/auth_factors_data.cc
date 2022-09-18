@@ -84,8 +84,8 @@ const cryptohome::KeyDefinition* AuthFactorsData::FindPinKey() const {
 
 const cryptohome::AuthFactor* AuthFactorsData::FindFactorByType(
     cryptohome::AuthFactorType type) const {
-  auto result = base::ranges::find_if(
-      configured_factors_, [type](auto& f) { return f.ref().type() == type; });
+  auto result = base::ranges::find(
+      configured_factors_, type, [](const auto& f) { return f.ref().type(); });
   if (result == configured_factors_.end())
     return nullptr;
   return &(*result);

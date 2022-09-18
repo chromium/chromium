@@ -246,10 +246,8 @@ ReportingEndpoint::Statistics* ReportingCacheImpl::GetEndpointStats(
     if (document_endpoints_source_it == document_endpoints_.end())
       return nullptr;
     const auto document_endpoint_it =
-        base::ranges::find_if(document_endpoints_source_it->second,
-                              [&group_key](ReportingEndpoint endpoint) {
-                                return endpoint.group_key == group_key;
-                              });
+        base::ranges::find(document_endpoints_source_it->second, group_key,
+                           &ReportingEndpoint::group_key);
     // The endpoint may have been removed while the upload was in progress. In
     // that case, we no longer care about the stats for the removed endpoint.
     if (document_endpoint_it == document_endpoints_source_it->second.end())

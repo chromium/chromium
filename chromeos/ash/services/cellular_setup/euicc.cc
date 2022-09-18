@@ -303,9 +303,9 @@ void Euicc::OnRequestPendingProfilesResult(
 mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(
     const std::string& activation_code,
     ESimProfile** profile_info) {
-  const auto iter = base::ranges::find_if(
-      esim_profiles_, [activation_code](const auto& esim_profile) -> bool {
-        return esim_profile->properties()->activation_code == activation_code;
+  const auto iter = base::ranges::find(
+      esim_profiles_, activation_code, [](const auto& esim_profile) {
+        return esim_profile->properties()->activation_code;
       });
   if (iter == esim_profiles_.end()) {
     NET_LOG(EVENT) << "Get pending profile with activation failed: No profile "

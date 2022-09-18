@@ -36,9 +36,9 @@ bool IsBase64Whitespace(char c) {
 //   - Does not have any escaped characters.
 //   - Does not have any whitespace.
 bool IsDataURLReadyForDecode(base::StringPiece body) {
-  return (body.length() % 4) == 0 && base::ranges::find_if(body, [](char c) {
-                                       return c == '%' || IsBase64Whitespace(c);
-                                     }) == std::end(body);
+  return (body.length() % 4) == 0 && base::ranges::none_of(body, [](char c) {
+           return c == '%' || IsBase64Whitespace(c);
+         });
 }
 
 }  // namespace

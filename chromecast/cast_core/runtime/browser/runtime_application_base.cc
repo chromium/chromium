@@ -23,8 +23,8 @@ namespace {
 const cast::common::Dictionary::Entry* FindEntry(
     const std::string& key,
     const cast::common::Dictionary& dict) {
-  auto iter = base::ranges::find_if(
-      dict.entries(), [&key](const auto& entry) { return entry.key() == key; });
+  auto iter = base::ranges::find(dict.entries(), key,
+                                 &cast::common::Dictionary::Entry::key);
   if (iter == dict.entries().end()) {
     return nullptr;
   }

@@ -842,9 +842,8 @@ void GetAssertionRequestHandler::OnReadLargeBlobs(
   if (status == CtapDeviceResponseCode::kSuccess) {
     for (auto& response : responses_) {
       const auto blob =
-          base::ranges::find_if(*blobs, [&response](const auto& pair) {
-            return pair.first == response.large_blob_key;
-          });
+          base::ranges::find(*blobs, response.large_blob_key,
+                             &std::pair<LargeBlobKey, LargeBlob>::first);
       if (blob != blobs->end()) {
         response.large_blob = std::move(blob->second);
       }

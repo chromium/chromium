@@ -413,10 +413,7 @@ std::u16string CaptureModeMenuGroup::GetOptionLabelForTesting(
 }
 
 CaptureModeOption* CaptureModeMenuGroup::GetOptionById(int option_id) const {
-  auto iter =
-      base::ranges::find_if(options_, [option_id](CaptureModeOption* option) {
-        return option->id() == option_id;
-      });
+  auto iter = base::ranges::find(options_, option_id, &CaptureModeOption::id);
   return iter == options_.end() ? nullptr : *iter;
 }
 

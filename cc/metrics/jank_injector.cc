@@ -86,10 +86,9 @@ bool IsJankInjectionEnabledForURL(const GURL& url) {
 
   const auto& paths = iter->second;
   const auto& path = url.path_piece();
-  return paths.end() !=
-         base::ranges::find_if(paths, [path](const std::string& p) {
-           return base::StartsWith(path, p);
-         });
+  return base::ranges::any_of(paths, [path](const std::string& p) {
+    return base::StartsWith(path, p);
+  });
 }
 
 void RunJank(JankInjectionParams params) {

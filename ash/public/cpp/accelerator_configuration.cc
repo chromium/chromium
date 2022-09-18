@@ -21,8 +21,7 @@ void AcceleratorConfiguration::AddAcceleratorsUpdatedCallback(
 
 void AcceleratorConfiguration::RemoveAcceleratorsUpdatedCallback(
     AcceleratorsUpdatedCallback callback) {
-  const auto it = base::ranges::find_if(
-      callbacks_, [callback](const auto& o) { return o == callback; });
+  const auto it = base::ranges::find(callbacks_, callback);
   if (it == callbacks_.end())
     return;
 

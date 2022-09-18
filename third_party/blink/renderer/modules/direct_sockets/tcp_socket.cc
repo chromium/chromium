@@ -234,8 +234,7 @@ void TCPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
 
   // Finds first actual exception and rejects |closed| with it.
   // If neither of the streams was errored, resolves |closed|.
-  if (auto it = base::ranges::find_if(
-          args, [](ScriptValue exception) { return !exception.IsEmpty(); });
+  if (auto it = base::ranges::find_if_not(args, &ScriptValue::IsEmpty);
       it != args.end()) {
     RejectClosed(*it);
   } else {

@@ -121,10 +121,9 @@ class CC_EXPORT TaskGraphWorkQueue {
   static bool HasReadyToRunTasksInNamespace(
       const TaskNamespace* task_namespace) {
     const auto& ready_tasks = task_namespace->ready_to_run_tasks;
-    return base::ranges::find_if_not(
-               ready_tasks, &PrioritizedTask::Vector::empty,
-               &TaskNamespace::ReadyTasks::value_type::second) !=
-           ready_tasks.end();
+    return !base::ranges::all_of(
+        ready_tasks, &PrioritizedTask::Vector::empty,
+        &TaskNamespace::ReadyTasks::value_type::second);
   }
 
   static bool HasFinishedRunningTasksInNamespace(
@@ -134,10 +133,9 @@ class CC_EXPORT TaskGraphWorkQueue {
   }
 
   bool HasReadyToRunTasks() const {
-    return base::ranges::find_if_not(ready_to_run_namespaces_,
-                                     &TaskNamespace::Vector::empty,
-                                     &ReadyNamespaces::value_type::second) !=
-           ready_to_run_namespaces_.end();
+    return !base::ranges::all_of(ready_to_run_namespaces_,
+                                 &TaskNamespace::Vector::empty,
+                                 &ReadyNamespaces::value_type::second);
   }
 
   bool HasReadyToRunTasksForCategory(uint16_t category) const {

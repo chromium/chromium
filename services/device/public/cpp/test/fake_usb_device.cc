@@ -125,22 +125,18 @@ void FakeUsbDevice::ClaimInterface(uint8_t interface_number,
   }
 
   const mojom::UsbDeviceInfo& device_info = device_->GetDeviceInfo();
-  auto config_it = base::ranges::find_if(
-      device_info.configurations,
-      [&device_info](const mojom::UsbConfigurationInfoPtr& config) {
-        return device_info.active_configuration == config->configuration_value;
-      });
+  auto config_it = base::ranges::find(
+      device_info.configurations, device_info.active_configuration,
+      &mojom::UsbConfigurationInfo::configuration_value);
   if (config_it == device_info.configurations.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     LOG(ERROR) << "No such configuration.";
     return;
   }
 
-  auto interface_it = base::ranges::find_if(
-      (*config_it)->interfaces,
-      [interface_number](const mojom::UsbInterfaceInfoPtr& interface) {
-        return interface->interface_number == interface_number;
-      });
+  auto interface_it =
+      base::ranges::find((*config_it)->interfaces, interface_number,
+                         &mojom::UsbInterfaceInfo::interface_number);
   if (interface_it == (*config_it)->interfaces.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     LOG(ERROR) << "No such interface in " << (*config_it)->interfaces.size()
