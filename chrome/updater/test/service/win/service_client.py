@@ -8,9 +8,9 @@ This command assumes the updater test service is already installed on the
 system.
 
 Example usages:
-    vpython service_proxy.py --function=RunAsSystem \
+    vpython3 service_proxy.py --function=RunAsSystem \
         --args='{"command": "notepad.exe"}'
-    vpython service_proxy.py --function=AnswerUpcomingUACPrompt \
+    vpython3 service_proxy.py --function=AnswerUpcomingUACPrompt \
         --args='{"actions": "A", "wait_child": false, "source": "demo"}'
 """
 
