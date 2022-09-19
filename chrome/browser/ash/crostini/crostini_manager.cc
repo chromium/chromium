@@ -307,8 +307,8 @@ class CrostiniManager::CrostiniRestarter
       {mojom::InstallerState::kSetupContainer, base::Minutes(5)},
       // StartContainer sends heartbeat messages on a 30-second interval, but
       // there's a bit of work that's not covered by heartbeat messages so to be
-      // safe set a 5 minute timeout.
-      {mojom::InstallerState::kStartContainer, base::Minutes(5)},
+      // safe set a 8 minute timeout.
+      {mojom::InstallerState::kStartContainer, base::Minutes(8)},
       // Configuration may be slow, making timeout 2 hours at first because some
       // playbooks are gigantic (e.g. Chromium playbook).
       {mojom::InstallerState::kConfigureContainer, base::Hours(2)},
