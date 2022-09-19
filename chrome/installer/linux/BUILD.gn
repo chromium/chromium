@@ -94,13 +94,16 @@ packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
 # TODO(mmoss) Any convenient way to get all the relevant build files?
 # (e.g. all locales, resources, etc.)
 packaging_files = packaging_files_binaries + [
-                    "$root_out_dir/vk_swiftshader_icd.json",
                     "$root_out_dir/xdg-mime",
                     "$root_out_dir/xdg-settings",
                     "$root_out_dir/locales/en-US.pak",
                     "$root_out_dir/MEIPreload/manifest.json",
                     "$root_out_dir/MEIPreload/preloaded_data.pb",
                   ]
+if (enable_swiftshader) {
+  packaging_files += [ "$root_out_dir/vk_swiftshader_icd.json" ]
+}
+
 if (use_qt) {
   # Even though this is a shared library, add it to `packaging_files` instead of
   # `packaging_files_shlibs` to skip the dependency check.  This is intentional
