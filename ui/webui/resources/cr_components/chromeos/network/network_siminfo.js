@@ -18,6 +18,7 @@ import './sim_lock_dialogs.js';
 
 import {isActiveSim} from '//resources/cr_components/chromeos/network/cellular_utils.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 import {loadTimeData} from '../../../js/load_time_data.m.js';
@@ -59,7 +60,7 @@ Polymer({
       value: null,
     },
 
-    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    /** @type {!GlobalPolicy|undefined} */
     globalPolicy: Object,
 
     disabled: {

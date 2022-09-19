@@ -10,6 +10,7 @@ import {ESimPageName, ESimSetupFlowResult, FAILED_ESIM_SETUP_DURATION_METRIC_NAM
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 
@@ -75,10 +76,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
   /** Adds an actively online wifi network and esim network. */
   function addOnlineWifiNetwork() {
-    const onlineNetwork = OncMojo.getDefaultNetworkState(
-        chromeos.networkConfig.mojom.NetworkType.kWiFi, wifiGuidPrefix);
-    onlineNetwork.connectionState =
-        chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
+    const onlineNetwork =
+        OncMojo.getDefaultNetworkState(NetworkType.kWiFi, wifiGuidPrefix);
+    onlineNetwork.connectionState = ConnectionStateType.kOnline;
     networkConfigRemote.addNetworksForTest([onlineNetwork]);
     MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
   }
@@ -86,8 +86,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
   /** Takes actively online network offline. */
   function takeWifiNetworkOffline() {
     networkConfigRemote.setNetworkConnectionStateForTest(
-        wifiGuidPrefix + '_guid',
-        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
+        wifiGuidPrefix + '_guid', ConnectionStateType.kNotConnected);
   }
 
   test('Error fetching profiles', async function() {
@@ -747,10 +746,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
             profileLoadingPage.loadingMessage,
             eSimPage.i18n('eSimProfileDetectMessage'));
 
-        const pSimNetwork = OncMojo.getDefaultNetworkState(
-            chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular');
-        pSimNetwork.connectionState =
-            chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+        const pSimNetwork =
+            OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
+        pSimNetwork.connectionState = ConnectionStateType.kConnected;
         networkConfigRemote.addNetworksForTest([pSimNetwork]);
         MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
         await flushAsync();

@@ -141,10 +141,7 @@ Polymer({
    * @return {string}
    */
   getPortalStateString_(state) {
-    return this.i18n(
-        'OncPortalState' +
-        OncMojo.getPortalStateString(
-            /** @type {chromeos.networkConfig.mojom.PortalState} */ (state)));
+    return this.i18n('OncPortalState' + OncMojo.getPortalStateString(state));
   },
 
   /**
@@ -154,10 +151,7 @@ Polymer({
    * @return {string}
    */
   getNetworkTypeString_(type) {
-    return this.i18n(
-        'OncType' +
-        OncMojo.getNetworkTypeString(
-            /** @type {chromeos.networkConfig.mojom.NetworkType} */ (type)));
+    return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));
   },
 
   /**

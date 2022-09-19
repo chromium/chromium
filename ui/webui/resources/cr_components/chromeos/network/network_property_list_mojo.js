@@ -15,6 +15,8 @@ import './network_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ActivationStateType, SecurityType, SubjectAltName, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -306,8 +308,8 @@ Polymer({
       // Unspecified properties in policy configurations are not user
       // modifiable. https://crbug.com/819837.
       const source = this.propertyDict.source;
-      return source !== chromeos.networkConfig.mojom.OncSource.kUserPolicy &&
-          source !== chromeos.networkConfig.mojom.OncSource.kDevicePolicy;
+      return source !== OncSource.kUserPolicy &&
+          source !== OncSource.kDevicePolicy;
     }
     return !this.isNetworkPolicyEnforced(property);
   },
@@ -381,7 +383,7 @@ Polymer({
         this.propertyDict.source) {
       const policySource = OncMojo.getEnforcedPolicySourceFromOncSource(
           this.propertyDict.source);
-      if (policySource !== chromeos.networkConfig.mojom.PolicySource.kNone) {
+      if (policySource !== PolicySource.kNone) {
         // If the dictionary is policy controlled, provide an empty property
         // object with the network policy source. See https://crbug.com/819837
         // for more info.
@@ -413,8 +415,7 @@ Polymer({
 
     if (key === 'wifi.eap.subjectAltNameMatch') {
       return OncMojo.serializeSubjectAltNameMatch(
-          /** @type {!Array<!chromeos.networkConfig.mojom.SubjectAltName>} */ (
-              value));
+          /** @type {!Array<!SubjectAltName>} */ (value));
     }
 
     if (key === 'wifi.eap.domainSuffixMatch') {
@@ -439,17 +440,16 @@ Polymer({
       // Special case typed managed properties.
       if (key === 'cellular.activationState') {
         valueStr = OncMojo.getActivationStateTypeString(
-            /** @type{!chromeos.networkConfig.mojom.ActivationStateType}*/ (
-                value));
+            /** @type {!ActivationStateType}*/ (value));
       } else if (key === 'portalState') {
         valueStr = OncMojo.getPortalStateString(
-            /** @type{!chromeos.networkConfig.mojom.PortalState}*/ (value));
+            /** @type {!PortalState}*/ (value));
       } else if (key === 'vpn.type') {
         valueStr = OncMojo.getVpnTypeString(
-            /** @type{!chromeos.networkConfig.mojom.VpnType}*/ (value));
+            /** @type {!VpnType}*/ (value));
       } else if (key === 'wifi.security') {
         valueStr = OncMojo.getSecurityTypeString(
-            /** @type{!chromeos.networkConfig.mojom.SecurityType}*/ (value));
+            /** @type {!SecurityType}*/ (value));
       } else {
         return value.toString();
       }

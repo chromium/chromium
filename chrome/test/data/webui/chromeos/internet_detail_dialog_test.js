@@ -7,6 +7,8 @@ import 'chrome://internet-detail-dialog/internet_detail_dialog_container.js';
 import {InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_container.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {CrosNetworkConfigRemote, InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -34,7 +36,7 @@ suite('internet-detail-dialog', () => {
   const test_iccid = '11111111111111111';
   let internetDetailDialog = null;
 
-  /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  /** @type {?CrosNetworkConfigRemote} */
   let mojoApi_;
 
   suiteSetup(function() {
@@ -70,27 +72,25 @@ suite('internet-detail-dialog', () => {
   }
 
   async function setupCellularNetwork(isPrimary, isInhibited) {
-    const mojom = chromeos.networkConfig.mojom;
-    await mojoApi_.setNetworkTypeEnabledState(
-        mojom.NetworkType.kCellular, true);
+    await mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
-    const cellularNetwork = getManagedProperties(
-        mojom.NetworkType.kCellular, mojom.OncSource.kDevice);
+    const cellularNetwork =
+        getManagedProperties(NetworkType.kCellular, OncSource.kDevice);
     cellularNetwork.typeProperties.cellular.iccid = test_iccid;
     // Required for connectDisconnectButton to be rendered.
     cellularNetwork.connectionState = isPrimary ?
-        mojom.ConnectionStateType.kConnected :
-        mojom.ConnectionStateType.kNotConnected;
+        ConnectionStateType.kConnected :
+        ConnectionStateType.kNotConnected;
     // Required for networkChooseMobile to be rendered.
     cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
 
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
     mojoApi_.setDeviceStateForTest({
-      type: mojom.NetworkType.kCellular,
-      deviceState: mojom.DeviceStateType.kEnabled,
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
       inhibitReason:
-          (isInhibited ? mojom.InhibitReason.kInstallingProfile :
-                         mojom.InhibitReason.kNotInhibited),
+          (isInhibited ? InhibitReason.kInstallingProfile :
+                         InhibitReason.kNotInhibited),
       simInfos: [{
         iccid: test_iccid,
         isPrimary: isPrimary,
@@ -153,11 +153,10 @@ suite('internet-detail-dialog', () => {
     assertFalse(infoFields.disabled);
 
     // Mock device being inhibited.
-    const mojom = chromeos.networkConfig.mojom;
     mojoApi_.setDeviceStateForTest({
-      type: mojom.NetworkType.kCellular,
-      deviceState: mojom.DeviceStateType.kEnabled,
-      inhibitReason: mojom.InhibitReason.kInstallingProfile,
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      inhibitReason: InhibitReason.kInstallingProfile,
       simInfos: [{
         iccid: test_iccid,
         isPrimary: true,
@@ -176,9 +175,9 @@ suite('internet-detail-dialog', () => {
 
     // Uninhibit.
     mojoApi_.setDeviceStateForTest({
-      type: mojom.NetworkType.kCellular,
-      deviceState: mojom.DeviceStateType.kEnabled,
-      inhibitReason: mojom.InhibitReason.kNotInhibited,
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      inhibitReason: InhibitReason.kNotInhibited,
       simInfos: [{
         iccid: test_iccid,
         isPrimary: true,

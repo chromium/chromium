@@ -36,10 +36,12 @@ import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome:
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {CrosNetworkConfigRemote, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -51,8 +53,6 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
 
 import {InternetConfigElement} from './internet_config.js';
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
-
-const mojom = chromeos.networkConfig.mojom;
 
 /** @type {number} */
 const ESIM_PROFILE_LIMIT = 5;
@@ -123,14 +123,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * The network type for the networks subpage when shown.
-       * @type {chromeos.networkConfig.mojom.NetworkType}
+       * @type {NetworkType}
        * @private
        */
       subpageType_: Number,
 
       /**
        * The network type for the known networks subpage when shown.
-       * @type {chromeos.networkConfig.mojom.NetworkType}
+       * @type {NetworkType}
        * @private
        */
       knownNetworksType_: Number,
@@ -153,7 +153,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         value: false,
       },
 
-      /** @private {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+      /** @private {!GlobalPolicy|undefined} */
       globalPolicy_: Object,
 
       /**
@@ -167,7 +167,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * List of third party (Extension + Arc) VPN providers.
-       * @type {!Array<!chromeos.networkConfig.mojom.VpnProvider>}
+       * @type {!Array<!VpnProvider>}
        * @private
        */
       vpnProviders_: {
@@ -247,7 +247,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /**
        * eSIM network used in internet detail menu.
-       * @private {chromeos.networkConfig.mojom.NetworkStateProperties}
+       * @private {NetworkStateProperties}
        */
       eSimNetworkState_: {
         type: Object,
@@ -288,14 +288,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
     /**
      * Type of last detail page visited
-     * @private {chromeos.networkConfig.mojom.NetworkType|undefined}
+     * @private {NetworkType|undefined}
      */
     this.detailType_ = undefined;
 
     /** @private  {!InternetPageBrowserProxy} */
     this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
 
-    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
@@ -308,7 +308,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
           /**
            * @type {!CustomEvent<!{
            *     enabled: boolean,
-           *     type: chromeos.networkConfig.mojom.NetworkType
+           *     type: NetworkType
            * }>}
            */
           (event));
@@ -340,19 +340,19 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     });
     this.addEventListener('show-known-networks', (event) => {
       this.onShowKnownNetworks_(
-          /** @type {!CustomEvent<chromeos.networkConfig.mojom.NetworkType>} */
+          /** @type {!CustomEvent<NetworkType>} */
           (event));
     });
     this.addEventListener('show-networks', (event) => {
       this.onShowNetworks_(
-          /** @type {!CustomEvent<chromeos.networkConfig.mojom.NetworkType>} */
+          /** @type {!CustomEvent<NetworkType>} */
           (event));
     });
     this.addEventListener('show-esim-profile-rename-dialog', (event) => {
       this.onShowESimProfileRenameDialog_(
           /**
                    @type {!CustomEvent<!{networkState:
-                       chromeos.networkConfig.mojom.NetworkStateProperties}>}
+                       NetworkStateProperties}>}
                      */
           (event));
     });
@@ -360,7 +360,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       this.onShowESimRemoveProfileDialog_(
           /**
              @type {!CustomEvent<!{networkState:
-                 chromeos.networkConfig.mojom.NetworkStateProperties}>}
+                 NetworkStateProperties}>}
                */
           (event));
     });
@@ -388,9 +388,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     // Manually show the deep links for settings nested within elements.
     let networkType = null;
     if (settingId === Setting.kWifiOnOff) {
-      networkType = mojom.NetworkType.kWiFi;
+      networkType = NetworkType.kWiFi;
     } else if (settingId === Setting.kMobileOnOff) {
-      networkType = mojom.NetworkType.kCellular;
+      networkType = NetworkType.kCellular;
     }
 
     afterNextRender(this, () => {
@@ -439,7 +439,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       // update.
       this.pendingShowSimLockDialog_ = !oldRoute &&
           !!queryParams.get('showSimLockDialog') &&
-          this.subpageType_ === mojom.NetworkType.kCellular;
+          this.subpageType_ === NetworkType.kCellular;
     } else if (route === routes.KNOWN_NETWORKS) {
       // Handle direct navigation to the known networks page,
       // e.g. chrome://settings/internet/knownNetworks?type=WiFi
@@ -448,7 +448,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       if (type) {
         this.knownNetworksType_ = OncMojo.getNetworkTypeFromString(type);
       } else {
-        this.knownNetworksType_ = mojom.NetworkType.kWiFi;
+        this.knownNetworksType_ = NetworkType.kWiFi;
       }
     } else if (route === routes.INTERNET) {
       // Show deep links for the internet page.
@@ -530,7 +530,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * Event triggered by a device state enabled toggle.
    * @param {!CustomEvent<!{
    *     enabled: boolean,
-   *     type: chromeos.networkConfig.mojom.NetworkType
+   *     type: NetworkType
    * }>} event
    * @private
    */
@@ -573,9 +573,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    */
   attemptShowCellularSetupDialog_(pageName) {
     const cellularDeviceState =
-        this.getDeviceState_(mojom.NetworkType.kCellular, this.deviceStates);
+        this.getDeviceState_(NetworkType.kCellular, this.deviceStates);
     if (!cellularDeviceState ||
-        cellularDeviceState.deviceState !== mojom.DeviceStateType.kEnabled) {
+        cellularDeviceState.deviceState !== DeviceStateType.kEnabled) {
       this.showErrorToast_(this.i18n('eSimMobileDataNotEnabledErrorToast'));
       return;
     }
@@ -636,15 +636,13 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /**
    * @param {boolean} configAndConnect
-   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @param {NetworkType} type
    * @param {?string=} opt_guid
    * @param {?string=} opt_name
    * @private
    */
   showConfig_(configAndConnect, type, opt_guid, opt_name) {
-    assert(
-        type !== chromeos.networkConfig.mojom.NetworkType.kCellular &&
-        type !== chromeos.networkConfig.mojom.NetworkType.kTether);
+    assert(type !== NetworkType.kCellular && type !== NetworkType.kTether);
     if (this.showInternetConfig_) {
       return;
     }
@@ -684,7 +682,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /**
    * @param {!CustomEvent<!{networkState:
-   *     chromeos.networkConfig.mojom.NetworkStateProperties}>} event
+   *     NetworkStateProperties}>} event
    * @private
    */
   onShowESimProfileRenameDialog_(event) {
@@ -699,7 +697,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /**
    * @param {!CustomEvent<!{networkState:
-   *     chromeos.networkConfig.mojom.NetworkStateProperties}>} event
+   *     NetworkStateProperties}>} event
    * @private
    */
   onShowESimRemoveProfileDialog_(event) {
@@ -713,7 +711,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {!CustomEvent<chromeos.networkConfig.mojom.NetworkType>} event
+   * @param {!CustomEvent<NetworkType>} event
    * @private
    */
   onShowNetworks_(event) {
@@ -728,8 +726,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     // The shared Cellular/Tether subpage is referred to as "Mobile".
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
-    if (this.subpageType_ === mojom.NetworkType.kCellular ||
-        this.subpageType_ === mojom.NetworkType.kTether) {
+    if (this.subpageType_ === NetworkType.kCellular ||
+        this.subpageType_ === NetworkType.kTether) {
       return this.i18n('OncTypeMobile');
     }
     return this.i18n(
@@ -737,7 +735,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {chromeos.networkConfig.mojom.NetworkType} subpageType
+   * @param {NetworkType} subpageType
    * @param {!Object<!OncMojo.DeviceStateProperties>|undefined} deviceStates
    * @return {!OncMojo.DeviceStateProperties|undefined}
    * @private
@@ -748,9 +746,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     }
     // If both Tether and Cellular are enabled, use the Cellular device state
     // when directly navigating to the Tether page.
-    if (subpageType === mojom.NetworkType.kTether &&
-        this.deviceStates[mojom.NetworkType.kCellular]) {
-      subpageType = mojom.NetworkType.kCellular;
+    if (subpageType === NetworkType.kTether &&
+        this.deviceStates[NetworkType.kCellular]) {
+      subpageType = NetworkType.kCellular;
     }
     return deviceStates[subpageType];
   }
@@ -761,7 +759,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * @private
    */
   getTetherDeviceState_(deviceStates) {
-    return deviceStates[mojom.NetworkType.kTether];
+    return deviceStates[NetworkType.kTether];
   }
 
   /**
@@ -770,8 +768,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * @private
    */
   onDeviceStatesChanged_(newValue, oldValue) {
-    const wifiDeviceState =
-        this.getDeviceState_(mojom.NetworkType.kWiFi, newValue);
+    const wifiDeviceState = this.getDeviceState_(NetworkType.kWiFi, newValue);
     let managedNetworkAvailable = false;
     if (wifiDeviceState) {
       managedNetworkAvailable = !!wifiDeviceState.managedNetworkAvailable;
@@ -781,10 +778,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       this.managedNetworkAvailable = managedNetworkAvailable;
     }
 
-    const vpn = this.deviceStates[mojom.NetworkType.kVPN];
-    this.vpnIsProhibited_ = !!vpn &&
-        vpn.deviceState ===
-            chromeos.networkConfig.mojom.DeviceStateType.kProhibited;
+    const vpn = this.deviceStates[NetworkType.kVPN];
+    this.vpnIsProhibited_ =
+        !!vpn && vpn.deviceState === DeviceStateType.kProhibited;
 
     if (this.detailType_ && !this.deviceStates[this.detailType_]) {
       // If the device type associated with the current network has been
@@ -811,7 +807,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {!CustomEvent<chromeos.networkConfig.mojom.NetworkType>} event
+   * @param {!CustomEvent<NetworkType>} event
    * @private
    */
   onShowKnownNetworks_(event) {
@@ -825,22 +821,18 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /** @private */
   onAddWiFiTap_() {
-    this.showConfig_(
-        true /* configAndConnect */,
-        chromeos.networkConfig.mojom.NetworkType.kWiFi);
+    this.showConfig_(true /* configAndConnect */, NetworkType.kWiFi);
   }
 
   /** @private */
   onAddVPNTap_() {
     if (!this.vpnIsProhibited_) {
-      this.showConfig_(
-          true /* configAndConnect */,
-          chromeos.networkConfig.mojom.NetworkType.kVPN);
+      this.showConfig_(true /* configAndConnect */, NetworkType.kVPN);
     }
   }
 
   /**
-   * @param {!{model: !{item: !mojom.VpnProvider}}} event
+   * @param {!{model: !{item: !VpnProvider}}} event
    * @private
    */
   onAddThirdPartyVpnTap_(event) {
@@ -850,7 +842,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @param {NetworkType} type
    * @private
    */
   showNetworksSubpage_(type) {
@@ -862,8 +854,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {!mojom.VpnProvider} vpnProvider1
-   * @param {!mojom.VpnProvider} vpnProvider2
+   * @param {!VpnProvider} vpnProvider1
+   * @param {!VpnProvider} vpnProvider2
    * @return {number}
    */
   compareVpnProviders_(vpnProvider1, vpnProvider2) {
@@ -892,14 +884,12 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
    * @private
    */
   wifiIsEnabled_(deviceStates) {
-    const wifi = deviceStates[mojom.NetworkType.kWiFi];
-    return !!wifi &&
-        wifi.deviceState ===
-        chromeos.networkConfig.mojom.DeviceStateType.kEnabled;
+    const wifi = deviceStates[NetworkType.kWiFi];
+    return !!wifi && wifi.deviceState === DeviceStateType.kEnabled;
   }
 
   /**
-   * @param {!mojom.GlobalPolicy} globalPolicy
+   * @param {!GlobalPolicy} globalPolicy
    * @param {boolean} managedNetworkAvailable
    * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStates
    * @return {boolean}
@@ -912,7 +902,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {!mojom.GlobalPolicy} globalPolicy
+   * @param {!GlobalPolicy} globalPolicy
    * @param {boolean} managedNetworkAvailable
    * @return {boolean}
    */
@@ -927,7 +917,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {!mojom.GlobalPolicy} globalPolicy
+   * @param {!GlobalPolicy} globalPolicy
    * @param {boolean} managedNetworkAvailable
    * @return {boolean}
    */
@@ -939,7 +929,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * @param {!mojom.VpnProvider} provider
+   * @param {!VpnProvider} provider
    * @return {string}
    */
   getAddThirdPartyVpnLabel_(provider) {
@@ -960,8 +950,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     const type = networkState.type;
     const displayName = OncMojo.getNetworkStateDisplayName(networkState);
 
-    if (!event.detail.bypassConnectionDialog &&
-        type === mojom.NetworkType.kTether &&
+    if (!event.detail.bypassConnectionDialog && type === NetworkType.kTether &&
         !networkState.typeState.tether.hasConnectedToHost) {
       const params = new URLSearchParams();
       params.append('guid', networkState.guid);
@@ -983,24 +972,24 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
     this.networkConfig_.startConnect(networkState.guid).then(response => {
       switch (response.result) {
-        case mojom.StartConnectResult.kSuccess:
+        case StartConnectResult.kSuccess:
           return;
-        case mojom.StartConnectResult.kInvalidGuid:
-        case mojom.StartConnectResult.kInvalidState:
-        case mojom.StartConnectResult.kCanceled:
+        case StartConnectResult.kInvalidGuid:
+        case StartConnectResult.kInvalidState:
+        case StartConnectResult.kCanceled:
           // TODO(stevenjb/khorimoto): Consider handling these cases.
           return;
-        case mojom.StartConnectResult.kNotConfigured:
+        case StartConnectResult.kNotConfigured:
           if (OncMojo.networkTypeHasConfigurationFlow(type)) {
             this.showConfig_(
                 true /* configAndConnect */, type, networkState.guid,
                 displayName);
           }
           return;
-        case mojom.StartConnectResult.kBlocked:
+        case StartConnectResult.kBlocked:
           // This shouldn't happen, the UI should prevent this, fall through and
           // show the error.
-        case mojom.StartConnectResult.kUnknown:
+        case StartConnectResult.kUnknown:
           console.error(
               'startConnect failed for: ' + networkState.guid +
               ' Error: ' + response.message);

@@ -12,6 +12,8 @@ import '../../../cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
@@ -92,38 +94,37 @@ Polymer({
     if (!this.networkState) {
       return '';
     }
-    const mojom = chromeos.networkConfig.mojom;
     const type = this.networkState.type;
-    if (type === mojom.NetworkType.kEthernet) {
+    if (type === NetworkType.kEthernet) {
       return 'ethernet';
     }
-    if (type === mojom.NetworkType.kVPN) {
+    if (type === NetworkType.kVPN) {
       return 'vpn';
     }
 
     const prefix = OncMojo.networkTypeIsMobile(type) ? 'cellular-' : 'wifi-';
 
-    if (this.networkState.type === mojom.NetworkType.kCellular &&
+    if (this.networkState.type === NetworkType.kCellular &&
         this.networkState.typeState.cellular.simLocked) {
       return prefix + 'locked';
     }
 
     if (!this.isListItem && !this.networkState.guid) {
       const device = this.deviceState;
-      if (!device || device.deviceState === mojom.DeviceStateType.kEnabled ||
-          device.deviceState === mojom.DeviceStateType.kEnabling) {
+      if (!device || device.deviceState === DeviceStateType.kEnabled ||
+          device.deviceState === DeviceStateType.kEnabling) {
         return prefix + 'no-network';
       }
       return prefix + 'off';
     }
 
     const connectionState = this.networkState.connectionState;
-    if (connectionState === mojom.ConnectionStateType.kConnecting) {
+    if (connectionState === ConnectionStateType.kConnecting) {
       return prefix + 'connecting';
     }
 
     if (!this.isListItem &&
-        connectionState === mojom.ConnectionStateType.kNotConnected) {
+        connectionState === ConnectionStateType.kNotConnected) {
       return prefix + 'not-connected';
     }
 
@@ -147,15 +148,14 @@ Polymer({
       return '';
     }
 
-    const mojom = chromeos.networkConfig.mojom;
     const type = this.networkState.type;
 
     // Ethernet and VPN connection labels don't attempt to describe the network
     // state like the icons, so there is only one string for each.
-    if (type === mojom.NetworkType.kEthernet) {
+    if (type === NetworkType.kEthernet) {
       return this.i18nDynamic(locale, 'networkIconLabelEthernet');
     }
-    if (type === mojom.NetworkType.kVPN) {
+    if (type === NetworkType.kVPN) {
       return this.i18nDynamic(locale, 'networkIconLabelVpn');
     }
 
@@ -163,7 +163,7 @@ Polymer({
     // 'Instant Tether', 'Cellular', 'Wi-Fi' which will be using to form the
     // full localized connection state string.
     let networkTypeString = '';
-    if (type === mojom.NetworkType.kTether) {
+    if (type === NetworkType.kTether) {
       networkTypeString = this.i18nDynamic(locale, 'OncTypeTether');
     } else if (OncMojo.networkTypeIsMobile(type)) {
       networkTypeString = this.i18nDynamic(locale, 'OncTypeCellular');
@@ -179,8 +179,8 @@ Polymer({
     if (!this.isListItem && !this.networkState.guid) {
       const device = this.deviceState;
       // Networks with no guid are generally UI placeholders.
-      if (!device || device.deviceState === mojom.DeviceStateType.kEnabled ||
-          device.deviceState === mojom.DeviceStateType.kEnabling) {
+      if (!device || device.deviceState === DeviceStateType.kEnabled ||
+          device.deviceState === DeviceStateType.kEnabling) {
         return this.i18nDynamic(
             locale, 'networkIconLabelNoNetwork', networkTypeString);
       }
@@ -188,13 +188,13 @@ Polymer({
     }
 
     const connectionState = this.networkState.connectionState;
-    if (connectionState === mojom.ConnectionStateType.kConnecting) {
+    if (connectionState === ConnectionStateType.kConnecting) {
       return this.i18nDynamic(
           locale, 'networkIconLabelConnecting', networkTypeString);
     }
 
     if (!this.isListItem &&
-        connectionState === mojom.ConnectionStateType.kNotConnected) {
+        connectionState === ConnectionStateType.kNotConnected) {
       // We only show 'Not Connected' when we are not in a list.
       return this.i18nDynamic(
           locale, 'networkIconLabelNotConnected', networkTypeString);
@@ -249,8 +249,7 @@ Polymer({
     if (!this.networkState) {
       return '';
     }
-    if (this.networkState.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular) {
+    if (this.networkState.type === NetworkType.kCellular) {
       const technology = this.getTechnologyId_(
           this.networkState.typeState.cellular.networkTechnology);
       if (technology !== '') {
@@ -300,14 +299,13 @@ Polymer({
     if (!this.networkState) {
       return false;
     }
-    const mojom = chromeos.networkConfig.mojom;
     if (!this.isListItem &&
         this.networkState.connectionState ===
-            mojom.ConnectionStateType.kNotConnected) {
+            ConnectionStateType.kNotConnected) {
       return false;
     }
-    return this.networkState.type === mojom.NetworkType.kWiFi &&
-        this.networkState.typeState.wifi.security !== mojom.SecurityType.kNone;
+    return this.networkState.type === NetworkType.kWiFi &&
+        this.networkState.typeState.wifi.security !== SecurityType.kNone;
   },
 
   /**
@@ -318,8 +316,7 @@ Polymer({
     if (!this.networkState) {
       return false;
     }
-    const mojom = chromeos.networkConfig.mojom;
-    return this.networkState.type === mojom.NetworkType.kCellular &&
+    return this.networkState.type === NetworkType.kCellular &&
         this.networkState.typeState.cellular.roaming;
   },
 

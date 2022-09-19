@@ -5,6 +5,8 @@
 import 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
+import {DeviceStateProperties, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 /**
  * Checks if the device has a cellular network with connectionState not
@@ -12,26 +14,24 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chrome
  * @return {!Promise<boolean>}
  */
 export function hasActiveCellularNetwork() {
-  const mojom = chromeos.networkConfig.mojom;
   const networkConfig =
       MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   return networkConfig
       .getNetworkStateList({
-        filter: mojom.FilterType.kActive,
-        networkType: mojom.NetworkType.kCellular,
-        limit: mojom.NO_LIMIT,
+        filter: FilterType.kActive,
+        networkType: NetworkType.kCellular,
+        limit: NO_LIMIT,
       })
       .then((response) => {
         return response.result.some(network => {
-          return network.connectionState !==
-              mojom.ConnectionStateType.kNotConnected;
+          return network.connectionState !== ConnectionStateType.kNotConnected;
         });
       });
 }
 
 /**
  * Returns number of phyical SIM and eSIM slots on the current device
- * @param {!chromeos.networkConfig.mojom.DeviceStateProperties|undefined}
+ * @param {!DeviceStateProperties|undefined}
  *     deviceState
  * @return {!{pSimSlots: number, eSimSlots: number}}
  */
@@ -60,33 +60,30 @@ export function getSimSlotCount(deviceState) {
  * @return {!Promise<boolean>}
  */
 export function isConnectedToNonCellularNetwork() {
-  const mojom = chromeos.networkConfig.mojom;
   const networkConfig =
       MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   return networkConfig
       .getNetworkStateList({
-        filter: mojom.FilterType.kActive,
-        networkType: mojom.NetworkType.kAll,
-        limit: mojom.NO_LIMIT,
+        filter: FilterType.kActive,
+        networkType: NetworkType.kAll,
+        limit: NO_LIMIT,
       })
       .then((response) => {
         // Filter for connected non-cellular networks.
         return response.result.some(network => {
-          return network.connectionState ===
-              mojom.ConnectionStateType.kOnline &&
-              network.type !== mojom.NetworkType.kCellular;
+          return network.connectionState === ConnectionStateType.kOnline &&
+              network.type !== NetworkType.kCellular;
         });
       });
 }
 
 /**
  * Determines if the current network is on the active sim slot.
- * @param {?chromeos.networkConfig.mojom.NetworkStateProperties} networkState
- * @param {?chromeos.networkConfig.mojom.DeviceStateProperties} deviceState
+ * @param {?NetworkStateProperties} networkState
+ * @param {?DeviceStateProperties} deviceState
  */
 export function isActiveSim(networkState, deviceState) {
-  const mojom = chromeos.networkConfig.mojom;
-  if (!networkState || networkState.type !== mojom.NetworkType.kCellular) {
+  if (!networkState || networkState.type !== NetworkType.kCellular) {
     return false;
   }
 

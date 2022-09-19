@@ -15,10 +15,10 @@ import './network_property_list_mojo.js';
 import './network_shared_css.js';
 
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.js';
-import {assert} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ApnProperties, ManagedApnProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 const kDefaultAccessPointName = 'NONE';
 const kOtherAccessPointName = 'Other';
@@ -38,7 +38,7 @@ Polymer({
       value: false,
     },
 
-    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    /** @type {!ManagedProperties|undefined} */
     managedProperties: {
       type: Object,
       observer: 'managedPropertiesChanged_',
@@ -61,7 +61,7 @@ Polymer({
     /**
      * Selectable list of APN dictionaries for the UI. Includes an entry
      * corresponding to |otherApn| (see below).
-     * @private {!Array<!chromeos.networkConfig.mojom.ApnProperties>}
+     * @private {!Array<!ApnProperties>}
      */
     apnSelectList_: {
       type: Array,
@@ -74,7 +74,7 @@ Polymer({
      * The user settable properties for a new ('other') APN. The values for
      * accessPointName, username, and password will be set to the currently
      * active APN if it does not match an existing list entry.
-     * @private {!chromeos.networkConfig.mojom.ApnProperties}
+     * @private {!ApnProperties}
      */
     otherApn_: {
       type: Object,
@@ -130,8 +130,8 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedApnProperties} apn
-   * @return {!chromeos.networkConfig.mojom.ApnProperties}
+   * @param {!ManagedApnProperties} apn
+   * @return {!ApnProperties}
    * @private
    */
   getApnFromManaged_(apn) {
@@ -148,8 +148,7 @@ Polymer({
   /** @private*/
   getActiveApnFromProperties_(managedProperties) {
     const cellular = managedProperties.typeProperties.cellular;
-    /** @type {!chromeos.networkConfig.mojom.ApnProperties|undefined} */ let
-        activeApn;
+    /** @type {!ApnProperties|undefined} */ let activeApn;
     // We show selectedAPN as the active entry in the select list but it may
     // not correspond to the currently "active" APN which is represented by
     // lastGoodApn.
@@ -207,7 +206,7 @@ Polymer({
   /**
    * Sets the list of selectable APNs for the UI. Appends an 'Other' entry
    * (see comments for |otherApn_| above).
-   * @param {chromeos.networkConfig.mojom.ApnProperties|undefined} activeApn
+   * @param {ApnProperties|undefined} activeApn
    * @private
    */
   setApnSelectList_(activeApn) {
@@ -261,7 +260,7 @@ Polymer({
    * Returns a modified copy of the APN properties or undefined if the
    * property is not set. All entries in the returned copy will have nonempty
    * name and accessPointName properties.
-   * @return {!Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined}
+   * @return {!Array<!ApnProperties>|undefined}
    * @private
    */
   generateApnList_() {
@@ -380,7 +379,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ApnProperties} apn
+   * @param {!ApnProperties} apn
    * @return {string} The most descriptive name for the access point.
    * @private
    */
@@ -390,7 +389,7 @@ Polymer({
   },
 
   /**
-   * @param {chromeos.networkConfig.mojom.ApnProperties} item
+   * @param {ApnProperties} item
    * @return {boolean} Boolean indicating whether |item| is the current selected
    *     apn item.
    * @private

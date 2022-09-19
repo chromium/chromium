@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
-
 /**
  * @fileoverview Polymer behavior for observing CrosNetworkConfigObserver
  * events.
  */
 
+import {CrosNetworkConfigObserver, CrosNetworkConfigObserverReceiver, NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+
+import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+
 /** @polymerBehavior */
 export const NetworkListenerBehavior = {
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigObserver} */
+  /** @private {?CrosNetworkConfigObserver} */
   observer_: null,
 
   /** @override */
   attached() {
-    this.observer_ =
-        new chromeos.networkConfig.mojom.CrosNetworkConfigObserverReceiver(
-            this);
+    this.observer_ = new CrosNetworkConfigObserverReceiver(this);
     MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote().addObserver(
         this.observer_.$.bindNewPipeAndPassRemote());
   },
@@ -26,12 +26,12 @@ export const NetworkListenerBehavior = {
   // CrosNetworkConfigObserver methods. Override these in the implementation.
 
   /**
-   * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
+   * @param {!Array<NetworkStateProperties>}
    *     activeNetworks
    */
   onActiveNetworksChanged(activeNetworks) {},
 
-  /** @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network */
+  /** @param {!NetworkStateProperties} network */
   onNetworkStateChanged(network) {},
 
   onNetworkStateListChanged() {},
@@ -49,19 +49,19 @@ export const NetworkListenerBehavior = {
 /** @interface */
 export class NetworkListenerBehaviorInterface {
   constructor() {
-    /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigObserver} */
+    /** @private {?CrosNetworkConfigObserver} */
     this.observer_;
   }
 
   attached() {}
 
   /**
-   * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
+   * @param {!Array<NetworkStateProperties>}
    *     activeNetworks
    */
   onActiveNetworksChanged(activeNetworks) {}
 
-  /** @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network */
+  /** @param {!NetworkStateProperties} network */
   onNetworkStateChanged(network) {}
 
   onNetworkStateListChanged() {}

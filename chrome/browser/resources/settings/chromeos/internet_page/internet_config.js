@@ -14,8 +14,9 @@ import './internet_shared_css.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {HTMLEscape} from 'chrome://resources/js/util.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {HTMLEscape} from 'chrome://resources/js/util.m.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -176,9 +177,7 @@ export class InternetConfigElement extends InternetConfigElementBase {
    * @private
    */
   onPropertiesSet_() {
-    if (this.type ===
-        OncMojo.getNetworkTypeString(
-            chromeos.networkConfig.mojom.NetworkType.kWiFi)) {
+    if (this.type === OncMojo.getNetworkTypeString(NetworkType.kWiFi)) {
       recordSettingChange(Setting.kWifiAddNetwork, {stringValue: this.guid});
     } else {
       recordSettingChange();

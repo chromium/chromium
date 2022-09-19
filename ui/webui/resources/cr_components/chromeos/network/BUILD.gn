@@ -9,6 +9,8 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+
   deps = [
     ":cellular_utils",
     ":cr_policy_network_behavior_mojo",
@@ -43,7 +45,7 @@ js_type_check("closure_compile_module") {
 
 js_library("mojo_interface_provider") {
   deps = [
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -51,7 +53,7 @@ js_library("mojo_interface_provider") {
 js_library("cr_policy_network_behavior_mojo") {
   deps = [
     "../../../cr_elements/policy:cr_policy_indicator_behavior",
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -85,7 +87,7 @@ js_library("network_apnlist") {
 js_library("network_choose_mobile") {
   deps = [
     ":network_shared_css",
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:i18n_behavior",
@@ -337,7 +339,7 @@ js_library("network_siminfo") {
 
 js_library("onc_mojo") {
   deps = [
-    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

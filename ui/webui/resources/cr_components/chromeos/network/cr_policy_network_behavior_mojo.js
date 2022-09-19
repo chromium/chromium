@@ -8,10 +8,9 @@
  * optional properties (which may be null|undefined).
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
-
 import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
+import {ApnProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedString, ManagedStringList} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {OncMojo} from './onc_mojo.js';
 
@@ -25,9 +24,8 @@ export const CrPolicyNetworkBehaviorMojo = {
     if (!property) {
       return false;
     }
-    const mojom = chromeos.networkConfig.mojom;
-    return property.policySource !== mojom.PolicySource.kNone &&
-        property.policySource !== mojom.PolicySource.kActiveExtension;
+    return property.policySource !== PolicySource.kNone &&
+        property.policySource !== PolicySource.kActiveExtension;
   },
 
   /**
@@ -38,8 +36,7 @@ export const CrPolicyNetworkBehaviorMojo = {
     if (!property) {
       return false;
     }
-    return property.policySource ===
-        chromeos.networkConfig.mojom.PolicySource.kActiveExtension;
+    return property.policySource === PolicySource.kActiveExtension;
   },
 
   /**
@@ -51,8 +48,7 @@ export const CrPolicyNetworkBehaviorMojo = {
     if (!property) {
       return false;
     }
-    return property.policySource !==
-        chromeos.networkConfig.mojom.PolicySource.kNone;
+    return property.policySource !== PolicySource.kNone;
   },
 
   /**
@@ -63,10 +59,9 @@ export const CrPolicyNetworkBehaviorMojo = {
     if (!property) {
       return false;
     }
-    const mojom = chromeos.networkConfig.mojom;
-    return property.policySource !== mojom.PolicySource.kUserPolicyEnforced &&
-        property.policySource !== mojom.PolicySource.kDevicePolicyEnforced &&
-        property.policySource !== mojom.PolicySource.kActiveExtension;
+    return property.policySource !== PolicySource.kUserPolicyEnforced &&
+        property.policySource !== PolicySource.kDevicePolicyEnforced &&
+        property.policySource !== PolicySource.kActiveExtension;
   },
 
   /**
@@ -77,9 +72,8 @@ export const CrPolicyNetworkBehaviorMojo = {
     if (!property) {
       return false;
     }
-    const mojom = chromeos.networkConfig.mojom;
-    return property.policySource === mojom.PolicySource.kUserPolicyEnforced ||
-        property.policySource === mojom.PolicySource.kDevicePolicyEnforced;
+    return property.policySource === PolicySource.kUserPolicyEnforced ||
+        property.policySource === PolicySource.kDevicePolicyEnforced;
   },
 
   /**
@@ -90,20 +84,18 @@ export const CrPolicyNetworkBehaviorMojo = {
     if (!property) {
       return false;
     }
-    const mojom = chromeos.networkConfig.mojom;
-    return property.policySource ===
-        mojom.PolicySource.kUserPolicyRecommended ||
-        property.policySource === mojom.PolicySource.kDevicePolicyRecommended;
+    return property.policySource === PolicySource.kUserPolicyRecommended ||
+        property.policySource === PolicySource.kDevicePolicyRecommended;
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
-   *         !chromeos.networkConfig.mojom.ManagedInt32|
-   *         !chromeos.networkConfig.mojom.ManagedString|
-   *         !chromeos.networkConfig.mojom.ManagedStringList|
-   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @param {!ManagedBoolean|
+   *         !ManagedInt32|
+   *         !ManagedString|
+   *         !ManagedStringList|
+   *         !ManagedApnList} property
    * @return {boolean|number|string|!Array<string>|
-   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   *          !Array<!ApnProperties>|null}
    *         |property.policyValue| if the property is policy-enforced or null
    *         otherwise.
    */
@@ -115,13 +107,13 @@ export const CrPolicyNetworkBehaviorMojo = {
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
-   *         !chromeos.networkConfig.mojom.ManagedInt32|
-   *         !chromeos.networkConfig.mojom.ManagedString|
-   *         !chromeos.networkConfig.mojom.ManagedStringList|
-   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @param {!ManagedBoolean|
+   *         !ManagedInt32|
+   *         !ManagedString|
+   *         !ManagedStringList|
+   *         !ManagedApnList} property
    * @return {boolean|number|string|!Array<string>|
-   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   *          !Array<!ApnProperties>|null}
    *         |property.policyValue| if the property is policy-recommended or
    *         null otherwise.
    */
@@ -133,25 +125,25 @@ export const CrPolicyNetworkBehaviorMojo = {
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.OncSource} source
+   * @param {!OncSource} source
    * @return {boolean}
    * @protected
    */
   isPolicySource(source) {
-    return source === chromeos.networkConfig.mojom.OncSource.kDevicePolicy ||
-        source === chromeos.networkConfig.mojom.OncSource.kUserPolicy;
+    return source === OncSource.kDevicePolicy ||
+        source === OncSource.kUserPolicy;
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.OncSource} source
+   * @param {!OncSource} source
    * @return {!CrPolicyIndicatorType}
    * @protected
    */
   getIndicatorTypeForSource(source) {
-    if (source === chromeos.networkConfig.mojom.OncSource.kDevicePolicy) {
+    if (source === OncSource.kDevicePolicy) {
       return CrPolicyIndicatorType.DEVICE_POLICY;
     }
-    if (source === chromeos.networkConfig.mojom.OncSource.kUserPolicy) {
+    if (source === OncSource.kUserPolicy) {
       return CrPolicyIndicatorType.USER_POLICY;
     }
     return CrPolicyIndicatorType.NONE;
@@ -166,16 +158,15 @@ export const CrPolicyNetworkBehaviorMojo = {
     if (!property) {
       return CrPolicyIndicatorType.NONE;
     }
-    const mojom = chromeos.networkConfig.mojom;
-    if (property.policySource === mojom.PolicySource.kUserPolicyEnforced ||
-        property.policySource === mojom.PolicySource.kUserPolicyRecommended) {
+    if (property.policySource === PolicySource.kUserPolicyEnforced ||
+        property.policySource === PolicySource.kUserPolicyRecommended) {
       return CrPolicyIndicatorType.USER_POLICY;
     }
-    if (property.policySource === mojom.PolicySource.kDevicePolicyEnforced ||
-        property.policySource === mojom.PolicySource.kDevicePolicyRecommended) {
+    if (property.policySource === PolicySource.kDevicePolicyEnforced ||
+        property.policySource === PolicySource.kDevicePolicyRecommended) {
       return CrPolicyIndicatorType.DEVICE_POLICY;
     }
-    if (property.policySource === mojom.PolicySource.kActiveExtension) {
+    if (property.policySource === PolicySource.kActiveExtension) {
       return CrPolicyIndicatorType.EXTENSION;
     }
     return CrPolicyIndicatorType.NONE;
@@ -221,36 +212,36 @@ export class CrPolicyNetworkBehaviorMojoInterface {
   isNetworkPolicyRecommended(property) {}
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
-   *         !chromeos.networkConfig.mojom.ManagedInt32|
-   *         !chromeos.networkConfig.mojom.ManagedString|
-   *         !chromeos.networkConfig.mojom.ManagedStringList|
-   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @param {!ManagedBoolean|
+   *         !ManagedInt32|
+   *         !ManagedString|
+   *         !ManagedStringList|
+   *         !ManagedApnList} property
    * @return {boolean|number|string|!Array<string>|
-   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   *          !Array<!ApnProperties>|null}
    */
   getEnforcedPolicyValue(property) {}
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ManagedBoolean|
-   *         !chromeos.networkConfig.mojom.ManagedInt32|
-   *         !chromeos.networkConfig.mojom.ManagedString|
-   *         !chromeos.networkConfig.mojom.ManagedStringList|
-   *         !chromeos.networkConfig.mojom.ManagedApnList} property
+   * @param {!ManagedBoolean|
+   *         !ManagedInt32|
+   *         !ManagedString|
+   *         !ManagedStringList|
+   *         !ManagedApnList} property
    * @return {boolean|number|string|!Array<string>|
-   *          !Array<!chromeos.networkConfig.mojom.ApnProperties>|null}
+   *          !Array<!ApnProperties>|null}
    */
   getRecommendedPolicyValue(property) {}
 
   /**
-   * @param {!chromeos.networkConfig.mojom.OncSource} source
+   * @param {!OncSource} source
    * @return {boolean}
    * @protected
    */
   isPolicySource(source) {}
 
   /**
-   * @param {!chromeos.networkConfig.mojom.OncSource} source
+   * @param {!OncSource} source
    * @return {!CrPolicyIndicatorType}
    * @protected
    */

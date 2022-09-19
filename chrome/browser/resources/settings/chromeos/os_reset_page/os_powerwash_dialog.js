@@ -16,6 +16,7 @@ import '../../settings_shared.css.js';
 import './os_powerwash_dialog_esim_item.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
@@ -115,10 +116,7 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
     event.detail.event.preventDefault();
 
     const params = new URLSearchParams();
-    params.append(
-        'type',
-        OncMojo.getNetworkTypeString(
-            chromeos.networkConfig.mojom.NetworkType.kCellular));
+    params.append('type', OncMojo.getNetworkTypeString(NetworkType.kCellular));
     Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
     this.$.dialog.close();

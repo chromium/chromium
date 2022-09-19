@@ -5,11 +5,11 @@
 import 'chrome://resources/cr_components/chromeos/network/network_icon.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {CrosNetworkConfig, CrosNetworkConfigRemote, FilterType, ManagedProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
@@ -57,7 +57,7 @@ Polymer({
    * This UI will use both the networkingPrivate extension API and the
    * networkConfig mojo API until we provide all of the required functionality
    * in networkConfig. TODO(stevenjb): Remove use of networkingPrivate api.
-   * @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
+   * @private {?CrosNetworkConfigRemote}
    */
   networkConfig_: null,
 
@@ -66,8 +66,7 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ =
-        chromeos.networkConfig.mojom.CrosNetworkConfig.getRemote();
+    this.networkConfig_ = CrosNetworkConfig.getRemote();
   },
 
   /** @override */
@@ -268,7 +267,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.NetworkType} type
+   * @param {!NetworkType} type
    * @return {string} A valid HTMLElement id.
    * @private
    */
@@ -431,7 +430,7 @@ Polymer({
   /**
    * @param {!HTMLTableCellElement} detailCell
    * @param {!OncMojo.NetworkStateProperties|!OncMojo.DeviceStateProperties|
-   *         !chromeos.networkConfig.mojom.ManagedProperties|
+   *         !ManagedProperties|
    *         !chrome.networkingPrivate.NetworkProperties} state
    * @param {!Object=} error
    * @private
@@ -521,7 +520,7 @@ Polymer({
       // |state.type| is expected to be the string "etherneteap", which is not
       // supported by the rest of this UI. Use the kEthernet constant instead.
       // See https://crbug.com/1213176.
-      state.type = chromeos.networkConfig.mojom.NetworkType.kEthernet;
+      state.type = NetworkType.kEthernet;
       states.push(state);
     }
     this.createStateTable_(
@@ -533,12 +532,11 @@ Polymer({
    * @private
    */
   requestNetworks_() {
-    const mojom = chromeos.networkConfig.mojom;
     this.networkConfig_
         .getNetworkStateList({
-          filter: mojom.FilterType.kVisible,
-          networkType: mojom.NetworkType.kAll,
-          limit: mojom.NO_LIMIT,
+          filter: FilterType.kVisible,
+          networkType: NetworkType.kAll,
+          limit: NO_LIMIT,
         })
         .then((responseParams) => {
           this.onVisibleNetworksReceived_(responseParams.result);
@@ -546,9 +544,9 @@ Polymer({
 
     this.networkConfig_
         .getNetworkStateList({
-          filter: mojom.FilterType.kConfigured,
-          networkType: mojom.NetworkType.kAll,
-          limit: mojom.NO_LIMIT,
+          filter: FilterType.kConfigured,
+          networkType: NetworkType.kAll,
+          limit: NO_LIMIT,
         })
         .then((responseParams) => {
           this.onFavoriteNetworksReceived_(responseParams.result);

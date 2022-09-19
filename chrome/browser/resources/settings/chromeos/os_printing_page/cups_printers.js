@@ -29,11 +29,13 @@ import '../../icons.html.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink_js.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
+import {CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -195,7 +197,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
   constructor() {
     super();
 
-    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
@@ -213,9 +215,9 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
     this.networkConfig_
         .getNetworkStateList({
-          filter: chromeos.networkConfig.mojom.FilterType.kActive,
-          networkType: chromeos.networkConfig.mojom.NetworkType.kAll,
-          limit: chromeos.networkConfig.mojom.NO_LIMIT,
+          filter: FilterType.kActive,
+          networkType: NetworkType.kAll,
+          limit: NO_LIMIT,
         })
         .then((responseParams) => {
           this.onActiveNetworksChanged(responseParams.result);
@@ -306,7 +308,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
 
   /**
    * CrosNetworkConfigObserver impl
-   * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
+   * @param {!Array<NetworkStateProperties>}
    *     networks
    * @private
    */
@@ -315,8 +317,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
       // Note: Check for kOnline rather than using
       // OncMojo.connectionStateIsConnected() since the latter could return true
       // for networks without connectivity (e.g., captive portals).
-      return network.connectionState ===
-          chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
+      return network.connectionState === ConnectionStateType.kOnline;
     });
   }
 

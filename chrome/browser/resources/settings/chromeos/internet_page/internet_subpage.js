@@ -27,9 +27,11 @@ import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {AlwaysOnVpnMode, AlwaysOnVpnProperties, CrosNetworkConfigRemote, FilterType, GlobalPolicy, NO_LIMIT, VpnProvider, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -41,8 +43,6 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
 import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
-
-const mojom = chromeos.networkConfig.mojom;
 
 /**
  * @constructor
@@ -100,12 +100,12 @@ class SettingsInternetSubpageElement extends
        */
       tetherDeviceState: Object,
 
-      /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+      /** @type {!GlobalPolicy|undefined} */
       globalPolicy: Object,
 
       /**
        * List of third party (Extension + Arc) VPN providers.
-       * @type {!Array<!chromeos.networkConfig.mojom.VpnProvider>}
+       * @type {!Array<!VpnProvider>}
        */
       vpnProviders: Array,
 
@@ -166,7 +166,7 @@ class SettingsInternetSubpageElement extends
 
       /**
        * Always-on VPN operating mode.
-       * @private {!chromeos.networkConfig.mojom.AlwaysOnVpnMode|undefined}
+       * @private {!AlwaysOnVpnMode|undefined}
        */
       alwaysOnVpnMode_: Number,
 
@@ -263,7 +263,7 @@ class SettingsInternetSubpageElement extends
     /** @private  {!InternetPageBrowserProxy} */
     this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
 
-    /** @private {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
@@ -390,7 +390,7 @@ class SettingsInternetSubpageElement extends
 
   /** NetworkListenerBehavior override */
   onVpnProvidersChanged() {
-    if (this.deviceState.type !== mojom.NetworkType.kVPN) {
+    if (this.deviceState.type !== NetworkType.kVPN) {
       return;
     }
     this.getNetworkStateList_();
@@ -400,16 +400,16 @@ class SettingsInternetSubpageElement extends
   deviceStateChanged_() {
     if (this.deviceState !== undefined) {
       // Set |vpnIsEnabled_| to be used for VPN special cases.
-      if (this.deviceState.type === mojom.NetworkType.kVPN) {
-        this.vpnIsEnabled_ = this.deviceState.deviceState ===
-            chromeos.networkConfig.mojom.DeviceStateType.kEnabled;
+      if (this.deviceState.type === NetworkType.kVPN) {
+        this.vpnIsEnabled_ =
+            this.deviceState.deviceState === DeviceStateType.kEnabled;
       }
 
       // A scan has completed if the spinner was active (i.e., scanning was
       // active) and the device is no longer scanning.
       this.hasCompletedScanSinceLastEnabled_ = this.showSpinner &&
           !this.deviceState.scanning &&
-          this.deviceState.deviceState === mojom.DeviceStateType.kEnabled;
+          this.deviceState.deviceState === DeviceStateType.kEnabled;
 
       // If the cellular network list is showing and currently inhibited, there
       // is a separate spinner that shows in the CellularNetworkList.
@@ -448,14 +448,14 @@ class SettingsInternetSubpageElement extends
    */
   shouldStartScan_() {
     // Scans should be kicked off from the Wi-Fi networks subpage.
-    if (this.deviceState.type === mojom.NetworkType.kWiFi) {
+    if (this.deviceState.type === NetworkType.kWiFi) {
       return true;
     }
 
     // Scans should be kicked off from the Mobile data subpage, as long as it
     // includes Tether networks.
-    if (this.deviceState.type === mojom.NetworkType.kTether ||
-        (this.deviceState.type === mojom.NetworkType.kCellular &&
+    if (this.deviceState.type === NetworkType.kTether ||
+        (this.deviceState.type === NetworkType.kCellular &&
          this.tetherDeviceState)) {
       return true;
     }
@@ -470,10 +470,10 @@ class SettingsInternetSubpageElement extends
     }
     const INTERVAL_MS = 10 * 1000;
     let type = this.deviceState.type;
-    if (type === mojom.NetworkType.kCellular && this.tetherDeviceState) {
+    if (type === NetworkType.kCellular && this.tetherDeviceState) {
       // Only request tether scan. Cellular scan is disruptive and should
       // only be triggered by explicit user action.
-      type = mojom.NetworkType.kTether;
+      type = NetworkType.kTether;
     }
     this.networkConfig_.requestNetworkScan(type);
     this.scanIntervalId_ = window.setInterval(() => {
@@ -496,8 +496,8 @@ class SettingsInternetSubpageElement extends
       return;
     }
     const filter = {
-      filter: chromeos.networkConfig.mojom.FilterType.kVisible,
-      limit: chromeos.networkConfig.mojom.NO_LIMIT,
+      filter: FilterType.kVisible,
+      limit: NO_LIMIT,
       networkType: this.deviceState.type,
     };
     this.networkConfig_.getNetworkStateList(filter).then(response => {
@@ -527,12 +527,12 @@ class SettingsInternetSubpageElement extends
     }
 
     // For the Cellular/Mobile subpage, also request Tether networks.
-    if (this.deviceState.type === mojom.NetworkType.kCellular &&
+    if (this.deviceState.type === NetworkType.kCellular &&
         this.tetherDeviceState) {
       const filter = {
-        filter: chromeos.networkConfig.mojom.FilterType.kVisible,
-        limit: chromeos.networkConfig.mojom.NO_LIMIT,
-        networkType: mojom.NetworkType.kTether,
+        filter: FilterType.kVisible,
+        limit: NO_LIMIT,
+        networkType: NetworkType.kTether,
       };
       this.networkConfig_.getNetworkStateList(filter).then(response => {
         this.set('networkStateList_', networkStates.concat(response.result));
@@ -541,25 +541,25 @@ class SettingsInternetSubpageElement extends
     }
 
     // For VPNs, separate out third party (Extension + Arc) VPNs.
-    if (this.deviceState.type === mojom.NetworkType.kVPN) {
+    if (this.deviceState.type === NetworkType.kVPN) {
       const builtinNetworkStates = [];
       const thirdPartyVpns = {};
       networkStates.forEach(state => {
-        assert(state.type === mojom.NetworkType.kVPN);
+        assert(state.type === NetworkType.kVPN);
         switch (state.typeState.vpn.type) {
-          case mojom.VpnType.kIKEv2:
-          case mojom.VpnType.kL2TPIPsec:
-          case mojom.VpnType.kOpenVPN:
-          case mojom.VpnType.kWireGuard:
+          case VpnType.kIKEv2:
+          case VpnType.kL2TPIPsec:
+          case VpnType.kOpenVPN:
+          case VpnType.kWireGuard:
             builtinNetworkStates.push(state);
             break;
-          case mojom.VpnType.kArc:
+          case VpnType.kArc:
             // Only show connected Arc VPNs.
             if (!OncMojo.connectionStateIsConnected(state.connectionState)) {
               break;
             }
           // Otherwise Arc VPNs are treated the same as Extension VPNs.
-          case mojom.VpnType.kExtension:
+          case VpnType.kExtension:
             const providerId = state.typeState.vpn.providerId;
             thirdPartyVpns[providerId] = thirdPartyVpns[providerId] || [];
             thirdPartyVpns[providerId].push(state);
@@ -576,9 +576,9 @@ class SettingsInternetSubpageElement extends
   /**
    * Returns an ordered list of VPN providers for all third party VPNs and any
    * other known providers.
-   * @param {!Array<!chromeos.networkConfig.mojom.VpnProvider>} vpnProviders
+   * @param {!Array<!VpnProvider>} vpnProviders
    * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
-   * @return {!Array<!chromeos.networkConfig.mojom.VpnProvider>}
+   * @return {!Array<!VpnProvider>}
    * @private
    */
   getVpnProviders_(vpnProviders, thirdPartyVpns) {
@@ -624,8 +624,8 @@ class SettingsInternetSubpageElement extends
    */
   deviceIsEnabled_(deviceState) {
     return !!deviceState &&
-        (deviceState.type === mojom.NetworkType.kVPN ||
-         deviceState.deviceState === mojom.DeviceStateType.kEnabled);
+        (deviceState.type === NetworkType.kVPN ||
+         deviceState.deviceState === DeviceStateType.kEnabled);
   }
 
   /**
@@ -645,8 +645,8 @@ class SettingsInternetSubpageElement extends
    * @private
    */
   enableToggleIsVisible_(deviceState) {
-    return !!deviceState && deviceState.type !== mojom.NetworkType.kEthernet &&
-        deviceState.type !== mojom.NetworkType.kVPN;
+    return !!deviceState && deviceState.type !== NetworkType.kEthernet &&
+        deviceState.type !== NetworkType.kVPN;
   }
 
   /**
@@ -658,8 +658,7 @@ class SettingsInternetSubpageElement extends
     if (!deviceState) {
       return false;
     }
-    if (deviceState.deviceState ===
-        chromeos.networkConfig.mojom.DeviceStateType.kProhibited) {
+    if (deviceState.deviceState === DeviceStateType.kProhibited) {
       return false;
     }
     if (OncMojo.deviceStateIsIntermediate(deviceState.deviceState)) {
@@ -689,10 +688,10 @@ class SettingsInternetSubpageElement extends
       return '';
     }
     switch (deviceState.type) {
-      case mojom.NetworkType.kTether:
-      case mojom.NetworkType.kCellular:
+      case NetworkType.kTether:
+      case NetworkType.kCellular:
         return this.i18n('internetToggleMobileA11yLabel');
-      case mojom.NetworkType.kWiFi:
+      case NetworkType.kWiFi:
         return this.i18n('internetToggleWiFiA11yLabel');
     }
     assertNotReached();
@@ -700,7 +699,7 @@ class SettingsInternetSubpageElement extends
   }
 
   /**
-   * @param {!mojom.VpnProvider} provider
+   * @param {!VpnProvider} provider
    * @return {string}
    * @private
    */
@@ -710,7 +709,7 @@ class SettingsInternetSubpageElement extends
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
-   * @param {!mojom.GlobalPolicy} globalPolicy
+   * @param {!GlobalPolicy} globalPolicy
    * @return {boolean}
    * @private
    */
@@ -723,12 +722,12 @@ class SettingsInternetSubpageElement extends
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
-   * @param {!mojom.GlobalPolicy} globalPolicy
+   * @param {!GlobalPolicy} globalPolicy
    * @return {boolean}
    * @private
    */
   showAddWifiButton_(deviceState, globalPolicy) {
-    if (!deviceState || deviceState.type !== mojom.NetworkType.kWiFi) {
+    if (!deviceState || deviceState.type !== NetworkType.kWiFi) {
       return false;
     }
     return this.allowAddConnection_(deviceState, globalPolicy);
@@ -751,7 +750,7 @@ class SettingsInternetSubpageElement extends
   onAddWifiButtonTap_() {
     assert(this.deviceState, 'Device state is falsey - Wifi expected.');
     const type = this.deviceState.type;
-    assert(type === mojom.NetworkType.kWiFi, 'Wifi type expected.');
+    assert(type === NetworkType.kWiFi, 'Wifi type expected.');
     this.dispatchShowConfigEvent_(OncMojo.getNetworkTypeString(type));
   }
 
@@ -759,12 +758,12 @@ class SettingsInternetSubpageElement extends
   onAddVpnButtonTap_() {
     assert(this.deviceState, 'Device state is falsey - VPN expected.');
     const type = this.deviceState.type;
-    assert(type === mojom.NetworkType.kVPN, 'VPN type expected.');
+    assert(type === NetworkType.kVPN, 'VPN type expected.');
     this.dispatchShowConfigEvent_(OncMojo.getNetworkTypeString(type));
   }
 
   /**
-   * @param {!{model: !{item: !mojom.VpnProvider}}} event
+   * @param {!{model: !{item: !VpnProvider}}} event
    * @private
    */
   onAddThirdPartyVpnTap_(event) {
@@ -779,7 +778,7 @@ class SettingsInternetSubpageElement extends
    * @private
    */
   knownNetworksIsVisible_(deviceState) {
-    return !!deviceState && deviceState.type === mojom.NetworkType.kWiFi;
+    return !!deviceState && deviceState.type === NetworkType.kWiFi;
   }
 
   /**
@@ -787,7 +786,7 @@ class SettingsInternetSubpageElement extends
    * @private
    */
   onKnownNetworksTap_() {
-    assert(this.deviceState.type === mojom.NetworkType.kWiFi);
+    assert(this.deviceState.type === NetworkType.kWiFi);
     const showKnownNetworksEvent = new CustomEvent('show-known-networks', {
       bubbles: true,
       composed: true,
@@ -817,7 +816,7 @@ class SettingsInternetSubpageElement extends
 
   /**
    * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
-   * @param {!mojom.VpnProvider} provider
+   * @param {!VpnProvider} provider
    * @return {!Array<!OncMojo.NetworkStateProperties>}
    * @private
    */
@@ -827,7 +826,7 @@ class SettingsInternetSubpageElement extends
 
   /**
    * @param {!Object<!Array<!OncMojo.NetworkStateProperties>>} thirdPartyVpns
-   * @param {!mojom.VpnProvider} provider
+   * @param {!VpnProvider} provider
    * @return {boolean}
    * @private
    */
@@ -871,15 +870,15 @@ class SettingsInternetSubpageElement extends
    * @private
    */
   isBlockedByPolicy_(state) {
-    if (state.type !== mojom.NetworkType.kWiFi &&
-        state.type !== mojom.NetworkType.kCellular) {
+    if (state.type !== NetworkType.kWiFi &&
+        state.type !== NetworkType.kCellular) {
       return false;
     }
     if (this.isPolicySource(state.source) || !this.globalPolicy) {
       return false;
     }
 
-    if (state.type === mojom.NetworkType.kCellular) {
+    if (state.type === NetworkType.kCellular) {
       return !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
     }
 
@@ -899,7 +898,7 @@ class SettingsInternetSubpageElement extends
    * @private
    */
   canAttemptConnection_(state) {
-    if (state.connectionState !== mojom.ConnectionStateType.kNotConnected) {
+    if (state.connectionState !== ConnectionStateType.kNotConnected) {
       return false;
     }
 
@@ -909,7 +908,7 @@ class SettingsInternetSubpageElement extends
 
     // VPNs can only be connected if there is an existing network connection to
     // use with the VPN.
-    if (state.type === mojom.NetworkType.kVPN &&
+    if (state.type === NetworkType.kVPN &&
         (!this.defaultNetwork ||
          !OncMojo.connectionStateIsConnected(
              this.defaultNetwork.connectionState))) {
@@ -917,7 +916,7 @@ class SettingsInternetSubpageElement extends
     }
 
     // Locked SIM profiles must be unlocked before a connection can occur.
-    if (state.type === mojom.NetworkType.kCellular &&
+    if (state.type === NetworkType.kCellular &&
         state.typeState.cellular.simLocked) {
       return false;
     }
@@ -947,8 +946,7 @@ class SettingsInternetSubpageElement extends
       return false;
     }
 
-    if (!!this.deviceState &&
-        this.deviceState.type === mojom.NetworkType.kVPN) {
+    if (!!this.deviceState && this.deviceState.type === NetworkType.kVPN) {
       return this.shouldShowVpnList_();
     }
     return this.networkStateList_.length > 0;
@@ -970,7 +968,7 @@ class SettingsInternetSubpageElement extends
   shouldShowCellularNetworkList_() {
     // Only shown if the currently-active subpage is for Cellular networks.
     return !!this.deviceState &&
-        this.deviceState.type === mojom.NetworkType.kCellular;
+        this.deviceState.type === NetworkType.kCellular;
   }
 
   /**
@@ -992,12 +990,12 @@ class SettingsInternetSubpageElement extends
    */
   getNoNetworksInnerHtml_(deviceState, tetherDeviceState) {
     const type = deviceState.type;
-    if (type === mojom.NetworkType.kTether ||
-        (type === mojom.NetworkType.kCellular && this.tetherDeviceState)) {
+    if (type === NetworkType.kTether ||
+        (type === NetworkType.kCellular && this.tetherDeviceState)) {
       return this.i18nAdvanced('internetNoNetworksMobileData');
     }
 
-    if (type === mojom.NetworkType.kVPN) {
+    if (type === NetworkType.kVPN) {
       return this.i18n('internetNoNetworks');
     }
 
@@ -1053,7 +1051,7 @@ class SettingsInternetSubpageElement extends
       return false;
     }
     return this.matchesType_(
-        OncMojo.getNetworkTypeString(mojom.NetworkType.kVPN), this.deviceState);
+        OncMojo.getNetworkTypeString(NetworkType.kVPN), this.deviceState);
   }
 
   /**
@@ -1079,7 +1077,7 @@ class SettingsInternetSubpageElement extends
    * @private
    */
   getAlwaysOnVpnNetworks_() {
-    if (!this.deviceState || this.deviceState.type !== mojom.NetworkType.kVPN) {
+    if (!this.deviceState || this.deviceState.type !== NetworkType.kVPN) {
       return [];
     }
 
@@ -1091,8 +1089,8 @@ class SettingsInternetSubpageElement extends
       // - TODO(b/188864779): ARC VPNs are not supported yet,
       // - Chrome VPN apps are deprecated and incompatible with lockdown mode
       //   (see b/206910855).
-      if (vpnList[0].typeState.vpn.type === mojom.VpnType.kArc ||
-          vpnList[0].typeState.vpn.type === mojom.VpnType.kExtension) {
+      if (vpnList[0].typeState.vpn.type === VpnType.kArc ||
+          vpnList[0].typeState.vpn.type === VpnType.kExtension) {
         continue;
       }
       alwaysOnVpnList.push(...vpnList);
@@ -1106,7 +1104,7 @@ class SettingsInternetSubpageElement extends
    * @private
    */
   updateAlwaysOnVpnPreferences_() {
-    if (!this.deviceState || this.deviceState.type !== mojom.NetworkType.kVPN) {
+    if (!this.deviceState || this.deviceState.type !== NetworkType.kVPN) {
       return;
     }
 
@@ -1127,7 +1125,7 @@ class SettingsInternetSubpageElement extends
       return;
     }
 
-    /** @type {!chromeos.networkConfig.mojom.AlwaysOnVpnProperties} */
+    /** @type {!AlwaysOnVpnProperties} */
     const properties = {
       mode: this.alwaysOnVpnMode_,
       serviceGuid: this.alwaysOnVpnService_,

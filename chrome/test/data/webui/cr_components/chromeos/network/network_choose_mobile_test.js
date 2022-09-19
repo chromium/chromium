@@ -5,17 +5,14 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_choose_mobile.js';
 
+import {ConnectionStateType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkChooseMobileTest', function() {
   /** @type {!NetworkChooseMobile|undefined} */
   let chooseMobile;
 
-  let mojom;
-
   setup(function() {
-    mojom = chromeos.networkConfig.mojom;
-
     chooseMobile = document.createElement('network-choose-mobile');
     chooseMobile.managedProperties = {
       typeProperties: {
@@ -34,7 +31,7 @@ suite('NetworkChooseMobileTest', function() {
     // A scan requires the connection state to be disconnected and the current
     // scan state to be 'not scanning'.
     chooseMobile.managedProperties = {
-      connectionState: mojom.ConnectionStateType.kNotConnected,
+      connectionState: ConnectionStateType.kNotConnected,
       typeProperties: {
         cellular: {},
       },
@@ -63,8 +60,10 @@ suite('NetworkChooseMobileTest', function() {
     };
 
     // Every connection state but kNotConnected prevents scanning.
-    for (const state in mojom.ConnectionStateType) {
-      if (state === mojom.ConnectionStateType.kNotConnected) continue;
+    for (const state in ConnectionStateType) {
+      if (state === ConnectionStateType.kNotConnected) {
+        continue;
+      }
 
       chooseMobile.managedProperties = {
         connectionState: state,
@@ -80,7 +79,7 @@ suite('NetworkChooseMobileTest', function() {
 
   test('Disabled UI state', function() {
     chooseMobile.managedProperties = {
-      connectionState: mojom.ConnectionStateType.kNotConnected,
+      connectionState: ConnectionStateType.kNotConnected,
       typeProperties: {
         cellular: {
           foundNetworks: [{

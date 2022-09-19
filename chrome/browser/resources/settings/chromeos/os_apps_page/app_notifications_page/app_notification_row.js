@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
 import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
