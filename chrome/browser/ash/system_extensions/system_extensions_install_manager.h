@@ -22,7 +22,7 @@ class Profile;
 
 namespace ash {
 
-class SystemExtensionsPersistenceManager;
+class SystemExtensionsPersistentStorage;
 class SystemExtensionsRegistry;
 class SystemExtensionsRegistryManager;
 class SystemExtensionsServiceWorkerManager;
@@ -47,7 +47,7 @@ class SystemExtensionsInstallManager {
       SystemExtensionsRegistryManager& registry_manager,
       SystemExtensionsRegistry& registry,
       SystemExtensionsServiceWorkerManager& service_worker_manager,
-      SystemExtensionsPersistenceManager& persistence_manager);
+      SystemExtensionsPersistentStorage& persistent_storage);
   SystemExtensionsInstallManager(const SystemExtensionsInstallManager&) =
       delete;
   SystemExtensionsInstallManager& operator=(
@@ -137,7 +137,7 @@ class SystemExtensionsInstallManager {
   const raw_ref<SystemExtensionsServiceWorkerManager> service_worker_manager_;
   const raw_ref<SystemExtensionsRegistryManager> registry_manager_;
   const raw_ref<SystemExtensionsRegistry> registry_;
-  const raw_ref<SystemExtensionsPersistenceManager> persistence_manager_;
+  const raw_ref<SystemExtensionsPersistentStorage> persistent_storage_;
 
   std::map<SystemExtensionId, SystemExtension> system_extensions_;
 

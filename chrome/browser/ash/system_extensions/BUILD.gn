@@ -19,8 +19,8 @@ source_set("system_extensions") {
     "system_extensions_internals_page_handler.h",
     "system_extensions_mutable_registry.cc",
     "system_extensions_mutable_registry.h",
-    "system_extensions_persistence_manager.cc",
-    "system_extensions_persistence_manager.h",
+    "system_extensions_persistent_storage.cc",
+    "system_extensions_persistent_storage.h",
     "system_extensions_profile_utils.cc",
     "system_extensions_profile_utils.h",
     "system_extensions_provider.cc",
@@ -84,7 +84,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "system_extensions_persistence_manager_unittest.cc",
+    "system_extensions_persistent_storage_unittest.cc",
     "system_extensions_sandboxed_unpacker_unittest.cc",
   ]
   deps = [

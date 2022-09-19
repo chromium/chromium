@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_persistent_storage.h"
 
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,19 +21,19 @@ static constexpr char kSystemExtensionManifest[] = "manifest";
 }  // namespace
 
 // static
-void SystemExtensionsPersistenceManager::RegisterProfilePrefs(
+void SystemExtensionsPersistentStorage::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kPersistedSystemExtensions);
 }
 
-SystemExtensionsPersistenceManager::SystemExtensionsPersistenceManager(
+SystemExtensionsPersistentStorage::SystemExtensionsPersistentStorage(
     Profile* profile)
     : profile_(profile) {}
 
-SystemExtensionsPersistenceManager::~SystemExtensionsPersistenceManager() =
+SystemExtensionsPersistentStorage::~SystemExtensionsPersistentStorage() =
     default;
 
-void SystemExtensionsPersistenceManager::Persist(
+void SystemExtensionsPersistentStorage::Add(
     const SystemExtension& system_extension) {
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kPersistedSystemExtensions);
@@ -48,15 +48,15 @@ void SystemExtensionsPersistenceManager::Persist(
       std::move(persisted_system_extension));
 }
 
-void SystemExtensionsPersistenceManager::Delete(
+void SystemExtensionsPersistentStorage::Remove(
     const SystemExtensionId& system_extension_id) {
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kPersistedSystemExtensions);
   update->GetDict().Remove(SystemExtension::IdToString(system_extension_id));
 }
 
-absl::optional<SystemExtensionPersistenceInfo>
-SystemExtensionsPersistenceManager::Get(
+absl::optional<SystemExtensionPersistedInfo>
+SystemExtensionsPersistentStorage::Get(
     const SystemExtensionId& system_extension_id) {
   auto* prefs = profile_->GetPrefs();
   const base::Value::Dict& persisted_system_extensions_map =
@@ -73,7 +73,7 @@ SystemExtensionsPersistenceManager::Get(
   if (!manifest_pref)
     return absl::nullopt;
 
-  absl::optional<SystemExtensionPersistenceInfo> info;
+  absl::optional<SystemExtensionPersistedInfo> info;
   info.emplace();
   info->id = system_extension_id;
   info->manifest = manifest_pref->Clone();
@@ -81,9 +81,9 @@ SystemExtensionsPersistenceManager::Get(
   return info;
 }
 
-std::vector<SystemExtensionPersistenceInfo>
-SystemExtensionsPersistenceManager::GetAll() {
-  std::vector<SystemExtensionPersistenceInfo> infos;
+std::vector<SystemExtensionPersistedInfo>
+SystemExtensionsPersistentStorage::GetAll() {
+  std::vector<SystemExtensionPersistedInfo> infos;
 
   auto* prefs = profile_->GetPrefs();
   const base::Value::Dict& persisted_system_extensions_map =
@@ -93,7 +93,7 @@ SystemExtensionsPersistenceManager::GetAll() {
     if (!id)
       continue;
 
-    absl::optional<SystemExtensionPersistenceInfo> info = Get(id.value());
+    absl::optional<SystemExtensionPersistedInfo> info = Get(id.value());
     if (!info)
       continue;
 

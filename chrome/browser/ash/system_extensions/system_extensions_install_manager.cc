@@ -17,7 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_persistent_storage.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_service_worker_manager.h"
@@ -37,12 +37,12 @@ SystemExtensionsInstallManager::SystemExtensionsInstallManager(
     SystemExtensionsRegistryManager& registry_manager,
     SystemExtensionsRegistry& registry,
     SystemExtensionsServiceWorkerManager& service_worker_manager,
-    SystemExtensionsPersistenceManager& persistence_manager)
+    SystemExtensionsPersistentStorage& persistent_storage)
     : profile_(profile),
       service_worker_manager_(service_worker_manager),
       registry_manager_(registry_manager),
       registry_(registry),
-      persistence_manager_(persistence_manager) {
+      persistent_storage_(persistent_storage) {
   RegisterPreviouslyPersistedSystemExtensions();
   InstallFromCommandLineIfNecessary();
 }
@@ -51,8 +51,8 @@ SystemExtensionsInstallManager::~SystemExtensionsInstallManager() = default;
 
 void SystemExtensionsInstallManager::
     RegisterPreviouslyPersistedSystemExtensions() {
-  const std::vector<SystemExtensionPersistenceInfo> persisted_infos =
-      persistence_manager_->GetAll();
+  const std::vector<SystemExtensionPersistedInfo> persisted_infos =
+      persistent_storage_->GetAll();
   for (const auto& persisted_info : persisted_infos) {
     InstallStatusOrSystemExtension status_or_extension =
         sandboxed_unpacker_.GetSystemExtensionFromValue(
@@ -153,7 +153,7 @@ void SystemExtensionsInstallManager::OnAssetsCopiedToProfileDir(
   }
 
   // Installation Step #3: Persist the System Extension across restarts.
-  persistence_manager_->Persist(system_extension);
+  persistent_storage_->Add(system_extension);
 
   SystemExtensionId id = system_extension.id;
   RegisterSystemExtension(std::move(system_extension));
@@ -191,7 +191,7 @@ void SystemExtensionsInstallManager::Uninstall(
   content::WebUIConfigMap::GetInstance().RemoveConfig(origin);
 
   // Installation Step #3: Remove the System Extension from persistent storage.
-  persistence_manager_->Delete(system_extension_id);
+  persistent_storage_->Remove(system_extension_id);
 
   // Uninstallation Step #4: Remove System Extension from the registry.
   registry_manager_->RemoveSystemExtension(system_extension_id);

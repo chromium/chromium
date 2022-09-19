@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_persistent_storage.h"
 
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,10 +31,10 @@ constexpr char kSecondName[] = "Second System Extension";
 constexpr char kSecondShortName[] = "Second SX";
 constexpr char kSecondServiceWorkerURL[] = "/sw.js";
 
-class SystemExtensionsPersistenceManagerTest
+class SystemExtensionsPersistentStorageTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  SystemExtensionsPersistenceManagerTest() {
+  SystemExtensionsPersistentStorageTest() {
     first_test_system_extension_.id = kFirstId;
     first_test_system_extension_.manifest.Set("type", kFirstTypeStr);
     first_test_system_extension_.manifest.Set("id", kFirstIdStr);
@@ -55,7 +55,7 @@ class SystemExtensionsPersistenceManagerTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    SystemExtensionsPersistenceManager::RegisterProfilePrefs(
+    SystemExtensionsPersistentStorage::RegisterProfilePrefs(
         profile()->GetTestingPrefService()->registry());
   }
 
@@ -85,9 +85,9 @@ class SystemExtensionsPersistenceManagerTest
 
 // Tests that we are writing and removing prefs as we persist and delete
 // System Extensions.
-TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
-  SystemExtensionsPersistenceManager manager(profile());
-  manager.Persist(first_test_system_extension());
+TEST_F(SystemExtensionsPersistentStorageTest, WriteAndRemovePrefs) {
+  SystemExtensionsPersistentStorage storage(profile());
+  storage.Add(first_test_system_extension());
 
   // Test that the extension was saved into a pref.
   auto* prefs = profile()->GetPrefs();
@@ -101,15 +101,15 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
   }
 
   // Test the API returns the correct values.
-  absl::optional<SystemExtensionPersistenceInfo> persistence_info =
-      manager.Get(kFirstId);
+  absl::optional<SystemExtensionPersistedInfo> persistence_info =
+      storage.Get(kFirstId);
   EXPECT_EQ(persistence_info->manifest, first_test_manifest());
-  std::vector<SystemExtensionPersistenceInfo> persistence_infos =
-      manager.GetAll();
+  std::vector<SystemExtensionPersistedInfo> persistence_infos =
+      storage.GetAll();
   EXPECT_EQ(persistence_infos.size(), 1u);
   EXPECT_EQ(persistence_infos[0].manifest, first_test_manifest());
 
-  manager.Delete(kFirstId);
+  storage.Remove(kFirstId);
 
   // Test that the System Extension was removed from prefs.
   {
@@ -121,14 +121,14 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
   }
 
   // Test that the API no longer returns the System Extension.
-  EXPECT_FALSE(manager.Get(kFirstId));
-  EXPECT_TRUE(manager.GetAll().empty());
+  EXPECT_FALSE(storage.Get(kFirstId));
+  EXPECT_TRUE(storage.GetAll().empty());
 }
 
-TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
-  SystemExtensionsPersistenceManager manager(profile());
-  manager.Persist(first_test_system_extension());
-  manager.Persist(second_test_system_extension());
+TEST_F(SystemExtensionsPersistentStorageTest, WriteAndRemovePrefs_Multiple) {
+  SystemExtensionsPersistentStorage storage(profile());
+  storage.Add(first_test_system_extension());
+  storage.Add(second_test_system_extension());
 
   // Test that the extension was saved into a pref.
   auto* prefs = profile()->GetPrefs();
@@ -149,25 +149,25 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
 
   // Test the API returns the correct values.
   {
-    std::vector<SystemExtensionPersistenceInfo> persistence_infos =
-        manager.GetAll();
+    std::vector<SystemExtensionPersistedInfo> persistence_infos =
+        storage.GetAll();
     EXPECT_EQ(persistence_infos.size(), 2u);
 
-    const SystemExtensionPersistenceInfo& first_persistence_info =
+    const SystemExtensionPersistedInfo& first_persistence_info =
         persistence_infos[0].id == kFirstId ? persistence_infos[0]
                                             : persistence_infos[1];
-    const SystemExtensionPersistenceInfo& second_persistence_info =
+    const SystemExtensionPersistedInfo& second_persistence_info =
         persistence_infos[0].id == kSecondId ? persistence_infos[0]
                                              : persistence_infos[1];
 
     EXPECT_EQ(first_persistence_info.manifest, first_test_manifest());
     EXPECT_EQ(second_persistence_info.manifest, second_test_manifest());
 
-    EXPECT_EQ(manager.Get(kFirstId)->manifest, first_test_manifest());
-    EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+    EXPECT_EQ(storage.Get(kFirstId)->manifest, first_test_manifest());
+    EXPECT_EQ(storage.Get(kSecondId)->manifest, second_test_manifest());
   }
 
-  manager.Delete(kFirstId);
+  storage.Remove(kFirstId);
 
   // Test that the System Extension was removed from prefs.
   {
@@ -188,16 +188,16 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
   // Test that the API no longer returns the first System Extension but still
   // returns the second System Extension.
   {
-    std::vector<SystemExtensionPersistenceInfo> persistence_infos =
-        manager.GetAll();
+    std::vector<SystemExtensionPersistedInfo> persistence_infos =
+        storage.GetAll();
     EXPECT_EQ(persistence_infos.size(), 1u);
     EXPECT_EQ(persistence_infos[0].manifest, second_test_manifest());
 
-    EXPECT_FALSE(manager.Get(kFirstId));
-    EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+    EXPECT_FALSE(storage.Get(kFirstId));
+    EXPECT_EQ(storage.Get(kSecondId)->manifest, second_test_manifest());
   }
 
-  manager.Delete(kSecondId);
+  storage.Remove(kSecondId);
 
   // Test that the last System Extension was removed from prefs.
   {
@@ -208,20 +208,20 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
 
   // Test that the API no longer returns any System Extensions.
   {
-    std::vector<SystemExtensionPersistenceInfo> persistence_infos =
-        manager.GetAll();
+    std::vector<SystemExtensionPersistedInfo> persistence_infos =
+        storage.GetAll();
     EXPECT_TRUE(persistence_infos.empty());
 
-    EXPECT_FALSE(manager.Get(kFirstId));
-    EXPECT_FALSE(manager.Get(kSecondId));
+    EXPECT_FALSE(storage.Get(kFirstId));
+    EXPECT_FALSE(storage.Get(kSecondId));
   }
 }
 
 // Tests that persisting a System Extension with the same id twice
 // overwrites the original System Extension.
-TEST_F(SystemExtensionsPersistenceManagerTest, PersistTwice) {
-  SystemExtensionsPersistenceManager manager(profile());
-  manager.Persist(first_test_system_extension());
+TEST_F(SystemExtensionsPersistentStorageTest, PersistTwice) {
+  SystemExtensionsPersistentStorage storage(profile());
+  storage.Add(first_test_system_extension());
 
   // The second System Extension has the same id but a different name.
   SystemExtension second_system_extension;
@@ -229,24 +229,24 @@ TEST_F(SystemExtensionsPersistenceManagerTest, PersistTwice) {
   second_system_extension.manifest = first_test_manifest().Clone();
   second_system_extension.manifest.Set("name", "Second System Extension");
 
-  manager.Persist(second_system_extension);
+  storage.Add(second_system_extension);
 
   // Test that the saved manifest is the correct one i.e. from the second
   // System Extension.
-  absl::optional<SystemExtensionPersistenceInfo> persistence_info =
-      manager.Get(kFirstId);
+  absl::optional<SystemExtensionPersistedInfo> persistence_info =
+      storage.Get(kFirstId);
   EXPECT_EQ(persistence_info->manifest, second_system_extension.manifest);
 }
 
 // Tests deleting a non-existent System Extension doesn't crash.
-TEST_F(SystemExtensionsPersistenceManagerTest, RemoveNonExistent) {
-  SystemExtensionsPersistenceManager manager(profile());
-  manager.Delete(kFirstId);
+TEST_F(SystemExtensionsPersistentStorageTest, RemoveNonExistent) {
+  SystemExtensionsPersistentStorage storage(profile());
+  storage.Remove(kFirstId);
 }
 
 // Tests that corrupt ids are ignored when returning values.
-TEST_F(SystemExtensionsPersistenceManagerTest, CorruptId) {
-  SystemExtensionsPersistenceManager manager(profile());
+TEST_F(SystemExtensionsPersistentStorageTest, CorruptId) {
+  SystemExtensionsPersistentStorage storage(profile());
 
   // Add a System Extension with a corrupted id.
   {
@@ -262,28 +262,28 @@ TEST_F(SystemExtensionsPersistenceManagerTest, CorruptId) {
 
   // Check that API calls return no entries, since the only entry is corrupted,
   // and that they don't crash because of the corrupted entry.
-  EXPECT_FALSE(manager.Get(kFirstId));
-  EXPECT_FALSE(manager.Get(kSecondId));
-  EXPECT_TRUE(manager.GetAll().empty());
+  EXPECT_FALSE(storage.Get(kFirstId));
+  EXPECT_FALSE(storage.Get(kSecondId));
+  EXPECT_TRUE(storage.GetAll().empty());
 
   // Persist a non-corrupted System Extension. Only the non-corrupted System
   // Extension should be returned since the first one is corrupted.
-  manager.Persist(second_test_system_extension());
+  storage.Add(second_test_system_extension());
 
-  EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+  EXPECT_EQ(storage.Get(kSecondId)->manifest, second_test_manifest());
 
-  auto infos = manager.GetAll();
+  auto infos = storage.GetAll();
   EXPECT_EQ(infos.size(), 1u);
   EXPECT_EQ(infos[0].manifest, second_test_manifest());
 
-  manager.Delete(kSecondId);
-  EXPECT_FALSE(manager.Get(kSecondId));
-  EXPECT_TRUE(manager.GetAll().empty());
+  storage.Remove(kSecondId);
+  EXPECT_FALSE(storage.Get(kSecondId));
+  EXPECT_TRUE(storage.GetAll().empty());
 }
 
 // Tests that entries with no manifest are ignored when returning values.
-TEST_F(SystemExtensionsPersistenceManagerTest, NoManifest) {
-  SystemExtensionsPersistenceManager manager(profile());
+TEST_F(SystemExtensionsPersistentStorageTest, NoManifest) {
+  SystemExtensionsPersistentStorage storage(profile());
 
   // Add a System Extension with no manifest.
   {
@@ -296,23 +296,23 @@ TEST_F(SystemExtensionsPersistenceManagerTest, NoManifest) {
 
   // Check that the System Extension with no manifest is not returned by
   // the API.
-  EXPECT_FALSE(manager.Get(kFirstId));
-  EXPECT_FALSE(manager.Get(kSecondId));
-  EXPECT_TRUE(manager.GetAll().empty());
+  EXPECT_FALSE(storage.Get(kFirstId));
+  EXPECT_FALSE(storage.Get(kSecondId));
+  EXPECT_TRUE(storage.GetAll().empty());
 
   // Persist a System Extension with a manifest. Only the System Extension
   // with a manifest should be returned.
-  manager.Persist(second_test_system_extension());
+  storage.Add(second_test_system_extension());
 
-  EXPECT_EQ(manager.Get(kSecondId)->manifest, second_test_manifest());
+  EXPECT_EQ(storage.Get(kSecondId)->manifest, second_test_manifest());
 
-  auto infos = manager.GetAll();
+  auto infos = storage.GetAll();
   EXPECT_EQ(infos.size(), 1u);
   EXPECT_EQ(infos[0].manifest, second_test_manifest());
 
-  manager.Delete(kSecondId);
-  EXPECT_FALSE(manager.Get(kSecondId));
-  EXPECT_TRUE(manager.GetAll().empty());
+  storage.Remove(kSecondId);
+  EXPECT_FALSE(storage.Get(kSecondId));
+  EXPECT_TRUE(storage.GetAll().empty());
 }
 
 }  // namespace ash
