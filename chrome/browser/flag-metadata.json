@@ -3154,7 +3154,7 @@
   {
     "name": "enable-web-authentication-passkeys-ui-experiment",
     "owners": [ "agl" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 118
   },
   {
     "name": "enable-web-bluetooth",
