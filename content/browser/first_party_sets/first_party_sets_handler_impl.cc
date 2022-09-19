@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "content/browser/first_party_sets/addition_overlaps_union_find.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/browser/first_party_sets/local_set_declaration.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
 #include "net/base/schemeful_site.h"
+#include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/public_sets.h"
@@ -53,7 +53,7 @@ std::vector<SingleSet> NormalizeAdditionSets(
     }
   }
 
-  AdditionOverlapsUnionFind union_finder(addition_sets.size());
+  net::AdditionOverlapsUnionFind union_finder(addition_sets.size());
   for (auto& [public_site, policy_set_indices] : policy_set_overlaps) {
     // Union together all overlapping policy sets to determine which one will
     // take ownership.

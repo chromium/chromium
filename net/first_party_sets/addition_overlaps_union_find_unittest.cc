@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/first_party_sets/addition_overlaps_union_find.h"
+#include "net/first_party_sets/addition_overlaps_union_find.h"
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace content {
+namespace net {
 namespace {
 
 TEST(AdditionOverlapsUnionFindUnittest, InvalidNumSets) {
@@ -79,4 +79,4 @@ TEST(AdditionOverlapsUnionFindUnittest, Union_NoOp_SharedRepresentative) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace net

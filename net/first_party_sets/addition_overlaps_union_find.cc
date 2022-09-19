@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/first_party_sets/addition_overlaps_union_find.h"
+#include "net/first_party_sets/addition_overlaps_union_find.h"
 
 #include <numeric>
 
@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 
-namespace content {
+namespace net {
 
 AdditionOverlapsUnionFind::AdditionOverlapsUnionFind(int num_sets) {
   CHECK_GE(num_sets, 0);
@@ -66,4 +66,4 @@ size_t AdditionOverlapsUnionFind::Find(size_t set) {
   return representatives_[set];
 }
 
-}  // namespace content
+}  // namespace net

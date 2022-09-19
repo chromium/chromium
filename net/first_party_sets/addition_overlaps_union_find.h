@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_ADDITION_OVERLAPS_UNION_FIND_H_
-#define CONTENT_BROWSER_FIRST_PARTY_SETS_ADDITION_OVERLAPS_UNION_FIND_H_
+#ifndef NET_FIRST_PARTY_SETS_ADDITION_OVERLAPS_UNION_FIND_H_
+#define NET_FIRST_PARTY_SETS_ADDITION_OVERLAPS_UNION_FIND_H_
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "content/common/content_export.h"
+#include "net/base/net_export.h"
 
-namespace content {
+namespace net {
 
 // A helper class defining a Union-Find data structure that's used for merging
-// disjoint transitively-overlapping addition sets together.
-class CONTENT_EXPORT AdditionOverlapsUnionFind {
+// disjoint transitively-overlapping sets together.
+class NET_EXPORT AdditionOverlapsUnionFind {
  public:
   using SetsMap = base::flat_map<size_t, base::flat_set<size_t>>;
 
@@ -45,6 +45,6 @@ class CONTENT_EXPORT AdditionOverlapsUnionFind {
   std::vector<size_t> representatives_;
 };
 
-}  // namespace content
+}  // namespace net
 
-#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_ADDITION_OVERLAPS_UNION_FIND_H_
+#endif  // NET_FIRST_PARTY_SETS_ADDITION_OVERLAPS_UNION_FIND_H_
