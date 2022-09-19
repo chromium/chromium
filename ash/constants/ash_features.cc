@@ -547,7 +547,7 @@ const base::Feature kDockedMagnifier{"DockedMagnifier",
 
 // Enables dragging an unpinned open app to pinned app side to pin.
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables dragging and dropping an existing window to new desk in overview.
 const base::Feature kDragWindowToNewDesk{"DragWindowToNewDesk",
