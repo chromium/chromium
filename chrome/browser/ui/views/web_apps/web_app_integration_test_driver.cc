@@ -1009,7 +1009,8 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
 
 void WebAppIntegrationTestDriver::InstallPolicyApp(Site site,
                                                    ShortcutOptions shortcut,
-                                                   WindowOptions window) {
+                                                   WindowOptions window,
+                                                   InstallMode mode) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
   base::Value container = base::Value(window == WindowOptions::kWindowed
@@ -1017,7 +1018,8 @@ void WebAppIntegrationTestDriver::InstallPolicyApp(Site site,
                                           : kDefaultLaunchContainerTabValue);
   InstallPolicyAppInternal(
       site, std::move(container),
-      /*create_shortcut=*/shortcut == ShortcutOptions::kWithShortcut);
+      /*create_shortcut=*/shortcut == ShortcutOptions::kWithShortcut,
+      /*install_as_shortcut=*/mode == InstallMode::kWebShortcut);
   AfterStateChangeAction();
 }
 
@@ -2730,7 +2732,8 @@ base::FilePath WebAppIntegrationTestDriver::GetShortcutPath(
 void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     Site site,
     base::Value default_launch_container,
-    const bool create_shortcut) {
+    const bool create_shortcut,
+    const bool install_as_shortcut) {
   GURL url = GetAppStartURL(site);
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
@@ -2739,6 +2742,7 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     item.Set(kUrlKey, url.spec());
     item.Set(kDefaultLaunchContainerKey, std::move(default_launch_container));
     item.Set(kCreateDesktopShortcutKey, create_shortcut);
+    item.Set(kInstallAsShortcut, install_as_shortcut);
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
     update->GetList().Append(std::move(item));

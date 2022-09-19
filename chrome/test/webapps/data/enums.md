@@ -37,3 +37,4 @@ The tables in this file are parsed as action templates for critical user journey
 | AskAgainOptions | AskAgain | Remember |
 | ShortcutOptions | WithShortcut | NoShortcut |
 | WindowOptions | Windowed | Browser |
+| InstallMode | WebApp* | WebShortcut |

@@ -84,6 +84,8 @@ enum class WindowOptions { kWindowed, kBrowser };
 
 enum class ShortcutOptions { kWithShortcut, kNoShortcut };
 
+enum class InstallMode { kWebApp, kWebShortcut };
+
 enum class AllowDenyOptions { kAllow, kDeny };
 
 enum class AskAgainOptions { kAskAgain, kRemember };
@@ -223,7 +225,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void InstallOmniboxIcon(InstallableSite site);
   void InstallPolicyApp(Site site,
                         ShortcutOptions shortcut,
-                        WindowOptions window);
+                        WindowOptions window,
+                        InstallMode mode);
   // These functions install apps which are tabbed and creates shortcuts.
   void ApplyRunOnOsLoginPolicyAllowed(Site site);
   void ApplyRunOnOsLoginPolicyBlocked(Site site);
@@ -338,7 +341,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void InstallPolicyAppInternal(Site site,
                                 base::Value default_launch_container,
-                                bool create_shortcut);
+                                const bool create_shortcut,
+                                const bool install_as_shortcut);
   void ApplyRunOnOsLoginPolicy(Site site, const char* policy);
 
   void UninstallPolicyAppById(const AppId& id);
