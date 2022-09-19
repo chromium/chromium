@@ -130,18 +130,21 @@ class RootScrollerTest : public testing::Test,
     return &doc->GetRootScrollerController().EffectiveRootScroller();
   }
 
-  WebCoalescedInputEvent GenerateTouchGestureEvent(WebInputEvent::Type type,
-                                                   int delta_x = 0,
-                                                   int delta_y = 0) {
-    return GenerateGestureEvent(type, WebGestureDevice::kTouchscreen, delta_x,
-                                delta_y);
-  }
-
-  WebCoalescedInputEvent GenerateWheelGestureEvent(WebInputEvent::Type type,
-                                                   int delta_x = 0,
-                                                   int delta_y = 0) {
-    return GenerateGestureEvent(type, WebGestureDevice::kTouchpad, delta_x,
-                                delta_y);
+  WebGestureEvent GenerateTouchGestureEvent(WebInputEvent::Type type,
+                                            int delta_x = 0,
+                                            int delta_y = 0) {
+    WebGestureEvent event(type, WebInputEvent::kNoModifiers,
+                          WebInputEvent::GetStaticTimeStampForTests(),
+                          WebGestureDevice::kTouchscreen);
+    event.SetPositionInWidget(gfx::PointF(100, 100));
+    if (type == WebInputEvent::Type::kGestureScrollUpdate) {
+      event.data.scroll_update.delta_x = delta_x;
+      event.data.scroll_update.delta_y = delta_y;
+    } else if (type == WebInputEvent::Type::kGestureScrollBegin) {
+      event.data.scroll_begin.delta_x_hint = delta_x;
+      event.data.scroll_begin.delta_y_hint = delta_y;
+    }
+    return event;
   }
 
   void SetCreateWebFrameWidgetCallback(
@@ -151,23 +154,6 @@ class RootScrollerTest : public testing::Test,
   }
 
  protected:
-  WebCoalescedInputEvent GenerateGestureEvent(WebInputEvent::Type type,
-                                              WebGestureDevice device,
-                                              int delta_x,
-                                              int delta_y) {
-    WebGestureEvent event(type, WebInputEvent::kNoModifiers,
-                          WebInputEvent::GetStaticTimeStampForTests(), device);
-    event.SetPositionInWidget(gfx::PointF(100, 100));
-    if (type == WebInputEvent::Type::kGestureScrollUpdate) {
-      event.data.scroll_update.delta_x = delta_x;
-      event.data.scroll_update.delta_y = delta_y;
-    } else if (type == WebInputEvent::Type::kGestureScrollBegin) {
-      event.data.scroll_begin.delta_x_hint = delta_x;
-      event.data.scroll_begin.delta_y_hint = delta_y;
-    }
-    return WebCoalescedInputEvent(event, ui::LatencyInfo());
-  }
-
   WebViewImpl* InitializeInternal(const String& url) {
     helper_ = std::make_unique<frame_test_helpers::WebViewHelper>(
         create_widget_callback_);
@@ -176,8 +162,11 @@ class RootScrollerTest : public testing::Test,
                                &ConfigureSettings);
 
     // Initialize browser controls to be shown.
-    GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 400), 50, 60, true);
+    gfx::Size viewport_size = gfx::Size(400, 400);
+    GetWebView()->ResizeWithBrowserControls(viewport_size, 50, 60, true);
     GetWebView()->GetBrowserControls().SetShownRatio(1, 1);
+    helper_->GetMainFrameWidget()->UpdateCompositorViewportRect(
+        gfx::Rect(viewport_size));
 
     UpdateAllLifecyclePhases(MainFrameView());
 
@@ -226,82 +215,45 @@ TEST_F(RootScrollerTest, defaultEffectiveRootScrollerIsDocumentNode) {
             EffectiveRootScroller(MainFrame()->GetDocument()));
 }
 
-class OverscrollWidgetInputHandlerHost
-    : public frame_test_helpers::TestWidgetInputHandlerHost {
- public:
-  MOCK_METHOD5(DidOverscroll,
-               void(const gfx::Vector2dF&,
-                    const gfx::Vector2dF&,
-                    const gfx::PointF&,
-                    const gfx::Vector2dF&,
-                    cc::OverscrollBehavior));
-
-  void DidOverscroll(mojom::blink::DidOverscrollParamsPtr params) override {
-    DidOverscroll(params->latest_overscroll_delta,
-                  params->accumulated_overscroll,
-                  params->causal_event_viewport_point,
-                  params->current_fling_velocity, params->overscroll_behavior);
-  }
-};
-
-class OverscrollTestWebFrameWidget
-    : public frame_test_helpers::TestWebFrameWidget {
- public:
-  template <typename... Args>
-  explicit OverscrollTestWebFrameWidget(Args&&... args)
-      : frame_test_helpers::TestWebFrameWidget(std::forward<Args>(args)...) {}
-
-  // frame_test_helpers::TestWebFrameWidget overrides.
-  frame_test_helpers::TestWidgetInputHandlerHost* GetInputHandlerHost()
-      override {
-    return &input_handler_host_;
-  }
-
-  OverscrollWidgetInputHandlerHost& GetOverscrollWidgetInputHandlerHost() {
-    return input_handler_host_;
-  }
-
- private:
-  OverscrollWidgetInputHandlerHost input_handler_host_;
-};
-
-// Tests that setting an element as the root scroller causes it to control url
-// bar hiding and overscroll.
-TEST_F(RootScrollerTest, TestSetRootScroller) {
-  SetCreateWebFrameWidgetCallback(base::BindRepeating(
-      &frame_test_helpers::WebViewHelper::CreateTestWebFrameWidget<
-          OverscrollTestWebFrameWidget>));
+// Tests that a DIV which becomes the implicit root scroller will properly
+// control url bar and bottom bar hiding and overscroll.
+TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
   Initialize("root-scroller.html");
   UpdateAllLifecyclePhases(MainFrameView());
 
   Element* container = MainFrame()->GetDocument()->getElementById("container");
   ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
 
-  // Content is 1000x1000, WebView size is 400x400 but hiding the top controls
-  // makes it 400x450 so max scroll is 550px.
-  double maximum_scroll = 550;
+  // Content is 1000x1000, WebView is 400x400 but hiding the 50px top controls
+  // and the 60px bottom controls makes it 400x510 so max scroll is 490px.
+  double maximum_scroll = 490;
 
-  OverscrollTestWebFrameWidget* widget =
-      static_cast<OverscrollTestWebFrameWidget*>(helper_->GetMainFrameWidget());
+  auto* widget = helper_->GetMainFrameWidget();
+  auto* layer_tree_host = helper_->GetLayerTreeHost();
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
 
-  widget->HandleInputEvent(
+  widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
   {
     // Scrolling over the #container DIV should cause the browser controls to
     // hide.
     EXPECT_FLOAT_EQ(1, GetBrowserControls().TopShownRatio());
     EXPECT_FLOAT_EQ(1, GetBrowserControls().BottomShownRatio());
-    widget->HandleInputEvent(
+    widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0,
                                   -GetBrowserControls().TopHeight()));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
     EXPECT_FLOAT_EQ(0, GetBrowserControls().TopShownRatio());
     EXPECT_FLOAT_EQ(0, GetBrowserControls().BottomShownRatio());
   }
 
   {
     // Make sure we're actually scrolling the DIV and not the LocalFrameView.
-    widget->HandleInputEvent(GenerateTouchGestureEvent(
+    widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -100));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
     EXPECT_FLOAT_EQ(100, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
                     MainFrameView()->LayoutViewport()->GetScrollOffset().y());
@@ -310,75 +262,80 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
   {
     // Scroll 50 pixels past the end. Ensure we report the 50 pixels as
     // overscroll.
-    EXPECT_CALL(widget->GetOverscrollWidgetInputHandlerHost(),
-                DidOverscroll(gfx::Vector2dF(0, 50), gfx::Vector2dF(0, 50),
-                              gfx::PointF(100, 100), gfx::Vector2dF(),
-                              cc::OverscrollBehavior()));
-    widget->HandleInputEvent(GenerateTouchGestureEvent(
-        WebInputEvent::Type::kGestureScrollUpdate, 0, -500));
+    widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
+        WebInputEvent::Type::kGestureScrollUpdate, 0, -440));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
+    EXPECT_TRUE(
+        widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
+            gfx::Vector2dF(0, 50), gfx::Vector2dF(0, 50), gfx::Vector2dF(),
+            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
                     MainFrameView()->LayoutViewport()->GetScrollOffset().y());
-    RunPendingTasks();
-    Mock::VerifyAndClearExpectations(
-        &widget->GetOverscrollWidgetInputHandlerHost());
   }
 
   {
     // Continue the gesture overscroll.
-    EXPECT_CALL(widget->GetOverscrollWidgetInputHandlerHost(),
-                DidOverscroll(gfx::Vector2dF(0, 20), gfx::Vector2dF(0, 70),
-                              gfx::PointF(100, 100), gfx::Vector2dF(),
-                              cc::OverscrollBehavior()));
-    widget->HandleInputEvent(GenerateTouchGestureEvent(
+    widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -20));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
+    EXPECT_TRUE(
+        widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
+            gfx::Vector2dF(0, 70), gfx::Vector2dF(0, 20), gfx::Vector2dF(),
+            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
                     MainFrameView()->LayoutViewport()->GetScrollOffset().y());
-    RunPendingTasks();
-    Mock::VerifyAndClearExpectations(
-        &widget->GetOverscrollWidgetInputHandlerHost());
   }
 
-  widget->HandleInputEvent(
+  widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
 
   {
     // Make sure a new gesture scroll still won't scroll the frameview and
     // overscrolls.
-    widget->HandleInputEvent(
+    widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
 
-    EXPECT_CALL(widget->GetOverscrollWidgetInputHandlerHost(),
-                DidOverscroll(gfx::Vector2dF(0, 30), gfx::Vector2dF(0, 30),
-                              gfx::PointF(100, 100), gfx::Vector2dF(),
-                              cc::OverscrollBehavior()));
-    widget->HandleInputEvent(GenerateTouchGestureEvent(
+    widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -30));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
+    EXPECT_TRUE(
+        widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
+            gfx::Vector2dF(0, 30), gfx::Vector2dF(0, 30), gfx::Vector2dF(),
+            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
                     MainFrameView()->LayoutViewport()->GetScrollOffset().y());
-    RunPendingTasks();
-    Mock::VerifyAndClearExpectations(
-        &widget->GetOverscrollWidgetInputHandlerHost());
 
-    widget->HandleInputEvent(
+    widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
   }
 
   {
     // Scrolling up should show the browser controls.
-    widget->HandleInputEvent(
+    widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
 
     EXPECT_FLOAT_EQ(0, GetBrowserControls().TopShownRatio());
     EXPECT_FLOAT_EQ(0, GetBrowserControls().BottomShownRatio());
-    GetWebView()->MainFrameWidget()->HandleInputEvent(GenerateTouchGestureEvent(
+
+    widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, 30));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
     EXPECT_FLOAT_EQ(0.6, GetBrowserControls().TopShownRatio());
     EXPECT_FLOAT_EQ(0.6, GetBrowserControls().BottomShownRatio());
 
-    widget->HandleInputEvent(
+    widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
   }
 
@@ -650,7 +607,10 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
                                      base_url);
 
   GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 400), 50, 50, true);
-  UpdateAllLifecyclePhases(MainFrameView());
+
+  auto* widget = helper_->GetMainFrameWidget();
+  auto* layer_tree_host = helper_->GetLayerTreeHost();
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
 
   Element* container = MainFrame()->GetDocument()->getElementById("container");
   ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
@@ -663,30 +623,48 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
   // scroll offset should shrink.
   ASSERT_EQ(1000 - 400, container_scroller->MaximumScrollOffset().y());
 
-  GetWebView()->MainFrameWidget()->HandleInputEvent(
+  widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
+
   ASSERT_EQ(1, GetBrowserControls().TopShownRatio());
   ASSERT_EQ(1, GetBrowserControls().BottomShownRatio());
-  GetWebView()->MainFrameWidget()->HandleInputEvent(
+
+  widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 0,
                                 -GetBrowserControls().TopHeight()));
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
   ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
   ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());
+
+  // TODO(crbug.com/1364851): This should be 1000 - 500, but the main thread's
+  // maximum scroll offset does not account for the hidden bottom bar.
   EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().y());
 
-  GetWebView()->MainFrameWidget()->HandleInputEvent(GenerateTouchGestureEvent(
+  widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
       WebInputEvent::Type::kGestureScrollUpdate, 0, -3000));
-  EXPECT_EQ(1000 - 450, container_scroller->GetScrollOffset().y());
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
 
-  GetWebView()->MainFrameWidget()->HandleInputEvent(
+  // The compositor input handler correctly accounts for both top and bottom bar
+  // in the calculation of scroll bounds. This is the true maximum.
+  EXPECT_EQ(1000 - 500, container_scroller->GetScrollOffset().y());
+
+  widget->DispatchThroughCcInputHandler(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
+  layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
   GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
+
+  // TODO(crbug.com/1364851): This should be 1000 - 500, but the main thread's
+  // maximum scroll offset does not account for the hidden bottom bar.
   EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().y());
 }
 
 TEST_F(RootScrollerTest, RotationAnchoring) {
   Initialize("root-scroller-rotation.html");
 
+  auto* widget = helper_->GetMainFrameWidget();
+  auto* layer_tree_host = helper_->GetLayerTreeHost();
   ScrollableArea* container_scroller;
 
   {
@@ -710,12 +688,15 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
     int scroll_y = 1000 * 4;
 
     GetWebView()->SetPageScaleFactor(2);
-    GetWebView()->MainFrameWidget()->HandleInputEvent(
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
+
+    widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
-    GetWebView()->MainFrameWidget()->HandleInputEvent(GenerateTouchGestureEvent(
+    widget->DispatchThroughCcInputHandler(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, -scroll_x, -scroll_y));
-    GetWebView()->MainFrameWidget()->HandleInputEvent(
+    widget->DispatchThroughCcInputHandler(
         GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
+    layer_tree_host->CompositeForTest(base::TimeTicks::Now(), false);
 
     // The visual viewport should be 1.5 screens scrolled so that the target
     // occupies the bottom quadrant of the layout viewport.
