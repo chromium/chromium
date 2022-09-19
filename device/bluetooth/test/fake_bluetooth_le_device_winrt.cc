@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -369,10 +370,9 @@ void FakeBluetoothLEDeviceWinrt::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
   auto* device_service = static_cast<BluetoothRemoteGattServiceWinrt*>(service)
                              ->GetDeviceServiceForTesting();
-  auto iter = std::find_if(fake_services_.begin(), fake_services_.end(),
-                           [device_service](const auto& fake_service) {
-                             return device_service == fake_service.Get();
-                           });
+  auto iter = base::ranges::find(
+      fake_services_, device_service,
+      &Microsoft::WRL::ComPtr<FakeGattDeviceServiceWinrt>::Get);
   DCHECK(iter != fake_services_.end());
   fake_services_.erase(iter);
   SimulateGattServicesChanged();

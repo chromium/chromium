@@ -4,9 +4,9 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 
+#include "base/ranges/algorithm.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 
@@ -891,7 +891,7 @@ void MapperElecomWirelessDirectInput(const Gamepad& input, Gamepad* mapped) {
 constexpr struct MappingData {
   GamepadId gamepad_id;
   GamepadStandardMappingFunction function;
-} AvailableMappings[] = {
+} kAvailableMappings[] = {
     // PowerA Wireless Controller - Nintendo GameCube style
     {GamepadId::kPowerALicPro, MapperSwitchPro},
     // DragonRise Generic USB
@@ -1005,13 +1005,10 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
     GamepadBusType bus_type) {
   GamepadId gamepad_id =
       GamepadIdList::Get().GetGamepadId(product_name, vendor_id, product_id);
-  const MappingData* begin = std::begin(AvailableMappings);
-  const MappingData* end = std::end(AvailableMappings);
-  const auto* find_it = std::find_if(begin, end, [=](const MappingData& item) {
-    return gamepad_id == item.gamepad_id;
-  });
+  const auto* find_it = base::ranges::find(kAvailableMappings, gamepad_id,
+                                           &MappingData::gamepad_id);
   GamepadStandardMappingFunction mapper =
-      (find_it == end) ? nullptr : find_it->function;
+      (find_it == std::end(kAvailableMappings)) ? nullptr : find_it->function;
 
   // The Linux kernel was updated in version 4.10 to better support Dualshock 4
   // and Dualshock 3/SIXAXIS gamepads. The driver patches the bcdHID value when

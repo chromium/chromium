@@ -4,9 +4,9 @@
 
 #include "device/gamepad/hid_haptic_gamepad.h"
 
-#include <algorithm>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "device/gamepad/hid_writer.h"
 
 namespace device {
@@ -50,7 +50,6 @@ HidHapticGamepad::HapticReportData kHapticReportData[] = {
     // Stadia controller
     {0x18d1, 0x9400, 0x05, 5, 1, 3, 2 * kBitsPerByte, 0, 0xffff},
 };
-size_t kHapticReportDataLength = std::size(kHapticReportData);
 
 HidHapticGamepad::HidHapticGamepad(const HapticReportData& data,
                                    std::unique_ptr<HidWriter> writer)
@@ -79,26 +78,21 @@ std::unique_ptr<HidHapticGamepad> HidHapticGamepad::Create(
 
 // static
 bool HidHapticGamepad::IsHidHaptic(uint16_t vendor_id, uint16_t product_id) {
-  const auto* begin = kHapticReportData;
-  const auto* end = kHapticReportData + kHapticReportDataLength;
-  const auto* find_it =
-      std::find_if(begin, end, [=](const HapticReportData& d) {
+  return base::ranges::any_of(
+      kHapticReportData, [=](const HapticReportData& d) {
         return d.vendor_id == vendor_id && d.product_id == product_id;
       });
-  return find_it != end;
 }
 
 // static
 const HidHapticGamepad::HapticReportData* HidHapticGamepad::GetHapticReportData(
     uint16_t vendor_id,
     uint16_t product_id) {
-  const auto* begin = kHapticReportData;
-  const auto* end = kHapticReportData + kHapticReportDataLength;
   const auto* find_it =
-      std::find_if(begin, end, [=](const HapticReportData& d) {
+      base::ranges::find_if(kHapticReportData, [=](const HapticReportData& d) {
         return d.vendor_id == vendor_id && d.product_id == product_id;
       });
-  return find_it == end ? nullptr : &*find_it;
+  return find_it == std::end(kHapticReportData) ? nullptr : &*find_it;
 }
 
 void HidHapticGamepad::DoShutdown() {

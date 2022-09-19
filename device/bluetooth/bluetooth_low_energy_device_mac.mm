@@ -11,6 +11,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
@@ -442,13 +443,12 @@ void BluetoothLowEnergyDeviceMac::SendNotificationIfDiscoveryComplete() {
   // Notify when all services have been discovered.
   bool discovery_complete =
       discovery_pending_count_ == 0 &&
-      std::find_if_not(
-          gatt_services_.begin(),
-          gatt_services_.end(), [](GattServiceMap::value_type & pair) {
+      base::ranges::all_of(
+          gatt_services_, [](GattServiceMap::value_type& pair) {
             BluetoothRemoteGattService* gatt_service = pair.second.get();
             return static_cast<BluetoothRemoteGattServiceMac*>(gatt_service)
                 ->IsDiscoveryComplete();
-          }) == gatt_services_.end();
+          });
   if (discovery_complete) {
     DVLOG(1) << *this << ": Discovery complete.";
     device_uuids_.ReplaceServiceUUIDs(gatt_services_);

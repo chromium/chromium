@@ -24,6 +24,7 @@
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -409,8 +410,8 @@ BluetoothAdapterMac::GetHostControllerState() {
 }
 
 void BluetoothAdapterMac::UpdateKnownLowEnergyDevices(
-    std::map<std::string, std::string> updated_low_energy_devices_info) {
-  std::map<std::string, std::string> changed_devices;
+    DevicesInfo updated_low_energy_devices_info) {
+  DevicesInfo changed_devices;
   // Notify DeviceChanged() to devices that have been newly paired as well as to
   // devices that have been removed from the pairing list.
   std::set_symmetric_difference(
@@ -881,9 +882,8 @@ void BluetoothAdapterMac::DidDisconnectPeripheral(CBPeripheral* peripheral,
 
 bool BluetoothAdapterMac::IsBluetoothLowEnergyDeviceSystemPaired(
     base::StringPiece device_identifier) const {
-  auto it = std::find_if(
-      low_energy_devices_info_.begin(), low_energy_devices_info_.end(),
-      [&](const auto& info) { return info.first == device_identifier; });
+  auto it = base::ranges::find(low_energy_devices_info_, device_identifier,
+                               &DevicesInfo::value_type::first);
   if (it == low_energy_devices_info_.end())
     return false;
 

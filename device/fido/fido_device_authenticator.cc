@@ -4,7 +4,6 @@
 
 #include "device/fido/fido_device_authenticator.h"
 
-#include <algorithm>
 #include <numeric>
 #include <utility>
 
@@ -12,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -912,11 +912,10 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
     return;
   }
 
-  auto existing_large_blob =
-      std::find_if(large_blob_array->begin(), large_blob_array->end(),
-                   [&large_blob_key](const LargeBlobData& blob) {
-                     return blob.Decrypt(large_blob_key);
-                   });
+  auto existing_large_blob = base::ranges::find_if(
+      *large_blob_array, [&large_blob_key](const LargeBlobData& blob) {
+        return blob.Decrypt(large_blob_key).has_value();
+      });
 
   LargeBlobData new_large_blob_data(large_blob_key, std::move(large_blob));
   if (existing_large_blob != large_blob_array->end()) {

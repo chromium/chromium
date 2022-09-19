@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_service_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_application_service_provider_impl.h"
@@ -160,10 +161,9 @@ void BluetoothGattApplicationServiceProvider::CreateAttributeServiceProviders(
 void BluetoothGattApplicationServiceProvider::SendValueChanged(
     const dbus::ObjectPath& characteristic_path,
     const std::vector<uint8_t>& value) {
-  auto characteristic = std::find_if(
-      characteristic_providers_.begin(), characteristic_providers_.end(),
-      [&](const std::unique_ptr<BluetoothGattCharacteristicServiceProvider>&
-              p) { return p->object_path() == characteristic_path; });
+  auto characteristic = base::ranges::find(
+      characteristic_providers_, characteristic_path,
+      &BluetoothGattCharacteristicServiceProvider::object_path);
   if (characteristic == characteristic_providers_.end()) {
     LOG(ERROR) << "Couldn't find characteristic provider for: "
                << characteristic_path.value();

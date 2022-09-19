@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
@@ -72,10 +73,8 @@ std::vector<uint8_t> ToByteVector(base::StringPiece str) {
 BluetoothDevice* GetMockDevice(MockBluetoothAdapter* adapter,
                                const std::string& address) {
   const std::vector<BluetoothDevice*> devices = adapter->GetMockDevices();
-  auto found = std::find_if(devices.begin(), devices.end(),
-                            [&address](const auto* device) {
-                              return device->GetAddress() == address;
-                            });
+  auto found =
+      base::ranges::find(devices, address, &BluetoothDevice::GetAddress);
   return found != devices.end() ? *found : nullptr;
 }
 

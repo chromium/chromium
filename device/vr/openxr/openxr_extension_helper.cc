@@ -6,6 +6,8 @@
 
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
+
 namespace device {
 
 OpenXrExtensionMethods::OpenXrExtensionMethods() = default;
@@ -27,11 +29,11 @@ OpenXrExtensionEnumeration::~OpenXrExtensionEnumeration() = default;
 
 bool OpenXrExtensionEnumeration::ExtensionSupported(
     const char* extension_name) const {
-  return std::find_if(
-             extension_properties_.begin(), extension_properties_.end(),
-             [&extension_name](const XrExtensionProperties& properties) {
-               return strcmp(properties.extensionName, extension_name) == 0;
-             }) != extension_properties_.end();
+  return base::ranges::any_of(
+      extension_properties_,
+      [&extension_name](const XrExtensionProperties& properties) {
+        return strcmp(properties.extensionName, extension_name) == 0;
+      });
 }
 
 OpenXrExtensionHelper::~OpenXrExtensionHelper() = default;
