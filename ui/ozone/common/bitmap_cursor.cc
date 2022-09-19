@@ -4,11 +4,10 @@
 
 #include "ui/ozone/common/bitmap_cursor.h"
 
-#include <algorithm>
-
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 
 namespace ui {
 
@@ -48,9 +47,7 @@ BitmapCursor::BitmapCursor(mojom::CursorType type,
   DCHECK_LE(base::TimeDelta(), frame_delay);
   // No null bitmap should be in the list. Blank cursors should just be an empty
   // vector.
-  DCHECK(std::find_if(bitmaps_.begin(), bitmaps_.end(),
-                      [](const SkBitmap& bitmap) { return bitmap.isNull(); }) ==
-         bitmaps_.end());
+  DCHECK(base::ranges::none_of(bitmaps_, &SkBitmap::isNull));
 }
 
 BitmapCursor::BitmapCursor(mojom::CursorType type,

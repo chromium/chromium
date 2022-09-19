@@ -12,7 +12,6 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -448,10 +448,7 @@ GetDisplayInfosAndInvalidCrtcs(int fd) {
       invalid_crtcs.push_back((connected_crtc));
 
     ScopedDrmCrtcPtr crtc(drmModeGetCrtc(fd, best_crtc));
-    auto iter = std::find_if(connectors.begin(), connectors.end(),
-                             [c](const ScopedDrmConnectorPtr& connector) {
-                               return connector.get() == c;
-                             });
+    auto iter = base::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
     DCHECK(iter != connectors.end());
     // |connectors.size()| <= 256, so |index| should be between 0-255.
     const uint8_t index = iter - connectors.begin();

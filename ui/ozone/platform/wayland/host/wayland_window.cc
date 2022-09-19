@@ -6,12 +6,13 @@
 
 #include <stdint.h>
 #include <wayland-cursor.h>
-#include <algorithm>
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
@@ -1041,11 +1042,10 @@ bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px) {
   // of elements in it for several frames under some conditions.
   // The `pending_configures_` should store px size instead of dip.
   auto result =
-      std::find_if(pending_configures_.begin(), pending_configures_.end(),
-                   [&size_px](auto& configure) {
-                     // Should we adjust?
-                     return configure.size_px == size_px && configure.set;
-                   });
+      base::ranges::find_if(pending_configures_, [&size_px](auto& configure) {
+        // Should we adjust?
+        return configure.size_px == size_px && configure.set;
+      });
 
   if (result != pending_configures_.end()) {
     auto serial = result->serial;

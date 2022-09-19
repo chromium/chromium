@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 
+#include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -68,8 +69,7 @@ wl_buffer* WaylandProxyImpl::CreateShmBasedWlBuffer(
 
 void WaylandProxyImpl::DestroyShmForWlBuffer(wl_buffer* buffer) {
   auto it =
-      std::find_if(shm_buffers_.begin(), shm_buffers_.end(),
-                   [buffer](const auto& buf) { return buf.get() == buffer; });
+      base::ranges::find(shm_buffers_, buffer, &ui::WaylandShmBuffer::get);
   DCHECK(it != shm_buffers_.end());
   shm_buffers_.erase(it);
 }

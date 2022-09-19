@@ -11,12 +11,13 @@
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
 #include <viewporter-client-protocol.h>
-#include <algorithm>
+
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -756,9 +757,7 @@ void WaylandSurface::Leave(void* data,
 }
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
-  auto entered_outputs_it_ =
-      std::find_if(entered_outputs_.begin(), entered_outputs_.end(),
-                   [&output_id](uint32_t id) { return id == output_id; });
+  auto entered_outputs_it_ = base::ranges::find(entered_outputs_, output_id);
   if (entered_outputs_it_ == entered_outputs_.end())
     return;
 

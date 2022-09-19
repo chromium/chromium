@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <xf86drm.h>
+
 #include <memory>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -73,8 +75,7 @@ ScopedDrmObjectPropertyPtr CreatePropertyObject(
 
 template <class Type>
 Type* FindObjectById(uint32_t id, std::vector<Type>& properties) {
-  auto it = std::find_if(properties.begin(), properties.end(),
-                         [id](const Type& p) { return p.id == id; });
+  auto it = base::ranges::find(properties, id, &Type::id);
   return it != properties.end() ? &(*it) : nullptr;
 }
 
@@ -194,10 +195,10 @@ void MockDrmDevice::UpdateState(
   plane_crtc_id_prop_id_ = 0;
   for (const PlaneProperties& plane_props : plane_properties) {
     const std::vector<DrmDevice::Property>& props = plane_props.properties;
-    auto it = std::find_if(
-        props.begin(), props.end(),
+    auto it = base::ranges::find(
+        props, "CRTC_ID",
         [&names = property_names_](const DrmDevice::Property& prop) {
-          return names.at(prop.id) == "CRTC_ID";
+          return names.at(prop.id);
         });
     if (it != props.end()) {
       plane_crtc_id_prop_id_ = it->id;

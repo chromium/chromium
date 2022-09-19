@@ -8,6 +8,7 @@
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -139,9 +140,9 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
 void WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone(
     struct zwp_linux_buffer_params_v1* params,
     struct wl_buffer* new_buffer) {
-  auto it = std::find_if(
-      pending_params_.begin(), pending_params_.end(),
-      [params](const auto& item) { return item.first.get() == params; });
+  auto it = base::ranges::find(pending_params_, params, [](const auto& item) {
+    return item.first.get();
+  });
   DCHECK(it != pending_params_.end());
 
   std::move(it->second).Run(wl::Object<struct wl_buffer>(new_buffer));

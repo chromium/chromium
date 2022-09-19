@@ -5,12 +5,14 @@
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 
 #include <sync/sync.h>
+
 #include <cmath>
 #include <cstdint>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence.h"
@@ -50,11 +52,8 @@ GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
   BufferId next_buffer_id = 0;
 
   // First try for an existing buffer.
-  auto it = std::find_if(available_solid_color_buffers_.begin(),
-                         available_solid_color_buffers_.end(),
-                         [&color](const SolidColorBuffer& solid_color_buffer) {
-                           return solid_color_buffer.color == color;
-                         });
+  auto it = base::ranges::find(available_solid_color_buffers_, color,
+                               &SolidColorBuffer::color);
   if (it != available_solid_color_buffers_.end()) {
     // This is a prefect color match so use this directly.
     next_buffer_id = it->buffer_id;
@@ -83,12 +82,8 @@ void GbmSurfacelessWayland::SolidColorBufferHolder::OnSubmission(
   // them. Instead, they are tracked by GbmSurfacelessWayland. In the future,
   // when SharedImageFactory allows to create non-backed shared images, this
   // should be removed from here.
-  auto it =
-      std::find_if(inflight_solid_color_buffers_.begin(),
-                   inflight_solid_color_buffers_.end(),
-                   [&buffer_id](const SolidColorBuffer& solid_color_buffer) {
-                     return solid_color_buffer.buffer_id == buffer_id;
-                   });
+  auto it = base::ranges::find(inflight_solid_color_buffers_, buffer_id,
+                               &SolidColorBuffer::buffer_id);
   if (it != inflight_solid_color_buffers_.end()) {
     available_solid_color_buffers_.emplace_back(std::move(*it));
     inflight_solid_color_buffers_.erase(it);

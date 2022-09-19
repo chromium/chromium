@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -153,8 +155,7 @@ class DrmDevice::PageFlipManager {
   ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
-    auto it =
-        std::find_if(callbacks_.begin(), callbacks_.end(), FindCallback(id));
+    auto it = base::ranges::find(callbacks_, id, &PageFlip::id);
     if (it == callbacks_.end()) {
       LOG(WARNING) << "Could not find callback for page flip id=" << id;
       return;
@@ -183,14 +184,6 @@ class DrmDevice::PageFlipManager {
     uint64_t id;
     uint32_t pending_calls;
     DrmDevice::PageFlipCallback callback;
-  };
-
-  struct FindCallback {
-    explicit FindCallback(uint64_t id) : id(id) {}
-
-    bool operator()(const PageFlip& flip) const { return flip.id == id; }
-
-    const uint64_t id;
   };
 
   uint64_t next_id_;

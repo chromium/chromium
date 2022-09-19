@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <cstring>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -150,8 +152,8 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     drm->plane_manager()->ResetConnectorsCache(drm->GetResources());
     auto display_infos = GetDisplayInfosAndUpdateCrtcs(drm->get_fd());
     for (const auto& display_info : display_infos) {
-      auto it = std::find_if(
-          old_displays.begin(), old_displays.end(),
+      auto it = base::ranges::find_if(
+          old_displays,
           DisplayComparator(drm, display_info->crtc()->crtc_id,
                             display_info->connector()->connector_id));
       if (it != old_displays.end()) {
@@ -405,10 +407,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const {
   ScreenManager::CrtcsWithDrmList controllers_to_remove;
   for (const auto& old_display : old_displays) {
-    auto it = std::find_if(new_displays.begin(), new_displays.end(),
-                           DisplayComparator(old_display.get()));
-
-    if (it == new_displays.end()) {
+    if (base::ranges::none_of(new_displays,
+                              DisplayComparator(old_display.get()))) {
       controllers_to_remove.emplace_back(old_display->crtc(),
                                          old_display->drm());
     }
@@ -417,10 +417,8 @@ void DrmGpuDisplayManager::NotifyScreenManager(
     screen_manager_->RemoveDisplayControllers(controllers_to_remove);
 
   for (const auto& new_display : new_displays) {
-    auto it = std::find_if(old_displays.begin(), old_displays.end(),
-                           DisplayComparator(new_display.get()));
-
-    if (it == old_displays.end()) {
+    if (base::ranges::none_of(old_displays,
+                              DisplayComparator(new_display.get()))) {
       screen_manager_->AddDisplayController(
           new_display->drm(), new_display->crtc(), new_display->connector());
     }

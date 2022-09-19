@@ -7,6 +7,7 @@
 #include <drm.h>
 #include <string.h>
 #include <xf86drm.h>
+
 #include <ios>
 #include <memory>
 #include <type_traits>
@@ -15,6 +16,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
@@ -363,8 +365,8 @@ void HardwareDisplayController::AddCrtc(
 std::unique_ptr<CrtcController> HardwareDisplayController::RemoveCrtc(
     const scoped_refptr<DrmDevice>& drm,
     uint32_t crtc) {
-  auto controller_it = std::find_if(
-      crtc_controllers_.begin(), crtc_controllers_.end(),
+  auto controller_it = base::ranges::find_if(
+      crtc_controllers_,
       [drm, crtc](const std::unique_ptr<CrtcController>& crtc_controller) {
         return crtc_controller->drm() == drm && crtc_controller->crtc() == crtc;
       });
