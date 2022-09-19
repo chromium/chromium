@@ -73,7 +73,7 @@ class CONTENT_EXPORT InterestGroupAuction
   struct PostAuctionSignals {
     PostAuctionSignals() = default;
 
-    // For now, top level post auction signals do not have
+    // For now, top-level post auction signals do not have
     // `highest_scoring_other_bid` or `made_highest_scoring_other_bid`.
     PostAuctionSignals(double winning_bid, bool made_winning_bid)
         : winning_bid(winning_bid), made_winning_bid(made_winning_bid) {}
@@ -221,8 +221,8 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
     // forDebuggingOnly.reportAdAuctionWin(url) called in generateBid().
-    // They support post auction signal placeholders in their URL string,
-    // for example, "https://example.com/${highestScoringOtherBid}".
+    // They support post auction signal placeholders in their query string, for
+    // example, "https://example.com/?${winningBid}".
     // Placeholders will be replaced by corresponding values. For a component
     // auction, post auction signals are only from the component auction, but
     // not the top-level auction.
@@ -232,8 +232,8 @@ class CONTENT_EXPORT InterestGroupAuction
     // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
     // forDebuggingOnly.reportAdAuctionWin(url) called in scoreAd(). In the case
     // of a component auction, these are the values from component seller that
-    // the scored ad was created in, and post auction signals are from the
-    // component auction.
+    // the scored ad was created in, and post auction signals are from both the
+    // component auction and top-level auction.
     absl::optional<GURL> seller_debug_loss_report_url;
     absl::optional<GURL> seller_debug_win_report_url;
 

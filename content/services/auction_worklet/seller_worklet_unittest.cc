@@ -1118,21 +1118,21 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
 
 TEST_F(SellerWorkletTest, ScoreAdBid) {
   bid_ = 5;
-  RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 5);
+  RunScoreAdWithReturnValueExpectingResult("bid", 5);
   bid_ = 0.5;
-  RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 0.5);
+  RunScoreAdWithReturnValueExpectingResult("bid", 0.5);
   bid_ = -1;
-  RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 0);
+  RunScoreAdWithReturnValueExpectingResult("bid", 0);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdBiddingDuration) {
   // Test browserSignals.bidding_duration_msec.
   browser_signal_bidding_duration_msecs_ = 0;
-  RunScoreAdWithReturnValueExpectingResult(
-      base::StringPrintf("browserSignals.biddingDurationMsec"), 0);
+  RunScoreAdWithReturnValueExpectingResult("browserSignals.biddingDurationMsec",
+                                           0);
   browser_signal_bidding_duration_msecs_ = 100;
-  RunScoreAdWithReturnValueExpectingResult(
-      base::StringPrintf("browserSignals.biddingDurationMsec"), 100);
+  RunScoreAdWithReturnValueExpectingResult("browserSignals.biddingDurationMsec",
+                                           100);
 }
 
 // Test that auction config gets into scoreAd. More detailed handling of

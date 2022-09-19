@@ -400,7 +400,7 @@ class InterestGroupAuction::BuyerHelper
               std::move(winner->seller_debug_win_report_url).value(), signals,
               top_level_signals));
         }
-        // `top_level_signals` is passed as parameter `signals` for top level
+        // `top_level_signals` is passed as parameter `signals` for top-level
         // seller.
         if (winner->top_level_seller_debug_win_report_url.has_value()) {
           debug_win_report_urls.emplace_back(FillPostAuctionSignals(
@@ -422,7 +422,7 @@ class InterestGroupAuction::BuyerHelper
             std::move(bid_state->seller_debug_loss_report_url).value(), signals,
             top_level_signals));
       }
-      // `top_level_signals` is passed as parameter `signals` for top level
+      // `top_level_signals` is passed as parameter `signals` for top-level
       // seller.
       if (bid_state->top_level_seller_debug_loss_report_url.has_value()) {
         debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
@@ -1205,8 +1205,8 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
       signals.made_highest_scoring_other_bid ? "true" : "false");
 
   // For component auction sellers only, which get post auction signals from
-  // both their own component auctions and top level auction.
-  // For now, we're assuming top level auctions to be first-price auction only
+  // both their own component auctions and top-level auction.
+  // For now, we're assuming top-level auctions to be first-price auction only
   // (not second-price auction) and it does not need highest_scoring_other_bid.
   if (top_level_signals.has_value()) {
     base::ReplaceSubstringsAfterOffset(
@@ -1249,10 +1249,10 @@ void InterestGroupAuction::TakeDebugReportUrls(
   PostAuctionSignals signals;
   signals.winning_bid = top_bid_ ? top_bid_->bid->bid : 0.0;
   signals.highest_scoring_other_bid = highest_scoring_other_bid_;
-  // `top_level_signals` includes post auction signals from top level auction.
-  // Will only will be used in debug report URLs of top level seller and
+  // `top_level_signals` includes post auction signals from top-level auction.
+  // Will only will be used in debug report URLs of top-level seller and
   // component sellers.
-  // For now, we're assuming top level auctions to be first-price auction only
+  // For now, we're assuming top-level auctions to be first-price auction only
   // (not second-price auction) and it does not need highest_scoring_other_bid.
   absl::optional<PostAuctionSignals> top_level_signals;
   if (parent_) {
