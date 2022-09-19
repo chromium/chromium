@@ -5,21 +5,15 @@
 // https://w3c.github.io/secure-payment-confirmation/#sctn-securepaymentconfirmationrequest-dictionary
 
 dictionary SecurePaymentConfirmationRequest {
-    required sequence<BufferSource> credentialIds;
-
-    // Opaque data about the current transaction provided by the issuer. As the
-    // issuer is the RP of the credential, `challenge` provides protection
-    // against replay attacks.
     required BufferSource challenge;
-
+    required USVString rpId;
+    required sequence<BufferSource> credentialIds;
     required PaymentCredentialInstrument instrument;
     unsigned long timeout;
     USVString payeeName;
     USVString payeeOrigin;
-
-    // The relying party, which must be the relying party of a given credential
-    // ID for it to match.
-    required USVString rpId;
+    // TODO(crbug.com/1365339): add 'extensions' member.
+    sequence<USVString> locale;
 
     // Whether or not to show an opt-out flow in the SPC UX.
     [RuntimeEnabled=SecurePaymentConfirmationOptOut, MeasureAs=SecurePaymentConfirmationOptOut] boolean showOptOut;
