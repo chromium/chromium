@@ -544,28 +544,6 @@ bool SharedImageFactory::OnMemoryDump(
 }
 
 #if BUILDFLAG(IS_WIN)
-bool SharedImageFactory::CreateSharedImageVideoPlanes(
-    base::span<const Mailbox> mailboxes,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    const gfx::Size& size,
-    uint32_t usage) {
-  if (!d3d_backing_factory_)
-    return false;
-
-  auto backings = d3d_backing_factory_->CreateSharedImageVideoPlanes(
-      mailboxes, std::move(handle), format, size, usage);
-
-  if (backings.size() != gfx::NumberOfPlanesForLinearBufferFormat(format))
-    return false;
-
-  for (auto& backing : backings) {
-    if (!RegisterBacking(std::move(backing)))
-      return false;
-  }
-  return true;
-}
-
 bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
   auto it = shared_images_.find(mailbox);
   if (it == shared_images_.end()) {

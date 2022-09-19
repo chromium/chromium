@@ -72,7 +72,7 @@ absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
   }
 }
 
-// Formats supported by CreateSharedImage(GMB) and CreateSharedImageVideoPlanes.
+// Formats supported by CreateSharedImage(GMB).
 DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
   switch (buffer_format) {
     case gfx::BufferFormat::RGBA_8888:
@@ -88,7 +88,7 @@ DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
   }
 }
 
-// Formats supported by CreateSharedImage(GMB) and CreateSharedImageVideoPlanes.
+// Formats supported by CreateSharedImage(GMB).
 DXGI_FORMAT GetDXGITypelessFormat(gfx::BufferFormat buffer_format) {
   switch (buffer_format) {
     case gfx::BufferFormat::RGBA_8888:

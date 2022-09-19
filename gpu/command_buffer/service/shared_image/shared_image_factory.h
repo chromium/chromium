@@ -122,11 +122,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   }
 
 #if BUILDFLAG(IS_WIN)
-  bool CreateSharedImageVideoPlanes(base::span<const Mailbox> mailboxes,
-                                    gfx::GpuMemoryBufferHandle handle,
-                                    gfx::BufferFormat format,
-                                    const gfx::Size& size,
-                                    uint32_t usage);
   bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #endif
 

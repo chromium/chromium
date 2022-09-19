@@ -63,14 +63,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage) = 0;
 
-  // Only implemented in the D3D backing factory.
-  virtual std::vector<std::unique_ptr<SharedImageBacking>>
-  CreateSharedImageVideoPlanes(base::span<const Mailbox> mailboxes,
-                               gfx::GpuMemoryBufferHandle handle,
-                               gfx::BufferFormat format,
-                               const gfx::Size& size,
-                               uint32_t usage);
-
   // Returns true if the factory is supported
   virtual bool IsSupported(uint32_t usage,
                            viz::ResourceFormat format,

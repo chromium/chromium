@@ -122,20 +122,6 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
 }
 
 #if BUILDFLAG(IS_WIN)
-std::vector<Mailbox> ClientSharedImageInterface::CreateSharedImageVideoPlanes(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    uint32_t usage) {
-  DCHECK_EQ(gpu_memory_buffer->GetType(), gfx::DXGI_SHARED_HANDLE);
-  DCHECK(gpu::IsValidClientUsage(usage));
-  auto mailboxes = proxy_->CreateSharedImageVideoPlanes(
-      gpu_memory_buffer, gpu_memory_buffer_manager, usage);
-  for (const auto& mailbox : mailboxes) {
-    AddMailbox(mailbox);
-  }
-  return mailboxes;
-}
-
 void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {

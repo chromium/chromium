@@ -11,17 +11,6 @@ SharedImageBackingFactory::SharedImageBackingFactory() = default;
 
 SharedImageBackingFactory::~SharedImageBackingFactory() = default;
 
-std::vector<std::unique_ptr<SharedImageBacking>>
-SharedImageBackingFactory::CreateSharedImageVideoPlanes(
-    base::span<const Mailbox> mailboxes,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    const gfx::Size& size,
-    uint32_t usage) {
-  NOTREACHED();
-  return {};
-}
-
 base::WeakPtr<SharedImageBackingFactory>
 SharedImageBackingFactory::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

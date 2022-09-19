@@ -44,10 +44,6 @@ class SharedImageInterfaceProxy {
                             uint32_t usage);
 
 #if BUILDFLAG(IS_WIN)
-  std::vector<Mailbox> CreateSharedImageVideoPlanes(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      uint32_t usage);
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox);
 #endif  // BUILDFLAG(IS_WIN)

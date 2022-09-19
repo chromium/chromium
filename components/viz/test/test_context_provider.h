@@ -66,11 +66,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage) override;
 
-  std::vector<gpu::Mailbox> CreateSharedImageVideoPlanes(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      uint32_t usage) override;
-
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override;
   void UpdateSharedImage(const gpu::SyncToken& sync_token,

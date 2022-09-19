@@ -111,15 +111,6 @@ class GPU_EXPORT SharedImageInterface {
                             SkAlphaType alpha_type,
                             uint32_t usage);
 
-  // TODO(sunnyps): DEPRECATED - remove after migrating all uses.
-  // Similar to above, but creates backings for all planes in one shot. Needed
-  // on platforms where the planes need to share some state on initialization.
-  // Only implemented on Windows.
-  virtual std::vector<Mailbox> CreateSharedImageVideoPlanes(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      uint32_t usage);
-
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.
   virtual void UpdateSharedImage(const SyncToken& sync_token,

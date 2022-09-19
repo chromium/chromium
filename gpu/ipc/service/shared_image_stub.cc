@@ -106,11 +106,6 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
 
 #if BUILDFLAG(IS_WIN)
-    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageVideoPlanes:
-      OnCreateSharedImageVideoPlanes(
-          std::move(request->get_create_shared_image_video_planes()));
-      break;
-
     case mojom::DeferredSharedImageRequest::Tag::kCopyToGpuMemoryBuffer: {
       auto& params = *request->get_copy_to_gpu_memory_buffer();
       OnCopyToGpuMemoryBuffer(params.mailbox, params.release_id);
@@ -320,32 +315,6 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
 }
 
 #if BUILDFLAG(IS_WIN)
-void SharedImageStub::OnCreateSharedImageVideoPlanes(
-    mojom::CreateSharedImageVideoPlanesParamsPtr params) {
-  TRACE_EVENT0("gpu", "SharedImageStub::CreateSharedImageVideoPlanes");
-  for (const auto& mailbox : params->mailboxes) {
-    if (!mailbox.IsSharedImage()) {
-      DLOG(ERROR) << "SharedImageStub: Trying to create a SharedImage video "
-                     "plane with a non-SharedImage mailbox.";
-      OnError();
-      return;
-    }
-  }
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-  if (!factory_->CreateSharedImageVideoPlanes(
-          std::move(params->mailboxes), std::move(params->gmb_handle),
-          params->format, params->size, params->usage)) {
-    DLOG(ERROR)
-        << "SharedImageStub: Failed to create shared image video planes";
-    OnError();
-    return;
-  }
-  sync_point_client_state_->ReleaseFenceSync(params->release_id);
-}
-
 void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
                                               uint32_t release_id) {
   if (!mailbox.IsSharedImage()) {

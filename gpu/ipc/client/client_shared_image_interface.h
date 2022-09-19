@@ -68,10 +68,6 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                             SkAlphaType alpha_type,
                             uint32_t usage) override;
 #if BUILDFLAG(IS_WIN)
-  std::vector<Mailbox> CreateSharedImageVideoPlanes(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      uint32_t usage) override;
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox) override;
 #endif

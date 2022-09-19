@@ -1593,7 +1593,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureSharedHandle) {
   RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/false);
 }
 
-TEST_F(D3DImageBackingFactoryTest, CreateSharedImageVideoPlanes) {
+TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureViaFactory) {
   RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/true);
 }
 
@@ -1662,7 +1662,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureSharedHandleOverlay) {
   RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/false);
 }
 
-TEST_F(D3DImageBackingFactoryTest, CreateSharedImageVideoPlanesOverlay) {
+TEST_F(D3DImageBackingFactoryTest, CreateFromVideoTextureViaFactoryOverlay) {
   RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/true);
 }
 

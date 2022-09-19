@@ -465,10 +465,6 @@ union DeferredSharedImageRequest {
   // See CreateGMBSharedImageParams.
   CreateGMBSharedImageParams create_gmb_shared_image;
 
-  // See CreateSharedImageVideoPlanesParams
-  [EnableIf=is_win]
-  CreateSharedImageVideoPlanesParams create_shared_image_video_planes;
-
   // Registers a new shared memory region to share with the GPU process for
   // uploading shared image data.
   mojo_base.mojom.ReadOnlySharedMemoryRegion register_upload_buffer;
@@ -615,29 +611,6 @@ struct CreateGMBSharedImageParams {
 
   // Indicates how the alpha component of each pixel is interpreted.
   skia.mojom.AlphaType alpha_type;
-};
-
-// Creates shared images for each plane of a multi-planar GpuMemoryBuffer.
-[EnableIf=is_win]
-struct CreateSharedImageVideoPlanesParams {
-  // Mailboxes for each plane.
-  array<Mailbox> mailboxes;
-
-  // Handle for the GpuMemoryBuffer.
-  gfx.mojom.GpuMemoryBufferHandle gmb_handle;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // GpuMemoryBuffer format.
-  gfx.mojom.BufferFormat format;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
 };
 
 // Updates the contents of a shared image from whatever is backing it, if
