@@ -205,6 +205,10 @@ static const MimeInfo kSecondaryMappings[] = {
     {"application/vnd.android.package-archive", "apk"},
     {"application/vnd.mozilla.xul+xml", "xul"},
     {"application/vnd.ms-excel", "xls"},
+    {"application/vnd.ms-powerpoint", "ppt"},
+    {"application/"
+     "vnd.openxmlformats-officedocument.presentationml.presentation",
+     "pptx"},
     {"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
      "xlsx"},
     {"application/vnd.openxmlformats-officedocument.wordprocessingml.document",

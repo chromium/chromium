@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -73,6 +74,23 @@ base::WeakPtr<file_manager::Volume> InstallFileSystemProviderChromeApp(
 std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
     Profile* profile,
     const base::FilePath& file);
+
+// Add a fake web app with to the |app_service_proxy| with
+// |intent_filters|.
+void AddFakeAppWithIntentFilters(
+    const std::string& app_id,
+    std::vector<apps::IntentFilterPtr> intent_filters,
+    apps::AppType app_type,
+    absl::optional<bool> handles_intents,
+    apps::AppServiceProxy* app_service_proxy);
+
+// Add a fake web app with to the |app_service_proxy|.
+void AddFakeWebApp(const std::string& app_id,
+                   const std::string& mime_type,
+                   const std::string& file_extension,
+                   const std::string& activity_label,
+                   absl::optional<bool> handles_intents,
+                   apps::AppServiceProxy* app_service_proxy);
 
 }  // namespace test
 }  // namespace file_manager

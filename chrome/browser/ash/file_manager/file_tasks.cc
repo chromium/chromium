@@ -186,7 +186,7 @@ void KeepOnlyFileManagerInternalTasks(std::vector<FullTaskDescriptor>* tasks) {
   std::vector<FullTaskDescriptor> filtered;
   for (FullTaskDescriptor& task : *tasks) {
     if (IsFilesAppId(task.task_descriptor.app_id))
-      filtered.push_back(task);
+      filtered.push_back(std::move(task));
   }
   tasks->swap(filtered);
 }
@@ -198,9 +198,22 @@ void RemoveFileManagerInternalActions(const std::set<std::string>& actions,
   for (FullTaskDescriptor& task : *tasks) {
     const auto& action = task.task_descriptor.action_id;
     if (!IsFilesAppId(task.task_descriptor.app_id)) {
-      filtered.push_back(task);
+      filtered.push_back(std::move(task));
     } else if (actions.find(ParseFilesAppActionId(action)) == actions.end()) {
-      filtered.push_back(task);
+      filtered.push_back(std::move(task));
+    }
+  }
+
+  tasks->swap(filtered);
+}
+
+// Removes tasks handled by |app_id|".
+void RemoveActionsForApp(const std::string& app_id,
+                         std::vector<FullTaskDescriptor>* tasks) {
+  std::vector<FullTaskDescriptor> filtered;
+  for (FullTaskDescriptor& task : *tasks) {
+    if (app_id != task.task_descriptor.app_id) {
+      filtered.push_back(std::move(task));
     }
   }
 
@@ -347,6 +360,9 @@ void PostProcessFoundTasks(
     disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
   } else {
+    // Hide the office PWA File Handler.
+    RemoveActionsForApp(extension_misc::kOfficePwaAppId, result_list.get());
+
     // Hack around the fact that App Service will only return one task for each
     // app. We want both tasks to be available, so add the office task if the
     // WebDrive task is available.

@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -493,6 +496,72 @@ TEST_F(FileManagerFileTaskPreferencesTest,
           ->GetDict(prefs::kDefaultTasksByMimeType)
           .FindString(mime_type);
   ASSERT_EQ(*default_task_id, files_task_id);
+}
+
+class FileManagerFileTaskWithAppServiceTest : public testing::Test {
+ public:
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_ = profile_builder.Build();
+    app_service_test_.SetUp(profile_.get());
+    app_service_proxy_ =
+        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+    ASSERT_TRUE(app_service_proxy_);
+  }
+
+  TestingProfile* profile() { return profile_.get(); }
+
+ protected:
+  apps::AppServiceProxy* app_service_proxy_ = nullptr;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  apps::AppServiceTest app_service_test_;
+};
+
+// Test that the office PWA file handler is hidden from the available file
+// handlers when opening an office file.
+TEST_F(FileManagerFileTaskWithAppServiceTest, OfficePwaHandlerHidden) {
+  struct FakeOfficeFileType {
+    std::string file_extension;
+    std::string mime_type;
+  };
+
+  // Enable `kUploadOfficeToCloud` flag as the hiding happens behind this flag.
+  base::test::ScopedFeatureList scoped_feature_list{
+      ash::features::kUploadOfficeToCloud};
+
+  std::vector<FakeOfficeFileType> fake_office_file_types = {
+      {"ppt", "application/vnd.ms-powerpoint"},
+      {"pptx",
+       "application/"
+       "vnd.openxmlformats-officedocument.presentationml.presentation"},
+      {"xls", "application/vnd.ms-excel"},
+      {"xlsx",
+       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+      {"doc", "application/msword"},
+      {"docx",
+       "application/"
+       "vnd.openxmlformats-officedocument.wordprocessingml.document"}};
+
+  for (FakeOfficeFileType& fake_office_file_type : fake_office_file_types) {
+    file_manager::test::AddFakeWebApp(extension_misc::kOfficePwaAppId,
+                                      fake_office_file_type.mime_type,
+                                      fake_office_file_type.file_extension,
+                                      "something", true, app_service_proxy_);
+
+    base::FilePath test_file_path = web_app::CreateTestFileWithExtension(
+        fake_office_file_type.file_extension);
+
+    std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
+        file_manager::test::GetTasksForFile(profile(), test_file_path);
+
+    for (FullTaskDescriptor& task : tasks) {
+      EXPECT_NE(extension_misc::kOfficePwaAppId, task.task_descriptor.app_id)
+          << " for extension: " << fake_office_file_type.file_extension;
+    }
+  }
 }
 
 // Test using the test extension system, which needs lots of setup.

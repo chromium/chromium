@@ -151,6 +151,7 @@ const char kGoogleSheetsDemoAppId[] = "nifkmgcdokhkjghdlgflonppnefddien";
 const char kGoogleSheetsPwaAppId[] = "hcgjdbbnhkmopplfiibmdgghhdhbiidh";
 const char kGoogleSlidesDemoAppId[] = "hdmobeajeoanbanmdlabnbnlopepchip";
 const char kGoogleKeepAppId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
+const char kOfficePwaAppId[] = "ocdlmjhbenodhlknglojajgokahchlkk";
 const char kYoutubeAppId[] = "blpcfgokakmgnkcojhhkbfbldkacnbeo";
 const char kYoutubePwaAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
 const char kSpotifyAppId[] = "pjibgclleladliembfgfagdaldikeohf";

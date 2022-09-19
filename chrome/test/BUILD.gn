@@ -359,6 +359,7 @@ static_library("test_support") {
       "//components/crx_file",
       "//components/keep_alive_registry",
       "//components/pref_registry",
+      "//components/services/app_service/public/cpp:test_support",
       "//components/storage_monitor",
       "//components/storage_monitor:test_support",
       "//components/ukm:test_support",
