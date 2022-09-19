@@ -407,16 +407,16 @@ void AccessibilityTreeFormatterBlink::AddProperties(
     if (node.HasIntListAttribute(attr)) {
       std::vector<int32_t> values;
       node.GetIntListAttribute(attr, &values);
-      base::ListValue value_list;
-      for (size_t i = 0; i < values.size(); ++i) {
+      base::Value::List value_list;
+      for (const int& value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
-          BrowserAccessibility* target = node.manager()->GetFromID(values[i]);
+          BrowserAccessibility* target = node.manager()->GetFromID(value);
           if (target)
             value_list.Append(ui::ToString(target->GetRole()));
           else
             value_list.Append("null");
         } else {
-          value_list.Append(values[i]);
+          value_list.Append(value);
         }
       }
       dict->Set(ui::ToString(attr), std::move(value_list));
@@ -554,7 +554,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
     if (node.HasIntListAttribute(attr)) {
       std::vector<int32_t> values;
       node.GetIntListAttribute(attr, &values);
-      base::ListValue value_list;
+      base::Value::List value_list;
       for (auto value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
           ui::AXTreeID tree_id = node.tree()->GetAXTreeID();
@@ -600,81 +600,84 @@ void AccessibilityTreeFormatterBlink::AddProperties(
 }
 
 std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
-    const base::DictionaryValue& dict) const {
-  std::string error_value;
-  if (dict.GetString("error", &error_value))
-    return error_value;
+    const base::DictionaryValue& dict_value) const {
+  const base::Value::Dict& dict = dict_value.GetDict();
+  const std::string* error_value = dict.FindString("error");
+  if (error_value)
+    return *error_value;
 
   std::string line;
 
   if (show_ids()) {
-    absl::optional<int> id_value = dict.FindIntKey("id");
-    WriteAttribute(true, base::NumberToString(*id_value), &line);
+    int id_value = dict.FindInt("id").value_or(0);
+    WriteAttribute(true, base::NumberToString(id_value), &line);
   }
 
-  std::string role_value;
-  dict.GetString("internalRole", &role_value);
-  WriteAttribute(true, role_value, &line);
+  const std::string* role_value = dict.FindString("internalRole");
+  if (role_value) {
+    WriteAttribute(true, *role_value, &line);
+  }
 
   for (int state_index = static_cast<int32_t>(ax::mojom::State::kNone);
        state_index <= static_cast<int32_t>(ax::mojom::State::kMaxValue);
        ++state_index) {
     auto state = static_cast<ax::mojom::State>(state_index);
-    const base::Value* value;
-    if (!dict.Get(ui::ToString(state), &value))
+    const base::Value* value = dict.Find(ui::ToString(state));
+    if (!value)
       continue;
 
     WriteAttribute(false, ui::ToString(state), &line);
   }
 
   // Offscreen and Focused states are not in the state list.
-  if (dict.FindBoolPath(STATE_OFFSCREEN).value_or(false))
+  if (dict.FindBool(STATE_OFFSCREEN).value_or(false))
     WriteAttribute(false, STATE_OFFSCREEN, &line);
-  if (dict.FindBoolPath(STATE_FOCUSED).value_or(false))
+  if (dict.FindBool(STATE_FOCUSED).value_or(false))
     WriteAttribute(false, STATE_FOCUSED, &line);
 
-  if (dict.FindKey("boundsX") && dict.FindKey("boundsY")) {
-    WriteAttribute(false,
-                   FormatCoordinates(dict, "location", "boundsX", "boundsY"),
-                   &line);
-  }
-
-  if (dict.FindKey("boundsWidth") && dict.FindKey("boundsHeight")) {
+  if (dict.Find("boundsX") && dict.Find("boundsY")) {
     WriteAttribute(
-        false, FormatCoordinates(dict, "size", "boundsWidth", "boundsHeight"),
+        false, FormatCoordinates(dict_value, "location", "boundsX", "boundsY"),
         &line);
   }
 
-  if (!dict.FindBoolPath("ignored").value_or(false)) {
-    if (dict.FindKey("pageBoundsX") && dict.FindKey("pageBoundsY")) {
-      WriteAttribute(
-          false,
-          FormatCoordinates(dict, "pageLocation", "pageBoundsX", "pageBoundsY"),
-          &line);
-    }
-    if (dict.FindKey("pageBoundsWidth") && dict.FindKey("pageBoundsHeight")) {
+  if (dict.Find("boundsWidth") && dict.Find("boundsHeight")) {
+    WriteAttribute(
+        false,
+        FormatCoordinates(dict_value, "size", "boundsWidth", "boundsHeight"),
+        &line);
+  }
+
+  if (!dict.FindBool("ignored").value_or(false)) {
+    if (dict.Find("pageBoundsX") && dict.Find("pageBoundsY")) {
       WriteAttribute(false,
-                     FormatCoordinates(dict, "pageSize", "pageBoundsWidth",
-                                       "pageBoundsHeight"),
+                     FormatCoordinates(dict_value, "pageLocation",
+                                       "pageBoundsX", "pageBoundsY"),
                      &line);
     }
-    if (dict.FindKey("unclippedBoundsX") && dict.FindKey("unclippedBoundsY")) {
+    if (dict.Find("pageBoundsWidth") && dict.Find("pageBoundsHeight")) {
       WriteAttribute(false,
-                     FormatCoordinates(dict, "unclippedLocation",
+                     FormatCoordinates(dict_value, "pageSize",
+                                       "pageBoundsWidth", "pageBoundsHeight"),
+                     &line);
+    }
+    if (dict.Find("unclippedBoundsX") && dict.Find("unclippedBoundsY")) {
+      WriteAttribute(false,
+                     FormatCoordinates(dict_value, "unclippedLocation",
                                        "unclippedBoundsX", "unclippedBoundsY"),
                      &line);
     }
-    if (dict.FindKey("unclippedBoundsWidth") &&
-        dict.FindKey("unclippedBoundsHeight")) {
+    if (dict.Find("unclippedBoundsWidth") &&
+        dict.Find("unclippedBoundsHeight")) {
       WriteAttribute(
           false,
-          FormatCoordinates(dict, "unclippedSize", "unclippedBoundsWidth",
+          FormatCoordinates(dict_value, "unclippedSize", "unclippedBoundsWidth",
                             "unclippedBoundsHeight"),
           &line);
     }
   }
 
-  if (dict.FindBoolPath("transform").value_or(false))
+  if (dict.FindBool("transform").value_or(false))
     WriteAttribute(false, "transform", &line);
 
   for (int attr_index = static_cast<int32_t>(ax::mojom::StringAttribute::kNone);
@@ -682,25 +685,25 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        static_cast<int32_t>(ax::mojom::StringAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::StringAttribute>(attr_index);
-    std::string string_value;
-    if (!dict.GetString(ui::ToString(attr), &string_value))
+    const std::string* string_value = dict.FindString(ui::ToString(attr));
+    if (!string_value)
       continue;
-    WriteAttribute(
-        false,
-        base::StringPrintf("%s='%s'", ui::ToString(attr), string_value.c_str()),
-        &line);
+    WriteAttribute(false,
+                   base::StringPrintf("%s='%s'", ui::ToString(attr),
+                                      string_value->c_str()),
+                   &line);
   }
 
   for (int attr_index = static_cast<int32_t>(ax::mojom::IntAttribute::kNone);
        attr_index <= static_cast<int32_t>(ax::mojom::IntAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntAttribute>(attr_index);
-    std::string string_value;
-    if (!dict.GetString(ui::ToString(attr), &string_value))
+    const std::string* string_value = dict.FindString(ui::ToString(attr));
+    if (!string_value)
       continue;
     WriteAttribute(
         false,
-        base::StringPrintf("%s=%s", ui::ToString(attr), string_value.c_str()),
+        base::StringPrintf("%s=%s", ui::ToString(attr), string_value->c_str()),
         &line);
   }
 
@@ -708,8 +711,8 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        attr_index <= static_cast<int32_t>(ax::mojom::BoolAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::BoolAttribute>(attr_index);
-    absl::optional<bool> bool_value = dict.FindBoolPath(ui::ToString(attr));
-    if (!bool_value)
+    absl::optional<bool> bool_value = dict.FindBool(ui::ToString(attr));
+    if (!bool_value.has_value())
       continue;
     WriteAttribute(false,
                    base::StringPrintf("%s=%s", ui::ToString(attr),
@@ -721,8 +724,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        attr_index <= static_cast<int32_t>(ax::mojom::FloatAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::FloatAttribute>(attr_index);
-    absl::optional<double> float_value =
-        dict.FindDoublePath(ui::ToString(attr));
+    absl::optional<double> float_value = dict.FindDouble(ui::ToString(attr));
     if (!float_value)
       continue;
     WriteAttribute(
@@ -736,10 +738,10 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
        static_cast<int32_t>(ax::mojom::IntListAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntListAttribute>(attr_index);
-    const base::Value* value = dict.FindListPath(ui::ToString(attr));
-    if (!value || !value->is_list())
+    const base::Value::List* value = dict.FindList(ui::ToString(attr));
+    if (!value)
       continue;
-    const base::Value::List& list = value->GetList();
+    const base::Value::List& list = *value;
     std::string attr_string(ui::ToString(attr));
     attr_string.push_back('=');
     for (size_t i = 0; i < list.size(); ++i) {
@@ -756,44 +758,35 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     WriteAttribute(false, attr_string, &line);
   }
 
-  std::string actions_value;
-  if (dict.GetString("actions", &actions_value)) {
+  const std::string* actions_value = dict.FindString("actions");
+  if (actions_value) {
     WriteAttribute(
-        false, base::StringPrintf("%s=%s", "actions", actions_value.c_str()),
-        &line);
+        false, base::StringPrintf("actions=%s", actions_value->c_str()), &line);
   }
 
   for (const char* attribute_name : TREE_DATA_ATTRIBUTES) {
-    const base::Value* value;
-    if (!dict.Get(attribute_name, &value))
+    const base::Value* value = dict.FindByDottedPath(attribute_name);
+    if (!value)
       continue;
 
     switch (value->type()) {
-      case base::Value::Type::STRING: {
-        const std::string* string_value_ptr = value->GetIfString();
-        const std::string string_value =
-            string_value_ptr ? *string_value_ptr : std::string();
-        WriteAttribute(
-            false,
-            base::StringPrintf("%s=%s", attribute_name, string_value.c_str()),
-            &line);
-        break;
-      }
-      case base::Value::Type::INTEGER: {
+      case base::Value::Type::STRING:
         WriteAttribute(false,
-                       base::StringPrintf("%s=%d", attribute_name,
-                                          value->GetIfInt().value_or(0)),
+                       base::StringPrintf("%s=%s", attribute_name,
+                                          value->GetString().c_str()),
                        &line);
         break;
-      }
-      case base::Value::Type::DOUBLE: {
-        double double_value;
-        double_value = value->GetIfDouble().value_or(0.0);
+      case base::Value::Type::INTEGER:
         WriteAttribute(
-            false, base::StringPrintf("%s=%.2f", attribute_name, double_value),
+            false, base::StringPrintf("%s=%d", attribute_name, value->GetInt()),
             &line);
         break;
-      }
+      case base::Value::Type::DOUBLE:
+        WriteAttribute(
+            false,
+            base::StringPrintf("%s=%.2f", attribute_name, value->GetDouble()),
+            &line);
+        break;
       default:
         NOTREACHED();
         break;
