@@ -2558,7 +2558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Memory.Total.PrivateMemoryFootprintVisiblePriorityOrHigherRenderers"
+    name="Memory.Total.PrivateMemoryFootprintVisibleOrHigherPriorityRenderers"
     units="MB" expires_after="2022-12-11">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -2616,7 +2616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Memory.Total.RendererPrivateMemoryFootprintVisiblePriorityOrHigher"
+    name="Memory.Total.RendererPrivateMemoryFootprintVisibleOrHigherPriority"
     units="MB" expires_after="2022-12-11">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
