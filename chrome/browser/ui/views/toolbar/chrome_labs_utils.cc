@@ -50,14 +50,14 @@ bool IsChromeLabsFeatureValid(const LabInfo& lab, Profile* profile) {
 void UpdateChromeLabsNewBadgePrefs(Profile* profile,
                                    const ChromeLabsBubbleViewModel* model) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DictionaryPrefUpdate update(
+  ScopedDictPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
-  DictionaryPrefUpdate update(g_browser_process->local_state(),
+  ScopedDictPrefUpdate update(g_browser_process->local_state(),
                               chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
-  base::Value* new_badge_prefs = update.Get();
+  base::Value::Dict& new_badge_prefs = update.Get();
 
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
@@ -68,15 +68,15 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
     if (IsChromeLabsFeatureValid(lab, profile) &&
         (lab.internal_name != flag_descriptions::kScrollableTabStripFlagId)) {
       lab_internal_names.push_back(lab.internal_name);
-      if (!new_badge_prefs->FindKey(lab.internal_name)) {
-        new_badge_prefs->SetIntKey(
+      if (!new_badge_prefs.Find(lab.internal_name)) {
+        new_badge_prefs.Set(
             lab.internal_name,
             chrome_labs_prefs::kChromeLabsNewExperimentPrefValue);
       }
     }
   }
   std::vector<std::string> entries_to_remove;
-  for (auto pref : new_badge_prefs->DictItems()) {
+  for (auto pref : new_badge_prefs) {
     // The size of |lab_internal_names| is capped around 3-5 elements.
     if (!base::Contains(lab_internal_names, pref.first)) {
       entries_to_remove.push_back(pref.first);
@@ -84,5 +84,5 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
   }
 
   for (const std::string& key : entries_to_remove)
-    new_badge_prefs->RemoveKey(key);
+    new_badge_prefs.Remove(key);
 }

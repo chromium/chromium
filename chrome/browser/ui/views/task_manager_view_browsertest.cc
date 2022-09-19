@@ -88,9 +88,9 @@ class TaskManagerViewTest : public InProcessBrowserTest {
     if (!local_state)
       FAIL();
 
-    DictionaryPrefUpdate dict_update(local_state,
+    ScopedDictPrefUpdate dict_update(local_state,
                                      prefs::kTaskManagerColumnVisibility);
-    dict_update->DictClear();
+    dict_update->clear();
   }
 
   void ToggleColumnVisibility(TaskManagerView* view, int col_id) {
