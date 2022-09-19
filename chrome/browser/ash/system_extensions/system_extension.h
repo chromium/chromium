@@ -19,7 +19,8 @@ namespace ash {
 using SystemExtensionId = std::array<uint8_t, 4>;
 
 enum class SystemExtensionType {
-  kEcho,
+  kWindowManagement,
+  kPeripheralPrototype,
 };
 
 struct SystemExtension {

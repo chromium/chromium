@@ -42,18 +42,20 @@ constexpr char kTestSystemExtensionManifest[] = R"({
    "name": "Sample System Web Extension",
    "service_worker_url": "/sw.js",
    "short_name": "Sample SWX",
-   "type": "echo"
+   "type": "window-management"
 }
 )";
 
 constexpr char kTestSystemExtensionIndexURL[] =
-    "chrome-untrusted://system-extension-echo-01020304/html/index.html";
+    "chrome-untrusted://system-extension-window-management-01020304/html/"
+    "index.html";
 
 constexpr char kTestSystemExtensionWrongURL[] =
-    "chrome-untrusted://system-extension-echo-01020304/html/wrong.html";
+    "chrome-untrusted://system-extension-window-management-01020304/html/"
+    "wrong.html";
 
 constexpr char kTestSystemExtensionEmptyPathURL[] =
-    "chrome-untrusted://system-extension-echo-01020304/";
+    "chrome-untrusted://system-extension-window-management-01020304/";
 
 base::FilePath GetBasicSystemExtensionDir() {
   base::FilePath test_dir;

@@ -104,7 +104,7 @@ using SystemExtensionsSandboxedUnpackerFromDirTest =
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Success) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
     "short_name": "Test"
@@ -115,11 +115,12 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Success) {
   auto system_extension = std::move(result).value();
 
   EXPECT_EQ(SystemExtensionId({1, 2, 3, 4}), system_extension.id);
-  EXPECT_EQ(SystemExtensionType::kEcho, system_extension.type);
-  EXPECT_EQ("chrome-untrusted://system-extension-echo-01020304/",
+  EXPECT_EQ(SystemExtensionType::kWindowManagement, system_extension.type);
+  EXPECT_EQ("chrome-untrusted://system-extension-window-management-01020304/",
             system_extension.base_url.spec());
-  EXPECT_EQ("chrome-untrusted://system-extension-echo-01020304/sw.js",
-            system_extension.service_worker_url.spec());
+  EXPECT_EQ(
+      "chrome-untrusted://system-extension-window-management-01020304/sw.js",
+      system_extension.service_worker_url.spec());
   EXPECT_EQ("Long Test", system_extension.name);
   ASSERT_TRUE(system_extension.short_name.has_value());
   EXPECT_EQ("Test", system_extension.short_name);
@@ -140,7 +141,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_EmptyManifest2) {
 
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdMissing) {
   static constexpr const char kSystemExtensionManifest[] = R"({
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
     "short_name": "Test"
@@ -153,7 +154,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdMissing) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidTooShort) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "0102",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
     "short_name": "Test"
@@ -166,7 +167,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidTooShort) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidTooLong) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "010203040506",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
     "short_name": "Test"
@@ -179,7 +180,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidTooLong) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_IdInvalidCharacters) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "0102030X",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
     "short_name": "Test"
@@ -217,7 +218,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_TypeInvalid) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlMissing) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "name": "Long Test",
     "short_name": "Test"
   })";
@@ -229,7 +230,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlMissing) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlInvalid) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "../",
     "name": "Long Test",
     "short_name": "Test"
@@ -242,7 +243,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlInvalid) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_ServiceWorkerUrlEmpty) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "",
     "name": "Long Test",
     "short_name": "Test"
@@ -256,7 +257,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest,
        Failure_ServiceWorkerUrlInvalidDifferentOrigin) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "https://test.example",
     "name": "Long Test",
     "short_name": "Test"
@@ -269,7 +270,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest,
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_NameMissing) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "short_name": "Test"
   })";
@@ -281,7 +282,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_NameMissing) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_NameEmpty) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "",
     "short_name": "Test"
@@ -294,7 +295,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Failure_NameEmpty) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Success_NoShortName) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "Long Test"
   })";
@@ -306,7 +307,7 @@ TEST_P(SystemExtensionsSandboxedUnpackerTest, Success_NoShortName) {
 TEST_P(SystemExtensionsSandboxedUnpackerTest, Success_EmptyShortName) {
   static constexpr const char kSystemExtensionManifest[] = R"({
     "id": "01020304",
-    "type": "echo",
+    "type": "window-management",
     "service_worker_url": "/sw.js",
     "name": "Long Test",
     "short_name": ""

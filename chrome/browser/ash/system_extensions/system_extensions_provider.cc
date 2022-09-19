@@ -53,7 +53,7 @@ void SystemExtensionsProvider::
   // TODO(https://crbug.com/1272371): Change the following to query system
   // extension feature list.
   out_forced_enabled_runtime_features.push_back("BlinkExtensionChromeOS");
-  if (system_extension->type == SystemExtensionType::kEcho) {
+  if (system_extension->type == SystemExtensionType::kWindowManagement) {
     out_forced_enabled_runtime_features.push_back(
         "BlinkExtensionChromeOSWindowManagement");
   }

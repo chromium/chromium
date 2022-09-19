@@ -3,5 +3,5 @@
     "short_name": "WM Extension",
     "service_worker_url": "/sw.js",
     "id": "01020304",
-    "type": "echo"
+    "type": "window-management"
 }

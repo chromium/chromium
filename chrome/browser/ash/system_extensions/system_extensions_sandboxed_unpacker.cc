@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -32,18 +33,35 @@ const constexpr char kServiceWorkerUrlKey[] = "service_worker_url";
 GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
   // The host is made of up a System Extension prefix based on the type and
   // the System Extension Id.
-
   base::StringPiece host_prefix;
   switch (type) {
-    case SystemExtensionType::kEcho:
-      static constexpr char kSystemExtensionEchoPrefix[] =
-          "system-extension-echo-";
-      host_prefix = kSystemExtensionEchoPrefix;
+    case SystemExtensionType::kWindowManagement:
+      static constexpr char kSystemExtensionWindowManagementPrefix[] =
+          "system-extension-window-management-";
+      host_prefix = kSystemExtensionWindowManagementPrefix;
+      break;
+    case SystemExtensionType::kPeripheralPrototype:
+      static constexpr char kSystemExtensionPeripheralPrototypePrefix[] =
+          "system-extension-peripheral-prototype-";
+      host_prefix = kSystemExtensionPeripheralPrototypePrefix;
       break;
   }
   const std::string host = base::StrCat({host_prefix, id});
   return GURL(base::StrCat({content::kChromeUIUntrustedScheme,
                             url::kStandardSchemeSeparator, host}));
+}
+
+SystemExtensionType* GetTypeFromString(base::StringPiece type_str) {
+  static base::NoDestructor<base::flat_map<std::string, SystemExtensionType>>
+      kStrToType({{"window-management", SystemExtensionType::kWindowManagement},
+                  {"peripheral-prototype",
+                   SystemExtensionType::kPeripheralPrototype}});
+
+  auto it = kStrToType->find(type_str);
+  if (it == kStrToType->end())
+    return nullptr;
+
+  return &it->second;
 }
 
 }  // namespace
@@ -128,10 +146,11 @@ SystemExtensionsSandboxedUnpacker::GetSystemExtensionFromValue(
   if (!type_str) {
     return SystemExtensionsInstallStatus::kFailedTypeMissing;
   }
-  if (base::CompareCaseInsensitiveASCII("echo", *type_str) != 0) {
+  SystemExtensionType* type = GetTypeFromString(*type_str);
+  if (type == nullptr) {
     return SystemExtensionsInstallStatus::kFailedTypeInvalid;
   }
-  system_extension.type = SystemExtensionType::kEcho;
+  system_extension.type = *type;
 
   // Parse base_url.
   const GURL base_url = GetBaseURL(*id_str, system_extension.type);

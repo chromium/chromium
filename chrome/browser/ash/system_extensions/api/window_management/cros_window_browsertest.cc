@@ -46,7 +46,7 @@ static constexpr const char kManifestTemplate[] = R"(
   "short_name": "Test",
   "service_worker_url": "/%s",
   "id": "01020304",
-  "type": "echo"
+  "type": "window-management"
 })";
 
 Profile* GetProfile() {

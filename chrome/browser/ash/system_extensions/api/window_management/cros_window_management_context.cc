@@ -287,8 +287,7 @@ void CrosWindowManagementContext::GetCrosWindowManagementInstances(
     auto* system_extension = system_extensions_registry_->GetById(id);
     DCHECK(system_extension);
 
-    // TODO(b/243092948): Change to kWindowManagement when it's added.
-    if (system_extension->type != SystemExtensionType::kEcho)
+    if (system_extension->type != SystemExtensionType::kWindowManagement)
       continue;
 
     GetCrosWindowManagement(system_extension->id, callback);

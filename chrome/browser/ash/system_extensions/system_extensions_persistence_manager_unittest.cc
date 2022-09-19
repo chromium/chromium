@@ -17,14 +17,14 @@ namespace {
 
 constexpr char kPersistedSystemExtensions[] = "system_extensions.persisted";
 
-constexpr char kFirstTypeStr[] = "echo";
+constexpr char kFirstTypeStr[] = "window-management";
 constexpr SystemExtensionId kFirstId = {1, 2, 3, 4};
 constexpr char kFirstIdStr[] = "01020304";
 constexpr char kFirstName[] = "Sample System Web Extension";
 constexpr char kFirstShortName[] = "Sample SWX";
 constexpr char kFirstServiceWorkerURL[] = "/sw.js";
 
-constexpr char kSecondTypeStr[] = "echo";
+constexpr char kSecondTypeStr[] = "peripheral-prototype";
 constexpr SystemExtensionId kSecondId = {5, 6, 7, 8};
 constexpr char kSecondIdStr[] = "05060708";
 constexpr char kSecondName[] = "Second System Extension";
