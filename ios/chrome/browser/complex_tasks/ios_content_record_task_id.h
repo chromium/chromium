@@ -10,10 +10,6 @@
 #include <string>
 #include <vector>
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Stores Task ID data in a NavigationItem. Task IDs track navigations and
 // relationships between navigations
 //

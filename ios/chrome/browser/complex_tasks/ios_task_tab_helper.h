@@ -11,10 +11,6 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // This class tracks Task IDs - navigations and relationships between
 // navigations. Task IDs have applications in navigation clustering
 // and assist in grouping together and organizing the user's history.
@@ -45,4 +41,5 @@ class IOSTaskTabHelper : public web::WebStateObserver,
   int prev_item_unique_id_ = -1;
   WEB_STATE_USER_DATA_KEY_DECL();
 };
+
 #endif  // IOS_CHROME_BROWSER_COMPLEX_TASKS_IOS_TASK_TAB_HELPER_H_

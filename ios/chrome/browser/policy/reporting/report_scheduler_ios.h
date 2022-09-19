@@ -7,10 +7,6 @@
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace enterprise_reporting {
 
 // Desktop implementation of the ReportScheduler delegate.

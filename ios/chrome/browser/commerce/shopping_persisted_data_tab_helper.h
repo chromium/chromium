@@ -126,4 +126,5 @@ class ShoppingPersistedDataTabHelper
 
   base::WeakPtrFactory<ShoppingPersistedDataTabHelper> weak_factory_{this};
 };
+
 #endif  // IOS_CHROME_BROWSER_COMMERCE_SHOPPING_PERSISTED_DATA_TAB_HELPER_H_
