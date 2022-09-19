@@ -956,15 +956,15 @@ if (!limit_android_deps) {
     testonly = true
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
-      ":com_google_guava_guava_android_java",
       ":com_google_protobuf_protobuf_javalite_java",
+      ":guava_android_java",
+      ":material_design_java",
       ":org_checkerframework_checker_qual_java",
       ":org_jsoup_jsoup_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_test_services_storage_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
-      material_design_target,
     ]
   }
 
