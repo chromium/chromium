@@ -73,6 +73,10 @@ if (is_android || is_chromeos) {
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
          android_static_analysis == "build_server")
 
+  # This configuration has not bot coverage and has broken multiple times.
+  # Warn against it.
+  assert(!(enable_chrome_android_internal && skip_secondary_abi_for_cq))
+
   declare_args() {
     # Android API level for 32 bits platforms
     android32_ndk_api_level = default_min_sdk_version
