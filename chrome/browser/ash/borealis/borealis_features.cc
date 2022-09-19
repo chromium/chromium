@@ -61,7 +61,7 @@ class FullChecker : public TokenHardwareChecker {
     //  * "Test" token: Allows borealis on any device with sufficient hardware
     //    (where *-borealis boards are always considered sufficient).
     //  * /board token: Similar to the super token, but only works for a subset
-    //  of baords.
+    //  of boards.
     //
     // All tokens will only function if borealis is already available on that
     // board based on its use flags.
@@ -101,29 +101,21 @@ class FullChecker : public TokenHardwareChecker {
                     "drobit"})) {
         return AllowStatus::kUnsupportedModel;
       }
-      return CpuRegexMatches(kBorealisCapableIntelCpuRegex) &&
-                     HasMemory(7 * kGibi)
-                 ? AllowStatus::kAllowed
-                 : AllowStatus::kHardwareChecksFailed;
+      return ReleasedBoardChecks(kBorealisCapableIntelCpuRegex);
     } else if (BoardIn({"brya", "adlrvp", "brask"})) {
       if (TokenHashMatches("tPl24iMxXNR,w$h6,g",
                            "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=")) {
         LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
         return AllowStatus::kAllowed;
       }
-      return CpuRegexMatches(kBorealisCapableIntelCpuRegex) &&
-                     HasMemory(7 * kGibi)
-                 ? AllowStatus::kAllowed
-                 : AllowStatus::kHardwareChecksFailed;
+      return ReleasedBoardChecks(kBorealisCapableIntelCpuRegex);
     } else if (BoardIn({"guybrush", "majolica"})) {
       if (TokenHashMatches("^_GkTVWDP.FQo5KclS",
                            "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=")) {
         LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
         return AllowStatus::kAllowed;
       }
-      return CpuRegexMatches("Ryzen [57]") && HasMemory(7 * kGibi)
-                 ? AllowStatus::kAllowed
-                 : AllowStatus::kHardwareChecksFailed;
+      return ReleasedBoardChecks("Ryzen [57]");
     } else if (IsBoard("draco")) {
       return AllowStatus::kAllowed;
     }
@@ -133,6 +125,20 @@ class FullChecker : public TokenHardwareChecker {
   // Similar to the above, but also constructs the checker.
   static AllowStatus BuildAndCheck(Data data) {
     return FullChecker(std::move(data)).Check();
+  }
+
+ private:
+  // Returns the allow status for a standard released board.
+  AllowStatus ReleasedBoardChecks(const std::string& cpu_regex) const {
+    if (!HasMemory(7 * kGibi)) {
+      return AllowStatus::kHardwareChecksFailed;
+    }
+    return CpuRegexMatches(cpu_regex) ||
+                   TokenHashMatches(
+                       "XIS4WQ+,^OZ5E,RG",
+                       "r37i7j1MV0mNmgAz0k/ItNjwLdupxYhFiYSjjRHSkWI=")
+               ? AllowStatus::kAllowed
+               : AllowStatus::kHardwareChecksFailed;
   }
 };
 
