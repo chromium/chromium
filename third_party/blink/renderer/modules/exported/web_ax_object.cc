@@ -1404,22 +1404,4 @@ bool WebAXObject::IsDirty(const WebDocument& web_document) {
   return document->ExistingAXObjectCache()->IsDirty();
 }
 
-// static
-void WebAXObject::Freeze(const WebDocument& web_document) {
-  const Document* doc = web_document.ConstUnwrap<Document>();
-  auto* cache = To<AXObjectCacheImpl>(doc->ExistingAXObjectCache());
-  if (cache)
-    cache->Freeze();
-}
-
-// static
-void WebAXObject::Thaw(const WebDocument& web_document) {
-  const Document* doc = web_document.ConstUnwrap<Document>();
-  if (!doc)
-    return;
-  auto* cache = To<AXObjectCacheImpl>(doc->ExistingAXObjectCache());
-  if (cache)
-    cache->Thaw();
-}
-
 }  // namespace blink
