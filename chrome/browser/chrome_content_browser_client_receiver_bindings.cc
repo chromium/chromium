@@ -364,8 +364,7 @@ void ChromeContentBrowserClient::
                receiver) {
           DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-          if (!ash::SystemExtensionsProvider::IsDebugMode() &&
-              !ash::SystemExtension::IsSystemExtensionOrigin(
+          if (!ash::SystemExtension::IsSystemExtensionOrigin(
                   info.storage_key.origin())) {
             return;
           }
@@ -397,8 +396,7 @@ void ChromeContentBrowserClient::
            mojo::PendingReceiver<blink::mojom::CrosHID> receiver) {
           DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-          if (!ash::SystemExtensionsProvider::IsDebugMode() &&
-              !ash::SystemExtension::IsSystemExtensionOrigin(
+          if (!ash::SystemExtension::IsSystemExtensionOrigin(
                   info.storage_key.origin())) {
             return;
           }

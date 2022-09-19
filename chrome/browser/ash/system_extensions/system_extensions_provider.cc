@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_persistence_manager.h"
@@ -15,7 +11,6 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_registry_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_service_worker_manager.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 
 namespace ash {
@@ -28,12 +23,6 @@ const char* kSystemExtensionScheme = content::kChromeUIUntrustedScheme;
 SystemExtensionsProvider& SystemExtensionsProvider::Get(Profile* profile) {
   DCHECK(ash::IsSystemExtensionsEnabled(profile));
   return *SystemExtensionsProviderFactory::GetForProfileIfExists(profile);
-}
-
-// static
-bool SystemExtensionsProvider::IsDebugMode() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kSystemExtensionsDebug);
 }
 
 SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {
