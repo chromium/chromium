@@ -468,6 +468,7 @@ viz_source_set("unit_tests") {
     "display/display_unittest.cc",
     "display/draw_polygon_unittest.cc",
     "display/frame_rate_decider_unittest.cc",
+    "display/overlay_candidate_factory_unittest.cc",
     "display/renderer_pixeltest.cc",
     "display/resolved_frame_data_unittest.cc",
     "display/skia_readback_pixeltest.cc",

@@ -526,7 +526,8 @@ class OverlayProcessorWebView::Manager
       gfx::SurfaceControl::Transaction& transaction,
       gfx::SurfaceControl::Surface& surface,
       const viz::OverlayCandidate& candidate) {
-    DCHECK_EQ(candidate.transform, gfx::OVERLAY_TRANSFORM_NONE);
+    DCHECK_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+              gfx::OVERLAY_TRANSFORM_NONE);
     gfx::Rect dst = gfx::ToEnclosingRect(candidate.unclipped_display_rect);
 
     transaction.SetPosition(surface, dst.origin());
