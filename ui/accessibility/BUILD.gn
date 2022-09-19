@@ -232,12 +232,12 @@ source_set("ax_assistant") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "platform/test_ax_tree_update.cc",
-    "platform/test_ax_tree_update.h",
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
     "test_ax_tree_manager.cc",
     "test_ax_tree_manager.h",
+    "test_ax_tree_update.cc",
+    "test_ax_tree_update.h",
     "test_ax_tree_update_json_reader.cc",
     "test_ax_tree_update_json_reader.h",
     "tree_generator.cc",

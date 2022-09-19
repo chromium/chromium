@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_PLATFORM_TEST_AX_TREE_UPDATE_H_
-#define UI_ACCESSIBILITY_PLATFORM_TEST_AX_TREE_UPDATE_H_
+#ifndef UI_ACCESSIBILITY_TEST_AX_TREE_UPDATE_H_
+#define UI_ACCESSIBILITY_TEST_AX_TREE_UPDATE_H_
 
 #include "ui/accessibility/ax_tree_update.h"
 
@@ -14,7 +14,7 @@ namespace ui {
 // updating simple accessibility trees.
 
 // Used to construct AXTreeUpdate node.
-struct TestAXTreeUpdateNode {
+struct TestAXTreeUpdateNode final {
   TestAXTreeUpdateNode() = delete;
   ~TestAXTreeUpdateNode();
 
@@ -51,4 +51,4 @@ class TestAXTreeUpdate final : public AXTreeUpdate {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_PLATFORM_TEST_AX_TREE_UPDATE_H_
+#endif  // UI_ACCESSIBILITY_TEST_AX_TREE_UPDATE_H_

@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
-#include "ui/accessibility/platform/test_ax_tree_update.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 using ax::mojom::Role;
 using ax::mojom::State;

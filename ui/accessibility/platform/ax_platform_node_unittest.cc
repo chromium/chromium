@@ -7,7 +7,7 @@
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
-#include "ui/accessibility/platform/test_ax_tree_update.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
