@@ -187,6 +187,7 @@ void PermissionManager::Shutdown() {
     }
     subscription_type_counts_.clear();
   }
+  permission_contexts_.clear();
 }
 
 PermissionContextBase* PermissionManager::GetPermissionContextForTesting(
