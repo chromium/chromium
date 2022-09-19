@@ -19,32 +19,21 @@
 #error "This file requires ARC support."
 #endif
 
-// static
-void OptimizationGuideValidationTabHelper::CreateForWebState(
-    web::WebState* web_state) {
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new OptimizationGuideValidationTabHelper(web_state)));
-    if (auto* optimization_guide_service =
-            OptimizationGuideServiceFactory::GetForBrowserState(
-                ChromeBrowserState::FromBrowserState(
-                    web_state->GetBrowserState()))) {
-      optimization_guide_service->RegisterOptimizationTypes(
-          {optimization_guide::proto::METADATA_FETCH_VALIDATION,
-           optimization_guide::proto::BLOOM_FILTER_VALIDATION});
-    }
-  }
-}
-
 OptimizationGuideValidationTabHelper::OptimizationGuideValidationTabHelper(
     web::WebState* web_state) {
-  if (!base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideMetadataValidation)) {
-    return;
+    web_state->AddObserver(this);
   }
 
-  web_state->AddObserver(this);
+  if (OptimizationGuideService* optimization_guide_service =
+          OptimizationGuideServiceFactory::GetForBrowserState(
+              ChromeBrowserState::FromBrowserState(
+                  web_state->GetBrowserState()))) {
+    optimization_guide_service->RegisterOptimizationTypes(
+        {optimization_guide::proto::METADATA_FETCH_VALIDATION,
+         optimization_guide::proto::BLOOM_FILTER_VALIDATION});
+  }
 }
 
 OptimizationGuideValidationTabHelper::~OptimizationGuideValidationTabHelper() {

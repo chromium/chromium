@@ -22,10 +22,6 @@ class OptimizationGuideValidationTabHelper
   OptimizationGuideValidationTabHelper& operator=(
       const OptimizationGuideValidationTabHelper&) = delete;
 
-  // Creates OptimizationGuideValidationTabHelper and attaches to `web_state`.
-  // `web_state` must not be null.
-  static void CreateForWebState(web::WebState* web_state);
-
  private:
   friend class web::WebStateUserData<OptimizationGuideValidationTabHelper>;
 

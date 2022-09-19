@@ -37,16 +37,6 @@ void IOSOptimizationGuideNavigationData::NotifyNavigationRedirect(
   set_navigation_url(url);
 }
 
-// static
-void OptimizationGuideTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new OptimizationGuideTabHelper(web_state)));
-  }
-}
-
 OptimizationGuideTabHelper::OptimizationGuideTabHelper(web::WebState* web_state)
     : optimization_guide_service_(
           OptimizationGuideServiceFactory::GetForBrowserState(

@@ -58,10 +58,6 @@ class OptimizationGuideTabHelper
   OptimizationGuideTabHelper& operator=(const OptimizationGuideTabHelper&) =
       delete;
 
-  // Creates OptimizationGuideTabHelper and attaches to `web_state`. `web_state`
-  // must not be null.
-  static void CreateForWebState(web::WebState* web_state);
-
  private:
   friend class web::WebStateUserData<OptimizationGuideTabHelper>;
 
