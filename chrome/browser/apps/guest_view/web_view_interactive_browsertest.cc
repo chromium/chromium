@@ -474,13 +474,19 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     content::WebContents* embedder_web_contents =
         GetFirstAppWindowWebContents();
     ASSERT_TRUE(embedder_web_contents);
-    ASSERT_TRUE(DeprecatedGuestWebContents());
+    ASSERT_TRUE(GetGuestView());
+
     // Click the guest to request fullscreen.
     ExtensionTestMessageListener passed_listener("FULLSCREEN_STEP_PASSED");
     passed_listener.set_failure_message("TEST_FAILED");
-    content::SimulateMouseClickAt(DeprecatedGuestWebContents(), 0,
-                                  blink::WebMouseEvent::Button::kLeft,
-                                  gfx::Point(20, 20));
+
+    WaitForHitTestData(GetGuestRenderFrameHost());
+
+    content::SimulateMouseClickAt(
+        embedder_web_contents, 0, blink::WebMouseEvent::Button::kLeft,
+        GetGuestRenderFrameHost()->GetView()->TransformPointToRootCoordSpace(
+            gfx::Point(20, 20)));
+
     ASSERT_TRUE(passed_listener.WaitUntilSatisfied());
   }
 
@@ -982,17 +988,8 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
              NO_TEST_SERVER);
 }
 
-// These tests are flaky on some platforms:
-// http://crbug.com/468660
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_FullscreenAllow_EmbedderHasPermission \
-  FullscreenAllow_EmbedderHasPermission
-#else
-#define MAYBE_FullscreenAllow_EmbedderHasPermission \
-  DISABLED_FullscreenAllow_EmbedderHasPermission
-#endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
-                       MAYBE_FullscreenAllow_EmbedderHasPermission) {
+                       FullscreenAllow_EmbedderHasPermission) {
 #if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
@@ -1001,41 +998,20 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
                        "web_view/fullscreen/embedder_has_permission");
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FullscreenDeny_EmbedderHasPermission \
-  FullscreenDeny_EmbedderHasPermission
-#else
-#define MAYBE_FullscreenDeny_EmbedderHasPermission \
-  DISABLED_FullscreenDeny_EmbedderHasPermission
-#endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
-                       MAYBE_FullscreenDeny_EmbedderHasPermission) {
+                       FullscreenDeny_EmbedderHasPermission) {
   FullscreenTestHelper("testFullscreenDeny",
                        "web_view/fullscreen/embedder_has_permission");
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FullscreenAllow_EmbedderHasNoPermission \
-  FullscreenAllow_EmbedderHasNoPermission
-#else
-#define MAYBE_FullscreenAllow_EmbedderHasNoPermission \
-  DISABLED_FullscreenAllow_EmbedderHasNoPermission
-#endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
-                       MAYBE_FullscreenAllow_EmbedderHasNoPermission) {
+                       FullscreenAllow_EmbedderHasNoPermission) {
   FullscreenTestHelper("testFullscreenAllow",
                        "web_view/fullscreen/embedder_has_no_permission");
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FullscreenDeny_EmbedderHasNoPermission \
-  FullscreenDeny_EmbedderHasNoPermission
-#else
-#define MAYBE_FullscreenDeny_EmbedderHasNoPermission \
-  DISABLED_FullscreenDeny_EmbedderHasNoPermission
-#endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
-                       MAYBE_FullscreenDeny_EmbedderHasNoPermission) {
+                       FullscreenDeny_EmbedderHasNoPermission) {
   FullscreenTestHelper("testFullscreenDeny",
                        "web_view/fullscreen/embedder_has_no_permission");
 }
