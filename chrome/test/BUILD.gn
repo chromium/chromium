@@ -860,6 +860,7 @@ if (is_android) {
 
     sources = [
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
+      "../browser/android/historical_tab_saver_browsertest.cc",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/autofill/android/save_update_address_profile_flow_manager_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",

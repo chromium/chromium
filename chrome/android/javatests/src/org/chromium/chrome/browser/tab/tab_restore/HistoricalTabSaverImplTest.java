@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -163,6 +164,65 @@ public class HistoricalTabSaverImplTest {
     }
 
     /**
+     * Tests saving a single frozen group. Needs native to test recovery of a frozen group when
+     * saving to TabRestoreService in native.
+     */
+    @Test
+    @MediumTest
+    public void testCreateHistoricalGroup_Frozen_HistoricalGroupCreated() {
+        final Tab tab0 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /*incognito=*/false);
+        final Tab tab1 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /*incognito=*/false);
+
+        selectFirstTab();
+        final Tab frozenTab0 = freezeTab(tab0);
+        final Tab frozenTab1 = freezeTab(tab1);
+
+        // Clear the entry created by freezing the tab.
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
+
+        HistoricalEntry group =
+                new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+        TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
+
+        ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
+        expectedEntries.add(group);
+        assertEntriesAre(Collections.singletonList(expectedEntries));
+    }
+
+    /**
+     * Tests saving a single frozen group that cannot be restored. Needs native to test handling of
+     * a frozen group that cannot be restored.
+     */
+    @Test
+    @MediumTest
+    public void testCreateHistoricalGroup_Frozen_CannotRestore() {
+        final Tab tab0 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /*incognito=*/false);
+        final Tab tab1 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /*incognito=*/false);
+
+        selectFirstTab();
+        final Tab frozenTab0 = freezeTab(tab0);
+        final Tab frozenTab1 = freezeTab(tab1);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { CriticalPersistedTabData.from(frozenTab0).setWebContentsState(null); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { CriticalPersistedTabData.from(frozenTab1).setWebContentsState(null); });
+        // Clear the entry created by freezing the tab.
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
+
+        HistoricalEntry group =
+                new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+        TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
+
+        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        assertEntriesAre(empty);
+    }
+
+    /**
      * Tests saving a single group with no title (default title == null). Needs native to test empty
      * title handling across the JNI boundary.
      */
@@ -205,6 +265,65 @@ public class HistoricalTabSaverImplTest {
         TabRestoreServiceUtils.createWindowEntry(mTabModel, expectedEntries);
 
         assertEntriesAre(Collections.singletonList(expectedEntries));
+    }
+
+    /**
+     * Tests saving a frozen bulk. Needs native to test recovery of a frozen bulk when saving
+     * to TabRestoreService in native.
+     */
+    @Test
+    @MediumTest
+    public void testCreateHistoricalBulk_Frozen_HistoricalBulkCreated() {
+        final Tab tab0 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /*incognito=*/false);
+        final Tab tab1 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /*incognito=*/false);
+
+        selectFirstTab();
+        final Tab frozenTab0 = freezeTab(tab0);
+        final Tab frozenTab1 = freezeTab(tab1);
+
+        // Clear the entry created by freezing the tab.
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
+
+        ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
+        expectedEntries.add(new HistoricalEntry(frozenTab0));
+        expectedEntries.add(new HistoricalEntry(frozenTab1));
+        TabRestoreServiceUtils.createWindowEntry(mTabModel, expectedEntries);
+
+        assertEntriesAre(Collections.singletonList(expectedEntries));
+    }
+
+    /**
+     * Tests saving a frozen bulk that cannot be restored. Needs native to test handling of a
+     * frozen bulk that cannot be restored.
+     */
+    @Test
+    @MediumTest
+    public void testCreateHistoricalBulk_Frozen_CannotRestore() {
+        final Tab tab0 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /*incognito=*/false);
+        final Tab tab1 =
+                sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /*incognito=*/false);
+
+        selectFirstTab();
+        final Tab frozenTab0 = freezeTab(tab0);
+        final Tab frozenTab1 = freezeTab(tab1);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { CriticalPersistedTabData.from(frozenTab0).setWebContentsState(null); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { CriticalPersistedTabData.from(frozenTab1).setWebContentsState(null); });
+        // Clear the entry created by freezing the tab.
+        TabRestoreServiceUtils.clearEntries(mTabModelSelector);
+
+        ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
+        expectedEntries.add(new HistoricalEntry(frozenTab0));
+        expectedEntries.add(new HistoricalEntry(frozenTab1));
+        TabRestoreServiceUtils.createWindowEntry(mTabModel, expectedEntries);
+
+        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        assertEntriesAre(empty);
     }
 
     /**
@@ -389,5 +508,11 @@ public class HistoricalTabSaverImplTest {
 
     private String getUrl(String relativeUrl) {
         return sActivityTestRule.getTestServer().getURL(relativeUrl);
+    }
+
+    private void selectFirstTab() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabModelSelector.getCurrentModel().setIndex(0, TabSelectionType.FROM_USER, false);
+        });
     }
 }

@@ -346,47 +346,7 @@ ScopedJavaLocalRef<jobject> WriteNavigationsAsByteBuffer(
                                                 serialized, current_entry);
 }
 
-// Restores a WebContents from the passed in state.
-WebContents* RestoreContentsFromByteBuffer(void* data,
-                                           int size,
-                                           int saved_state_version,
-                                           bool initially_hidden,
-                                           bool no_renderer) {
-  bool is_off_the_record;
-  int current_entry_index;
-  std::vector<sessions::SerializedNavigationEntry> navigations;
-  bool success = ExtractNavigationEntries(data, size, saved_state_version,
-                                          &is_off_the_record,
-                                          &current_entry_index, &navigations);
-  if (!success)
-    return nullptr;
-
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  std::vector<std::unique_ptr<content::NavigationEntry>> entries =
-      sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
-          navigations, profile);
-
-  if (is_off_the_record) {
-    // Serialization and deserialization related functionalities are only
-    // supported for Incognito tabbed Activities and they use primary OTR
-    // profile.
-    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  }
-
-  WebContents::CreateParams params(profile);
-
-  params.initially_hidden = initially_hidden;
-  if (no_renderer) {
-    params.desired_renderer_state =
-        WebContents::CreateParams::kNoRendererProcess;
-  }
-  std::unique_ptr<WebContents> web_contents(WebContents::Create(params));
-  web_contents->GetController().Restore(
-      current_entry_index, content::RestoreType::kRestored, &entries);
-  return web_contents.release();
-}
-
-}  // anonymous namespace
+}  // namespace
 
 ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
     JNIEnv* env,
@@ -500,13 +460,58 @@ ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
   if (!data || size <= 0)
     return ScopedJavaLocalRef<jobject>();
 
-  WebContents* web_contents = ::RestoreContentsFromByteBuffer(
-      data, size, saved_state_version, initially_hidden, no_renderer);
+  WebContents* web_contents =
+      WebContentsState::RestoreContentsFromByteBuffer(
+          data, size, saved_state_version, initially_hidden, no_renderer)
+          .release();
 
   if (web_contents)
     return web_contents->GetJavaWebContents();
   else
     return ScopedJavaLocalRef<jobject>();
+}
+
+std::unique_ptr<WebContents> WebContentsState::RestoreContentsFromByteBuffer(
+    void* data,
+    int size,
+    int saved_state_version,
+    bool initially_hidden,
+    bool no_renderer) {
+  DCHECK_NE(data, nullptr);
+  DCHECK_GT(size, 0);
+
+  bool is_off_the_record;
+  int current_entry_index;
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  bool success = ExtractNavigationEntries(data, size, saved_state_version,
+                                          &is_off_the_record,
+                                          &current_entry_index, &navigations);
+  if (!success)
+    return nullptr;
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries =
+      sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
+          navigations, profile);
+
+  if (is_off_the_record) {
+    // Serialization and deserialization related functionalities are only
+    // supported for Incognito tabbed Activities and they use primary OTR
+    // profile.
+    profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
+
+  WebContents::CreateParams params(profile);
+
+  params.initially_hidden = initially_hidden;
+  if (no_renderer) {
+    params.desired_renderer_state =
+        WebContents::CreateParams::kNoRendererProcess;
+  }
+  std::unique_ptr<WebContents> web_contents(WebContents::Create(params));
+  web_contents->GetController().Restore(
+      current_entry_index, content::RestoreType::kRestored, &entries);
+  return web_contents;
 }
 
 ScopedJavaLocalRef<jobject>

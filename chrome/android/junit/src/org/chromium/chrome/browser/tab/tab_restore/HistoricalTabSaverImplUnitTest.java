@@ -21,8 +21,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -95,7 +98,31 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
-        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab);
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, -1);
+    }
+
+    /**
+     * Tests collapsing a group with a single tab into a single tab entry with non null web contents
+     * state buffer.
+     */
+    @Test
+    public void testCreateHistoricalTab_FromGroup_NonNullBuffer() {
+        byte[] bytes = new byte[3];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        WebContentsState tempState = new WebContentsState(buf);
+        tempState.setVersion(1);
+
+        MockTab tab = new MockTab(0, false);
+        CriticalPersistedTabData tempData = new CriticalPersistedTabData(tab);
+        tempData.setWebContentsState(tempState);
+        tab = (MockTab) MockTab.initializeWithCriticalPersistedTabData(tab, tempData);
+
+        HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab}));
+        mHistoricalTabSaver.createHistoricalTabOrGroup(group);
+
+        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, 1);
     }
 
     /**
@@ -108,7 +135,31 @@ public class HistoricalTabSaverImplUnitTest {
         mHistoricalTabSaver.createHistoricalBulkClosure(
                 Collections.singletonList(new HistoricalEntry(tab)));
 
-        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab);
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, -1);
+    }
+
+    /**
+     * Tests collapsing a bulk closure with a single tab into a single tab entry with non null web
+     * contents state buffer.
+     */
+    @Test
+    public void testCreateHistoricalTab_FromBulk_NonNullBuffer() {
+        byte[] bytes = new byte[3];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        WebContentsState tempState = new WebContentsState(buf);
+        tempState.setVersion(1);
+
+        MockTab tab = new MockTab(0, false);
+        CriticalPersistedTabData tempData = new CriticalPersistedTabData(tab);
+        tempData.setWebContentsState(tempState);
+        tab = (MockTab) MockTab.initializeWithCriticalPersistedTabData(tab, tempData);
+
+        mHistoricalTabSaver.createHistoricalBulkClosure(
+                Collections.singletonList(new HistoricalEntry(tab)));
+
+        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab, buf, 1);
     }
 
     /**
@@ -124,8 +175,13 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(tabList));
         mHistoricalTabSaver.createHistoricalBulkClosure(Collections.singletonList(group));
 
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf};
+        int[] versions = new int[] {-1, -1};
         verify(mHistoricalTabSaverJni, times(1))
-                .createHistoricalGroup(eq(mTabModel), eq("Foo"), eq(tabList));
+                .createHistoricalGroup(
+                        eq(mTabModel), eq("Foo"), eq(tabList), eq(buffers), eq(versions));
     }
 
     /**
@@ -141,7 +197,9 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(tabList));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
-        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab0);
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        verify(mHistoricalTabSaverJni, times(1)).createHistoricalTab(tab0, buf, -1);
     }
 
     /**
@@ -158,8 +216,13 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(tabList));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf};
+        int[] versions = new int[] {-1, -1};
         verify(mHistoricalTabSaverJni, times(1))
-                .createHistoricalGroup(eq(mTabModel), eq("Foo"), eq(new Tab[] {tab0, tab2}));
+                .createHistoricalGroup(eq(mTabModel), eq("Foo"), eq(new Tab[] {tab0, tab2}),
+                        eq(buffers), eq(versions));
     }
 
     /**
@@ -174,8 +237,13 @@ public class HistoricalTabSaverImplUnitTest {
         HistoricalEntry group = new HistoricalEntry(0, "Foo", Arrays.asList(tabList));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf};
+        int[] versions = new int[] {-1, -1, -1};
         verify(mHistoricalTabSaverJni, times(1))
-                .createHistoricalGroup(eq(mTabModel), eq("Foo"), eq(tabList));
+                .createHistoricalGroup(
+                        eq(mTabModel), eq("Foo"), eq(tabList), eq(buffers), eq(versions));
     }
 
     /**
@@ -195,10 +263,14 @@ public class HistoricalTabSaverImplUnitTest {
         entries.add(new HistoricalEntry(tab2));
         mHistoricalTabSaver.createHistoricalBulkClosure(entries);
 
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf};
+        int[] versions = new int[] {-1, -1, -1};
         verify(mHistoricalTabSaverJni, times(1))
                 .createHistoricalBulkClosure(eq(mTabModel), eq(new int[0]), eq(new String[0]),
                         eq(new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID}),
-                        eq(new Tab[] {tab1, tab2, tab2}));
+                        eq(new Tab[] {tab1, tab2, tab2}), eq(buffers), eq(versions));
     }
 
     /**
@@ -242,8 +314,13 @@ public class HistoricalTabSaverImplUnitTest {
         int[] perTabGroupIds =
                 new int[] {Tab.INVALID_TAB_ID, 1, 1, Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, 3, 3};
         Tab[] tabs = new Tab[] {tab0, tab4, tab6, tab7, tab8, tab10, tab11};
+
+        byte[] bytes = new byte[0];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};
+        int[] versions = new int[] {-1, -1, -1, -1, -1, -1, -1};
         verify(mHistoricalTabSaverJni, times(1))
-                .createHistoricalBulkClosure(
-                        eq(mTabModel), eq(groupIds), eq(groupTitles), eq(perTabGroupIds), eq(tabs));
+                .createHistoricalBulkClosure(eq(mTabModel), eq(groupIds), eq(groupTitles),
+                        eq(perTabGroupIds), eq(tabs), eq(buffers), eq(versions));
     }
 }

@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "content/public/browser/web_contents.h"
 
 namespace sessions {
 class SerializedNavigationEntry;
@@ -34,27 +35,35 @@ class WebContentsState {
                                         int saved_state_version,
                                         const DeletionPredicate& predicate);
 
-  // Extracts display title from serialized tab data on restore
+  // Extracts display title from serialized tab data on restore.
   static base::android::ScopedJavaLocalRef<jstring>
   GetDisplayTitleFromByteBuffer(JNIEnv* env,
                                 void* data,
                                 int size,
                                 int saved_state_version);
 
-  // Extracts virtual url from serialized tab data on restore
+  // Extracts virtual url from serialized tab data on restore.
   static base::android::ScopedJavaLocalRef<jstring> GetVirtualUrlFromByteBuffer(
       JNIEnv* env,
       void* data,
       int size,
       int saved_state_version);
 
-  // Restores a WebContents from the passed in state.
+  // Restores a WebContents from the passed in state using JNI parameters.
   static base::android::ScopedJavaLocalRef<jobject>
   RestoreContentsFromByteBuffer(JNIEnv* env,
                                 jobject state,
                                 jint saved_state_version,
                                 jboolean initially_hidden,
                                 jboolean no_renderer);
+
+  // Restores a WebContents from the passed in state using native parameters.
+  static std::unique_ptr<content::WebContents> RestoreContentsFromByteBuffer(
+      void* data,
+      int size,
+      int saved_state_version,
+      bool initially_hidden,
+      bool no_renderer);
 
   // Synthesizes a stub, single-navigation state for a tab that will be loaded
   // lazily.
