@@ -914,9 +914,15 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
   }
 
   // Let the bridge handle associating and merging the data.
-  absl::optional<ModelError> error = bridge_->MergeSyncData(
-      std::move(metadata_changes), std::move(entity_data));
-  return error;
+  // For ApplyUpdatesImmediatelyTypes(), no merge is necessary or supported, so
+  // call ApplySyncChanges() instead.
+  if (ApplyUpdatesImmediatelyTypes().Has(type_)) {
+    return bridge_->ApplySyncChanges(std::move(metadata_changes),
+                                     std::move(entity_data));
+  }
+
+  return bridge_->MergeSyncData(std::move(metadata_changes),
+                                std::move(entity_data));
 }
 
 absl::optional<ModelError>

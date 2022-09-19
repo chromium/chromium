@@ -410,6 +410,16 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
     base::UmaHistogramEnumeration(kBlockedByUndecryptableUpdateHistogramName,
                                   ModelTypeHistogramValue(type_));
   }
+
+  // Usually, updates must only be applied at the end of a sync cycle, once all
+  // updates have been downloaded. This is mostly important during initial sync,
+  // so that the merge of local and remote data can happen.
+  // Data types that do not do an actual merge also don't have to download all
+  // remote data first. Instead, apply updates as they come in. This saves the
+  // need to accumulate all data in memory.
+  if (ApplyUpdatesImmediatelyTypes().Has(type_)) {
+    ApplyUpdates(status);
+  }
 }
 
 // static

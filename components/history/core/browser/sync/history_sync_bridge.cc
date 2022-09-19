@@ -427,13 +427,10 @@ HistorySyncBridge::CreateMetadataChangeList() {
 absl::optional<syncer::ModelError> HistorySyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Note: History is not synced retroactively - only visits created *after*
-  // turning Sync on get synced. So there's nothing to upload here. Just apply
-  // the incoming changes to the local history DB.
-  return ApplySyncChanges(std::move(metadata_change_list),
-                          std::move(entity_data));
+  // Since HISTORY is in ApplyUpdatesImmediatelyTypes(), MergeSyncData() should
+  // never be called.
+  NOTREACHED();
+  return {};
 }
 
 absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(

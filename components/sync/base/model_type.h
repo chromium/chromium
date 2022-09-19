@@ -347,6 +347,14 @@ constexpr ModelTypeSet CommitOnlyTypes() {
                       SHARING_MESSAGE);
 }
 
+// Types for which downloaded updates are applied immediately, before all
+// updates are downloaded and the Sync cycle finishes.
+// For these types, ModelTypeSyncBridge::MergeSyncData() will never be called
+// (since without downloading all the data, no initial merge is possible).
+constexpr ModelTypeSet ApplyUpdatesImmediatelyTypes() {
+  return ModelTypeSet(HISTORY);
+}
+
 // User types that can be encrypted, which is a subset of UserTypes() and a
 // superset of AlwaysEncryptedUserTypes();
 ModelTypeSet EncryptableUserTypes();
