@@ -460,7 +460,11 @@ public final class ReturnToChromeUtil {
      * Returns whether grid Tab switcher or the Start surface should be shown at startup.
      */
     public static boolean shouldShowOverviewPageOnStart(Context context, Intent intent,
-            TabModelSelector tabModelSelector, ChromeInactivityTracker inactivityTracker) {
+            TabModelSelector tabModelSelector, ChromeInactivityTracker inactivityTracker,
+            boolean isTablet) {
+        // Neither Start surface or GTS should be shown on Tablet at startup.
+        if (isTablet) return false;
+
         String intentUrl = IntentHandler.getUrlFromIntent(intent);
 
         // If user launches Chrome by tapping the app icon, the intentUrl is NULL;
@@ -488,8 +492,7 @@ public final class ReturnToChromeUtil {
         // Checks whether to show the Start surface / grid Tab switcher due to feature flag
         // TAB_SWITCHER_ON_RETURN_MS.
         long lastBackgroundedTimeMillis = inactivityTracker.getLastBackgroundedTimeMs();
-        boolean tabSwitcherOnReturn = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && IntentUtils.isMainIntentFromLauncher(intent)
+        boolean tabSwitcherOnReturn = IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
 
         // If the overview page won't be shown on startup, stops here.

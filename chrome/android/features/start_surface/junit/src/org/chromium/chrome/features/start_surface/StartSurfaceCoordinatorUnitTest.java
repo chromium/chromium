@@ -301,12 +301,14 @@ public class StartSurfaceCoordinatorUnitTest {
         when(mChromeInactivityTracker.getLastBackgroundedTimeMs()).thenReturn(10L);
 
         Assert.assertFalse(ReturnToChromeUtil.isPrimaryAccountSync());
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                mActivity, mActivity.getIntent(), mTabModelSelector, mChromeInactivityTracker));
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldShowOverviewPageOnStart(mActivity, mActivity.getIntent(),
+                        mTabModelSelector, mChromeInactivityTracker, false /* isTablet */));
         ReturnToChromeUtil.setSyncForTesting(true);
         Assert.assertTrue(ReturnToChromeUtil.isPrimaryAccountSync());
-        Assert.assertTrue(ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                mActivity, mActivity.getIntent(), mTabModelSelector, mChromeInactivityTracker));
+        Assert.assertTrue(
+                ReturnToChromeUtil.shouldShowOverviewPageOnStart(mActivity, mActivity.getIntent(),
+                        mTabModelSelector, mChromeInactivityTracker, false /* isTablet */));
 
         ReturnToChromeUtil.setSyncForTesting(false);
     }

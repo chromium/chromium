@@ -270,13 +270,13 @@ public class ReturnToChromeUtilUnitTest {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(0).when(mTabModelSelector).getTotalTabCount();
         Assert.assertTrue(ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                mContext, mIntent, mTabModelSelector, mInactivityTracker));
+                mContext, mIntent, mTabModelSelector, mInactivityTracker, false /* isTablet */));
 
         // Tests the case when the total tab count > 0:
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(1).when(mTabModelSelector).getTotalTabCount();
         Assert.assertTrue(ReturnToChromeUtil.shouldShowOverviewPageOnStart(
-                mContext, mIntent, mTabModelSelector, mInactivityTracker));
+                mContext, mIntent, mTabModelSelector, mInactivityTracker, false /* isTablet */));
 
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
