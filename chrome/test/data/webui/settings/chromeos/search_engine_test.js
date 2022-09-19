@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Router, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, SearchEnginesBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -16,76 +16,6 @@ suite('SearchEngine', function() {
   let browserProxy = null;
 
   let searchEngineInfo = null;
-
-  /**
-   * A test version of SearchEnginesBrowserProxy. Provides helper methods
-   * for allowing tests to know when a method was called, as well as
-   * specifying mock responses.
-   *
-   * @implements {SearchEnginesBrowserProxy}
-   */
-  class TestSearchEnginesBrowserProxy extends TestBrowserProxy {
-    constructor() {
-      super([
-        'getSearchEnginesList',
-        'removeSearchEngine',
-        'searchEngineEditCancelled',
-        'searchEngineEditCompleted',
-        'searchEngineEditStarted',
-        'setDefaultSearchEngine',
-        'validateSearchEngineInput',
-      ]);
-
-      /** @private {!SearchEnginesInfo} */
-      this.searchEnginesInfo_ =
-          {defaults: [], actives: [], others: [], extensions: []};
-    }
-
-    /** @override */
-    setDefaultSearchEngine(modelIndex) {
-      this.methodCalled('setDefaultSearchEngine', modelIndex);
-    }
-
-    /** @override */
-    removeSearchEngine(modelIndex) {
-      this.methodCalled('removeSearchEngine', modelIndex);
-    }
-
-    /** @override */
-    searchEngineEditStarted(modelIndex) {
-      this.methodCalled('searchEngineEditStarted', modelIndex);
-    }
-
-    /** @override */
-    searchEngineEditCancelled() {
-      this.methodCalled('searchEngineEditCancelled');
-    }
-
-    /** @override */
-    searchEngineEditCompleted(searchEngine, keyword, queryUrl) {
-      this.methodCalled('searchEngineEditCompleted');
-    }
-
-    /** @override */
-    getSearchEnginesList() {
-      this.methodCalled('getSearchEnginesList');
-      return Promise.resolve(this.searchEnginesInfo_);
-    }
-
-    /** @override */
-    validateSearchEngineInput(fieldName, fieldValue) {
-      this.methodCalled('validateSearchEngineInput');
-      return Promise.resolve(true);
-    }
-
-    /**
-     * Sets the response to be returned by |getSearchEnginesList|.
-     * @param {!SearchEnginesInfo} searchEnginesInfo
-     */
-    setSearchEnginesInfo(searchEnginesInfo) {
-      this.searchEnginesInfo_ = searchEnginesInfo;
-    }
-  }
 
   function createSampleSearchEngine(
       canBeDefault, canBeEdited, canBeRemoved, name, modelIndex) {
@@ -128,9 +58,13 @@ suite('SearchEngine', function() {
     loadTimeData.overrideValues({
       shouldShowQuickAnswersSettings: false,
     });
-    browserProxy = new TestSearchEnginesBrowserProxy();
+
     searchEngineInfo = generateSearchEngineInfo();
-    browserProxy.setSearchEnginesInfo(searchEngineInfo);
+    browserProxy = TestBrowserProxy.fromClass(SearchEnginesBrowserProxyImpl);
+    browserProxy.setResultMapperFor('getSearchEnginesList', async () => {
+      return searchEngineInfo;
+    });
+
     SearchEnginesBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-search-engine');

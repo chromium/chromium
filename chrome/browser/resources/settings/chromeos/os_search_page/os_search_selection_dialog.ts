@@ -12,20 +12,22 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../settings_shared.css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './os_search_selection_dialog.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const OsSettingsSearchSelectionDialogElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+interface OsSettingsSearchSelectionDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const OsSettingsSearchSelectionDialogElementBase =
+    WebUIListenerMixin(PolymerElement);
+
 class OsSettingsSearchSelectionDialogElement extends
     OsSettingsSearchSelectionDialogElementBase {
   static get is() {
@@ -33,14 +35,13 @@ class OsSettingsSearchSelectionDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * List of default search engines available.
-       * @private {!Array<!SearchEngine>}
        */
       searchEngines_: {
         type: Array,
@@ -51,16 +52,16 @@ class OsSettingsSearchSelectionDialogElement extends
     };
   }
 
-  /** @override */
+  private searchEngines_: SearchEngine[];
+  private browserProxy_: SearchEnginesBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!SearchEnginesBrowserProxy} */
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.browserProxy_.getSearchEnginesList().then(
@@ -69,40 +70,37 @@ class OsSettingsSearchSelectionDialogElement extends
         'search-engines-changed', this.updateSearchEngines_.bind(this));
   }
 
-  /**
-   * @param {!SearchEnginesInfo} searchEngines
-   * @private
-   */
-  updateSearchEngines_(searchEngines) {
+  private updateSearchEngines_(searchEngines: SearchEnginesInfo) {
     this.set('searchEngines_', searchEngines.defaults);
   }
 
   /**
    * Enables the checked languages.
-   * @private
    */
-  onActionButtonClick_() {
-    const select = /** @type {!HTMLSelectElement} */ (
-        this.shadowRoot.querySelector('select'));
+  private onActionButtonClick_() {
+    const select =
+        this.shadowRoot!.querySelector('select') as HTMLSelectElement;
     const searchEngine = this.searchEngines_[select.selectedIndex];
     this.browserProxy_.setDefaultSearchEngine(searchEngine.modelIndex);
 
     this.$.dialog.close();
   }
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     this.$.dialog.close();
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       this.onCancelButtonClick_();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-search-selection-dialog':
+        OsSettingsSearchSelectionDialogElement;
   }
 }
 

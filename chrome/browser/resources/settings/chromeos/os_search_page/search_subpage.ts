@@ -20,9 +20,10 @@ import '../../settings_vars.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './search_engine.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
@@ -31,33 +32,30 @@ import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsSearchSubpageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+import {getTemplate} from './search_subpage.html.js';
 
-/** @polymer */
+const SettingsSearchSubpageElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior],
+        I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          I18nMixinInterface & PrefsBehaviorInterface &
+          RouteObserverBehaviorInterface,
+    };
+
 class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
   static get is() {
     return 'settings-search-subpage';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -70,7 +68,6 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
         ]),
       },
 
-      /** @private */
       quickAnswersTranslationDisabled_: {
         type: Boolean,
         value() {
@@ -78,7 +75,6 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
         },
       },
 
-      /** @private */
       quickAnswersSubToggleEnabled_: {
         type: Boolean,
         value() {
@@ -86,31 +82,32 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
         },
       },
 
-      /** @private */
       quickAnswersSubLabel_: {
         type: String,
-        value() {
-          return this.getAriaLabelledSubLabel_(
-              this.i18nAdvanced('quickAnswersEnableDescriptionWithLink'));
-        },
       },
 
-      /** @private */
       translationSubLabel_: {
         type: String,
-        value() {
-          return this.getAriaLabelledSubLabel_(
-              this.i18nAdvanced('quickAnswersTranslationEnableDescription'));
-        },
       },
     };
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override supportedSettingIds: Set<Setting>;
+  private quickAnswersSubLabel_: string;
+  private quickAnswersSubToggleEnabled_: boolean;
+  private quickAnswersTranslationDisabled_: boolean;
+  private translationSubLabel_: string;
+
+  constructor() {
+    super();
+
+    this.quickAnswersSubLabel_ = this.getAriaLabelledSubLabel_(
+        this.i18nAdvanced('quickAnswersEnableDescriptionWithLink'));
+    this.translationSubLabel_ = this.getAriaLabelledSubLabel_(
+        this.i18nAdvanced('quickAnswersTranslationEnableDescription'));
+  }
+
+  override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.
     if (route !== routes.SEARCH_SUBPAGE) {
       return;
@@ -119,31 +116,33 @@ class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @private
-   */
-  onSettingsLinkClick_() {
+  private onSettingsLinkClick_() {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
   }
 
   /**
    * Attaches aria attributes to the sub label.
-   * @param {string} subLabel
-   * @return {string}
-   * @private
    */
-  getAriaLabelledSubLabel_(subLabel) {
+  private getAriaLabelledSubLabel_(subLabel: string): string {
     // Creating a <localized-link> to get aria-labelled content with
     // the link. Since <settings-toggle-button> is a shared element which does
     // not have access to <localized-link> internally, we create dummy
     // element and take its innerHTML here.
     const link = document.createElement('localized-link');
     link.setAttribute('localized-string', subLabel);
-    link.setAttribute('hidden', true);
+    link.setAttribute('hidden', 'true');
     document.body.appendChild(link);
-    const innerHTML = link.shadowRoot.querySelector('#container').innerHTML;
+    const container = link.shadowRoot!.getElementById('container');
+    assert(container);
+    const innerHTML = container.innerHTML;
     document.body.removeChild(link);
     return innerHTML;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-search-subpage': SettingsSearchSubpageElement;
   }
 }
 

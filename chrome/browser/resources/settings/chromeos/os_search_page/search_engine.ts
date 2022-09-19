@@ -20,45 +20,37 @@ import '../../prefs/pref_util.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './search_engine.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSearchEngineElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    I18nMixin(WebUIListenerMixin(PolymerElement));
 
-/** @polymer */
 class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
   static get is() {
     return 'settings-search-engine';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       prefs: Object,
 
-      /** @private {!SearchEngine} The current selected search engine. */
+      /** The current selected search engine. */
       currentSearchEngine_: Object,
 
-      /** @private */
       showSearchSelectionDialog_: Boolean,
 
-      /** @private */
       syncSettingsCategorizationEnabled_: {
         type: Boolean,
         value() {
@@ -68,16 +60,18 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
     };
   }
 
-  /** @override */
+  private browserProxy_: SearchEnginesBrowserProxy;
+  private currentSearchEngine_: SearchEngine;
+  private showSearchSelectionDialog_: boolean;
+  private syncSettingsCategorizationEnabled_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!SearchEnginesBrowserProxy} */
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.browserProxy_.getSearchEnginesList().then(
@@ -86,27 +80,22 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
         'search-engines-changed', this.updateCurrentSearchEngine_.bind(this));
   }
 
-  /**
-   * @param {!SearchEnginesInfo} searchEngines
-   * @private
-   */
-  updateCurrentSearchEngine_(searchEngines) {
-    this.currentSearchEngine_ =
-        /** @type {!SearchEngine} */ (
-            searchEngines.defaults.find(searchEngine => searchEngine.default));
+  private updateCurrentSearchEngine_(searchEngines: SearchEnginesInfo) {
+    const defaultSearchEngine =
+        searchEngines.defaults.find(searchEngine => searchEngine.default);
+    assert(defaultSearchEngine);
+    this.currentSearchEngine_ = defaultSearchEngine;
   }
 
-  /** @override */
-  focus() {
+  override focus() {
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      this.shadowRoot.querySelector('#browserSearchSettingsLink').focus();
+      this.getBrowserSearchSettingsLink_().focus();
     } else {
-      this.shadowRoot.querySelector('#searchSelectionDialogButton').focus();
+      this.getSearchSelectionDialogButton_().focus();
     }
   }
 
-  /** @private */
-  onDisableExtension_() {
+  private onDisableExtension_() {
     const event = new CustomEvent('refresh-pref', {
       bubbles: true,
       composed: true,
@@ -115,40 +104,48 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
     this.dispatchEvent(event);
   }
 
-  /** @private */
-  onShowSearchSelectionDialogClick_() {
+  private onShowSearchSelectionDialogClick_() {
     this.showSearchSelectionDialog_ = true;
   }
 
-  /** @private */
-  onSearchSelectionDialogClose_() {
+  private onSearchSelectionDialogClose_() {
     this.showSearchSelectionDialog_ = false;
-    focusWithoutInk(
-        assert(this.shadowRoot.querySelector('#searchSelectionDialogButton')));
+    focusWithoutInk(this.getSearchSelectionDialogButton_());
   }
 
-  /** @private */
-  onSearchEngineLinkClick_() {
+  private onSearchEngineLinkClick_() {
     window.open('chrome://settings/search');
   }
 
-  /**
-   * @param {!chrome.settingsPrivate.PrefObject} pref
-   * @return {boolean}
-   * @private
-   */
-  isDefaultSearchControlledByPolicy_(pref) {
+  private isDefaultSearchControlledByPolicy_(
+      pref: chrome.settingsPrivate.PrefObject): boolean {
     return pref.controlledBy ===
         chrome.settingsPrivate.ControlledBy.USER_POLICY;
   }
 
-  /**
-   * @param {!chrome.settingsPrivate.PrefObject} pref
-   * @return {boolean}
-   * @private
-   */
-  isDefaultSearchEngineEnforced_(pref) {
+  private isDefaultSearchEngineEnforced_(
+      pref: chrome.settingsPrivate.PrefObject): boolean {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private getBrowserSearchSettingsLink_() {
+    const browserSearchSettingsLink =
+        this.shadowRoot!.getElementById('browserSearchSettingsLink');
+    assert(browserSearchSettingsLink);
+    return browserSearchSettingsLink;
+  }
+
+  private getSearchSelectionDialogButton_() {
+    const searchSelectionDialogButton =
+        this.shadowRoot!.getElementById('searchSelectionDialogButton');
+    assert(searchSelectionDialogButton);
+    return searchSelectionDialogButton;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-search-engine': SettingsSearchEngineElement;
   }
 }
 

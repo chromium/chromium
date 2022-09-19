@@ -21,10 +21,10 @@ import '../google_assistant_page/google_assistant_page.js';
 import './search_subpage.js';
 import './search_engine.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
@@ -32,32 +32,29 @@ import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsSearchPageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior], PolymerElement);
+import {getTemplate} from './os_search_page.html.js';
 
-/** @polymer */
+const OsSettingsSearchPageElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior, RouteObserverBehavior],
+        I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nMixinInterface &
+          DeepLinkingBehaviorInterface & RouteObserverBehaviorInterface,
+    };
+
 class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
   static get is() {
     return 'os-settings-search-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @type {?Map<string, string>} */
       focusConfig_: Object,
 
-      /** @private */
       shouldShowQuickAnswersSettings_: {
         type: Boolean,
         value() {
@@ -65,7 +62,7 @@ class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
         },
       },
 
-      /** @private Can be disallowed due to flag, policy, locale, etc. */
+      /** Can be disallowed due to flag, policy, locale, etc. */
       isAssistantAllowed_: {
         type: Boolean,
         value() {
@@ -75,7 +72,6 @@ class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -84,8 +80,12 @@ class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
     };
   }
 
-  /** @override */
-  ready() {
+  override supportedSettingIds: Set<Setting>;
+  private isAssistantAllowed_: boolean;
+  private focusConfig_: Map<string, string>;
+  private shouldShowQuickAnswersSettings_: boolean;
+
+  override ready() {
     super.ready();
 
     this.focusConfig_ = new Map();
@@ -94,11 +94,7 @@ class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
         routes.GOOGLE_ASSISTANT.path, '#assistantSubpageTrigger');
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.
     if (route !== routes.OS_SEARCH) {
       return;
@@ -107,26 +103,25 @@ class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
     this.attemptDeepLink();
   }
 
-  /** @private */
-  onSearchTap_() {
+  private onSearchTap_() {
     Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE);
   }
 
-  /** @private */
-  onGoogleAssistantTap_() {
+  private onGoogleAssistantTap_() {
     assert(this.isAssistantAllowed_);
     Router.getInstance().navigateTo(routes.GOOGLE_ASSISTANT);
   }
 
-  /**
-   * @param {boolean} toggleValue
-   * @return {string}
-   * @private
-   */
-  getAssistantEnabledDisabledLabel_(toggleValue) {
+  private getAssistantEnabledDisabledLabel_(toggleValue: boolean): string {
     return this.i18n(
         toggleValue ? 'searchGoogleAssistantEnabled' :
                       'searchGoogleAssistantDisabled');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-search-page': OsSettingsSearchPageElement;
   }
 }
 
