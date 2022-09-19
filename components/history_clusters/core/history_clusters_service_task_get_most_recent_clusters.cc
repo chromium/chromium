@@ -16,6 +16,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 
 namespace history_clusters {
 
@@ -56,14 +57,16 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
     // If visits can't be clustered, either because `backend_` is null, or all
     // unclustered visits have already been clustered and returned, then return
     // persisted clusters.
-    if (!backend_) {
-      weak_history_clusters_service_->NotifyDebugMessage(
-          "HistoryClustersServiceTaskGetMostRecentClusters::Start() Error: "
-          "ClusteringBackend is nullptr. Returning most recent clusters.");
-    } else {
-      weak_history_clusters_service_->NotifyDebugMessage(
-          "HistoryClustersServiceTaskGetMostRecentClusters::Start() exhausted "
-          "unclustered visits. Returning most recent clusters.");
+    if (weak_history_clusters_service_) {
+      if (!backend_) {
+        weak_history_clusters_service_->NotifyDebugMessage(
+            "HistoryClustersServiceTaskGetMostRecentClusters::Start() Error: "
+            "ClusteringBackend is nullptr. Returning most recent clusters.");
+      } else {
+        weak_history_clusters_service_->NotifyDebugMessage(
+            "HistoryClustersServiceTaskGetMostRecentClusters::Start() "
+            "exhausted unclustered visits. Returning most recent clusters.");
+      }
     }
     ReturnMostRecentPersistedClusters(continuation_params_.continuation_time);
 
@@ -100,17 +103,22 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
         QueryClustersContinuationParams continuation_params) {
   DCHECK(backend_);
 
-  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+  if (weak_history_clusters_service_ &&
+      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(
-        "HistoryClustersServiceTaskGetMostRecentClusters::OnGotHistoryVisits("
+        "HistoryClustersServiceTaskGetMostRecentClusters::"
+        "OnGotAnnotatedVisitsToCluster("
         ")");
-    weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
-        "  annotated_visits.size() = %zu", annotated_visits.size()));
     weak_history_clusters_service_->NotifyDebugMessage(
         "  continuation_time = " +
         (continuation_params.continuation_time.is_null()
              ? "null (i.e. exhausted history)"
              : base::TimeToISO8601(continuation_params.continuation_time)));
+    weak_history_clusters_service_->NotifyDebugMessage(
+        base::StringPrintf("GET MOST RECENT CLUSTERS TASK - VISITS %zu:",
+                           annotated_visits.size()));
+    weak_history_clusters_service_->NotifyDebugMessage(
+        GetDebugJSONForVisits(annotated_visits));
   }
 
   base::UmaHistogramTimes(
@@ -124,14 +132,6 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(continuation_params.continuation_time);
 
   } else {
-    if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
-      weak_history_clusters_service_->NotifyDebugMessage(
-          "  Visits JSON follows:");
-      weak_history_clusters_service_->NotifyDebugMessage(
-          GetDebugJSONForVisits(annotated_visits));
-      weak_history_clusters_service_->NotifyDebugMessage(
-          "Calling backend_->GetClusters()");
-    }
     base::UmaHistogramCounts1000("History.Clusters.Backend.NumVisitsToCluster",
                                  static_cast<int>(annotated_visits.size()));
     backend_get_clusters_start_time_ = base::TimeTicks::Now();
@@ -153,11 +153,10 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
   base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
                                clusters.size());
 
-  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
-    weak_history_clusters_service_->NotifyDebugMessage(
-        "HistoryClustersService::OnGotRawClusters()");
-    weak_history_clusters_service_->NotifyDebugMessage(
-        "  Raw Clusters from Backend JSON follows:");
+  if (weak_history_clusters_service_ &&
+      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+    weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
+        "GET MOST RECENT CLUSTERS TASK - CLUSTERS %zu:", clusters.size()));
     weak_history_clusters_service_->NotifyDebugMessage(
         GetDebugJSONForClusters(clusters));
   }
@@ -182,6 +181,15 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     OnGotMostRecentPersistedClusters(std::vector<history::Cluster> clusters) {
+  if (GetConfig().persist_clusters_in_history_db && !recluster_ &&
+      weak_history_clusters_service_ &&
+      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+    weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
+        "GET MOST RECENT CLUSTERS TASK - PERSISTED CLUSTERS %zu:",
+        clusters.size()));
+    weak_history_clusters_service_->NotifyDebugMessage(
+        GetDebugJSONForClusters(clusters));
+  }
   // TODO(manukh): If the most recent cluster is invalid (due to DB corruption),
   //  `GetMostRecentClusters()` will return no clusters. We should handle this
   //  case and not assume we've exhausted history.

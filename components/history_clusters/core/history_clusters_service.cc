@@ -204,8 +204,8 @@ void HistoryClustersService::UpdateClusters() {
     return;
   update_clusters_task_ =
       std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
-          incomplete_visit_context_annotations_, backend_.get(),
-          history_service_, base::DoNothing());
+          weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,
+          backend_.get(), history_service_, base::DoNothing());
 }
 
 absl::optional<history::ClusterKeywordData>

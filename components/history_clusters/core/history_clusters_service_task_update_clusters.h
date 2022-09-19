@@ -20,6 +20,8 @@ class HistoryService;
 
 namespace history_clusters {
 
+class HistoryClustersService;
+
 // `HistoryClustersServiceTaskUpdateClusters` gets clustered and unclustered
 // visits straddling the threshold and clusters them together. It continues
 // doing so, moving the threshold forward 1 day each time, until reaching today.
@@ -34,6 +36,7 @@ namespace history_clusters {
 class HistoryClustersServiceTaskUpdateClusters {
  public:
   HistoryClustersServiceTaskUpdateClusters(
+      base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
       const IncompleteVisitMap incomplete_visit_context_annotations,
       ClusteringBackend* const backend,
       history::HistoryService* const history_service,
@@ -69,6 +72,8 @@ class HistoryClustersServiceTaskUpdateClusters {
                           QueryClustersContinuationParams continuation_params,
                           std::vector<history::Cluster> clusters);
 
+  // Never nullptr.
+  base::WeakPtr<HistoryClustersService> weak_history_clusters_service_;
   const IncompleteVisitMap incomplete_visit_context_annotations_;
   // Can be nullptr.
   ClusteringBackend* const backend_;
