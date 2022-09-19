@@ -11,6 +11,17 @@ import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
+ * Clicks the enabled and visible move to trash button and ensures the delete
+ * button is hidden.
+ * @param {string} appId
+ */
+async function clickTrashButton(appId) {
+  await remoteCall.waitForElement(appId, '#delete-button[hidden]');
+  await remoteCall.waitAndClickElement(
+      appId, '#move-to-trash-button:not([hidden]):not([disabled])');
+}
+
+/**
  * Delete files in MyFiles and ensure they are moved to /.Trash.
  * Then delete items from /.Trash/files and /.Trash/info, then delete /.Trash.
  */
@@ -23,7 +34,7 @@ testcase.trashMoveToTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -115,7 +126,7 @@ testcase.trashMoveToTrash = async () => {
   // Delete photos dir (no dialog),
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="photos"]');
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
 
   // Wait for photos to be removed, and .Trash to be recreated.
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
@@ -158,7 +169,7 @@ testcase.trashRestoreFromToast = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -187,7 +198,7 @@ testcase.trashRestoreFromTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -235,7 +246,7 @@ testcase.trashRestoreFromTrashShortcut = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -270,7 +281,7 @@ testcase.trashEmptyTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -302,7 +313,7 @@ testcase.trashEmptyTrashShortcut = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -337,7 +348,7 @@ testcase.trashDeleteFromTrash = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -383,7 +394,7 @@ testcase.trashNoTasksInTrashRoot = async () => {
   await remoteCall.waitForElement(appId, '#tasks:not([hidden])');
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -413,7 +424,7 @@ testcase.trashDoubleClickOnFileInTrashRootShowsDialog = async () => {
       appId, DOWNLOADS_FAKE_TASKS[0].descriptor);
 
   // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -439,7 +450,7 @@ testcase.trashTraversingFolderShowsDisallowedDialog = async () => {
   // Select the Photos folder and trash the whole thing.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="photos"]');
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');
 
   // Navigate to /Trash and ensure the "photos" folder is shown.
@@ -696,7 +707,7 @@ testcase.trashEnsureOldEntriesArePeriodicallyRemoved = async () => {
   // Select hello.txt and make sure a default task is executed when double
   // clicking.
   await remoteCall.waitAndClickElement(appId, fileNameSelector);
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, fileNameSelector);
 
   // Navigate to /Trash and ensure the file is there and has not been deleted,
@@ -738,7 +749,7 @@ testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
   // Select hello.txt and send it to the Trash.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -785,7 +796,7 @@ testcase.trashCopyShouldBeDisabledCutShouldBeEnabled = async () => {
 
   // Select hello.txt and send it to the Trash.
   await remoteCall.waitAndClickElement(appId, fileSelector);
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(appId, fileSelector);
 
   // Navigate to the Trash root.
@@ -824,7 +835,7 @@ testcase.trashRestorationDialogInProgressDoesntShowUndo = async () => {
   // Select hello.txt and send it to the Trash.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -851,7 +862,7 @@ testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
   // Select hello.txt and send it to the Trash, this file should not be removed
   // in between enabling and disabling the feature.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
-  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await clickTrashButton(appId);
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
@@ -868,7 +879,9 @@ testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
 
   // Ensure the delete button shows up instead of the move to trash button.
   await remoteCall.waitUntilSelected(appId, 'world.ogv');
-  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  await remoteCall.waitForElement(appId, '#move-to-trash-button[hidden]');
+  await remoteCall.waitAndClickElement(
+      appId, '#delete-button:not([hidden]):not([disabled])');
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
   // Cancel the dialog.

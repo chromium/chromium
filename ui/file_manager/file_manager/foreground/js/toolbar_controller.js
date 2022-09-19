@@ -122,10 +122,10 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!Command}
+     * @type {!Command}
      * @const
      */
-    this.moveToTrashCommand_ = assertInstanceof(
+    this.moveToTrashCommand = assertInstanceof(
         util.queryRequiredElement(
             '#move-to-trash', assert(this.toolbar_.ownerDocument.body)),
         Command);
@@ -258,6 +258,12 @@ export class ToolbarController {
     this.togglePinnedCommand_.addEventListener(
         'checkedChange', this.updatePinnedToggle_.bind(this));
 
+    this.moveToTrashCommand.addEventListener(
+        'hiddenChange', this.updateMoveToTrashCommand_.bind(this));
+
+    this.moveToTrashCommand.addEventListener(
+        'disabledChange', this.updateMoveToTrashCommand_.bind(this));
+
     this.togglePinnedCommand_.addEventListener(
         'disabledChange', this.updatePinnedToggle_.bind(this));
 
@@ -338,13 +344,14 @@ export class ToolbarController {
          selection.hasReadOnlyEntry() ||
          selection.entries.some(
              entry => util.isNonModifiable(this.volumeManager_, entry)));
-    // Show 'Move to Trash' rather than 'Delete' if possible.
+    // Show 'Move to Trash' rather than 'Delete' if possible. The
+    // `moveToTrashCommand` needs to be set to hidden to ensure the
+    // `canExecuteChange` invokes the `hiddenChange` event in the case where
+    // Trash should be shown.
     this.moveToTrashButton_.hidden = true;
-    if (!this.deleteButton_.hidden && util.isTrashEnabled() &&
-        this.moveToTrashCommand_.canExecuteChange(
-            this.listContainer_.currentList)) {
-      this.deleteButton_.hidden = true;
-      this.moveToTrashButton_.hidden = false;
+    this.moveToTrashCommand.disabled = true;
+    if (!this.deleteButton_.hidden && util.isTrashEnabled()) {
+      this.moveToTrashCommand.canExecuteChange(this.listContainer_.currentList);
     }
 
     // Update visibility of the restore-from-trash button.
@@ -396,8 +403,8 @@ export class ToolbarController {
    * @private
    */
   onMoveToTrashButtonClicked_() {
-    this.moveToTrashCommand_.canExecuteChange(this.listContainer_.currentList);
-    this.moveToTrashCommand_.execute(this.listContainer_.currentList);
+    this.moveToTrashCommand.canExecuteChange(this.listContainer_.currentList);
+    this.moveToTrashCommand.execute(this.listContainer_.currentList);
   }
 
   /**
@@ -442,5 +449,13 @@ export class ToolbarController {
     // Optimistally update the command's properties so we get notified if they
     // change back.
     this.togglePinnedCommand_.checked = this.pinnedToggle_.checked;
+  }
+
+  /** @private */
+  updateMoveToTrashCommand_() {
+    if (!this.deleteButton_.hidden) {
+      this.deleteButton_.hidden = !this.moveToTrashCommand.disabled;
+      this.moveToTrashButton_.hidden = this.moveToTrashCommand.disabled;
+    }
   }
 }

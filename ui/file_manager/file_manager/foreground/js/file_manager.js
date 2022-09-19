@@ -1626,6 +1626,9 @@ export class FileManager extends EventTarget {
     if (this.trashEnabled !== prefs.trashEnabled) {
       this.trashEnabled = prefs.trashEnabled;
       this.toggleTrashRootOnPreferencesUpdate_();
+      this.toolbarController_.moveToTrashCommand.disabled = !this.trashEnabled;
+      this.toolbarController_.moveToTrashCommand.canExecuteChange(
+          this.ui_.listContainer.currentList);
       redraw = true;
     }
 
