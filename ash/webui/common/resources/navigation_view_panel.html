@@ -71,17 +71,17 @@
   }
 
   #sideNav {
-    grid-area: sideNav;
     display: flex;
     flex-direction: column;
+    grid-area: sideNav;
     justify-content: flex-start;
-    min-width: 0px;
+    min-width: 0;
   }
 
   #navigationBody {
     grid-area: main;
     justify-self: center;
-    min-width: 0px;
+    min-width: 0;
     padding-inline: var(--container-padding-nav);
   }
 
@@ -106,7 +106,8 @@
     <div id="topNav">
       <page-toolbar
           title="[[title]]"
-          is-narrow="[[!showNav]]">
+          is-narrow="[[!showNav]]"
+          exportparts="title">
       </page-toolbar>
     </div>
   </template>
@@ -124,7 +125,8 @@
     </div>
     <div slot="body">
       <navigation-selector selector-items={{selectorItems_}}
-          selected-item={{selectedItem}}>
+          selected-item="{{selectedItem}}"
+          exportparts="navigation-item">
       </navigation-selector>
     <slot name="bottom-nav-content-drawer"></slot>
     </div>
@@ -133,7 +135,7 @@
     <div id="sideNav">
       <div id="navigationSelector" class="left-aligned">
         <navigation-selector selector-items={{selectorItems_}}
-            selected-item={{selectedItem}}>
+            selected-item="{{selectedItem}}" exportparts="navigation-item">
         </navigation-selector>
         <slot name="bottom-nav-content-panel"></slot>
       </div>

@@ -131,18 +131,16 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
   private addNavigationSelectors_() {
     const pages = [
       this.$.navigationPanel.createSelectorItem(
-          'Chrome OS', 'shortcuts-page',
-          'navigation-selector:laptop-chromebook', 'chromeos-page-id',
+          'Chrome OS', 'shortcuts-page', '', 'chromeos-page-id',
           {category: /**ChromeOS*/ 0}),
       this.$.navigationPanel.createSelectorItem(
-          'Browser', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-          'browser-page-id', {category: /**Browser*/ 1}),
+          'Browser', 'shortcuts-page', '', 'browser-page-id',
+          {category: /**Browser*/ 1}),
       this.$.navigationPanel.createSelectorItem(
-          'Android', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-          'android-page-id', {category: /**Android*/ 2}),
+          'Android', 'shortcuts-page', '', 'android-page-id',
+          {category: /**Android*/ 2}),
       this.$.navigationPanel.createSelectorItem(
-          'Accessibility', 'shortcuts-page',
-          'navigation-selector:laptop-chromebook', 'a11y-page-id',
+          'Accessibility', 'shortcuts-page', '', 'a11y-page-id',
           {category: /**Accessbility*/ 3}),
 
     ];

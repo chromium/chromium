@@ -2,9 +2,17 @@
   :host {
     @apply --shortcut-customization-default-font;
   }
+
+  #navigationPanel::part(title) {
+    padding-inline-start: 8px;
+  }
+
+  #navigationPanel::part(navigation-item) {
+    padding-inline-start: 28px;
+  }
 </style>
 <!-- TODO(jimmyxgong): Localize this title -->
-<navigation-view-panel id="navigationPanel" title="Shortcut Customization"
+<navigation-view-panel id="navigationPanel" title="Shortcuts"
     show-tool-bar>
   <div slot="bottom-nav-content-panel">
     <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked_">

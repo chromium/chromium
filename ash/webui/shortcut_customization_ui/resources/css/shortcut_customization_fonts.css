@@ -9,7 +9,7 @@
 :host {
     --shortcut-customization-default-font-family:
         "Google Sans", Roboto, sans-serif;
-    --shortcut-customization-default-font-size: 16px;
+    --shortcut-customization-default-font-size: 13px;
     --shortcut-customization-default-font-weight: 400; /* regular */
 
     --shortcut-customization-default-font: {

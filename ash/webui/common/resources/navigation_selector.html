@@ -62,6 +62,7 @@ cr-expand-button {
   <div id="navigationSelectorMenu">
     <template id="selectorItems" is="dom-repeat" items="{{selectorItems}}">
         <div class$="{{computeInitialClass_(item)}}" tabindex="0"
+            part="navigation-item"
             on-click="onSelected_">
           <iron-icon class="icon" icon="[[item.icon]]"
             alt="" hidden="[[!item.icon]]"></iron-icon>
