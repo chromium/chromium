@@ -93,7 +93,7 @@ export class ChromeVoxBackground {
     chrome.windows.getAll({'populate': true}, windows => {
       for (let i = 0; i < windows.length; i++) {
         const tabs = windows[i].tabs.filter(tab => matchesRe.test(tab.url));
-        this.injectChromeVoxIntoTabs(tabs);
+        InjectedScriptLoader.injectContentScript(tabs);
       }
     });
   }
@@ -160,50 +160,6 @@ export class ChromeVoxBackground {
     ChromeVoxEditableTextBase.useIBeamCursor =
         (prefs['useIBeamCursor'] === 'true');
     ChromeVox.isStickyPrefOn = (prefs['sticky'] === 'true');
-  }
-
-  /**
-   * Inject ChromeVox into a tab.
-   * @param {Array<Tab>} tabs The tab where ChromeVox scripts should be
-   *     injected.
-   */
-  injectChromeVoxIntoTabs(tabs) {
-    const listOfFiles =
-        chrome.runtime.getManifest()['content_scripts'][0]['js'];
-    const stageTwo = function(code) {
-      for (let i = 0, tab; tab = tabs[i]; i++) {
-        globalThis.console.log('Injecting into ' + tab.id, tab);
-        let sawError = false;
-
-        /**
-         * A helper function which executes code.
-         * @param {string} code The code to execute.
-         */
-        const executeScript = code => {
-          chrome.tabs.executeScript(tab.id, {code, 'allFrames': true}, () => {
-            if (!chrome.extension.lastError) {
-              return;
-            }
-            if (sawError) {
-              return;
-            }
-            sawError = true;
-            console.error('Could not inject into tab', tab);
-          });
-        };
-
-        // Set a variable so that Closure deps work correctly.
-        executeScript('window.CLOSURE_NO_DEPS = true');
-
-        // Now inject the ChromeVox content script code into the tab.
-        listOfFiles.forEach(file => executeScript(code[file]));
-      }
-    };
-
-    // We use fetchCode instead of chrome.extensions.executeFile because
-    // executeFile doesn't propagate the file name to the content script
-    // which means that script is not visible in Dev Tools.
-    InjectedScriptLoader.fetchCode(listOfFiles, stageTwo);
   }
 
   /**

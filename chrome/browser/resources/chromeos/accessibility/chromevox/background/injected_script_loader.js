@@ -48,4 +48,41 @@ export class InjectedScriptLoader {
 
     files.forEach(file => loadScriptAsCode(file));
   }
+
+  /**
+   * Inject the content scripts into already existing tabs.
+   * @param {!Array<!Tab>} tabs The tab where ChromeVox scripts should be
+   *     injected.
+   */
+  static async injectContentScript(tabs) {
+    const listOfFiles =
+        chrome.runtime.getManifest()['content_scripts'][0]['js'];
+
+    const code = await new Promise(
+        resolve => InjectedScriptLoader.fetchCode(listOfFiles, resolve));
+    for (const tab of tabs) {
+      // Set a variable so that Closure deps work correctly.
+      InjectedScriptLoader.execute_('window.CLOSURE_NO_DEPS = true', tab);
+
+      // Now inject the ChromeVox content script code into the tab.
+      listOfFiles.forEach(
+          file => InjectedScriptLoader.execute_(code[file], tab));
+    }
+  }
+
+  /**
+   * A helper function which executes code.
+   * @param {string} code The code to execute.
+   * @return {!Promise}
+   * @private
+   */
+  static async execute_(code, tab) {
+    await new Promise(
+        resolve => chrome.tabs.executeScript(
+            tab.id, {code, 'allFrames': true}, resolve));
+    if (!chrome.extension.lastError) {
+      return;
+    }
+    console.error('Could not inject into tab', tab);
+  }
 }
