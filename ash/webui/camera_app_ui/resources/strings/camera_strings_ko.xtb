@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">녹화된 동영상이 없습니다.</translation>
+<translation id="169335673490251151">추가 페이지 스캔</translation>
 <translation id="1838104802459806957">위로 기울이기</translation>
 <translation id="1851169887664797861">추가 카메라 제어 기능 사용 가능</translation>
 <translation id="1851616744363735765">일시중지됨</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">링크 주소 복사</translation>
 <translation id="4281620174117014503">중간 해상도</translation>
 <translation id="4329152592498422850">스퀘어 사진 촬영으로 전환</translation>
+<translation id="4340659173795395806">이제 다중 페이지 PDF를 생성할 수 있습니다.</translation>
 <translation id="4383571725254449280">실적 로그 인쇄</translation>
 <translation id="4445542136948522167">사진 촬영 중지</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" />메가픽셀</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5320594929574852403">왼쪽으로 이동</translation>
 <translation id="5444515100983837161">프레임 안에 문서의 네 모서리를 위치시키세요. 문서와 배경이 서로 다른 색상일 때 스캔이 가장 잘 작동합니다.</translation>
+<translation id="5662366948659129155"><ph name="COUNT" />페이지 스캔 중</translation>
 <translation id="5671277269877808209">정사각형</translation>
 <translation id="5746169159649715125">PDF로 저장</translation>
 <translation id="5753488212459587150">전문가 모드 사용 설정</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">전문가 모드</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5869546221129391014">격자</translation>
+<translation id="5903928279335207406">페이지 삭제</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5976160379964388480">기타</translation>
@@ -158,6 +162,7 @@
 <translation id="8167081290930651932">사진으로 저장</translation>
 <translation id="8239780215768881278">동영상 스냅샷 촬영</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="839162370397157884">페이지 선택</translation>
 <translation id="8425673304802773841">아래로 기울이기</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8629662593426079630">360p</translation>

@@ -333,6 +333,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8453117565092476964">El archivo de instalación está dañado o no es válido. Vuelve a descargar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: Ayuda a mejorar las funciones y el rendimiento de ChromiumOS enviando automáticamente datos de diagnóstico y de uso a Google.</translation>
 <translation id="8493179195440786826">Chromium no está actualizado</translation>
+<translation id="8522220489792889625">Cuando es necesario, Chromium recupera la memoria de las pestañas que no estás usando activamente. Puedes cambiar esta opción en cualquier momento en la configuración.</translation>
 <translation id="8550334526674375523">Este perfil de trabajo es completamente independiente de tu perfil personal.</translation>
 <translation id="8558383651099478961">Tus padres han desactivado "Permisos de sitios, aplicaciones y extensiones" en Chromium. No se permite añadir <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Para recibir futuras actualizaciones de Chromium, necesitarás macOS 10.13 o una versión posterior. Este ordenador utiliza macOS 10.12.</translation>

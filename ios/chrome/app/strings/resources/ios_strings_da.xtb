@@ -55,6 +55,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1322735045095424339">Din organisation kræver inkognitotilstand</translation>
 <translation id="1323735185997015385">Slet</translation>
 <translation id="132683371494960526">Tryk to gange for at ændre den overordnede mappe.</translation>
+<translation id="1335348992705722518">Administrer indstillinger...</translation>
 <translation id="1340643665687018190">Luk menu</translation>
 <translation id="1358214951266274152">Gå til link, du har kopieret</translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
@@ -383,6 +384,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4187450337729239226">Indsæt og søg</translation>
 <translation id="4223967053752765281">Din organisation har deaktiveret login. Du kan stadig se din historik samt dine bogmærker, adgangskoder og andre indstillinger på din enhed. Hvis du foretager nogen ændringer, bliver de dog ikke synkroniseret med din konto.</translation>
 <translation id="4233831822770018312">Rediger tilladelser</translation>
+<translation id="4236584471598725073">Der holdes øje med prisen</translation>
 <translation id="4237377247299956313">Tryk på <ph name="BEGIN_BOLD" />Standardbrowserapp<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Angiv adgangssætning</translation>
 <translation id="4249955472157341256">Sortér efter seneste</translation>

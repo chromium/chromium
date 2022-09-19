@@ -214,6 +214,7 @@
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
 <translation id="2148716181193084225">오늘</translation>
+<translation id="2161132820593978283">영상 통화에서 화면 중앙에 표시되도록 카메라 프레이밍을 사용해 보세요. 빠른 설정에서 사용 설정하면 됩니다.</translation>
 <translation id="2170530631236737939">최근 사용을 종료하려면 세 손가락을 사용해 아래로 스와이프하세요.</translation>
 <translation id="219905428774326614">런처, 모든 앱</translation>
 <translation id="2201071101391734388">최근 사진 총 <ph name="TOTAL_COUNT" />개 중 <ph name="INDEX" />번째입니다.</translation>
@@ -252,6 +253,7 @@
 <translation id="2405664212338326887">연결되지 않음</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2412593942846481727">업데이트 가능</translation>
+<translation id="2426051945783024481">카메라 프레임이 자동으로 중앙에 위치함</translation>
 <translation id="2427507373259914951">왼쪽 클릭</translation>
 <translation id="2429753432712299108">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 허가하기 전에 다음 패스키가 기기에 표시되는지 확인하세요. <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
@@ -1038,6 +1040,7 @@
 <translation id="6960565108681981554">활성화되지 않았습니다. 이동통신사에 문의하세요.</translation>
 <translation id="6961121602502368900">직장 프로필에서는 휴대전화 무음 설정을 사용할 수 없음</translation>
 <translation id="6961840794482373852">Alt + 위쪽 화살표 단축키가 변경되었습니다. Page Up 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 위쪽 화살표 키를 누르세요.</translation>
+<translation id="696267987219125751">카메라 프레이밍이 사용 중지되어 있습니다.</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@
 <translation id="7513922695575567867">현재 캘린더에서 <ph name="DATE" />이 속한 주를 표지 중이며 선택된 날짜는 <ph name="SELECTED_DATE" />입니다.</translation>
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">카메라 프레이밍이 사용 설정되어 있습니다.</translation>
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux 앱 및 시크릿 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
@@ -1146,6 +1150,7 @@
 <translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7609951632080598826">캘린더 보기, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">카메라가 다시 연결되었습니다.</translation>
+<translation id="761736749114493194">카메라 프레이밍을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">Nearby Share 설정 표시</translation>
 <translation id="7634648064048557203">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다</translation>
@@ -1306,6 +1311,7 @@
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
+<translation id="8541078764854166027">카메라 프레이밍</translation>
 <translation id="8542053257095774575">저장된 데스크 또는 템플릿 없음</translation>
 <translation id="8546059259582788728">정렬이 실행취소됨</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>

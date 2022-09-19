@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">ยอมรับและดำเนินการต่อ</translation>
 <translation id="110724200315609752">เปลี่ยนเพื่อเปิดหน้าต่าง</translation>
 <translation id="1112015203684611006">การพิมพ์ล้มเหลว</translation>
+<translation id="1118569444314402022">ยินดีต้อนรับกลับมา <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">สร้างแท็บใหม่</translation>
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
 <translation id="1135212215217513471">ดาวน์โหลด Chrome สำหรับ iOS</translation>
@@ -63,6 +64,7 @@
 <translation id="1377255359165588604">การซิงค์หยุดทำงานแล้ว</translation>
 <translation id="1377321085342047638">หมายเลขบัตร</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
+<translation id="138618066238211776">ดำเนินการต่อในชื่อ <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 สัปดาห์ที่ผ่านมา</translation>
 <translation id="1404330357948037222">คุณออกจากระบบแล้ว</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
@@ -176,6 +178,7 @@
 <translation id="2421044535038393232">แก้ไขต่อไป</translation>
 <translation id="2434405374328098816">คุณบันทึกรหัสผ่านสำหรับ "<ph name="USERNAME" />" ที่ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
+<translation id="2461070143328828326">การตั้งค่ารหัสผ่าน</translation>
 <translation id="2469960372084740698">ปิด Google Safe Browsing ใช่ไหม</translation>
 <translation id="2473876017985765807">คุณบันทึกรหัสผ่านสำหรับ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2476359652512522418">ไม่ได้เลือก</translation>
@@ -330,6 +333,7 @@
 <translation id="3709582977625132201">ทำเครื่องหมายว่ายังไม่อ่าน</translation>
 <translation id="371230970611282515">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="37207012422556617">การค้นหาที่มาแรง</translation>
+<translation id="3726360487031500941">ลงชื่อเข้าใช้บัญชี "<ph name="USER_NAME" />" อีกครั้ง</translation>
 <translation id="3740397331642243698">เปิด URL ที่ป้อนใน Google Chrome ในโหมดไม่ระบุตัวตน</translation>
 <translation id="3762232513783804601">สร้างมาเพื่อ iPad ของคุณ</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>

@@ -693,6 +693,7 @@
 <translation id="1640283014264083726">RSA шифрлэлттэй PKCS # 1 MD4</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" />-н бусад үйлдэл</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Өөр 1 нууц үгний формат буруу байсан тул үүнийг импорт хийгээгүй}other{Өөр {NUM_PASSWORDS} нууц үгний формат буруу байсан тул үүнийг импорт хийгээгүй}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> болон бусад <ph name="NUMBER_OF_DEVICES" /> Bluetooth төхөөрөмжтэй холбогдсон</translation>
 <translation id="1642494467033190216">Бусад алдаа засах тохируулгыг идэвхжүүлэхээс өмнө үндсэн хамгаалалт болон дахин ачаалах үйлдлийг зогсоож арилгах шаардлагатай.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA SHA-1-тэй гарын үсэг</translation>
@@ -1843,6 +1844,7 @@
 <translation id="2673135533890720193">Хайлтын хадгалагдсан мэдээллийг уншина</translation>
 <translation id="2674764818721168631">Унтраалттай</translation>
 <translation id="2678063897982469759">Дахин идэвхжүүл</translation>
+<translation id="2678100101831051676">Дамжуулах боломжгүй.</translation>
 <translation id="268053382412112343">Түүх</translation>
 <translation id="2681124317993121768">Зочны профайлуудыг дэмждэггүй</translation>
 <translation id="2682498795777673382">Таны эцэг эхийн хийсэн шинэчлэлт</translation>
@@ -3879,6 +3881,7 @@
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />"-г ашиглахын тулд хуудсыг дахин ачаална уу</translation>
 <translation id="4617270414136722281">Өргөтгөлийн сонголт</translation>
 <translation id="4617880081511131945">Холболт тогтоож чадсангүй</translation>
+<translation id="4618195822946934889">URL зөвхөн ASCII тэмдэгтүүд агуулах боломжтой</translation>
 <translation id="4619564267100705184">Өөрийгөө мөн болохыг бататгах</translation>
 <translation id="4619615317237390068">Бусад төхөөрөмжний таб</translation>
 <translation id="4620809267248568679">Энэ тохиргоог өргөтгөлөөр идэвхжүүлсэн байна.</translation>
@@ -5080,6 +5083,7 @@
 <translation id="5800351251499368110">Хажуугийн самбарт хайлтыг хаана уу. Хажуугийн самбарт хайлт нээлттэй байна.</translation>
 <translation id="5801568494490449797">Миний сонголт</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
+<translation id="5805268472388605531">Өргөлтийн тэмдгүүд болон тусгай тэмдэгтүүдийг харахын тулд гарын товч дээр удаана дарна уу</translation>
 <translation id="5805697420284793859">Цонхны менежер</translation>
 <translation id="5806447147478173900">Үзүүлсэн сайтуудын хадгалах сангийн ашиглалтын нийт хэмжээ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (өгөгдмөл)</translation>
@@ -5720,6 +5724,7 @@
 <translation id="642469772702851743">Энэ төхөөрөмжийг (SN: <ph name="SERIAL_NUMBER" />) эзэмшигч нь түгжсэн байна.</translation>
 <translation id="6425556984042222041">Бичвэрийг-ярианд-хувиргах хурд</translation>
 <translation id="642729974267661262">Дуу тоглуулахыг зөвшөөрөөгүй</translation>
+<translation id="6427608534767366138">"<ph name="NETWORK_ID" />"-д проксигийн баталгаажуулалт шаардлагатай</translation>
 <translation id="6429384232893414837">Шинэчлэлтийн алдаа</translation>
 <translation id="6430814529589430811">Base64-шифрлэлттэй ASCII, дан гэрчилгээ</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> нь компьютерийн бүх хэрэглэгчдэд зориулан автомат шинэчлэлтийг суулгаж өгнө.</translation>
@@ -7851,6 +7856,7 @@
 <translation id="844063558976952706">Үргэлж энэ сайт дээр</translation>
 <translation id="8441313165929432954">Модем болгох явцыг идэвхжүүлэх/идэвхгүй болгох</translation>
 <translation id="8443795068008423036">Таны төхөөрөмж хамгийн шинэ эсэхийг шалгаад, дахин оролдоно уу</translation>
+<translation id="8443986842926457191">URL нь 2048-аас дээш тэмдэгттэй байна</translation>
 <translation id="8446884382197647889">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8447409163267621480">Ctrl эсвэл Alt-н аль нэгийг агуулдаг</translation>
 <translation id="844850004779619592">Тушаал олдсонгүй</translation>
@@ -7916,6 +7922,7 @@
 <translation id="851263357009351303"><ph name="HOST" />-д зургуудыг харуулахыг үргэлж зөвшөөр</translation>
 <translation id="8513108775083588393">Автомат эргэх</translation>
 <translation id="8514746246728959655">Аюулгүй байдлын өөр түлхүүр туршиж үзнэ үү</translation>
+<translation id="8519895319663397036">Нууц үгнүүдийг импорт хийх боломжгүй. Файлын хэмжээ 150 КБ-аас бага байх ёстой.</translation>
 <translation id="8523493869875972733">Өөрчлөлтийг хадгалах</translation>
 <translation id="8523849605371521713">Удирдамжийн дагуу нэмсэн</translation>
 <translation id="8524783101666974011">Google Бүртгэлдээ карт хадгалах</translation>

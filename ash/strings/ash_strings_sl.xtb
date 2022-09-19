@@ -214,6 +214,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2132302418721800944">Snemanje celotnega zaslona</translation>
 <translation id="2135456203358955318">Zasidrana lupa</translation>
 <translation id="2148716181193084225">Danes</translation>
+<translation id="2161132820593978283">Preizkusite kadriranje fotoaparata, da boste v videoklicih prikazani na sredini zaslona. Vklopite ga v hitrih nastavitvah.</translation>
 <translation id="2170530631236737939">Če želite zapreti način pregleda, povlecite s tremi prsti navzdol.</translation>
 <translation id="219905428774326614">Zaganjalnik, vse aplikacije</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2405664212338326887">Ni povezano</translation>
 <translation id="2408955596600435184">Vnos kode PIN</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
+<translation id="2426051945783024481">Okvir fotoaparata je samodejno na sredini.</translation>
 <translation id="2427507373259914951">Levi klik</translation>
 <translation id="2429753432712299108">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. Preden sprejmete, se prepričajte, da je na napravi prikazano to geslo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
@@ -1038,6 +1040,7 @@ Nova namestitev</translation>
 <translation id="6960565108681981554">Ni aktivirano. Obrnite se na operaterja.</translation>
 <translation id="6961121602502368900">Utišanje telefona ni na voljo v delovnem profilu</translation>
 <translation id="6961840794482373852">Bližnjica na tipkovnici alt + puščica gor je spremenjena. Če želite uporabiti tipko za stran navzgor, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico gor.</translation>
+<translation id="696267987219125751">Kadriranje fotoaparata je izklopljeno.</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6972754398087986839">Začnite</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@ Nova namestitev</translation>
 <translation id="7513922695575567867">Koledar, v tednu <ph name="DATE" />, trenutno izbran datum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kadriranje fotoaparata je vklopljeno.</translation>
 <translation id="7526573455193969409">Omrežje je morda nadzorovano</translation>
 <translation id="7536035074519304529">Naslov IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikacije za Linux in anonimna okna trenutno niso podprta. Druge aplikacije bodo shranjene.</translation>
@@ -1146,6 +1150,7 @@ Nova namestitev</translation>
 <translation id="7607002721634913082">Začasno ustavljeno</translation>
 <translation id="7609951632080598826">Pogled koledarja, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Fotoaparat je znova povezan.</translation>
+<translation id="761736749114493194">Preklop kadriranja fotoaparata. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Prikaz nastavitev deljenja v bližini.</translation>
 <translation id="7634648064048557203">Fotoaparat je pripet v spodnji desni kot</translation>
@@ -1306,6 +1311,7 @@ Nova namestitev</translation>
 <translation id="851458219935658693">Prikaz oken na trenutnem namizju, izbran je izbirni gumb</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>
+<translation id="8541078764854166027">Kadriranje</translation>
 <translation id="8542053257095774575">Ni shranjenih namizij ali predlogov</translation>
 <translation id="8546059259582788728">Razveljavitev razvrščanja je uspela</translation>
 <translation id="8551588720239073785">Nastavitve datuma in ure</translation>

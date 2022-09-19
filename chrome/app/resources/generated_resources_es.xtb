@@ -692,6 +692,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1640283014264083726">PKCS #1 MD4 con cifrado RSA</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641496881756082050">Más acciones de <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{No se ha importado 1 contraseña más porque tiene un formato incorrecto}other{No se han importado {NUM_PASSWORDS} contraseñas más porque tienen un formato incorrecto}}</translation>
 <translation id="1642492862748815878">Conectado a <ph name="DEVICE" /> y a otros <ph name="NUMBER_OF_DEVICES" /> dispositivos Bluetooth</translation>
 <translation id="1642494467033190216">Para poder habilitar otras funciones de depuración, es necesario eliminar la protección de rootfs y reiniciar.</translation>
 <translation id="1643072738649235303">Firma X9.62 ECDSA con SHA-1</translation>
@@ -1081,7 +1082,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1995916364271252349">Controla la información que pueden usar y mostrar los sitios (ubicación, cámara, ventanas emergentes y otros)</translation>
 <translation id="1997433994358798851">Chrome necesita permiso para conectarse a tu dispositivo mediante Bluetooth.</translation>
 <translation id="1997616988432401742">Tus certificados</translation>
-<translation id="1999115740519098545">Al abrir</translation>
+<translation id="1999115740519098545">Al iniciar</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas desde la barra de direcciones y el cuadro de búsqueda a tu buscador predeterminado</translation>
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2003130567827682533">Para activar los datos de "<ph name="NAME" />", conéctate a una red Wi‑Fi</translation>
@@ -1830,6 +1831,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2673135533890720193">Leer tu historial de navegación</translation>
 <translation id="2674764818721168631">Desactivado</translation>
 <translation id="2678063897982469759">Volver a habilitar</translation>
+<translation id="2678100101831051676">No se ha podido enviar.</translation>
 <translation id="268053382412112343">Hi&amp;storial</translation>
 <translation id="2681124317993121768">No se admiten perfiles de invitado</translation>
 <translation id="2682498795777673382">Actualizado por tu padre o madre</translation>
@@ -3862,6 +3864,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4617019240346358451">Vuelve a cargar la página para usar <ph name="EXTENSION_NAME" /></translation>
 <translation id="4617270414136722281">Opciones de extensión</translation>
 <translation id="4617880081511131945">No se puede establecer conexión</translation>
+<translation id="4618195822946934889">La URL solo puede contener caracteres ASCII</translation>
 <translation id="4619564267100705184">Verificar mi identidad</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4620809267248568679">Una extensión aplica esta opción.</translation>
@@ -5061,6 +5064,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5800351251499368110">Cerrar la búsqueda en el panel lateral. La búsqueda está abierta en el panel lateral.</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5805268472388605531">Mantén pulsadas las teclas del teclado para ver las tildes y los caracteres especiales</translation>
 <translation id="5805697420284793859">Administrador de ventanas</translation>
 <translation id="5806447147478173900">Almacenamiento total usado por sitios mostrados: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Predeterminado)</translation>
@@ -5702,6 +5706,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="642469772702851743">El propietario ha bloqueado este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Velocidad de conversión de texto a voz</translation>
 <translation id="642729974267661262">No puede reproducir sonido</translation>
+<translation id="6427608534767366138">Se requiere la autenticación de proxy de "<ph name="NETWORK_ID" />"</translation>
 <translation id="6429384232893414837">Error de actualización</translation>
 <translation id="6430814529589430811">ASCII codificado en Base64, certificado único</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizaciones automáticas para todos los usuarios de este ordenador.</translation>
@@ -7831,6 +7836,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="844063558976952706">Siempre en este sitio</translation>
 <translation id="8441313165929432954">Habilitar/Inhabilitar conexión compartida</translation>
 <translation id="8443795068008423036">Asegúrate de que tu dispositivo esté actualizado e inténtalo de nuevo</translation>
+<translation id="8443986842926457191">La URL contiene más de 2048 caracteres</translation>
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8447409163267621480">Incluye Ctrl o Alt</translation>
 <translation id="844850004779619592">No se han encontrado comandos</translation>
@@ -7896,6 +7902,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="851263357009351303">Permitir siempre que <ph name="HOST" /> muestre imágenes</translation>
 <translation id="8513108775083588393">Giro automático</translation>
 <translation id="8514746246728959655">Prueba con una llave de seguridad diferente</translation>
+<translation id="8519895319663397036">No se pueden importar las contraseñas. El tamaño del archivo debe ser inferior a 150 kB.</translation>
 <translation id="8523493869875972733">Mantener cambios</translation>
 <translation id="8523849605371521713">Añadida por política</translation>
 <translation id="8524783101666974011">Guardar las tarjetas en tu cuenta de Google</translation>

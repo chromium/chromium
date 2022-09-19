@@ -214,6 +214,7 @@
 <translation id="2132302418721800944">ሙሉ ማያ ገጽን ቅረጽ</translation>
 <translation id="2135456203358955318">የተተከለ ማጉያ</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
+<translation id="2161132820593978283">የቪድዮ ጥሪዎች ላይ በማያ ገጹ መሃል ላይ እንዲሆኑ የካሜራ ክፈፍ መስራትን ይሞክሩ። በፈጣን ቅንብሮች ውስጥ ያብሩት።</translation>
 <translation id="2170530631236737939">ከአጠቃላይ ዕይታ ለመውጣት በሦስት ጣቶች ወደ ታች ያንሸራትቱ</translation>
 <translation id="219905428774326614">ማስጀመሪያ፣ ሁሉም መተግበሪያዎች</translation>
 <translation id="2201071101391734388">የቅርብ ጊዜ ፎቶ <ph name="INDEX" /> ከ<ph name="TOTAL_COUNT" />።</translation>
@@ -252,6 +253,7 @@
 <translation id="2405664212338326887">አልተገናኘም</translation>
 <translation id="2408955596600435184">የእርስዎን ፒን ያስገቡ</translation>
 <translation id="2412593942846481727">ዝማኔ ይገኛል</translation>
+<translation id="2426051945783024481">የካሜራ ክፈፍ በራስ-ሰር መሃል ላይ ሆኗል</translation>
 <translation id="2427507373259914951">የግራ ጠቅታ</translation>
 <translation id="2429753432712299108">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። ከመቀበልዎ በፊት እባክዎ ይህ የይለፍ ቃል በዚያ መሣሪያ ላይ የሚታይ መሆኑን ያረጋግጡ፦ <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
@@ -1038,6 +1040,7 @@
 <translation id="6960565108681981554">አልገበረም። የአገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="6961121602502368900">በሥራ መገለጫ ላይ የስልክ ድምጽን ማጥፋት አይገኝም</translation>
 <translation id="6961840794482373852">የAlt + የላይ ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የላይ ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የላይ ቀስት ይጫኑ።</translation>
+<translation id="696267987219125751">የካሜራ ክፈፍ መስራት ጠፍቷል።</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6972754398087986839">አስጀማሪ መመሪያ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@
 <translation id="7513922695575567867">ቀን መቁጠሪያ፣ የ<ph name="DATE" /> ሳምንት፣ <ph name="SELECTED_DATE" /> በአሁኑ ጊዜ ተመርጧል።</translation>
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">የካሜራ ክፈፍ መስራት በርቷል።</translation>
 <translation id="7526573455193969409">አውታረ መረብ ክትትል የሚደረግበት ሊሆን ይችላል</translation>
 <translation id="7536035074519304529">የአይፒ አድራሻ፦ <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">የሊኑክስ መተግበሪያዎች እና ማንነት የማያሳውቁ መስኮቶች በአሁኑ ጊዜ አይደገፉም። ሌሎች መተግበሪያዎች ይቀመጣሉ።</translation>
@@ -1146,6 +1150,7 @@
 <translation id="7607002721634913082">ለአፍታ ቆሟል</translation>
 <translation id="7609951632080598826">የቀን መቁጠሪያ እይታ፣ <ph name="DATE" />፣ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ካሜራ እንደገና ተገናኝቷል።</translation>
+<translation id="761736749114493194">የካሜራ ክፈፍን ይቀያይሩ። <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ፋ</translation>
 <translation id="7633755430369750696">አቅራቢያ አጋራ ቅንብሮችን አሳይ።</translation>
 <translation id="7634648064048557203">ካሜራ ታችኛው ቀኝ ጥግ ላይ ገጥሟል</translation>
@@ -1306,6 +1311,7 @@
 <translation id="851458219935658693">አሁን ካለ ዴስክ መስኮቶችን አሳይ፣ የራዲዮ አዝራር ተመርጧል</translation>
 <translation id="8517041960877371778">የእርሰዎ <ph name="DEVICE_TYPE" /> እንደበራ ኃይል መሙላት አይችሉ ይሆናል።</translation>
 <translation id="8535393432370007982">በቀለም የተደረደረበት ቅደም-ተከተል ቀልብስ</translation>
+<translation id="8541078764854166027">የካሜራ ክፈፍ በመስራት ላይ</translation>
 <translation id="8542053257095774575">ምንም የተቀመጡ ዴስኮች ወይም ቅንብር ደንቦች የሉም</translation>
 <translation id="8546059259582788728">ድርደራም መቀልበስ ተሳክቷል</translation>
 <translation id="8551588720239073785">የቀን እና የጊዜ ቅንብሮች</translation>

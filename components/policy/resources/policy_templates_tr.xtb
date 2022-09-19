@@ -6019,6 +6019,15 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7200364929485466022">Güncelleme denetiminin ne zaman yapılması gerektiği (cihazın yerel saat dilimine göre).</translation>
 <translation id="7202925763179776247">İndirme kısıtlamalarına izin ver</translation>
 <translation id="7207095846245296855">Google Güvenli Arama'yı zorla</translation>
+<translation id="7208483746373960784">Bu ayar, <ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra kullanıcı verilerinin ne kadarının saklanacağını belirler.
+
+      Politika <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> değerine ayarlanırsa geriye dönük veri taşıma işlemi gerçekleştirilmez.
+
+      Politika <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> değerine ayarlanırsa tüm kullanıcı verileri kaldırılır. Bu en güvenli seçenektir.
+
+      Politika <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> değerine ayarlanırsa kullanıcı verilerinin çoğu kaldırılır. Yalnızca tarayıcıdan bağımsız dosyalar (örneğin, indirilenler) saklanır.
+
+      Politika <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> değerine ayarlanırsa tüm kullanıcı verileri saklanır. Bu seçenek, yüksek hata riskine sahiptir ve kurtarma işlemi için powerwash yapılması gerekir.</translation>
 <translation id="7211368186050418507">Saat dilimini hiçbir zaman otomatik algılama</translation>
 <translation id="7216442368414164495">Kullanıcıların Güvenli Tarama genişletilmiş raporlamasını etkinleştirmesine izin ver</translation>
 <translation id="721970071627370558">Cihazın güç durumu raporlamasını devre dışı bırak</translation>

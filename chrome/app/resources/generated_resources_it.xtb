@@ -692,6 +692,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1640283014264083726">PKCS #1 MD4 con crittografia RSA</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="1641496881756082050">Altre azioni per <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Non è stata importata 1 altra password perché non è formattata correttamente}other{Non sono state importate {NUM_PASSWORDS} altre password perché non sono formattate correttamente}}</translation>
 <translation id="1642492862748815878">Connessione a <ph name="DEVICE" /> e altri<ph name="NUMBER_OF_DEVICES" /> dispositivi Bluetooth</translation>
 <translation id="1642494467033190216">Per poter attivare altre funzioni di debug è necessario rimuovere la protezione rootfs e riavviare.</translation>
 <translation id="1643072738649235303">Firma X9.62 ECDSA con SHA-1</translation>
@@ -1829,6 +1830,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2673135533890720193">Leggere la cronologia di navigazione</translation>
 <translation id="2674764818721168631">Off</translation>
 <translation id="2678063897982469759">Riattiva</translation>
+<translation id="2678100101831051676">Impossibile trasmettere.</translation>
 <translation id="268053382412112343">Cr&amp;onologia</translation>
 <translation id="2681124317993121768">I profili ospite non sono supportati</translation>
 <translation id="2682498795777673382">Aggiornato da un genitore</translation>
@@ -3862,6 +3864,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4617019240346358451">Ricarica la pagina per utilizzare "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">Opzioni estensione</translation>
 <translation id="4617880081511131945">Impossibile stabilire una connessione</translation>
+<translation id="4618195822946934889">L'URL può contenere soltanto caratteri ASCII</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4619615317237390068">Schede di altri dispositivi</translation>
 <translation id="4620809267248568679">Questa impostazione è applicata da un'estensione.</translation>
@@ -5059,6 +5062,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5800351251499368110">Chiudi la ricerca aperta nel riquadro laterale.</translation>
 <translation id="5801568494490449797">Preferenze</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
+<translation id="5805268472388605531">Tieni premuti i tasti della tastiera per vedere accenti e caratteri speciali</translation>
 <translation id="5805697420284793859">Gestione finestre</translation>
 <translation id="5806447147478173900">Spazio di archiviazione totale usato dai siti visualizzati: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (valore predefinito)</translation>
@@ -5699,6 +5703,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="642469772702851743">Questo dispositivo (numero di serie <ph name="SERIAL_NUMBER" />) è stato bloccato dal proprietario.</translation>
 <translation id="6425556984042222041">Velocità sintesi vocale</translation>
 <translation id="642729974267661262">Non possono riprodurre suoni</translation>
+<translation id="6427608534767366138">L'autenticazione del proxy è obbligatoria per "<ph name="NETWORK_ID" />"</translation>
 <translation id="6429384232893414837">Errore di aggiornamento</translation>
 <translation id="6430814529589430811">ASCII con codifica Base64, singolo certificato</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> imposterà gli aggiornamenti automatici per tutti gli utenti di questo computer.</translation>
@@ -7828,6 +7833,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="844063558976952706">Sempre su questo sito</translation>
 <translation id="8441313165929432954">Attiva/disattiva tethering</translation>
 <translation id="8443795068008423036">Assicurati che il dispositivo sia aggiornato e riprova</translation>
+<translation id="8443986842926457191">L'URL contiene più di 2048 caratteri</translation>
 <translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8447409163267621480">Includi CTRL o ALT</translation>
 <translation id="844850004779619592">Nessun comando trovato</translation>
@@ -7893,6 +7899,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="851263357009351303">Consenti sempre la visualizzazione di immagini in <ph name="HOST" /></translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>
 <translation id="8514746246728959655">Prova a usare un altro token di sicurezza</translation>
+<translation id="8519895319663397036">Impossibile importare le password. Le dimensioni file devono essere minori di 150 kB.</translation>
 <translation id="8523493869875972733">Mantieni le modifiche</translation>
 <translation id="8523849605371521713">Aggiunta in base alle norme</translation>
 <translation id="8524783101666974011">Salva carte nel tuo Account Google</translation>

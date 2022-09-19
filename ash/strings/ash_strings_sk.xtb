@@ -1155,6 +1155,7 @@ Nová inštalácia</translation>
 <translation id="7633755430369750696">Zobraziť nastavenia Zdieľania nablízku</translation>
 <translation id="7634648064048557203">Kamera bola prichytená do pravého dolného rohu</translation>
 <translation id="7641938616688887143">Nahrať</translation>
+<translation id="7642106959537987271">režim inverzie farieb</translation>
 <translation id="7642647758716480637">Otvoriť nastavenia siete <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7647488630410863958">Ak si chcete zobraziť upozornenia, odomknite zariadenie</translation>
@@ -1260,6 +1261,7 @@ Nová inštalácia</translation>
 <translation id="8209010265547628927">Resetovať</translation>
 <translation id="8214996719228530800">Kanál Canary</translation>
 <translation id="8219451629189078428">Chromebook musíte mať v tomto období zapnutý a pripojený k zásuvke. Uistite sa, či je kábel nabíjačky alebo adaptéra riadne pripojený do Chromebooku aj elektrickej zásuvky. Chromebook nevypínajte.</translation>
+<translation id="8230305195727960608">Režim inverzie farieb</translation>
 <translation id="8236042855478648955">Čas na prestávku</translation>
 <translation id="8246282815785366524">Vitajte späť, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, batéria telefónu <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1388,7 @@ Nová inštalácia</translation>
 <translation id="8982906748181120328">Viditeľnosť nablízku</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Práve sa používa <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Režim inverzie farieb je zapnutý. Vypnete ho opätovným stlačením kombinácie klávesov Ctrl + Hľadať + H.</translation>
 <translation id="899350903320462459">Ak chcete vykonať akciu s upozornením, odomknite zariadenie ako <ph name="LOGIN_ID" /></translation>
 <translation id="9000771174482730261">SPRAVOVAŤ PRIESTOR</translation>
 <translation id="9017320285115481645">Zadajte prístupový kód rodiča Family Link.</translation>
@@ -1434,6 +1437,7 @@ Nová inštalácia</translation>
 <translation id="921989828232331238">Rodič na dnes toto zariadenie uzamkol</translation>
 <translation id="9220525904950070496">Odstrániť účet</translation>
 <translation id="923686485342484400">Ak sa chcete odhlásiť, stlačte dvakrát kombináciu klávesov Ctrl, Shift a Q.</translation>
+<translation id="92580429198593979">Stlačili ste klávesovú skratku inverzie farieb. Chcete ju zapnúť?</translation>
 <translation id="925832987464884575">Skryť ukážky</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> vyžaduje, aby ste ihneď aktualizovali zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Čo mám v kalendári?</translation>

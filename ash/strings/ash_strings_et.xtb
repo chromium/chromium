@@ -214,6 +214,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2132302418721800944">Täisekraani salvestamine</translation>
 <translation id="2135456203358955318">Dokitud luup</translation>
 <translation id="2148716181193084225">Täna</translation>
+<translation id="2161132820593978283">Proovige kaamera kadreerimist, et oleksite videokõnedes ekraanikuva keskel. Lülitage see sisse kiirseadete kaudu.</translation>
 <translation id="2170530631236737939">Ülevaatest lahkumiseks pühkige kolme sõrmega alla</translation>
 <translation id="219905428774326614">Käivitaja, kõik rakendused</translation>
 <translation id="2201071101391734388">Hiljutine foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2405664212338326887">Ühendus puudub</translation>
 <translation id="2408955596600435184">Sisestage PIN-kood</translation>
 <translation id="2412593942846481727">Värskendus on saadaval</translation>
+<translation id="2426051945783024481">Kaamera kaader on automaatselt keskel</translation>
 <translation id="2427507373259914951">Vasakklikk</translation>
 <translation id="2429753432712299108">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Enne nõustumist veenduge, et selles seadmes oleks kuvatud see parool: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Kuva parool</translation>
@@ -1039,6 +1041,7 @@ Uus installimine</translation>
 <translation id="6960565108681981554">Aktiveerimata. Võtke oma operaatoriga ühendust.</translation>
 <translation id="6961121602502368900">Telefoni vaigistamine pole tööprofiilil saadaval</translation>
 <translation id="6961840794482373852">Klaviatuuri otseteed Alt + ülesnool on muudetud. Lehe võrra üles klahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + ülesnoolt.</translation>
+<translation id="696267987219125751">Kaamera kadreerimine on välja lülitatud.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Alustamine</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1129,6 +1132,7 @@ Uus installimine</translation>
 <translation id="7513922695575567867">Kalender, kuupäeva <ph name="DATE" /> nädal, <ph name="SELECTED_DATE" /> on praegu valitud.</translation>
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kaamera kadreerimine on sisse lülitatud.</translation>
 <translation id="7526573455193969409">Võrku võidakse jälgida</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linuxi rakendusi ja inkognito aknaid praegu ei toetata. Muud rakendused salvestatakse.</translation>
@@ -1147,6 +1151,7 @@ Uus installimine</translation>
 <translation id="7607002721634913082">Peatatud</translation>
 <translation id="7609951632080598826">Kalendrivaade, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kaamera ühendati uuesti.</translation>
+<translation id="761736749114493194">Kaamera kadreerimise lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Läheduses jagamise seadete kuvamine.</translation>
 <translation id="7634648064048557203">Kaamera kinnitati paremasse alanurka</translation>
@@ -1307,6 +1312,7 @@ Uus installimine</translation>
 <translation id="851458219935658693">Valitud on raadionupp Näita praeguse töölaua aknaid</translation>
 <translation id="8517041960877371778">Kui seade <ph name="DEVICE_TYPE" /> on sisse lülitatud, ei pruugita seda laadida.</translation>
 <translation id="8535393432370007982">Võta värvi järgi sortimine tagasi</translation>
+<translation id="8541078764854166027">Kadreerimine</translation>
 <translation id="8542053257095774575">Salvestatud töölaudu ega malle ei ole</translation>
 <translation id="8546059259582788728">Sortimise tagasivõtmine õnnestus</translation>
 <translation id="8551588720239073785">Kuupäeva ja kellaaja seaded</translation>

@@ -60,6 +60,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2094648590148273905">Voorwaarden van Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome toch sluiten?</translation>
 <translation id="2106831557840787829">Chrome OS Flex wordt mogelijke gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Als deze instelling aanstaat, claimt Chrome geheugen terug van tabbladen die je niet actief gebruikt. Zo worden de resources van je computer vrijgemaakt voor andere taken en blijft Chrome snel. Inactieve tabbladen worden leeg weergegeven en worden automatisch opnieuw geladen als je erop klikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />feedback sturen<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Hiermee worden <ph name="ITEMS_COUNT" /> items verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Opnieuw starten om &amp;Chrome te updaten</translation>
 <translation id="2123055963409958220">Help Chrome beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>

@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vil du slutte Chrome alligevel?</translation>
 <translation id="2106831557840787829">ChromeOS Flex leveres ved hjælp af ekstra <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Når indstillingen er aktiveret, bruger Chrome hukommelse fra faner, du ikke aktivt bruger. Dette frigør din computers ressourcer til andre opgaver og sørger for, at Chrome forbliver hurtigt. Inaktive faner fremstår som tomme og genindlæses automatisk, når du klikker på dem. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Genstart og opdater &amp;Chrome</translation>
 <translation id="2123055963409958220">Vær med til at gøre Chrome bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" />.</translation>
@@ -271,6 +272,7 @@
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6739177684496155661">Vil du fortsætte på en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">Chrome sender den tekst, du angiver i browseren, til Google for at rette stavefejl</translation>
+<translation id="6756581345161130259">Når det er nødvendigt, bruger Chrome hukommelse fra faner, du ikke aktivt bruger. Du kan altid ændre dette under Indstillinger.</translation>
 <translation id="677276454032249905">Vil du afslutte Chrome alligevel?</translation>
 <translation id="6785872064505734160">Google Assistent i Chrome kan udføre handlinger for dig på websites</translation>
 <translation id="683440813066116847">Indgående regel for Google Chrome Canary om at tillade mDNS-trafik.</translation>

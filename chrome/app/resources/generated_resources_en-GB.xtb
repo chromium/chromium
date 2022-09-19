@@ -2189,6 +2189,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2977480621796371840">Remove from group</translation>
 <translation id="2979639724566107830">Open in new window</translation>
 <translation id="2981113813906970160">Show large mouse cursor</translation>
+<translation id="2981293774053328982">This file contains malware that can compromise your personal or social network accounts</translation>
 <translation id="2983373101216420412">Case battery level <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Send a request to your administrator to install '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="2987620471460279764">Text shared from other device</translation>
@@ -3774,6 +3775,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4514610446763173167">Toggle video to play or pause</translation>
 <translation id="451515744433878153">Remove</translation>
 <translation id="4515872537870654449">Contact Dell for service. The dock will shut down if the fan isn't working.</translation>
+<translation id="4518840066030486079">Shift key mode style</translation>
 <translation id="4519331665958994620">Sites can ask to use your camera</translation>
 <translation id="4519935350946509010">Connection error.</translation>
 <translation id="4520385623207007473">Cookies in use</translation>
@@ -3869,6 +3871,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4598345735110653698">Manage passkeys</translation>
 <translation id="4598556348158889687">Storage management</translation>
 <translation id="4598776695426288251">Wi-Fi available via multiple devices</translation>
+<translation id="4600071396330666617">Number of suggestions</translation>
 <translation id="4601426376352205922">Mark as Unread</translation>
 <translation id="4602466770786743961">Always allow <ph name="HOST" /> to access your camera and microphone</translation>
 <translation id="4606551464649945562">Do not allow sites to create a 3D map of your surroundings or track camera position</translation>
@@ -4315,6 +4318,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5043913660911154449">Or specify your printer PPD <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="504561833207953641">Opening in existing browser session.</translation>
+<translation id="5049614114599109018">Use input history</translation>
 <translation id="5051836348807686060">Spellcheck isn’t supported for the languages that you have selected</translation>
 <translation id="5052499409147950210">Edit site</translation>
 <translation id="505347685865235222">Unnamed group – <ph name="GROUP_CONTENT_STRING" /></translation>

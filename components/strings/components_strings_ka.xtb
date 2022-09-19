@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">წერილის ფორმით დაკეცვა</translation>
 <translation id="138218114945450791">ცისფერი</translation>
 <translation id="1382194467192730611">USB მოწყობილობა დაშვებულია თქვენი ადმინისტრატორის მიერ</translation>
+<translation id="1382378825779654399">როცა რომელიმე საიტზე ფასი დაიკლებს, ელფოსტით გაფრთხილებებს მიიღებთ. ეს გვერდი შეინახება „<ph name="LAST_BOOKMARKS_FOLDER" />“-ში.</translation>
 <translation id="1382912999714108023">თქვენი ამჟამინდელი ინფორმაცია არ ჩანს? დაუკავშირდით თქვენს ბანკს ინფორმაციის განახლებისთვის.</translation>
 <translation id="1384725838384960382">უსაფრთხო გადახდის ავტორიზაციის რეგისტრაციის ფურცელი</translation>
 <translation id="1386623374109090026">ანოტაციები</translation>
@@ -1520,6 +1521,7 @@
 <translation id="5018422839182700155">ამ გვერდის გახსნა ვერ მოხერხდა</translation>
 <translation id="5019198164206649151">სარეზერვო საცავი ცუდ მდგომარეობაშია</translation>
 <translation id="5020776957610079374">მსოფლიო მუსიკა</translation>
+<translation id="5021557570875267742">გააკონტროლეთ ფასები Chrome-ის მეშვეობით</translation>
 <translation id="5023310440958281426">შეამოწმეთ ადმინისტრატორის წესები</translation>
 <translation id="5029568752722684782">ასლის გასუფთავება</translation>
 <translation id="5030338702439866405">გამცემი:</translation>
@@ -2240,6 +2242,7 @@
 <translation id="6993898126790112050">6x9 (კონვერტი)</translation>
 <translation id="6996312675313362352">ყოველთვის ითარგმნოს <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">გასართობის ინდუსტრია</translation>
+<translation id="7003335073762455340">თქვენ თვალს ადევნებთ ამ პროდუქტს. ეს გვერდი შენახულია „<ph name="LAST_BOOKMARKS_FOLDER" />“-ში.</translation>
 <translation id="7004583254764674281">Windows Hello-ს გამოყენება ბარათების უფრო სწრაფად დასადასტურებლად</translation>
 <translation id="7006930604109697472">მაინც გაგზავნა</translation>
 <translation id="7012363358306927923">ჩინეთის UnionPay</translation>
@@ -3034,6 +3037,7 @@
 <translation id="9174623988242579721">ინდივიდუალური შეკვეთით დამზადებული და სწრაფი სატრანსპორტო საშუალებები</translation>
 <translation id="9174917557437862841">ჩანართის გადართვის ღილაკი, ამ ჩანართზე გადასართველად დააჭირეთ კლავიშს „Enter“</translation>
 <translation id="9179703756951298733">მართეთ საგადახდო და საკრედიტო ბარათების ინფორმაცია Chrome-ის პარამეტრებიდან</translation>
+<translation id="9179907736442194268">მიიღეთ გაფრთხილებები ელფოსტით, როცა რომელიმე საიტზე ფასი დაიკლებს</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> მხარდაუჭერელ პროტოკოლს იყენებს.</translation>
 <translation id="9187461866967718678">ექსტრემალური სპორტი</translation>

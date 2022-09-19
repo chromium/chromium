@@ -2176,6 +2176,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2977480621796371840">Guruhdan chiqarish</translation>
 <translation id="2979639724566107830">Yangi oynada ochish</translation>
 <translation id="2981113813906970160">Sichqonchaning katta kursorini ko‘rsatish</translation>
+<translation id="2981293774053328982">Bu fayl tarkibida shaxsiy yoki ijtimoiy tarmoq hisoblaringizni oshkor qilishi mumkin zararli kod mavjud.</translation>
 <translation id="2983373101216420412">Quti batareya quvvati: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2985348301114641460">Administratorga “<ph name="EXTENSION_NAME" />” kengaytmasini oʻrnatish talabi yuborilsinmi?</translation>
 <translation id="2987620471460279764">Boshqa qurilmadan ulashilgan matn</translation>
@@ -3761,6 +3762,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4514610446763173167">Videoni ijro yoki pauza qilish</translation>
 <translation id="451515744433878153">Olib tashlash</translation>
 <translation id="4515872537870654449">Yordam uchun Dell kompaniyasiga murojaat qiling. Ventilyator ishlamasa, dok avtomatik oʻchadi.</translation>
+<translation id="4518840066030486079">Shift tugmasi modifikatori uslubi</translation>
 <translation id="4519331665958994620">Saytlar kameradan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="4519935350946509010">Ulanish xatoligi.</translation>
 <translation id="4520385623207007473">Cookie fayllaridan foydalanish</translation>
@@ -3856,6 +3858,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4598345735110653698">Kodlarni boshqarish</translation>
 <translation id="4598556348158889687">Xotira boshqaruvi</translation>
 <translation id="4598776695426288251">Bir nechta qurilmalar tarqatayotgan Wi-Fi tarmoqlar mavjud</translation>
+<translation id="4600071396330666617">Takliflar soni</translation>
 <translation id="4601426376352205922">Oʻqilmagan deb belgilash</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> saytiga kamera va mikrofondan foydalanishga har doim ruxsat berilsin</translation>
 <translation id="4606551464649945562">Saytlarga atrofingiz 3D xaritasini yaratish yoki kamera holatini kuzatishni taqiqlash</translation>
@@ -4302,6 +4305,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5043913660911154449">Yoki printeringiz PPD faylini tanlang <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
 <translation id="504561833207953641">Mavjud brauzer seansida ochilmoqda.</translation>
+<translation id="5049614114599109018">Kiritish tarixidan foydalanilsin</translation>
 <translation id="5051836348807686060">Tanlangan tilda imlo tekshirilmaydi</translation>
 <translation id="5052499409147950210">Saytni tahrirlash</translation>
 <translation id="505347685865235222">Nomsiz guruh – <ph name="GROUP_CONTENT_STRING" /></translation>

@@ -693,6 +693,7 @@
 <translation id="1640283014264083726">PKCS #1 MD4 ከRSA ምስጠራ ጋር</translation>
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
 <translation id="1641496881756082050">ለ<ph name="NETWORK_NAME" /> ተጨማሪ እርምጃዎች</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{በስህተት ቅርጸት ስለተሰራለት 1 ሌላ የይለፍ ቃል ማምጣት አልተቻለም}one{በስህተት ቅርጸት ስለተሰራለት {NUM_PASSWORDS} ሌላ የይለፍ ቃል ማምጣት አልተቻለም}other{በስህተት ቅርጸት ስለተሰራላቸው {NUM_PASSWORDS} ሌላ የይለፍ ቃላት ማምጣት አልተቻለም}}</translation>
 <translation id="1642492862748815878">ከ<ph name="DEVICE" /> እና <ph name="NUMBER_OF_DEVICES" /> ሌሎች የብሉቱዝ መሣሪያዎች ጋር ተገናኝቷል</translation>
 <translation id="1642494467033190216">ሌሎች የማረሚያ ባህሪያት ከመንቃታቸው በፊት የrootfs ጥበቃ መወገድ እና ዳግም መጀመር ያስፈልጋል።</translation>
 <translation id="1643072738649235303">የX9.62 ECDSA ፊርማ በSHA-1</translation>
@@ -1838,6 +1839,7 @@
 <translation id="2673135533890720193">የአሰሳ ታሪክዎን ያነብባል</translation>
 <translation id="2674764818721168631">አጥፋ</translation>
 <translation id="2678063897982469759">እንደገና አንቃ</translation>
+<translation id="2678100101831051676">cast ማድረግ አልተቻለም።</translation>
 <translation id="268053382412112343">&amp;ታሪክ</translation>
 <translation id="2681124317993121768">የእንግዳ መገለጫዎች አይደገፉም</translation>
 <translation id="2682498795777673382">ዝማኔ ከእርስዎ ወላጅ</translation>
@@ -3869,6 +3871,7 @@
 <translation id="4617019240346358451">«<ph name="EXTENSION_NAME" />»ን ለመጠቀም ገጹን ዳግም ይጫኑ</translation>
 <translation id="4617270414136722281">የቅጥያ አማራጮች</translation>
 <translation id="4617880081511131945">ግንኙነትን መመስረት አልተቻለም</translation>
+<translation id="4618195822946934889">ዩአርኤል መያዝ የሚችለው የASCII ቁምፊዎችን ብቻ ነው</translation>
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4619615317237390068">ከሌሎች መሣሪያዎች የመጡ ትሮች</translation>
 <translation id="4620809267248568679">ይህ ቅንብር በአንድ ቅጥያ ነው የሚፈጸመው።</translation>
@@ -5068,6 +5071,7 @@
 <translation id="5800351251499368110">በጎን ፓነል ውስጥ ፍለጋን ዝጋ። ፍለጋ በጎን ፓነል ውስጥ ተከፍቷል።</translation>
 <translation id="5801568494490449797">አማራጮች</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
+<translation id="5805268472388605531">የአጽንዖት ምልክቶች እና ልዩ ቁምፊዎችን ለማየት የቁልፍ ሰሌዳ ቁልፎችን ተጭነው ይያዙ</translation>
 <translation id="5805697420284793859">የWindow አስተዳዳሪ</translation>
 <translation id="5806447147478173900">በሚታዩት ጣቢያዎች ስራ ላይ የዋለው ጠቅላላ ማከማቻ፦ <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ነባሪ)</translation>
@@ -5709,6 +5713,7 @@
 <translation id="642469772702851743">ይህ መሣሪያ (SN፦ <ph name="SERIAL_NUMBER" />) በዋና ባለቤቱ ተቆልፎ ነበር።</translation>
 <translation id="6425556984042222041">የጽሑፍ-ወደ-ንግግር ፍጥነት</translation>
 <translation id="642729974267661262">ድምጽ ለማጫወት አልተፈቀደም</translation>
+<translation id="6427608534767366138">ለ«<ph name="NETWORK_ID" />» ተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="6429384232893414837">የማዘመን ስህተት</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII፣ ነጠላ ሰርቲፊኬት</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ለሁሉም የዚህ ኮምፒውተር ተጠቃሚዎች አውቶማቲክ ዝምኖችን ያዋቅራል።</translation>
@@ -7845,6 +7850,7 @@ nil</translation>
 <translation id="844063558976952706">ሁሌም በዚህ ጣቢያ ላይ</translation>
 <translation id="8441313165929432954">እንደ ሞደም መሰካትን አንቃ/አሰናክል</translation>
 <translation id="8443795068008423036">እባክዎ መሣሪያዎ የተዘመነ መሆኑን ያረጋግጡ እና እንደገና ይሞክሩ</translation>
+<translation id="8443986842926457191">ዩአርኤል ከ2048 ቁምፊዎች በላይ ነው</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8447409163267621480">Ctrl ወይም Alt ያካትቱ</translation>
 <translation id="844850004779619592">ምንም ትዕዛዞች አልተገኙም</translation>
@@ -7910,6 +7916,7 @@ nil</translation>
 <translation id="851263357009351303">ሁልጊዜ <ph name="HOST" /> ምስሎችን እዲያሳይ ፍቀድ</translation>
 <translation id="8513108775083588393">በራስ ሰር አሽከርክር</translation>
 <translation id="8514746246728959655">የተለየ የደህንነት ቁልፍ ይሞክሩ</translation>
+<translation id="8519895319663397036">የይለፍ ቃላትን ማምጣት አልተቻለም። የፋይሉ መጠን ከ150 ኪባ በታች መሆን አለበት።</translation>
 <translation id="8523493869875972733">ለውጦችን አስቀምጥ</translation>
 <translation id="8523849605371521713">በመመሪያ የታከለ</translation>
 <translation id="8524783101666974011">ወደ የእርስዎ የGoogle መለያ ካርዶችን ያስቀምጡ</translation>

@@ -174,6 +174,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1380591466760231819">Listový záhyb</translation>
 <translation id="138218114945450791">Svetlomodrá</translation>
 <translation id="1382194467192730611">Zariadenie USB je povolené správcom</translation>
+<translation id="1382378825779654399">Keď na ktoromkoľvek webe klesne cena, dostanete e‑mailové upozornenie. Táto stránka sa uloží do priečinka <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Nezobrazujú sa vaše aktuálne informácie? Kontaktujte svoju banku a aktualizujte ich.</translation>
 <translation id="1384725838384960382">Hárok overenia poverenia zabezpečenej platby</translation>
 <translation id="1386623374109090026">Anotácie</translation>
@@ -421,6 +422,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2034971124472263449">Napriek tomu uložiť</translation>
 <translation id="2035400064145347639">Turistickí sprievodcovia a cestopisy</translation>
 <translation id="2036983605131262583">Alternatívny kotúč</translation>
+<translation id="2040463897538655645">Vymeniteľné úložisko</translation>
 <translation id="2040894699575719559">Poloha je blokovaná</translation>
 <translation id="2042213636306070719">Priehradka č. 7</translation>
 <translation id="204357726431741734">Prihlásiť sa a používať heslá uložené vo vašom účte Google</translation>
@@ -1515,6 +1517,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5018422839182700155">Táto stránka sa nedá otvoriť</translation>
 <translation id="5019198164206649151">Zlý stav záložného ukladacieho priestoru</translation>
 <translation id="5020776957610079374">Svetová hudba</translation>
+<translation id="5021557570875267742">Sledovanie cien pomocou Chromu</translation>
 <translation id="5023310440958281426">Skontrolujte pravidlá správcu</translation>
 <translation id="5029568752722684782">Vymazať kópiu</translation>
 <translation id="5030338702439866405">Vydavateľ</translation>
@@ -2234,6 +2237,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6993898126790112050">6x9 (obálka)</translation>
 <translation id="6996312675313362352">Vždy prekladať jazyk <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Zábavný priemysel</translation>
+<translation id="7003335073762455340">Tento produkt sledujete. Táto stránka je uložená v priečinku <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Potvrdzujte karty rýchlejšie pomocou služby Windows Hello</translation>
 <translation id="7006930604109697472">Aj tak odoslať</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3029,6 +3033,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9174623988242579721">Upravené a výkonné vozidlá</translation>
 <translation id="9174917557437862841">Tlačidlo na prepnutie karty, stlačením klávesa Enter prepnite na túto kartu</translation>
 <translation id="9179703756951298733">Spravovať platby a informácie o kreditných kartách v nastaveniach Chromu</translation>
+<translation id="9179907736442194268">Dostávajte e‑mailové upozornenia, keď na ľubovoľnom webe klesne cena</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9183425211371246419">Web <ph name="HOST_NAME" /> využíva nepodporovaný protokol.</translation>
 <translation id="9187461866967718678">Extrémne športy</translation>

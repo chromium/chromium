@@ -55,6 +55,7 @@
 <translation id="1322735045095424339">تفرض مؤسستك استخدام "وضع التصفُّح المتخفي".</translation>
 <translation id="1323735185997015385">حذف</translation>
 <translation id="132683371494960526">انقر مرّتين لتغيير المجلد الرئيسي.</translation>
+<translation id="1335348992705722518">إدارة الإعدادات...</translation>
 <translation id="1340643665687018190">إغلاق القائمة</translation>
 <translation id="1358214951266274152">الانتقال إلى الرابط الذي نسخته</translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
@@ -385,6 +386,7 @@
 <translation id="4187450337729239226">اللصق والبحث</translation>
 <translation id="4223967053752765281">أوقفت مؤسستك إمكانية تسجيل الدخول. سيظل بإمكانك الاطّلاع على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى على هذا الجهاز. وفي حال إجراء أي تغييرات، لن تتم مزامنتها مع حسابك.</translation>
 <translation id="4233831822770018312">تعديل الأذونات</translation>
+<translation id="4236584471598725073">يتم حاليًا تتبُّع السعر</translation>
 <translation id="4237377247299956313">‏النقر على <ph name="BEGIN_BOLD" />Default Browser App (تطبيق المتصفِّح التلقائي)<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">إدخال عبارة المرور</translation>
 <translation id="4249955472157341256">الترتيب حسب الأحدث</translation>
@@ -813,7 +815,7 @@
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
-<translation id="7646263789464975852">القائمة ← الإعدادات ← تأكيد السلامة</translation>
+<translation id="7646263789464975852">القائمة ← الإعدادات ← التحقّق من الأمان</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>

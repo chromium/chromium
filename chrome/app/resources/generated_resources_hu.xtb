@@ -695,6 +695,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1640283014264083726">PKCS #1 MD4 RSA titkosítással</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="1641496881756082050">További műveletek a következőhöz: <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 további jelszót nem sikerült importálni, mert nem volt megfelelő a formátuma}other{{NUM_PASSWORDS} további jelszót nem sikerült importálni, mert nem volt megfelelő a formátumuk}}</translation>
 <translation id="1642492862748815878">Csatlakoztatva van a(z) <ph name="DEVICE" /> eszközhöz és <ph name="NUMBER_OF_DEVICES" /> másik Bluetooth-eszközhöz</translation>
 <translation id="1642494467033190216">A rootfs védelem eltávolítása és újraindítás szükséges a további hibakeresési funkciók engedélyezése előtt.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA aláírás a következővel: SHA-1</translation>
@@ -1843,6 +1844,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2673135533890720193">A böngészési előzmények olvasása</translation>
 <translation id="2674764818721168631">Ki</translation>
 <translation id="2678063897982469759">Újraengedélyezés</translation>
+<translation id="2678100101831051676">Átküldés sikertelen.</translation>
 <translation id="268053382412112343">Elő&amp;zmények</translation>
 <translation id="2681124317993121768">A vendégprofilok nem támogatottak</translation>
 <translation id="2682498795777673382">Frissítés a szülőtől</translation>
@@ -3876,6 +3878,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4617019240346358451">Töltse be újra az oldalt a(z) „<ph name="EXTENSION_NAME" />” használatához</translation>
 <translation id="4617270414136722281">Bővítménybeállítások</translation>
 <translation id="4617880081511131945">Nem lehet kapcsolódni</translation>
+<translation id="4618195822946934889">Az URL csak ASCII-karakterekből állhat</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4619615317237390068">Más eszközök lapjai</translation>
 <translation id="4620809267248568679">Ezt a beállítást egy bővítmény kényszeríti ki.</translation>
@@ -5077,6 +5080,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5800351251499368110">Oldalsó paneli keresés bezárása. Meg van nyitva a keresés az oldalsó panelen.</translation>
 <translation id="5801568494490449797">Beállítások</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
+<translation id="5805268472388605531">Az ékezetek és a speciális karakterek megjelenítéséhez tartsa lenyomva a billentyűket</translation>
 <translation id="5805697420284793859">Ablakkezelő</translation>
 <translation id="5806447147478173900">A megjelenített webhelyek által felhasznált teljes tárhely: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (alapértelmezett)</translation>
@@ -5718,6 +5722,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="642469772702851743">Az eszközt (sorozatszám: <ph name="SERIAL_NUMBER" />) zárolta a tulajdonos.</translation>
 <translation id="6425556984042222041">Szövegfelolvasó sebessége</translation>
 <translation id="642729974267661262">Nem játszhatnak le hangot</translation>
+<translation id="6427608534767366138">Proxyhitelesítés szükséges itt: „<ph name="NETWORK_ID" />”</translation>
 <translation id="6429384232893414837">Frissítési hiba</translation>
 <translation id="6430814529589430811">Base64 kódolású ASCII, egyedüli tanúsítvány</translation>
 <translation id="6431347207794742960">A <ph name="PRODUCT_NAME" /> jelen számítógép összes felhasználója számára beállítja az automatikus frissítéseket.</translation>
@@ -7846,6 +7851,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="844063558976952706">Ezen a webhelyen mindig</translation>
 <translation id="8441313165929432954">Internetmegosztás engedélyezése/letiltása</translation>
 <translation id="8443795068008423036">Győződjön meg arról, hogy eszköze naprakész, majd próbálkozzon újra</translation>
+<translation id="8443986842926457191">Az URL több mint 2048 karakterből áll</translation>
 <translation id="8446884382197647889">További információ</translation>
 <translation id="8447409163267621480">Használja a Ctrl vagy az Alt gombot</translation>
 <translation id="844850004779619592">Nem találhatók parancsok</translation>
@@ -7911,6 +7917,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="851263357009351303"><ph name="HOST" /> mindig mutathasson képeket</translation>
 <translation id="8513108775083588393">Autom.forgatás</translation>
 <translation id="8514746246728959655">Próbálkozzon másik biztonsági hardverkulccsal</translation>
+<translation id="8519895319663397036">Nem lehet importálni a jelszavakat. A fájl mérete nem érheti el a 150 kB-ot.</translation>
 <translation id="8523493869875972733">Módosítások megtartása</translation>
 <translation id="8523849605371521713">Házirend adta hozzá</translation>
 <translation id="8524783101666974011">Kártyák mentése a Google-fiókjába</translation>

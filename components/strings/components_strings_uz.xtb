@@ -259,6 +259,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="156703335097561114">Manzillar, interfeys konfiguratsiyasi hamda ulanish sifati kabi tarmoqga oid axborot</translation>
 <translation id="1567040042588613346">Bu parametr xatosiz ishlayapti, lekin boshqa qaysidir parametr qiymati bilan almashtirildi.</translation>
 <translation id="1569487616857761740">Amal qilish muddatini kiriting</translation>
+<translation id="1569694109004336106">Google Chrome parollarni kiritishda Windows Hello himoyasini yoqishga urinmoqda.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Veb-sahifani ochish vaqtida kutilmagan xatolik yuz berdi.</translation>
 <translation id="1586541204584340881">Oʻrnatilgan kengaytmalar</translation>
@@ -397,6 +398,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1958218078413065209">Eng yuqori ballingiz: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Ochilgan sahifalar manzillari, tizim va sahifalar<ph name="END_WHITEPAPER_LINK" /> haqidagi ayrim maʼlumotlarni Google serverlariga yuborish orqali internetdagi xavfsizlik tizimini hamma uchun yaxshilashga yordam berasiz. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Maxfiylik siyosati<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> xatcho‘plari</translation>
+<translation id="1971033026002113380">Parollarni TouchID yordamida himoyalash</translation>
 <translation id="1973335181906896915">Seriyalashtirish amali bajarilmadi</translation>
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1975457531113383421">Kiritish tarnovi</translation>
@@ -724,6 +726,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2881276955470682203">Karta eslab qolinsinmi?</translation>
 <translation id="2882949212241984732">Darvozasimon shaklida taxlash</translation>
 <translation id="2893773853358652045">Toʻrtinchi oʻram</translation>
+<translation id="289834758818479772">Bu qurilmani boshqalar bilan birga ishlatsangiz, saqlangan parollaringizdan foydalanishda TouchID tekshiruvini yoqishingiz mumkin.</translation>
 <translation id="2900528713135656174">Tadbir yaratish</translation>
 <translation id="2903493209154104877">Manzillar</translation>
 <translation id="290376772003165898">Sahifa <ph name="LANGUAGE" /> tilida emasmi?</translation>
@@ -800,6 +803,8 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3108943290502734357">Oʻrta tarnov</translation>
 <translation id="3109728660330352905">Sizda bu sahifani ko‘rishga ruxsat yo‘q.</translation>
 <translation id="3113284927548439113">Uchinchi siljish</translation>
+<translation id="3114040155724590991">Android tizimi yangilanmoqda
+    Ilova odatdagidan kechroq ishga tushishi mumkin.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Maxfiy fayl yuklab olinsinmi?}other{Maxfiy fayllar yuklab olinsinmi?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini qaytarishingizni talab qilmoqda.</translation>
 <translation id="3116158981186517402">Laminatsiyalash</translation>
@@ -1250,6 +1255,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4306812610847412719">vaqtinchalik xotira</translation>
 <translation id="4308567447483056043">Bu parametr foydalanuvchi begonaligi uchun inkor etildi. Bu parametr tatbiq qilinishi uchun Chrome brauzeri va profili bir xil tashkilot tomonidan administrator konsoli orqali boshqarilishi lozim.</translation>
 <translation id="4310070645992025887">Sayohatlar xizmatidan qidirish</translation>
+<translation id="4310496734563057511">Bu qurilmani boshqalar bilan birga ishlatsangiz, saqlangan parollaringizdan foydalanishda Windows Hello tekshiruvini yoqishingiz mumkin.</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloklansin (standart parametr)</translation>
 <translation id="4314815835985389558">Sinxronizatsiyani boshqarish</translation>
@@ -1464,6 +1470,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4880827082731008257">Qidiruv tarixi</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="4885256590493466218">Hisob-kitob vaqtida <ph name="CARD_DETAIL" /> bilan toʻlang</translation>
+<translation id="4887406273302438710">Parollarni Windows Hello yordamida himoyalash</translation>
 <translation id="4888600795924685526">Chet tillarini oʻrganish</translation>
 <translation id="4889420713887366944">Inkognito oynasini ochish tugmasi, yangi Inkognito oynasini ochib internetni kuzatuvsiz kezish uchun Enter tugmasini bosing</translation>
 <translation id="4892518386797173871">Orqasi</translation>
@@ -1682,6 +1689,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5426179911063097041"><ph name="SITE" /> sayti bildirishnoma yuborishga ruxsat so‘ramoqda.</translation>
 <translation id="5428105026674456456">Ispancha</translation>
 <translation id="5430298929874300616">Xatcho‘pni o‘chirish</translation>
+<translation id="5434423669266814150">parollarni kiritishda TouchID tekshiruvini yoqish</translation>
 <translation id="5443468954631487277">Teskari tartibda old tomonida</translation>
 <translation id="5447765697759493033">Bu sayt tarjima qilinmaydi</translation>
 <translation id="5452270690849572955"><ph name="HOST_NAME" /> sahifasi topilmadi</translation>
@@ -2457,6 +2465,7 @@ Batafsil axborot:
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hisobingiz xavf ostida va shaxsiy ma’lumotlaringizni kimdir ko‘rishi mumkin. Parolingizni hoziroq o‘zgartirishni tavsiya etamiz.</translation>
 <translation id="7564680668369175887">Ulama vagonlar</translation>
 <translation id="7567204685887185387">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati ishonchli tuyulmayapti. Server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
+<translation id="7568616151991626879">Google Chrome parollarni kiritishda <ph name="APP_NAME" /> himoyasini yoqishga urinmoqda.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Qidiruv tizimlarini boshqarish tugmasi, birlamchi qidiruv tizimi va qidiruv saytini boshqarish uchun Enter tugmasini bosing</translation>
 <translation id="7569952961197462199">Bu kredit karta Chrome’dan o‘chirib tashlansinmi?</translation>
@@ -2487,6 +2496,7 @@ Batafsil axborot:
 <translation id="7637586430889951925">{COUNT,plural, =0{Yoʻq}=1{Hisobingizda 1 ta parol bor (<ph name="DOMAIN_LIST" /> uchun)}other{Hisobingizda # ta parol bor (<ph name="DOMAIN_LIST" /> uchun)}}</translation>
 <translation id="7638605456503525968">Ketma-ket portlar</translation>
 <translation id="7639968568612851608">Toʻq kulrang</translation>
+<translation id="7646681339175747202">Hozirgina siz foydalangan parol oshkor qilingan. Google Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="7647206758853451655">Bosma sifati</translation>
 <translation id="7648992873808071793">Fayllarni bu qurilmada saqlash</translation>
 <translation id="7653957176542370971">Toʻlovlarni qayta ishlash vositasi yopildi</translation>

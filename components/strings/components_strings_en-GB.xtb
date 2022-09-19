@@ -261,6 +261,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="156703335097561114">Networking information, such as addresses, interface configuration and connection quality</translation>
 <translation id="1567040042588613346">This policy is working as intended but the same value is set elsewhere and is superseded by this policy.</translation>
 <translation id="1569487616857761740">Enter expiry date</translation>
+<translation id="1569694109004336106">Google Chrome is trying to turn on Windows Hello for filling in passwords.</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
 <translation id="1586541204584340881">Which extensions you have installed</translation>
@@ -399,6 +400,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1958218078413065209">Your highest score is <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK" />URLs of some pages that you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK" /> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privacy policy<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
+<translation id="1971033026002113380">Protect passwords with Touch ID</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
 <translation id="1974060860693918893">Advanced</translation>
 <translation id="1975457531113383421">Input tray</translation>
@@ -726,6 +728,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2881276955470682203">Save card?</translation>
 <translation id="2882949212241984732">Double-gate fold</translation>
 <translation id="2893773853358652045">Fourth roll</translation>
+<translation id="289834758818479772">If you share this device with others, you can turn on Touch ID to verify that it's you whenever you use a saved password</translation>
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2903493209154104877">Addresses</translation>
 <translation id="290376772003165898">Page is not in <ph name="LANGUAGE" />?</translation>
@@ -802,6 +805,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3108943290502734357">Middle tray</translation>
 <translation id="3109728660330352905">You don't have authorisation to view this page.</translation>
 <translation id="3113284927548439113">Third shift</translation>
+<translation id="3114040155724590991">Updating Android System
+    Starting your app may take longer than usual.</translation>
 <translation id="3115363211799416195">{0,plural, =1{Download confidential file?}other{Download confidential files?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminate</translation>
@@ -1256,6 +1261,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4306812610847412719">clipboard</translation>
 <translation id="4308567447483056043">This policy is ignored because the user is unaffiliated. For this policy to be applied, the Chrome browser and profile must be managed through the Admin console by the same organisation.</translation>
 <translation id="4310070645992025887">Search your journeys</translation>
+<translation id="4310496734563057511">If you share this device with others, you can turn on Windows Hello to verify that it's you whenever you use a saved password</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Block (default)</translation>
 <translation id="4314815835985389558">Manage sync</translation>
@@ -1470,6 +1476,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4880827082731008257">Search history</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4885256590493466218">Pay with <ph name="CARD_DETAIL" /> at checkout</translation>
+<translation id="4887406273302438710">Protect passwords with Windows Hello</translation>
 <translation id="4888600795924685526">Foreign language study</translation>
 <translation id="4889420713887366944">Open incognito window button; press enter to open a new incognito window to browse privately</translation>
 <translation id="4892518386797173871">Rear</translation>
@@ -1689,6 +1696,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5428105026674456456">Spanish</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
+<translation id="5434423669266814150">turn on Touch ID for filling in passwords</translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447765697759493033">This site will not be translated</translation>
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>
@@ -2466,6 +2474,7 @@ Additional details:
 <translation id="7564049878696755256">You could lose access to your <ph name="ORG_NAME" /> account or experience identity theft. Chrome recommends changing your password now.</translation>
 <translation id="7564680668369175887">Estate cars</translation>
 <translation id="7567204685887185387">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might have been issued fraudulently. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
+<translation id="7568616151991626879">Google Chrome is trying to fill in your password on <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Manage search engines button: press Enter to manage your default search engine and site search</translation>
 <translation id="7569952961197462199">Remove credit card from Chrome?</translation>
@@ -2496,6 +2505,7 @@ Additional details:
 <translation id="7637586430889951925">{COUNT,plural, =0{None}=1{1 password in your account (for <ph name="DOMAIN_LIST" />)}other{# passwords in your account (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serial ports</translation>
 <translation id="7639968568612851608">Dark grey</translation>
+<translation id="7646681339175747202">The password that you just used was found in a data breach. Google Password Manager recommends changing your password now.</translation>
 <translation id="7647206758853451655">Print quality</translation>
 <translation id="7648992873808071793">Store files on this device</translation>
 <translation id="7653957176542370971">Payment handler sheet is closed</translation>

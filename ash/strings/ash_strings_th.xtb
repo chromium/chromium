@@ -235,6 +235,7 @@
 <translation id="2298170939937364391">เปิดใช้แว่นขยายทั้งหน้าจอแล้ว กด Ctrl+Search+M อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="2302092602801625023">บัญชีนี้จัดการโดย Family Link</translation>
 <translation id="2303600792989757991">ภาพรวมการสลับหน้าต่าง</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: การจับภาพหน้าจอ การดาวน์โหลด และไฟล์ที่ปักหมุดไว้ล่าสุด</translation>
 <translation id="2318576281648121272">วันนี้ <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , หมวดหมู่ผลการค้นหา</translation>
 <translation id="2322173485024759474">ถอยกลับทีละตัวอักษร</translation>
@@ -1155,6 +1156,7 @@
 <translation id="7633755430369750696">แสดงการตั้งค่าการแชร์ใกล้เคียง</translation>
 <translation id="7634648064048557203">จัดกล้องพอดีกับมุมขวาล่างแล้ว</translation>
 <translation id="7641938616688887143">บันทึก</translation>
+<translation id="7642106959537987271">โหมดการกลับสี</translation>
 <translation id="7642647758716480637">เปิดการตั้งค่าของ <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (เจ้าของ)</translation>
 <translation id="7647488630410863958">ปลดล็อกอุปกรณ์เพื่อดูการแจ้งเตือน</translation>
@@ -1260,6 +1262,7 @@
 <translation id="8209010265547628927">รีเซ็ต</translation>
 <translation id="8214996719228530800">เวอร์ชัน Canary</translation>
 <translation id="8219451629189078428">คุณต้องเปิด Chromebook และเสียบปลั๊กไว้ตลอดในระหว่างนี้ ตรวจดูว่าได้เสียบสายที่ชาร์จและอะแดปเตอร์ไว้แน่นดีแล้ว ทั้งกับ Chromebook และเต้ารับ และอย่าปิด Chromebook</translation>
+<translation id="8230305195727960608">โหมดการกลับสี</translation>
 <translation id="8236042855478648955">ได้เวลาพักแล้ว</translation>
 <translation id="8246282815785366524">ยินดีต้อนรับกลับมา <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" /></translation>
@@ -1386,6 +1389,7 @@
 <translation id="8982906748181120328">การมองเห็นใกล้เคียง</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">กำลังใช้<ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">เปิดใช้โหมดการกลับสีแล้ว กด Ctrl+Search+H อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>
 <translation id="9000771174482730261">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="9017320285115481645">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครอง</translation>
@@ -1434,6 +1438,7 @@
 <translation id="921989828232331238">ผู้ปกครองล็อกอุปกรณ์ของคุณไว้ทั้งวัน</translation>
 <translation id="9220525904950070496">ลบบัญชี</translation>
 <translation id="923686485342484400">กด Control Shift Q 2 ครั้งเพื่อออกจากระบบ</translation>
+<translation id="92580429198593979">คุณกดแป้นพิมพ์ลัดสำหรับการกลับสี คุณต้องการเปิดฟีเจอร์นี้ไหม</translation>
 <translation id="925832987464884575">ซ่อนตัวอย่าง</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> โดยทันที</translation>
 <translation id="938963181863597773">มีอะไรในปฏิทินของฉันบ้าง</translation>

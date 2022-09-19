@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">‏شرایط ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
 <translation id="2106831557840787829">‏ارائه ChromeOS Flex با <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مانند <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزاری Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
+<translation id="2112742052114331084">‏وقتی روشن باشد، Chrome حافظه را از برگه‌هایی که به‌طور فعال از آن‌ها استفاده نمی‌کنید بازپس می‌گیرد. این کار منابع رایانه را برای وظایف دیگر آزاد می‌کند و موجب می‌شود Chrome همچنان با سرعت بالا اجرا شود. برگه‌های غیرفعال خالی به‌نظر می‌رسند و وقتی روی آن‌ها کلیک کنید به‌طور خودکار مجدداً بار می‌شوند. <ph name="BEGIN_LINK" />اطلاعات بیشتری کسب کنید<ph name="END_LINK" /> یا <ph name="BEGIN_LINK_2" />بازخورد ارسال کنید<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="2121284319307530122">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="2123055963409958220">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chrome کمک کنید</translation>
@@ -271,6 +272,7 @@
 <translation id="6735387454586646204">‏سیستم ChromeOS Flex</translation>
 <translation id="6739177684496155661">‏در نمایه جدیدی از Chrome ادامه می‌دهید؟</translation>
 <translation id="6750954913813541382">‏Chrome برای رفع غلط‌های املایی، نوشتاری را که در مرورگر تایپ می‌کنید به Google ارسال می‌کند</translation>
+<translation id="6756581345161130259">‏درصورت نیاز، Chrome حافظه را از برگه‌هایی که به‌طور فعال از آن‌ها استفاده نمی‌کنید بازپس می‌گیرد. هرزمان خواستید می‌توانید آن را در تنظیمات تغییر دهید.</translation>
 <translation id="677276454032249905">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
 <translation id="6785872064505734160">‏«دستیار Google» در Chrome می‌تواند کنش‌هایی را در وب‌سایت‌ها برایتان انجام دهد</translation>
 <translation id="683440813066116847">‏قانون ترافیک ورودی برای Google Chrome Canary به منظور اجازه به ترافیک mDNS .</translation>

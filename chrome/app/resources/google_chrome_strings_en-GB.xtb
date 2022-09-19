@@ -31,6 +31,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1587223624401073077">Google Chrome is using your camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
 <translation id="1597911401261118146">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
+<translation id="1599904803480101533">Chrome blocked this archive file because it may hide malware</translation>
 <translation id="1619887657840448962">To make Chrome safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don’t want Chrome to consider.</translation>
 <translation id="1628000112320670027">Get help with Chrome</translation>

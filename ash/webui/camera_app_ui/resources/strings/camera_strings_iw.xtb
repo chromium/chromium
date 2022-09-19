@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1627744224761163218">‎4 x 4</translation>
 <translation id="1664224225747386870">לא צולם סרטון</translation>
+<translation id="169335673490251151">סריקת דפים נוספים</translation>
 <translation id="1838104802459806957">הטייה מעלה</translation>
 <translation id="1851169887664797861">יש פקדים נוספים למצלמה</translation>
 <translation id="1851616744363735765">מושהית</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="4281620174117014503">רזולוציה בינונית</translation>
 <translation id="4329152592498422850">מעבר לצילום תמונה מרובעת</translation>
+<translation id="4340659173795395806">‏עכשיו אפשר ליצור קובץ PDF שמכיל מספר דפים</translation>
 <translation id="4383571725254449280">הדפסת יומני ביצועים</translation>
 <translation id="4445542136948522167">הפסקת הצילום</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:‏<ph name="ASPECT_RATIO_HEIGHT" />)‏ <ph name="MEGAPIXEL" /> מגה-פיקסל</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5320594929574852403">מתבצעת תזוזה לשמאל</translation>
 <translation id="5444515100983837161">יש למקם את כל קצות המסמך בתוך המסגרת. הסריקה תתבצע בצורה הטובה ביותר אם המסמך והרקע יהיו בצבעים שונים.</translation>
+<translation id="5662366948659129155">מתבצעת סריקה של דף <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">ריבוע</translation>
 <translation id="5746169159649715125">‏שמירה כקובץ PDF</translation>
 <translation id="5753488212459587150">הפעלת מצב מתקדם</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">מצב מתקדם</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5869546221129391014">רשת</translation>
+<translation id="5903928279335207406">מחיקת הדף</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5975083100439434680">התרחקות</translation>
 <translation id="5976160379964388480">אחרים</translation>
@@ -158,6 +162,7 @@
 <translation id="8167081290930651932">שמירה כתמונה</translation>
 <translation id="8239780215768881278">צילום תמונה מהסרטון</translation>
 <translation id="8261506727792406068">מחיקה</translation>
+<translation id="839162370397157884">בחירת הדף</translation>
 <translation id="8425673304802773841">הטייה מטה</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8629662593426079630">360p</translation>

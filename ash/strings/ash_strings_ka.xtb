@@ -1150,6 +1150,7 @@
 <translation id="7633755430369750696">მახლობლად გაზიარების პარამეტრების ჩვენება.</translation>
 <translation id="7634648064048557203">კამერა მიზიდულია ქვედა მარჯვენა კუთხეში</translation>
 <translation id="7641938616688887143">ჩაწერა</translation>
+<translation id="7642106959537987271">ფერთა ინვერსიის რეჟიმი</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />-ის პარამეტრების გახსნა, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (მფლობელი)</translation>
 <translation id="7647488630410863958">შეტყობინებების სანახავად, განბლოკეთ მოწყობილობა</translation>
@@ -1255,6 +1256,7 @@
 <translation id="8209010265547628927">გადაყენება</translation>
 <translation id="8214996719228530800">Canary არხი</translation>
 <translation id="8219451629189078428">თქვენი Chromebook ამ დროის განმავლობაში ჩართული და კვების წყაროსთან მიერთებული უნდა იყოს. დარწმუნდით, რომ დამტენის ან ადაპტერის კაბელები კარგად არის შეერთებული როგორც Chromebook-ში, ისე როზეტში. არ გამორთოთ Chromebook.</translation>
+<translation id="8230305195727960608">ფერთა ინვერსიის რეჟიმი</translation>
 <translation id="8236042855478648955">შესვენების დროა</translation>
 <translation id="8246282815785366524">კეთილი იყოს თქვენი დაბრუნება, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" /></translation>
@@ -1380,6 +1382,7 @@
 <translation id="8982906748181120328">ახლომახლო ხილვადობა</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">გამოიყენება <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">ფერთა ინვერსიის რეჟიმი ჩაირთო. მის გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას Ctrl+Search+H.</translation>
 <translation id="899350903320462459">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა <ph name="LOGIN_ID" />-ის სახელით</translation>
 <translation id="9000771174482730261">მეხსიერების მართვა</translation>
 <translation id="9017320285115481645">შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის.</translation>
@@ -1428,6 +1431,7 @@
 <translation id="921989828232331238">თქვენმა მშობელმა ჩაკეტა მოწყობილობა ერთი დღით</translation>
 <translation id="9220525904950070496">ანგარიშის წაშლა</translation>
 <translation id="923686485342484400">დააჭირეთ Control Shift Q ორჯერ, რათა გამოხვიდეთ.</translation>
+<translation id="92580429198593979">თქვენ დააჭირეთ კლავიატურის მალსახმობს ფერთა ინვერსიისთვის. გსურთ მისი ჩართვა?</translation>
 <translation id="925832987464884575">გადახედვის გამორთვა</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> ითხოვს, დაუყოვნებლივ განაახლოთ ეს <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">რა მაქვს კალენდარში?</translation>

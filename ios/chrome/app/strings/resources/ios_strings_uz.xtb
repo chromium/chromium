@@ -23,6 +23,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1104948393051856124">Davom etish</translation>
 <translation id="110724200315609752">Yopilmagan oynalarga oʻtish</translation>
 <translation id="1112015203684611006">Chop etilmadi.</translation>
+<translation id="1118569444314402022">Qaytganingizdan mamnunmiz, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Yangi sahifa ochish</translation>
 <translation id="1126809382673880764">Zararli sayt, yuklanma va kengaytmalardan himoya qila olmaydi. Gmail va Qidiruv kabi Google xizmatlarida Saytlarni xavfsiz kezish himoyasi ostida boʻlasiz.</translation>
 <translation id="1135212215217513471">iOS uchun Chromeni olish</translation>
@@ -63,6 +64,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1377255359165588604">Sinxronlab bo‘lmadi.</translation>
 <translation id="1377321085342047638">Karta raqami</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> hisobi bilan davom etish</translation>
 <translation id="1400642268715879018">Oxirgi 4 haftalik</translation>
 <translation id="1404330357948037222">Hisobingizdan chiqqansiz</translation>
 <translation id="1407135791313364759">Barchasini ochish</translation>
@@ -176,6 +178,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2421044535038393232">Tahrirlashda davom etish</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> saytidagi <ph name="USERNAME" /> paroli allaqachon saqlangan</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
+<translation id="2461070143328828326">Parol sozlamalari</translation>
 <translation id="2469960372084740698">Saytlarni xavfsiz kezish faolsizlantirilsinmi?</translation>
 <translation id="2473876017985765807"><ph name="WEBSITE" /> uchun parol allaqachon saqlangan</translation>
 <translation id="2476359652512522418">Tanlanmagan.</translation>
@@ -330,6 +333,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3709582977625132201">Oʻqilmagan deb belgilash</translation>
 <translation id="371230970611282515">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="37207012422556617">Qidiruv trendlari</translation>
+<translation id="3726360487031500941"><ph name="USER_NAME" /> hisobingizga qayta kiring</translation>
 <translation id="3740397331642243698">Kiritilgan URL manzillar Google Chrome brauzerida Inkognito rejimda ochiladi.</translation>
 <translation id="3762232513783804601">iPad uchun ishlab chiqilgan</translation>
 <translation id="3771033907050503522">Inkognito varaqlar</translation>

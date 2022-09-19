@@ -303,6 +303,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7682601070171973634">Chromium bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
 <translation id="7686590090926151193">Chromium is niet je standaardbrowser</translation>
 <translation id="7689606757190482937">Chromium synchroniseren en personaliseren op al je apparaten</translation>
+<translation id="7714577916146996629">Als deze instelling aanstaat, claimt Chromium geheugen terug van tabbladen die je niet actief gebruikt. Zo worden de resources van je computer vrijgemaakt voor andere taken en blijft Chromium snel. Inactieve tabbladen worden leeg weergegeven en worden automatisch opnieuw geladen als je erop klikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />feedback sturen<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>

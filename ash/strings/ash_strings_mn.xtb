@@ -214,6 +214,7 @@
 <translation id="2132302418721800944">Бүтэн дэлгэцийг бичих</translation>
 <translation id="2135456203358955318">Суурилуулсан томруулагч</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
+<translation id="2161132820593978283">Камерын хүрээлэх онцлогийг туршсанаар та видео дуудлагын дэлгэцийн голд байх болно. Үүнийг Шуурхай тохиргоо хэсэгт асаана уу.</translation>
 <translation id="2170530631236737939">Тоймоос гарахын тулд гурван хуруугаараа доош шударна уу</translation>
 <translation id="219905428774326614">Эхлүүлэгч, бүх апп</translation>
 <translation id="2201071101391734388">Саяхны <ph name="TOTAL_COUNT" />-с <ph name="INDEX" />-р зураг.</translation>
@@ -252,6 +253,7 @@
 <translation id="2405664212338326887">Холбогдоогүй</translation>
 <translation id="2408955596600435184">ПИН-ээ оруулна уу</translation>
 <translation id="2412593942846481727">Шинэчлэх боломжтой</translation>
+<translation id="2426051945783024481">Камерын хүрээг автоматаар голлуулсан</translation>
 <translation id="2427507373259914951">Зүүн талыг товших</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж нь холбогдох зөвшөөрөл хүсч байна. Хүлээж авахаасаа өмнө <ph name="PASSKEY" /> дамжуулах түлхүүр үг нь энэ төхөөрөмж дээр гарч ирсэн байгаа эсэхийг шалгана уу.</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
@@ -1039,6 +1041,7 @@
 <translation id="6960565108681981554">Идэвхжүүлээгүй байна. Оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="6961121602502368900">Ажлын профайл дээр утсыг чимээгүй болгох боломжгүй</translation>
 <translation id="6961840794482373852">Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Up товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Дээш сумыг дарна уу.</translation>
+<translation id="696267987219125751">Камерын хүрээлэх онцлог унтраалттай байна.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Эхлүүлэх</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7513922695575567867">Календарь, <ph name="DATE" />-н долоо хоног, <ph name="SELECTED_DATE" />-г одоогоор сонгосон.</translation>
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Камерын хүрээлэх онцлог асаалттай байна.</translation>
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux аппууд болон Нууцлалтай цонхнуудыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
@@ -1147,6 +1151,7 @@
 <translation id="7607002721634913082">зогссон</translation>
 <translation id="7609951632080598826">Календарийн харагдах байдал, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камер дахин холбогдсон.</translation>
+<translation id="761736749114493194">Камерын хүрээлэх онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Ойролцоо хуваалцах тохиргоог харуулна.</translation>
 <translation id="7634648064048557203">Камерыг баруун доод булан руу зэрэгцүүлсэн</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">Одоогийн дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
 <translation id="8517041960877371778">Таны <ph name="DEVICE_TYPE" /> асаалттай үед цэнэглэхгүй.</translation>
 <translation id="8535393432370007982">Өнгөөр эрэмбэлэх дарааллыг болих</translation>
+<translation id="8541078764854166027">Камерын хүрээлэх онцлог</translation>
 <translation id="8542053257095774575">Хадгалсан дэлгэц эсвэл загвар байхгүй</translation>
 <translation id="8546059259582788728">Эрэмбэлэхийг амжилттай болилоо</translation>
 <translation id="8551588720239073785">Огноо болон цагийн тохиргоо</translation>

@@ -214,6 +214,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2132302418721800944">Recordio'r sgrîn lawn</translation>
 <translation id="2135456203358955318">Chwyddwr sydd wedi'i docio</translation>
 <translation id="2148716181193084225">Heddiw</translation>
+<translation id="2161132820593978283">Rhowch gynnig ar fframio camera fel y byddwch yng nghanol y sgrîn ar alwadau fideo. Trowch ef ymlaen yn y Gosodiadau Cyflym.</translation>
 <translation id="2170530631236737939">Sweipiwch i lawr gyda thri bys i adael Trosolwg</translation>
 <translation id="219905428774326614">Lansiwr, pob ap</translation>
 <translation id="2201071101391734388">Llun diweddar <ph name="INDEX" /> o <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +253,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2405664212338326887">Ni chysylltir</translation>
 <translation id="2408955596600435184">Rhowch eich PIN</translation>
 <translation id="2412593942846481727">Mae diweddariad ar gael</translation>
+<translation id="2426051945783024481">Mae fframio camera wedi'i ganoli yn awtomatig</translation>
 <translation id="2427507373259914951">Clic chwith</translation>
 <translation id="2429753432712299108">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru. Cyn derbyn, cadarnhewch fod y cod pass hwn yn cael ei ddangos ar y ddyfais honno: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
@@ -1038,6 +1040,7 @@ Gosodiad newydd</translation>
 <translation id="6960565108681981554">Heb ei weithredu. Cysylltwch â'ch cludydd.</translation>
 <translation id="6961121602502368900">Nid yw Distewi'r Ffôn ar gael ar broffil gwaith</translation>
 <translation id="6961840794482373852">Mae'r llwybr byr bysellfwrdd Alt + Saeth i fyny wedi newid. I ddefnyddio'r fysell Page Up, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth i fyny.</translation>
+<translation id="696267987219125751">Mae fframio'r camera wedi'i ddiffodd.</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6972754398087986839">Cychwyn arni</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1128,6 +1131,7 @@ Gosodiad newydd</translation>
 <translation id="7513922695575567867">Calendr, wythnos o <ph name="DATE" />, mae <ph name="SELECTED_DATE" /> wedi'i ddewis ar hyn o bryd.</translation>
 <translation id="7514365320538308">Lawrlwytho</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Mae fframio camera ymlaen.</translation>
 <translation id="7526573455193969409">Mae'n bosib bod y rhwydwaith yn cael ei fonitro</translation>
 <translation id="7536035074519304529">Cyfeiriad IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Ni chefnogir apiau Linux a ffenestri anhysbys ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
@@ -1146,6 +1150,7 @@ Gosodiad newydd</translation>
 <translation id="7607002721634913082">Wedi seibio</translation>
 <translation id="7609951632080598826">Gwedd calendr, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Mae'r camera wedi'i ailgysylltu.</translation>
+<translation id="761736749114493194">Toglo fframio camera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Dangos gosodiadau Rhannu Gerllaw.</translation>
 <translation id="7634648064048557203">Mae'r camera wedi'i snapio i'r gornel dde isaf</translation>
@@ -1306,6 +1311,7 @@ Gosodiad newydd</translation>
 <translation id="851458219935658693">Dangos ffenestri o'r ddesg bresennol, botwm radio wedi'i ddewis</translation>
 <translation id="8517041960877371778">Mae'n bosib na fydd eich <ph name="DEVICE_TYPE" /> yn gwefru tra bydd ymlaen.</translation>
 <translation id="8535393432370007982">Dadwnued trefnu yn ôl lliw</translation>
+<translation id="8541078764854166027">Fframio camera</translation>
 <translation id="8542053257095774575">Nid oes unrhyw ddesgiau neu dempledi wedi'u cadw</translation>
 <translation id="8546059259582788728">Wedi dadwneud trefnu yn llwyddiannus</translation>
 <translation id="8551588720239073785">Gosodiadau dyddiad ac amser</translation>

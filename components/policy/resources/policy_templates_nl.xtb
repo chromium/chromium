@@ -5954,6 +5954,15 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7200364929485466022">Tijd wanneer de updatecheck moet plaatsvinden, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="7202925763179776247">Downloadbeperkingen toestaan</translation>
 <translation id="7207095846245296855">Google SafeSearch afdwingen</translation>
+<translation id="7208483746373960784">Deze instelling bepaalt hoeveel gebruikersgegevens worden bewaard nadat <ph name="LACROS_NAME" /> is uitgezet.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, wordt er geen achterwaartse gegevensmigratie uitgevoerd.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, worden alle gebruikersgegevens verwijderd. Dit is de veiligste optie.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, worden de meeste gebruikersgegevens verwijderd. Alleen bestanden die niet afhankelijk zijn van de browser worden bewaard (zoals downloads).
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, worden alle gebruikersgegevens bewaard. Deze optie heeft een hoog risico op fouten en vereist een Powerwash om te herstellen.</translation>
 <translation id="7211368186050418507">Tijdzone nooit automatisch detecteren</translation>
 <translation id="7216442368414164495">Hiermee kunnen gebruikers zich aanmelden voor uitgebreide rapportage van Safe Browsing</translation>
 <translation id="721970071627370558">Rapportage van aan/uit-status van apparaat uitzetten</translation>

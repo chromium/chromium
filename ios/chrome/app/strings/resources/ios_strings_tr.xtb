@@ -55,6 +55,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1322735045095424339">Kuruluşunuz Gizli modu gerektiriyor</translation>
 <translation id="1323735185997015385">Sil</translation>
 <translation id="132683371494960526">Üst klasörü değiştirmek için iki kez dokunun.</translation>
+<translation id="1335348992705722518">Ayarları yönet...</translation>
 <translation id="1340643665687018190">Menüyü Kapat</translation>
 <translation id="1358214951266274152">Kopyalanan Bağlantıyı Ziyaret Et</translation>
 <translation id="1360432990279830238">Oturum ve senkronizasyon kapatılsın mı?</translation>
@@ -383,6 +384,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4187450337729239226">Yapıştır ve Ara</translation>
 <translation id="4223967053752765281">Kuruluşunuz oturum açmayı devre dışı bıraktı. Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızı bu cihazda görmeye devam edebilirsiniz. Değişiklik yaparsanız bu değişiklikler hesabınızla senkronize edilmez.</translation>
 <translation id="4233831822770018312">İzinleri düzenle</translation>
+<translation id="4236584471598725073">Fiyat Takip Ediliyor</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Varsayılan Tarayıcı Uygulaması<ph name="END_BOLD" />'na dokunun</translation>
 <translation id="424315890655130736">Parolayı Girin</translation>
 <translation id="4249955472157341256">En güncel tarihe göre sırala</translation>

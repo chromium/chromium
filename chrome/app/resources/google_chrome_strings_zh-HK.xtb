@@ -60,6 +60,7 @@
 <translation id="2094648590148273905">ChromeOS Flex 條款</translation>
 <translation id="2094919256425865063">仍要退出 Chrome 嗎？</translation>
 <translation id="2106831557840787829">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
+<translation id="2112742052114331084">啟用此設定後，Chrome 會回收目前未使用的分頁記憶體。這樣做可釋出電腦的資源來處理其他工作，並維持 Chrome 的運作速度。已停用的分頁會顯示為空白，並會在您按一下分頁後自動重新載入內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />提供意見<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="2121284319307530122">重新啟動以更新 &amp;Chrome</translation>
 <translation id="2123055963409958220">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chrome 更臻完美</translation>
@@ -278,6 +279,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系統</translation>
 <translation id="6739177684496155661">要透過新的 Chrome 設定檔繼續瀏覽嗎？</translation>
 <translation id="6750954913813541382">Chrome 會將您在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
+<translation id="6756581345161130259">如有需要，Chrome 會回收目前未使用的分頁記憶體。您可隨時在設定中變更此設定。</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
 <translation id="6785872064505734160">Chrome 的「Google 助理」可助您完成各網站的操作</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
