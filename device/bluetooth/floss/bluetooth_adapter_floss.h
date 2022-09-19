@@ -21,6 +21,7 @@
 #include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_gatt_client.h"
 #include "device/bluetooth/floss/floss_lescan_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 
@@ -134,7 +135,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // ScannerClientObserver overrides
   void ScannerRegistered(device::BluetoothUUID uuid,
                          uint8_t scanner_id,
-                         uint8_t status) override;
+                         GattStatus status) override;
   void ScanResultReceived(ScanResult scan_result) override;
 
  protected:

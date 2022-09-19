@@ -885,10 +885,17 @@ void BluetoothAdapterFloss::SetStandardChromeOSAdapterName() {
 
 void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
                                               uint8_t scanner_id,
-                                              uint8_t status) {
+                                              GattStatus status) {
   BLUETOOTH_LOG(EVENT) << "Scanner registered with UUID = " << uuid
                        << ", scanner id = " << static_cast<int>(scanner_id)
                        << ", status = " << static_cast<int>(status);
+
+  if (status != GattStatus::kSuccess) {
+    BLUETOOTH_LOG(ERROR) << "Error registering scanner " << uuid
+                         << ", status: " << static_cast<int>(status);
+    scanners_.erase(uuid);
+    return;
+  }
 
   if (!base::Contains(scanners_, uuid)) {
     VLOG(1) << "ScannerRegistered but no longer exists " << uuid;

@@ -18,6 +18,7 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/exported_callback_manager.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_gatt_client.h"
 
 namespace dbus {
 class ObjectPath;
@@ -50,7 +51,7 @@ class ScannerClientObserver : public base::CheckedObserver {
   // A scanner has been registered
   virtual void ScannerRegistered(device::BluetoothUUID uuid,
                                  uint8_t scanner_id,
-                                 uint8_t status) {}
+                                 GattStatus status) {}
 
   // A scan result has been received
   virtual void ScanResultReceived(ScanResult scan_result) {}
@@ -95,7 +96,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
   // ScannerClientObserver overrides
   void ScannerRegistered(device::BluetoothUUID uuid,
                          uint8_t scanner_id,
-                         uint8_t status) override;
+                         GattStatus status) override;
   void ScanResultReceived(ScanResult scan_result) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.

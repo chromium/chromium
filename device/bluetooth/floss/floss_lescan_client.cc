@@ -139,7 +139,7 @@ void FlossLEScanClient::StopScan(ResponseCallback<Void> callback,
 
 void FlossLEScanClient::ScannerRegistered(device::BluetoothUUID uuid,
                                           uint8_t scanner_id,
-                                          uint8_t status) {
+                                          GattStatus status) {
   for (auto& observer : observers_) {
     observer.ScannerRegistered(uuid, scanner_id, status);
   }

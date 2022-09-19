@@ -145,7 +145,7 @@ class BluetoothFlossTest : public testing::Test {
         static_cast<BluetoothAdapterFloss*>(adapter_.get());
 
     floss_adapter->ScannerRegistered(device::BluetoothUUID(kTestUuidStr),
-                                     kTestScannerId, 0);
+                                     kTestScannerId, GattStatus::kSuccess);
     floss_adapter->ScanResultReceived(ScanResult{kTestDeviceAddr});
 
     base::RunLoop().RunUntilIdle();

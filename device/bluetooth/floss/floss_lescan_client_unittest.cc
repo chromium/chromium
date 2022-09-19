@@ -43,7 +43,7 @@ constexpr uint8_t kTestUuidByteArray[] = {0, 1, 2,  3,  4,  5,  6,  7,
                                           8, 9, 10, 11, 12, 13, 14, 15};
 constexpr char kTestUuidStr[] = "00010203-0405-0607-0809-0a0b0c0d0e0f";
 const uint8_t kTestScannerId = 10;
-const uint8_t kTestStatus = 1;
+const GattStatus kTestStatus = GattStatus::kSuccess;
 const uint32_t kTestCallbackId = 1000;
 constexpr char kTestDeviceAddr[] = "11:22:33:44:55:66";
 const uint8_t kTestAddrType = 2;
@@ -81,7 +81,7 @@ class FlossLEScanClientTest : public testing::Test,
   // ScannerClientObserver overrides
   void ScannerRegistered(device::BluetoothUUID uuid,
                          uint8_t scanner_id,
-                         uint8_t status) override {
+                         GattStatus status) override {
     fake_scanner_registered_info_ = {uuid, scanner_id, status};
   }
 
@@ -111,7 +111,7 @@ class FlossLEScanClientTest : public testing::Test,
     dbus::MessageWriter writer(&method_call);
     writer.AppendArrayOfBytes(kTestUuidByteArray, sizeof(kTestUuidByteArray));
     writer.AppendByte(kTestScannerId);
-    writer.AppendByte(kTestStatus);
+    writer.AppendUint32(static_cast<uint32_t>(kTestStatus));
 
     std::unique_ptr<dbus::Response> saved_response;
     method_handler.Run(&method_call,
@@ -166,7 +166,7 @@ class FlossLEScanClientTest : public testing::Test,
   std::unique_ptr<FlossLEScanClient> client_;
 
   // For observer test inspections.
-  absl::optional<std::tuple<device::BluetoothUUID, uint8_t, uint8_t>>
+  absl::optional<std::tuple<device::BluetoothUUID, uint8_t, GattStatus>>
       fake_scanner_registered_info_;
   ScanResult fake_scan_result_;
 
