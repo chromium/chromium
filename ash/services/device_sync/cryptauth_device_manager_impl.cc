@@ -684,7 +684,7 @@ CryptAuthDeviceManagerImpl::GetPixelTetherHosts() const {
 void CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess(
     const cryptauth::GetMyDevicesResponse& response) {
   // Update the synced devices stored in the user's prefs.
-  base::Value devices_as_list(base::Value::Type::LIST);
+  base::Value::List devices_as_list;
 
   if (!response.devices().empty()) {
     PA_LOG(VERBOSE) << "Devices were successfully synced.";
@@ -709,8 +709,9 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess(
       devices_as_list !=
       pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   {
-    ListPrefUpdate update(pref_service_, prefs::kCryptAuthDeviceSyncUnlockKeys);
-    *update.Get() = std::move(devices_as_list);
+    ScopedListPrefUpdate update(pref_service_,
+                                prefs::kCryptAuthDeviceSyncUnlockKeys);
+    *update = std::move(devices_as_list);
   }
   UpdateUnlockKeysFromPrefs();
 
