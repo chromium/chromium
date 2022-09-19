@@ -43,6 +43,7 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
+  bool CanCreateNativePixmapForFormat(gfx::BufferFormat format) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                VkDevice vk_device,
                                gfx::Size size,

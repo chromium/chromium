@@ -37,6 +37,7 @@ class MockGbmDevice : public GbmDevice {
       uint32_t format,
       const gfx::Size& size,
       gfx::NativePixmapHandle handle) override;
+  bool CanCreateBufferForFormat(uint32_t format) override;
 
  private:
   uint32_t next_handle_ = 0;

@@ -146,6 +146,8 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
       gfx::BufferUsage usage,
       absl::optional<gfx::Size> framebuffer_size = absl::nullopt);
 
+  virtual bool CanCreateNativePixmapForFormat(gfx::BufferFormat format);
+
   // Similar to CreateNativePixmap, but returns the result asynchronously.
   using NativePixmapCallback =
       base::OnceCallback<void(scoped_refptr<gfx::NativePixmap>)>;

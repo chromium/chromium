@@ -193,6 +193,12 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
   return pixmap;
 }
 
+bool X11SurfaceFactory::CanCreateNativePixmapForFormat(
+    gfx::BufferFormat format) {
+  return ui::GpuMemoryBufferSupportX11::GetInstance()
+      ->CanCreateNativePixmapForFormat(format);
+}
+
 void X11SurfaceFactory::CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                                 VkDevice vk_device,
                                                 gfx::Size size,

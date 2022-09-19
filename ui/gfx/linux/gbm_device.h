@@ -32,6 +32,8 @@ class GbmDevice {
       uint32_t format,
       const gfx::Size& size,
       gfx::NativePixmapHandle handle) = 0;
+
+  virtual bool CanCreateBufferForFormat(uint32_t format) = 0;
 };
 
 }  // namespace ui

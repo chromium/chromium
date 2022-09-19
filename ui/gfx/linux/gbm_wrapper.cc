@@ -359,16 +359,8 @@ class Device final : public ui::GbmDevice {
       gfx::NativePixmapHandle handle) override {
     DCHECK_EQ(handle.planes[0].offset, 0u);
 
-    // Try to use scanout if supported.
-    int gbm_flags = GBM_BO_USE_SCANOUT;
-#if defined(MINIGBM)
-    gbm_flags |= GBM_BO_USE_TEXTURING;
-#endif
-    if (!gbm_device_is_format_supported(device_, format, gbm_flags))
-      gbm_flags &= ~GBM_BO_USE_SCANOUT;
-
-    struct gbm_bo* bo = nullptr;
-    if (!gbm_device_is_format_supported(device_, format, gbm_flags)) {
+    int gbm_flags = 0;
+    if ((gbm_flags = GetSupportedGbmFlags(format)) == 0) {
       LOG(ERROR) << "gbm format not supported: " << format;
       return nullptr;
     }
@@ -389,7 +381,8 @@ class Device final : public ui::GbmDevice {
 
     // The fd passed to gbm_bo_import is not ref-counted and need to be
     // kept open for the lifetime of the buffer.
-    bo = gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data, gbm_flags);
+    struct gbm_bo* bo =
+        gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data, gbm_flags);
     if (!bo) {
       LOG(ERROR) << "nullptr returned from gbm_bo_import";
       return nullptr;
@@ -398,6 +391,28 @@ class Device final : public ui::GbmDevice {
     return std::make_unique<Buffer>(bo, format, gbm_flags, handle.modifier,
                                     size, std::move(handle));
   }
+
+  bool CanCreateBufferForFormat(uint32_t format) override {
+    return GetSupportedGbmFlags(format) != 0;
+  }
+
+#if defined(MINIGBM)
+  int GetSupportedGbmFlags(uint32_t format) {
+    int gbm_flags = GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING;
+    if (gbm_device_is_format_supported(device_, format, gbm_flags))
+      return gbm_flags;
+    gbm_flags = GBM_BO_USE_TEXTURING;
+    if (gbm_device_is_format_supported(device_, format, gbm_flags))
+      return gbm_flags;
+    return 0;
+  }
+#else
+  int GetSupportedGbmFlags(uint32_t format) {
+    if (gbm_device_is_format_supported(device_, format, GBM_BO_USE_SCANOUT))
+      return GBM_BO_USE_SCANOUT;
+    return 0;
+  }
+#endif
 
  private:
   const raw_ptr<gbm_device> device_;

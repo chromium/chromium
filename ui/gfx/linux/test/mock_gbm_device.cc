@@ -191,4 +191,8 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferFromHandle(
   return nullptr;
 }
 
+bool MockGbmDevice::CanCreateBufferForFormat(uint32_t format) {
+  return true;
+}
+
 }  // namespace ui

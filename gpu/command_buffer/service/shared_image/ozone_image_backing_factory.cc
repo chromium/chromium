@@ -203,9 +203,11 @@ bool OzoneImageBackingFactory::IsSupported(
   if (used_by_webgpu && !CanImportNativePixmapToWebGPU()) {
     return false;
   }
-  ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
-                              ->GetSurfaceFactoryOzone()
-                              ->GetCurrentGLOzone();
+  auto* factory = ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+  if (!factory->CanCreateNativePixmapForFormat(viz::BufferFormat(format)))
+    return false;
+
+  ui::GLOzone* gl_ozone = factory->GetCurrentGLOzone();
   if (used_by_gl && (!gl_ozone || !gl_ozone->CanImportNativePixmap())) {
     return false;
   }

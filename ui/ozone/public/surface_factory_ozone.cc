@@ -86,6 +86,13 @@ scoped_refptr<gfx::NativePixmap> SurfaceFactoryOzone::CreateNativePixmap(
   return nullptr;
 }
 
+bool SurfaceFactoryOzone::CanCreateNativePixmapForFormat(
+    gfx::BufferFormat format) {
+  // It's up to specific implementations of this method to report an inability
+  // to create native pixmap handles for a specific format.
+  return true;
+}
+
 void SurfaceFactoryOzone::CreateNativePixmapAsync(
     gfx::AcceleratedWidget widget,
     VkDevice vk_device,
