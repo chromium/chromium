@@ -483,7 +483,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
 
   std::vector<CanonicalCookie*> FindCookiesForRegistryControlledHost(
       const GURL& url,
-      CookieMap* cookie_map = nullptr);
+      CookieMap* cookie_map = nullptr,
+      PartitionedCookieMap::iterator* partition_it = nullptr);
 
   std::vector<CanonicalCookie*> FindPartitionedCookiesForRegistryControlledHost(
       const CookiePartitionKey& cookie_partition_key,
