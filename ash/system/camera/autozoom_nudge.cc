@@ -40,7 +40,6 @@ AutozoomNudge::AutozoomNudge()
                   kAutozoomIconSize,
                   kIconLabelSpacing,
                   kNudgePadding,
-                  /*anchor_status_area=*/true,
                   AshColorProvider::ContentLayerType::kIconColorProminent) {}
 
 AutozoomNudge::~AutozoomNudge() = default;

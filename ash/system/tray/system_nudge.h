@@ -42,7 +42,6 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
               int icon_size,
               int icon_label_spacing,
               int nudge_padding,
-              bool anchor_status_area = false,
               AshColorProvider::ContentLayerType icon_color_layer_type =
                   AshColorProvider::ContentLayerType::kIconColorPrimary);
   SystemNudge(const SystemNudge&) = delete;
@@ -95,10 +94,6 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, ShellObserver {
     int icon_label_spacing;
     // The padding which separates the nudge's border with its inner contents.
     int nudge_padding;
-    // If true, the nudge will be on the same side of the status area.
-    // Otherwise the nudge will be on the left/right side of the window for
-    // non-RTL/RTL locale.
-    bool anchor_status_area = false;
     // The color of the icon.
     AshColorProvider::ContentLayerType icon_color_layer_type =
         AshColorProvider::ContentLayerType::kIconColorPrimary;

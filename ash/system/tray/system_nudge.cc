@@ -43,23 +43,12 @@ constexpr base::TimeDelta kNudgeBoundsAnimationTime = base::Milliseconds(250);
 gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
                                 Shelf* shelf,
                                 int nudge_width,
-                                int nudge_height,
-                                bool anchor_status_area) {
+                                int nudge_height) {
   bool shelf_hidden = shelf->GetVisibilityState() != SHELF_VISIBLE &&
                       shelf->GetAutoHideState() == SHELF_AUTO_HIDE_HIDDEN;
 
-  bool on_right_side;
-  if (!anchor_status_area) {
-    on_right_side = base::i18n::IsRTL();
-  } else if (base::i18n::IsRTL()) {
-    // status area is on the left side in RTL when shelf is at bottom.
-    on_right_side = shelf->alignment() == ShelfAlignment::kRight;
-  } else {
-    on_right_side = shelf->alignment() != ShelfAlignment::kLeft;
-  }
-
   int x;
-  if (on_right_side) {
+  if (base::i18n::IsRTL()) {
     x = display_bounds.right() - nudge_width - kNudgeMargin;
     if (shelf->alignment() == ShelfAlignment::kRight && !shelf_hidden)
       x -= ShelfConfig::Get()->shelf_size();
@@ -144,7 +133,6 @@ SystemNudge::SystemNudge(
     int icon_size,
     int icon_label_spacing,
     int nudge_padding,
-    bool anchor_status_area,
     AshColorProvider::ContentLayerType icon_color_layer_type)
     : root_window_(Shell::GetRootWindowForNewWindows()) {
   params_.name = name;
@@ -152,7 +140,6 @@ SystemNudge::SystemNudge(
   params_.icon_size = icon_size;
   params_.icon_label_spacing = icon_label_spacing;
   params_.nudge_padding = nudge_padding;
-  params_.anchor_status_area = anchor_status_area;
   params_.icon_color_layer_type = icon_color_layer_type;
 }
 
@@ -220,9 +207,8 @@ void SystemNudge::CalculateAndSetWidgetBounds() {
 
   gfx::Size nudge_size = nudge_view_->GetPreferredSize();
   Shelf* shelf = RootWindowController::ForWindow(root_window_)->shelf();
-  gfx::Rect widget_bounds =
-      CalculateWidgetBounds(display_bounds, shelf, nudge_size.width(),
-                            nudge_size.height(), params_.anchor_status_area);
+  gfx::Rect widget_bounds = CalculateWidgetBounds(
+      display_bounds, shelf, nudge_size.width(), nudge_size.height());
 
   // Only run the widget bounds animation if the widget's bounds have already
   // been initialized.

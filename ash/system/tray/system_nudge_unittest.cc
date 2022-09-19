@@ -28,14 +28,12 @@ gfx::VectorIcon kEmptyIcon;
 class TestSystemNudge : public SystemNudge {
  public:
   explicit TestSystemNudge(
-      bool anchor_status_area,
       NudgeCatalogName catalog_name = NudgeCatalogName::kTestCatalogName)
       : SystemNudge(kNudgeName,
                     catalog_name,
                     kIconSize,
                     kIconLabelSpacing,
-                    kNudgePadding,
-                    anchor_status_area) {}
+                    kNudgePadding) {}
 
   gfx::Rect GetWidgetBounds() {
     return widget()->GetClientAreaBoundsInScreen();
@@ -67,7 +65,7 @@ TEST_F(SystemNudgeTest, NudgeDefaultOnLeftSide) {
   int shelf_size = ShelfConfig::Get()->shelf_size();
   gfx::Rect nudge_bounds;
 
-  TestSystemNudge nudge(/*anchor_status_area=*/false);
+  TestSystemNudge nudge;
 
   nudge.Show();
   nudge_bounds = nudge.GetWidgetBounds();
@@ -85,40 +83,6 @@ TEST_F(SystemNudgeTest, NudgeDefaultOnLeftSide) {
   nudge_bounds = nudge.GetWidgetBounds();
   nudge_bounds.Outset(kNudgeMargin);
   EXPECT_EQ(nudge_bounds.x(), display_bounds.x());
-  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
-
-  shelf->SetAlignment(ShelfAlignment::kLeft);
-  nudge_bounds = nudge.GetWidgetBounds();
-  nudge_bounds.Outset(kNudgeMargin);
-  EXPECT_EQ(nudge_bounds.x(), display_bounds.x() + shelf_size);
-  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
-}
-
-TEST_F(SystemNudgeTest, NudgeAnchorStatusArea) {
-  Shelf* shelf = GetPrimaryShelf();
-  display::Display primary_display = GetPrimaryDisplay();
-  gfx::Rect display_bounds = primary_display.bounds();
-  int shelf_size = ShelfConfig::Get()->shelf_size();
-  gfx::Rect nudge_bounds;
-
-  TestSystemNudge nudge(/*anchor_status_area=*/true);
-
-  nudge.Show();
-  nudge_bounds = nudge.GetWidgetBounds();
-  nudge_bounds.Outset(kNudgeMargin);
-  EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
-  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
-
-  shelf->SetAlignment(ShelfAlignment::kBottomLocked);
-  nudge_bounds = nudge.GetWidgetBounds();
-  nudge_bounds.Outset(kNudgeMargin);
-  EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
-  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
-
-  shelf->SetAlignment(ShelfAlignment::kRight);
-  nudge_bounds = nudge.GetWidgetBounds();
-  nudge_bounds.Outset(kNudgeMargin);
-  EXPECT_EQ(nudge_bounds.right(), display_bounds.right() - shelf_size);
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 
   shelf->SetAlignment(ShelfAlignment::kLeft);
@@ -133,8 +97,8 @@ TEST_F(SystemNudgeTest, ShownCountMetric) {
 
   const NudgeCatalogName catalog_name_1 = static_cast<NudgeCatalogName>(1);
   const NudgeCatalogName catalog_name_2 = static_cast<NudgeCatalogName>(2);
-  TestSystemNudge nudge_1(/*anchor_status_area=*/true, catalog_name_1);
-  TestSystemNudge nudge_2(/*anchor_status_area=*/true, catalog_name_2);
+  TestSystemNudge nudge_1(catalog_name_1);
+  TestSystemNudge nudge_2(catalog_name_2);
 
   nudge_1.Show();
   histogram_tester.ExpectBucketCount(kNudgeShownCountHistogramName,
