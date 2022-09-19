@@ -8,15 +8,75 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
-#include "url/gurl.h"
-#include "url/origin.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
+
+class GURL;
+
+namespace url {
+
+class Origin;
+
+}  // namespace url
+
+namespace base {
+
+class UnguessableToken;
+
+}  // namespace base
 
 namespace mojo {
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::DirectFromSellerSignalsSubresourceDataView,
+                 blink::DirectFromSellerSignalsSubresource> {
+  static const GURL& bundle_url(
+      const blink::DirectFromSellerSignalsSubresource& params) {
+    return params.bundle_url;
+  }
+
+  static const base::UnguessableToken& token(
+      const blink::DirectFromSellerSignalsSubresource& params) {
+    return params.token;
+  }
+
+  static bool Read(
+      blink::mojom::DirectFromSellerSignalsSubresourceDataView data,
+      blink::DirectFromSellerSignalsSubresource* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::DirectFromSellerSignalsDataView,
+                 blink::DirectFromSellerSignals> {
+  static const GURL& prefix(const blink::DirectFromSellerSignals& params) {
+    return params.prefix;
+  }
+
+  static const base::flat_map<url::Origin,
+                              blink::DirectFromSellerSignalsSubresource>&
+  per_buyer_signals(const blink::DirectFromSellerSignals& params) {
+    return params.per_buyer_signals;
+  }
+
+  static const absl::optional<blink::DirectFromSellerSignalsSubresource>&
+  seller_signals(const blink::DirectFromSellerSignals& params) {
+    return params.seller_signals;
+  }
+
+  static const absl::optional<blink::DirectFromSellerSignalsSubresource>&
+  auction_signals(const blink::DirectFromSellerSignals& params) {
+    return params.auction_signals;
+  }
+
+  static bool Read(blink::mojom::DirectFromSellerSignalsDataView data,
+                   blink::DirectFromSellerSignals* out);
+};
 
 template <>
 struct BLINK_COMMON_EXPORT
@@ -108,6 +168,11 @@ struct BLINK_COMMON_EXPORT
   static const blink::AuctionConfig::NonSharedParams&
   auction_ad_config_non_shared_params(const blink::AuctionConfig& config) {
     return config.non_shared_params;
+  }
+
+  static const absl::optional<blink::DirectFromSellerSignals>&
+  direct_from_seller_signals(const blink::AuctionConfig& params) {
+    return params.direct_from_seller_signals;
   }
 
   static bool has_seller_experiment_group_id(

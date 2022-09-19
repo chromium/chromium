@@ -6,6 +6,34 @@
 
 namespace blink {
 
+DirectFromSellerSignalsSubresource::DirectFromSellerSignalsSubresource() =
+    default;
+DirectFromSellerSignalsSubresource::DirectFromSellerSignalsSubresource(
+    const DirectFromSellerSignalsSubresource&) = default;
+DirectFromSellerSignalsSubresource::DirectFromSellerSignalsSubresource(
+    DirectFromSellerSignalsSubresource&&) = default;
+DirectFromSellerSignalsSubresource::~DirectFromSellerSignalsSubresource() =
+    default;
+
+DirectFromSellerSignalsSubresource&
+DirectFromSellerSignalsSubresource::operator=(
+    const DirectFromSellerSignalsSubresource&) = default;
+DirectFromSellerSignalsSubresource&
+DirectFromSellerSignalsSubresource::operator=(
+    DirectFromSellerSignalsSubresource&&) = default;
+
+DirectFromSellerSignals::DirectFromSellerSignals() = default;
+DirectFromSellerSignals::DirectFromSellerSignals(
+    const DirectFromSellerSignals&) = default;
+DirectFromSellerSignals::DirectFromSellerSignals(DirectFromSellerSignals&&) =
+    default;
+DirectFromSellerSignals::~DirectFromSellerSignals() = default;
+
+DirectFromSellerSignals& DirectFromSellerSignals::operator=(
+    const DirectFromSellerSignals&) = default;
+DirectFromSellerSignals& DirectFromSellerSignals::operator=(
+    DirectFromSellerSignals&&) = default;
+
 AuctionConfig::NonSharedParams::NonSharedParams() = default;
 AuctionConfig::NonSharedParams::NonSharedParams(const NonSharedParams&) =
     default;

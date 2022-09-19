@@ -9,7 +9,9 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -44,6 +46,7 @@
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -677,6 +680,117 @@ bool CopySellerSignalsFromIdlToMojo(const ScriptState& script_state,
   return true;
 }
 
+// Attempts to build a DirectFromSellerSignalsSubresource. If there is no
+// registered subresource URL `subresource_url` returns nullptr -- processing
+// may continue with the next `subresource_url`.
+mojom::blink::DirectFromSellerSignalsSubresourcePtr
+TryToBuildDirectFromSellerSignalsSubresource(
+    const KURL& subresource_url,
+    const SecurityOrigin& seller,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    const ResourceFetcher& resource_fetcher) {
+  DCHECK(subresource_url.IsValid());
+  DCHECK(
+      subresource_url.ProtocolIs(url::kHttpsScheme) &&
+      seller.IsSameOriginWith(SecurityOrigin::Create(subresource_url).get()));
+  // NOTE: If subresource bundles are disabled, GetSubresourceBundleToken() will
+  // always return absl::nullopt.
+  absl::optional<base::UnguessableToken> token =
+      resource_fetcher.GetSubresourceBundleToken(subresource_url);
+  if (!token)
+    return nullptr;
+  absl::optional<KURL> bundle_url =
+      resource_fetcher.GetSubresourceBundleSourceUrl(subresource_url);
+  DCHECK(bundle_url->ProtocolIs(url::kHttpsScheme));
+  DCHECK(seller.IsSameOriginWith(SecurityOrigin::Create(*bundle_url).get()));
+  auto mojo_bundle = mojom::blink::DirectFromSellerSignalsSubresource::New();
+  mojo_bundle->token = *token;
+  mojo_bundle->bundle_url = *bundle_url;
+  return mojo_bundle;
+}
+
+bool CopyDirectFromSellerSignalsFromIdlToMojo(
+    const ExecutionContext& context,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    const ResourceFetcher& resource_fetcher,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasDirectFromSellerSignals())
+    return true;
+  const KURL direct_from_seller_signals_prefix =
+      context.CompleteURL(input.directFromSellerSignals());
+  if (!direct_from_seller_signals_prefix.IsValid()) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "directFromSellerSignals", input.directFromSellerSignals(),
+        "cannot be resolved to a valid URL."));
+    return false;
+  }
+  if (!direct_from_seller_signals_prefix.ProtocolIs(url::kHttpsScheme) ||
+      !output.seller->IsSameOriginWith(
+          SecurityOrigin::Create(direct_from_seller_signals_prefix).get())) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "directFromSellerSignals", input.directFromSellerSignals(),
+        "must match seller origin; only https scheme is supported."));
+    return false;
+  }
+  if (!direct_from_seller_signals_prefix.Query().IsEmpty()) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "directFromSellerSignals", input.directFromSellerSignals(),
+        "URL prefix must not have a query string."));
+    return false;
+  }
+  auto mojo_direct_from_seller_signals =
+      mojom::blink::DirectFromSellerSignals::New();
+  mojo_direct_from_seller_signals->prefix = direct_from_seller_signals_prefix;
+
+  for (scoped_refptr<const SecurityOrigin> buyer :
+       *output.auction_ad_config_non_shared_params->interest_group_buyers) {
+    // Replace "/" with "%2F" to match the behavior of
+    // base::EscapeQueryParamValue(). Also, the subresource won't be found if
+    // the URL doesn't match.
+    const KURL subresource_url(
+        direct_from_seller_signals_prefix.GetString() + "?perBuyerSignals=" +
+        EncodeWithURLEscapeSequences(buyer->ToString()).Replace("/", "%2F"));
+    mojom::blink::DirectFromSellerSignalsSubresourcePtr maybe_mojo_bundle =
+        TryToBuildDirectFromSellerSignalsSubresource(
+            subresource_url, *output.seller, exception_state, input,
+            resource_fetcher);
+    if (!maybe_mojo_bundle)
+      continue;  // The bundle wasn't found, try the next one.
+    mojo_direct_from_seller_signals->per_buyer_signals.insert(
+        buyer, std::move(maybe_mojo_bundle));
+  }
+
+  {
+    const KURL subresource_url(direct_from_seller_signals_prefix.GetString() +
+                               "?sellerSignals");
+    mojom::blink::DirectFromSellerSignalsSubresourcePtr maybe_mojo_bundle =
+        TryToBuildDirectFromSellerSignalsSubresource(
+            subresource_url, *output.seller, exception_state, input,
+            resource_fetcher);
+    // May be null if the signals weren't found.
+    mojo_direct_from_seller_signals->seller_signals =
+        std::move(maybe_mojo_bundle);
+  }
+
+  {
+    const KURL subresource_url(direct_from_seller_signals_prefix.GetString() +
+                               "?auctionSignals");
+    mojom::blink::DirectFromSellerSignalsSubresourcePtr maybe_mojo_bundle =
+        TryToBuildDirectFromSellerSignalsSubresource(
+            subresource_url, *output.seller, exception_state, input,
+            resource_fetcher);
+    // May be null if the signals weren't found.
+    mojo_direct_from_seller_signals->auction_signals =
+        std::move(maybe_mojo_bundle);
+  }
+
+  output.direct_from_seller_signals =
+      std::move(mojo_direct_from_seller_signals);
+  return true;
+}
+
 bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
                                       ExceptionState& exception_state,
                                       const AuctionAdConfig& input,
@@ -863,6 +977,7 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     ScriptState& script_state,
     const ExecutionContext& context,
     ExceptionState& exception_state,
+    const ResourceFetcher& resource_fetcher,
     const AuctionAdConfig& config) {
   auto mojo_config = mojom::blink::AuctionAdConfig::New();
   mojo_config->auction_ad_config_non_shared_params =
@@ -878,6 +993,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                        *mojo_config) ||
       !CopySellerSignalsFromIdlToMojo(script_state, exception_state, config,
                                       *mojo_config) ||
+      !CopyDirectFromSellerSignalsFromIdlToMojo(
+          context, exception_state, config, resource_fetcher, *mojo_config) ||
       !CopyPerBuyerSignalsFromIdlToMojo(script_state, exception_state, config,
                                         *mojo_config) ||
       !CopyPerBuyerTimeoutsFromIdlToMojo(script_state, exception_state, config,
@@ -907,9 +1024,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
         return mojom::blink::AuctionAdConfigPtr();
       }
 
-      auto mojo_component_auction =
-          IdlAuctionConfigToMojo(/*is_top_level=*/false, script_state, context,
-                                 exception_state, *idl_component_auction);
+      auto mojo_component_auction = IdlAuctionConfigToMojo(
+          /*is_top_level=*/false, script_state, context, exception_state,
+          resource_fetcher, *idl_component_auction);
       if (!mojo_component_auction)
         return mojom::blink::AuctionAdConfigPtr();
       mojo_config->auction_ad_config_non_shared_params->component_auctions
@@ -1301,7 +1418,9 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   auto mojo_config = IdlAuctionConfigToMojo(
-      /*is_top_level=*/true, *script_state, *context, exception_state, *config);
+      /*is_top_level=*/true, *script_state, *context, exception_state,
+      /*resource_fetcher=*/
+      *GetSupplementable()->DomWindow()->document()->Fetcher(), *config);
   if (!mojo_config)
     return ScriptPromise();
 

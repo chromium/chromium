@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -86,10 +87,99 @@ struct InterestGroup {
   array<InterestGroupAd>? ad_components;
 };
 
+// Packages the details necessary for the browser process to retrieve a
+// DirectFromSellerSignals resource of a subresource bundle -- the actual
+// subresource URL is constructed by the browser process from the
+// DirectFromSellerSignals `prefix` and the browser supplied suffix, as
+// described in DirectFromSellerSignals.
+//
+// To fetch a subresource bundle URL from the browser process, the `bundle_url`,
+// subresource URL (constructed from the prefix + suffix), token, and renderer
+// process ID are needed.
+//
+// The resource is only available while the <script type="webbundle"> tag that
+// declared the resource is still alive.
+//
+// TODO(crbug.com/1355887): Consider adding a mechanism to extend the lifetime
+// of the subresource for the duration of the auction.
+struct DirectFromSellerSignalsSubresource {
+  // URL of the bundle (.wbn / "application/webbundle") file.
+  url.mojom.Url bundle_url;
+
+  // The UnguessableToken for this subresource, stored in the renderer's
+  // ResourceFetcher.
+  //
+  // TODO(crbug.com/1364649): Change to use a base::TokenType specialization
+  // along with other web / subresource bundle uses of UnguessableToken.
+  mojo_base.mojom.UnguessableToken token;
+};
+
+// Signals to be loaded from resources in subresource bundle(s). Like
+// `seller_signals`, `per_buyer_signals`, and `auction_signals` in
+// AuctionAdConfigNonSharedParams, but the signals' contents are not revealed
+// to the renderer process.
+//
+// The page specifies a URL prefix, and the subresource URLs of signals destined
+// for particular origins are formed by concatenating a suffix (as described in
+// field comments) to the prefix -- since the browser process is doing the
+// concatenation, it can ensure that each signal is only given to the recipient
+// intended by the seller.
+//
+// All subresource URLs must resolve to a valid application/json string. The
+// origin of the prefix and the URL of each source bundle must have a scheme of
+// https (uuid-in-package isn't supported since it doesn't support CORS), and
+// each origin must match `seller` in AuctionAdConfig. The response must be
+// served with the headers `X-FLEDGE-Auction-Only: true` and `X-Allow-Fledge:
+// true`. The request is made with CORS, using the caller of runAdAuction()'s
+// frame as the initiator.
+//
+// The worklet process will parse the signals object and deliver it to worklet
+// functions (generateBid(), scoreAd(), reportWin(), reportResult()).
+//
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#25-additional-trusted-signals-directfromsellersignals
+struct DirectFromSellerSignals {
+  // The prefix specified by the page. Must have no query string.
+  url.mojom.Url prefix;
+
+  // DirectFromSellerSignals for individual buyers. Keys determine the buyer
+  // that should receive the signals loaded via the
+  // DirectFromSellerSignalsSubresource value. The subresource URL should be:
+  //
+  // prefix + "?perBuyerSignals=" + encodeURIComponent(buyer_origin_key)
+  //
+  // where encodeURIComponent() is a function equivalent to the JavaScript
+  // built-in function encodeURIComponent(), and buyer_origin_key is the buyer's
+  // origin (and also the map key for the particular
+  // DirectFromSellerSignalsSubresource).
+  //
+  // It's possible that not every buyer origin from `interest_group_buyers` is
+  // present, or that any buyer is present -- only those subresource URLs that
+  // are in the `interest_group_buyers` and have been declared in a
+  // <script type="webbundle"> tag will be included.
+  map<url.mojom.Origin, DirectFromSellerSignalsSubresource> per_buyer_signals;
+
+  // directFromSellerSignals for the seller. The subresource URL should be:
+  //
+  // prefix + "?sellerSignals"
+  //
+  // iff such a subresource is declared in a <script type="webbundle"> tag.
+  DirectFromSellerSignalsSubresource? seller_signals;
+
+  // Signals that are delivered to all parties -- the seller, and all buyers.
+  // The subresource URL should be:
+  //
+  // prefix + "?auctionSignals"
+  //
+  // iff such a subresource is declared in a <script type="webbundle"> tag.
+  DirectFromSellerSignalsSubresource? auction_signals;
+};
+
 // Subset of AuctionAdConfig that is not shared by all auctions that are
 // using the same SellerWorklet object (so it's "not shared" between
 // AuctionConfigs that share the same SellerWorklet). Other AuctionAdConfig
-// parameters all must be the same for two auctions to share a Sellerworklet.
+// parameters all must be the same for two auctions to share a Sellerworklet, or
+// otherwise be parameters that don't need to be resent to each seller worklet
+// method invocation.
 struct AuctionAdConfigNonSharedParams {
   // Owners of interest groups allowed to participate in the auction.
   // Must all be HTTPS.
@@ -172,6 +262,12 @@ struct AuctionAdConfig {
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   AuctionAdConfigNonSharedParams auction_ad_config_non_shared_params;
+
+  // DirectFromSellerSignals to be loaded from resources in subresource
+  // bundle(s).  Like `seller_signals`,`per_buyer_signals`, and
+  // `auction_signals`, but the signals' contents are not revealed to the
+  // renderer process. See details in the DirectFromSellerSignals comment.
+  DirectFromSellerSignals? direct_from_seller_signals;
 
   // Optional identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).

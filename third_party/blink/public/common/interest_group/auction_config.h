@@ -13,12 +13,49 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
+
+// Refers to a resource in a subresource bundle. Valid only as long as the
+// <script type="webbundle"> tag that owns the subresource exists.
+struct BLINK_COMMON_EXPORT DirectFromSellerSignalsSubresource {
+  DirectFromSellerSignalsSubresource();
+  DirectFromSellerSignalsSubresource(const DirectFromSellerSignalsSubresource&);
+  DirectFromSellerSignalsSubresource(DirectFromSellerSignalsSubresource&&);
+  ~DirectFromSellerSignalsSubresource();
+
+  DirectFromSellerSignalsSubresource& operator=(
+      const DirectFromSellerSignalsSubresource&);
+  DirectFromSellerSignalsSubresource& operator=(
+      DirectFromSellerSignalsSubresource&&);
+
+  GURL bundle_url;
+  base::UnguessableToken token;
+};
+
+// The set of directFromSellerSignals for a particular auction or component
+// auction.
+struct BLINK_COMMON_EXPORT DirectFromSellerSignals {
+  DirectFromSellerSignals();
+  DirectFromSellerSignals(const DirectFromSellerSignals&);
+  DirectFromSellerSignals(DirectFromSellerSignals&&);
+  ~DirectFromSellerSignals();
+
+  DirectFromSellerSignals& operator=(const DirectFromSellerSignals&);
+  DirectFromSellerSignals& operator=(DirectFromSellerSignals&&);
+
+  GURL prefix;
+  base::flat_map<url::Origin, DirectFromSellerSignalsSubresource>
+      per_buyer_signals;
+  absl::optional<DirectFromSellerSignalsSubresource> seller_signals;
+  absl::optional<DirectFromSellerSignalsSubresource> auction_signals;
+};
 
 // AuctionConfig class used by FLEDGE auctions. Typemapped to
 // blink::mojom::AuctionAdConfig, primarily so the typemap can include validity
@@ -110,6 +147,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   NonSharedParams non_shared_params;
+
+  // Subresource bundle URLs that when fetched should yield a JSON
+  // direct_from_seller_signals responses for the seller and buyers.
+  absl::optional<DirectFromSellerSignals> direct_from_seller_signals;
 
   // Identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).

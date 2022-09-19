@@ -12,6 +12,7 @@ dictionary AuctionAdConfig {
   sequence<USVString> interestGroupBuyers;
   any auctionSignals;
   any sellerSignals;
+  USVString directFromSellerSignals;
   unsigned long long sellerTimeout;
   unsigned short sellerExperimentGroupId;
   record<USVString, any> perBuyerSignals;

@@ -7,9 +7,11 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -40,6 +42,31 @@ bool AreBuyerPrioritySignalsValid(
 }
 
 }  // namespace
+
+bool StructTraits<blink::mojom::DirectFromSellerSignalsSubresourceDataView,
+                  blink::DirectFromSellerSignalsSubresource>::
+    Read(blink::mojom::DirectFromSellerSignalsSubresourceDataView data,
+         blink::DirectFromSellerSignalsSubresource* out) {
+  if (!data.ReadBundleUrl(&out->bundle_url) || !data.ReadToken(&out->token)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool StructTraits<blink::mojom::DirectFromSellerSignalsDataView,
+                  blink::DirectFromSellerSignals>::
+    Read(blink::mojom::DirectFromSellerSignalsDataView data,
+         blink::DirectFromSellerSignals* out) {
+  if (!data.ReadPrefix(&out->prefix) ||
+      !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
+      !data.ReadSellerSignals(&out->seller_signals) ||
+      !data.ReadAuctionSignals(&out->auction_signals)) {
+    return false;
+  }
+
+  return true;
+}
 
 bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
                   blink::AuctionConfig::NonSharedParams>::
@@ -97,6 +124,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
       !data.ReadDecisionLogicUrl(&out->decision_logic_url) ||
       !data.ReadTrustedScoringSignalsUrl(&out->trusted_scoring_signals_url) ||
       !data.ReadAuctionAdConfigNonSharedParams(&out->non_shared_params) ||
+      !data.ReadDirectFromSellerSignals(&out->direct_from_seller_signals) ||
       !data.ReadPerBuyerExperimentGroupIds(
           &out->per_buyer_experiment_group_ids)) {
     return false;
@@ -122,6 +150,47 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
        !IsHttpsAndMatchesOrigin(*out->trusted_scoring_signals_url,
                                 out->seller))) {
     return false;
+  }
+
+  absl::optional<blink::DirectFromSellerSignals> direct_from_seller_signals =
+      out->direct_from_seller_signals;
+  if (direct_from_seller_signals) {
+    const GURL& prefix = direct_from_seller_signals->prefix;
+    // The prefix can't have a query because the browser process appends its own
+    // query suffix.
+    if (prefix.has_query())
+      return false;
+    // NOTE: uuid-in-package isn't supported, since it doesn't support CORS.
+    if (!IsHttpsAndMatchesOrigin(prefix, out->seller))
+      return false;
+    base::flat_set<url::Origin> interest_group_buyers(
+        out->non_shared_params.interest_group_buyers
+            ? *out->non_shared_params.interest_group_buyers
+            : std::vector<url::Origin>());
+    for (const auto& [buyer_origin, bundle_url] :
+         direct_from_seller_signals->per_buyer_signals) {
+      // The renderer shouldn't provide bundles for origins that aren't buyers
+      // in this auction -- there would be no worklet to receive them.
+      if (interest_group_buyers.count(buyer_origin) < 1)
+        return false;
+      // All DirectFromSellerSignals must come from the seller.
+      if (!IsHttpsAndMatchesOrigin(bundle_url.bundle_url, out->seller))
+        return false;
+    }
+    if (direct_from_seller_signals->seller_signals &&
+        !IsHttpsAndMatchesOrigin(
+            direct_from_seller_signals->seller_signals->bundle_url,
+            out->seller)) {
+      // All DirectFromSellerSignals must come from the seller.
+      return false;
+    }
+    if (direct_from_seller_signals->auction_signals &&
+        !IsHttpsAndMatchesOrigin(
+            direct_from_seller_signals->auction_signals->bundle_url,
+            out->seller)) {
+      // All DirectFromSellerSignals must come from the seller.
+      return false;
+    }
   }
 
   return true;
