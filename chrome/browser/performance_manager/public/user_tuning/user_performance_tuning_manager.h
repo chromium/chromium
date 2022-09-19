@@ -115,6 +115,7 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
     ~UserPerformanceTuningReceiverImpl() override;
 
     void NotifyTabCountThresholdReached() override;
+    void NotifyMemoryThresholdReached() override;
   };
 
   explicit UserPerformanceTuningManager(
@@ -133,6 +134,7 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
   void UpdateBatterySaverModeState();
 
   void NotifyTabCountThresholdReached();
+  void NotifyMemoryThresholdReached();
 
   // base::PowerStateObserver:
   void OnPowerStateChange(bool on_battery_power) override;

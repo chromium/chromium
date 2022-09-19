@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -208,6 +209,10 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
     int tab_count_threshold =
         performance_manager::features::kHighEfficiencyModePromoTabCountThreshold
             .Get();
+    int memory_percent_threshold =
+        performance_manager::features::
+            kHighEfficiencyModePromoMemoryPercentThreshold.Get();
+    uint64_t system_memory_kb = base::SysInfo::AmountOfPhysicalMemory() / 1024;
     DCHECK_GT(tab_count_threshold, 0);
     user_performance_tuning_manager_ = base::WrapUnique(
         new performance_manager::user_tuning::UserPerformanceTuningManager(
@@ -217,7 +222,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
                 base::WrapUnique(new performance_manager::user_tuning::
                                      UserPerformanceTuningManager::
                                          UserPerformanceTuningReceiverImpl),
-                static_cast<size_t>(tab_count_threshold))));
+                tab_count_threshold,
+                system_memory_kb * 100 / memory_percent_threshold)));
   }
 #endif
 

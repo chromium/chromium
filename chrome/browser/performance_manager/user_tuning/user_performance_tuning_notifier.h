@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_USER_TUNING_USER_PERFORMANCE_TUNING_NOTIFIER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_USER_TUNING_USER_PERFORMANCE_TUNING_NOTIFIER_H_
 
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/graph/system_node.h"
 
 namespace performance_manager::user_tuning {
 
@@ -14,7 +16,8 @@ namespace performance_manager::user_tuning {
 // the graph and notify the UserPerformanceTuningManager when certain thresholds
 // are met.
 class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
-                                      public PageNode::ObserverDefaultImpl {
+                                      public PageNode::ObserverDefaultImpl,
+                                      public SystemNode::ObserverDefaultImpl {
  public:
   // The instance of this delegate will have its different functions invoked on
   // the Performance Manager sequence by the
@@ -26,9 +29,14 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
     // Called when the current tab count reaches the threshold specified by
     // `tab_count_threshold`.
     virtual void NotifyTabCountThresholdReached() = 0;
+
+    // Called when the current total resident set size of all processes exceeds
+    // `resident_set_threshold_kb`.
+    virtual void NotifyMemoryThresholdReached() = 0;
   };
 
   UserPerformanceTuningNotifier(std::unique_ptr<Receiver> delegate,
+                                uint64_t resident_set_threshold_kb,
                                 int tab_count_threshold);
   ~UserPerformanceTuningNotifier() override;
 
@@ -42,10 +50,20 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   void OnTypeChanged(const PageNode* page_node,
                      PageType previous_type) override;
 
+  // SystemNode::ObserverDefaultImpl:
+  void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override;
+
  private:
   void MaybeAddTabAndNotify(const PageNode* page_node);
 
   std::unique_ptr<Receiver> receiver_;
+  raw_ptr<Graph> graph_;
+
+  std::unique_ptr<
+      performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>
+      metrics_interest_token_;
+  const uint64_t resident_set_threshold_kb_ = 0;
+  uint64_t previous_total_rss_ = 0;
 
   const int tab_count_threshold_ = 0;
   int tab_count_ = 0;

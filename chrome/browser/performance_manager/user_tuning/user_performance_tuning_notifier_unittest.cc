@@ -17,24 +17,33 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
       ++tab_count_threshold_reached_count_;
     }
 
+    void NotifyMemoryThresholdReached() override {
+      ++memory_percent_threshold_reached_count_;
+    }
+
     int tab_count_threshold_reached_count_ = 0;
+    int memory_percent_threshold_reached_count_ = 0;
   };
 
   void SetUp() override {
     GraphTestHarness::SetUp();
 
+    graph()->PassToGraph(
+        std::make_unique<performance_manager::ProcessMetricsDecorator>());
+
     auto receiver = std::make_unique<TestReceiver>();
     receiver_ = receiver.get();
 
-    auto notifier =
-        std::make_unique<UserPerformanceTuningNotifier>(std::move(receiver), 2);
+    auto notifier = std::make_unique<UserPerformanceTuningNotifier>(
+        std::move(receiver), /*memory_theshold_kb=*/10,
+        /*tab_count_threshold=*/2);
     graph()->PassToGraph(std::move(notifier));
   }
 
   raw_ptr<TestReceiver> receiver_;
 };
 
-TEST_F(UserPerformanceTuningNotifierTest, TestThresholdTriggered) {
+TEST_F(UserPerformanceTuningNotifierTest, TestTabsThresholdTriggered) {
   EXPECT_EQ(0, receiver_->tab_count_threshold_reached_count_);
 
   // The threshold is 2, so having one tab doesn't trigger it.
@@ -67,6 +76,27 @@ TEST_F(UserPerformanceTuningNotifierTest, TestOnlyTabsCount) {
   auto page2 = CreateNode<PageNodeImpl>();
   auto page3 = CreateNode<PageNodeImpl>();
   EXPECT_EQ(0, receiver_->tab_count_threshold_reached_count_);
+}
+
+TEST_F(UserPerformanceTuningNotifierTest, TestMemoryThresholdTriggered) {
+  auto process1 = CreateNode<ProcessNodeImpl>();
+  process1->set_resident_set_kb(8);
+  SystemNodeImpl::FromNode(graph()->GetSystemNode())
+      ->OnProcessMemoryMetricsAvailable();
+  EXPECT_EQ(0, receiver_->memory_percent_threshold_reached_count_);
+
+  auto process2 = CreateNode<ProcessNodeImpl>();
+  process2->set_resident_set_kb(5);
+  SystemNodeImpl::FromNode(graph()->GetSystemNode())
+      ->OnProcessMemoryMetricsAvailable();
+  EXPECT_EQ(1, receiver_->memory_percent_threshold_reached_count_);
+
+  // Staying above the threshold doesn't re-trigger it.
+  auto process3 = CreateNode<ProcessNodeImpl>();
+  process3->set_resident_set_kb(5);
+  SystemNodeImpl::FromNode(graph()->GetSystemNode())
+      ->OnProcessMemoryMetricsAvailable();
+  EXPECT_EQ(1, receiver_->memory_percent_threshold_reached_count_);
 }
 
 }  // namespace performance_manager::user_tuning

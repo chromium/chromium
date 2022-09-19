@@ -115,6 +115,17 @@ void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
       }));
 }
 
+void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
+    NotifyMemoryThresholdReached() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce([]() {
+        // Hitting this CHECK would mean this task is running after
+        // PostMainMessageLoopRun, which shouldn't happen.
+        CHECK(g_user_performance_tuning_manager);
+        GetInstance()->NotifyMemoryThresholdReached();
+      }));
+}
+
 UserPerformanceTuningManager::UserPerformanceTuningManager(
     PrefService* local_state,
     std::unique_ptr<UserPerformanceTuningNotifier> notifier,
@@ -232,6 +243,12 @@ void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
 void UserPerformanceTuningManager::NotifyTabCountThresholdReached() {
   for (auto& obs : observers_) {
     obs.OnTabCountThresholdReached();
+  }
+}
+
+void UserPerformanceTuningManager::NotifyMemoryThresholdReached() {
+  for (auto& obs : observers_) {
+    obs.OnMemoryThresholdReached();
   }
 }
 

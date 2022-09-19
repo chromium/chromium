@@ -47,6 +47,12 @@ extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState;
 // The number of tabs at which the user may be prompted to enable high
 // efficiency mode.
 extern const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold;
+
+// The percentage of used memory at which the user may be prompted to enable
+// high efficiency mode. For instance, if this parameter is set to 70, the promo
+// would be triggered when memory use exceeds 70% of available memory.
+extern const base::FeatureParam<int>
+    kHighEfficiencyModePromoMemoryPercentThreshold;
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the

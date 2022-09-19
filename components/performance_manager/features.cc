@@ -40,6 +40,12 @@ const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold{
     "tab_count_threshold",
     10,
 };
+
+const base::FeatureParam<int> kHighEfficiencyModePromoMemoryPercentThreshold{
+    &kHighEfficiencyModeAvailable,
+    "memory_percent_threshold",
+    70,
+};
 #endif
 
 const base::Feature kBFCachePerformanceManagerPolicy{
