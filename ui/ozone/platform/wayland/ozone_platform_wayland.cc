@@ -246,8 +246,6 @@ class OzonePlatformWayland : public OzonePlatform,
            WaylandKeyboard::Delegate* key_delegate,
            LinuxInputMethodContextDelegate* ime_delegate)
             -> std::unique_ptr<LinuxInputMethodContext> {
-          if (!connection->text_input_manager_v1())
-            return nullptr;
           return std::make_unique<WaylandInputMethodContext>(
               connection, key_delegate, ime_delegate);
         },
