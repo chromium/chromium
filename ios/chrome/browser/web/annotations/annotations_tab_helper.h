@@ -30,14 +30,10 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
                              public web::WebStateUserData<AnnotationsTabHelper>,
                              public web::WebStateObserver {
  public:
-  explicit AnnotationsTabHelper(web::WebState* web_state);
   ~AnnotationsTabHelper() override;
 
   // Sets the BaseViewController from which to present UI.
   void SetBaseViewController(UIViewController* baseViewController);
-
-  // WebStateUserData methods:
-  static void CreateForWebState(web::WebState* web_state);
 
   // AnnotationsTextObserver methods:
   void OnTextExtracted(web::WebState* web_state,
@@ -58,11 +54,13 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
  private:
   friend class WebStateUserData<AnnotationsTabHelper>;
 
-  UIViewController* base_view_controller_;
+  explicit AnnotationsTabHelper(web::WebState* web_state);
 
   // Receiver for text classifier extracted intents. Must run on main thread.
   void ApplyDeferredProcessing(web::WebState* web_state,
                                absl::optional<base::Value> deferred);
+
+  UIViewController* base_view_controller_ = nil;
 
   web::WebState* web_state_ = nullptr;
 

@@ -103,15 +103,6 @@ AnnotationsTabHelper::~AnnotationsTabHelper() {
   web_state_ = nullptr;
 }
 
-// static
-void AnnotationsTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           std::make_unique<AnnotationsTabHelper>(web_state));
-  }
-}
-
 void AnnotationsTabHelper::SetBaseViewController(
     UIViewController* baseViewController) {
   base_view_controller_ = baseViewController;
