@@ -53,6 +53,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
       const url::Origin& origin) override;
 #if !BUILDFLAG(IS_ANDROID)
   absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
+  bool IsFpsManaged() override;
   bool CreateInfoBarDelegate() override;
   std::unique_ptr<content_settings::CookieControlsController>
   CreateCookieControlsController() override;

@@ -1209,8 +1209,10 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
             privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
 #if !BUILDFLAG(IS_ANDROID)
       auto fps_owner = delegate_->GetFpsOwner(site_url_);
-      if (fps_owner)
+      if (fps_owner) {
         cookies_info.fps_info = PageInfoUI::CookiesFpsInfo(*fps_owner);
+        cookies_info.fps_info->is_managed = delegate_->IsFpsManaged();
+      }
 
 #endif
     }

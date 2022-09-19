@@ -301,7 +301,7 @@ void PageInfoCookiesContentView::SetFpsCookiesInfo(
     absl::optional<CookiesFpsInfo> fps_info,
     bool is_fps_allowed) {
   if (is_fps_allowed) {
-    InitFpsButton();
+    InitFpsButton(fps_info->is_managed);
     fps_button_->SetVisible(true);
 
     const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
@@ -317,7 +317,7 @@ void PageInfoCookiesContentView::SetFpsCookiesInfo(
   }
 }
 
-void PageInfoCookiesContentView::InitFpsButton() {
+void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
   if (fps_button_)
     return;
 
@@ -340,7 +340,10 @@ void PageInfoCookiesContentView::InitFpsButton() {
           icon_fps, IDS_PAGE_INFO_COOKIES, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS,
           tooltip, /*secondary_text=*/u" ",
-          PageInfoViewFactory::GetLaunchIcon()));
+          PageInfoViewFactory::GetLaunchIcon(),
+          is_managed ? absl::optional<ui::ImageModel>(
+                           PageInfoViewFactory::GetEnforcedByPolicyIcon())
+                     : absl::nullopt));
 }
 
 void PageInfoCookiesContentView::FpsSettingsButtonClicked(ui::Event const&) {
