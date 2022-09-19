@@ -1119,10 +1119,6 @@ bool Element::HasAnimations() const {
   return element_animations && !element_animations->IsEmpty();
 }
 
-Node::NodeType Element::getNodeType() const {
-  return kElementNode;
-}
-
 bool Element::hasAttribute(const QualifiedName& name) const {
   return hasAttributeNS(name.NamespaceURI(), name.LocalName());
 }

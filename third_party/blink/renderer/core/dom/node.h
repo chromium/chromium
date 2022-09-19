@@ -92,10 +92,9 @@ class V8UnionStringOrTrustedScript;
 class WebPluginContainerImpl;
 struct PhysicalRect;
 
-const int kDOMNodeTypeShift = 2;
-const int kElementNamespaceTypeShift = 4;
-const int kNodeStyleChangeShift = 15;
-const int kNodeCustomElementShift = 17;
+const int kElementNamespaceTypeShift = 5;
+const int kNodeStyleChangeShift = 17;
+const int kNodeCustomElementShift = 19;
 
 // Values for kChildNeedsStyleRecalcFlag, controlling whether a node gets its
 // style recalculated.
@@ -215,7 +214,6 @@ class CORE_EXPORT Node : public EventTarget {
   virtual String nodeValue() const;
   virtual void setNodeValue(const String&,
                             ExceptionState& = ASSERT_NO_EXCEPTION);
-  virtual NodeType getNodeType() const = 0;
   ContainerNode* parentNode() const {
     return IsShadowRoot() ? nullptr : ParentOrShadowHostNode();
   }
@@ -314,19 +312,21 @@ class CORE_EXPORT Node : public EventTarget {
   void SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style);
 
   // Other methods (not part of DOM)
+  ALWAYS_INLINE NodeType getNodeType() const {
+    return static_cast<NodeType>(node_flags_ & kNodeTypeMask);
+  }
   ALWAYS_INLINE bool IsTextNode() const {
-    return GetDOMNodeType() == DOMNodeType::kText;
+    return getNodeType() == kTextNode || getNodeType() == kCdataSectionNode;
   }
   ALWAYS_INLINE bool IsContainerNode() const {
     return GetFlag(kIsContainerFlag);
   }
   ALWAYS_INLINE bool IsElementNode() const {
-    return GetDOMNodeType() == DOMNodeType::kElement;
+    return getNodeType() == kElementNode;
   }
   ALWAYS_INLINE bool IsDocumentFragment() const {
-    return GetDOMNodeType() == DOMNodeType::kDocumentFragment;
+    return getNodeType() == kDocumentFragmentNode;
   }
-
   ALWAYS_INLINE bool IsHTMLElement() const {
     return GetElementNamespaceType() == ElementNamespaceType::kHTML;
   }
@@ -1004,56 +1004,58 @@ class CORE_EXPORT Node : public EventTarget {
 
  private:
   enum NodeFlags : uint32_t {
-    kHasRareDataFlag = 1,
-
+    // Let the NodeTypeMask comes first, so the shit operation can
+    // be eliminated when get NodeType for the reason of performance.
     // Node type flags. These never change once created.
-    kIsContainerFlag = 1 << 1,
-    kDOMNodeTypeMask = 0x3 << kDOMNodeTypeShift,
+    kNodeTypeMask = 0xf,
+    kIsContainerFlag = 1 << 4,
     kElementNamespaceTypeMask = 0x3 << kElementNamespaceTypeShift,
+
+    kHasRareDataFlag = 1 << 7,
 
     // Changes based on if the element should be treated like a link,
     // ex. When setting the href attribute on an <a>.
-    kIsLinkFlag = 1 << 6,
+    kIsLinkFlag = 1 << 8,
 
     // Changes based on :hover, :active and :focus state.
-    kIsUserActionElementFlag = 1 << 7,
+    kIsUserActionElementFlag = 1 << 9,
 
     // Tree state flags. These change when the element is added/removed
     // from a DOM tree.
-    kIsConnectedFlag = 1 << 8,
-    kIsInShadowTreeFlag = 1 << 9,
+    kIsConnectedFlag = 1 << 10,
+    kIsInShadowTreeFlag = 1 << 11,
 
     // Set by the parser when the children are done parsing.
-    kIsFinishedParsingChildrenFlag = 1 << 10,
+    kIsFinishedParsingChildrenFlag = 1 << 12,
 
     // Flags related to recalcStyle.
-    kHasCustomStyleCallbacksFlag = 1 << 11,
-    kChildNeedsStyleInvalidationFlag = 1 << 12,
-    kNeedsStyleInvalidationFlag = 1 << 13,
-    kChildNeedsStyleRecalcFlag = 1 << 14,
+    kHasCustomStyleCallbacksFlag = 1 << 13,
+    kChildNeedsStyleInvalidationFlag = 1 << 14,
+    kNeedsStyleInvalidationFlag = 1 << 15,
+    kChildNeedsStyleRecalcFlag = 1 << 16,
     kStyleChangeMask = 0x3 << kNodeStyleChangeShift,
 
     kCustomElementStateMask = 0x7 << kNodeCustomElementShift,
 
-    kHasNameOrIsEditingTextFlag = 1 << 20,
-    kHasEventTargetDataFlag = 1 << 21,
+    kHasNameOrIsEditingTextFlag = 1 << 22,
+    kHasEventTargetDataFlag = 1 << 23,
 
-    kNeedsReattachLayoutTree = 1 << 22,
-    kChildNeedsReattachLayoutTree = 1 << 23,
+    kNeedsReattachLayoutTree = 1 << 24,
+    kChildNeedsReattachLayoutTree = 1 << 25,
 
-    kHasDuplicateAttributes = 1 << 24,
+    kHasDuplicateAttributes = 1 << 26,
 
-    kForceReattachLayoutTree = 1 << 25,
+    kForceReattachLayoutTree = 1 << 27,
 
-    kHasDisplayLockContext = 1 << 26,
+    kHasDisplayLockContext = 1 << 28,
 
-    kSelfOrAncestorHasDirAutoAttribute = 1 << 27,
-    kCachedDirectionalityIsRtl = 1 << 28,
-    kNeedsInheritDirectionalityFromParent = 1 << 29,
+    kSelfOrAncestorHasDirAutoAttribute = 1 << 29,
+    kCachedDirectionalityIsRtl = 1 << 30,
+    kNeedsInheritDirectionalityFromParent = 1u << 31,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 2 bits remaining.
+    // 0 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {
@@ -1064,16 +1066,6 @@ class CORE_EXPORT Node : public EventTarget {
   }
   void SetFlag(NodeFlags mask) { node_flags_ |= mask; }
   void ClearFlag(NodeFlags mask) { node_flags_ &= ~mask; }
-
-  enum class DOMNodeType : uint32_t {
-    kElement = 0,
-    kText = 1 << kDOMNodeTypeShift,
-    kDocumentFragment = 2 << kDOMNodeTypeShift,
-    kOther = 3 << kDOMNodeTypeShift,
-  };
-  ALWAYS_INLINE DOMNodeType GetDOMNodeType() const {
-    return static_cast<DOMNodeType>(node_flags_ & kDOMNodeTypeMask);
-  }
 
   enum class ElementNamespaceType : uint32_t {
     kHTML = 0,
@@ -1088,34 +1080,34 @@ class CORE_EXPORT Node : public EventTarget {
 
  protected:
   enum ConstructionType {
-    kCreateOther = kDefaultNodeFlags |
-                   static_cast<NodeFlags>(DOMNodeType::kOther) |
-                   static_cast<NodeFlags>(ElementNamespaceType::kOther),
-    kCreateText = kDefaultNodeFlags |
-                  static_cast<NodeFlags>(DOMNodeType::kText) |
+    kCreateBase = kDefaultNodeFlags |
                   static_cast<NodeFlags>(ElementNamespaceType::kOther),
-    kCreateContainer = kDefaultNodeFlags | kIsContainerFlag |
-                       static_cast<NodeFlags>(DOMNodeType::kOther) |
-                       static_cast<NodeFlags>(ElementNamespaceType::kOther),
-    kCreateElement = kDefaultNodeFlags | kIsContainerFlag |
-                     static_cast<NodeFlags>(DOMNodeType::kElement) |
-                     static_cast<NodeFlags>(ElementNamespaceType::kOther),
-    kCreateDocumentFragment =
-        kDefaultNodeFlags | kIsContainerFlag |
-        static_cast<NodeFlags>(DOMNodeType::kDocumentFragment) |
-        static_cast<NodeFlags>(ElementNamespaceType::kOther),
+    kCreateAttribute = kCreateBase | static_cast<NodeFlags>(kAttributeNode),
+    kCreateComment = kCreateBase | static_cast<NodeFlags>(kCommentNode),
+    kCreateDocumentType =
+        kCreateBase | static_cast<NodeFlags>(kDocumentTypeNode),
+    kCreateProcessingInstruction =
+        kCreateBase | static_cast<NodeFlags>(kProcessingInstructionNode),
+    kCreateCdataSection =
+        kCreateBase | static_cast<NodeFlags>(kCdataSectionNode),
+    kCreateText = kCreateBase | static_cast<NodeFlags>(kTextNode),
+    kCreateElement =
+        kCreateBase | kIsContainerFlag | static_cast<NodeFlags>(kElementNode),
+    kCreateDocument = kCreateBase | kIsContainerFlag | kIsConnectedFlag |
+                      static_cast<NodeFlags>(kDocumentNode),
+    kCreateDocumentFragment = kCreateBase | kIsContainerFlag |
+                              static_cast<NodeFlags>(kDocumentFragmentNode),
     kCreateShadowRoot = kCreateDocumentFragment | kIsInShadowTreeFlag,
     kCreateHTMLElement = kDefaultNodeFlags | kIsContainerFlag |
-                         static_cast<NodeFlags>(DOMNodeType::kElement) |
+                         static_cast<NodeFlags>(kElementNode) |
                          static_cast<NodeFlags>(ElementNamespaceType::kHTML),
     kCreateMathMLElement =
         kDefaultNodeFlags | kIsContainerFlag |
-        static_cast<NodeFlags>(DOMNodeType::kElement) |
+        static_cast<NodeFlags>(kElementNode) |
         static_cast<NodeFlags>(ElementNamespaceType::kMathML),
     kCreateSVGElement = kDefaultNodeFlags | kIsContainerFlag |
-                        static_cast<NodeFlags>(DOMNodeType::kElement) |
+                        static_cast<NodeFlags>(kElementNode) |
                         static_cast<NodeFlags>(ElementNamespaceType::kSVG),
-    kCreateDocument = kCreateContainer | kIsConnectedFlag,
     kCreateEditingText = kCreateText | kHasNameOrIsEditingTextFlag,
   };
 

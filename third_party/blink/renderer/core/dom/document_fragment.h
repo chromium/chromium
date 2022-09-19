@@ -38,7 +38,7 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
  public:
   static DocumentFragment* Create(Document&);
 
-  DocumentFragment(Document*, ConstructionType = kCreateContainer);
+  DocumentFragment(Document*, ConstructionType);
 
   void ParseHTML(const String&,
                  Element* context_element,
@@ -57,7 +57,6 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   String nodeName() const final;
 
  private:
-  NodeType getNodeType() const final;
   Node* Clone(Document&, CloneChildrenFlag) const override;
   bool ChildTypeAllowed(NodeType) const override;
 };

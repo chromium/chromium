@@ -1825,10 +1825,6 @@ String Document::nodeName() const {
   return "#document";
 }
 
-Node::NodeType Document::getNodeType() const {
-  return kDocumentNode;
-}
-
 FormController& Document::GetFormController() {
   if (!form_controller_) {
     form_controller_ = MakeGarbageCollected<FormController>(*this);

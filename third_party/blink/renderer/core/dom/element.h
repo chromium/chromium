@@ -1467,7 +1467,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void ClientQuads(Vector<gfx::QuadF>& quads) const;
 
-  NodeType getNodeType() const final;
   bool ChildTypeAllowed(NodeType) const final;
 
   // Returns the attribute's index or `kNotFound` if not found.

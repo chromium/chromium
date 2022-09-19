@@ -70,7 +70,6 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
 
  private:
   String nodeName() const override;
-  NodeType getNodeType() const override;
   Node* Clone(Document&, CloneChildrenFlag) const override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

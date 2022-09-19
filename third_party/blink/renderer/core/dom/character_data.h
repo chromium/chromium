@@ -70,8 +70,9 @@ class CORE_EXPORT CharacterData : public Node {
       : Node(&tree_scope, type),
         is_parkable_(false),
         data_(!text.IsNull() ? text : g_empty_string) {
-    DCHECK(type == kCreateOther || type == kCreateText ||
-           type == kCreateEditingText);
+    DCHECK(type == kCreateComment || type == kCreateText ||
+           type == kCreateCdataSection ||
+           type == kCreateProcessingInstruction || type == kCreateEditingText);
   }
 
   void SetDataWithoutUpdate(const String& data) {

@@ -37,14 +37,14 @@
 namespace blink {
 
 Attr::Attr(Element& element, const QualifiedName& name)
-    : Node(&element.GetDocument(), kCreateOther),
+    : Node(&element.GetDocument(), kCreateAttribute),
       element_(&element),
       name_(name) {}
 
 Attr::Attr(Document& document,
            const QualifiedName& name,
            const AtomicString& standalone_value)
-    : Node(&document, kCreateOther),
+    : Node(&document, kCreateAttribute),
       name_(name),
       standalone_value_or_attached_local_name_(standalone_value) {}
 

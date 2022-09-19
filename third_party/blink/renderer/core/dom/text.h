@@ -71,7 +71,6 @@ class CORE_EXPORT Text : public CharacterData {
   void ReattachLayoutTreeIfNeeded(AttachContext&);
 
   bool CanContainRangeEndPoint() const final { return true; }
-  NodeType getNodeType() const override;
 
   void Trace(Visitor*) const override;
 

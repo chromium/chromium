@@ -45,7 +45,7 @@ namespace blink {
 ProcessingInstruction::ProcessingInstruction(Document& document,
                                              const String& target,
                                              const String& data)
-    : CharacterData(document, data, kCreateOther),
+    : CharacterData(document, data, kCreateProcessingInstruction),
       target_(target),
       loading_(false),
       alternate_(false),
@@ -71,10 +71,6 @@ void ProcessingInstruction::ClearEventListenerForXSLT() {
 
 String ProcessingInstruction::nodeName() const {
   return target_;
-}
-
-Node::NodeType ProcessingInstruction::getNodeType() const {
-  return kProcessingInstructionNode;
 }
 
 Node* ProcessingInstruction::Clone(Document& factory, CloneChildrenFlag) const {

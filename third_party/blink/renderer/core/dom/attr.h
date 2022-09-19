@@ -64,7 +64,6 @@ class CORE_EXPORT Attr final : public Node {
       delete;  // This will catch anyone doing an unnecessary check.
 
   String nodeName() const override { return name(); }
-  NodeType getNodeType() const override { return kAttributeNode; }
 
   String nodeValue() const override { return value(); }
   void setNodeValue(const String&, ExceptionState&) override;

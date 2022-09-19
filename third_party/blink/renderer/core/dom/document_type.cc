@@ -32,17 +32,13 @@ DocumentType::DocumentType(Document* document,
                            const String& name,
                            const String& public_id,
                            const String& system_id)
-    : Node(document, kCreateOther),
+    : Node(document, kCreateDocumentType),
       name_(name),
       public_id_(public_id),
       system_id_(system_id) {}
 
 String DocumentType::nodeName() const {
   return name();
-}
-
-Node::NodeType DocumentType::getNodeType() const {
-  return kDocumentTypeNode;
 }
 
 Node* DocumentType::Clone(Document& factory, CloneChildrenFlag) const {

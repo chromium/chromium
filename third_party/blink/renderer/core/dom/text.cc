@@ -240,10 +240,6 @@ String Text::nodeName() const {
   return "#text";
 }
 
-Node::NodeType Text::getNodeType() const {
-  return kTextNode;
-}
-
 Node* Text::Clone(Document& factory, CloneChildrenFlag) const {
   return CloneWithData(factory, data());
 }
