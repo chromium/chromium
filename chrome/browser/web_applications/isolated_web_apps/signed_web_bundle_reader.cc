@@ -155,36 +155,36 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
 
 void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
     ReadErrorCallback callback,
-    IntegrityVerificationAction action) {
+    SignatureVerificationAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
   switch (action.type()) {
-    case IntegrityVerificationAction::Type::kAbort:
+    case SignatureVerificationAction::Type::kAbort:
       FulfillWithError(std::move(callback),
                        AbortedByCaller({.message = action.abort_message()}));
       return;
-    case IntegrityVerificationAction::Type::kContinueAndVerifyIntegrity:
-      VerifyIntegrity(std::move(callback));
+    case SignatureVerificationAction::Type::kContinueAndVerifySignatures:
+      VerifySignatures(std::move(callback));
       return;
 #if BUILDFLAG(IS_CHROMEOS)
-    case IntegrityVerificationAction::Type::
-        kContinueAndSkipIntegrityVerification:
+    case SignatureVerificationAction::Type::
+        kContinueAndSkipSignatureVerification:
       ReadMetadata(std::move(callback));
       return;
 #endif
   }
 }
 
-void SignedWebBundleReader::VerifyIntegrity(ReadErrorCallback callback) {
+void SignedWebBundleReader::VerifySignatures(ReadErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
   // TODO(crbug.com/1315947): Actually verify integrity here.
-  OnIntegrityVerified(std::move(callback));
+  OnSignaturesVerified(std::move(callback));
 }
 
-void SignedWebBundleReader::OnIntegrityVerified(ReadErrorCallback callback) {
+void SignedWebBundleReader::OnSignaturesVerified(ReadErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
@@ -469,39 +469,39 @@ SignedWebBundleReader::ReadResponseError::ForResponseNotFound(
 }
 
 // static
-SignedWebBundleReader::IntegrityVerificationAction
-SignedWebBundleReader::IntegrityVerificationAction::Abort(
+SignedWebBundleReader::SignatureVerificationAction
+SignedWebBundleReader::SignatureVerificationAction::Abort(
     const std::string& abort_message) {
-  return IntegrityVerificationAction(Type::kAbort, abort_message);
+  return SignatureVerificationAction(Type::kAbort, abort_message);
 }
 
 // static
-SignedWebBundleReader::IntegrityVerificationAction SignedWebBundleReader::
-    IntegrityVerificationAction::ContinueAndVerifyIntegrity() {
-  return IntegrityVerificationAction(Type::kContinueAndVerifyIntegrity,
+SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
+    SignatureVerificationAction::ContinueAndVerifySignatures() {
+  return SignatureVerificationAction(Type::kContinueAndVerifySignatures,
                                      absl::nullopt);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 
 // static
-SignedWebBundleReader::IntegrityVerificationAction SignedWebBundleReader::
-    IntegrityVerificationAction::ContinueAndSkipIntegrityVerification() {
-  return IntegrityVerificationAction(
-      Type::kContinueAndSkipIntegrityVerification, absl::nullopt);
+SignedWebBundleReader::SignatureVerificationAction SignedWebBundleReader::
+    SignatureVerificationAction::ContinueAndSkipSignatureVerification() {
+  return SignatureVerificationAction(
+      Type::kContinueAndSkipSignatureVerification, absl::nullopt);
 }
 
 #endif
 
-SignedWebBundleReader::IntegrityVerificationAction::IntegrityVerificationAction(
+SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
     Type type,
     absl::optional<std::string> abort_message)
     : type_(type), abort_message_(abort_message) {}
 
-SignedWebBundleReader::IntegrityVerificationAction::IntegrityVerificationAction(
-    const IntegrityVerificationAction&) = default;
+SignedWebBundleReader::SignatureVerificationAction::SignatureVerificationAction(
+    const SignatureVerificationAction&) = default;
 
-SignedWebBundleReader::IntegrityVerificationAction::
-    ~IntegrityVerificationAction() = default;
+SignedWebBundleReader::SignatureVerificationAction::
+    ~SignatureVerificationAction() = default;
 
 }  // namespace web_app

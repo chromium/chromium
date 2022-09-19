@@ -59,27 +59,27 @@ class SignedWebBundleReader {
   // `integrity_block_result_callback`. If a caller decides that parsing should
   // stop, then metadata will not be read and the `read_error_callback` will run
   // with an `AbortedByCaller` error.
-  class IntegrityVerificationAction {
+  class SignatureVerificationAction {
    public:
     enum class Type {
       kAbort,
-      kContinueAndVerifyIntegrity,
+      kContinueAndVerifySignatures,
 #if BUILDFLAG(IS_CHROMEOS)
       // On ChromeOS, we only verify integrity at install-time. On other OSes,
       // we verify integrity once per session, so skipping integrity
       // verification is not an option for other OSes.
-      kContinueAndSkipIntegrityVerification,
+      kContinueAndSkipSignatureVerification,
 #endif
     };
 
-    static IntegrityVerificationAction Abort(const std::string& abort_message);
-    static IntegrityVerificationAction ContinueAndVerifyIntegrity();
+    static SignatureVerificationAction Abort(const std::string& abort_message);
+    static SignatureVerificationAction ContinueAndVerifySignatures();
 #if BUILDFLAG(IS_CHROMEOS)
-    static IntegrityVerificationAction ContinueAndSkipIntegrityVerification();
+    static SignatureVerificationAction ContinueAndSkipSignatureVerification();
 #endif
 
-    IntegrityVerificationAction(const IntegrityVerificationAction&);
-    ~IntegrityVerificationAction();
+    SignatureVerificationAction(const SignatureVerificationAction&);
+    ~SignatureVerificationAction();
 
     Type type() { return type_; }
 
@@ -87,7 +87,7 @@ class SignedWebBundleReader {
     std::string abort_message() { return *abort_message_; }
 
    private:
-    IntegrityVerificationAction(Type type,
+    SignatureVerificationAction(Type type,
                                 absl::optional<std::string> abort_message);
 
     const Type type_;
@@ -96,7 +96,7 @@ class SignedWebBundleReader {
 
   using IntegrityBlockReadResultCallback = base::OnceCallback<void(
       const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
-      base::OnceCallback<void(IntegrityVerificationAction)> callback)>;
+      base::OnceCallback<void(SignatureVerificationAction)> callback)>;
 
   // This error will be passed to `read_error_callback` if parsing is aborted by
   // the caller as part of `integrity_block_result_callback`.
@@ -236,11 +236,11 @@ class SignedWebBundleReader {
 
   void OnShouldContinueParsingAfterIntegrityBlock(
       ReadErrorCallback callback,
-      IntegrityVerificationAction action);
+      SignatureVerificationAction action);
 
-  void VerifyIntegrity(ReadErrorCallback callback);
+  void VerifySignatures(ReadErrorCallback callback);
 
-  void OnIntegrityVerified(ReadErrorCallback callback);
+  void OnSignaturesVerified(ReadErrorCallback callback);
 
   void ReadMetadata(ReadErrorCallback callback);
 

@@ -83,7 +83,7 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
-    base::OnceCallback<void(SignedWebBundleReader::IntegrityVerificationAction)>
+    base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
         integrity_callback) {
   if (auto error =
           validator_->ValidateIntegrityBlock(web_bundle_id, public_key_stack);
@@ -91,18 +91,18 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
     // Aborting parsing will trigger a call to `OnIntegrityBlockAndMetadataRead`
     // with a `SignedWebBundleReader::AbortedByCaller` error.
     std::move(integrity_callback)
-        .Run(SignedWebBundleReader::IntegrityVerificationAction::Abort(*error));
+        .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(*error));
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::move(integrity_callback)
-      .Run(SignedWebBundleReader::IntegrityVerificationAction::
-               ContinueAndSkipIntegrityVerification());
+      .Run(SignedWebBundleReader::SignatureVerificationAction::
+               ContinueAndSkipSignatureVerification());
 #else
   std::move(integrity_callback)
-      .Run(SignedWebBundleReader::IntegrityVerificationAction::
-               ContinueAndVerifyIntegrity());
+      .Run(SignedWebBundleReader::SignatureVerificationAction::
+               ContinueAndVerifySignatures());
 #endif
 }
 

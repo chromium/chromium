@@ -112,7 +112,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
       base::OnceCallback<
-          void(SignedWebBundleReader::IntegrityVerificationAction)> callback);
+          void(SignedWebBundleReader::SignatureVerificationAction)> callback);
 
   void OnIntegrityBlockAndMetadataRead(
       const base::FilePath& web_bundle_path,

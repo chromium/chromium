@@ -79,12 +79,12 @@ class SignedWebBundleReaderTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  using VerificationAction = SignedWebBundleReader::IntegrityVerificationAction;
+  using VerificationAction = SignedWebBundleReader::SignatureVerificationAction;
 
   std::unique_ptr<SignedWebBundleReader> CreateReaderAndInitialize(
       SignedWebBundleReader::ReadErrorCallback callback,
       VerificationAction verification_action =
-          VerificationAction::ContinueAndVerifyIntegrity(),
+          VerificationAction::ContinueAndVerifySignatures(),
       const std::string test_file_data = kResponseBody) {
     // Provide a buffer that contains the contents of just a single
     // response. We do not need to provide an integrity block or metadata
