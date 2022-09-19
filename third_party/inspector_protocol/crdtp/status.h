@@ -90,7 +90,7 @@ struct CRDTP_EXPORT Status {
 
   Error error = Error::OK;
   size_t pos = npos();
-  [[nodiscard]] Status(Error error, size_t pos) : error(error), pos(pos) {}
+  Status(Error error, size_t pos) : error(error), pos(pos) {}
   Status() = default;
 
   bool IsMessageError() const {
