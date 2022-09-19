@@ -91,6 +91,7 @@ NSString* const kFailMarkCircleFillSymbol = @"exclamationmark.circle.fill";
 NSString* const kTrashSymbol = @"trash";
 NSString* const kInfoCircleSymbol = @"info.circle";
 NSString* const kHistorySymbol = @"clock.arrow.circlepath";
+NSString* const kCheckmarkSealSymbol = @"checkmark.seal";
 NSString* const kWifiSymbol = @"wifi";
 NSString* const kBookmarksSymbol = @"star.fill";
 

@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -347,6 +348,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       case NTPCollectionShortcutTypeHistory:
         base::RecordAction(base::UserMetricsAction("MobileNTPShowHistory"));
         [self.dispatcher showHistory];
+        break;
+      case NTPCollectionShortcutTypeWhatsNew:
+        base::RecordAction(base::UserMetricsAction("MobileNTPShowWhatsNew"));
+        [self.dispatcher showWhatsNew];
         break;
       case NTPCollectionShortcutTypeCount:
         NOTREACHED();
@@ -637,6 +642,20 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return [NSString stringWithFormat:@"%@%@", pageTitle, time];
 }
 
+- (BOOL)shouldShowWhatsNewActionItem {
+  if (!base::FeatureList::IsEnabled(kWhatsNewIOS)) {
+    return NO;
+  }
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  BOOL isSignedIn =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+  return !isSignedIn;
+}
+
 #pragma mark - Properties
 
 - (NSArray<ContentSuggestionsMostVisitedActionItem*>*)actionButtonItems {
@@ -644,8 +663,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     self.readingListItem = ReadingListActionItem();
     self.readingListItem.count = self.readingListUnreadCount;
     _actionButtonItems = @[
-      BookmarkActionItem(), self.readingListItem, RecentTabsActionItem(),
-      HistoryActionItem()
+      [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
+                                          : BookmarkActionItem(),
+      self.readingListItem, RecentTabsActionItem(), HistoryActionItem()
     ];
     for (ContentSuggestionsMostVisitedActionItem* item in _actionButtonItems) {
       item.accessibilityTraits = UIAccessibilityTraitButton;

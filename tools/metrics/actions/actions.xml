@@ -18657,6 +18657,12 @@ should be able to be added at any place in this file.
   <description>The user tapped the recent list icon on the NTP.</description>
 </action>
 
+<action name="MobileNTPShowWhatsNew">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user tapped the what's new icon on the NTP.</description>
+</action>
+
 <action name="MobileNTPSwitchToBookmarks">
   <obsolete>
     Removed with deprecation of Bookmark suggestions category.

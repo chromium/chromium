@@ -297,3 +297,20 @@ TEST_F(ContentSuggestionsMediatorTest,
       IOSContentSuggestionsActionType::kTrendingQuery, 1);
   histogram_tester_->ExpectUniqueSample("IOS.TrendingQueries", index, 1);
 }
+
+// Tests that the command is sent to the dispatcher when opening the What's new.
+TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
+  OCMExpect([dispatcher_ showWhatsNew]);
+
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kShortcuts, 0);
+  // Action.
+  ContentSuggestionsMostVisitedActionItem* whatsNew = WhatsNewActionItem();
+  [mediator_ openMostVisitedItem:whatsNew atIndex:1];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kShortcuts, 1);
+  // Test.
+  EXPECT_OCMOCK_VERIFY(dispatcher_);
+}

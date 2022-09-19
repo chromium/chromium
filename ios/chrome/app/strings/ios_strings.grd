@@ -711,6 +711,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS" desc="The Recent Tabs title on the new tab page [Length: 10em]">
         Recent Tabs
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW" desc="The What's New title on the new tab page [Length: 10em]">
+        What's New
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_REMOVE" desc="The name of the Remove command in the Content Suggestions articles context menu">
         Remove
       </message>

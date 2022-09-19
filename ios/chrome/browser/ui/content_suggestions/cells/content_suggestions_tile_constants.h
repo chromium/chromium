@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, NTPCollectionShortcutType) {
   NTPCollectionShortcutTypeReadingList,
   NTPCollectionShortcutTypeRecentTabs,
   NTPCollectionShortcutTypeHistory,
+  NTPCollectionShortcutTypeWhatsNew,
   NTPCollectionShortcutTypeCount
 };
 

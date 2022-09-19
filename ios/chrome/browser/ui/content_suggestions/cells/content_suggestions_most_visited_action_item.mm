@@ -31,6 +31,9 @@
       case NTPCollectionShortcutTypeHistory:
         _index = NTPCollectionShortcutTypeHistory;
         break;
+      case NTPCollectionShortcutTypeWhatsNew:
+        _index = NTPCollectionShortcutTypeWhatsNew;
+        break;
       default:
         break;
     }

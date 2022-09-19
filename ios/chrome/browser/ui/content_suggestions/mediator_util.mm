@@ -92,3 +92,8 @@ ContentSuggestionsMostVisitedActionItem* HistoryActionItem() {
   return [[ContentSuggestionsMostVisitedActionItem alloc]
       initWithCollectionShortcutType:NTPCollectionShortcutTypeHistory];
 }
+
+ContentSuggestionsMostVisitedActionItem* WhatsNewActionItem() {
+  return [[ContentSuggestionsMostVisitedActionItem alloc]
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew];
+}

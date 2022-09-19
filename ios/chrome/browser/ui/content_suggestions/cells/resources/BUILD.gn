@@ -48,3 +48,12 @@ imageset("ntp_history_icon") {
     "ntp_history_icon.imageset/ntp_history_icon@3x.png",
   ]
 }
+
+imageset("ntp_whats_new_icon") {
+  sources = [
+    "ntp_whats_new_icon.imageset/Contents.json",
+    "ntp_whats_new_icon.imageset/ntp_whats_new_icon.png",
+    "ntp_whats_new_icon.imageset/ntp_whats_new_icon@2x.png",
+    "ntp_whats_new_icon.imageset/ntp_whats_new_icon@3x.png",
+  ]
+}

@@ -44,6 +44,7 @@ source_set("cells") {
     "resources:ntp_most_visited_tile",
     "resources:ntp_readinglist_icon",
     "resources:ntp_recent_icon",
+    "resources:ntp_whats_new_icon",
     "//base",
     "//components/ntp_tiles",
     "//ios/chrome/app/strings",

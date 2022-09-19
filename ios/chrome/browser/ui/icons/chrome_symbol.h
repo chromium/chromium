@@ -53,6 +53,7 @@ extern NSString* const kFailMarkCircleFillSymbol;
 extern NSString* const kTrashSymbol;
 extern NSString* const kInfoCircleSymbol;
 extern NSString* const kHistorySymbol;
+extern NSString* const kCheckmarkSealSymbol;
 extern NSString* const kWifiSymbol;
 extern NSString* const kBookmarksSymbol;
 

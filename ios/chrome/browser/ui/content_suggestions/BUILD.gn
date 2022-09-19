@@ -114,6 +114,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/whats_new:feature_flags",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web_state_list",
@@ -304,7 +305,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/ui/collection_view",
-    "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
@@ -329,8 +329,6 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//services/network:test_support",
     "//testing/gtest",
-    "//testing/gtest",
-    "//third_party/ocmock",
     "//third_party/ocmock",
   ]
   configs += [

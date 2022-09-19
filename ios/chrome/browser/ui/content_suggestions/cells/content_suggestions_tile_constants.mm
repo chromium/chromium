@@ -32,6 +32,8 @@ NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
       return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS);
     case NTPCollectionShortcutTypeHistory:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_HISTORY);
+    case NTPCollectionShortcutTypeWhatsNew:
+      return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW);
     case NTPCollectionShortcutTypeCount:
       NOTREACHED();
       return @"";
@@ -52,6 +54,9 @@ UIImage* ImageForCollectionShortcutType(NTPCollectionShortcutType type) {
       break;
     case NTPCollectionShortcutTypeHistory:
       imageName = @"ntp_history_icon";
+      break;
+    case NTPCollectionShortcutTypeWhatsNew:
+      imageName = @"ntp_whats_new_icon";
       break;
     case NTPCollectionShortcutTypeCount:
       NOTREACHED();
@@ -75,6 +80,9 @@ UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type) {
     case NTPCollectionShortcutTypeHistory:
       return DefaultSymbolTemplateWithPointSize(
           kHistorySymbol, kSymbolContentSuggestionsPointSize);
+    case NTPCollectionShortcutTypeWhatsNew:
+      return DefaultSymbolTemplateWithPointSize(
+          kCheckmarkSealSymbol, kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeCount:
       NOTREACHED();
       return nil;

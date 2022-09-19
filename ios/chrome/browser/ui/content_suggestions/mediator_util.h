@@ -45,4 +45,7 @@ ContentSuggestionsMostVisitedActionItem* RecentTabsActionItem();
 // Creates and returns a History action item.
 ContentSuggestionsMostVisitedActionItem* HistoryActionItem();
 
+// Creates and returns a Whats New action item.
+ContentSuggestionsMostVisitedActionItem* WhatsNewActionItem();
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
