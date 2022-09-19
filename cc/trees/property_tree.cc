@@ -133,6 +133,7 @@ void TransformTree::clear() {
   cached_data_.clear();
   cached_data_.push_back(TransformCachedNodeData());
   sticky_position_data_.clear();
+  anchor_scroll_containers_data_.clear();
 
 #if DCHECK_IS_ON()
   DCHECK(TransformTree() == *this);
