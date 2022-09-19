@@ -56,9 +56,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
-    units="ms" expires_after="M108">
+    units="ms" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     The latency improvement provided by the delegated ink trail API, both with
     and without prediction, in milliseconds. This latency improvement is the
@@ -78,9 +78,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment{Number}"
-    units="ms" expires_after="M108">
+    units="ms" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     The latency improvement provided by predicting extra delegated ink points
     when using the delegated ink trail API with SkiaRenderer in milliseconds.
@@ -99,9 +99,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
-    enum="BooleanDirection" expires_after="M108">
+    enum="BooleanDirection" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     Boolean that indicates whether the prediction is in the same direction as
     the real trajectory at the same prediction time. True means the direction is
@@ -114,9 +114,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
-    units="pixels" expires_after="M108">
+    units="pixels" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     {Direction}shoot distance in pixels between a predicted point and the
     corresponding interpolated real point that occurred at the prediction time.
@@ -132,9 +132,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
-    units="pixels" expires_after="M108">
+    units="pixels" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     Euclidean distance in pixels between two successive variations of delegated
     ink trail deltas which are the difference beween a predicted delegated ink
@@ -153,9 +153,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.Frame{ScoreType}"
-    units="pixels" expires_after="M108">
+    units="pixels" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     Distance in pixels between a predicted point and the corresponding
     interpolated real point that occurred at the prediction time.
@@ -181,9 +181,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.WrongDirection"
-    enum="BooleanDirection" expires_after="M108">
+    enum="BooleanDirection" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     Whether the prediction is in the same direction as the real trajectory at
     the same prediction time.
@@ -201,9 +201,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{ScoreType}"
-    units="pixels" expires_after="M108">
+    units="pixels" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     Distance in pixels between a predicted point and the corresponding
     interpolated real point that occurred at the prediction time.
@@ -226,9 +226,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Type}Jitter"
-    units="pixels" expires_after="M108">
+    units="pixels" expires_after="2023-02-01">
   <owner>jonross@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <summary>
     Euclidean distance in pixels between two successive variations of delegated
     ink trail deltas which are the difference beween a predicted delegated ink
