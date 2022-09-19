@@ -185,6 +185,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -600,7 +601,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel))
+  if (customize_chrome::IsSidePanelEnabled())
     CustomizeChromeTabHelper::CreateForWebContents(web_contents);
 #endif
 

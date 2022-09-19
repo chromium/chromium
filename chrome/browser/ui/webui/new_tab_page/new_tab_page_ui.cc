@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
+#include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
@@ -531,9 +532,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
   content::WebUIDataSource::Add(profile_, source);
 
-  source->AddBoolean(
-      "customizeChromeEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel));
+  source->AddBoolean("customizeChromeEnabled",
+                     customize_chrome::IsSidePanelEnabled());
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
@@ -570,7 +570,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       ntp_custom_background_service_.get());
 
   // Create and register customize chrome entry on unified side panel
-  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+  if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents_);
     customize_chrome_tab_helper->CreateAndRegisterEntry();
@@ -586,7 +586,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
 
 NewTabPageUI::~NewTabPageUI() {
   // Deregister customize chrome entry on unified side panel
-  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+  if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents_);
     customize_chrome_tab_helper->DeregisterEntry();
