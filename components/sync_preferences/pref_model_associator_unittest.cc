@@ -81,16 +81,11 @@ class AbstractPreferenceMergeTest : public testing::Test {
         pref_service_->GetSyncableService(syncer::PREFERENCES));
   }
 
-  void SetContentPattern(base::Value* patterns_dict,
+  void SetContentPattern(base::Value::Dict& patterns_dict,
                          const std::string& expression,
                          int setting) {
-    base::Value* expression_dict =
-        patterns_dict->FindKeyOfType(expression, base::Value::Type::DICTIONARY);
-    if (!expression_dict) {
-      expression_dict = patterns_dict->SetKey(
-          expression, base::Value(base::Value::Type::DICTIONARY));
-    }
-    expression_dict->SetKey("setting", base::Value(setting));
+    base::Value::Dict* expression_dict = patterns_dict.EnsureDict(expression);
+    expression_dict->Set("setting", setting);
   }
 
   void SetPrefToEmpty(const std::string& pref_name) {
@@ -170,9 +165,8 @@ TEST_F(ListPreferenceMergeTest, LocalEmpty) {
 TEST_F(ListPreferenceMergeTest, ServerNull) {
   auto null_value = std::make_unique<base::Value>();
   {
-    ListPrefUpdate update(pref_service_.get(), kListPrefName);
-    base::Value* local_list_value = update.Get();
-    local_list_value->Append(local_url0_);
+    ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
+    update->Append(local_url0_);
   }
 
   const PrefService::Preference* pref =
@@ -187,9 +181,8 @@ TEST_F(ListPreferenceMergeTest, ServerNull) {
 TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   std::unique_ptr<base::Value> empty_value(new base::ListValue);
   {
-    ListPrefUpdate update(pref_service_.get(), kListPrefName);
-    base::Value* local_list_value = update.Get();
-    local_list_value->Append(local_url0_);
+    ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
+    update->Append(local_url0_);
   }
 
   const PrefService::Preference* pref =
@@ -203,10 +196,9 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
 
 TEST_F(ListPreferenceMergeTest, Merge) {
   {
-    ListPrefUpdate update(pref_service_.get(), kListPrefName);
-    base::Value* local_list_value = update.Get();
-    local_list_value->Append(local_url0_);
-    local_list_value->Append(local_url1_);
+    ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
+    update->Append(local_url0_);
+    update->Append(local_url1_);
   }
 
   const PrefService::Preference* pref =
@@ -224,11 +216,10 @@ TEST_F(ListPreferenceMergeTest, Merge) {
 
 TEST_F(ListPreferenceMergeTest, Duplicates) {
   {
-    ListPrefUpdate update(pref_service_.get(), kListPrefName);
-    base::Value* local_list_value = update.Get();
-    local_list_value->Append(local_url0_);
-    local_list_value->Append(server_url0_);
-    local_list_value->Append(server_url1_);
+    ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
+    update->Append(local_url0_);
+    update->Append(server_url0_);
+    update->Append(server_url1_);
   }
 
   const PrefService::Preference* pref =
@@ -245,10 +236,9 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
 
 TEST_F(ListPreferenceMergeTest, Equals) {
   {
-    ListPrefUpdate update(pref_service_.get(), kListPrefName);
-    base::Value* local_list_value = update.Get();
-    local_list_value->Append(server_url0_);
-    local_list_value->Append(server_url1_);
+    ScopedListPrefUpdate update(pref_service_.get(), kListPrefName);
+    update->Append(server_url0_);
+    update->Append(server_url1_);
   }
 
   base::Value original = server_url_list_.Clone();
@@ -267,9 +257,9 @@ class DictionaryPreferenceMergeTest : public AbstractPreferenceMergeTest {
         expression2_("expression2"),
         expression3_("expression3"),
         expression4_("expression4") {
-    SetContentPattern(&server_patterns_, expression0_, 1);
-    SetContentPattern(&server_patterns_, expression1_, 2);
-    SetContentPattern(&server_patterns_, expression2_, 1);
+    SetContentPattern(server_patterns_.GetDict(), expression0_, 1);
+    SetContentPattern(server_patterns_.GetDict(), expression1_, 2);
+    SetContentPattern(server_patterns_.GetDict(), expression2_, 1);
   }
 
   std::string expression0_;
@@ -277,7 +267,7 @@ class DictionaryPreferenceMergeTest : public AbstractPreferenceMergeTest {
   std::string expression2_;
   std::string expression3_;
   std::string expression4_;
-  base::DictionaryValue server_patterns_;
+  base::Value server_patterns_{base::Value::Type::DICT};
 };
 
 TEST_F(DictionaryPreferenceMergeTest, LocalEmpty) {
@@ -292,9 +282,8 @@ TEST_F(DictionaryPreferenceMergeTest, LocalEmpty) {
 TEST_F(DictionaryPreferenceMergeTest, ServerNull) {
   auto null_value = std::make_unique<base::Value>();
   {
-    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
-    base::Value* local_dict_value = update.Get();
-    SetContentPattern(local_dict_value, expression3_, 1);
+    ScopedDictPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    SetContentPattern(*update, expression3_, 1);
   }
 
   const PrefService::Preference* pref =
@@ -309,9 +298,8 @@ TEST_F(DictionaryPreferenceMergeTest, ServerNull) {
 TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
   std::unique_ptr<base::Value> empty_value(new base::DictionaryValue);
   {
-    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
-    base::Value* local_dict_value = update.Get();
-    SetContentPattern(local_dict_value, expression3_, 1);
+    ScopedDictPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    SetContentPattern(*update, expression3_, 1);
   }
 
   const PrefService::Preference* pref =
@@ -325,9 +313,8 @@ TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
 
 TEST_F(DictionaryPreferenceMergeTest, MergeNoConflicts) {
   {
-    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
-    base::Value* local_dict_value = update.Get();
-    SetContentPattern(local_dict_value, expression3_, 1);
+    ScopedDictPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    SetContentPattern(*update, expression3_, 1);
   }
 
   base::Value merged_value(pref_sync_service_->MergePreference(
@@ -335,22 +322,21 @@ TEST_F(DictionaryPreferenceMergeTest, MergeNoConflicts) {
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
 
-  base::DictionaryValue expected;
-  SetContentPattern(&expected, expression0_, 1);
-  SetContentPattern(&expected, expression1_, 2);
-  SetContentPattern(&expected, expression2_, 1);
-  SetContentPattern(&expected, expression3_, 1);
+  base::Value::Dict expected;
+  SetContentPattern(expected, expression0_, 1);
+  SetContentPattern(expected, expression1_, 2);
+  SetContentPattern(expected, expression2_, 1);
+  SetContentPattern(expected, expression3_, 1);
   EXPECT_EQ(merged_value, expected);
 }
 
 TEST_F(DictionaryPreferenceMergeTest, MergeConflicts) {
   {
-    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
-    base::Value* local_dict_value = update.Get();
-    SetContentPattern(local_dict_value, expression0_, 2);
-    SetContentPattern(local_dict_value, expression2_, 1);
-    SetContentPattern(local_dict_value, expression3_, 1);
-    SetContentPattern(local_dict_value, expression4_, 2);
+    ScopedDictPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    SetContentPattern(*update, expression0_, 2);
+    SetContentPattern(*update, expression2_, 1);
+    SetContentPattern(*update, expression3_, 1);
+    SetContentPattern(*update, expression4_, 2);
   }
 
   base::Value merged_value(pref_sync_service_->MergePreference(
@@ -358,12 +344,12 @@ TEST_F(DictionaryPreferenceMergeTest, MergeConflicts) {
       *pref_service_->FindPreference(kDictionaryPrefName)->GetValue(),
       server_patterns_));
 
-  base::DictionaryValue expected;
-  SetContentPattern(&expected, expression0_, 1);
-  SetContentPattern(&expected, expression1_, 2);
-  SetContentPattern(&expected, expression2_, 1);
-  SetContentPattern(&expected, expression3_, 1);
-  SetContentPattern(&expected, expression4_, 2);
+  base::Value::Dict expected;
+  SetContentPattern(expected, expression0_, 1);
+  SetContentPattern(expected, expression1_, 2);
+  SetContentPattern(expected, expression2_, 1);
+  SetContentPattern(expected, expression3_, 1);
+  SetContentPattern(expected, expression4_, 2);
   EXPECT_EQ(merged_value, expected);
 }
 
@@ -382,11 +368,10 @@ TEST_F(DictionaryPreferenceMergeTest, MergeValueToDictionary) {
 
 TEST_F(DictionaryPreferenceMergeTest, Equal) {
   {
-    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
-    base::Value* local_dict_value = update.Get();
-    SetContentPattern(local_dict_value, expression0_, 1);
-    SetContentPattern(local_dict_value, expression1_, 2);
-    SetContentPattern(local_dict_value, expression2_, 1);
+    ScopedDictPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    SetContentPattern(*update, expression0_, 1);
+    SetContentPattern(*update, expression1_, 2);
+    SetContentPattern(*update, expression2_, 1);
   }
 
   base::Value merged_value(pref_sync_service_->MergePreference(
@@ -398,11 +383,10 @@ TEST_F(DictionaryPreferenceMergeTest, Equal) {
 
 TEST_F(DictionaryPreferenceMergeTest, ConflictButServerWins) {
   {
-    DictionaryPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
-    base::Value* local_dict_value = update.Get();
-    SetContentPattern(local_dict_value, expression0_, 2);
-    SetContentPattern(local_dict_value, expression1_, 2);
-    SetContentPattern(local_dict_value, expression2_, 1);
+    ScopedDictPrefUpdate update(pref_service_.get(), kDictionaryPrefName);
+    SetContentPattern(*update, expression0_, 2);
+    SetContentPattern(*update, expression1_, 2);
+    SetContentPattern(*update, expression2_, 1);
   }
 
   base::Value merged_value(pref_sync_service_->MergePreference(
@@ -420,20 +404,19 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
         expression0_("expression0"),
         expression1_("expression1") {
     server_url_list_.Append(url0_);
-    SetContentPattern(&server_patterns_, expression0_, 1);
+    SetContentPattern(server_patterns_.GetDict(), expression0_, 1);
   }
 
   bool MergeListPreference(const char* pref) {
     {
-      ListPrefUpdate update(pref_service_.get(), pref);
-      base::Value* local_list_value = update.Get();
-      local_list_value->Append(url1_);
+      ScopedListPrefUpdate update(pref_service_.get(), pref);
+      update->Append(url1_);
     }
 
     base::Value merged_value(pref_sync_service_->MergePreference(
         pref, *pref_service_->GetUserPrefValue(pref), server_url_list_));
 
-    base::ListValue expected;
+    base::Value::List expected;
     expected.Append(url0_);
     expected.Append(url1_);
     return merged_value == expected;
@@ -441,17 +424,16 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
 
   bool MergeDictionaryPreference(const char* pref) {
     {
-      DictionaryPrefUpdate update(pref_service_.get(), pref);
-      base::Value* local_dict_value = update.Get();
-      SetContentPattern(local_dict_value, expression1_, 1);
+      ScopedDictPrefUpdate update(pref_service_.get(), pref);
+      SetContentPattern(*update, expression1_, 1);
     }
 
     base::Value merged_value(pref_sync_service_->MergePreference(
         pref, *pref_service_->GetUserPrefValue(pref), server_patterns_));
 
-    base::DictionaryValue expected;
-    SetContentPattern(&expected, expression0_, 1);
-    SetContentPattern(&expected, expression1_, 1);
+    base::Value::Dict expected;
+    SetContentPattern(expected, expression0_, 1);
+    SetContentPattern(expected, expression1_, 1);
     return merged_value == expected;
   }
 
@@ -461,7 +443,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
   std::string expression1_;
   std::string content_type0_;
   base::ListValue server_url_list_;
-  base::DictionaryValue server_patterns_;
+  base::Value server_patterns_{base::Value::Type::DICT};
 };
 
 TEST_F(IndividualPreferenceMergeTest, ListPreference) {

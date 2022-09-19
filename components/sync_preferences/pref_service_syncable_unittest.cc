@@ -299,10 +299,9 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationDoNotSyncDefaults) {
 TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
   prefs_.SetString(kStringPrefName, kExampleUrl0);
   {
-    ListPrefUpdate update(GetPrefs(), kListPrefName);
-    base::Value* url_list = update.Get();
-    url_list->Append(kExampleUrl0);
-    url_list->Append(kExampleUrl1);
+    ScopedListPrefUpdate update(GetPrefs(), kListPrefName);
+    update->Append(kExampleUrl0);
+    update->Append(kExampleUrl1);
   }
   syncer::SyncChangeList out;
   InitWithSyncDataTakeOutput(syncer::SyncDataList(), &out);
@@ -318,9 +317,8 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
 TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
   prefs_.SetString(kStringPrefName, kExampleUrl0);
   {
-    ListPrefUpdate update(GetPrefs(), kListPrefName);
-    base::Value* url_list = update.Get();
-    url_list->Append(kExampleUrl0);
+    ScopedListPrefUpdate update(GetPrefs(), kListPrefName);
+    update->Append(kExampleUrl0);
   }
 
   syncer::SyncDataList in;
@@ -511,10 +509,9 @@ class PrefServiceSyncableMergeTest : public testing::Test {
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
   {
-    ListPrefUpdate update(&prefs_, kListPrefName);
-    base::Value* url_list = update.Get();
-    url_list->Append(kExampleUrl0);
-    url_list->Append(kExampleUrl1);
+    ScopedListPrefUpdate update(&prefs_, kListPrefName);
+    update->Append(kExampleUrl0);
+    update->Append(kExampleUrl1);
   }
 
   base::ListValue urls_to_restore;
@@ -592,10 +589,9 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedDictionaryValues) {
   {
-    DictionaryPrefUpdate update(&prefs_, kDictPrefName);
-    base::Value* dict_value = update.Get();
-    dict_value->SetStringKey("my_key1", "my_value1");
-    dict_value->SetStringKey("my_key3", "my_value3");
+    ScopedDictPrefUpdate update(&prefs_, kDictPrefName);
+    update->Set("my_key1", "my_value1");
+    update->Set("my_key3", "my_value3");
   }
 
   base::DictionaryValue remote_update;
