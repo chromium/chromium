@@ -68,7 +68,7 @@ trust_anchors {
 # Autoridad de Certificacion Firmaprofesional CIF A62634068
 # https://publifirma.firmaprofesional.com/
 trust_anchors {
-  sha256_hex: "04048028bf1f2864d48f9ad4d83294366a828856553f3b14303f90147f5d40ef"
+  sha256_hex: "57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a"
   ev_policy_oids: "1.3.6.1.4.1.13177.10.1.3.10"
 }
 
