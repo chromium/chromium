@@ -35,7 +35,7 @@ namespace {
 
 #if DCHECK_IS_ON()
 AXObject* ParentObjectUnignored(AXObject* child) {
-  if (child->IsDetached())
+  if (!child || child->IsDetached())
     return nullptr;
   AXObject* parent = child->ParentObjectIncludedInTree();
   while (parent && !parent->IsDetached() &&
@@ -97,7 +97,8 @@ void BlinkAXTreeSource::SetLoadInlineTextBoxesForId(int32_t id) {
   // method is called.
   WTF::Vector<int32_t> to_remove;
   for (auto iter : load_inline_text_boxes_ids_) {
-    if (GetFromId(iter)->IsDetached())
+    auto* obj = GetFromId(iter);
+    if (!obj || obj->IsDetached())
       to_remove.push_back(iter);
   }
   for (auto iter : to_remove)
@@ -298,7 +299,7 @@ void BlinkAXTreeSource::GetChildren(
     AXObject* child = parent->ChildAtIncludingIgnored(i);
 
     // The child may be invalid due to issues in blink accessibility code.
-    if (child->IsDetached()) {
+    if (!child || child->IsDetached()) {
       NOTREACHED() << "Should not try to serialize an invalid child:"
                    << "\nParent: " << parent->ToString(true).Utf8()
                    << "\nChild: " << child->ToString(true).Utf8();
@@ -340,7 +341,8 @@ AXObject* BlinkAXTreeSource::GetParent(AXObject* node) const {
     if (node == GetRoot())
       return nullptr;
     node = node->ParentObject();
-  } while (!node->IsDetached() && !node->AccessibilityIsIncludedInTree());
+  } while (node && !node->IsDetached() &&
+           !node->AccessibilityIsIncludedInTree());
 
   return node;
 }
@@ -381,7 +383,7 @@ void BlinkAXTreeSource::SerializeNode(AXObject* src,
   dst->id = src->AXObjectID();
   dst->role = src->RoleValue();
 
-  if (src->IsDetached() || !src->AccessibilityIsIncludedInTree()) {
+  if (!src || src->IsDetached() || !src->AccessibilityIsIncludedInTree()) {
     dst->AddState(ax::mojom::blink::State::kIgnored);
     NOTREACHED();
     return;
