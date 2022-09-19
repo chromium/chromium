@@ -11,23 +11,23 @@ Then change update the remote URLs for chromium and V8 to our forks.  The `gclie
 
 ```
 cd /path/to/src
-git remote set-url origin https://github.com/RecordReplay/chromium.git
+git remote set-url origin https://github.com/replayio/chromium.git
 git branch -D main
 git pull
 git checkout master
 gclient sync
 cd /path/to/src/v8
-git remote set-url origin https://github.com/RecordReplay/chromium-v8.git
+git remote set-url origin https://github.com/replayio/chromium-v8.git
 git branch -D master
 git pull
 git checkout master
 cd /path/to/src/third_party/webrtc
-git remote set-url origin https://github.com/RecordReplay/chromium-webrtc.git
+git remote set-url origin https://github.com/replayio/chromium-webrtc.git
 git branch -D master
 git pull
 git checkout main
 cd /path/to/src/third_party/skia
-git remote set-url origin https://github.com/RecordReplay/chromium-skia.git
+git remote set-url origin https://github.com/replayio/chromium-skia.git
 git branch -D master
 git pull
 git checkout main
@@ -108,7 +108,7 @@ gclient will change V8 to point back to the default google remote, erasing all r
 
 ```
 cd v8
-git remote set-url origin https://github.com/RecordReplay/chromium-v8.git
+git remote set-url origin https://github.com/replayio/chromium-v8.git
 git pull
 ... fix merge conflicts ...
 git commit -a
