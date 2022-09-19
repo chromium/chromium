@@ -41,6 +41,10 @@ constexpr uint64_t kGibi = 1024ull * 1024 * 1024;
 // prefs.
 constexpr char kSaltForPrefStorage[] = "/!RoFN8,nDxiVgTI6CvU";
 
+// Regex used for CPU checks on intel processors, this means "any 11th
+// generation or greater i5/i7 processor".
+constexpr char kBorealisCapableIntelCpuRegex[] = "[1-9][1-9].. Gen.*i[57]-";
+
 // Checks the current hardware+token configuration to determine if the user
 // should be able to run borealis.
 //
@@ -97,7 +101,8 @@ class FullChecker : public TokenHardwareChecker {
                     "drobit"})) {
         return AllowStatus::kUnsupportedModel;
       }
-      return CpuRegexMatches("[1-9][1-9].. Gen.*i[57]-") && HasMemory(7 * kGibi)
+      return CpuRegexMatches(kBorealisCapableIntelCpuRegex) &&
+                     HasMemory(7 * kGibi)
                  ? AllowStatus::kAllowed
                  : AllowStatus::kHardwareChecksFailed;
     } else if (BoardIn({"brya", "adlrvp", "brask"})) {
@@ -106,7 +111,10 @@ class FullChecker : public TokenHardwareChecker {
         LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
         return AllowStatus::kAllowed;
       }
-      return AllowStatus::kIncorrectToken;
+      return CpuRegexMatches(kBorealisCapableIntelCpuRegex) &&
+                     HasMemory(7 * kGibi)
+                 ? AllowStatus::kAllowed
+                 : AllowStatus::kHardwareChecksFailed;
     } else if (BoardIn({"guybrush", "majolica"})) {
       if (TokenHashMatches("^_GkTVWDP.FQo5KclS",
                            "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=")) {
