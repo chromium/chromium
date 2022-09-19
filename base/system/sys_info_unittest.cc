@@ -40,6 +40,11 @@
 #include "base/win/wmi.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+#include "base/system/sys_info_internal.h"
+#include "base/test/scoped_feature_list.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace base {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -55,6 +60,22 @@ TEST_F(SysInfoTest, NumProcs) {
   // We aren't actually testing that it's correct, just that it's sane.
   EXPECT_GE(SysInfo::NumberOfProcessors(), 1);
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(SysInfoTest, NumProcsWithSecurityMitigationEnabled) {
+  // Verify that the number of number of available processors available when CPU
+  // security mitigation is enabled is the number of available "physical"
+  // processors.
+  test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(kNumberOfCoresWithCpuSecurityMitigation);
+  SysInfo::SetIsCpuSecurityMitigationsEnabled(true);
+  EXPECT_EQ(internal::NumberOfProcessors(),
+            internal::NumberOfPhysicalProcessors());
+
+  // Reset to default value
+  SysInfo::SetIsCpuSecurityMitigationsEnabled(false);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(SysInfoTest, AmountOfMem) {
   // We aren't actually testing that it's correct, just that it's sane.

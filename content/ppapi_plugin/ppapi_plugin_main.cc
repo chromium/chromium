@@ -57,6 +57,10 @@
 #include <stdlib.h>
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/system/sys_info.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 sandbox::TargetServices* g_target_services = NULL;
 #else
@@ -68,6 +72,12 @@ namespace content {
 // Main function for starting the PPAPI plugin process.
 int PpapiPluginMain(MainFunctionParams parameters) {
   const base::CommandLine& command_line = *parameters.command_line;
+
+#if BUILDFLAG(IS_MAC)
+  // Specified when launching the process in
+  // PpapiPluginSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations.
+  base::SysInfo::SetIsCpuSecurityMitigationsEnabled(true);
+#endif
 
 #if BUILDFLAG(IS_WIN)
   // https://crbug.com/1139752 Premature unload of shell32 caused process to

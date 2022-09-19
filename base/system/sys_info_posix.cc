@@ -35,49 +35,16 @@
 #include <sys/vfs.h>
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include <sys/sysctl.h>
+#include "base/feature_list.h"
+#include "base/system/sys_info_internal.h"
+#endif
+
 namespace {
-
-#if !BUILDFLAG(IS_OPENBSD)
-int NumberOfProcessors() {
-  // sysconf returns the number of "logical" (not "physical") processors on both
-  // Mac and Linux.  So we get the number of max available "logical" processors.
-  //
-  // Note that the number of "currently online" processors may be fewer than the
-  // returned value of NumberOfProcessors(). On some platforms, the kernel may
-  // make some processors offline intermittently, to save power when system
-  // loading is low.
-  //
-  // One common use case that needs to know the processor count is to create
-  // optimal number of threads for optimization. It should make plan according
-  // to the number of "max available" processors instead of "currently online"
-  // ones. The kernel should be smart enough to make all processors online when
-  // it has sufficient number of threads waiting to run.
-  long res = sysconf(_SC_NPROCESSORS_CONF);
-  if (res == -1) {
-    NOTREACHED();
-    return 1;
-  }
-
-  int num_cpus = static_cast<int>(res);
-
-#if BUILDFLAG(IS_LINUX)
-  // Restrict the CPU count based on the process's CPU affinity mask, if
-  // available.
-  cpu_set_t* cpu_set = CPU_ALLOC(num_cpus);
-  size_t cpu_set_size = CPU_ALLOC_SIZE(num_cpus);
-  int ret = sched_getaffinity(0, cpu_set_size, cpu_set);
-  if (ret == 0) {
-    num_cpus = CPU_COUNT_S(cpu_set_size, cpu_set);
-  }
-  CPU_FREE(cpu_set);
-#endif  // BUILDFLAG(IS_LINUX)
-
-  return num_cpus;
-}
-
-base::LazyInstance<base::internal::LazySysInfoValue<int, NumberOfProcessors>>::
-    Leaky g_lazy_number_of_processors = LAZY_INSTANCE_INITIALIZER;
-#endif  // !BUILDFLAG(IS_OPENBSD)
+#if BUILDFLAG(IS_MAC)
+bool is_cpu_security_mitigation_enabled = false;
+#endif
 
 uint64_t AmountOfVirtualMemory() {
   struct rlimit limit;
@@ -144,9 +111,81 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
 
 namespace base {
 
+namespace internal {
+
+int NumberOfProcessors() {
+#if BUILDFLAG(IS_MAC)
+  // When CPU security mitigation is enabled, return number of "physical"
+  // cores and not the number of "logical" cores. CPU security mitigations
+  // disables hyper-threading for the current application, which effectively
+  // limits the number of concurrently executing threads to the number of
+  // physical cores.
+  if (base::FeatureList::IsEnabled(
+          base::kNumberOfCoresWithCpuSecurityMitigation) &&
+      is_cpu_security_mitigation_enabled) {
+    absl::optional<int> number_of_physical_cores =
+        internal::NumberOfPhysicalProcessors();
+    if (number_of_physical_cores.has_value())
+      return number_of_physical_cores.value();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+  // sysconf returns the number of "logical" (not "physical") processors on both
+  // Mac and Linux.  So we get the number of max available "logical" processors.
+  //
+  // Note that the number of "currently online" processors may be fewer than the
+  // returned value of NumberOfProcessors(). On some platforms, the kernel may
+  // make some processors offline intermittently, to save power when system
+  // loading is low.
+  //
+  // One common use case that needs to know the processor count is to create
+  // optimal number of threads for optimization. It should make plan according
+  // to the number of "max available" processors instead of "currently online"
+  // ones. The kernel should be smart enough to make all processors online when
+  // it has sufficient number of threads waiting to run.
+  long res = sysconf(_SC_NPROCESSORS_CONF);
+  if (res == -1) {
+    NOTREACHED();
+    return 1;
+  }
+
+  int num_cpus = static_cast<int>(res);
+
+#if BUILDFLAG(IS_LINUX)
+  // Restrict the CPU count based on the process's CPU affinity mask, if
+  // available.
+  cpu_set_t* cpu_set = CPU_ALLOC(num_cpus);
+  size_t cpu_set_size = CPU_ALLOC_SIZE(num_cpus);
+  int ret = sched_getaffinity(0, cpu_set_size, cpu_set);
+  if (ret == 0) {
+    num_cpus = CPU_COUNT_S(cpu_set_size, cpu_set);
+  }
+  CPU_FREE(cpu_set);
+#endif  // BUILDFLAG(IS_LINUX)
+
+  return num_cpus;
+}
+
+#if BUILDFLAG(IS_MAC)
+absl::optional<int> NumberOfPhysicalProcessors() {
+  uint32_t sysctl_value = 0;
+  size_t length = sizeof(sysctl_value);
+
+  if (sysctlbyname("hw.physicalcpu_max", &sysctl_value, &length, nullptr, 0) ==
+      0) {
+    return static_cast<int>(sysctl_value);
+  }
+
+  return absl::nullopt;
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
+}  // namespace internal
+
 #if !BUILDFLAG(IS_OPENBSD)
 int SysInfo::NumberOfProcessors() {
-  return g_lazy_number_of_processors.Get().value();
+  static int number_of_processors = internal::NumberOfProcessors();
+  return number_of_processors;
 }
 #endif  // !BUILDFLAG(IS_OPENBSD)
 
@@ -249,5 +288,16 @@ std::string SysInfo::OperatingSystemArchitecture() {
 size_t SysInfo::VMAllocationGranularity() {
   return checked_cast<size_t>(getpagesize());
 }
+
+#if BUILDFLAG(IS_MAC)
+const BASE_EXPORT base::Feature kNumberOfCoresWithCpuSecurityMitigation = {
+    "NumberOfCoresWithCpuSecurityMitigation",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+void SysInfo::SetIsCpuSecurityMitigationsEnabled(bool is_enabled) {
+  is_cpu_security_mitigation_enabled = is_enabled;
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace base

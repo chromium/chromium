@@ -5,6 +5,9 @@
 #ifndef BASE_SYSTEM_SYS_INFO_INTERNAL_H_
 #define BASE_SYSTEM_SYS_INFO_INTERNAL_H_
 
+#include "base/base_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace base {
 
 namespace internal {
@@ -24,6 +27,11 @@ class LazySysInfoValue {
  private:
   const T value_;
 };
+
+// Exposed for testing.
+BASE_EXPORT absl::optional<int> NumberOfPhysicalProcessors();
+
+BASE_EXPORT int NumberOfProcessors();
 
 }  // namespace internal
 

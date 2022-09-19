@@ -50,6 +50,10 @@
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/system/sys_info.h"
+#endif
+
 namespace {
 
 void SetV8FlagIfFeature(const base::Feature& feature, const char* v8_flag) {
@@ -94,6 +98,12 @@ namespace content {
 RenderProcessImpl::RenderProcessImpl()
     : RenderProcess(GetThreadPoolInitParams()) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+#if BUILDFLAG(IS_MAC)
+  // Specified when launching the process in
+  // RendererSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations
+  base::SysInfo::SetIsCpuSecurityMitigationsEnabled(true);
+#endif
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Some official builds ship with DCHECKs compiled in. Failing DCHECKs then

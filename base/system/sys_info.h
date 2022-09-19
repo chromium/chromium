@@ -17,7 +17,18 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/feature_list.h"
+#endif
+
 namespace base {
+
+#if BUILDFLAG(IS_MAC)
+// When enabled, NumberOfProcessors() returns the number of physical processors
+// instead of the number of logical processors if CPU security mitigations are
+// enabled for the current process.
+extern const Feature kNumberOfCoresWithCpuSecurityMitigation;
+#endif
 
 namespace debug {
 FORWARD_DECLARE_TEST(SystemMetricsTest, ParseMeminfo);
@@ -28,7 +39,11 @@ struct SystemMemoryInfoKB;
 
 class BASE_EXPORT SysInfo {
  public:
-  // Return the number of logical processors/cores on the current machine.
+  // Returns the number of processors/cores available for the current
+  // application. This is typically the number of logical cores installed on the
+  // system, but could instead be the number of physical cores when
+  // SetIsCpuSecurityMitigationsEnabled() has been invoked to indicate that CPU
+  // security mitigations are enabled on Mac.
   static int NumberOfProcessors();
 
   // Return the number of bytes of physical memory on the current machine.
@@ -210,6 +225,13 @@ class BASE_EXPORT SysInfo {
   // <=1GB pre-O Android devices. See: |detectLowEndDevice| in SysUtils.java.
   // On Desktop this returns true when memory <= 2GB.
   static bool IsLowEndDevice();
+
+#if BUILDFLAG(IS_MAC)
+  // Sets whether CPU security mitigations are enabled for the current process.
+  // This is used to control the behavior of NumberOfProcessors(), see comment
+  // on that method.
+  static void SetIsCpuSecurityMitigationsEnabled(bool is_enabled);
+#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SysInfoTest, AmountOfAvailablePhysicalMemory);
