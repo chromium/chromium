@@ -116,7 +116,7 @@ def _ApplyTool(tools_clang_scripts_directory,
       _RunGit(args)
     else:
       with open(actual_files[0], 'w') as output_file:
-        output_file.write(stdout)
+        output_file.write(stdout.decode('utf-8'))
 
     return 0
 
