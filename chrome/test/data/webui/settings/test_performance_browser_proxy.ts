@@ -9,8 +9,13 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     PerformanceBrowserProxy {
   constructor() {
     super([
+      'openBatterySaverFeedbackDialog',
       'openHighEfficiencyFeedbackDialog',
     ]);
+  }
+
+  openBatterySaverFeedbackDialog() {
+    this.methodCalled('openBatterySaverFeedbackDialog');
   }
 
   openHighEfficiencyFeedbackDialog() {

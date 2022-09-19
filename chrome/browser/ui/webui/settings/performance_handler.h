@@ -24,6 +24,7 @@ class PerformanceHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
+  void HandleOpenBatterySaverFeedbackDialog(const base::Value::List& args);
   void HandleOpenHighEfficiencyFeedbackDialog(const base::Value::List& args);
   void HandleOpenFeedbackDialog(const std::string category_tag);
 };

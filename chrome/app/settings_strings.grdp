@@ -1396,6 +1396,18 @@
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="High efficiency mode setting label">
     Memory Saver
   </message>
+  <message name="IDS_SETTINGS_BATTERY_PAGE_TITLE" desc="Title of the battery page">
+    Battery
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING" desc="Battery saver mode setting label">
+    Battery Saver
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_ON_BATTERY_LABEL" desc="Label for the battery saver mode enabled when unplugged option">
+    Turn on when my computer is unplugged
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_BELOW_THRESHOLD_LABEL" desc="Label for the battery saver mode enabled only when battery is low option">
+    Turn on only when my battery is low
+  </message>
 
   <!-- Languages Page -->
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">

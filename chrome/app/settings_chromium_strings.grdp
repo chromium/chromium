@@ -278,7 +278,10 @@
 
   <!-- Performance Page -->
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION" desc="Description for the high efficiency mode setting">
-    When on, Chromium reclaims memory from tabs you aren't actively using. This frees up your computer's resources for other tasks and keeps Chromium speedy. Inactive tabs appear empty and automatically reload when you click them. <ph name="BEGIN_LINK">&lt;a id="highEfficiencyLearnMore" target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> or <ph name="BEGIN_LINK_2">&lt;a id="highEfficiencySendFeedback" href="#"&gt;</ph>send feedback<ph name="END_LINK_2">&lt;/a&gt;</ph>
+    When on, Chromium reclaims memory from tabs you aren't actively using. This frees up your computer's resources for other tasks and keeps Chromium speedy. Inactive tabs appear empty and automatically reload when you click them. <ph name="BEGIN_LINK">&lt;a id="highEfficiencyLearnMore" target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the battery saver mode setting">
+    When on, Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK">&lt;a id="batterySaverLearnMore" target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
 
   <!-- Languages Page -->

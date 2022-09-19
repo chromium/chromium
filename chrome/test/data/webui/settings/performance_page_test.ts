@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://settings/settings.js';
+import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {OpenWindowProxyImpl, PerformanceBrowserProxyImpl, SettingsPerformancePageElement} from 'chrome://settings/settings.js';
+import {SettingsPerformancePageElement} from 'chrome://settings/lazy_load.js';
+import {OpenWindowProxyImpl, PerformanceBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
@@ -21,16 +22,6 @@ suite('PerformancePage', function() {
 
   const highEfficiencyModeEnabledPref =
       'prefs.performance_tuning.high_efficiency_mode.enabled.value';
-
-  function isToggleOn(): boolean {
-    const settingsToggleButton =
-        performancePage.shadowRoot!.querySelector('settings-toggle-button');
-    assertTrue(!!settingsToggleButton, 'settings-toggle-button missing');
-    const crToggle =
-        settingsToggleButton.shadowRoot!.querySelector('cr-toggle');
-    assertTrue(!!crToggle, 'cr-toggle missing from settings-toggle-button');
-    return crToggle.checked;
-  }
 
   setup(function() {
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
@@ -57,13 +48,16 @@ suite('PerformancePage', function() {
 
   test('testHighEfficiencyModeEnabled', function() {
     performancePage.set(highEfficiencyModeEnabledPref, true);
-    assertTrue(isToggleOn(), 'toggle should be checked when pref is true');
+    assertTrue(
+        performancePage.$.toggleButton.checked,
+        'toggle should be checked when pref is true');
   });
 
   test('testHighEfficiencyModeDisabled', function() {
     performancePage.set(highEfficiencyModeEnabledPref, false);
     assertFalse(
-        isToggleOn(), 'toggle should not be checked when pref is false');
+        performancePage.$.toggleButton.checked,
+        'toggle should not be checked when pref is false');
   });
 
   test('testLearnMoreLink', async function() {
@@ -86,9 +80,16 @@ suite('PerformancePage', function() {
     const sendFeedbackLink =
         settingsToggleButton.shadowRoot!.querySelector<HTMLElement>(
             '#highEfficiencySendFeedback');
+
+    // <if expr="_google_chrome">
     assertTrue(!!sendFeedbackLink);
     sendFeedbackLink.click();
     await performanceBrowserProxy.whenCalled(
         'openHighEfficiencyFeedbackDialog');
+    // </if>
+
+    // <if expr="not _google_chrome">
+    assertFalse(!!sendFeedbackLink);
+    // </if>
   });
 });

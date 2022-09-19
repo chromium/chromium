@@ -417,8 +417,13 @@ suite('PrivacyGuidePromo', () => {
 
 suite('SettingsBasicPagePerformance', () => {
   let page: SettingsBasicPageElement;
+
   function queryPerformanceSettingsSection() {
     return page.shadowRoot!.querySelector('#performanceSettingsSection');
+  }
+
+  function queryBatterySettingsSection() {
+    return page.shadowRoot!.querySelector('#batterySettingsSection');
   }
 
   async function createNewBasicPage() {
@@ -435,12 +440,17 @@ suite('SettingsBasicPagePerformance', () => {
   test('performanceVisibilityTestFeaturesNotAvailable', async function() {
     loadTimeData.overrideValues({
       highEfficiencyModeAvailable: false,
+      batterySaverModeAvailable: false,
     });
     await createNewBasicPage();
     // Set the visibility of the pages under test to their default value.
     page.pageVisibility = pageVisibility;
     flush();
 
+    assertFalse(
+        !!queryBatterySettingsSection(),
+        'Battery section should not be visible with default page visibility ' +
+            'if feature flags are off');
     assertFalse(
         !!queryPerformanceSettingsSection(),
         'Performance section should not be visible with default page ' +
@@ -453,6 +463,9 @@ suite('SettingsBasicPagePerformance', () => {
     flush();
 
     assertFalse(
+        !!queryBatterySettingsSection(),
+        'Battery section should not be visible when visibility is false');
+    assertFalse(
         !!queryPerformanceSettingsSection(),
         'Performance section should not be visible when visibility is false');
   });
@@ -460,12 +473,17 @@ suite('SettingsBasicPagePerformance', () => {
   test('performanceVisibilityTestFeaturesAvailable', async function() {
     loadTimeData.overrideValues({
       highEfficiencyModeAvailable: true,
+      batterySaverModeAvailable: true,
     });
     await createNewBasicPage();
     // Set the visibility of the pages under test to their default value.
     page.pageVisibility = pageVisibility;
     flush();
 
+    assertTrue(
+        !!queryBatterySettingsSection(),
+        'Battery section should be visible with default page visibility if ' +
+            'feature flags are on');
     assertTrue(
         !!queryPerformanceSettingsSection(),
         'Performance section should be visible with default page visibility ' +
@@ -477,6 +495,9 @@ suite('SettingsBasicPagePerformance', () => {
     });
     flush();
 
+    assertFalse(
+        !!queryBatterySettingsSection(),
+        'Battery section should not be visible when visibility is false');
     assertFalse(
         !!queryPerformanceSettingsSection(),
         'Performance section should not be visible when visibility is false');

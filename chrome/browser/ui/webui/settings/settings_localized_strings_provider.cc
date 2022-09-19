@@ -740,6 +740,13 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
       {"highEfficiencyModeLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING},
+      {"batteryPageTitle", IDS_SETTINGS_BATTERY_PAGE_TITLE},
+      {"batterySaverModeLabel",
+       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
+      {"batterySaverModeEnabledOnBatteryLabel",
+       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_ON_BATTERY_LABEL},
+      {"batterySaverModeEnabledBelowThresholdLabel",
+       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_BELOW_THRESHOLD_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -748,9 +755,16 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION,
           base::UTF8ToUTF16(chrome::kHighEfficiencyModeLearnMoreUrl)));
+  html_source->AddString(
+      "batterySaverModeDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION,
+          base::UTF8ToUTF16(chrome::kBatterySaverModeLearnMoreUrl)));
 
   html_source->AddString("highEfficiencyLearnMoreUrl",
                          chrome::kHighEfficiencyModeLearnMoreUrl);
+  html_source->AddString("batterySaverLearnMoreUrl",
+                         chrome::kBatterySaverModeLearnMoreUrl);
 }
 
 void AddLanguagesStrings(content::WebUIDataSource* html_source,

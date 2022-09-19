@@ -44,6 +44,9 @@ extern const char kAdvancedProtectionDownloadLearnMoreURL[];
 // "Chrome Settings" URL for website notifications linked out from OSSettings.
 extern const char kAppNotificationsBrowserSettingsURL[];
 
+// "Learn more" URL for Battery Saver Mode.
+extern const char kBatterySaverModeLearnMoreUrl[];
+
 // The URL for providing help when the Bluetooth adapter is off.
 extern const char kBluetoothAdapterOffHelpURL[];
 

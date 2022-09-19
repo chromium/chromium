@@ -3,10 +3,15 @@
 // found in the LICENSE file.
 
 export interface PerformanceBrowserProxy {
+  openBatterySaverFeedbackDialog(): void;
   openHighEfficiencyFeedbackDialog(): void;
 }
 
 export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
+  openBatterySaverFeedbackDialog() {
+    chrome.send('openBatterySaverFeedbackDialog');
+  }
+
   openHighEfficiencyFeedbackDialog() {
     chrome.send('openHighEfficiencyFeedbackDialog');
   }

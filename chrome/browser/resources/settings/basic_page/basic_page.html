@@ -155,6 +155,16 @@
                 </settings-performance-page>
               </settings-section>
             </template>
+            <template is="dom-if"
+                if="[[showBatteryPage_(pageVisibility.performance)]]"
+                restamp>
+              <settings-section page-title="$i18n{batteryPageTitle}"
+                  section="battery" nest-under-section="performance"
+                  id="batterySettingsSection">
+                <settings-battery-page prefs="{{prefs}}">
+                </settings-battery-page>
+              </settings-section>
+            </template>
             <template is="dom-if" if="[[showPage_(pageVisibility.downloads)]]"
                 restamp>
               <settings-section page-title="$i18n{downloadsPageTitle}"

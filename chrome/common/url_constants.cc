@@ -26,6 +26,9 @@ const char kAdvancedProtectionDownloadLearnMoreURL[] =
 const char kAppNotificationsBrowserSettingsURL[] =
     "chrome://settings/content/notifications";
 
+const char kBatterySaverModeLearnMoreUrl[] =
+    "https://support.google.com/chrome/?p=chrome_battery_saver";
+
 const char kBluetoothAdapterOffHelpURL[] =
     "https://support.google.com/chrome?p=bluetooth";
 

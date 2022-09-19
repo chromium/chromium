@@ -17,10 +17,20 @@ PerformanceHandler::~PerformanceHandler() = default;
 
 void PerformanceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "openBatterySaverFeedbackDialog",
+      base::BindRepeating(
+          &PerformanceHandler::HandleOpenBatterySaverFeedbackDialog,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "openHighEfficiencyFeedbackDialog",
       base::BindRepeating(
           &PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog,
           base::Unretained(this)));
+}
+
+void PerformanceHandler::HandleOpenBatterySaverFeedbackDialog(
+    const base::Value::List& args) {
+  HandleOpenFeedbackDialog("performance_battery");
 }
 
 void PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog(

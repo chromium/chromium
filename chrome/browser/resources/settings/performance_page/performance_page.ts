@@ -7,6 +7,7 @@ import '../controls/settings_toggle_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
@@ -14,6 +15,12 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_browser_proxy.js';
 import {getTemplate} from './performance_page.html.js';
 // clang-format on
+
+export interface SettingsPerformancePageElement {
+  $: {
+    toggleButton: SettingsToggleButtonElement,
+  };
+}
 
 const SettingsPerformancePageElementBase = PrefsMixin(PolymerElement);
 
