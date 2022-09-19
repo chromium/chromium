@@ -431,7 +431,7 @@ void WebCacheManager::ReviseAllocationStrategy() {
 void WebCacheManager::ReviseAllocationStrategyLater() {
   DCHECK(!base::FeatureList::IsEnabled(
       blink::features::kNoCentralWebCacheLimitControl));
-  if (!base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly))
+  if (base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly))
     return;
 
   // Avoid piling up notifications.
