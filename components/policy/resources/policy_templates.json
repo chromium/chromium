@@ -13827,6 +13827,35 @@
       'arc_support': 'This policy has no effect on the Android Google Drive app. If you want to prevent use of Google Drive over cellular connections, you should disallow installation of the Android Google Drive app.',
     },
     {
+      'name': 'TrashEnabled',
+      'owners': ['file://ui/file_manager/OWNERS', 'benreich@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Trash is enabled for the user.',
+        },
+        {
+          'value': False,
+          'caption': 'Trash is disabled for the user.',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 1017,
+      'caption': '''Enable capability to send files to the Trash (on supported filesystems) in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app''',
+      'tags': [],
+      'desc': '''Setting the policy to enabled allows users of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app to see a Trash bin and files under My files and Downloads (including their user created descendants) will be sent their on a delete.
+
+      If the policy is set to False the files that previously resided in trash will still be available by showing hidden files and finding the .Trash directory under My files or Downloads.''',
+    },
+    {
       'name': 'PinnedLauncherApps',
       'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'list',
@@ -34416,6 +34445,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1016,
+  'highest_id_currently_used': 1017,
   'highest_atomic_group_id_currently_used': 43
 }

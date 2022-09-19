@@ -1340,6 +1340,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCalendarIntegrationEnabled,
     ash::prefs::kCalendarIntegrationEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kTrashEnabled,
+    ash::prefs::kFilesAppTrashEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

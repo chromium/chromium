@@ -8745,6 +8745,41 @@
       }
     ]
   },
+  "TrashEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.filesapp.trash_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "TrashEnabled": false
+        },
+        "prefs": {
+          "ash.filesapp.trash_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "TrashEnabled": true
+        },
+        "prefs": {
+          "ash.filesapp.trash_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "PinnedLauncherApps": {
     "os": [
       "chromeos_ash"
