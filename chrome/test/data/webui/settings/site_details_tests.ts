@@ -516,10 +516,41 @@ suite('SiteDetails', function() {
         assertEquals('foo.com', hostRequested);
         webUIListenerCallback(
             'usage-total-changed', hostRequested, '1 KB', '10 cookies',
-            'Allowed for 1 foo.com site');
+            'Allowed for 1 foo.com site', false);
         assertFalse(testElement.$.fpsMembership.hidden);
         assertEquals(
             'Allowed for 1 foo.com site',
             testElement.$.fpsMembership.textContent!.trim());
+        flush();
+        // Assert first party set policy is null.
+        const fpsPolicy =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
+        assertEquals(null, fpsPolicy);
+      });
+  test(
+      'first party set policy shown when managed key is set to true',
+      async function() {
+        const origin = 'https://foo.com:443';
+        browserProxy.setPrefs(prefs);
+        testElement = createSiteDetails(origin);
+
+        const results = await Promise.all([
+          websiteUsageProxy.whenCalled('fetchUsageTotal'),
+        ]);
+
+        const hostRequested = results[0];
+        assertEquals('foo.com', hostRequested);
+        webUIListenerCallback(
+            'usage-total-changed', hostRequested, '1 KB', '10 cookies',
+            'Allowed for 1 foo.com site', true);
+        assertFalse(testElement.$.fpsMembership.hidden);
+        assertEquals(
+            'Allowed for 1 foo.com site',
+            testElement.$.fpsMembership.textContent!.trim());
+        flush();
+        // Assert first party set policy is shown.
+        const fpsPolicy =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
+        assertFalse(fpsPolicy!.hidden);
       });
 });

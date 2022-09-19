@@ -500,7 +500,8 @@ class SiteSettingsHandlerTest : public testing::Test,
   void ValidateUsageInfo(const std::string& expected_usage_host,
                          const std::string& expected_usage_string,
                          const std::string& expected_cookie_string,
-                         const std::string& expected_fps_member_count_string) {
+                         const std::string& expected_fps_member_count_string,
+                         const bool expected_fps_policy) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
@@ -518,6 +519,9 @@ class SiteSettingsHandlerTest : public testing::Test,
 
     ASSERT_TRUE(data.arg_nth(4)->is_string());
     EXPECT_EQ(expected_fps_member_count_string, data.arg_nth(4)->GetString());
+
+    ASSERT_TRUE(data.arg_nth(5)->is_bool());
+    EXPECT_EQ(expected_fps_policy, data.arg_nth(5)->GetBool());
   }
 
   void CreateIncognitoProfile() {
@@ -3015,11 +3019,21 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
        ConvertEtldToSchemefulSite("google.com")},
       {ConvertEtldToSchemefulSite("unrelated.com"),
        ConvertEtldToSchemefulSite("unrelated.com")},
+      {ConvertEtldToSchemefulSite("ungrouped.com"),
+       ConvertEtldToSchemefulSite("ungrouped.com")},
   };
 
   EXPECT_CALL(*mock_privacy_sandbox_service(), GetFirstPartySets())
-      .Times(3)
+      .Times(4)
       .WillRepeatedly(Return(first_party_sets));
+  EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_CALL(
+      *mock_privacy_sandbox_service(),
+      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("ungrouped.com")))
+      .Times(1)
+      .WillOnce(Return(true));
 
   // Confirm that usage info only returns unpartitioned storage.
   SetUpCookiesTreeModel();
@@ -3031,20 +3045,26 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("www.example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
-  ValidateUsageInfo("www.example.com", "2 B", "1 cookie", "");
+  ValidateUsageInfo("www.example.com", "2 B", "1 cookie", "", false);
 
   args.clear();
   args.Append("example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
-  ValidateUsageInfo("example.com", "", "1 cookie", "");
+  ValidateUsageInfo("example.com", "", "1 cookie", "", false);
 
   args.clear();
   args.Append("google.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
   ValidateUsageInfo("google.com", "", "2 cookies",
-                    "Allowed for 2 google.com sites");
+                    "Allowed for 2 google.com sites", false);
+  args.clear();
+  args.Append("ungrouped.com");
+  handler()->HandleFetchUsageTotal(args);
+  handler()->OnGetUsageInfo();
+  ValidateUsageInfo("ungrouped.com", "", "1 cookie",
+                    "Allowed for 1 ungrouped.com site", true);
 }
 
 TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {

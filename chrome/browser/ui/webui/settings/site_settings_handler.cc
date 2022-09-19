@@ -755,6 +755,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   std::string usage_string;
   std::string cookie_string;
   std::string fps_string;
+  bool fpsPolicy = false;
   for (const auto& site : root->children()) {
     std::string title = base::UTF16ToUTF8(site->GetTitle());
     if (title != usage_host_)
@@ -789,9 +790,10 @@ void SiteSettingsHandler::OnGetUsageInfo() {
           IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, num_cookies));
     }
 
+    auto* privacy_sandbox_service =
+        PrivacySandboxServiceFactory::GetForProfile(profile_);
     auto fps_map =
-        GetFpsMap(PrivacySandboxServiceFactory::GetForProfile(profile_),
-                  cookies_tree_model_.get());
+        GetFpsMap(privacy_sandbox_service, cookies_tree_model_.get());
     auto etld_plus1 = GetEtldPlusOne(site->GetDetailedInfo().origin);
     if (fps_map.count(etld_plus1)) {
       fps_string =
@@ -800,12 +802,14 @@ void SiteSettingsHandler::OnGetUsageInfo() {
                   IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL),
               "MEMBERS", static_cast<int>(fps_map[etld_plus1].second),
               "FPS_OWNER", fps_map[etld_plus1].first));
+      fpsPolicy = privacy_sandbox_service->IsPartOfManagedFirstPartySet(
+          ConvertEtldToSchemefulSite(etld_plus1));
     }
     break;
   }
   FireWebUIListener("usage-total-changed", base::Value(usage_host_),
                     base::Value(usage_string), base::Value(cookie_string),
-                    base::Value(fps_string));
+                    base::Value(fps_string), base::Value(fpsPolicy));
 }
 
 void SiteSettingsHandler::OnContentSettingChanged(

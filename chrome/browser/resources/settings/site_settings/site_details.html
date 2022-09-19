@@ -18,6 +18,18 @@
       #usageHeader {
         padding: 0 var(--cr-section-padding);
       }
+
+      #usageDetails {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+      }
+
+      #fpsPolicyContainer {
+        display: flex;
+        padding: 8px;
+      }
     </style>
     <!-- Confirm reset settings dialog. -->
     <cr-dialog id="confirmResetSettings" close-text="$i18n{close}"
@@ -78,25 +90,40 @@
         </div>
         <div class="list-item" id="storage"
             hidden$="[[!hasUsage_(storedData_, numCookies_)]]">
-          <div class="start" id="storageText">
-            <div id="storedData" hidden$="[[!storedData_]]">
-              [[storedData_]]
+          <div id="usageDetails">
+            <div>
+              <div id="storageText">
+                <div id="storedData" hidden$="[[!storedData_]]">
+                  [[storedData_]]
+                </div>
+                <div hidden$="[[!hasDataAndCookies_(
+                    storedData_,numCookies_)]]">
+                  &nbsp;&middot;&nbsp;
+                </div>
+                <div id="numCookies" hidden$="[[!numCookies_]]">
+                  [[numCookies_]]
+                </div>
+              </div>
+              <div id="fpsMembership" class="secondary" 
+                  hidden$="[[!fpsMembership_]]">
+                [[fpsMembership_]]
+              </div>
             </div>
-            <div hidden$="[[!hasDataAndCookies_(storedData_, numCookies_)]]">
-              &nbsp;&middot;&nbsp;
-            </div>
-            <div id="numCookies" hidden$="[[!numCookies_]]">
-              [[numCookies_]]
-            </div>
+            <template is="dom-if" if="[[fpsEnterprisePref_]]">
+              <div id="fpsPolicyContainer">
+                <cr-policy-pref-indicator
+                  id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                  icon-aria-label="[[label]]" focus-row-control
+                  focus-type="policy">
+                </cr-policy-pref-indicator>
+              </div>
+            </template>
           </div>
           <cr-button id="clearStorage" role="button" aria-disabled="false"
               on-click="onConfirmClearStorage_"
               aria-label="$i18n{siteSettingsDelete}">
             $i18n{siteSettingsDelete}
           </cr-button>
-        </div>
-        <div id="fpsMembership" hidden$="[[!fpsMembership_]]">
-          [[fpsMembership_]]
         </div>
       </div>
     </div>

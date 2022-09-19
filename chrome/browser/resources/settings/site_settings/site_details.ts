@@ -114,6 +114,11 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: '',
       },
 
+      /**
+       * Mock preference used to power managed policy icon for first party sets.
+       */
+      fpsEnterprisePref_: Object,
+
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
         value() {
@@ -141,6 +146,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private storedData_: string;
   private numCookies_: string;
   private fpsMembership_: string;
+  private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
 
@@ -153,8 +159,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
 
     this.addWebUIListener(
         'usage-total-changed',
-        (host: string, data: string, cookies: string, fps: string) => {
-          this.onUsageTotalChanged_(host, data, cookies, fps);
+        (host: string, data: string, cookies: string, fps: string,
+         fpsPolicy: boolean) => {
+          this.onUsageTotalChanged_(host, data, cookies, fps, fpsPolicy);
         });
 
     this.addWebUIListener(
@@ -216,13 +223,20 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
    * @param usage The string showing how much data the given host is using.
    * @param cookies The string showing how many cookies the given host is using.
    * @param fpsMembership The string showing first party set membership details.
+   * @param fpsPolicy Whether a policy is applied to this FPS member.
    */
   private onUsageTotalChanged_(
-      host: string, usage: string, cookies: string, fpsMembership: string) {
+      host: string, usage: string, cookies: string, fpsMembership: string,
+      fpsPolicy: boolean) {
     if (this.fetchingForHost_ === host) {
       this.storedData_ = usage;
       this.numCookies_ = cookies;
       this.fpsMembership_ = fpsMembership;
+      this.fpsEnterprisePref_ = fpsPolicy ? Object.assign({
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+        controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+      }) :
+                                            undefined;
     }
   }
 
