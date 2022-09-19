@@ -94,7 +94,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     BufferInfo buffer_info;
   };
 
-  void SubmitBuffer(int buff_id, BufferInfo buffer);
+  void SubmitBuffer(int buff_id, BufferInfo&& buffer);
 
   void CompleteFrame(const uint64_t counter,
                      const gfx::Size& window_pix,
@@ -293,8 +293,13 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 #define DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, id) \
   DBG_DRAW_RECTANGLE_OPT_BUFF_UV(anno, option, pos, size, id, DEFAULT_UV)
 
-#define DBG_COMPLETE_BUFFERS(buff_id, buffer) \
-  viz::VizDebugger::GetInstance()->SubmitBuffer(buff_id, buffer);
+#define DBG_COMPLETE_BUFFERS(buff_id, buffer)                           \
+  do {                                                                  \
+    if (viz::VizDebugger::IsEnabled()) {                                \
+      viz::VizDebugger::GetInstance()->SubmitBuffer(buff_id,            \
+                                                    std::move(buffer)); \
+    }                                                                   \
+  } while (0)
 
 #define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
   DBG_DRAW_RECTANGLE_OPT_BUFF(anno, option, pos, size, nullptr)

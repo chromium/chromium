@@ -382,7 +382,7 @@ TEST_F(VisualDebuggerTest, SingleBufferAsync) {
     static const int kNumSubmission = 1;
     static std::vector<VizDebuggerInternal::Buffer> previous_textures;
     for (auto&& each : previous_textures) {
-      DBG_COMPLETE_BUFFERS(each.id, each.buffer_info)
+      DBG_COMPLETE_BUFFERS(each.id, each.buffer_info);
     }
 
     int id = 0;

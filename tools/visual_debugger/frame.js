@@ -39,8 +39,8 @@ class CircularBuffer {
 // Represents a single frame, and contains all associated data.
 //
 class DrawFrame {
-  // Circular buffer supports 2^14 frames.
-  static maxBufferNumFrames = 16384;
+  // Circular buffer supports 1 minute of frames.
+  static maxBufferNumFrames = 60*60;
   static frameBuffer = new CircularBuffer(DrawFrame.maxBufferNumFrames);
   static buffer_map = new Object();
   static count() { return DrawFrame.frameBuffer.instances.length; }
