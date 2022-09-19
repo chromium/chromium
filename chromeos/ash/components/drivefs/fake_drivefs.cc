@@ -186,8 +186,8 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
         const base::FilePath path = item_ptr->path;
         const drivefs::mojom::FileMetadata* metadata = item_ptr->metadata.get();
         if (!query.empty()) {
-          return base::ToLowerASCII(path.BaseName().value()).find(query) ==
-                 std::string::npos;
+          return !base::Contains(base::ToLowerASCII(path.BaseName().value()),
+                                 query);
         }
         if (params_->available_offline) {
           return !metadata->available_offline && IsLocal(metadata->type);
