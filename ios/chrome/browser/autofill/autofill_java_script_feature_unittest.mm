@@ -201,7 +201,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"is_checkable" : @false,
         @"is_focusable" : @true,
         @"value" : @"",
-        @"label" : @"",
+        @"label" : @"Last Name",
         @"unique_renderer_id" : @"3"
       },
       @{
@@ -294,7 +294,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"is_checkable" : @false,
         @"is_focusable" : @true,
         @"value" : @"",
-        @"label" : @"",
+        @"label" : @"Last Name",
         @"unique_renderer_id" : @"3"
       },
       @{

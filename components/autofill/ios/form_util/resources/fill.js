@@ -1269,25 +1269,6 @@ __gCrWeb.fill.inferLabelFromPlaceholder = function(element) {
 
 /**
  * Helper for |InferLabelForElement()| that infers a label, if possible, from
- * the aria-label attribute.
- *
- * It is based on the logic in
- *     string16 InferLabelFromAriaLabel(const WebFormControlElement& element)
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
- *
- * @param {FormControlElement} element An element to examine.
- * @return {string} The label of element.
- */
-__gCrWeb.fill.inferLabelFromAriaLabel = function(element) {
-  if (!element) {
-    return '';
-  }
-
-  return element.getAttribute('aria-label') || '';
-};
-
-/**
- * Helper for |InferLabelForElement()| that infers a label, if possible, from
  * the value attribute when it is present and user has not typed in (if
  * element's value attribute is same as the element's value).
  *
@@ -1761,7 +1742,7 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
   }
 
   // If we didn't find a placeholder, check for the aria-label case.
-  inferredLabel = __gCrWeb.fill.inferLabelFromAriaLabel(element);
+  inferredLabel = __gCrWeb.fill.getAriaLabel(element);
   if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
     return inferredLabel;
   }

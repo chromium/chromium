@@ -499,16 +499,6 @@ std::u16string InferLabelFromPlaceholder(const WebFormControlElement& element) {
   return std::u16string();
 }
 
-// Helper for |InferLabelForElement()| that infers a label, if possible, from
-// the aria-label. e.g. <input aria-label="foo">
-std::u16string InferLabelFromAriaLabel(const WebFormControlElement& element) {
-  static const base::NoDestructor<WebString> kAriaLabel("aria-label");
-  if (element.HasAttribute(*kAriaLabel))
-    return element.GetAttribute(*kAriaLabel).Utf16();
-
-  return std::u16string();
-}
-
 // Helper for |InferLabelForElement()| that infers a label, from
 // the value attribute when it is present and user has not typed in (if
 // element's value attribute is same as the element's value).
@@ -811,7 +801,7 @@ bool InferLabelForElement(const WebFormControlElement& element,
   }
 
   // If we didn't find a placeholder, check for aria-label text.
-  inferred_label = InferLabelFromAriaLabel(element);
+  inferred_label = GetAriaLabel(element.GetDocument(), element);
   if (IsLabelValid(inferred_label)) {
     label_source = FormFieldData::LabelSource::kAriaLabel;
     label = std::move(inferred_label);
