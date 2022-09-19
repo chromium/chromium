@@ -1822,7 +1822,7 @@ public class CustomTabActivityTest {
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
         connection.newSession(token);
         connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         if (ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()) {
