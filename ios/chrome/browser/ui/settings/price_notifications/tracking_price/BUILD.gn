@@ -11,10 +11,8 @@ source_set("tracking_price") {
   deps = [
     ":constants",
     ":tracking_price_ui",
-    "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ui/base",
@@ -25,9 +23,19 @@ source_set("tracking_price_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "tracking_price_consumer.h",
+    "tracking_price_view_controller.h",
+    "tracking_price_view_controller.mm",
     "tracking_price_view_controller_delegate.h",
   ]
-  deps = [ "//ios/chrome/browser/ui/table_view" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ui/base",
+  ]
 }
 
 source_set("constants") {
