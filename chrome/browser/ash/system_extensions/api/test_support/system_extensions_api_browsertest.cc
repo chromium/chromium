@@ -40,11 +40,7 @@ void TestChromeContentBrowserClient::Init() {
 void TestChromeContentBrowserClient::BindHostReceiverForRenderer(
     content::RenderProcessHost* render_process_host,
     mojo::GenericPendingReceiver receiver) {
-  // Copy the name here instead of using a const reference because `PassPipe()`
-  // below will reset the interface name.
-  const std::string interface_name = *receiver.interface_name();
-  if (binder_registry_.CanBindInterface(interface_name)) {
-    binder_registry_.BindInterface(interface_name, receiver.PassPipe());
+  if (binder_map_.TryBind(&receiver)) {
     return;
   }
 

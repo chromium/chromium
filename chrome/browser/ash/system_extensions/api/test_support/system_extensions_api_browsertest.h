@@ -7,7 +7,7 @@
 
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace content {
 class ScopedContentBrowserClientSetting;
@@ -37,7 +37,7 @@ class TestChromeContentBrowserClient : public ChromeContentBrowserClient {
   void AddRendererInterface(
       const base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>&
           callback) {
-    binder_registry_.AddInterface(callback);
+    binder_map_.Add<Interface>(callback);
   }
 
   // ChromeContentBrowserClient
@@ -49,7 +49,7 @@ class TestChromeContentBrowserClient : public ChromeContentBrowserClient {
   std::unique_ptr<content::ScopedContentBrowserClientSetting>
       scoped_content_browser_client_setting_;
 
-  service_manager::BinderRegistry binder_registry_;
+  mojo::BinderMap binder_map_;
 };
 
 }  // namespace internal
