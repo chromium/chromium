@@ -14,7 +14,7 @@ class ASH_PUBLIC_EXPORT NightLightController {
  public:
   // These values are written to logs. New enum values can be added, but
   // existing enums must never be renumbered or deleted and reused.
-  enum ScheduleType {
+  enum class ScheduleType {
     // Automatic toggling of NightLight is turned off.
     kNone = 0,
 

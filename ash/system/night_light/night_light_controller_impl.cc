@@ -1004,7 +1004,7 @@ void NightLightControllerImpl::OnEnabledPrefChanged() {
                                                            /*by_user=*/false);
 
   if (enabled && features::IsAutoNightLightEnabled() &&
-      GetScheduleType() == kSunsetToSunrise &&
+      GetScheduleType() == ScheduleType::kSunsetToSunrise &&
       (is_first_user_init_ ||
        animation_duration_ == AnimationDuration::kLong) &&
       !UserHasEverChangedSchedule() &&
@@ -1037,7 +1037,8 @@ void NightLightControllerImpl::OnColorTemperaturePrefChanged() {
 }
 
 void NightLightControllerImpl::OnScheduleTypePrefChanged() {
-  VLOG(1) << "Schedule type changed. New type: " << GetScheduleType() << ".";
+  VLOG(1) << "Schedule type changed. New type: "
+          << static_cast<int>(GetScheduleType()) << ".";
   DCHECK(active_user_pref_service_);
   NotifyClientWithScheduleChange();
   Refresh(/*did_schedule_change=*/true,

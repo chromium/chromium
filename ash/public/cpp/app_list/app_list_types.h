@@ -429,7 +429,7 @@ enum class AppListSearchResultCategory {
 //
 // TODO(https://crbug.com/1258415): kChip can be deprecated once
 // ProductivityLauncher is launched.
-enum SearchResultDisplayType {
+enum class SearchResultDisplayType {
   kNone = 0,
   kList = 1,  // Displays in search list
   kTile = 2,  // Displays in search tiles

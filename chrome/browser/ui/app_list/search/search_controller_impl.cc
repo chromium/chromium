@@ -181,7 +181,8 @@ void SearchControllerImpl::OnImpression(
     ash::AppListNotifier::Location location,
     const std::vector<ash::AppListNotifier::Result>& results,
     const std::u16string& query) {
-  if (query.empty() && location == ash::kList && mixer_) {
+  if (query.empty() && location == ash::SearchResultDisplayType::kList &&
+      mixer_) {
     ash::SearchResultIdWithPositionIndices results_with_indices;
     for (size_t i = 0; i < results.size(); ++i) {
       results_with_indices.emplace_back(results[i].id, i);

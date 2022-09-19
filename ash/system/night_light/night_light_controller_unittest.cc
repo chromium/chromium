@@ -1630,7 +1630,7 @@ TEST_F(AutoNightLightTest, Notification) {
   // Since Auto Night Light is enabled, the schedule should be automatically set
   // to sunset-to-sunrise, even though the user never set that pref.
   NightLightControllerImpl* controller = GetController();
-  EXPECT_EQ(NightLightController::kSunsetToSunrise,
+  EXPECT_EQ(NightLightController::ScheduleType::kSunsetToSunrise,
             controller->GetScheduleType());
   EXPECT_FALSE(
       user1_pref_service()->HasPrefPath(prefs::kNightLightScheduleType));
@@ -1662,7 +1662,7 @@ TEST_F(AutoNightLightTest, Notification) {
 TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   GetSessionControllerClient()->UnlockScreen();
   NightLightControllerImpl* controller = GetController();
-  EXPECT_EQ(NightLightController::kSunsetToSunrise,
+  EXPECT_EQ(NightLightController::ScheduleType::kSunsetToSunrise,
             controller->GetScheduleType());
 
   // Use a fake geoposition with sunset/sunrise times at 5pm/3am.
@@ -1716,7 +1716,8 @@ TEST_F(AutoNightLightTest, OverriddenByUser) {
   // Once the user sets the schedule to anything, even sunset-to-sunrise, the
   // auto-night light will never show.
   NightLightControllerImpl* controller = GetController();
-  controller->SetScheduleType(NightLightController::kSunsetToSunrise);
+  controller->SetScheduleType(
+      NightLightController::ScheduleType::kSunsetToSunrise);
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(20 * 60));  // Now is 8:00 PM.
