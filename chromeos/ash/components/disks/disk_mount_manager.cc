@@ -1002,12 +1002,12 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // CrosDisksClient::Observer override.
-  void OnMountEvent(MountEventType event,
-                    const std::string& device_path_arg) override {
-    // Take a copy of the argument so we can modify it below.
-    std::string device_path = device_path_arg;
+  void OnMountEvent(const MountEventType event,
+                    const std::string& device_path) override {
+    VLOG(1) << "OnMountEvent: " << event << " for '" << device_path << "'";
+
     switch (event) {
-      case MountEventType::kDiskAdded: {
+      case MountEventType::kDiskAdded:
         // Ensure we have an entry indicating we're waiting for
         // GetDeviceProperties() to complete.
         deferred_mount_events_[device_path];
@@ -1016,34 +1016,36 @@ class DiskMountManagerImpl : public DiskMountManager,
             BindOnce(&DiskMountManagerImpl::OnGetDeviceProperties,
                      weak_ptr_factory_.GetWeakPtr()),
             base::DoNothing());
-        break;
-      }
-      case MountEventType::kDiskRemoved: {
+        return;
+
+      case MountEventType::kDiskRemoved:
         // Search and remove disks that are no longer present.
-        DiskMountManager::Disks::iterator iter = disks_.find(device_path);
-        if (iter != disks_.end()) {
-          Disk* disk = iter->get();
-          NotifyDiskStatusUpdate(DISK_REMOVED, *disk);
-          disks_.erase(iter);
+        if (Disks::const_iterator it = disks_.find(device_path);
+            it != disks_.end()) {
+          DCHECK(*it);
+          NotifyDiskStatusUpdate(DISK_REMOVED, **it);
+          disks_.erase(std::move(it));
         }
-        break;
-      }
-      case MountEventType::kDeviceAdded: {
+        return;
+
+      case MountEventType::kDeviceAdded:
         NotifyDeviceStatusUpdate(DEVICE_ADDED, device_path);
-        break;
-      }
-      case MountEventType::kDeviceRemoved: {
+        return;
+
+      case MountEventType::kDeviceRemoved:
         NotifyDeviceStatusUpdate(DEVICE_REMOVED, device_path);
-        break;
-      }
-      case MountEventType::kDeviceScanned: {
+        return;
+
+      case MountEventType::kDeviceScanned:
         NotifyDeviceStatusUpdate(DEVICE_SCANNED, device_path);
+        return;
+
+      case MountEventType::kDiskChanged:
         break;
-      }
-      default: {
-        LOG(ERROR) << "Unknown event: " << static_cast<int>(event);
-      }
     }
+
+    LOG(ERROR) << "Unexpected mount event " << event << " for '" << device_path
+               << "'";
   }
 
   // Notifies all observers about disk status update.

@@ -159,6 +159,10 @@ enum class MountEventType {
   kDeviceScanned,
 };
 
+// Output operator for logging.
+COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
+std::ostream& operator<<(std::ostream& out, MountEventType event);
+
 // Mount option to control write permission to a device.
 enum class MountAccessMode {
   kReadWrite,

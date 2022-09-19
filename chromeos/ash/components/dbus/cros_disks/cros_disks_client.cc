@@ -761,6 +761,23 @@ std::ostream& operator<<(std::ostream& out, const PartitionError error) {
   return out << std::underlying_type_t<PartitionError>(error);
 }
 
+std::ostream& operator<<(std::ostream& out, const MountEventType event) {
+  switch (event) {
+#define PRINT_ERROR(s)    \
+  case MountEventType::s: \
+    return out << #s;
+    PRINT_ERROR(kDiskAdded)
+    PRINT_ERROR(kDiskRemoved)
+    PRINT_ERROR(kDiskChanged)
+    PRINT_ERROR(kDeviceAdded)
+    PRINT_ERROR(kDeviceRemoved)
+    PRINT_ERROR(kDeviceScanned)
+#undef PRINT_ERROR
+  }
+
+  return out << std::underlying_type_t<MountEventType>(event);
+}
+
 std::ostream& operator<<(std::ostream& out, const MountEntry& entry) {
   return out << "error_code = " << entry.error_code << ", source_path = '"
              << entry.source_path << "', mount_type = " << entry.mount_type
