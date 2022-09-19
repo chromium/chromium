@@ -27,14 +27,6 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Stops the coordinator and dismisses the Incognito interstitial with
-// `completion` as a completion.
-- (void)stopWithCompletion:(ProceduralBlock)completion;
-
-// Starts the coordinator and shows the Incognito interstitial with `completion`
-// as a completion.
-- (void)startWithCompletion:(ProceduralBlock)completion;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INCOGNITO_INTERSTITIAL_INCOGNITO_INTERSTITIAL_COORDINATOR_H_

@@ -33,7 +33,7 @@
 
 @implementation IncognitoInterstitialCoordinator
 
-- (void)startWithCompletion:(ProceduralBlock)completion {
+- (void)start {
   self.incognitoInterstitialViewController =
       [[IncognitoInterstitialViewController alloc] init];
   self.incognitoInterstitialViewController.delegate = self;
@@ -46,7 +46,7 @@
   [self.baseViewController
       presentViewController:self.incognitoInterstitialViewController
                    animated:YES
-                 completion:completion];
+                 completion:nil];
 
   // The default recorded action is "Cancel".
   // This value is changed right before the "Open in Chrome Incognito" or
@@ -54,25 +54,13 @@
   self.incognitoInterstitialAction = IncognitoInterstitialActions::kCancel;
 }
 
-- (void)stopWithCompletion:(ProceduralBlock)completion {
-  __weak __typeof(self) weakSelf = self;
-  [self.incognitoInterstitialViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           weakSelf.incognitoInterstitialViewController = nil;
-                           completion();
-                         }];
+- (void)stop {
+  [self.incognitoInterstitialViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+  self.incognitoInterstitialViewController = nil;
 
   UMA_HISTOGRAM_ENUMERATION(kIncognitoInterstitialActionsHistogram,
                             self.incognitoInterstitialAction);
-}
-
-- (void)start {
-  [self startWithCompletion:nil];
-}
-
-- (void)stop {
-  [self stopWithCompletion:nil];
 }
 
 #pragma mark - IncognitoInterstitialViewControllerDelegate

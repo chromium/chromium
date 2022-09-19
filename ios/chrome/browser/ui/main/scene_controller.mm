@@ -640,8 +640,7 @@ bool IsSigninForcedByPolicy() {
 // Assumes the Incognito interstitial coordinator is currently not instantiated.
 // Runs `completion` once the Incognito interstitial is presented.
 - (void)showIncognitoInterstitialWithUrlLoadParams:
-            (const UrlLoadParams&)urlLoadParams
-                                        completion:(ProceduralBlock)completion {
+    (const UrlLoadParams&)urlLoadParams {
   DCHECK(self.incognitoInterstitialCoordinator == nil);
   self.incognitoInterstitialCoordinator =
       [[IncognitoInterstitialCoordinator alloc]
@@ -650,7 +649,7 @@ bool IsSigninForcedByPolicy() {
   self.incognitoInterstitialCoordinator.delegate = self;
   self.incognitoInterstitialCoordinator.tabOpener = self;
   self.incognitoInterstitialCoordinator.urlLoadParams = urlLoadParams;
-  [self.incognitoInterstitialCoordinator startWithCompletion:completion];
+  [self.incognitoInterstitialCoordinator start];
 }
 
 // A sink for appState:didTransitionFromInitStage: and
@@ -2293,8 +2292,8 @@ bool IsSigninForcedByPolicy() {
   __weak SceneController* weakSelf = self;
   void (^dismissModalsCompletion)() = ^{
     if (targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
-      [weakSelf showIncognitoInterstitialWithUrlLoadParams:copyOfUrlLoadParams
-                                                completion:completion];
+      [weakSelf showIncognitoInterstitialWithUrlLoadParams:copyOfUrlLoadParams];
+      completion();
     } else {
       [weakSelf openSelectedTabInMode:targetMode
                     withUrlLoadParams:copyOfUrlLoadParams
@@ -2884,8 +2883,9 @@ bool IsSigninForcedByPolicy() {
     // bookmarks or the recent tabs view.
     [self interruptSigninCoordinatorAnimated:animated completion:completion];
   } else if (self.incognitoInterstitialCoordinator) {
-    [self.incognitoInterstitialCoordinator stopWithCompletion:completion];
+    [self.incognitoInterstitialCoordinator stop];
     self.incognitoInterstitialCoordinator = nil;
+    completion();
   } else {
     completion();
   }
