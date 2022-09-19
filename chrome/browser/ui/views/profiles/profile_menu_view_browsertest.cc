@@ -428,14 +428,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
 
 // Checks that the NTP is navigated to the logout URL, instead of creating
 // another tab.
-// Flaky on Linux, at least. crbug.com/1116606
-// Flaky on Mac because of crbug.com/1273102.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_SignoutFromNTP DISABLED_SignoutFromNTP
-#else
-#define MAYBE_SignoutFromNTP SignoutFromNTP
-#endif
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, MAYBE_SignoutFromNTP) {
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, SignoutFromNTP) {
   // Start from the NTP.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
