@@ -1576,7 +1576,7 @@ void WallpaperControllerImpl::RemoveAlwaysOnTopWallpaper() {
 }
 
 void WallpaperControllerImpl::RemoveUserWallpaper(const AccountId& account_id) {
-  if (wallpaper_cache_map_.find(account_id) != wallpaper_cache_map_.end())
+  if (base::Contains(wallpaper_cache_map_, account_id))
     wallpaper_cache_map_.erase(account_id);
   pref_manager_->RemoveUserWallpaperInfo(account_id);
   RemoveUserWallpaperImpl(account_id);
