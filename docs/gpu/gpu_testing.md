@@ -446,6 +446,37 @@ Email kbr@ if you try this and find it doesn't work.
 
 [isolate-server-credentials]: gpu_testing_bot_details.md#Isolate-server-credentials
 
+## Debugging a Specific Subset of Tests on a Specific GPU Bot
+
+When a test exhibits flake on the bots, it can be convenient to run it
+repeatedly with local code modifications on the bot where it is exhibiting
+flake. One way of doing this is via swarming (see the below section). However, a
+lower-overhead alternative that also works in the case where you are looking to
+run on a bot for which you cannot locally build is to locally alter the
+configuration of the bot in question to specify that it should run only the
+tests desired, repeating as many times as desired. Instructions for doing this
+are as follows (see the [example CL] for a concrete instantiation of these
+instructions):
+
+1. In testsuite_exceptions.pyl, find the section for the test suite in question
+   (creating it if it doesn't exist).
+2. Add modifications for the bot in question and specify arguments such that
+   your desired tests are run for the desired number of iterations.
+3. Run testing/buildbot/generate_buildbot_json.py and verify that the JSON file
+   for the bot in question was modified as you would expect.
+4. Upload and run tryjobs on that specific bot via "Choose Tryjobs."
+5. Examine the test results. (You can verify that the tests run were as you
+   expected by examining the test results for individual shards of the run
+   of the test suite in question.)
+6. Add logging/code modifications/etc as desired and go back to step 4,
+   repeating the process until you've uncovered the underlying issue.
+7. Remove the the changes to testsuite_exceptions.pyl and the JSON file if
+   turning the CL into one intended for submission!
+
+Here is an [example CL] that does this.
+
+[example CL]: https://chromium-review.googlesource.com/c/chromium/src/+/3898592/4
+
 ## Running Locally Built Binaries on the GPU Bots
 
 See the [Swarming documentation] for instructions on how to upload your binaries to the isolate server and trigger execution on Swarming.
