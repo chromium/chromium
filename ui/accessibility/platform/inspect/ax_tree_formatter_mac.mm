@@ -250,7 +250,7 @@ void AXTreeFormatterMac::AddProperties(const AXElementWrapper& ax_element,
   }
 }
 
-base::Value AXTreeFormatterMac::PopulateLocalPosition(
+base::Value::Dict AXTreeFormatterMac::PopulateLocalPosition(
     const AXElementWrapper& ax_element,
     const NSRect& root_rect) const {
   // The NSAccessibility position of an object is in global coordinates and

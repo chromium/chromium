@@ -62,8 +62,8 @@ class AX_EXPORT AXTreeFormatterMac : public AXTreeFormatterBase {
       const AXPropertyNode& property_node,
       const AXTreeIndexerMac* indexer) const;
 
-  base::Value PopulateLocalPosition(const AXElementWrapper& ax_element,
-                                    const NSRect& root_rect) const;
+  base::Value::Dict PopulateLocalPosition(const AXElementWrapper& ax_element,
+                                          const NSRect& root_rect) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;

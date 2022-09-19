@@ -33,24 +33,25 @@ base::Value AXTextMarkerRangeToBaseValue(id, const AXTreeIndexerMac*);
 // Returns the base::Value representation of nil.
 AX_EXPORT base::Value AXNilToBaseValue();
 
-// Returns the base::Value representation of the given NSArray.
-AX_EXPORT base::Value AXNSArrayToBaseValue(NSArray*, const AXTreeIndexerMac*);
+// Returns the base::Value::List representation of the given NSArray.
+AX_EXPORT base::Value::List AXNSArrayToBaseValue(NSArray*,
+                                                 const AXTreeIndexerMac*);
 
-// Returns the base::Value representation of the given NSDictionary.
-AX_EXPORT base::Value AXNSDictionaryToBaseValue(NSDictionary*,
-                                                const AXTreeIndexerMac*);
+// Returns the base::Value::Dict representation of the given NSDictionary.
+AX_EXPORT base::Value::Dict AXNSDictionaryToBaseValue(NSDictionary*,
+                                                      const AXTreeIndexerMac*);
 
-// Returns the base::Value representation of the given NSPoint.
-AX_EXPORT base::Value AXNSPointToBaseValue(NSPoint);
+// Returns the base::Value::Dict representation of the given NSPoint.
+AX_EXPORT base::Value::Dict AXNSPointToBaseValue(NSPoint);
 
-// Returns the base::Value representation of the given NSSize.
-AX_EXPORT base::Value AXNSSizeToBaseValue(NSSize);
+// Returns the base::Value::Dict representation of the given NSSize.
+AX_EXPORT base::Value::Dict AXNSSizeToBaseValue(NSSize);
 
-// Returns the base::Value representation of the given NSRect.
-AX_EXPORT base::Value AXNSRectToBaseValue(NSRect);
+// Returns the base::Value::Dict representation of the given NSRect.
+AX_EXPORT base::Value::Dict AXNSRectToBaseValue(NSRect);
 
-// Returns the base::Value representation of the given NSRange.
-AX_EXPORT base::Value AXNSRangeToBaseValue(NSRange);
+// Returns the base::Value::Dict representation of the given NSRange.
+AX_EXPORT base::Value::Dict AXNSRangeToBaseValue(NSRange);
 
 }  // namespace ui
 
