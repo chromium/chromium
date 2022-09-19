@@ -1350,6 +1350,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Adds the top toolbar and sets constraints.
 - (void)setupTopToolbar {
+  bool dynamic_island_toolbar_blur_fix = ShouldUseToolbarBlurFix();
+  UIVisualEffectView* topToolbarBlurView;
+  if (dynamic_island_toolbar_blur_fix) {
+    UIBlurEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    topToolbarBlurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    topToolbarBlurView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:topToolbarBlurView];
+  }
+
   // In iOS 13+, constraints break if the UIToolbar is initialized with a null
   // or zero rect frame. An arbitrary non-zero frame fixes this issue.
   TabGridTopToolbar* topToolbar =
@@ -1385,6 +1395,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [topToolbar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [topToolbar.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]
   ]];
+
+  if (dynamic_island_toolbar_blur_fix) {
+    [NSLayoutConstraint activateConstraints:@[
+      [topToolbarBlurView.topAnchor
+          constraintEqualToAnchor:self.view.topAnchor],
+      [topToolbarBlurView.bottomAnchor
+          constraintEqualToAnchor:topToolbar.bottomAnchor],
+      [topToolbarBlurView.leadingAnchor
+          constraintEqualToAnchor:topToolbar.leadingAnchor],
+      [topToolbarBlurView.trailingAnchor
+          constraintEqualToAnchor:topToolbar.trailingAnchor],
+    ]];
+  }
 }
 
 // Adds the bottom toolbar and sets constraints.

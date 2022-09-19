@@ -58,11 +58,15 @@ namespace ios {
 namespace device_util {
 
 std::string GetPlatform() {
+#if TARGET_OS_SIMULATOR
+  return getenv("SIMULATOR_MODEL_IDENTIFIER");
+#elif TARGET_OS_IPHONE
   std::string platform;
   size_t size = 0;
   sysctlbyname("hw.machine", NULL, &size, NULL, 0);
   sysctlbyname("hw.machine", base::WriteInto(&platform, size), &size, NULL, 0);
   return platform;
+#endif
 }
 
 bool RamIsAtLeast512Mb() {
