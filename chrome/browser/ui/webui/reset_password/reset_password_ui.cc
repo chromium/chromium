@@ -88,7 +88,7 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
 PasswordType GetPasswordType(content::WebContents* web_contents) {
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetPendingEntry();
-  if (!nav_entry || !nav_entry->GetHasPostData())
+  if (!nav_entry || !nav_entry->GetHasPostData() || !nav_entry->GetPostData())
     return PasswordType::PASSWORD_TYPE_UNKNOWN;
   auto& post_data = nav_entry->GetPostData()->elements()->at(0);
   if (post_data.type() == network::DataElement::Tag::kBytes) {
