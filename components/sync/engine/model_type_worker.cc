@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -225,6 +226,11 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
   DCHECK(cryptographer_);
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
 
+  // GC directive is stored independently of progress marker and is used during
+  // a sync cycle (i.e. in-memory only). Clear GC directive on load to clean up
+  // previously persisted values.
+  model_type_state_.mutable_progress_marker()->clear_gc_directive();
+
   if (!CommitOnlyTypes().Has(GetModelType())) {
     DCHECK_EQ(type, GetModelTypeFromSpecificsFieldNumber(
                         initial_state.progress_marker().data_type_id()));
@@ -338,6 +344,7 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
   // TODO(rlarocque): Handle data type context conflicts.
   *model_type_state_.mutable_type_context() = mutated_context;
   *model_type_state_.mutable_progress_marker() = progress_marker;
+  ExtractGcDirective();
 
   for (const sync_pb::SyncEntity* update_entity : applicable_updates) {
     RecordEntityChangeMetrics(
@@ -560,9 +567,10 @@ void ModelTypeWorker::SendPendingUpdatesToProcessorIfReady() {
   DeduplicatePendingUpdatesBasedOnOriginatorClientItemId();
 
   model_type_processor_->OnUpdateReceived(model_type_state_,
-                                          std::move(pending_updates_));
-
+                                          std::move(pending_updates_),
+                                          std::move(pending_gc_directive_));
   pending_updates_.clear();
+  pending_gc_directive_.reset();
 }
 
 void ModelTypeWorker::NudgeForCommit() {
@@ -936,6 +944,22 @@ bool ModelTypeWorker::HasNonDeletionUpdates() const {
     }
   }
   return false;
+}
+
+void ModelTypeWorker::ExtractGcDirective() {
+  DCHECK(model_type_state_.has_progress_marker());
+
+  if (model_type_state_.progress_marker().has_gc_directive()) {
+    // Keep a new GC directive if received.
+    pending_gc_directive_ = model_type_state_.progress_marker().gc_directive();
+    model_type_state_.mutable_progress_marker()->clear_gc_directive();
+    return;
+  }
+
+  // Remove the GC directive if not present in the response, to mimic the
+  // previous behavior.
+  // TODO(crbug.com/1356900): keep the GC directive during current sync cycle.
+  pending_gc_directive_.reset();
 }
 
 GetLocalChangesRequest::GetLocalChangesRequest(

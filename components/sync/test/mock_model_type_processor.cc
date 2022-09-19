@@ -12,6 +12,7 @@
 #include "base/hash/sha1.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
@@ -64,10 +65,11 @@ void MockModelTypeProcessor::OnCommitFailed(SyncCommitError commit_error) {
 
 void MockModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
-    UpdateResponseDataList response_list) {
+    UpdateResponseDataList response_list,
+    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   pending_tasks_.push_back(base::BindOnce(
       &MockModelTypeProcessor::OnUpdateReceivedImpl, base::Unretained(this),
-      type_state, std::move(response_list)));
+      type_state, std::move(response_list), std::move(gc_directive)));
   if (is_synchronous_)
     RunQueuedTasks();
 }
@@ -174,6 +176,12 @@ sync_pb::ModelTypeState MockModelTypeProcessor::GetNthUpdateState(
   return type_states_received_on_update_[n];
 }
 
+sync_pb::GarbageCollectionDirective MockModelTypeProcessor::GetNthGcDirective(
+    size_t n) const {
+  DCHECK_LT(n, received_gc_directives_.size());
+  return received_gc_directives_[n];
+}
+
 size_t MockModelTypeProcessor::GetNumCommitResponses() const {
   return received_commit_responses_.size();
 }
@@ -274,7 +282,8 @@ void MockModelTypeProcessor::OnCommitCompletedImpl(
 
 void MockModelTypeProcessor::OnUpdateReceivedImpl(
     const sync_pb::ModelTypeState& type_state,
-    UpdateResponseDataList response_list) {
+    UpdateResponseDataList response_list,
+    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   type_states_received_on_update_.push_back(type_state);
   for (const UpdateResponseData& response : response_list) {
     const ClientTagHash& client_tag_hash = response.entity.client_tag_hash;
@@ -285,6 +294,8 @@ void MockModelTypeProcessor::OnUpdateReceivedImpl(
     update_response_items_.insert(std::make_pair(client_tag_hash, &response));
   }
   received_update_responses_.push_back(std::move(response_list));
+  received_gc_directives_.push_back(
+      gc_directive.value_or(sync_pb::GarbageCollectionDirective()));
 }
 
 // Fetches the sequence number as of the most recent update request.

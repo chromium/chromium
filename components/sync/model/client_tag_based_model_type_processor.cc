@@ -155,7 +155,8 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
       // For commit-only types, no updates are expected and hence we can
       // consider initial_sync_done(), reflecting that sync is enabled.
       model_type_state.set_initial_sync_done(true);
-      OnFullUpdateReceived(model_type_state, UpdateResponseDataList());
+      OnFullUpdateReceived(model_type_state, UpdateResponseDataList(),
+                           /*gc_directive=*/absl::nullopt);
       DCHECK(entity_tracker_);
     } else {
       activation_response->model_type_state = model_type_state;
@@ -699,10 +700,9 @@ void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
 
 // Returns whether the state has a version_watermark based GC directive, which
 // tells us to clear all sync data that's stored locally.
-bool HasClearAllDirective(const sync_pb::ModelTypeState& model_type_state) {
-  return model_type_state.progress_marker()
-      .gc_directive()
-      .has_version_watermark();
+bool HasClearAllDirective(
+    const absl::optional<sync_pb::GarbageCollectionDirective>& gc_directive) {
+  return gc_directive.has_value() && gc_directive->has_version_watermark();
 }
 
 void ClientTagBasedModelTypeProcessor::OnCommitFailed(
@@ -726,16 +726,18 @@ void ClientTagBasedModelTypeProcessor::OnCommitFailed(
 
 void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
-    UpdateResponseDataList updates) {
+    UpdateResponseDataList updates,
+    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_ready_to_sync_);
   DCHECK(!model_error_);
+  DCHECK(!model_type_state.progress_marker().has_gc_directive());
 
   const bool is_initial_sync = !IsTrackingMetadata();
   LogUpdatesReceivedByProcessorHistogram(type_, is_initial_sync,
                                          updates.size());
 
-  if (!ValidateUpdate(model_type_state, updates)) {
+  if (!ValidateUpdate(model_type_state, updates, gc_directive)) {
     return;
   }
 
@@ -749,9 +751,10 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   // on the client, without having to know exactly which entities the client
   // has.
   const bool treating_as_full_update =
-      is_initial_sync || HasClearAllDirective(model_type_state);
+      is_initial_sync || HasClearAllDirective(gc_directive);
   if (treating_as_full_update) {
-    error = OnFullUpdateReceived(model_type_state, std::move(updates));
+    error = OnFullUpdateReceived(model_type_state, std::move(updates),
+                                 std::move(gc_directive));
   } else {
     error = OnIncrementalUpdateReceived(model_type_state, std::move(updates));
   }
@@ -789,7 +792,8 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
 
 bool ClientTagBasedModelTypeProcessor::ValidateUpdate(
     const sync_pb::ModelTypeState& model_type_state,
-    const UpdateResponseDataList& updates) {
+    const UpdateResponseDataList& updates,
+    const absl::optional<sync_pb::GarbageCollectionDirective>& gc_directive) {
   if (!entity_tracker_) {
     // Due to uss_migrator, initial sync (when migrating from non-USS) does not
     // contain any gc directives. Thus, we cannot expect the conditions below to
@@ -798,7 +802,7 @@ bool ClientTagBasedModelTypeProcessor::ValidateUpdate(
     return true;
   }
 
-  if (HasClearAllDirective(model_type_state) &&
+  if (HasClearAllDirective(gc_directive) &&
       bridge_->SupportsIncrementalUpdates()) {
     ReportErrorImpl(ModelError(FROM_HERE,
                                "Received an update with version watermark for "
@@ -806,7 +810,7 @@ bool ClientTagBasedModelTypeProcessor::ValidateUpdate(
                     ErrorSite::kSupportsIncrementalUpdatesMismatch);
 
     return false;
-  } else if (!HasClearAllDirective(model_type_state) &&
+  } else if (!HasClearAllDirective(gc_directive) &&
              !bridge_->SupportsIncrementalUpdates() && !updates.empty()) {
     // We receive an update without clear all directive from the server to
     // indicate no data has changed. This contradicts with the list of updates
@@ -827,7 +831,8 @@ bool ClientTagBasedModelTypeProcessor::ValidateUpdate(
 absl::optional<ModelError>
 ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
-    UpdateResponseDataList updates) {
+    UpdateResponseDataList updates,
+    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();
   DCHECK(model_ready_to_sync_);
@@ -836,10 +841,10 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
   // update.
   DCHECK(model_type_state.initial_sync_done());
 
-  // Ensure that this is the initial sync, and it was not already marked done.
-  DCHECK(HasClearAllDirective(model_type_state) || !entity_tracker_);
+  // Ensure that this is the initial sync or a cleanup.
+  DCHECK(HasClearAllDirective(gc_directive) || !entity_tracker_);
 
-  if (entity_tracker_ && HasClearAllDirective(model_type_state)) {
+  if (entity_tracker_ && HasClearAllDirective(gc_directive)) {
     ExpireAllEntries(metadata_changes.get());
     entity_tracker_->set_model_type_state(model_type_state);
   }

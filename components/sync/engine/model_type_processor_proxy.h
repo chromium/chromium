@@ -31,7 +31,9 @@ class ModelTypeProcessorProxy : public ModelTypeProcessor {
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList updates) override;
+                        UpdateResponseDataList updates,
+                        absl::optional<sync_pb::GarbageCollectionDirective>
+                            gc_directive) override;
 
  private:
   base::WeakPtr<ModelTypeProcessor> processor_;

@@ -48,8 +48,10 @@ void ForwardingModelTypeProcessor::OnCommitFailed(
 
 void ForwardingModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
-    UpdateResponseDataList updates) {
-  processor_->OnUpdateReceived(type_state, std::move(updates));
+    UpdateResponseDataList updates,
+    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
+  processor_->OnUpdateReceived(type_state, std::move(updates),
+                               std::move(gc_directive));
 }
 
 }  // namespace syncer

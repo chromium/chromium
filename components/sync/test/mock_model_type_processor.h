@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/model_type_processor.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
@@ -54,7 +55,9 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList response_list) override;
+                        UpdateResponseDataList response_list,
+                        absl::optional<sync_pb::GarbageCollectionDirective>
+                            gc_directive) override;
 
   // By default, this object behaves as if all messages are processed
   // immediately.  Sometimes it is useful to defer work until later, as might
@@ -93,6 +96,7 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
   size_t GetNumUpdateResponses() const;
   std::vector<const UpdateResponseData*> GetNthUpdateResponse(size_t n) const;
   sync_pb::ModelTypeState GetNthUpdateState(size_t n) const;
+  sync_pb::GarbageCollectionDirective GetNthGcDirective(size_t n) const;
 
   // Getters to access the log of received commit responses.
   //
@@ -137,8 +141,10 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
   // Process a received update response.
   //
   // Implemented as an Impl method so we can defer its execution in some cases.
-  void OnUpdateReceivedImpl(const sync_pb::ModelTypeState& type_state,
-                            UpdateResponseDataList response_list);
+  void OnUpdateReceivedImpl(
+      const sync_pb::ModelTypeState& type_state,
+      UpdateResponseDataList response_list,
+      absl::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
   // Getter and setter for per-item sequence number tracking.
   int64_t GetCurrentSequenceNumber(const ClientTagHash& tag_hash) const;
@@ -161,9 +167,10 @@ class MockModelTypeProcessor : public ModelTypeProcessor {
 
   // A log of messages received by this object.
   std::vector<CommitResponseDataList> received_commit_responses_;
+  std::vector<sync_pb::ModelTypeState> type_states_received_on_commit_;
   std::vector<UpdateResponseDataList> received_update_responses_;
   std::vector<sync_pb::ModelTypeState> type_states_received_on_update_;
-  std::vector<sync_pb::ModelTypeState> type_states_received_on_commit_;
+  std::vector<sync_pb::GarbageCollectionDirective> received_gc_directives_;
   size_t commit_failures_count_ = 0;
 
   // Latest responses received, indexed by tag_hash.

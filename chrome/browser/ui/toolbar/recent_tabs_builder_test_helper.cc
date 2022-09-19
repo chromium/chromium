@@ -203,7 +203,8 @@ void RecentTabsBuilderTestHelper::ExportToSessionSync(
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
-  processor->OnUpdateReceived(model_type_state, std::move(updates));
+  processor->OnUpdateReceived(model_type_state, std::move(updates),
+                              /*gc_directive=*/absl::nullopt);
   // ClientTagBasedModelTypeProcessor uses ModelTypeProcessorProxy during
   // activation, which involves task posting for receiving updates.
   base::RunLoop().RunUntilIdle();

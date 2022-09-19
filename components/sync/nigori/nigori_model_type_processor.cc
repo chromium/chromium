@@ -117,7 +117,8 @@ void NigoriModelTypeProcessor::OnCommitCompleted(
 
 void NigoriModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
-    UpdateResponseDataList updates) {
+    UpdateResponseDataList updates,
+    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_ready_to_sync_);
   // If there is a model error, it must have been reported already but hasn't
@@ -127,6 +128,8 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
     return;
   }
 
+  // TODO(crbug.com/1356900): validate incoming updates, e.g. |gc_directive|
+  // must be empty for Nigori.
   absl::optional<ModelError> error;
 
   const bool is_initial_sync = !model_type_state_.initial_sync_done();

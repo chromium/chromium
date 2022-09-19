@@ -32,6 +32,7 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -179,14 +180,16 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
     // Initialize the processor with initial_sync_done.
     sync_pb::ModelTypeState state;
     state.set_initial_sync_done(true);
-    state.mutable_progress_marker()
-        ->mutable_gc_directive()
-        ->set_version_watermark(1);
+
+    sync_pb::GarbageCollectionDirective gc_directive;
+    gc_directive.set_version_watermark(1);
+
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillOfferSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
     }
-    real_processor_->OnUpdateReceived(state, std::move(initial_updates));
+    real_processor_->OnUpdateReceived(state, std::move(initial_updates),
+                                      gc_directive);
   }
 
   std::vector<AutofillOfferSpecifics> GetAllLocalData() {

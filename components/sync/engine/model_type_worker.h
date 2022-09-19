@@ -27,6 +27,7 @@
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 namespace sync_pb {
@@ -266,6 +267,10 @@ class ModelTypeWorker : public UpdateHandler,
   // Returns whether |pending_updates_| contain any non-deletion update.
   bool HasNonDeletionUpdates() const;
 
+  // Extraxts GC directive from the progress marker to handle it independently
+  // of |model_type_state_|.
+  void ExtractGcDirective();
+
   const ModelType type_;
 
   const raw_ptr<Cryptographer> cryptographer_;
@@ -311,6 +316,10 @@ class ModelTypeWorker : public UpdateHandler,
   // ordering here is NOT guaranteed to stick to the download ordering or any
   // other.
   UpdateResponseDataList pending_updates_;
+
+  // Pending GC directive if received during the current sync cycle. If there
+  // are several pending GC directives, the latest one will be stored.
+  absl::optional<sync_pb::GarbageCollectionDirective> pending_gc_directive_;
 
   // Indicates if processor has local changes. Processor only nudges worker once
   // and worker might not be ready to commit entities at the time.

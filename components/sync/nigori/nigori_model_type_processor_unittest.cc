@@ -426,8 +426,8 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldMergeSyncData) {
               MergeSyncData(OptionalEntityDataHasDecryptorTokenKeyName(
                   kDecryptorTokenKeyName)));
 
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 }
 
 TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChanges) {
@@ -442,8 +442,8 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChanges) {
               ApplySyncChanges(OptionalEntityDataHasDecryptorTokenKeyName(
                   kDecryptorTokenKeyName)));
 
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 }
 
 TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChangesWhenEmptyUpdates) {
@@ -455,7 +455,8 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChangesWhenEmptyUpdates) {
   EXPECT_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(Eq(absl::nullopt)));
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                UpdateResponseDataList());
+                                UpdateResponseDataList(),
+                                /*gc_directive=*/absl::nullopt);
 }
 
 TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChangesWhenReflection) {
@@ -470,8 +471,8 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldApplySyncChangesWhenReflection) {
   // metadata.
   EXPECT_CALL(*mock_nigori_sync_bridge(), ApplySyncChanges(Eq(absl::nullopt)));
 
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 }
 
 TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndKeepMetadata) {
@@ -533,8 +534,8 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldResetDataOnCacheGuidMismatch) {
               MergeSyncData(OptionalEntityDataHasDecryptorTokenKeyName(
                   kDecryptorTokenKeyName)));
 
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 }
 
 TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
@@ -560,8 +561,8 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldDisconnectWhenMergeSyncDataFails) {
 
   ASSERT_TRUE(processor()->IsConnectedForTest());
   EXPECT_CALL(error_handler_callback, Run);
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
@@ -589,8 +590,8 @@ TEST_F(NigoriModelTypeProcessorTest,
 
   ASSERT_TRUE(processor()->IsConnectedForTest());
   EXPECT_CALL(error_handler_callback, Run);
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 

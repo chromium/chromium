@@ -54,7 +54,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
       const syncer::CommitResponseDataList& committed_response_list,
       const syncer::FailedCommitResponseDataList& error_response_list) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        syncer::UpdateResponseDataList updates) override;
+                        syncer::UpdateResponseDataList updates,
+                        absl::optional<sync_pb::GarbageCollectionDirective>
+                            gc_directive) override;
 
   // ModelTypeControllerDelegate implementation.
   void OnSyncStarting(const syncer::DataTypeActivationRequest& request,

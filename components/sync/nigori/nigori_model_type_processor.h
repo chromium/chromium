@@ -41,7 +41,9 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
       const CommitResponseDataList& committed_response_list,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList updates) override;
+                        UpdateResponseDataList updates,
+                        absl::optional<sync_pb::GarbageCollectionDirective>
+                            gc_directive) override;
 
   // ModelTypeControllerDelegate implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request,

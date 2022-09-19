@@ -354,8 +354,8 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMerge) {
   ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
   EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -386,8 +386,8 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
       bookmark_model()->bookmark_bar_node();
   ASSERT_TRUE(bookmark_bar->children().empty());
 
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 
   ASSERT_THAT(bookmark_bar->children().front().get(), NotNull());
   EXPECT_THAT(bookmark_bar->children().front()->GetTitle(),
@@ -423,8 +423,8 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
       kRandomPosition, /*response_version=*/1, bookmark_node->guid()));
 
   base::HistogramTester histogram_tester;
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 
   // Check if the bookmark has been updated properly.
   EXPECT_THAT(bookmark_bar->children().front().get(), Eq(bookmark_node));
@@ -466,8 +466,8 @@ TEST_F(
   updates[0].response_version++;
 
   EXPECT_CALL(*schedule_save_closure(), Run());
-  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                std::move(updates));
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeSyncMetadata) {
@@ -618,8 +618,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Push empty updates list to the processor together with the updated model
   // type state.
   syncer::UpdateResponseDataList empty_updates_list;
-  processor()->OnUpdateReceived(model_type_state,
-                                std::move(empty_updates_list));
+  processor()->OnUpdateReceived(model_type_state, std::move(empty_updates_list),
+                                /*gc_directive=*/absl::nullopt);
 
   // The model type state inside the tracker should have been updated, and
   // carries the new encryption key name.
@@ -658,7 +658,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_CALL(*mock_commit_queue(), NudgeForCommit()).Times(0);
   syncer::UpdateResponseDataList updates;
   updates.push_back(std::move(response_data));
-  processor()->OnUpdateReceived(model_type_state, std::move(updates));
+  processor()->OnUpdateReceived(model_type_state, std::move(updates),
+                                /*gc_directive=*/absl::nullopt);
 
   // The bookmarks shouldn't be marked for committing.
   ASSERT_THAT(tracker->GetEntityForSyncId(kNodeId), NotNull());
@@ -852,7 +853,8 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   // Synchronize with the server and get any updates.
   EXPECT_CALL(*mock_commit_queue(), NudgeForCommit());
   processor()->OnUpdateReceived(CreateDummyModelTypeState(),
-                                syncer::UpdateResponseDataList());
+                                syncer::UpdateResponseDataList(),
+                                /*gc_directive=*/absl::nullopt);
 
   // Check that all entities are unsynced now and metadata is marked as
   // reuploaded.

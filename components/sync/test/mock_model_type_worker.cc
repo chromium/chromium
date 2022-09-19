@@ -122,7 +122,8 @@ void MockModelTypeWorker::UpdateModelTypeState(
 }
 
 void MockModelTypeWorker::UpdateFromServer() {
-  processor_->OnUpdateReceived(model_type_state_, UpdateResponseDataList());
+  processor_->OnUpdateReceived(model_type_state_, UpdateResponseDataList(),
+                               /*gc_directive=*/absl::nullopt);
 }
 
 void MockModelTypeWorker::UpdateFromServer(
@@ -151,7 +152,8 @@ void MockModelTypeWorker::UpdateFromServer(
 }
 
 void MockModelTypeWorker::UpdateFromServer(UpdateResponseDataList updates) {
-  processor_->OnUpdateReceived(model_type_state_, std::move(updates));
+  processor_->OnUpdateReceived(model_type_state_, std::move(updates),
+                               /*gc_directive=*/absl::nullopt);
 }
 
 syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
@@ -237,7 +239,8 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateTombstoneUpdateData(
 void MockModelTypeWorker::TombstoneFromServer(const ClientTagHash& tag_hash) {
   UpdateResponseDataList list;
   list.push_back(GenerateTombstoneUpdateData(tag_hash));
-  processor_->OnUpdateReceived(model_type_state_, std::move(list));
+  processor_->OnUpdateReceived(model_type_state_, std::move(list),
+                               /*gc_directive=*/absl::nullopt);
 }
 
 void MockModelTypeWorker::AckOnePendingCommit() {
@@ -327,20 +330,20 @@ void MockModelTypeWorker::UpdateWithEncryptionKey(
     const std::string& ekn,
     UpdateResponseDataList update) {
   model_type_state_.set_encryption_key_name(ekn);
-  processor_->OnUpdateReceived(model_type_state_, std::move(update));
+  processor_->OnUpdateReceived(model_type_state_, std::move(update),
+                               /*gc_directive=*/absl::nullopt);
 }
 
 void MockModelTypeWorker::UpdateWithGarbageCollection(
     const sync_pb::GarbageCollectionDirective& gcd) {
-  *model_type_state_.mutable_progress_marker()->mutable_gc_directive() = gcd;
-  processor_->OnUpdateReceived(model_type_state_, UpdateResponseDataList());
+  processor_->OnUpdateReceived(model_type_state_, UpdateResponseDataList(),
+                               gcd);
 }
 
 void MockModelTypeWorker::UpdateWithGarbageCollection(
     UpdateResponseDataList update,
     const sync_pb::GarbageCollectionDirective& gcd) {
-  *model_type_state_.mutable_progress_marker()->mutable_gc_directive() = gcd;
-  processor_->OnUpdateReceived(model_type_state_, std::move(update));
+  processor_->OnUpdateReceived(model_type_state_, std::move(update), gcd);
 }
 
 std::string MockModelTypeWorker::GenerateId(const ClientTagHash& tag_hash) {

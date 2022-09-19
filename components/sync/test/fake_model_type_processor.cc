@@ -29,6 +29,7 @@ void FakeModelTypeProcessor::OnCommitCompleted(
 
 void FakeModelTypeProcessor::OnUpdateReceived(
     const sync_pb::ModelTypeState& type_state,
-    UpdateResponseDataList updates) {}
+    UpdateResponseDataList updates,
+    absl::optional<sync_pb::GarbageCollectionDirective> gc_directive) {}
 
 }  // namespace syncer

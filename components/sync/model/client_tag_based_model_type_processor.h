@@ -103,7 +103,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       const FailedCommitResponseDataList& error_response_list) override;
   void OnCommitFailed(SyncCommitError commit_error) override;
   void OnUpdateReceived(const sync_pb::ModelTypeState& type_state,
-                        UpdateResponseDataList updates) override;
+                        UpdateResponseDataList updates,
+                        absl::optional<sync_pb::GarbageCollectionDirective>
+                            gc_directive) override;
 
   // ModelTypeControllerDelegate implementation.
   // |start_callback| will never be called synchronously.
@@ -161,15 +163,18 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // Validates the update specified by the input parameters and returns whether
   // it should get further processed. If the update is incorrect, this function
   // also reports an error.
-  bool ValidateUpdate(const sync_pb::ModelTypeState& model_type_state,
-                      const UpdateResponseDataList& updates);
+  bool ValidateUpdate(
+      const sync_pb::ModelTypeState& model_type_state,
+      const UpdateResponseDataList& updates,
+      const absl::optional<sync_pb::GarbageCollectionDirective>& gc_directive);
 
   // Handle the first update received from the server after being enabled. If
   // the data type does not support incremental updates, this will be called for
   // any server update.
   absl::optional<ModelError> OnFullUpdateReceived(
       const sync_pb::ModelTypeState& type_state,
-      UpdateResponseDataList updates);
+      UpdateResponseDataList updates,
+      absl::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
   // Handle any incremental updates received from the server after being
   // enabled.
