@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations", "xcode")
+load("//lib/builders.star", "os", "reclient", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -406,15 +406,11 @@ ci.builder(
         category = "mac",
         short_name = "bld",
     ),
-    goma_debug = True,  # TODO(hinoka): Remove this after debugging.
-    goma_jobs = None,
     cores = None,  # Swapping between 8 and 24
     os = os.MAC_DEFAULT,
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 2,
     ),
-    reclient_instance = None,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 linux_memory_builder(

@@ -640,7 +640,7 @@
       'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot',
-      'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
+      'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'mac-arm64-rel (reclient shadow)': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
     },
 
@@ -652,7 +652,7 @@
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot_reclient',
       'Linux MSan Builder': 'msan_release_bot_reclient',
       'Linux TSan Builder': 'tsan_disable_nacl_release_bot_reclient',
-      'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on',
+      'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on_reclient',
       'WebKit Linux ASAN': 'asan_lsan_release_bot_blink_reclient',
       'WebKit Linux Leak': 'release_bot_blink_reclient',
       'WebKit Linux MSAN': 'msan_release_bot_blink_reclient',
@@ -1979,8 +1979,8 @@
       'asan', 'lsan', 'release_trybot_reclient',
     ],
 
-    'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on': [
-      'asan', 'minimal_symbols', 'disable_nacl', 'release_bot', 'dcheck_always_on',
+    'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on_reclient': [
+      'asan', 'minimal_symbols', 'disable_nacl', 'release_bot_reclient', 'dcheck_always_on',
     ],
 
     'asan_v8_heap_debug_bot_hybrid_reclient': [
