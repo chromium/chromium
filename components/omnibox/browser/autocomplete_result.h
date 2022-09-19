@@ -353,7 +353,7 @@ class AutocompleteResult {
 
   ACMatches matches_;
 
-  // The map of suggestion group IDs to suggestion groups information.
+  // The map of suggestion group IDs to suggestion group information.
   SuggestionGroupsMap suggestion_groups_map_;
 
 #if BUILDFLAG(IS_ANDROID)

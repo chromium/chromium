@@ -167,7 +167,8 @@ class SearchSuggestionParser {
       return additional_query_params_;
     }
 
-    void set_suggestion_group_id(omnibox::GroupId suggestion_group_id) {
+    void set_suggestion_group_id(
+        absl::optional<omnibox::GroupId> suggestion_group_id) {
       suggestion_group_id_ = suggestion_group_id;
     }
     absl::optional<omnibox::GroupId> suggestion_group_id() const {
@@ -214,12 +215,8 @@ class SearchSuggestionParser {
     // Optional additional parameters to be added to the search URL.
     std::string additional_query_params_;
 
-    // The suggestion group ID based on the omnibox::GroupIds enum in
-    // suggestion_config.proto. Used to look up the suggestion group info this
-    // suggestion belong to such as the header text this suggestion must appear
-    // under.
-    // Note: Use omnibox::GROUP_INVALID in place of a missing suggestion
-    // group Id when this is to be converted to a primitive type.
+    // The optional suggestion group ID used to look up the suggestion group
+    // config for the group this suggestion belongs to from the server response.
     absl::optional<omnibox::GroupId> suggestion_group_id_;
 
     // Optional short answer to the input that produced this suggestion.
@@ -340,7 +337,7 @@ class SearchSuggestionParser {
     // If the relevance values of the results are from the server.
     bool relevances_from_server;
 
-    // The server supplied map of suggestion group IDs to suggestion group info.
+    // The map of suggestion group IDs to suggestion group information.
     SuggestionGroupsMap suggestion_groups_map;
   };
 

@@ -557,7 +557,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
   int prefetch_index = -1;
   int prerender_index = -1;
   omnibox::GroupsInfo groups_info;
-  std::unordered_map<int, omnibox::GroupId> chrome_group_ids_map;
 
   if (root_list.size() > 4u && root_list[4].is_dict()) {
     const base::Value& extras = root_list[4];
@@ -825,76 +824,96 @@ bool SearchSuggestionParser::ParseSuggestResults(
       }
 
       if (suggestion_group_id) {
-        // If seeing a group ID for the first time:
-        auto it =
-            groups_info.mutable_group_configs_map()->find(*suggestion_group_id);
-        if (it != groups_info.mutable_group_configs_map()->end()) {
-          // Assign a 0-based index to it based on the number of groups seen so
-          // far.
-          const int group_index = chrome_group_ids_map.size();
-
-          // Convert the server-provided group ID to one known to Chrome. Do not
-          // propagate the server-provided group ID, if Chrome ran out of
-          // reserved group IDs to assign.
-          const auto chrome_group_id = ChromeGroupIdForRemoteGroupIdAndIndex(
-              *suggestion_group_id, group_index);
-          if (chrome_group_id == omnibox::GROUP_INVALID) {
-            continue;
-          }
-
-          // Use the converted group ID to store the associated suggestion group
-          // information in the results.
-          results->suggestion_groups_map[chrome_group_id]
-              .group_config.MergeFrom(
-                  groups_info.group_configs_map().at(*suggestion_group_id));
-          results->suggestion_groups_map[chrome_group_id].original_group_id =
-              *suggestion_group_id;
-          results->suggestion_groups_map[chrome_group_id].priority =
-              ChromeGroupPriorityForRemoteGroupIndex(group_index);
-
-          // Remember the mapping from the converted group ID to the
-          // server-provided one.
-          chrome_group_ids_map[*suggestion_group_id] = chrome_group_id;
-
-          // Erase the group information already stored in the results.
-          groups_info.mutable_group_configs_map()->erase(it);
-        }
-
-        // Set the converted group ID in the suggestion, if one is available.
-        // Do not propagate the server-provided group IDs without any associated
-        // group information.
-        if (base::Contains(chrome_group_ids_map, *suggestion_group_id)) {
-          results->suggest_results.back().set_suggestion_group_id(
-              chrome_group_ids_map[*suggestion_group_id]);
-        }
+        // Do not use GroupIdForNumber() because |suggestion_group_id| may not
+        // be present in omnibox::GroupId. However, casting int values into
+        // omnibox::GroupId enum without testing membership is expected to be
+        // safe as omnibox::GroupId enum has a fixed int underlying type.
+        // TODO(crbug.com/1343512): Use GroupIdForNumber() once the server
+        //  response has migrated to a serialized omnibox::GroupsInfo proto.
+        results->suggest_results.back().set_suggestion_group_id(
+            static_cast<omnibox::GroupId>(*suggestion_group_id));
       }
     }
   }
 
-  // Add the suggestion group information for the remaining group IDs without
-  // any associated suggestions. The only known use case is the personalized
-  // zero-suggest which is also produced by Chrome and relies on the
-  // server-provided group information to show properly.
-  for (const auto& entry : groups_info.group_configs_map()) {
+  results->relevances_from_server = relevances != nullptr;
+
+  // Keeps the mapping from server-provided group IDs to those known to Chrome.
+  std::unordered_map<omnibox::GroupId, omnibox::GroupId> chrome_group_ids_map;
+
+  // Adds the group information for the given suggestion group ID and config.
+  auto add_group_info = [&](const omnibox::GroupId suggestion_group_id,
+                            const omnibox::GroupConfig& group_config) {
+    // The group information is already stored if the group ID is seen before.
+    if (base::Contains(chrome_group_ids_map, suggestion_group_id)) {
+      return;
+    }
+
+    // Assign a 0-based index to the group based on the number of groups so far.
     const int group_index = chrome_group_ids_map.size();
 
     // Convert the server-provided group ID to one known to Chrome.
     const auto chrome_group_id =
-        ChromeGroupIdForRemoteGroupIdAndIndex(entry.first, group_index);
+        ChromeGroupIdForRemoteGroupIdAndIndex(suggestion_group_id, group_index);
+
+    // Do not propagate the server-provided group IDs if Chrome ran out of
+    // group IDs to assign or if the group ID was invalid to begin with.
     if (chrome_group_id == omnibox::GROUP_INVALID) {
+      return;
+    }
+
+    // Remember the conversion.
+    chrome_group_ids_map[suggestion_group_id] = chrome_group_id;
+
+    // Store the associated suggestion group information in the results.
+    results->suggestion_groups_map[chrome_group_id].group_config.MergeFrom(
+        group_config);
+    results->suggestion_groups_map[chrome_group_id].original_group_id =
+        suggestion_group_id;
+    results->suggestion_groups_map[chrome_group_id].priority =
+        ChromeGroupPriorityForRemoteGroupIndex(group_index);
+  };
+
+  for (auto& suggest_result : results->suggest_results) {
+    if (!suggest_result.suggestion_group_id().has_value()) {
       continue;
     }
 
-    // Use the converted group ID to store the associated suggestion group
-    // information in the results.
-    results->suggestion_groups_map[chrome_group_id].group_config.MergeFrom(
-        groups_info.group_configs_map().at(entry.first));
-    results->suggestion_groups_map[chrome_group_id].original_group_id =
-        entry.first;
-    results->suggestion_groups_map[chrome_group_id].priority =
-        ChromeGroupPriorityForRemoteGroupIndex(group_index);
+    const omnibox::GroupId suggestion_group_id =
+        suggest_result.suggestion_group_id().value();
+
+    // Do not propagate the server-provided group IDs without any associated
+    // group config.
+    if (!base::Contains(groups_info.group_configs_map(), suggestion_group_id)) {
+      suggest_result.set_suggestion_group_id(absl::nullopt);
+      continue;
+    }
+
+    // Add the group information for the group associated with the suggestion.
+    add_group_info(suggestion_group_id,
+                   groups_info.group_configs_map().at(suggestion_group_id));
+
+    // Update or reset the group ID in the suggestion.
+    if (base::Contains(chrome_group_ids_map, suggestion_group_id)) {
+      suggest_result.set_suggestion_group_id(
+          chrome_group_ids_map[suggestion_group_id]);
+    } else {
+      suggest_result.set_suggestion_group_id(absl::nullopt);
+    }
   }
 
-  results->relevances_from_server = relevances != nullptr;
+  // Add the group information for the remaining groups without any suggestions.
+  // The only known use case is the personalized zero-suggest which is also
+  // produced by Chrome and relies on the server-provided group config to show.
+  for (const auto& entry : groups_info.group_configs_map()) {
+    // Do not use GroupIdForNumber() because |groups_info| keys may not be
+    // present in omnibox::GroupId. However, casting int values into
+    // omnibox::GroupId enum without testing membership is expected to be safe
+    // as omnibox::GroupId enum has a fixed int underlying type.
+    // TODO(crbug.com/1343512): Use GroupIdForNumber() once the server
+    //  response has migrated to a serialized omnibox::GroupsInfo proto.
+    add_group_info(static_cast<omnibox::GroupId>(entry.first), entry.second);
+  }
+
   return true;
 }

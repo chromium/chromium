@@ -681,11 +681,11 @@ struct AutocompleteMatch {
   std::u16string description_for_shortcuts;
   ACMatchClassifications description_class_for_shortcuts;
 
-  // The optional suggestion group Id. Used to look up the suggestion group info
-  // such as the header text this match must appear under from ACResult.
+  // The optional suggestion group ID used to look up the suggestion group info
+  // for the group this suggestion belongs to from the AutocompleteResult.
   //
-  // This is converted to a primitive int type in Java and JavaScript; with -1
-  // (omnibox::GROUP_INVALID) used as a sentinel value.
+  // Use omnibox::GROUP_INVALID in place of a missing value when converting
+  // this to a primitive type.
   absl::optional<omnibox::GroupId> suggestion_group_id;
 
   // If true, UI-level code should swap the contents and description fields
