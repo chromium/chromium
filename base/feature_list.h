@@ -39,15 +39,42 @@ enum FeatureState {
   FEATURE_ENABLED_BY_DEFAULT,
 };
 
-// The Feature struct is used to define the default state for a feature. See
-// comment below for more details. There must only ever be one struct instance
-// for a given feature name - generally defined as a constant global variable or
-// file static. It should never be used as a constexpr as it breaks
-// pointer-based identity lookup.
+// Recommended macros for declaring and defining features:
 //
-// Note: New code should use CONSTINIT on the base::Feature declaration, as in:
+// - `kFeature` is the C++ identifier that will be used for the `base::Feature`.
+// - `name` is the feature name, which must be globally unique. This name is
+//   used to enable/disable features via experiments and command-line flags.
+//   Names should use CamelCase-style naming, e.g. "MyGreatFeature".
+// - `default_state` is the default state to use for the feature, i.e.
+//   `base::FEATURE_DISABLED_BY_DEFAULT` or `base::FEATURE_ENABLED_BY_DEFAULT`.
+//   As noted above, the actual runtime state may differ from the default state,
+//   due to field trials or command-line switches.
+
+// Provides a forward declaration for `kFeature` in a header file, e.g.
 //
-//   CONSTINIT Feature kSomeFeature("FeatureName", FEATURE_DISABLED_BY_DEFAULT);
+//   BASE_DECLARE_FEATURE(kMyFeature);
+//
+// If the feature needs to be marked as exported, i.e. it is referenced by
+// multiple components, then write:
+//
+//   COMPONENT_EXPORT(MY_COMPONENT) BASE_DECLARE_FEATURE(kMyFeature);
+#define BASE_DECLARE_FEATURE(kFeature) \
+  extern CONSTINIT const base::Feature kFeature
+
+// Provides a definition for `kFeature` with `name` and `default_state`, e.g.
+//
+//   BASE_FEATURE(kMyFeature, "MyFeature", base::FEATURE_DISABLED_BY_DEFAULT);
+//
+// Features should *not* be defined in header files; do not use this macro in
+// header files.
+#define BASE_FEATURE(feature, name, default_state) \
+  CONSTINIT const base::Feature feature(name, default_state)
+
+// The Feature struct is used to define the default state for a feature. There
+// must only ever be one struct instance for a given feature name—generally
+// defined as a constant global variable or file static. Declare and define
+// features using the `BASE_DECLARE_FEATURE()` and `BASE_FEATURE()` macros
+// above, as there are some subtleties involved.
 //
 // Feature constants are internally mutable, as this allows them to contain a
 // mutable member to cache their override state, while still remaining declared

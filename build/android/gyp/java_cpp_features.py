@@ -15,16 +15,24 @@ from util import java_cpp_utils
 
 
 class FeatureParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
+  # Ex. 'BASE_FEATURE(kConstantName, "StringNameOfTheFeature", ...);'
+  # would parse as:
+  #   ExtractConstantName() -> 'ConstantName'
+  #   ExtractValue() -> '"StringNameOfTheFeature"'
+  FEATURE_RE = re.compile(r'BASE_FEATURE\(k([^,]+),')
   # Ex. 'const base::Feature kConstantName{"StringNameOfTheFeature", ...};'
   # would parse as:
   #   ExtractConstantName() -> 'ConstantName'
   #   ExtractValue() -> '"StringNameOfTheFeature"'
-  FEATURE_RE = re.compile(
+  LEGACY_FEATURE_RE = re.compile(
       r'\s*const(?:\s+\w+_EXPORT)? (?:base::)?Feature\s+k(\w+)\s*(?:=\s*)?')
   VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*,')
 
   def ExtractConstantName(self, line):
     match = FeatureParserDelegate.FEATURE_RE.match(line)
+    if match:
+      return match.group(1)
+    match = FeatureParserDelegate.LEGACY_FEATURE_RE.match(line)
     return match.group(1) if match else None
 
   def ExtractValue(self, line):

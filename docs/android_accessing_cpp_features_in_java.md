@@ -129,11 +129,9 @@ disabled-by-default for another). Example:
 
 ```c++
 #if defined(...)
-const base::Feature kMyFeature{
-    "MyFeature", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kMyFeature, "MyFeature", base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-const base::Feature kMyFeature{
-    "MyFeature", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMyFeature, "MyFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 ```
 
@@ -143,12 +141,12 @@ compilation error is complaining about). Fortunately, the workaround is fairly
 simple. Rewrite the definition to only use directives around the enabled state:
 
 ```c++
-const base::Feature kMyFeature{
-    "MyFeature",
+BASE_FEATURE(kMyFeature,
+             "MyFeature",
 #if defined(...)
-    base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-    base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
 
