@@ -724,6 +724,11 @@ Status ExecuteWindowCommand(const WindowCommand& command,
       // When pageload strategy is None, new navigation can occur during
       // execution of a command. Retry the command.
       continue;
+    } else if (status.code() == kDisconnected) {
+      // Some commands, like clicking a button or link which closes the window,
+      // may result in a kDisconnected error code. |web_view| may be invalid at
+      // at this point.
+      return status;
     } else if (status.IsError()) {
       // If the command failed while a new page or frame started loading, retry
       // the command after the pending navigation has completed.

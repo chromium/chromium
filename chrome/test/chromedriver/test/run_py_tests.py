@@ -1005,6 +1005,17 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     alert_button.Click()
     self.assertTrue(self._driver.IsAlertOpen())
 
+  def testClickElementThatRestartsBrowser(self):
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4221
+    self._driver.Load('chrome://flags')
+    reset_all = self._driver.FindElement('css selector',
+                                         '#experiment-reset-all')
+    reset_all.Click()
+    relaunch = self._driver.FindElement('css selector',
+                                        '#experiment-restart-button')
+    # Clicking Relaunch should not crash chromedriver.
+    relaunch.Click()
+
   def testClickElementJustOutsidePage(self):
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3878
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
