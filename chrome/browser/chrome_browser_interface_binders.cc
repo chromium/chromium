@@ -901,9 +901,6 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
       TabStripUI,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      ash::ColorInternalsUI,
-#endif
       NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
@@ -1344,6 +1341,10 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (base::FeatureList::IsEnabled(ash::features::kFaceMLApp)) {
     registry.ForWebUI<ash::FaceMLAppUI>()
         .Add<ash::mojom::face_ml_app::PageHandlerFactory>();
+  }
+  if (base::FeatureList::IsEnabled(ash::features::kJelly)) {
+    registry.ForWebUI<ash::ColorInternalsUI>()
+        .Add<color_change_listener::mojom::PageHandler>();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

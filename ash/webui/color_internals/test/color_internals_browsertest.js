@@ -25,6 +25,10 @@ var ColorInternalsUIBrowserTest = class extends testing.Test {
   get isAsync() {
     return true;
   }
+  /** @override */
+  get featureList() {
+    return {enabled: ['ash::features::kJelly']};
+  }
 };
 
 // Tests that chrome://color-internals loads successfully.

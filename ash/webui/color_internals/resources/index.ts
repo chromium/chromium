@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy} from 'chrome://resources/cr_components/color_change_listener/browser_proxy.js';
-import {refreshColorCss} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
 const CROS_TOKENS_JSON_URL = 'color_internals_tokens.json';
 
@@ -99,8 +98,3 @@ window.onload = () => {
   populateTokenTable();
   startColorChangeUpdater();
 };
-
-function startColorChangeUpdater() {
-  BrowserProxy.getInstance().callbackRouter.onColorProviderChanged.addListener(
-      refreshColorCss);
-}
