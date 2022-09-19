@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestBadThenGoodPassword) {
 }
 
 // Test how locking the screen affects an active fullscreen window.
-// TODO(crbug.com/1364698): Fix flakiness on Linux builder.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1364698): Fix flakiness on ASAN builder.
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_TestFullscreenExit DISABLED_TestFullscreenExit
 #else
 #define MAYBE_TestFullscreenExit TestFullscreenExit
