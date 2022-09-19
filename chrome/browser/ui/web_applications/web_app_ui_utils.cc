@@ -68,16 +68,6 @@ void ShowAppManagementPage(const AppId& app_id) {
     return;
   }
 
-  auto remote_version =
-      service->GetInterfaceVersion(crosapi::mojom::AppServiceProxy::Uuid_);
-
-  if (remote_version < int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
-                               kShowAppManagementPageMinVersion}) {
-    LOG(WARNING) << "Ash AppServiceProxy version " << remote_version
-                 << " does not support ShowAppManagementPage().";
-    return;
-  }
-
   service->GetRemote<crosapi::mojom::AppServiceProxy>()->ShowAppManagementPage(
       app_id);
 }

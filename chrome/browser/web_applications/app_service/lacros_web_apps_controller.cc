@@ -95,14 +95,6 @@ void LacrosWebAppsController::Init() {
     remote_publisher_version_ =
         service->GetInterfaceVersion(crosapi::mojom::AppPublisher::Uuid_);
 
-    if (remote_publisher_version_ <
-        int{crosapi::mojom::AppPublisher::MethodMinVersions::
-                kRegisterAppControllerMinVersion}) {
-      LOG(WARNING) << "Ash AppPublisher version " << remote_publisher_version_
-                   << " does not support RegisterAppController().";
-      return;
-    }
-
     service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
         receiver_.BindNewPipeAndPassRemoteWithVersion());
     remote_publisher_ =
@@ -385,13 +377,6 @@ void LacrosWebAppsController::PublishWebApps(std::vector<apps::AppPtr> apps) {
     return;
   }
 
-  if (remote_publisher_version_ <
-      int{crosapi::mojom::AppPublisher::MethodMinVersions::kOnAppsMinVersion}) {
-    LOG(WARNING) << "Ash AppPublisher version " << remote_publisher_version_
-                 << " does not support OnApps().";
-    return;
-  }
-
   remote_publisher_->OnApps(std::move(apps));
 }
 
@@ -423,13 +408,6 @@ void LacrosWebAppsController::ModifyWebAppCapabilityAccess(
   capability_access->microphone = accessing_microphone;
   capability_accesses.push_back(std::move(capability_access));
 
-  if (remote_publisher_version_ <
-      int{crosapi::mojom::AppPublisher::MethodMinVersions::
-              kOnCapabilityAccessesMinVersion}) {
-    LOG(WARNING) << "Ash AppPublisher version " << remote_publisher_version_
-                 << " does not support OnCapabilityAccesses().";
-    return;
-  }
   remote_publisher_->OnCapabilityAccesses(std::move(capability_accesses));
 }
 

@@ -27,29 +27,10 @@
 
 namespace web_app {
 
-class LacrosWebAppsControllerBrowserTest : public WebAppNavigationBrowserTest {
- public:
-  LacrosWebAppsControllerBrowserTest() = default;
-  ~LacrosWebAppsControllerBrowserTest() override = default;
-
- protected:
-  // If ash is does not contain the relevant test controller functionality,
-  // then there's nothing to do for this test.
-  bool IsServiceAvailable() {
-    DCHECK(IsWebAppsCrosapiEnabled());
-    auto* const service = chromeos::LacrosService::Get();
-    return service->GetInterfaceVersion(
-               crosapi::mojom::TestController::Uuid_) >=
-           static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                                kCloseAllBrowserWindowsMinVersion);
-  }
-};
+using LacrosWebAppsControllerBrowserTest = WebAppNavigationBrowserTest;
 
 // Test that the default context menu for a web app has the correct items.
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
-  if (!IsServiceAvailable())
-    GTEST_SKIP() << "Unsupported ash version.";
-
   InstallTestWebApp();
   const AppId app_id = test_web_app_id();
 
@@ -87,14 +68,6 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
 
 // Test that ShowSiteSettings() launches the Settings SWA.
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
-  if (!IsServiceAvailable() ||
-      chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::AppServiceProxy::Uuid_) <
-          static_cast<int>(crosapi::mojom::AppServiceProxy::MethodMinVersions::
-                               kShowAppManagementPageMinVersion)) {
-    GTEST_SKIP() << "Unsupported ash version.";
-  }
-
   InstallTestWebApp();
   const AppId app_id = test_web_app_id();
   AppReadinessWaiter(profile(), kOsSettingsAppId).Await();
