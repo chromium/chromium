@@ -33,8 +33,8 @@ class TestPlatformDelegate : public BasePlatformDelegate {
               GetProductMetadata,
               (const base::FilePath&),
               (override));
-  MOCK_METHOD(absl::optional<std::string>,
-              GetSigningCertificatePublicKeyHash,
+  MOCK_METHOD(absl::optional<std::vector<std::string>>,
+              GetSigningCertificatesPublicKeyHashes,
               (const base::FilePath&),
               (override));
 };

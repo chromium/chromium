@@ -221,9 +221,10 @@ namespace enterprise.reportingPrivate {
     // Is true if a currently running process was spawned from this file.
     boolean? isRunning;
 
-    // Sha256 hash of the public key of the certificate used to sign the
-    // executable.
-    DOMString? publicKeySha256;
+    // SHA-256 hashes of the public keys of the certificates used to sign the
+    // executable. A hash is computed over the DER-encoded SubjectPublicKeyInfo
+    // representation of the key.
+    DOMString[]? publicKeysHashes;
 
     // Product name of this executable.
     DOMString? productName;

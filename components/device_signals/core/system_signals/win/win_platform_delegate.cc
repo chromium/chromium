@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -81,13 +82,14 @@ bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
   return true;
 }
 
-absl::optional<std::string>
-WinPlatformDelegate::GetSigningCertificatePublicKeyHash(
+absl::optional<std::vector<std::string>>
+WinPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
     const base::FilePath& file_path) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                  base::File::FLAG_WIN_SHARE_DELETE);
+  std::vector<std::string> hashes;
   if (!file.IsValid()) {
-    return absl::nullopt;
+    return hashes;
   }
 
   // TODO(b:244573398): Get public key hashes for all certificate indices and
@@ -98,7 +100,7 @@ WinPlatformDelegate::GetSigningCertificatePublicKeyHash(
   if (!::ImageGetCertificateHeader(file.GetPlatformFile(),
                                    /*CertificateIndex=*/0,
                                    &certificate_header)) {
-    return absl::nullopt;
+    return hashes;
   }
 
   DWORD certificate_length = certificate_header.dwLength;
@@ -110,7 +112,7 @@ WinPlatformDelegate::GetSigningCertificatePublicKeyHash(
   certificate->wRevision = WIN_CERT_REVISION_1_0;
   if (!::ImageGetCertificateData(file.GetPlatformFile(), /*CertificateIndex=*/0,
                                  certificate.get(), &certificate_length)) {
-    return absl::nullopt;
+    return hashes;
   }
 
   PCCERT_CONTEXT raw_certificate_context = nullptr;
@@ -121,12 +123,12 @@ WinPlatformDelegate::GetSigningCertificatePublicKeyHash(
   if (!::CryptVerifyMessageSignature(
           &crypt_verify_param, /*dwSignerIndex=*/0, certificate->bCertificate,
           certificate->dwLength, NULL, NULL, &raw_certificate_context)) {
-    return absl::nullopt;
+    return hashes;
   }
 
   crypto::ScopedPCCERT_CONTEXT certificate_context(raw_certificate_context);
   if (!certificate_context || !certificate_context->pbCertEncoded) {
-    return absl::nullopt;
+    return hashes;
   }
 
   base::StringPiece der_bytes(
@@ -135,10 +137,12 @@ WinPlatformDelegate::GetSigningCertificatePublicKeyHash(
 
   base::StringPiece spki;
   if (!net::asn1::ExtractSPKIFromDERCert(der_bytes, &spki)) {
-    return absl::nullopt;
+    return hashes;
   }
 
-  return crypto::SHA256HashString(spki);
+  hashes.push_back(crypto::SHA256HashString(spki));
+
+  return hashes;
 }
 
 }  // namespace device_signals

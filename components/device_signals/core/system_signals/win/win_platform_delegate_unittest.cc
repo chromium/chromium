@@ -84,30 +84,35 @@ TEST_F(WinPlatformDelegateTest, ResolveFilePath_Fail) {
 }
 
 TEST_F(WinPlatformDelegateTest,
-       GetSigningCertificatePublicKeyHash_InvalidPath) {
-  EXPECT_FALSE(
-      platform_delegate_.GetSigningCertificatePublicKeyHash(base::FilePath()));
+       GetSigningCertificatesPublicKeyHashes_InvalidPath) {
+  auto public_keys = platform_delegate_.GetSigningCertificatesPublicKeyHashes(
+      base::FilePath());
+  ASSERT_TRUE(public_keys);
+  EXPECT_EQ(public_keys->size(), 0U);
 }
 
-TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeyHash_Signed) {
+TEST_F(WinPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_Signed) {
   base::FilePath signed_exe_path = test::GetSignedExePath();
   ASSERT_TRUE(base::PathExists(signed_exe_path));
 
-  auto public_key =
-      platform_delegate_.GetSigningCertificatePublicKeyHash(signed_exe_path);
-  ASSERT_TRUE(public_key);
+  auto public_keys =
+      platform_delegate_.GetSigningCertificatesPublicKeyHashes(signed_exe_path);
+  ASSERT_TRUE(public_keys);
+  ASSERT_EQ(public_keys->size(), 1U);
 
   std::string base64_encoded_public_key;
-  base::Base64Encode(public_key.value(), &base64_encoded_public_key);
+  base::Base64Encode(public_keys.value()[0], &base64_encoded_public_key);
   EXPECT_EQ(base64_encoded_public_key, kExpectedBase64PublicKey);
 }
 
-TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeyHash_Empty) {
+TEST_F(WinPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_Empty) {
   base::FilePath empty_exe_path = test::GetEmptyExePath();
   ASSERT_TRUE(base::PathExists(empty_exe_path));
 
-  EXPECT_FALSE(
-      platform_delegate_.GetSigningCertificatePublicKeyHash(empty_exe_path));
+  auto public_keys =
+      platform_delegate_.GetSigningCertificatesPublicKeyHashes(empty_exe_path);
+  ASSERT_TRUE(public_keys);
+  EXPECT_EQ(public_keys->size(), 0U);
 }
 
 TEST_F(WinPlatformDelegateTest, GetProductMetadata_Success) {

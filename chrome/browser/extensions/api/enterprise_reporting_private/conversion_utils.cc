@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/enterprise_reporting_private/conversion_utils.h"
 
+#include <algorithm>
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -32,6 +34,8 @@ using PresenceValue = device_signals::PresenceValue;
 namespace extensions {
 
 namespace {
+
+constexpr size_t kGeneralSignalUpperLimit = 128U;
 
 absl::optional<ParsedSignalsError> TryParseError(
     const device_signals::SignalsAggregationResponse& response,
@@ -74,6 +78,17 @@ std::string EncodeHash(const std::string& byte_string) {
   base::Base64UrlEncode(byte_string, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_string);
   return encoded_string;
+}
+
+std::vector<std::string> EncodeHashes(
+    const std::vector<std::string>& byte_strings) {
+  std::vector<std::string> encoded_strings;
+  const size_t upper_bound =
+      std::min(kGeneralSignalUpperLimit, byte_strings.size());
+  for (size_t i = 0; i < upper_bound; ++i) {
+    encoded_strings.push_back(EncodeHash(byte_strings[i]));
+  }
+  return encoded_strings;
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -161,9 +176,9 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
 
       response.is_running = executable_metadata.is_running;
 
-      if (executable_metadata.public_key_sha256) {
-        response.public_key_sha256 =
-            EncodeHash(*executable_metadata.public_key_sha256);
+      if (executable_metadata.public_keys_hashes) {
+        response.public_keys_hashes =
+            EncodeHashes(executable_metadata.public_keys_hashes.value());
       }
 
       response.product_name = executable_metadata.product_name;
@@ -247,7 +262,10 @@ absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
   std::vector<api::enterprise_reporting_private::AntiVirusSignal>
       api_av_signals;
   const auto& av_response = aggregation_response.av_signal_response.value();
-  for (const auto& av_product : av_response.av_products) {
+  const size_t upper_bound =
+      std::min(kGeneralSignalUpperLimit, av_response.av_products.size());
+  for (size_t i = 0U; i < upper_bound; ++i) {
+    const auto& av_product = av_response.av_products[i];
     api::enterprise_reporting_private::AntiVirusSignal api_av_signal;
     api_av_signal.display_name = av_product.display_name;
     api_av_signal.product_id = av_product.product_id;
@@ -291,7 +309,10 @@ absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
       api_hotfix_signals;
   const auto& hotfix_response =
       aggregation_response.hotfix_signal_response.value();
-  for (const auto& hotfix : hotfix_response.hotfixes) {
+  const size_t upper_bound =
+      std::min(kGeneralSignalUpperLimit, hotfix_response.hotfixes.size());
+  for (size_t i = 0U; i < upper_bound; ++i) {
+    const auto& hotfix = hotfix_response.hotfixes[i];
     api::enterprise_reporting_private::HotfixSignal api_hotfix;
     api_hotfix.hotfix_id = hotfix.hotfix_id;
     api_hotfix_signals.push_back(std::move(api_hotfix));

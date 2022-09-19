@@ -28,8 +28,8 @@ bool MacPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
   return true;
 }
 
-absl::optional<std::string>
-MacPlatformDelegate::GetSigningCertificatePublicKeyHash(
+absl::optional<std::vector<std::string>>
+MacPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
     const base::FilePath& file_path) {
   // TODO(b:231326198): Implement.
   return absl::nullopt;

@@ -34,8 +34,8 @@ PlatformDelegate::GetProductMetadata(const base::FilePath& file_path) {
   return absl::nullopt;
 }
 
-absl::optional<std::string>
-PlatformDelegate::GetSigningCertificatePublicKeyHash(
+absl::optional<std::vector<std::string>>
+PlatformDelegate::GetSigningCertificatesPublicKeyHashes(
     const base::FilePath& file_path) {
   return absl::nullopt;
 }

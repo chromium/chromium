@@ -67,8 +67,8 @@ ExecutableMetadataServiceImpl::GetAllExecutableMetadata(
       executable_metadata.version = product_metadata->version;
     }
 
-    executable_metadata.public_key_sha256 =
-        platform_delegate_->GetSigningCertificatePublicKeyHash(file_path);
+    executable_metadata.public_keys_hashes =
+        platform_delegate_->GetSigningCertificatesPublicKeyHashes(file_path);
 
     file_paths_to_metadata_map[file_path] = executable_metadata;
   }

@@ -16,7 +16,7 @@ ExecutableMetadata::~ExecutableMetadata() = default;
 
 bool ExecutableMetadata::operator==(const ExecutableMetadata& other) const {
   return is_running == other.is_running &&
-         public_key_sha256 == other.public_key_sha256 &&
+         public_keys_hashes == other.public_keys_hashes &&
          product_name == other.product_name && version == other.version;
 }
 

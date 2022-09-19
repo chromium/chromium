@@ -6,6 +6,7 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_MOJOM_SYSTEM_SIGNALS_MOJOM_TRAITS_COMMON_H_
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -30,9 +31,9 @@ struct StructTraits<device_signals::mojom::ExecutableMetadataDataView,
     return input.is_running;
   }
 
-  static absl::optional<std::string> public_key_sha256(
+  static absl::optional<std::vector<std::string>> public_keys_hashes(
       const device_signals::ExecutableMetadata& input) {
-    return input.public_key_sha256;
+    return input.public_keys_hashes;
   }
 
   static absl::optional<std::string> product_name(

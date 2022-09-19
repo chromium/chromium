@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
             chrome.test.assertEq('FOUND', response.presence);
             chrome.test.assertTrue(!!response.sha256Hash);
             chrome.test.assertTrue(response.isRunning);
-            chrome.test.assertFalse(!!response.publicKeySha256);
+            chrome.test.assertEq([], response.publicKeysHashes);
             ++expectedFilesCounter;
           } else if (response.path === signedExePath) {
             chrome.test.assertEq('FOUND', response.presence);
@@ -651,8 +651,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
               '4R_6DJ8lI0RTqe3RyyUdRhB_NLU2rXRkKoWErKjBqM4',
               response.sha256Hash);
             chrome.test.assertEq(
-              'Rsw3wqh8gUxnMU8j2jGvvBMZqpe6OhIxn_WeEVg-pYQ',
-              response.publicKeySha256);
+              ['Rsw3wqh8gUxnMU8j2jGvvBMZqpe6OhIxn_WeEVg-pYQ'],
+              response.publicKeysHashes);
             chrome.test.assertFalse(response.isRunning);
             chrome.test.assertFalse(!!response.productName);
             chrome.test.assertFalse(!!response.version);
@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
               response.sha256Hash);
             chrome.test.assertEq(metadataName, response.productName);
             chrome.test.assertEq(metadataVersion, response.version);
-            chrome.test.assertFalse(!!response.publicKeySha256);
+            chrome.test.assertEq([], response.publicKeysHashes);
             chrome.test.assertFalse(response.isRunning);
             ++expectedFilesCounter;
           }

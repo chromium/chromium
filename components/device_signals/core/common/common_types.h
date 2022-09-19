@@ -6,6 +6,7 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_COMMON_TYPES_H_
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,9 +28,9 @@ struct ExecutableMetadata {
   // Is true if a currently running process was spawned from this file.
   bool is_running = false;
 
-  // Byte string containing the SHA256 hash of the public key of the certificate
-  // used to sign the executable.
-  absl::optional<std::string> public_key_sha256 = absl::nullopt;
+  // Byte strings containing the SHA-256 hash of the DER-encoded SPKI structures
+  // of the certificates used to sign the executable.
+  absl::optional<std::vector<std::string>> public_keys_hashes = absl::nullopt;
 
   // Product name of this executable.
   absl::optional<std::string> product_name = absl::nullopt;
