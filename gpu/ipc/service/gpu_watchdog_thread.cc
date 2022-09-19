@@ -683,6 +683,17 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   auto last_arm_disarm_counter = ReadArmDisarmCounter();
   base::debug::Alias(&last_arm_disarm_counter);
 
+  // Record whether we are in report only mode in the crash
+  static crash_reporter::CrashKeyString<16> report_only_crash_key(
+      "gpu_hang_report_only");
+  report_only_crash_key.Set(in_report_only_mode_ ? "enabled" : "disabled");
+
+  // Short term investigation into report only mode, bug tracking report only
+  // mode can be found at crbug.com/1356196. The Catan team has not seen the
+  // expected rampup in crashes where report only mode is enabled.
+  // TODO(crbug.com/1356196): remove this when investigation is over.
+  UMA_HISTOGRAM_BOOLEAN("GPU.ReportOnlyModeStatusAtHang", in_report_only_mode_);
+
   // Create a crash dump first
   base::debug::DumpWithoutCrashing();
 
