@@ -20,6 +20,7 @@
 #include "base/memory/singleton.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
@@ -421,6 +422,18 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   return policy_json;
 }
 
+void RecordInstallTypesInPolicy(const policy::PolicyMap& policy) {
+  const base::Value* const arc_enabled =
+      policy.GetValue(policy::key::kArcEnabled, base::Value::Type::BOOLEAN);
+  if (!arc_enabled || !arc_enabled->GetBool())
+    return;
+
+  const base::Value* const arc_policy =
+      policy.GetValue(policy::key::kArcPolicy, base::Value::Type::STRING);
+  if (arc_policy)
+    policy_util::RecordInstallTypesInPolicy(arc_policy->GetString());
+}
+
 // Singleton factory for ArcPolicyBridge.
 class ArcPolicyBridgeFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
@@ -520,6 +533,7 @@ void ArcPolicyBridge::OnConnectionReady() {
     InitializePolicyService();
   }
   policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+  policy_util::RecordInstallTypesInPolicy(GetCurrentJSONPolicies());
 
   if (!on_arc_instance_ready_callback_.is_null()) {
     std::move(on_arc_instance_ready_callback_).Run();
@@ -610,6 +624,7 @@ void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
     return;
 
   instance->OnPolicyUpdated();
+  RecordInstallTypesInPolicy(current);
 }
 
 void ArcPolicyBridge::OnCommandReceived(

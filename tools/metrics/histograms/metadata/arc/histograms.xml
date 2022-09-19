@@ -758,7 +758,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.CloudDpc{TimedCloudDpcOp}.TimeDelta{SuccessFailure}{ArcUserTypes}"
-    units="ms" expires_after="2022-10-14">
+    units="ms" expires_after="2023-03-14">
   <owner>batoon@google.com</owner>
   <owner>mhasank@google.com</owner>
   <owner>arc-commercial@google.com</owner>
@@ -1696,6 +1696,19 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Arc.Policy.InstallTypesOnDevice" enum="AppInstallType"
+    expires_after="2023-03-15">
+  <owner>batoon@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Record which app install types are included in the policy that is applied to
+    a device. The metric is emitted once when arc_policy_bridge starts and any
+    time the policy is updated. For example, if there are 5 FORCE_INSTALLED apps
+    and 3 BLOCKED apps in the policy, the metric will record one count for
+    FORCE_INSTALLED and one count for BLOCKED.
+  </summary>
 </histogram>
 
 <histogram name="Arc.PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"

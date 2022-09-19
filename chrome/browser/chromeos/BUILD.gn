@@ -1705,6 +1705,7 @@ source_set("unit_tests") {
     "../ash/arc/pip/arc_pip_bridge_unittest.cc",
     "../ash/arc/policy/arc_policy_bridge_unittest.cc",
     "../ash/arc/policy/arc_policy_handler_unittest.cc",
+    "../ash/arc/policy/arc_policy_util_unittest.cc",
     "../ash/arc/policy/managed_configuration_variables_unittest.cc",
     "../ash/arc/privacy_items/arc_privacy_items_bridge_unittest.cc",
     "../ash/arc/process/arc_process_unittest.cc",
