@@ -29,7 +29,9 @@ python_version: "3.8"
 # allows us to ensure that vpython specs stay mac-arm64-friendly
 verify_pep425_tag: [
     {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
-    {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+# TODO(https://crbug.com/1363689): Re-enable once the linux_arm64 versions of
+# these wheels are available.
+#   {python: "cp38", abi: "cp38", platform: "linux_arm64"},
 
     {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
     {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
@@ -309,7 +311,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/urllib3-py2_py3"
-  version: "version:1.24.3"
+  version: "version:1.26.6"
 >
 wheel: <
   name: "infra/python/wheels/blessings-py2_py3"
@@ -366,6 +368,10 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/ecdsa-py2_py3"
   version: "version:0.17.0"
+>
+wheel: <
+  name: "infra/python/wheels/brotli/${vpython_platform}"
+  version: "version:1.0.9"
 >
 
 # Used by:
@@ -526,8 +532,47 @@ wheel: <
 >
 
 # Used by:
+#   chrome/test/mini_installer/test_chrome_with_chromedriver.py
 #   testing/script/run_variations_smoke_tests.py
+# Keep this to the same revision as third_party/webdriver/pylib, which is pulled
+# in via DEPS.
 wheel: <
   name: "infra/python/wheels/selenium-py3"
-  version: "version:3.14.0"
+  version: "version:4.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/trio-py3"
+  version: "version:0.20.0"
+>
+wheel: <
+  name: "infra/python/wheels/trio-websocket-py3"
+  version: "version:0.9.2"
+>
+wheel: <
+  name: "infra/python/wheels/outcome-py3"
+  version: "version:1.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/sniffio-py3"
+  version: "version:1.2.0"
+>
+wheel: <
+  name: "infra/python/wheels/async-generator-py3"
+  version: "version:1.10"
+>
+wheel: <
+  name: "infra/python/wheels/wsproto-py3"
+  version: "version:1.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/h11-py3"
+  version: "version:0.13.0"
+>
+wheel: <
+  name: "infra/python/wheels/sortedcontainers-py3"
+  version: "version:2.4.0"
+>
+wheel: <
+  name: "infra/python/wheels/pyopenssl-py2_py3"
+  version: "version:19.0.0"
 >
