@@ -1076,6 +1076,14 @@ dictionary DlpRestrictionDetails {
   VolumeType[] components;
 };
 
+dictionary DialogCallerInformation {
+  // The URL of the caller.
+  DOMString? url;
+
+  // The component type of the caller.
+  VolumeType? component;
+};
+
 // A Guest OS that supports guest->host file sharing. This definition should
 // match the one in file_manager_private.js.
 dictionary MountableGuest {
@@ -1161,6 +1169,10 @@ callback GetDlpRestrictionDetailsCallback =
 // |blockedComponents| A list of components (subset of VolumeType) to which
 // transferring an Entry is blocked by Data Leak Prevention (DLP) policy.
 callback GetDlpBlockedComponentsCallback = void(VolumeType[] blockedComponents);
+
+// |caller| Either the URL or a component (subset of VolumeType) of
+// the caller that created the dialog (Save As/File Picker).
+callback GetDialogCallerCallback = void(DialogCallerInformation caller);
 
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
@@ -1472,6 +1484,10 @@ interface Functions {
   static void getDlpBlockedComponents(
       DOMString sourceUrl,
       GetDlpBlockedComponentsCallback callback);
+
+  // Retrieves the caller that created the dialog (Save As/File Picker).
+  // |callback| Result callback.
+  static void getDialogCaller(GetDialogCallerCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.

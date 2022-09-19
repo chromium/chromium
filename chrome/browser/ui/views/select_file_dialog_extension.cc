@@ -28,8 +28,10 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/login_web_dialog.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/file_manager/select_file_dialog_extension_user_data.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -44,6 +46,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -274,14 +277,15 @@ void SelectFileDialogExtension::OnSystemDialogShown(
     content::WebContents* web_contents,
     const std::string& id) {
   system_files_app_web_contents_ = web_contents;
-  SelectFileDialogExtensionUserData::SetRoutingIdForWebContents(web_contents,
-                                                                id);
+  SelectFileDialogExtensionUserData::SetDialogDataForWebContents(
+      web_contents, id, dialog_caller_);
 }
 
 void SelectFileDialogExtension::OnSystemDialogWillClose() {
   profile_ = nullptr;
   owner_window_ = nullptr;
   system_files_app_web_contents_ = nullptr;
+  dialog_caller_.reset();
   PendingDialog::GetInstance()->Remove(routing_id_);
   // Actually invoke the appropriate callback on our listener.
   NotifyListener();
@@ -409,6 +413,8 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     return;
   }
 
+  dialog_caller_ = owner.dialog_caller;
+
   // The base window to associate the dialog with.
   ui::BaseWindow* base_window = nullptr;
 
@@ -499,6 +505,7 @@ void SelectFileDialogExtension::SelectFileImpl(
   // |default_extension| is ignored.
   Owner owner;
   owner.window = owner_window;
+  // TODO(crbug.com/1364565): Set the owner.dialog_caller.
   SelectFileWithFileManagerParams(type, title, default_path, file_types,
                                   file_type_index, params, owner,
                                   /*search_query=*/"",

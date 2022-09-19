@@ -783,6 +783,14 @@ chrome.fileManagerPrivate.DlpRestrictionDetails;
 
 /**
  * @typedef {{
+ *   url:  (string|undefined),
+ *   component: (!chrome.fileManagerPrivate.VolumeType|undefined),
+ * }}
+ */
+chrome.fileManagerPrivate.DialogCallerInformation;
+
+/**
+ * @typedef {{
  *   restoreEntry: !Entry,
  *   trashInfoFileName: string,
  *   deletionDate: Date,
@@ -1036,6 +1044,14 @@ chrome.fileManagerPrivate.getDlpRestrictionDetails = function(
  */
 chrome.fileManagerPrivate.getDlpBlockedComponents = function(
     sourceUrl, callback) {};
+
+/**
+ * Retrieves the caller that created the dialog (Save As/File Picker).
+ * @param {function(!chrome.fileManagerPrivate.DialogCallerInformation)}
+ * callback Callback with either a URL or component (subset of VolumeType) of
+ * the caller.
+ */
+chrome.fileManagerPrivate.getDialogCaller = function(callback) {};
 
 /**
  * Starts to copy an entry. If the source is a directory, the copy is done

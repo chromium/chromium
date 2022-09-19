@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
@@ -94,6 +95,10 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
     absl::optional<std::string> lacros_window_id;
     // Set to true only if SelectFileAsh opened the dialog.
     bool is_lacros = false;
+    // The URL or Component type of the caller that opened the dialog (Save
+    // As/File Picker).
+    absl::optional<policy::DlpFilesController::DlpFileDestination>
+        dialog_caller;
   };
   void SelectFileWithFileManagerParams(Type type,
                                        const std::u16string& title,
@@ -167,6 +172,10 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
 
   // The window that created the dialog.
   aura::Window* owner_window_ = nullptr;
+
+  // The optional URL or a component type of the caller that created the dialog
+  // (Save As/File Picker).
+  absl::optional<policy::DlpFilesController::DlpFileDestination> dialog_caller_;
 
   // We defer the callback into SelectFileDialog::Listener until the window
   // closes, to match the semantics of file selection on Windows and Mac.

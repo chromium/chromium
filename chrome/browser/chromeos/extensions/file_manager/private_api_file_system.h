@@ -371,6 +371,20 @@ class FileManagerPrivateGetDlpBlockedComponentsFunction
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.getDialogCaller method.
+class FileManagerPrivateGetDialogCallerFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getDialogCaller",
+                             FILEMANAGERPRIVATE_GETDIALOGCALLER)
+
+ protected:
+  ~FileManagerPrivateGetDialogCallerFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 // Implements the chrome.fileManagerPrivate.startCopy method.
 class FileManagerPrivateInternalStartCopyFunction
     : public LoggedExtensionFunction {

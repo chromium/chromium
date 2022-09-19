@@ -58,6 +58,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/file_stream_md5_digester.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -1273,6 +1274,25 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
   return RespondNow(ArgumentList(
       api::file_manager_private::GetDlpBlockedComponents::Results::Create(
           converted_list)));
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetDialogCallerFunction::Run() {
+  absl::optional<policy::DlpFilesController::DlpFileDestination> caller =
+      SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
+          this->GetSenderWebContents());
+  base::Value::Dict info;
+  if (caller.has_value()) {
+    if (caller->url_or_path.has_value()) {
+      info.Set("url", caller->url_or_path.value());
+    }
+    if (caller->component.has_value()) {
+      info.Set("component",
+               DlpRulesManagerComponentToApiEnum(caller->component.value()));
+    }
+  }
+
+  return RespondNow(WithArguments(std::move(info)));
 }
 
 FileManagerPrivateInternalStartCopyFunction::

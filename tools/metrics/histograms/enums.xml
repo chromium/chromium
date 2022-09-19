@@ -35631,6 +35631,7 @@ Called by update_extension_histograms.py.-->
   <int value="1705" label="WMDESKSPRIVATE_DELETESAVEDDESK"/>
   <int value="1706" label="WMDESKSPRIVATE_RECALLSAVEDDESK"/>
   <int value="1707" label="FILEMANAGERPRIVATE_GETDLPBLOCKEDCOMPONENTS"/>
+  <int value="1708" label="FILEMANAGERPRIVATE_GETDIALOGCALLER"/>
 </enum>
 
 <enum name="ExtensionIconState">

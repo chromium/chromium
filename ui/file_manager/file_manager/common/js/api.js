@@ -153,6 +153,16 @@ export async function getDlpRestrictionDetails(sourceUrl) {
 }
 
 /**
+ * Retrieves the caller that created the dialog (Save As/File Picker).
+ * @return {!Promise<!chrome.fileManagerPrivate.DialogCallerInformation>}
+ * callback Callback with either a URL or component (subset of VolumeType) of
+ * the caller.
+ */
+export async function getDialogCaller() {
+  return promisify(chrome.fileManagerPrivate.getDialogCaller);
+}
+
+/**
  * Lists Guest OSs which support having their files mounted.
  * @return {!Promise<!Array<!chrome.fileManagerPrivate.MountableGuest>>}
  */

@@ -8,30 +8,54 @@
 #include <string>
 
 #include "base/supports_user_data.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
 }
 
-// Used for attachingSelectFileDialogExtension's routing ID to its WebContents.
+// Used for attaching SelectFileDialogExtension's user data to its WebContents.
 class SelectFileDialogExtensionUserData : public base::SupportsUserData::Data {
  public:
   SelectFileDialogExtensionUserData(const SelectFileDialogExtensionUserData&) =
       delete;
   SelectFileDialogExtensionUserData& operator=(
       const SelectFileDialogExtensionUserData&) = delete;
+  ~SelectFileDialogExtensionUserData() override;
 
-  static void SetRoutingIdForWebContents(content::WebContents* web_contents,
-                                         const std::string& routing_id);
+  // Attaches the SelectFileDialogExtension's user data to its `web_contents`,
+  // that consists of the unique `routing_id` and optionally the
+  // `dialog_caller`.
+  static void SetDialogDataForWebContents(
+      content::WebContents* web_contents,
+      const std::string& routing_id,
+      absl::optional<policy::DlpFilesController::DlpFileDestination>
+          dialog_caller);
+  // Returns the SelectFileDialogExtension's routing id attached to
+  // `web_contents`, if it can be found.
   static std::string GetRoutingIdForWebContents(
       content::WebContents* web_contents);
+  // Returns the SelectFileDialogExtension's caller attached to `web_contents`,
+  // if it can be found.
+  static absl::optional<policy::DlpFilesController::DlpFileDestination>
+  GetDialogCallerForWebContents(content::WebContents* web_contents);
 
  private:
-  explicit SelectFileDialogExtensionUserData(const std::string& routing_id);
+  SelectFileDialogExtensionUserData(
+      const std::string& routing_id,
+      absl::optional<policy::DlpFilesController::DlpFileDestination>
+          dialog_caller);
 
   const std::string& routing_id() const { return routing_id_; }
 
+  absl::optional<policy::DlpFilesController::DlpFileDestination> dialog_caller()
+      const {
+    return dialog_caller_;
+  }
+
   std::string routing_id_;
+  absl::optional<policy::DlpFilesController::DlpFileDestination> dialog_caller_;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_SELECT_FILE_DIALOG_EXTENSION_USER_DATA_H_
