@@ -42,7 +42,7 @@ class DownloadManagerTabHelper
 
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.
-  DownloadManagerTabHelper(web::WebState* web_state);
+  explicit DownloadManagerTabHelper(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<DownloadManagerTabHelper>;

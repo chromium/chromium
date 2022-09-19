@@ -12,14 +12,6 @@
 #error "This file requires ARC support."
 #endif
 
-void SafariDownloadTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           std::make_unique<SafariDownloadTabHelper>());
-  }
-}
-
 void SafariDownloadTabHelper::DownloadMobileConfig(
     std::unique_ptr<web::DownloadTask> task) {
   NSURL* url = net::NSURLWithGURL(task->GetOriginalUrl());
@@ -31,5 +23,7 @@ void SafariDownloadTabHelper::DownloadCalendar(
   NSURL* url = net::NSURLWithGURL(task->GetOriginalUrl());
   [delegate_ presentCalendarAlertFromURL:url];
 }
+
+SafariDownloadTabHelper::SafariDownloadTabHelper(web::WebState* web_state) {}
 
 WEB_STATE_USER_DATA_KEY_IMPL(SafariDownloadTabHelper)

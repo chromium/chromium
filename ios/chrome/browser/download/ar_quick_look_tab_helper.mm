@@ -120,14 +120,6 @@ ARQuickLookTabHelper::~ARQuickLookTabHelper() {
   }
 }
 
-void ARQuickLookTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           std::make_unique<ARQuickLookTabHelper>(web_state));
-  }
-}
-
 void ARQuickLookTabHelper::Download(
     std::unique_ptr<web::DownloadTask> download_task) {
   DCHECK(download_task);

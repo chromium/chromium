@@ -60,7 +60,7 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
 
  protected:
   // Allow subclassing from PassKitTabHelper for testing purposes.
-  PassKitTabHelper(web::WebState* web_state);
+  explicit PassKitTabHelper(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<PassKitTabHelper>;

@@ -51,16 +51,10 @@ class ARQuickLookTabHelper
       public web::DownloadTaskObserver,
       public web::WebStateUserData<ARQuickLookTabHelper> {
  public:
-  ARQuickLookTabHelper(web::WebState* web_state);
-
   ARQuickLookTabHelper(const ARQuickLookTabHelper&) = delete;
   ARQuickLookTabHelper& operator=(const ARQuickLookTabHelper&) = delete;
 
   ~ARQuickLookTabHelper() override;
-
-  // Creates TabHelper. `delegate` is not retained by this instance. `web_state`
-  // must not be null.
-  static void CreateForWebState(web::WebState* web_state);
 
   id<ARQuickLookTabHelperDelegate> delegate() { return delegate_; }
 
@@ -71,6 +65,10 @@ class ARQuickLookTabHelper
   // Downloads and previews the USDZ file given by `download_task`. Takes
   // ownership of `download_task`.
   virtual void Download(std::unique_ptr<web::DownloadTask> download_task);
+
+ protected:
+  // Allow subclassing from ARQuickLookTabHelper for testing purposes.
+  explicit ARQuickLookTabHelper(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<ARQuickLookTabHelper>;

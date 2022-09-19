@@ -42,9 +42,11 @@ template <class TabHelper>
 class StubTabHelper : public TabHelper {
  public:
   // Overrides the method from web::WebStateUserData<TabHelper>.
-  static void CreateForWebState(web::WebState* web_state) {
+  template <typename... Args>
+  static void CreateForWebState(web::WebState* web_state, Args&&... args) {
     web_state->SetUserData(TabHelper::UserDataKey(),
-                           base::WrapUnique(new StubTabHelper(web_state)));
+                           base::WrapUnique(new StubTabHelper(
+                               web_state, std::forward<Args>(args)...)));
   }
 
   // Adds the given task to tasks() lists.
