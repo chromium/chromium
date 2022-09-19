@@ -33268,7 +33268,7 @@ This policy has no effect if the option to keep existing browsing data is not av
       'caption': 'Re-enable the deprecated window.webkitStorageInfo API',
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:106-107', 'chrome_os:106-107', 'android:106-107'],
+      'supported_on': ['chrome.*:106-', 'chrome_os:106-', 'android:106-'],
       'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
@@ -33284,13 +33284,12 @@ This policy has no effect if the option to keep existing browsing data is not av
           'caption': 'window.webkitStorageInfo will be unavailable.',
         },
       ],
-      'deprecated': True,
       'default': False,
       'example_value': False,
       'id': 1004,
       'tags': [],
-      'desc': '''Starting in M106, the non-standard API window.webkitStorageInfo will be removed.
-      This policy re-enables the API until M107.
+      'desc': '''Non-standard API window.webkitStorageInfo is deprecated and is planned for removal.
+      This policy re-enables the API.
       If this policy is set to Enabled, the window.webkitStorageInfo API will be available.
       If this policy is set to Disabled or not set, the window.webkitStorageInfo API will be unavailable.
       ''',
