@@ -3956,6 +3956,13 @@
        {}
       ]
      ],
+     "remove-right-block-during-joining-with-parent-left-block.html": [
+      "29ee228fea44fdaedb85188610f5088619ff8c4f",
+      [
+       null,
+       {}
+      ]
+     ],
      "remve-documentElement-after-inserthtml-svg-and-td.html": [
       "eebeac317da782b8738c4ad5ee45390f66f1b35e",
       [
@@ -565183,6 +565190,15 @@
         null,
         {}
        ]
+      ],
+      "suspend-with-navigation.html": [
+       "b9328ae95d74aab9e3d0ae1ca509980c7c78ebb7",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
       ]
      },
      "the-audionode-interface": {
@@ -569961,6 +569977,13 @@
      ],
      "default-iterator-object.html": [
       "c7e9188521a2ae0bc9f15ff9bcaefc55a5253ce2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "default-toJSON-cross-realm.html": [
+      "79c3097f339b58fe051453543ee922280e057bc0",
       [
        null,
        {}
