@@ -368,6 +368,7 @@ class CORE_EXPORT HTMLInputElement
     form_element_pii_type_ = form_element_pii_type;
   }
 
+  bool isMutable();
   void showPicker(ExceptionState&);
 
  protected:
