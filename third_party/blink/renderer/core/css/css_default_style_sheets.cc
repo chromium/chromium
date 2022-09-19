@@ -60,8 +60,11 @@ String OverflowForSVGRules() {
   if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled())
     return "";
 
+  // SVG uses an overflow value of 'hidden' for backwards compatibility with
+  // flex layout. 'overflow-clip-margin' below still applies because the used
+  // value of overflow at paint time is 'clip'.
+  // See https://github.com/w3c/csswg-drafts/issues/7714 for context.
   return String(R"CSS(svg:not(:root) {
-    overflow: clip;
     overflow-clip-margin: content-box;
         })CSS");
 }

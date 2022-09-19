@@ -615,11 +615,22 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     if (!style.OverflowClipMargin())
       return false;
 
+    // Replaced elements have a used value of 'clip' for all overflow values
+    // except visible. See discussion at
+    // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1248761712.
+    bool is_overflow_clip = false;
+    if (IsLayoutReplaced() &&
+        RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled()) {
+      is_overflow_clip = style.OverflowX() != EOverflow::kVisible &&
+                         style.OverflowY() != EOverflow::kVisible;
+    } else {
+      is_overflow_clip = style.OverflowX() == EOverflow::kClip &&
+                         style.OverflowY() == EOverflow::kClip;
+    }
+
     // In all other cases, we apply overflow-clip-margin when we clip to
     // overflow clip edge, meaning we have overflow: clip or paint containment.
-    return (style.OverflowX() == EOverflow::kClip &&
-            style.OverflowY() == EOverflow::kClip) ||
-           ShouldApplyPaintContainment();
+    return is_overflow_clip || ShouldApplyPaintContainment();
   }
 
   inline bool IsEligibleForPaintOrLayoutContainment() const {
