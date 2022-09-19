@@ -107,4 +107,8 @@ void RecordCloneBookmarkNode(int num_cloned) {
   base::UmaHistogramCounts100("Bookmarks.Clone.NumCloned", num_cloned);
 }
 
+void RecordAverageNodeSizeAtStartup(size_t size_in_bytes) {
+  base::UmaHistogramCounts10000("Bookmarks.AverageNodeSize", size_in_bytes);
+}
+
 }  // namespace bookmarks::metrics

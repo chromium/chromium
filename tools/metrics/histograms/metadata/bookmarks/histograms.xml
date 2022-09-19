@@ -82,6 +82,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.AverageNodeSize" units="Bytes"
+    expires_after="2023-06-08">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the average size of bookmark nodes on disk. Approximated by dividing
+    the total size on disk by the number of non-folder nodes. Recorded at
+    startup when the bookmark model is loaded from disk.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.BookmarkAllTabsWithTabsCount.Incognito" units="tabs"
     expires_after="2023-01-01">
   <owner>roagarwal@chromium.org</owner>

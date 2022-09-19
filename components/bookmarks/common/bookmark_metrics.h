@@ -57,6 +57,9 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats);
 // bookmarks that were selected.
 void RecordCloneBookmarkNode(int num_cloned);
 
+// Records the approximate average node size at startup.
+void RecordAverageNodeSizeAtStartup(size_t size_in_bytes);
+
 }  // namespace metrics
 
 }  // namespace bookmarks
