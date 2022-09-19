@@ -822,28 +822,6 @@ function GEN() {}
 function GEN_INCLUDE() {}
 
 /**
- * At runtime, register the testName with a test fixture. Since this method
- * doesn't have a test fixture, create a dummy fixture to hold its |name|
- * and |testCaseBodies|.
- * @param {string} testCaseName The name of the test case.
- * @param {string} testName The name of the test function.
- * @param {Function} testBody The body to execute when running this test.
- */
-function TEST(testCaseName, testName, testBody) {
-  let fixtureConstructor = this[testCaseName];
-  if (fixtureConstructor === undefined) {
-    fixtureConstructor = function() {};
-    this[testCaseName] = fixtureConstructor;
-    fixtureConstructor.prototype = {
-      __proto__: Test.prototype,
-      name: testCaseName,
-    };
-    fixtureConstructor.testCaseBodies = {};
-  }
-  fixtureConstructor.testCaseBodies[testName] = testBody;
-}
-
-/**
  * At runtime, register the testName with its fixture. Stuff the |name| into
  * the |testFixture|'s prototype, if needed, and the |testCaseBodies| into its
  * constructor.
@@ -1232,7 +1210,6 @@ exports.runAllActionsAsync = runAllActionsAsync;
 exports.runTest = runTest;
 exports.runTestFunction = runTestFunction;
 exports.DUMMY_URL = DUMMY_URL;
-exports.TEST = TEST;
 exports.TEST_F = TEST_F;
 exports.TEST_F_WITH_PREAMBLE = TEST_F_WITH_PREAMBLE;
 exports.RUNTIME_TEST_F = TEST_F;
