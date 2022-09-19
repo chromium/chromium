@@ -617,14 +617,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   }
 }
 
-#if !defined(NDEBUG)
 // Flaky timeout in debug builds (crbug.com/1338408).
-#define MAYBE_OgImagePresent DISABLED_OgImagePresent
-#else
-#define MAYBE_OgImagePresent OgImagePresent
-#endif
+// TODO(crbug.com/1365619): Flaky on several OSes in non-debug.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       MAYBE_OgImagePresent) {
+                       DISABLED_OgImagePresent) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/og_image.html"));
@@ -639,14 +635,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       1);
 }
 
-#if !defined(NDEBUG)
 // Flaky timeout in debug builds (crbug.com/1338408).
-#define MAYBE_OgImagePresentButMalformed DISABLED_OgImagePresentButMalformed
-#else
-#define MAYBE_OgImagePresentButMalformed OgImagePresentButMalformed
-#endif
+// TODO(crbug.com/1365619): Flaky on several OSes in non-debug.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       MAYBE_OgImagePresentButMalformed) {
+                       DISABLED_OgImagePresentButMalformed) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/og_image_malformed.html"));
