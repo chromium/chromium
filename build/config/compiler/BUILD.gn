@@ -1548,10 +1548,6 @@ config("default_warnings") {
           # TODO(crbug.com/1352183) Evaluate and possibly enable.
           "-Wno-bitfield-constant-conversion",
         ]
-        if (is_win) {
-          # TODO(https://crbug.com/1363759): Evaluate and possibly enable.
-          cflags += [ "-Wno-deprecated-copy-with-user-provided-copy" ]
-        }
       }
     }
   }
