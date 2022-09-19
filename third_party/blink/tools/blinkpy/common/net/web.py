@@ -26,12 +26,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import functools
 import gzip
-
-import six
-from six.moves import urllib
-import time
+import io
 import logging
+import time
+import urllib.request
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
 
@@ -48,31 +48,10 @@ class Web(object):
             return self.http_error_301(req, fp, 301, msg, headers)
 
     def get_binary(self, url, return_none_on_404=False, retries=0):
-        def make_request():
-            response = self.request('GET',
-                                    url,
-                                    headers={'Accept-Encoding': 'gzip'})
-            if response.headers.get('Content-Encoding') == 'gzip':
-                # Wrap the HTTP response, which is not fully file-like.
-                # Unfortunately, `six` does not provide `io.BufferedRandom`, so
-                # we need to read the entire payload up-front (may pose a
-                # performance issue).
-                buf = six.BytesIO(response.read())
-                gzip_decoder = gzip.GzipFile(fileobj=buf)
-                return gzip_decoder.read()
-            return response.read()
-
-        if retries > 0:
-            for i in range(retries):
-                try:
-                    return NetworkTransaction(
-                        return_none_on_404=return_none_on_404).run(
-                            make_request)
-                except six.moves.urllib.error.URLError as error:
-                    _log.error(
-                        "Received URLError: %s. Retrying in 10"
-                        " seconds for the %s time...", error, i + 1)
-                    time.sleep(10)
+        make_request = functools.partial(self.request_and_read,
+                                         'GET',
+                                         url,
+                                         headers={'Accept-Encoding': 'gzip'})
         return NetworkTransaction(
             return_none_on_404=return_none_on_404).run(make_request)
 
@@ -87,3 +66,14 @@ class Web(object):
                 request.add_header(key, value)
 
         return opener.open(request)
+
+    def request_and_read(self, *args, **kwargs):
+        # TODO(crbug.com/1213998): Consider a higher-level HTTP client like
+        # `requests` that handles retries and decoding automatically.
+        response = self.request(*args, **kwargs)
+        if response.headers.get('Content-Encoding') == 'gzip':
+            # Wrap the HTTP response, which is not fully file-like.
+            buf = io.BytesIO(response.read())
+            gzip_decoder = gzip.GzipFile(fileobj=buf)
+            return gzip_decoder.read()
+        return response.read()

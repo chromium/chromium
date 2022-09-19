@@ -74,10 +74,10 @@ class NetworkTransactionTest(LoggingTestCase):
         self.assertEqual(transaction.run(self._raise_500_error), 42)
         self.assertEqual(self._run_count, 3)
         self.assertLog([
-            'WARNING: Received HTTP status 500 loading "http://example.com/".  '
-            'Retrying in 0 seconds...\n',
-            'WARNING: Received HTTP status 500 loading "http://example.com/".  '
-            'Retrying in 0.0 seconds...\n'
+            'WARNING: Received HTTP status 500 loading "http://example.com/": '
+            'internal server error. Retrying in 0.000 seconds...\n',
+            'WARNING: Received HTTP status 500 loading "http://example.com/": '
+            'internal server error. Retrying in 0.000 seconds...\n'
         ])
 
     def test_convert_404_to_none(self):

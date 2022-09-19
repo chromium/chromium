@@ -92,34 +92,12 @@ class TestResultsFetcher(object):
         return self.accumulated_results_url_base(builder_name)
 
     @memoized
-    def get_artifact_list_for_test(self, host, result_name):
-        """Fetches the list of artifacts for a test-result.
-        """
-        luci_token = LuciAuth(host).get_access_token()
-
-        url = 'https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/ListArtifacts'
-        header = {
-            'Authorization': 'Bearer ' + luci_token,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        }
-
-        data = {
-            "parent": result_name,
-        }
-
-        req_body = json.dumps(data).encode("utf-8")
-        response = self.do_request_with_retries('POST', url, req_body, header)
-        if response is None:
+    def get_artifact_list_for_test(self, result_name):
+        """Fetches the list of artifacts for a test-result."""
+        artifacts = self._resultdb_client.list_artifacts(result_name)
+        if not artifacts:
             _log.warning("Failed to get baseline artifacts")
-        if response.getcode() == 200:
-            response_body = response.read()
-
-        RESPONSE_PREFIX = b")]}'"
-        if response_body.startswith(RESPONSE_PREFIX):
-            response_body = response_body[len(RESPONSE_PREFIX):]
-        res = json.loads(response_body)
-        return res['artifacts']
+        return artifacts
 
     def get_full_builder_url(self, url_base, builder_name):
         """ Returns the url for a builder directory in google storage.
@@ -171,89 +149,24 @@ class TestResultsFetcher(object):
         return self.builder_results_url_base(
             builder_name) + '/results/layout-test-results'
 
-    def get_invocation(self, build):
-        """Returns the invocation for a build
-        """
-        return "invocations/build-%s" % build.build_id
-
-    def do_request_with_retries(self, method, url, data, headers):
-        for i in range(5):
-            try:
-                response = self.web.request(method, url, data=data, headers=headers)
-                return response
-            except six.moves.urllib.error.URLError:
-                _log.warning("Meet URLError...")
-                if i < 4:
-                    time.sleep(10)
-        _log.error("Http request failed for %s" % data)
-        return None
-
     @memoized
-    def fetch_results_from_resultdb_layout_tests(self, host, build,
+    def fetch_results_from_resultdb_layout_tests(self, build,
                                                  unexpected_results):
         if unexpected_results:
             predicate = PREDICATE_UNEXPECTED_RESULTS
         else:
             predicate = ""
-        rv = self.fetch_results_from_resultdb(host, [build], predicate)
+        rv = self.fetch_results_from_resultdb([build], predicate)
         # Rebaselining should still work correctly on this object, even though
         # it holds results for possibly multiple steps. ResultDB only exposes
         # the test suite name (like 'blink_web_tests'), not the full step name
         # with the '(with patch)' suffix.
         return WebTestResults.results_from_resultdb(rv)
 
-    def fetch_results_from_resultdb(self, host, builds, predicate):
-        """Returns a list of test results from ResultDB
-        """
-        luci_token = LuciAuth(host).get_access_token()
-
-        url = 'https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/QueryTestResults'
-        header = {
-            'Authorization': 'Bearer ' + luci_token,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        }
-        rv = []
-        page_token = None
-        request_more = True
-        invocations = [self.get_invocation(build) for build in builds]
-        data = {
-            "invocations": invocations,
-        }
-        if predicate:
-            data.update({"predicate": predicate})
-        while request_more:
-            request_more = False
-            if page_token:
-                data.update({"pageToken": page_token})
-            req_body = json.dumps(data).encode("utf-8")
-            _log.debug("Sending QueryTestResults request. Url: %s with Body: %s" %
-                       (url, req_body))
-
-            response = self.do_request_with_retries('POST', url, req_body, header)
-            if response is None:
-                continue
-
-            if response.getcode() == 200:
-                response_body = response.read()
-
-                # This string always appear at the beginning of the RPC response
-                # from ResultDB.
-                RESPONSE_PREFIX = b")]}'"
-                if response_body.startswith(RESPONSE_PREFIX):
-                    response_body = response_body[len(RESPONSE_PREFIX):]
-                res = json.loads(response_body)
-                if res:
-                    rv.extend(res['testResults'])
-                    page_token = res.get('nextPageToken')
-                    if page_token:
-                        request_more = True
-            else:
-                _log.error(
-                    "Failed to get test results from ResultDB (status=%s)" %
-                    response.status)
-                _log.debug("Full QueryTestResults response: %s" % str(response))
-        return rv
+    def fetch_results_from_resultdb(self, builds, predicate):
+        """Returns a list of test results from ResultDB."""
+        build_ids = [build.build_id for build in builds]
+        return self._resultdb_client.query_test_results(build_ids, predicate)
 
     @memoized
     def fetch_results(self, build, full=False, step_name=None):

@@ -284,7 +284,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             unavailable_step_names = []
             if self._resultdb_fetcher:
                 maybe_results = results_fetcher.fetch_results_from_resultdb_layout_tests(
-                    self._tool, build, True)
+                    build, True)
                 if maybe_results:
                     builds_to_results[build].append(maybe_results)
                 else:

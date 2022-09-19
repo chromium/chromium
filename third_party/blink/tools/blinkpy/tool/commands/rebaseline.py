@@ -380,7 +380,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         # TODO(preethim): Consider doing QueryArtifacts do a walk of that list for
         # test of interest than sending out the RPC for every test.
         webtest_results_resultdb = self._tool.results_fetcher.fetch_results_from_resultdb_layout_tests(
-            self._tool, build, True)
+            build, True)
         artifact_fetch_urls = []
         if webtest_results_resultdb:
             results_list = webtest_results_resultdb.test_results_resultdb()
@@ -390,7 +390,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     break
                 if test_name in result['testId']:
                     artifact_list = self._tool.results_fetcher.get_artifact_list_for_test(
-                        self._tool, result['name'])
+                        result['name'])
                     for artifact in artifact_list:
                         if 'actual' in artifact['artifactId']:
                             artifact_fetch_urls.append(artifact['fetchUrl'])

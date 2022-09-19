@@ -51,6 +51,9 @@ class MockWeb(object):
         self.requests.append((url, data))
         return MockResponse(self.responses.pop(0))
 
+    def request_and_read(self, *args, **kwargs):
+        return self.request(*args, **kwargs).read()
+
     def append_prpc_response(self, payload, status_code=200, headers=None):
         headers = headers or {}
         headers.setdefault('Content-Type', 'application/json')

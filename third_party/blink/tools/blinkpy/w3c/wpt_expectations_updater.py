@@ -345,7 +345,8 @@ class WPTExpectationsUpdater(object):
         func = lambda x: (x["variant"]["def"]["test_suite"] == test_suite)
         test_results_list = []
         predicate = {"expectancy": "VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS"}
-        rv = self.host.results_fetcher.fetch_results_from_resultdb(self.host, [build], predicate)
+        rv = self.host.results_fetcher.fetch_results_from_resultdb([build],
+                                                                   predicate)
         rv = list(filter(func, rv))
         if not self.options.include_unexpected_pass:
             # if a test first fail then passed unexpectedly

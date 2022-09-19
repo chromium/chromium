@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import functools
 import logging
 import json
 from typing import NamedTuple, Optional
@@ -35,6 +36,10 @@ import six
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.luci_auth import LuciAuth
+from blinkpy.common.net.network_transaction import (
+    NetworkTransaction,
+    NetworkTimeout,
+)
 
 _log = logging.getLogger(__name__)
 
@@ -111,21 +116,25 @@ class BaseRPC:
         headers = {
             'Authorization': 'Bearer ' + luci_token,
             'Accept': 'application/json',
+            'Accept-Encoding': 'gzip',
             'Content-Type': 'application/json',
         }
         url = self._make_url(method)
         body = six.ensure_binary(json.dumps(data, separators=(',', ':')))
-        response = self._web.request('POST', url, data=body, headers=headers)
-        if response.getcode() == 200:
-            response_body = response.read()
+        make_request = functools.partial(self._web.request_and_read,
+                                         'POST',
+                                         url,
+                                         data=body,
+                                         headers=headers)
+        try:
+            response_body = NetworkTransaction().run(make_request)
             if response_body.startswith(RESPONSE_PREFIX):
                 response_body = response_body[len(RESPONSE_PREFIX):]
             return json.loads(response_body)
-
-        _log.error("RPC request failed. Status=%s, url=%s", response.status,
-                   url)
-        _log.debug("Full RPC response: %s" % str(response))
-        return None
+        except NetworkTimeout:
+            _log.error('RPC request timed out. URL: %s', url)
+            _log.debug('Full RPC request: %s', json.dumps(data, indent=2))
+            return None
 
     def _luci_rpc_paginated(self,
                             method,
@@ -291,6 +300,29 @@ class ResultDBClient(BaseRPC):
 
     def _get_invocations(self, build_ids):
         return ['invocations/build-%s' % build_id for build_id in build_ids]
+
+    def query_test_results(self,
+                           build_ids,
+                           predicate,
+                           page_size=None,
+                           count=1000):
+        request = {
+            'invocations': self._get_invocations(build_ids),
+            'predicate': predicate,
+        }
+        return self._luci_rpc_paginated('QueryTestResults',
+                                        request,
+                                        'testResults',
+                                        page_size=page_size,
+                                        count=count)
+
+    def list_artifacts(self, parent, page_size=None, count=1000):
+        request = {'parent': parent}
+        return self._luci_rpc_paginated('ListArtifacts',
+                                        request,
+                                        'artifacts',
+                                        page_size=page_size,
+                                        count=count)
 
     def query_artifacts(self, build_ids, predicate, page_size=None,
                         count=1000):
