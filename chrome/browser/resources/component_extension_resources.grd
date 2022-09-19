@@ -49,6 +49,7 @@
         <include name="IDR_ARC_SUPPORT_EVENT_TRACKER_JS" file="chromeos/arc_support/event_tracker.js" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_MAIN_CSS" file="chromeos/arc_support/main.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN_JS" file="chromeos/arc_support/main.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_I18N_TEMPLATE_NO_PROCESS_JS" file="chromeos/arc_support/i18n_template_no_process.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_OVERLAY_CSS" file="chromeos/arc_support/overlay.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_OVERLAY_JS" file="chromeos/arc_support/overlay.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PLAYSTORE_CSS" file="chromeos/arc_support/playstore.css" type="BINDATA" />

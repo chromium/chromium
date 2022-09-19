@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Tests for ui/webui/resources/js/i18n_template_no_process.js
+// Tests for chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js
 
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -30,7 +30,7 @@ I18nProcessTest.prototype = {
    * @override
    */
   extraLibraries: [
-    '//ui/webui/resources/js/i18n_template_no_process.js',
+    '//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js',
     '//ROOT_GEN_DIR/ui/webui/resources/js/load_time_data.js',
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',

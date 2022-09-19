@@ -87,7 +87,6 @@ preprocess_if_expr("preprocess_src") {
   if (is_chromeos_ash) {
     in_files += [
       "cr.js",
-      "i18n_template_no_process.js",
       "list_property_update_behavior.js",
       "promise_resolver.js",
     ]
@@ -115,10 +114,6 @@ preprocess_if_expr("preprocess_generated") {
     "promise_resolver.m.js",
     "util.m.js",
   ]
-
-  if (is_chromeos_ash) {
-    in_files += [ "i18n_template_no_process.m.js" ]
-  }
 }
 
 group("closure_compile") {
@@ -141,10 +136,7 @@ js_type_check("js_resources") {
   }
 
   if (is_chromeos_ash) {
-    deps += [
-      ":action_link",
-      ":i18n_template_no_process",
-    ]
+    deps += [ ":action_link" ]
   }
 }
 
@@ -162,12 +154,6 @@ js_library("cr") {
     ":promise_resolver",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("i18n_template_no_process") {
-    deps = [ ":load_time_data" ]
-  }
 }
 
 js_library("load_time_data") {
@@ -199,12 +185,6 @@ js_modulizer("modulize") {
     "promise_resolver.js",
     "util.js",
   ]
-  if (is_chromeos_ash) {
-    input_files += [ "i18n_template_no_process.js" ]
-  }
-
-  namespace_rewrites =
-      [ "Polymer.ArraySplice.calculateSplices|calculateSplices" ]
 }
 
 js_unmodulizer("unmodulize") {
@@ -237,10 +217,6 @@ js_type_check("js_resources_modules") {
     ":static_types",
     ":util.m",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ ":i18n_template_no_process.m" ]
-  }
 }
 
 js_library("assert.m") {
@@ -277,15 +253,6 @@ js_library("parse_html_subset") {
 
 js_library("plural_string_proxy") {
   deps = [ ":cr.m" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("i18n_template_no_process.m") {
-    sources =
-        [ "$root_gen_dir/ui/webui/resources/js/i18n_template_no_process.m.js" ]
-    deps = [ ":load_time_data" ]
-    extra_deps = [ ":modulize" ]
-  }
 }
 
 js_library("promise_resolver.m") {

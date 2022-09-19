@@ -2406,6 +2406,7 @@ if (!is_android) {
     }
 
     if (is_chromeos_ash) {
+      data += [ "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js" ]
       sources += [
         "../browser/media/webrtc/get_display_media_set_browsertest.cc",
         "../browser/sessions/tab_restore_service_browsertest.cc",
