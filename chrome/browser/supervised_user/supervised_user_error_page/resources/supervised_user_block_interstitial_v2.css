@@ -3,9 +3,7 @@
    found in the LICENSE file. */
 
 /* This is the stylesheet for the interstitial when the
-   "WebFilterInterstitialRefresh" flag is enabled.
-   TODO(b/243916175): update this file to only include the flag-on styling, and
-   remove interstitial-refresh-enabled. */
+   "WebFilterInterstitialRefresh" flag is enabled. */
 
 body {
   --avatar-stroke-color: var(--google-gray-50);
@@ -27,10 +25,12 @@ button {
   box-sizing: border-box;
   color: var(--primary-button-text-color);
   cursor: pointer;
-  font-size: 14px;
-  line-height: 16pt;
+  font-size: 13px;
+  font-weight: 500;
+  height: 32px;
+  line-height: normal;
   margin: 0;
-  padding: 8px 16px;
+  padding: 6px 16px;
   transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
 }
@@ -82,6 +82,7 @@ p,
 
 h1 {
   color: var(--header-color);
+  font-family: "Google Sans", sans-serif;
   font-size: 24px;
   font-weight: normal;
   margin: 0 0 16px;
@@ -94,7 +95,7 @@ html {
 
 p {
   color: var(--paragraph-color);
-  font-size: 15px;
+  font-size: 14px;
   margin-bottom: 0;
 }
 
@@ -104,6 +105,7 @@ p {
 }
 
 .icon {
+  display: none;
   overflow: visible;
 }
 
@@ -114,14 +116,15 @@ p {
 }
 
 .illustration {
-  display: none;
+  display: inline;
 }
 
 .frame-blocked {
   box-sizing: border-box;
-  margin: 100px auto 0;
-  max-width: 600px;
-  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  margin: 50px auto 0;
+  max-width: 432px;
   overflow: visible;
   width: 100%;
 }
@@ -139,21 +142,21 @@ p {
 }
 
 .go-back-button {
-  float: left;
+  float: right;
+  margin-left: 24px;
 }
 
 #custodians-information {
-  margin-top: 16px;
+  margin-top: 0;
 }
 
 .custodian-information {
   clear: both;
-  margin-top: 8px;
+  margin-top: 24px;
 }
 
 .avatar-img {
-  border: 1px solid var(--avatar-stroke-color);
-  border-radius: 50%;
+  border: none;
   content: -webkit-image-set(url(default_100_percent/logo_avatar_circle_blue_color.png) 1x,
       url(default_200_percent/logo_avatar_circle_blue_color.png) 2x);
   float: left;
@@ -172,6 +175,7 @@ p {
 
 .custodian-name {
   color: var(--custodian-name-color);
+  display: none;
   font-size: 15px;
   font-weight: bold;
   margin-bottom: 4px;
@@ -181,7 +185,7 @@ p {
   color: var(--custodian-email-color);
   display: flex;
   flex-direction: column;
-  font-size: 15px;
+  font-size: 13px;
   height: 100%;
   justify-content: center;
 }
@@ -199,83 +203,6 @@ p {
 }
 
 #block-reason {
-  /* Hidden unless the web filter interstitial refresh flag is enabled */
-  display: none;
-}
-
-/* Styles for when the web filter interstitial refresh flag is enabled. */
-.interstitial-refresh-enabled button {
-  font-size: 13px;
-  font-weight: 500;
-  height: 32px;
-  line-height: normal;
-  padding: 6px 16px;
-}
-
-.interstitial-refresh-enabled .secondary-button {
-  background: var(--background-color);
-  border: 1px solid var(--google-gray-300);
-  color: var(--google-blue-600);
-}
-
-.interstitial-refresh-enabled .secondary-button:active {
-  background: var(--secondary-button-hover-fill-color);
-}
-
-.interstitial-refresh-enabled h1 {
-  font-family: "Google Sans", sans-serif;
-}
-
-.interstitial-refresh-enabled p {
-  color: var(--paragraph-color);
-  font-size: 14px;
-}
-
-.interstitial-refresh-enabled .icon {
-  display: none;
-}
-
-picture {
-  margin: auto;
-}
-
-.interstitial-refresh-enabled .illustration {
-  display: inline;
-}
-
-.interstitial-refresh-enabled .frame-blocked {
-  display: flex;
-  flex-direction: column;
-  margin-top: 50px;
-  max-width: 432px;
-}
-
-.interstitial-refresh-enabled .go-back-button {
-  float: right;
-  margin-left: 24px;
-}
-
-.interstitial-refresh-enabled #custodians-information {
-  margin-top: 0;
-}
-
-.interstitial-refresh-enabled .custodian-information {
-  margin-top: 24px;
-}
-
-.interstitial-refresh-enabled .avatar-img {
-  border: none;
-}
-
-.interstitial-refresh-enabled .custodian-name {
-  display: none;
-}
-
-.interstitial-refresh-enabled .custodian-email {
-  font-size: 13px;
-}
-
-.interstitial-refresh-enabled #block-reason {
   align-items: center;
   background-color: var(--callout-bg-color);
   border-radius: 8px;
@@ -287,19 +214,33 @@ picture {
   margin: 20px auto 0;
 }
 
-.interstitial-refresh-enabled #block-reason-header {
+#block-reason-header {
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
   margin: 0;
 }
 
-.interstitial-refresh-enabled #block-reason-message {
+#block-reason-message {
   color: var(--callout-text-color);
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
   margin: 0;
+}
+
+.secondary-button {
+  background: var(--background-color);
+  border: 1px solid var(--google-gray-300);
+  color: var(--google-blue-600);
+}
+
+.secondary-button:active {
+  background: var(--secondary-button-hover-fill-color);
+}
+
+picture {
+  margin: auto;
 }
 
 /* Local approvals button is only shown when the local web approvals flag
@@ -323,18 +264,15 @@ button:focus-visible {
 @media (prefers-color-scheme: dark) {
   body.supervised-user-block {
     --avatar-stroke-color: var(--google-blue-100);
-    --custodian-email-color: var(--google-gray-500);
-    --custodian-name-color: var(--google-gray-500);
-  }
-
-  body.supervised-user-block.interstitial-refresh-enabled {
-    --header-color: #e9eaed;
-    --paragraph-color: var(--google-gray-500);
     --callout-bg-color: var(--google-gray-800);
     --callout-text-color: var(--google-gray-200);
+    --custodian-email-color: var(--google-gray-500);
+    --custodian-name-color: var(--google-gray-500);
+    --header-color: #e9eaed;
+    --paragraph-color: var(--google-gray-500);
   }
 
-  .interstitial-refresh-enabled .remote-approvals-button {
+  .remote-approvals-button {
     color: var(--google-blue-300);
     border-color: var(--secondary-button-border-color);
   }
@@ -362,28 +300,27 @@ margin to 0. This will be useful for subframes. */
   }
 }
 
-/* Narrow width styles when the web filter interstitial refresh flag is
-enabled. */
 @media (max-width: 480px) {
-  .interstitial-refresh-enabled {
+
+  body * {
     padding: 0;
     margin: auto;
   }
 
-  .interstitial-refresh-enabled button,
-  .interstitial-refresh-enabled [dir='rtl'] button {
+  button,
+  [dir='rtl'] button {
     width: initial;
   }
 
-  .interstitial-refresh-enabled button {
+  button {
     margin: 0 4px 16px 4px;
   }
 
-  .interstitial-refresh-enabled .illustration {
+  .illustration {
     display: none;
   }
 
-  .interstitial-refresh-enabled .frame-blocked {
+  .frame-blocked {
     align-items: center;
     background-color: rgba(232, 234, 237, .38);
     border-radius: 12px;
@@ -391,33 +328,33 @@ enabled. */
     width: 284px;
   }
 
-  .interstitial-refresh-enabled .message-container {
+  .message-container {
     align-items: center;
   }
 
-  .interstitial-refresh-enabled #main-message {
+  #main-message {
     margin-top: 32px;
     text-align: center;
   }
 
-  .interstitial-refresh-enabled #custodians-information {
+  #custodians-information {
     margin-top: 8px;
   }
 
-  .interstitial-refresh-enabled .custodian-information {
+  .custodian-information {
     margin-top: 8px;
   }
 
-  .interstitial-refresh-enabled .custodian-contact {
+  .custodian-contact {
     height: 24px;
   }
 
-  .interstitial-refresh-enabled .avatar-img {
+  .avatar-img {
     height: 24px;
     width: 24px;
   }
 
-  .interstitial-refresh-enabled .button-container {
+  .button-container {
     display: flex;
     flex-direction: row-reverse;
     flex-wrap: wrap;
@@ -425,13 +362,13 @@ enabled. */
     margin: 24px 0 16px;
   }
 
-  .interstitial-refresh-enabled .go-back-button {
+  .go-back-button {
     margin-left: 4px;
   }
 }
 
 @media (prefers-color-scheme: dark) and (max-width: 480px) {
-  .interstitial-refresh-enabled .frame-blocked {
+  .frame-blocked {
     background-color: initial;
   }
 }
