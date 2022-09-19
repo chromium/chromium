@@ -24,8 +24,11 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -85,6 +88,20 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     DialogBrowserTest::SetUpOnMainThread();
     browser()->window()->Activate();
     ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
+  }
+
+  void TearDownOnMainThread() override {
+    Profile* const profile = browser()->profile();
+    web_app::WebAppRegistrar& registrar =
+        web_app::WebAppProvider::GetForTest(profile)->registrar();
+    for (const auto& app_id : registrar.GetAppIds()) {
+      web_app::AppReadinessWaiter app_readiness_waiter(
+          profile, app_id, apps::Readiness::kUninstalledByUser);
+      web_app::test::UninstallWebApp(profile, app_id);
+      app_readiness_waiter.Await();
+    }
+
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   ~FeaturePromoDialogTest() override = default;
@@ -313,6 +330,7 @@ class FeaturePromoDialogIntentChipTest : public FeaturePromoDialogTest {
     web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
     auto app_id = web_app::test::InstallWebApp(browser()->profile(),
                                                std::move(web_app_info));
+    web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
     return app_id;
   }
 
