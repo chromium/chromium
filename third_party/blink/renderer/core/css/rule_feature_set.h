@@ -80,16 +80,6 @@ class CORE_EXPORT RuleFeatureSet {
     return metadata_.max_direct_adjacent_selectors;
   }
 
-  bool HasSelectorForAttribute(const AtomicString& attribute_name) const {
-    DCHECK(!attribute_name.IsEmpty());
-    return attribute_invalidation_sets_.Contains(attribute_name);
-  }
-
-  bool HasSelectorForClass(const AtomicString& class_value) const {
-    DCHECK(!class_value.IsEmpty());
-    return class_invalidation_sets_.Contains(class_value);
-  }
-
   bool HasSelectorForId(const AtomicString& id_value) const {
     return id_invalidation_sets_.Contains(id_value);
   }
