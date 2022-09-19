@@ -6,52 +6,42 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-/** @interface */
-export class TimeZoneBrowserProxy {
+export interface TimeZoneBrowserProxy {
   /** Notifies C++ code to show parent access code verification view. */
-  showParentAccessForTimeZone() {}
+  showParentAccessForTimeZone(): void;
 
   /** Notifies C++ code that the date_time page is ready. */
-  dateTimePageReady() {}
+  dateTimePageReady(): void;
 
   /** Notifies C++ code to show the chrome://set-time standalone dialog. */
-  showSetDateTimeUI() {}
+  showSetDateTimeUI(): void;
 
-  /** @return {!Promise<!Array<!Array<string>>>} */
-  getTimeZones() {}
+  getTimeZones(): Promise<string[][]>;
 }
 
-/** @type {?TimeZoneBrowserProxy} */
-let instance = null;
+let instance: TimeZoneBrowserProxy|null = null;
 
-/** @implements {TimeZoneBrowserProxy} */
-export class TimeZoneBrowserProxyImpl {
-  /** @return {!TimeZoneBrowserProxy} */
-  static getInstance() {
+export class TimeZoneBrowserProxyImpl implements TimeZoneBrowserProxy {
+  static getInstance(): TimeZoneBrowserProxy {
     return instance || (instance = new TimeZoneBrowserProxyImpl());
   }
 
-  /** @param {!TimeZoneBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: TimeZoneBrowserProxy) {
     instance = obj;
   }
 
-  /** @override */
   showParentAccessForTimeZone() {
     chrome.send('handleShowParentAccessForTimeZone');
   }
 
-  /** @override */
   dateTimePageReady() {
     chrome.send('dateTimePageReady');
   }
 
-  /** @override */
   showSetDateTimeUI() {
     chrome.send('showSetDateTimeUI');
   }
 
-  /** @override */
   getTimeZones() {
     return sendWithPromise('getTimeZones');
   }

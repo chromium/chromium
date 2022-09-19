@@ -7,17 +7,19 @@
  * time zone settings.
  */
 import '../../controls/controlled_radio_button.js';
+import '../../controls/settings_dropdown_menu.js';
 import '../../controls/settings_radio_group.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 import './timezone_selector.js';
 
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
@@ -25,32 +27,35 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
 
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
+import {TimezoneSelectorElement} from './timezone_selector.js';
+import {getTemplate} from './timezone_subpage.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
+interface TimezoneSubpageElement {
+  $: {
+    timezoneSelector: TimezoneSelectorElement,
+    timeZoneResolveMethodDropdown: SettingsDropdownMenuElement,
+  };
+}
+
 const TimezoneSubpageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      PrefsBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+                                       [
+                                         DeepLinkingBehavior,
+                                         PrefsBehavior,
+                                         RouteObserverBehavior,
+                                       ],
+                                       WebUIListenerMixin(PolymerElement)) as {
+  new (): PolymerElement & DeepLinkingBehaviorInterface &
+      PrefsBehaviorInterface & RouteObserverBehaviorInterface &
+      WebUIListenerMixinInterface,
+};
 
-/** @polymer */
 class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   static get is() {
     return 'timezone-subpage';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -65,7 +70,6 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -74,12 +78,11 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     };
   }
 
+  private browserProxy_: TimeZoneBrowserProxy;
 
-  /** @override */
   constructor() {
     super();
 
-    /** @private {?TimeZoneBrowserProxy} */
     this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
   }
 
@@ -90,11 +93,8 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
    * C++ side, and timezone setting will be disable. Once it is complete the
    * 'access-code-validation-complete' event is triggered which invokes
    * enableTimeZoneSetting_.
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   * @protected
    */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route, _oldRoute?: Route) {
     if (newRoute !== routes.DATETIME_TIMEZONE_SUBPAGE) {
       return;
     }
@@ -113,10 +113,9 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
   /**
    * Returns value list for timeZoneResolveMethodDropdown menu.
-   * @private
    */
-  getTimeZoneResolveMethodsList_() {
-    const result = [];
+  private getTimeZoneResolveMethodsList_() {
+    const result: Array<{name: string, value: number}> = [];
     const pref =
         this.getPref('generated.resolve_timezone_by_geolocation_method_short');
     // Make sure current value is in the list, even if it is not
@@ -152,10 +151,9 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
   /**
    * Enables all dropdowns and radio buttons.
-   * @private
    */
-  enableTimeZoneSetting_() {
-    const radios = this.root.querySelectorAll('controlled-radio-button');
+  private enableTimeZoneSetting_() {
+    const radios = this.shadowRoot!.querySelectorAll('controlled-radio-button');
     for (const radio of radios) {
       radio.disabled = false;
     }
@@ -169,15 +167,20 @@ class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
   /**
    * Disables all dropdowns and radio buttons.
-   * @private
    */
-  disableTimeZoneSetting_() {
+  private disableTimeZoneSetting_() {
     this.$.timeZoneResolveMethodDropdown.disabled = true;
     this.$.timezoneSelector.shouldDisableTimeZoneGeoSelector = true;
-    const radios = this.root.querySelectorAll('controlled-radio-button');
+    const radios = this.shadowRoot!.querySelectorAll('controlled-radio-button');
     for (const radio of radios) {
       radio.disabled = true;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'timezone-subpage': TimezoneSubpageElement;
   }
 }
 
