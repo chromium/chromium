@@ -6,6 +6,7 @@ source_set("core") {
   sources = [
     "saved_tab_group.cc",
     "saved_tab_group.h",
+    "saved_tab_group_sync_bridge_base.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
   ]
