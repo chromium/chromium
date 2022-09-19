@@ -7,13 +7,16 @@
 
 #include <memory>
 
-#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/background_html_token_producer.h"
 #include "third_party/blink/renderer/core/html/parser/html_input_stream.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace WTF {
 class String;
@@ -172,7 +175,7 @@ class CORE_EXPORT HTMLTokenProducer {
   bool was_tokenizer_state_explicitly_set_ = false;
 
   // TaskRunner the background producer runs on.
-  scoped_refptr<base::SequencedTaskRunner> worker_pool_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // This deletes itself once ShutdownAndScheduleDeletion() is called.
   BackgroundHTMLTokenProducer* background_producer_ = nullptr;
