@@ -20101,6 +20101,17 @@
       },
       {
         "isolate_profile_data": true,
+        "name": "chrome_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "chrome_junit_tests",
+        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
+      },
+      {
+        "isolate_profile_data": true,
         "name": "components_junit_tests",
         "resultdb": {
           "enable": true,

@@ -7799,6 +7799,16 @@
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
       },
       {
+        "name": "chrome_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "chrome_junit_tests",
+        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
+      },
+      {
         "name": "components_junit_tests",
         "resultdb": {
           "enable": true,

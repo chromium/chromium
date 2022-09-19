@@ -1024,6 +1024,11 @@
           'nougat-x86-emulator',
         ],
       },
+      'chrome_junit_tests': {
+        'remove_mixins': [
+          'nougat-x86-emulator',
+        ],
+      },
       'components_junit_tests': {
         'remove_mixins': [
           'nougat-x86-emulator',
@@ -1115,24 +1120,6 @@
         ],
         # Experimental until we're sure these are stable.
         'experiment_percentage': 100
-      },
-    },
-
-    'chromium_junit_tests_scripts': {
-      'chrome_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-bionic',
-        ],
-        'remove_mixins': [
-          'bullhead',
-          'marshmallow',
-          'marshmallow-x86-emulator',
-          'nougat-x86-emulator',
-          'pie_fleet',
-          'walleye',
-        ],
-        'use_isolated_scripts_api': True,
       },
     },
 
@@ -5395,8 +5382,6 @@
       'android_wpr_record_replay_tests',
       #'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
-      'chromium_junit_tests_scripts',
-
       # TODO(crbug.com/1255748): Remove components_capacity_tests when
       # chromium_gtests are enabled in this suite.
       'components_capacity_tests',
@@ -6232,7 +6217,6 @@
 
     'marshmallow_pie_isolated_scripts': [
       'android_isolated_scripts',
-      'chromium_junit_tests_scripts',
       'components_perftests_isolated_scripts',
       'telemetry_android_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts_android',
