@@ -104,6 +104,16 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // A timer to delay writing to disk too often.
   base::OneShotTimer write_timer_;
 
+  // TODO(crbug.com/1327267): Remove these counters once crash is understood.
+  // The number of times the breadcrumbs file has been written to. Counts from
+  // the perspective of the main thread, i.e., a write is counted at the time
+  // that a task to write is posted.
+  size_t write_counter_ = 0;
+  // The value of `write_counter_` when the file was last fully rewritten, i.e.,
+  // replaced by the temp file. Intended to investigate whether replacing the
+  // breadcrumbs file can sometimes cause a crash on the next write attempt.
+  size_t write_counter_at_last_full_rewrite_ = 0;
+
   // The path to the file for storing persisted breadcrumbs.
   const base::FilePath breadcrumbs_file_path_;
 
