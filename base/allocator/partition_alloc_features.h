@@ -81,6 +81,12 @@ enum class BackupRefPtrMode {
   kDisabledButSplitPartitions3Way,
 };
 
+enum class AlternateBucketDistributionMode : uint8_t {
+  kDefault,
+  kCoarser,
+  kDenser,
+};
+
 extern const BASE_EXPORT Feature kPartitionAllocBackupRefPtr;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
@@ -92,14 +98,16 @@ extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableExtractionCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableInstantiationCheckParam;
+extern const BASE_EXPORT base::FeatureParam<AlternateBucketDistributionMode>
+    kPartitionAllocAlternateBucketDistributionParam;
 
 extern const BASE_EXPORT Feature kPartitionAllocPCScanMUAwareScheduler;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanStackScanning;
 extern const BASE_EXPORT Feature kPartitionAllocDCScan;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanImmediateFreeing;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanEagerClearing;
-extern const BASE_EXPORT Feature kPartitionAllocUseAlternateDistribution;
 extern const BASE_EXPORT Feature kPartitionAllocSortActiveSlotSpans;
+extern const BASE_EXPORT Feature kPartitionAllocUseAlternateDistribution;
 
 }  // namespace features
 }  // namespace base

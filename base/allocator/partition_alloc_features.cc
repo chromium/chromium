@@ -113,11 +113,21 @@ const base::FeatureParam<bool> kBackupRefPtrAsanEnableExtractionCheckParam{
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableInstantiationCheckParam{
     &kPartitionAllocBackupRefPtr, "asan-enable-instantiation-check", true};
 
-// If enabled, switches the bucket distribution to an alternate one. The
-// alternate distribution must have buckets that are a subset of the default
-// one.
-const Feature kPartitionAllocUseAlternateDistribution{
+// If enabled, switches the bucket distribution to an alternate one. Only one of
+// these features may b e enabled at a time.
+const BASE_EXPORT Feature kPartitionAllocUseAlternateDistribution{
     "PartitionAllocUseAlternateDistribution", FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<AlternateBucketDistributionMode>::Option
+    kPartitionAllocAlternateDistributionOption[] = {
+        {AlternateBucketDistributionMode::kDefault, "default"},
+        {AlternateBucketDistributionMode::kCoarser, "coarser"},
+        {AlternateBucketDistributionMode::kDenser, "denser"},
+};
+const base::FeatureParam<AlternateBucketDistributionMode>
+    kPartitionAllocAlternateBucketDistributionParam{
+        &kPartitionAllocUseAlternateDistribution, "mode",
+        AlternateBucketDistributionMode::kCoarser,
+        &kPartitionAllocAlternateDistributionOption};
 
 // If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
 // affect whether PCScan is enabled itself.

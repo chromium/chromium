@@ -29,6 +29,7 @@
 
 namespace partition_alloc {
 
+using BucketDistribution = ThreadSafePartitionRoot::BucketDistribution;
 namespace {
 
 constexpr size_t kSmallSize = 12;
@@ -84,7 +85,9 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
 
 }  // namespace
 
-class PartitionAllocThreadCacheTest : public ::testing::TestWithParam<bool> {
+class PartitionAllocThreadCacheTest
+    : public ::testing::TestWithParam<
+          PartitionRoot<internal::ThreadSafe>::BucketDistribution> {
  public:
   PartitionAllocThreadCacheTest() : root_(CreatePartitionRoot()) {}
 
@@ -101,10 +104,17 @@ class PartitionAllocThreadCacheTest : public ::testing::TestWithParam<bool> {
 
  protected:
   void SetUp() override {
-    if (GetParam())
-      root_->SwitchToDenserBucketDistribution();
-    else
-      root_->ResetBucketDistributionForTesting();
+    switch (GetParam()) {
+      case BucketDistribution::kDefault:
+        root_->SwitchToDefaultBucketDistribution();
+        break;
+      case BucketDistribution::kCoarser:
+        root_->ResetBucketDistributionForTesting();
+        break;
+      case BucketDistribution::kDenser:
+        root_->SwitchToDenserBucketDistribution();
+        break;
+    }
 
 #if defined(PA_HAS_64_BITS_POINTERS)
     // Another test can uninitialize the pools, so make sure they are
@@ -141,8 +151,9 @@ class PartitionAllocThreadCacheTest : public ::testing::TestWithParam<bool> {
   // Returns the size of the smallest bucket fitting an allocation of
   // |sizeof(ThreadCache)| bytes.
   size_t GetBucketSizeForThreadCache() {
-    size_t tc_bucket_index =
-        root_->SizeToBucketIndex(sizeof(ThreadCache), false);
+    size_t tc_bucket_index = root_->SizeToBucketIndex(
+        sizeof(ThreadCache),
+        ThreadSafePartitionRoot::BucketDistribution::kCoarser);
     auto* tc_bucket = &root_->buckets[tc_bucket_index];
     return tc_bucket->slot_size;
   }
@@ -186,7 +197,9 @@ class PartitionAllocThreadCacheTest : public ::testing::TestWithParam<bool> {
 
 INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          PartitionAllocThreadCacheTest,
-                         ::testing::Values(false, true));
+                         ::testing::Values(BucketDistribution::kDefault,
+                                           BucketDistribution::kCoarser,
+                                           BucketDistribution::kDenser));
 
 TEST_P(PartitionAllocThreadCacheTest, Simple) {
   // There is a cache.
@@ -355,11 +368,11 @@ namespace {
 
 size_t FillThreadCacheAndReturnIndex(ThreadSafePartitionRoot* root,
                                      size_t size,
-                                     bool with_denser_bucket_distribution,
+                                     BucketDistribution bucket_distribution,
                                      size_t count = 1) {
   uint16_t bucket_index =
       PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-          size, with_denser_bucket_distribution);
+          size, bucket_distribution);
   std::vector<void*> allocated_data;
 
   for (size_t i = 0; i < count; ++i) {
@@ -382,15 +395,14 @@ class ThreadDelegateForMultipleThreadCaches
  public:
   ThreadDelegateForMultipleThreadCaches(ThreadCache* parent_thread_cache,
                                         ThreadSafePartitionRoot* root,
-                                        bool with_denser_bucket_distribution)
+                                        BucketDistribution bucket_distribution)
       : parent_thread_tcache_(parent_thread_cache),
         root_(root),
-        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+        bucket_distribution_(bucket_distribution) {}
 
   void ThreadMain() override {
     EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    FillThreadCacheAndReturnIndex(root_, kMediumSize,
-                                  with_denser_bucket_distribution_);
+    FillThreadCacheAndReturnIndex(root_, kMediumSize, bucket_distribution_);
     auto* tcache = root_->thread_cache_for_testing();
     EXPECT_TRUE(tcache);
 
@@ -400,7 +412,7 @@ class ThreadDelegateForMultipleThreadCaches
  private:
   ThreadCache* parent_thread_tcache_ = nullptr;
   ThreadSafePartitionRoot* root_ = nullptr;
-  bool with_denser_bucket_distribution_;
+  PartitionRoot<internal::ThreadSafe>::BucketDistribution bucket_distribution_;
 };
 
 }  // namespace
@@ -479,15 +491,14 @@ class ThreadDelegateForThreadCacheRegistry
  public:
   ThreadDelegateForThreadCacheRegistry(ThreadCache* parent_thread_cache,
                                        ThreadSafePartitionRoot* root,
-                                       bool with_denser_bucket_distribution)
+                                       BucketDistribution bucket_distribution)
       : parent_thread_tcache_(parent_thread_cache),
         root_(root),
-        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+        bucket_distribution_(bucket_distribution) {}
 
   void ThreadMain() override {
     EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    FillThreadCacheAndReturnIndex(root_, kSmallSize,
-                                  with_denser_bucket_distribution_);
+    FillThreadCacheAndReturnIndex(root_, kSmallSize, bucket_distribution_);
     auto* tcache = root_->thread_cache_for_testing();
     EXPECT_TRUE(tcache);
 
@@ -499,7 +510,7 @@ class ThreadDelegateForThreadCacheRegistry
  private:
   ThreadCache* parent_thread_tcache_ = nullptr;
   ThreadSafePartitionRoot* root_ = nullptr;
-  bool with_denser_bucket_distribution_;
+  BucketDistribution bucket_distribution_;
 };
 
 }  // namespace
@@ -584,15 +595,15 @@ class ThreadDelegateForMultipleThreadCachesAccounting
   ThreadDelegateForMultipleThreadCachesAccounting(
       ThreadSafePartitionRoot* root,
       int alloc_ount,
-      bool with_denser_bucket_distribution)
+      BucketDistribution bucket_distribution)
       : root_(root),
         alloc_count_(alloc_count),
-        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+        bucket_distribution_(bucket_distribution) {}
 
   void ThreadMain() override {
     EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    size_t bucket_index = FillThreadCacheAndReturnIndex(
-        root_, kMediumSize, with_denser_bucket_distribution_);
+    size_t bucket_index =
+        FillThreadCacheAndReturnIndex(root_, kMediumSize, bucket_distribution_);
 
     ThreadCacheStats stats;
     ThreadCacheRegistry::Instance().DumpStats(false, &stats);
@@ -610,7 +621,7 @@ class ThreadDelegateForMultipleThreadCachesAccounting
  private:
  private:
   ThreadSafePartitionRoot* root_ = nullptr;
-  bool with_denser_bucket_distribution_;
+  BucketDistribution bucket_distribution_;
   const int alloc_count_;
 };
 
@@ -648,17 +659,16 @@ class ThreadDelegateForPurgeAll
                             std::atomic<bool>& other_thread_started,
                             std::atomic<bool>& purge_called,
                             int bucket_index,
-                            bool with_denser_bucket_distribution)
+                            BucketDistribution bucket_distribution)
       : root_(root),
         other_thread_tcache_(other_thread_tcache),
         other_thread_started_(other_thread_started),
         purge_called_(purge_called),
         bucket_index_(bucket_index),
-        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+        bucket_distribution_(bucket_distribution) {}
 
   void ThreadMain() override PA_NO_THREAD_SAFETY_ANALYSIS {
-    FillThreadCacheAndReturnIndex(root_, kSmallSize,
-                                  with_denser_bucket_distribution_);
+    FillThreadCacheAndReturnIndex(root_, kSmallSize, bucket_distribution_);
     other_thread_tcache_ = root_->thread_cache_for_testing();
 
     other_thread_started_.store(true, std::memory_order_release);
@@ -684,7 +694,7 @@ class ThreadDelegateForPurgeAll
   std::atomic<bool>& other_thread_started_;
   std::atomic<bool>& purge_called_;
   const int bucket_index_;
-  bool with_denser_bucket_distribution_;
+  BucketDistribution bucket_distribution_;
 };
 
 }  // namespace
@@ -776,13 +786,13 @@ namespace {
 
 void FillThreadCacheWithMemory(ThreadSafePartitionRoot* root,
                                size_t target_cached_memory,
-                               bool with_denser_bucket_distribution) {
+                               BucketDistribution bucket_distribution) {
   for (int batch : {1, 2, 4, 8, 16}) {
     for (size_t allocation_size = 1;
          allocation_size <= ThreadCache::kLargeSizeThreshold;
          allocation_size++) {
-      FillThreadCacheAndReturnIndex(root, allocation_size, batch,
-                                    with_denser_bucket_distribution);
+      FillThreadCacheAndReturnIndex(root, allocation_size, bucket_distribution,
+                                    batch);
 
       if (ThreadCache::Get()->CachedMemory() >= target_cached_memory)
         return;
@@ -799,16 +809,16 @@ class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
       ThreadSafePartitionRoot* root,
       std::atomic<int>& allocations_done,
       std::atomic<bool>& can_finish,
-      bool with_denser_bucket_distribution)
+      BucketDistribution bucket_distribution)
       : root_(root),
         allocations_done_(allocations_done),
         can_finish_(can_finish),
-        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+        bucket_distribution_(bucket_distribution) {}
 
   void ThreadMain() override {
     FillThreadCacheWithMemory(
         root_, 5 * ThreadCacheRegistry::kMinCachedMemoryForPurging,
-        with_denser_bucket_distribution_);
+        bucket_distribution_);
     allocations_done_.fetch_add(1, std::memory_order_release);
 
     // This thread needs to be alive when the next periodic purge task runs.
@@ -820,7 +830,7 @@ class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
   ThreadSafePartitionRoot* root_ = nullptr;
   std::atomic<int>& allocations_done_;
   std::atomic<bool>& can_finish_;
-  bool with_denser_bucket_distribution_;
+  BucketDistribution bucket_distribution_;
 };
 
 }  // namespace
@@ -966,16 +976,15 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
       std::atomic<bool>& other_thread_started,
       std::atomic<bool>& threshold_changed,
       int bucket_index,
-      bool with_denser_bucket_distribution)
+      BucketDistribution bucket_distribution)
       : root_(root),
         other_thread_started_(other_thread_started),
         threshold_changed_(threshold_changed),
         bucket_index_(bucket_index),
-        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+        bucket_distribution_(bucket_distribution) {}
 
   void ThreadMain() override {
-    FillThreadCacheAndReturnIndex(root_, kSmallSize,
-                                  with_denser_bucket_distribution_,
+    FillThreadCacheAndReturnIndex(root_, kSmallSize, bucket_distribution_,
                                   kDefaultCountForSmallBucket + 10);
     auto* this_thread_tcache = root_->thread_cache_for_testing();
     // More than the default since the multiplier has changed.
@@ -999,7 +1008,7 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
   std::atomic<bool>& other_thread_started_;
   std::atomic<bool>& threshold_changed_;
   const int bucket_index_;
-  bool with_denser_bucket_distribution_;
+  PartitionRoot<internal::ThreadSafe>::BucketDistribution bucket_distribution_;
 };
 
 }  // namespace
@@ -1141,7 +1150,9 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
 
   // The ThreadCache is allocated before we change buckets, so its size is
   // always based on the sparser distribution.
-  size_t tc_bucket_index = root_->SizeToBucketIndex(sizeof(ThreadCache), false);
+  size_t tc_bucket_index = root_->SizeToBucketIndex(
+      sizeof(ThreadCache),
+      ThreadSafePartitionRoot::BucketDistribution::kCoarser);
   auto* tc_bucket = &root_->buckets[tc_bucket_index];
   size_t expected_allocated_size =
       tc_bucket->slot_size;  // For the ThreadCache itself.
@@ -1248,11 +1259,12 @@ TEST(AlternateBucketDistributionTest, SizeToIndex) {
       size_t n = i * (4 + offset) / 4;
       EXPECT_EQ(BucketIndexLookup::GetIndex(n),
                 BucketIndexLookup::GetIndexForDenserBuckets(n));
-      EXPECT_EQ(BucketIndexLookup::GetIndex(n), expected_index++);
+      EXPECT_EQ(BucketIndexLookup::GetIndex(n), expected_index);
+      expected_index += 2;
     }
     // The last two buckets in the order are "rounded up" to the same bucket
     // as the next power of two.
-    expected_index += 2;
+    expected_index += 4;
     for (size_t offset = 2; offset < 4; offset++) {
       size_t n = i * (4 + offset) / 4;
       // These two are rounded up in the alternate distribution, so we expect

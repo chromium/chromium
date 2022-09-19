@@ -370,8 +370,10 @@ constexpr size_t kMinBucketedOrder =
 constexpr size_t kMaxBucketedOrder = 20;
 constexpr size_t kNumBucketedOrders =
     (kMaxBucketedOrder - kMinBucketedOrder) + 1;
-// 4 buckets per order (for the higher orders).
-constexpr size_t kNumBucketsPerOrderBits = 2;
+// 8 buckets per order (for the higher orders).
+// Note: this is not what is used by default, but the maximum amount of buckets
+// per order. By default, only 4 are used.
+constexpr size_t kNumBucketsPerOrderBits = 3;
 constexpr size_t kNumBucketsPerOrder = 1 << kNumBucketsPerOrderBits;
 constexpr size_t kNumBuckets = kNumBucketedOrders * kNumBucketsPerOrder;
 constexpr size_t kSmallestBucket = 1 << (kMinBucketedOrder - 1);

@@ -38,7 +38,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   const size_t kSlotSize = 2 * internal::SystemPageSize();
   uint16_t bucket_index =
       PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-          kSlotSize, root->flags.with_denser_bucket_distribution);
+          kSlotSize, root->GetBucketDistribution());
   auto* bucket = root->buckets + bucket_index;
 
   const size_t kSuperPagePayloadStartOffset =

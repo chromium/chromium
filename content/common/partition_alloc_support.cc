@@ -313,8 +313,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::SplitMainPartition(split_main_partition),
       allocator_shim::UseDedicatedAlignedPartition(
           use_dedicated_aligned_partition),
-      allocator_shim::AlternateBucketDistribution(base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseAlternateDistribution)));
+      allocator_shim::AlternateBucketDistribution(
+          base::features::kPartitionAllocAlternateBucketDistributionParam
+              .Get()));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   // If BRP is not enabled, check if any of PCScan flags is enabled.

@@ -582,9 +582,18 @@ void ConfigurePartitions(
   auto* current_aligned_root = g_aligned_root.Get();
 
   if (!split_main_partition) {
-    if (!use_alternate_bucket_distribution) {
-      current_root->SwitchToDenserBucketDistribution();
-      current_aligned_root->SwitchToDenserBucketDistribution();
+    switch (use_alternate_bucket_distribution) {
+      case AlternateBucketDistribution::kDefault:
+        current_root->SwitchToDefaultBucketDistribution();
+        current_aligned_root->SwitchToDefaultBucketDistribution();
+        break;
+      case AlternateBucketDistribution::kCoarser:
+        // We are already using the coarse distribution when we create a root.
+        break;
+      case AlternateBucketDistribution::kDenser:
+        current_root->SwitchToDenserBucketDistribution();
+        current_aligned_root->SwitchToDenserBucketDistribution();
+        break;
     }
     PA_DCHECK(!enable_brp);
     PA_DCHECK(!use_dedicated_aligned_partition);
@@ -658,9 +667,18 @@ void ConfigurePartitions(
       partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
       partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
 
-  if (!use_alternate_bucket_distribution) {
-    g_root.Get()->SwitchToDenserBucketDistribution();
-    g_aligned_root.Get()->SwitchToDenserBucketDistribution();
+  switch (use_alternate_bucket_distribution) {
+    case AlternateBucketDistribution::kDefault:
+      g_root.Get()->SwitchToDefaultBucketDistribution();
+      g_aligned_root.Get()->SwitchToDefaultBucketDistribution();
+      break;
+    case AlternateBucketDistribution::kCoarser:
+      // We are already using the coarse distribution when we create a root.
+      break;
+    case AlternateBucketDistribution::kDenser:
+      g_root.Get()->SwitchToDenserBucketDistribution();
+      g_aligned_root.Get()->SwitchToDenserBucketDistribution();
+      break;
   }
 }
 
