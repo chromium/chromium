@@ -12,6 +12,7 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "base/test/ios/wait_util.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/values.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
@@ -127,7 +128,7 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
   GetTestPlatformPolicyProvider()->UpdateChromePolicy(values);
 }
 
-+ (void)clearAllPoliciesInMemory {
++ (void)clearAllPoliciesInNSUserDefault {
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
@@ -169,16 +170,25 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
   store->set_policy_data_for_testing(std::move(policy_data));
 }
 
-+ (void)clearDMTokenDirectory {
-  base::FilePath app_data_dir_path;
-  base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path);
-  base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
++ (BOOL)clearDMTokenDirectory {
+  base::FilePath appDataDirPath;
+  base::PathService::Get(base::DIR_APP_DATA, &appDataDirPath);
+  base::FilePath dmTokenDirPath = appDataDirPath.Append(kDmTokenBaseDir);
 
-  base::ThreadPool::PostTask(
+  __block BOOL didComplete = NO;
+  base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(^{
-        base::DeletePathRecursively(dm_token_dir_path);
+        base::DeletePathRecursively(dmTokenDirPath);
+      }),
+      base::BindOnce(^{
+        didComplete = YES;
       }));
+
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, ^{
+        return didComplete;
+      });
 }
 
 + (BOOL)isCloudPolicyClientRegistered {
@@ -190,16 +200,25 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
       ->is_registered();
 }
 
-+ (void)clearCloudPolicyDirectory {
-  base::FilePath user_data_dir;
-  base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
-  base::FilePath policy_dir = user_data_dir.Append(kPolicyDir);
++ (BOOL)clearCloudPolicyDirectory {
+  base::FilePath userDataDir;
+  base::PathService::Get(ios::DIR_USER_DATA, &userDataDir);
+  base::FilePath policyDir = userDataDir.Append(kPolicyDir);
 
-  base::ThreadPool::PostTask(
+  __block BOOL didComplete = NO;
+  base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(^{
-        base::DeletePathRecursively(policy_dir);
+        base::DeletePathRecursively(policyDir);
+      }),
+      base::BindOnce(^{
+        didComplete = YES;
       }));
+
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForFileOperationTimeout, ^{
+        return didComplete;
+      });
 }
 
 + (BOOL)hasUserPolicyDataInCurrentBrowserState {

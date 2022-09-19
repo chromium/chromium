@@ -47,19 +47,24 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
   GREYAssertTrue(_policyTestServer->Start(),
                  @"Policy test server did not start.");
 
-  [PolicyAppInterface clearAllPoliciesInMemory];
-  [PolicyAppInterface clearDMTokenDirectory];
-  [PolicyAppInterface clearCloudPolicyDirectory];
+  [self clearPolicies];
 }
 
 - (void)tearDown {
-  [PolicyAppInterface clearAllPoliciesInMemory];
-  [PolicyAppInterface clearDMTokenDirectory];
-  [PolicyAppInterface clearCloudPolicyDirectory];
+  [self clearPolicies];
   [super tearDown];
 }
 
 #pragma mark - Helpers
+
+// Removes all policies stored in memory.
+- (void)clearPolicies {
+  [PolicyAppInterface clearAllPoliciesInNSUserDefault];
+  GREYAssertTrue([PolicyAppInterface clearDMTokenDirectory],
+                 @"DM token directory not cleared.");
+  GREYAssertTrue([PolicyAppInterface clearCloudPolicyDirectory],
+                 @"Cloud policy directory not cleared.");
+}
 
 // Waits and verify that the enterprise loading screen is not displayed.
 - (void)verifyLoadingScreenIsDismissed {
