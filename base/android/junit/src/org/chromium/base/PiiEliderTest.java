@@ -105,6 +105,13 @@ public class PiiEliderTest {
     }
 
     @Test
+    public void testElideUrl12() {
+        String original = "System.err: at kH.onAnimationEnd"
+                + "(chromium-TrichromeChromeGoogle6432.aab-canary-530200034:42)";
+        assertEquals(original, PiiElider.elideUrl(original));
+    }
+
+    @Test
     public void testElideNonHttpUrl() {
         String original = "test some-other-scheme://address/01010?param=33&other_param=AAA !!!";
         String expected = "test HTTP://WEBADDRESS.ELIDED !!!";

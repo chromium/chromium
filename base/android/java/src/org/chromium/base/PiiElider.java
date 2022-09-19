@@ -69,12 +69,20 @@ public class PiiElider {
                     + "(/" + PATH_CHAR + "*)?" // Rest of the URI path.
                     + "(\\b|$)"); // Always end on a word boundary or end of string.
 
-    private static final Pattern LIKELY_EXCEPTION_LOG =
-            Pattern.compile("\\sat\\sorg\\.chromium\\.[^ ]+.|"
-                    + "Caused by: java.lang."
-                    // When a class is not found it can fail to satisfy our isClass
-                    // check but is still worth noting what it was.
-                    + "(ClassNotFoundException|NoClassDefFoundError):");
+    // Example variant info chromium-TrichromeChromeGoogle6432.aab
+    private static final String CHROME_VARIANT_INFO = "chromium-[^\\.]+\\.aab";
+    private static final Pattern LIKELY_EXCEPTION_LOG = Pattern.compile("\\sat\\s"
+            // These are all package prefixes of classes that are likely to
+            // exist on a stacktrace and are very unlikely to be a PII url.
+            + "(org\\.chromium|com\\.google|java|android|com\\.android)\\.[^ ]+.|"
+            // if a line has what looks like line number info, it's probably an
+            // exception log.
+            + "\\(" + CHROME_VARIANT_INFO
+            + "[^:]+:\\d+\\)|"
+            // When a class is not found it can fail to satisfy our isClass
+            // check but is still worth noting what it was.
+            + "Caused by: java\\.lang\\."
+            + "(ClassNotFoundException|NoClassDefFoundError):");
 
     private static final String IP_ELISION = "1.2.3.4";
     private static final String MAC_ELISION = "01:23:45:67:89:AB";
@@ -90,7 +98,7 @@ public class PiiElider {
 
     private static final String[] SYSTEM_NAMESPACE =
             new String[] {"android.", "com.android.", "dalvik.", "java.", "javax.", "org.apache.",
-                    "org.json.", "org.w3c.dom.", "org.xml.", "org.xmlpull."};
+                    "org.json.", "org.w3c.dom.", "org.xml.", "org.xmlpull.", "System."};
 
     /**
      * Elides any emails in the specified {@link String} with
