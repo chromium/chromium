@@ -10,11 +10,10 @@
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
-
-class FirstPartySetsContextConfig;
 
 // This class holds all of the info associated with the public First-Party
 // Sets, after they've been parsed. This is suitable for plumbing from the
@@ -24,6 +23,9 @@ class NET_EXPORT PublicSets {
   PublicSets();
   PublicSets(base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
              base::flat_map<SchemefulSite, SchemefulSite> aliases);
+  PublicSets(base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
+             base::flat_map<SchemefulSite, SchemefulSite> aliases,
+             FirstPartySetsContextConfig manual_config);
 
   PublicSets(PublicSets&&);
   PublicSets& operator=(PublicSets&&);
@@ -33,12 +35,15 @@ class NET_EXPORT PublicSets {
   bool operator==(const PublicSets& other) const;
   bool operator!=(const PublicSets& other) const;
 
+  // The accessors below should only be used by mojo plumbing.
   const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
     return entries_;
   }
-
   const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
     return aliases_;
+  }
+  const FirstPartySetsContextConfig& manual_config() const {
+    return manual_config_;
   }
 
   // Creates a clone of this instance.
@@ -80,27 +85,17 @@ class NET_EXPORT PublicSets {
       const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases);
 
  private:
-  // Finds the intersection between the underlying entries and the given
-  // manually-specified set.
-  //
-  // The returned collection also includes any sites in the underlying entries
-  // whose primary was in the intersection.
-  base::flat_set<SchemefulSite> FindIntersection(
-      const SchemefulSite& manual_primary,
-      const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries)
-      const;
-
-  // Finds singleton sets in the underlying entries, which are sets that consist
-  // of only a single site.
-  base::flat_set<SchemefulSite> FindSingletons() const;
-
-  // Represents the mapping of site -> entry, where keys are sites within sets,
-  // and values are entries of the sets.
+  // Represents the mapping of site -> entry, where keys are sites within
+  // sets, and values are entries of the sets.
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;
 
   // The site aliases. Used to normalize a given SchemefulSite into its
   // canonical representative, before looking it up in `entries_`.
   base::flat_map<SchemefulSite, SchemefulSite> aliases_;
+
+  // Stores the customizations induced by the manually-specified set. May be
+  // empty if no switch was provided.
+  FirstPartySetsContextConfig manual_config_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os, const PublicSets& ps);

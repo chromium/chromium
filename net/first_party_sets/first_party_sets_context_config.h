@@ -31,6 +31,23 @@ class NET_EXPORT FirstPartySetsContextConfig {
 
   bool operator==(const FirstPartySetsContextConfig& other) const;
 
+  bool empty() const { return customizations_.empty(); }
+
+  // Finds an override for the given site, in this context. Returns:
+  // - nullopt if no override was found.
+  // - optional(nullopt) if an override was found, and it's a deletion.
+  // - optional(optional(entry)) if an override was found, and it's a
+  // modification/addition.
+  absl::optional<absl::optional<FirstPartySetEntry>> FindOverride(
+      const SchemefulSite& site) const;
+
+  // Modifies this config such that `aliases` are taken into account.
+  //
+  // This method requires that no override exists in this config for any key in
+  // `aliases`; and that an override exists in this config for every value in
+  // `aliases`.
+  void IngestAliases(base::flat_map<SchemefulSite, SchemefulSite> aliases);
+
   const OverrideSets& customizations() const { return customizations_; }
 
  private:

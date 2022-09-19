@@ -54,16 +54,6 @@ struct FirstPartySetMetadata {
 };
 
 // This struct must match the class fields defined in
-// //net/first_party_sets/public_sets.h.
-struct PublicFirstPartySets {
-  // The mapping from site to FPS entry.
-  map<SchemefulSite, FirstPartySetEntry> sets;
-
-  // The mapping from site alias to canonical site.
-  map<SchemefulSite, SchemefulSite> aliases;
-};
-
-// This struct must match the class fields defined in
 // //net/first_party_sets/first_party_sets_context_config.h.
 struct FirstPartySetsContextConfig {
   // This map must be computed against the public First-Party Sets, where the
@@ -73,3 +63,17 @@ struct FirstPartySetsContextConfig {
   // from the existing First-Party Sets, for the given context.
   map<SchemefulSite, FirstPartySetEntry?> customizations;
 };
+
+// This struct must match the class fields defined in
+// //net/first_party_sets/public_sets.h.
+struct PublicFirstPartySets {
+  // The mapping from site to FPS entry.
+  map<SchemefulSite, FirstPartySetEntry> sets;
+
+  // The mapping from site alias to canonical site.
+  map<SchemefulSite, SchemefulSite> aliases;
+
+  // The config induced by the manually-supplied set.
+  FirstPartySetsContextConfig manual_config;
+};
+

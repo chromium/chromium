@@ -119,6 +119,11 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return p.aliases();
   }
 
+  static const net::FirstPartySetsContextConfig& manual_config(
+      const net::PublicSets& p) {
+    return p.manual_config();
+  }
+
   static bool Read(network::mojom::PublicFirstPartySetsDataView public_sets,
                    net::PublicSets* out_public_sets);
 };

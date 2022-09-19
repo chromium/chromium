@@ -124,7 +124,10 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
   net::SchemefulSite b_cctld(GURL("https://b.cctld"));
   net::SchemefulSite c(GURL("https://c.test"));
 
+  net::FirstPartySetsContextConfig manual_config({{c, absl::nullopt}});
+
   const net::PublicSets original(
+      /*entries=*/
       {
           {a,
            net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
@@ -132,7 +135,7 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
           {c,
            net::FirstPartySetEntry(a, net::SiteType::kService, absl::nullopt)},
       },
-      {{b_cctld, b}});
+      /*aliases=*/{{b_cctld, b}}, manual_config.Clone());
 
   net::PublicSets round_tripped;
 
@@ -143,6 +146,7 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
   EXPECT_EQ(original, round_tripped);
   EXPECT_FALSE(round_tripped.entries().empty());
   EXPECT_FALSE(round_tripped.aliases().empty());
+  EXPECT_EQ(round_tripped.manual_config(), manual_config);
 }
 
 TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {

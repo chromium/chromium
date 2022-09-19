@@ -155,7 +155,12 @@ bool StructTraits<network::mojom::PublicFirstPartySetsDataView,
   if (!public_sets.ReadAliases(&aliases))
     return false;
 
-  *out_public_sets = net::PublicSets(entries, aliases);
+  net::FirstPartySetsContextConfig manual_config;
+  if (!public_sets.ReadManualConfig(&manual_config))
+    return false;
+
+  *out_public_sets =
+      net::PublicSets(entries, aliases, std::move(manual_config));
 
   return true;
 }

@@ -4158,6 +4158,7 @@ test("net_unittests") {
     "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
     "filter/filter_source_stream_unittest.cc",
     "filter/gzip_source_stream_unittest.cc",
+    "first_party_sets/first_party_sets_context_config_unittest.cc",
     "first_party_sets/public_sets_unittest.cc",
     "http/alternative_service_unittest.cc",
     "http/bidirectional_stream_unittest.cc",

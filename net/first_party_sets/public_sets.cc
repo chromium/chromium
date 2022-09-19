@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
@@ -62,7 +61,17 @@ PublicSets::PublicSets() = default;
 PublicSets::PublicSets(
     base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases)
-    : entries_(std::move(entries)), aliases_(std::move(aliases)) {}
+    : PublicSets(std::move(entries),
+                 std::move(aliases),
+                 FirstPartySetsContextConfig()) {}
+
+PublicSets::PublicSets(
+    base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
+    base::flat_map<SchemefulSite, SchemefulSite> aliases,
+    FirstPartySetsContextConfig manual_config)
+    : entries_(std::move(entries)),
+      aliases_(std::move(aliases)),
+      manual_config_(std::move(manual_config)) {}
 
 PublicSets::PublicSets(PublicSets&&) = default;
 PublicSets& PublicSets::operator=(PublicSets&&) = default;
@@ -70,8 +79,8 @@ PublicSets& PublicSets::operator=(PublicSets&&) = default;
 PublicSets::~PublicSets() = default;
 
 bool PublicSets::operator==(const PublicSets& other) const {
-  return std::tie(entries_, aliases_) ==
-         std::tie(other.entries_, other.aliases_);
+  return std::tie(entries_, aliases_, manual_config_) ==
+         std::tie(other.entries_, other.aliases_, other.manual_config_);
 }
 
 bool PublicSets::operator!=(const PublicSets& other) const {
@@ -79,24 +88,29 @@ bool PublicSets::operator!=(const PublicSets& other) const {
 }
 
 PublicSets PublicSets::Clone() const {
-  return PublicSets(entries_, aliases_);
+  return PublicSets(entries_, aliases_, manual_config_.Clone());
 }
 
 absl::optional<FirstPartySetEntry> PublicSets::FindEntry(
     const SchemefulSite& site,
     const FirstPartySetsContextConfig* fps_context_config) const {
-  SchemefulSite normalized_site = NormalizeScheme(site);
+  const SchemefulSite normalized_site = NormalizeScheme(site);
 
   // Check if `normalized_site` can be found in the customizations first.
-  // If not, fall back to look up in `entries_`.
   if (fps_context_config) {
-    if (const auto config_it =
-            fps_context_config->customizations().find(normalized_site);
-        config_it != fps_context_config->customizations().end()) {
-      return config_it->second;
+    if (const auto entry = fps_context_config->FindOverride(normalized_site);
+        entry.has_value()) {
+      return entry.value();
     }
   }
 
+  // Now see if it's in the manual config (with or without a manual alias).
+  if (const auto manual_entry = manual_config_.FindOverride(normalized_site);
+      manual_entry.has_value()) {
+    return manual_entry.value();
+  }
+
+  // Finally, look up in `entries_`, applying an alias if applicable.
   const auto canonical_it = aliases_.find(normalized_site);
   const SchemefulSite& canonical_site =
       canonical_it == aliases_.end() ? normalized_site : canonical_it->second;
@@ -121,76 +135,16 @@ base::flat_map<SchemefulSite, FirstPartySetEntry> PublicSets::FindEntries(
   return sites_to_entries;
 }
 
-base::flat_set<SchemefulSite> PublicSets::FindIntersection(
-    const SchemefulSite& manual_primary,
-    const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries)
-    const {
-  std::vector<SchemefulSite> intersection;
-  for (const std::pair<SchemefulSite, FirstPartySetEntry>&
-           public_site_and_entry : entries_) {
-    const SchemefulSite& public_site = public_site_and_entry.first;
-    const SchemefulSite& public_primary =
-        public_site_and_entry.second.primary();
-    bool is_affected_by_local_set =
-        public_site == manual_primary || public_primary == manual_primary ||
-        base::ranges::any_of(
-            manual_entries,
-            [&](const std::pair<SchemefulSite, FirstPartySetEntry>&
-                    manual_site_and_entry) {
-              const SchemefulSite& manual_site = manual_site_and_entry.first;
-              return manual_site == public_site ||
-                     manual_site == public_primary;
-            });
-    if (is_affected_by_local_set) {
-      intersection.push_back(public_site_and_entry.first);
-    }
-  };
-
-  return intersection;
-}
-
-base::flat_set<SchemefulSite> PublicSets::FindSingletons() const {
-  std::vector<SchemefulSite> primaries_with_members;
-  for (const auto& [site, entry] : entries_) {
-    if (site != entry.primary())
-      primaries_with_members.push_back(entry.primary());
-  }
-  std::vector<SchemefulSite> singletons;
-  for (const auto& [site, entry] : entries_) {
-    if (site == entry.primary() &&
-        !base::Contains(primaries_with_members, site)) {
-      singletons.push_back(site);
-    }
-  }
-
-  return singletons;
-}
-
 void PublicSets::ApplyManuallySpecifiedSet(
     const SchemefulSite& manual_primary,
     const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries,
     const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases) {
-  base::flat_set<SchemefulSite> intersection =
-      FindIntersection(manual_primary, manual_entries);
-  for (const auto& site : intersection) {
-    entries_.erase(site);
-  }
-
-  base::flat_set<SchemefulSite> singletons = FindSingletons();
-  for (const auto& singleton : singletons) {
-    entries_.erase(singleton);
-  }
-
-  base::ranges::copy(manual_entries, std::inserter(entries_, entries_.end()));
-
-  // Finally, remove any aliases for public sites that were affected (deleted),
-  // and add any aliases defined in the local set.
-  base::EraseIf(
-      aliases_, [&](const std::pair<SchemefulSite, SchemefulSite>& alias) {
-        return intersection.contains(alias.second) ||
-               singletons.contains(alias.second);
-      });
-  aliases_.insert(manual_aliases.begin(), manual_aliases.end());
+  DCHECK(manual_config_.empty());
+  // We handle the manually-specified set the same way as we handle
+  // replacement enterprise policy sets.
+  manual_config_ = ComputeConfig(
+      /*replacement_sets=*/{manual_entries}, /*normalized_additions=*/{});
+  manual_config_.IngestAliases(std::move(manual_aliases));
 }
 
 FirstPartySetsContextConfig PublicSets::ComputeConfig(
@@ -287,6 +241,14 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
   for (auto& [owner, members] : potential_singletons) {
     bool inserted = site_to_entry.emplace(owner, absl::nullopt).second;
     DCHECK(inserted);
+  }
+
+  // For every public alias that would now refer to a site in the overlay, which
+  // is not already contained in the overlay, we explicitly ignore that alias.
+  for (const auto& [alias, site] : aliases_) {
+    if (site_to_entry.contains(site) && !site_to_entry.contains(alias)) {
+      site_to_entry.emplace(alias, absl::nullopt);
+    }
   }
 
   return FirstPartySetsContextConfig(std::move(site_to_entry));
