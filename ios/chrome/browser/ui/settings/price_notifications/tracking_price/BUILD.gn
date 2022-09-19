@@ -5,6 +5,8 @@
 source_set("tracking_price") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "tracking_price_coordinator.h",
+    "tracking_price_coordinator.mm",
     "tracking_price_mediator.h",
     "tracking_price_mediator.mm",
   ]
@@ -12,6 +14,7 @@ source_set("tracking_price") {
     ":constants",
     ":tracking_price_ui",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",

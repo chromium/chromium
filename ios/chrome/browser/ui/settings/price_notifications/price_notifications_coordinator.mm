@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_view_controller.h"
+#import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_coordinator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,12 +19,16 @@
 
 @interface PriceNotificationsCoordinator () <
     PriceNotificationsNavigationCommands,
-    PriceNotificationsViewControllerPresentationDelegate>
+    PriceNotificationsViewControllerPresentationDelegate,
+    TrackingPriceCoordinatorDelegate>
 
 // View controller presented by coordinator.
 @property(nonatomic, strong) PriceNotificationsViewController* viewController;
 // Price notifications settings mediator.
 @property(nonatomic, strong) PriceNotificationsMediator* mediator;
+// Coordinator for Tracking Price settings menu.
+@property(nonatomic, strong) TrackingPriceCoordinator* trackingPriceCoordinator;
+
 @end
 
 @implementation PriceNotificationsCoordinator
@@ -54,7 +59,13 @@
 #pragma mark - PriceNotificationsNavigationCommands
 
 - (void)showTrackingPrice {
-  // TODO(crbug.com/1363193): Create TrackingPriceCoordinator.
+  DCHECK(!self.trackingPriceCoordinator);
+  DCHECK(self.baseNavigationController);
+  self.trackingPriceCoordinator = [[TrackingPriceCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.trackingPriceCoordinator.delegate = self;
+  [self.trackingPriceCoordinator start];
 }
 
 #pragma mark - PriceNotificationsViewControllerPresentationDelegate
@@ -64,4 +75,15 @@
   DCHECK_EQ(self.viewController, controller);
   [self.delegate priceNotificationsCoordinatorDidRemove:self];
 }
+
+#pragma mark - TrackingPriceCoordinatorDelegate
+
+- (void)trackingPriceCoordinatorDidRemove:
+    (TrackingPriceCoordinator*)coordinator {
+  DCHECK_EQ(self.trackingPriceCoordinator, coordinator);
+  [self.trackingPriceCoordinator stop];
+  self.trackingPriceCoordinator.delegate = nil;
+  self.trackingPriceCoordinator = nil;
+}
+
 @end
