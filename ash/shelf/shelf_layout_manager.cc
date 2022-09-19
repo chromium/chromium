@@ -889,7 +889,7 @@ void ShelfLayoutManager::ProcessScrollOffset(int offset,
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(shelf_widget_->GetNativeWindow())
           .id(),
-      kScrollFromShelf, event.time_stamp());
+      AppListShowSource::kScrollFromShelf, event.time_stamp());
 }
 
 void ShelfLayoutManager::ProcessScrollEventFromShelf(ui::ScrollEvent* event) {
@@ -938,7 +938,7 @@ bool ShelfLayoutManager::MaybeHandleShelfFling(
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(shelf_widget_->GetNativeWindow())
           .id(),
-      kSwipeFromShelf, event_in_screen.time_stamp());
+      AppListShowSource::kSwipeFromShelf, event_in_screen.time_stamp());
 
   return true;
 }

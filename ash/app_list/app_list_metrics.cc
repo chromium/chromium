@@ -242,18 +242,18 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
   // This switch determines which metric we submit for the Apps.AppListOpenTime
   // metric. Adding a string requires you update the apps histogram.xml as well.
   switch (source) {
-    case kSearchKey:
-    case kSearchKeyFullscreen_DEPRECATED:
+    case AppListShowSource::kSearchKey:
+    case AppListShowSource::kSearchKeyFullscreen_DEPRECATED:
       return "SearchKey";
-    case kShelfButton:
-    case kShelfButtonFullscreen:
+    case AppListShowSource::kShelfButton:
+    case AppListShowSource::kShelfButtonFullscreen:
       return "HomeButton";
-    case kSwipeFromShelf:
+    case AppListShowSource::kSwipeFromShelf:
       return "Swipe";
-    case kScrollFromShelf:
+    case AppListShowSource::kScrollFromShelf:
       return "Scroll";
-    case kTabletMode:
-    case kAssistantEntryPoint:
+    case AppListShowSource::kTabletMode:
+    case AppListShowSource::kAssistantEntryPoint:
       return "Others";
   }
   NOTREACHED();

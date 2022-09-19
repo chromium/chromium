@@ -1025,8 +1025,8 @@ void AppListControllerImpl::OnUiVisibilityChanged(
           IgnoreResult(close_assistant_ui_runner_.Release());
         }
 
-        Show(GetDisplayIdToShowAppListOn(), kAssistantEntryPoint,
-             base::TimeTicks());
+        Show(GetDisplayIdToShowAppListOn(),
+             AppListShowSource::kAssistantEntryPoint, base::TimeTicks());
       }
       if (ShouldShowAppListBubble()) {
         bubble_presenter_->ShowEmbeddedAssistantUI();
@@ -1897,7 +1897,7 @@ void AppListControllerImpl::ShowHomeScreen() {
   // transition.
   absl::optional<AppListShowSource> show_source;
   if (!GetTopVisibleWindow())
-    show_source = kTabletMode;
+    show_source = AppListShowSource::kTabletMode;
 
   Show(GetDisplayIdToShowAppListOn(), show_source, base::TimeTicks());
   UpdateHomeScreenVisibility();

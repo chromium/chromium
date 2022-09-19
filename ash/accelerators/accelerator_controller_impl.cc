@@ -1231,7 +1231,7 @@ void AcceleratorControllerImpl::PerformAction(
       Shell::Get()->display_manager()->AddRemoveDisplay();
       break;
     case DEV_TOGGLE_APP_LIST:
-      HandleToggleAppList(accelerator, kSearchKey);
+      HandleToggleAppList(accelerator, AppListShowSource::kSearchKey);
       break;
     case DEV_TOGGLE_UNIFIED_DESKTOP:
       accelerators::ToggleUnifiedDesktop();
@@ -1513,7 +1513,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::MaybeTakeWindowScreenshot();
       break;
     case TOGGLE_APP_LIST: {
-      HandleToggleAppList(accelerator, kSearchKey);
+      HandleToggleAppList(accelerator, AppListShowSource::kSearchKey);
       break;
     }
     case TOGGLE_CALENDAR:

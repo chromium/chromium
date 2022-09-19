@@ -637,10 +637,10 @@ TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
 
   ClickHomeButton();
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kShelfButton,
+      "Apps.AppListShowSource", AppListShowSource::kShelfButton,
       1 /* Number of times app list is shown with a shelf button */);
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kTabletMode,
+      "Apps.AppListShowSource", AppListShowSource::kTabletMode,
       0 /* Number of times app list is shown by tablet mode transition */);
 
   GetAppListTestHelper()->CheckVisibility(true);
@@ -649,7 +649,7 @@ TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
   // showing the app list.
   ClickHomeButton();
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kShelfButton,
+      "Apps.AppListShowSource", AppListShowSource::kShelfButton,
       1 /* Number of times app list shown with a shelf button */);
   histogram_tester.ExpectTotalCount("Apps.AppListShowSource", 1);
 }
@@ -676,7 +676,7 @@ TEST_F(AppListShowSourceMetricTest, TabletModeWithNoWindowOpen) {
   GetAppListTestHelper()->CheckVisibility(true);
 
   histogram_tester.ExpectBucketCount(
-      "Apps.AppListShowSource", kTabletMode,
+      "Apps.AppListShowSource", AppListShowSource::kTabletMode,
       1 /* Number of times app list shown after entering tablet mode */);
 }
 

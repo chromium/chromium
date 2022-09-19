@@ -173,7 +173,8 @@ void HomeButton::ButtonPressed(views::Button* sender,
   }
 
   const AppListShowSource show_source =
-      event.IsShiftDown() ? kShelfButtonFullscreen : kShelfButton;
+      event.IsShiftDown() ? AppListShowSource::kShelfButtonFullscreen
+                          : AppListShowSource::kShelfButton;
   Shell::Get()->app_list_controller()->ToggleAppList(
       GetDisplayId(), show_source, event.time_stamp());
 
