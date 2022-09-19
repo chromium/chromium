@@ -68,6 +68,12 @@ CC_BASE_EXPORT extern const base::Feature kSlidingWindowForDroppedFrameCounter;
 // GpuImageDecodeTaskImpl and SoftwareImageDecodeTaskImpl.
 // Introduced to fix https://crbug.com/1116624
 CC_BASE_EXPORT extern const base::Feature kNormalPriorityImageDecoding;
+
+// When enabled commits are aborted if scroll and viewport state from CC could
+// not be synchronized at the beginning of the frame because main frames were
+// being deferred.
+CC_BASE_EXPORT extern const base::Feature
+    kSkipCommitsIfNotSynchronizingCompositorState;
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

@@ -1054,7 +1054,6 @@
       // Document transitions, including shared element transitions.
       // See https://github.com/WICG/shared-element-transitions
       name: "DocumentTransition",
-      origin_trial_feature_name: "DocumentTransitionV2",
       base_feature: "DocumentTransition",
     },
     {

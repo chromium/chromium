@@ -218,6 +218,11 @@ class CC_EXPORT LayerTreeSettings {
 
   // Whether to disable the frame rate limit in the scheduler.
   bool disable_frame_rate_limit = false;
+
+  // When enabled commits are aborted if scroll and viewport state from CC could
+  // not be synchronized at the beginning of the frame because main frames were
+  // being deferred.
+  bool skip_commits_if_not_synchronizing_compositor_state = true;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {
