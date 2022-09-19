@@ -142,6 +142,23 @@ ScreenResolution DesktopResizerX11::GetCurrentResolution(
   if (has_randr_)
     connection_->DispatchAll();
 
+  // RANDR does not allow fetching information on a particular monitor. So
+  // fetch all of them and try to find the requested monitor.
+  auto reply = randr_->GetMonitors({root_}).Sync();
+  if (reply) {
+    for (const auto& monitor : reply->monitors) {
+      if (static_cast<webrtc::ScreenId>(monitor.name) != screen_id) {
+        continue;
+      }
+      return ScreenResolution(
+          webrtc::DesktopSize(monitor.width, monitor.height),
+          GetMonitorDpi(monitor));
+    }
+  }
+
+  LOG(ERROR) << "Cannot find current resolution for screen ID " << screen_id
+             << ". Resolution of the default screen will be returned.";
+
   ScreenResolution result(
       webrtc::DesktopSize(connection_->default_screen().width_in_pixels,
                           connection_->default_screen().height_in_pixels),
