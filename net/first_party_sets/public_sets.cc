@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -301,6 +302,16 @@ PublicSets::NormalizeAdditionSets(
     normalized_additions.push_back(normalized);
   }
   return normalized_additions;
+}
+
+bool PublicSets::ForEachPublicSetEntry(
+    base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)> f)
+    const {
+  for (const auto& [site, entry] : entries_) {
+    if (!f(site, entry))
+      return false;
+  }
+  return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const PublicSets& ps) {

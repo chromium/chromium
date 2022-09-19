@@ -21,8 +21,9 @@ class Version;
 }  // namespace base
 
 namespace net {
-class SchemefulSite;
 class FirstPartySetEntry;
+class PublicSets;
+class SchemefulSite;
 }  // namespace net
 
 namespace content {
@@ -88,7 +89,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // Wraps FirstPartySetsDatabase::SetPublicSets.
   void PersistPublicSets(const std::string& browser_context_id,
                          const base::Version& version,
-                         const FlattenedSets& sets);
+                         const net::PublicSets& sets);
 
   // Wraps FirstPartySetsDatabase::GetPublicSets.
   FlattenedSets GetPersistedPublicSets(const std::string& browser_context_id);

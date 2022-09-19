@@ -396,6 +396,26 @@ TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
 }
 
+TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_FullIteration) {
+  int count = 0;
+  EXPECT_TRUE(public_sets().ForEachPublicSetEntry(
+      [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
+        ++count;
+        return true;
+      }));
+  EXPECT_EQ(count, 6);
+}
+
+TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_EarlyReturn) {
+  int count = 0;
+  EXPECT_FALSE(public_sets().ForEachPublicSetEntry(
+      [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
+        ++count;
+        return count < 4;
+      }));
+  EXPECT_EQ(count, 4);
+}
+
 TEST_F(PublicSetsTest, ComputeConfig_Empty) {
   EXPECT_EQ(PublicSets(
                 /*entries=*/

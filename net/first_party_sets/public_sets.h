@@ -7,11 +7,20 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+namespace network::mojom {
+class PublicFirstPartySetsDataView;
+}  // namespace network::mojom
 
 namespace net {
 
@@ -34,17 +43,6 @@ class NET_EXPORT PublicSets {
 
   bool operator==(const PublicSets& other) const;
   bool operator!=(const PublicSets& other) const;
-
-  // The accessors below should only be used by mojo plumbing.
-  const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
-    return entries_;
-  }
-  const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
-    return aliases_;
-  }
-  const FirstPartySetsContextConfig& manual_config() const {
-    return manual_config_;
-  }
 
   // Creates a clone of this instance.
   PublicSets Clone() const;
@@ -82,7 +80,23 @@ class NET_EXPORT PublicSets {
       const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries,
       const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases);
 
+  // Synchronously iterate over all entries in the public sets (i.e. not
+  // including any manual set entries). Returns early if any of the iterations
+  // returns false. Returns false if iteration was incomplete; true if all
+  // iterations returned true. No guarantees are made re: iteration order.
+  // Aliases are not included.
+  bool ForEachPublicSetEntry(
+      base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
+          f) const;
+
  private:
+  // mojo (de)serialization needs access to private details.
+  friend struct mojo::StructTraits<network::mojom::PublicFirstPartySetsDataView,
+                                   PublicSets>;
+
+  friend NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                             const PublicSets& ps);
+
   // Preprocesses a collection of "addition" sets, such that any sets that
   // transitively overlap (when taking the current `entries_` of this map, plus
   // the manual config, into account) are unioned together. I.e., this ensures
@@ -93,8 +107,20 @@ class NET_EXPORT PublicSets {
           base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>&
           addition_sets) const;
 
-  // Represents the mapping of site -> entry, where keys are sites within
-  // sets, and values are entries of the sets.
+  const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
+    return entries_;
+  }
+
+  const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
+    return aliases_;
+  }
+
+  const FirstPartySetsContextConfig& manual_config() const {
+    return manual_config_;
+  }
+
+  // Represents the mapping of site -> entry, where keys are sites within sets,
+  // and values are entries of the sets.
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;
 
   // The site aliases. Used to normalize a given SchemefulSite into its

@@ -19,8 +19,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
-class SchemefulSite;
 class FirstPartySetEntry;
+class PublicSets;
+class SchemefulSite;
 }  // namespace net
 
 namespace sql {
@@ -71,7 +72,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // version used by `browser_context_id`. Returns true on success.
   [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
                                    const std::string& version,
-                                   const FlattenedSets& sets);
+                                   const net::PublicSets& sets);
 
   // Stores the `sites` to be cleared for the `browser_context_id` into
   // database, and returns true on success.

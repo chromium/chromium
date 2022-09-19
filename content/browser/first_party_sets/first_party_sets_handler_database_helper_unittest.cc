@@ -11,6 +11,7 @@
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/public_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -434,24 +435,28 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
 
   db_helper_->PersistPublicSets(
       browser_context_id, base::Version("0.0.1"),
-      {{net::SchemefulSite(GURL("https://example.test")),
-        net::FirstPartySetEntry(
-            net::SchemefulSite(GURL("https://example.test")),
-            net::SiteType::kPrimary, absl::nullopt)},
-       {net::SchemefulSite(GURL("https://member1.test")),
-        net::FirstPartySetEntry(
-            net::SchemefulSite(GURL("https://example.test")),
-            net::SiteType::kAssociated, 0)},
-       {net::SchemefulSite(GURL("https://member3.test")),
-        net::FirstPartySetEntry(
-            net::SchemefulSite(GURL("https://example.test")),
-            net::SiteType::kAssociated, 1)},
-       {net::SchemefulSite(GURL("https://foo.test")),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kPrimary, absl::nullopt)},
-       {net::SchemefulSite(GURL("https://member2.test")),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                                net::SiteType::kAssociated, 0)}});
+      net::PublicSets(
+          /*entries=*/{{net::SchemefulSite(GURL("https://example.test")),
+                        net::FirstPartySetEntry(
+                            net::SchemefulSite(GURL("https://example.test")),
+                            net::SiteType::kPrimary, absl::nullopt)},
+                       {net::SchemefulSite(GURL("https://member1.test")),
+                        net::FirstPartySetEntry(
+                            net::SchemefulSite(GURL("https://example.test")),
+                            net::SiteType::kAssociated, 0)},
+                       {net::SchemefulSite(GURL("https://member3.test")),
+                        net::FirstPartySetEntry(
+                            net::SchemefulSite(GURL("https://example.test")),
+                            net::SiteType::kAssociated, 1)},
+                       {net::SchemefulSite(GURL("https://foo.test")),
+                        net::FirstPartySetEntry(
+                            net::SchemefulSite(GURL("https://foo.test")),
+                            net::SiteType::kPrimary, absl::nullopt)},
+                       {net::SchemefulSite(GURL("https://member2.test")),
+                        net::FirstPartySetEntry(
+                            net::SchemefulSite(GURL("https://foo.test")),
+                            net::SiteType::kAssociated, 0)}},
+          /*aliases=*/{}));
 
   FirstPartySetsHandlerDatabaseHelper::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),

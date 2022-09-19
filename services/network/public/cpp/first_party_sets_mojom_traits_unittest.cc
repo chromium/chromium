@@ -144,9 +144,6 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
           original, round_tripped));
 
   EXPECT_EQ(original, round_tripped);
-  EXPECT_FALSE(round_tripped.entries().empty());
-  EXPECT_FALSE(round_tripped.aliases().empty());
-  EXPECT_EQ(round_tripped.manual_config(), manual_config);
 }
 
 TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {

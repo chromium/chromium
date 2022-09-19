@@ -10,6 +10,7 @@
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/public_sets.h"
 
 namespace content {
 
@@ -120,7 +121,7 @@ void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(
 void FirstPartySetsHandlerDatabaseHelper::PersistPublicSets(
     const std::string& browser_context_id,
     const base::Version& version,
-    const FirstPartySetsHandlerDatabaseHelper::FlattenedSets& sets) {
+    const net::PublicSets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
   DCHECK(version.IsValid());

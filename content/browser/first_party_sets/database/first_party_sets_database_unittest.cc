@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/public_sets.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -258,13 +259,16 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_NoPreExistingDB) {
   const std::string site = "https://aaa.test";
   const std::string primary = "https://bbb.test";
 
-  FirstPartySetsDatabase::FlattenedSets input = {
-      {net::SchemefulSite(GURL(site)),
-       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                               net::SiteType::kAssociated, absl::nullopt)},
-      {net::SchemefulSite(GURL(primary)),
-       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                               net::SiteType::kPrimary, absl::nullopt)}};
+  net::PublicSets input(
+      /*entries=*/{{net::SchemefulSite(GURL(site)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kAssociated,
+                                            absl::nullopt)},
+                   {net::SchemefulSite(GURL(primary)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kPrimary,
+                                            absl::nullopt)}},
+      /*aliases=*/{});
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -334,13 +338,16 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_PreExistingDB) {
   const std::string site = "https://site1.test";
   const std::string primary = "https://site2.test";
 
-  FirstPartySetsDatabase::FlattenedSets input = {
-      {net::SchemefulSite(GURL(site)),
-       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                               net::SiteType::kAssociated, absl::nullopt)},
-      {net::SchemefulSite(GURL(primary)),
-       net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                               net::SiteType::kPrimary, absl::nullopt)}};
+  net::PublicSets input(
+      /*entries=*/{{net::SchemefulSite(GURL(site)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kAssociated,
+                                            absl::nullopt)},
+                   {net::SchemefulSite(GURL(primary)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kPrimary,
+                                            absl::nullopt)}},
+      /*aliases=*/{});
 
   OpenDatabase();
   // Trigger the lazy-initialization.

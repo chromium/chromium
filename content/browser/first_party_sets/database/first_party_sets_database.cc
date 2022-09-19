@@ -15,8 +15,10 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/public_sets.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -124,7 +126,7 @@ FirstPartySetsDatabase::~FirstPartySetsDatabase() {
 bool FirstPartySetsDatabase::SetPublicSets(
     const std::string& browser_context_id,
     const std::string& version,
-    const FirstPartySetsDatabase::FlattenedSets& sets) {
+    const net::PublicSets& public_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit())
@@ -134,21 +136,25 @@ bool FirstPartySetsDatabase::SetPublicSets(
   if (!transaction.Begin())
     return false;
 
-  for (const auto& [site, entry] : sets) {
-    DCHECK(!site.opaque());
-    DCHECK(!entry.primary().opaque());
-    static constexpr char kInsertSql[] =
-        "INSERT INTO public_sets(version,site,primary_site,site_type)"
-        "VALUES(?,?,?,?)";
-    sql::Statement insert_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
-    insert_statement.BindString(0, version);
-    insert_statement.BindString(1, site.Serialize());
-    insert_statement.BindString(2, entry.primary().Serialize());
-    insert_statement.BindInt(3, static_cast<int>(entry.site_type()));
+  if (!public_sets.ForEachPublicSetEntry(
+          [&](const net::SchemefulSite& site,
+              const net::FirstPartySetEntry& entry) -> bool {
+            DCHECK(!site.opaque());
+            DCHECK(!entry.primary().opaque());
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+            static constexpr char kInsertSql[] =
+                "INSERT INTO public_sets(version,site,primary_site,site_type)"
+                "VALUES(?,?,?,?)";
+            sql::Statement insert_statement(
+                db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
+            insert_statement.BindString(0, version);
+            insert_statement.BindString(1, site.Serialize());
+            insert_statement.BindString(2, entry.primary().Serialize());
+            insert_statement.BindInt(3, static_cast<int>(entry.site_type()));
 
-    if (!insert_statement.Run())
-      return false;
+            return insert_statement.Run();
+          })) {
+    return false;
   }
 
   // Keeps track of the version used by the given `browser_context_id`.

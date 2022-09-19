@@ -250,7 +250,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     db_helper_
         .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistPublicSets)
         .WithArgs(browser_context_id, version_.value(),
-                  public_sets_->entries());
+                  public_sets_.value().Clone());
   }
   std::move(callback).Run();
 }
