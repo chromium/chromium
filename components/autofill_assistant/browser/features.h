@@ -33,6 +33,7 @@ extern const base::Feature kAutofillAssistantRemoteAssistantUi;
 extern const base::Feature kAutofillAssistantSignGetActionsRequests;
 extern const base::Feature
     kAutofillAssistantSignGetNoRoundTripScriptsByHashRequests;
+extern const base::Feature kAutofillAssistantSendModelVersionInClientContext;
 extern const base::Feature kAutofillAssistantUrlHeuristic1;
 extern const base::Feature kAutofillAssistantUrlHeuristic2;
 extern const base::Feature kAutofillAssistantUrlHeuristic3;

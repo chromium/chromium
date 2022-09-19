@@ -130,6 +130,11 @@ const base::Feature kAutofillAssistantProactiveHelp{
 const base::Feature kAutofillAssistantRemoteAssistantUi{
     "AutofillAssistantRemoteAssistantUi", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Send the Moonracer model version in the client context.
+const base::Feature kAutofillAssistantSendModelVersionInClientContext{
+    "AutofillAssistantSendModelVersionInClientContext",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used to configure URL heuristics for upcoming new features.
 extern const base::Feature kAutofillAssistantUrlHeuristic1{
     "AutofillAssistantUrlHeuristic1", base::FEATURE_DISABLED_BY_DEFAULT};

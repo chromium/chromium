@@ -2672,6 +2672,25 @@ TEST_F(ControllerTest, AttachesAvailableModelVersionForCommandLineSwitch) {
                          TriggerContext::Options()));
 }
 
+TEST_F(ControllerTest, AttachesAvailableModelVersionWhenFeatureEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillAssistantSendModelVersionInClientContext);
+
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
+      .WillOnce(RunOnceCallback<0>(123456));
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{}),
+                         TriggerContext::Options()));
+}
+
 TEST_F(ControllerTest, UpdatesJsFlowLibraryLoaded) {
   EXPECT_CALL(*mock_service_, UpdateJsFlowLibraryLoaded(true));
 

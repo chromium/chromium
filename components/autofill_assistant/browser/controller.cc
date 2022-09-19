@@ -45,7 +45,10 @@ namespace autofill_assistant {
 namespace {
 
 bool ShouldSendModelVersionInContext(const TriggerContext& trigger_context) {
-  return trigger_context.GetScriptParameters()
+  return base::FeatureList::IsEnabled(
+             autofill_assistant::features::
+                 kAutofillAssistantSendModelVersionInClientContext) ||
+         trigger_context.GetScriptParameters()
              .GetSendAnnotateDomModelVersion() ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kAutofillAssistantAnnotateDom);
