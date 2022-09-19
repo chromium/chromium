@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+if ('ServiceWorkerGlobalScope' in self) {
+  self.selfFrameId = -1;
+} else {
+  self.selfDocumentId = 1;
+  self.selfFrameId = 0;
+}
+
 var getURL = chrome.extension.getURL;
 var deepEq = chrome.test.checkDeepEq;
 var expectedEventData;

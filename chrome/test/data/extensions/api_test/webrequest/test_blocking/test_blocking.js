@@ -581,7 +581,8 @@ function modifyResponseHeaders() {
           type: "xmlhttprequest",
           frameUrl: "unknown frame URL",
           initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1
+          frameId: self.selfFrameId,
+          documentId: self.selfDocumentId,
         }
       },
       {
@@ -592,7 +593,8 @@ function modifyResponseHeaders() {
           tabId: -1,
           type: "xmlhttprequest",
           initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1
+          frameId: self.selfFrameId,
+          documentId: self.selfDocumentId,
         }
       },
       { label: "x-onSendHeaders",
@@ -602,7 +604,8 @@ function modifyResponseHeaders() {
           tabId: -1,
           type: "xmlhttprequest",
           initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1
+          frameId: self.selfFrameId,
+          documentId: self.selfDocumentId,
         }
       },
       {
@@ -616,7 +619,8 @@ function modifyResponseHeaders() {
           statusCode: 200,
           responseHeadersExist: true,
           initiator: getDomain(initiators.WEB_INITIATED),
-          documentId: 1
+          frameId: self.selfFrameId,
+          documentId: self.selfDocumentId,
         },
         retval_function: function(name, details) {
           responseHeaders = details.responseHeaders;
@@ -645,7 +649,8 @@ function modifyResponseHeaders() {
           ip: "127.0.0.1",
           initiator: getDomain(initiators.WEB_INITIATED),
           responseHeadersExist: true,
-          documentId: 1
+          frameId: self.selfFrameId,
+          documentId: self.selfDocumentId,
         }
       },
       { label: "x-onCompleted",
@@ -660,7 +665,8 @@ function modifyResponseHeaders() {
           ip: "127.0.0.1",
           initiator: getDomain(initiators.WEB_INITIATED),
           responseHeadersExist: true,
-          documentId: 1
+          frameId: self.selfFrameId,
+          documentId: self.selfDocumentId,
         }
       },
     ],
@@ -1363,10 +1369,6 @@ var nonServiceWorkerTests = [
   // Tests that use synchronous XMLHttpRequest are not compatible with
   // service workers.
   syncXhrsFromOurselfAreInvisible,
-  // This test fails because the header is not removed from the response as
-  // expected. The same code works fine with a legacy background page.
-  // See crbug.com/1361610.
-  modifyResponseHeaders,
   // This test results in an XMLHttpRequest being issued from outside of the
   // test.
   asyncXhrsFromOurselfAreVisible,
