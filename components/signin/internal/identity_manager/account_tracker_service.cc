@@ -556,9 +556,8 @@ void AccountTrackerService::OnAccountImageUpdated(
     return;
 
   base::Value::Dict* dict = nullptr;
-  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  base::Value::List& list = update->GetList();
-  for (base::Value& value : list) {
+  ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+  for (base::Value& value : *update) {
     base::Value::Dict* maybe_dict = value.GetIfDict();
     if (maybe_dict) {
       const std::string* account_key = maybe_dict->FindString(kAccountKeyKey);
@@ -617,8 +616,8 @@ void AccountTrackerService::LoadFromPrefs() {
                                               ? signin::Tribool::kTrue
                                               : signin::Tribool::kFalse;
           // Migrate to kAccountChildAttributeKey.
-          ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value::Dict& update_dict = update->GetList()[i].GetDict();
+          ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+          base::Value::Dict& update_dict = (*update)[i].GetDict();
           update_dict.Set(kAccountChildAttributeKey,
                           static_cast<int>(account_info.is_child_account));
           update_dict.Remove(kDeprecatedChildStatusKey);
@@ -638,8 +637,8 @@ void AccountTrackerService::LoadFromPrefs() {
                 dict->FindIntByDottedPath(
                     kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
           // Migrate to Capability names based pref paths.
-          ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value::Dict& update_dict = update->GetList()[i].GetDict();
+          ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+          base::Value::Dict& update_dict = (*update)[i].GetDict();
           SetAccountCapabilityState(
               update_dict, kCanOfferExtendedChromeSyncPromosCapabilityName,
               ParseTribool(can_offer_extended_chrome_sync_promos));
@@ -702,9 +701,8 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
     return;
 
   base::Value::Dict* dict = nullptr;
-  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  base::Value::List& list = update->GetList();
-  for (base::Value& value : list) {
+  ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+  for (base::Value& value : *update) {
     base::Value::Dict* maybe_dict = value.GetIfDict();
     if (maybe_dict) {
       const std::string* account_key = maybe_dict->FindString(kAccountKeyKey);
@@ -716,8 +714,8 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   }
 
   if (!dict) {
-    list.Append(base::Value::Dict());
-    dict = &list.back().GetDict();
+    update->Append(base::Value::Dict());
+    dict = &update->back().GetDict();
     dict->Set(kAccountKeyKey, account_info.account_id.ToString());
   }
 
@@ -747,9 +745,9 @@ void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
   if (!pref_service_)
     return;
 
-  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+  ScopedListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   const std::string account_id = account_info.account_id.ToString();
-  update->GetList().EraseIf([&account_id](const base::Value& value) {
+  update->EraseIf([&account_id](const base::Value& value) {
     if (!value.is_dict())
       return false;
     const std::string* account_key = value.GetDict().FindString(kAccountKeyKey);

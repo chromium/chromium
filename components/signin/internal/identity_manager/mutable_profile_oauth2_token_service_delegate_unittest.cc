@@ -991,8 +991,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
     pref_service_.SetInteger(prefs::kAccountIdMigrationState,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
-    ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
-    update->ClearList();
+    ScopedListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
+    update->clear();
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetStringKey("account_id", email);
     dict.SetStringKey("email", email);
@@ -1056,17 +1056,17 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     pref_service_.SetInteger(prefs::kAccountIdMigrationState,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
-    ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
-    update->ClearList();
-    base::Value account1(base::Value::Type::DICTIONARY);
-    account1.SetStringKey("account_id", email1);
-    account1.SetStringKey("email", email1);
-    account1.SetStringKey("gaia", gaia_id1);
+    ScopedListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
+    update->clear();
+    base::Value::Dict account1;
+    account1.Set("account_id", email1);
+    account1.Set("email", email1);
+    account1.Set("gaia", gaia_id1);
     update->Append(std::move(account1));
-    base::Value account2(base::Value::Type::DICTIONARY);
-    account2.SetStringKey("account_id", email2);
-    account2.SetStringKey("email", email2);
-    account2.SetStringKey("gaia", gaia_id2);
+    base::Value::Dict account2;
+    account2.Set("account_id", email2);
+    account2.Set("email", email2);
+    account2.Set("gaia", gaia_id2);
     update->Append(std::move(account2));
     account_tracker_service_.ResetForTesting();
 

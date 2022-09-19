@@ -306,12 +306,12 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
-  update->ClearList();
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email);
-  dict.SetStringKey("email", email);
-  dict.SetStringKey("gaia", gaia_id);
+  ScopedListPrefUpdate update(client_prefs, prefs::kAccountInfo);
+  update->clear();
+  base::Value::Dict dict;
+  dict.Set("account_id", email);
+  dict.Set("email", email);
+  dict.Set("gaia", gaia_id);
   update->Append(std::move(dict));
 
   account_tracker()->ResetForTesting();
@@ -337,12 +337,12 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
-  update->ClearList();
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email);
-  dict.SetStringKey("email", email);
-  dict.SetStringKey("gaia", gaia_id);
+  ScopedListPrefUpdate update(client_prefs, prefs::kAccountInfo);
+  update->clear();
+  base::Value::Dict dict;
+  dict.Set("account_id", email);
+  dict.Set("email", email);
+  dict.Set("gaia", gaia_id);
   update->Append(std::move(dict));
 
   account_tracker()->ResetForTesting();
