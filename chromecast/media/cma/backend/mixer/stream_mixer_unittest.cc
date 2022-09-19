@@ -338,7 +338,7 @@ void CompareAudioData(const ::media::AudioBus& expected,
     const float* expected_data = expected.channel(c);
     const float* actual_data = actual.channel(c);
     for (int f = 0; f < expected.frames(); ++f) {
-      EXPECT_FLOAT_EQ(*expected_data++, *actual_data++)
+      EXPECT_NEAR(*expected_data++, *actual_data++, 0.0000001f)
           << c << " " << f << " " << token;
     }
   }

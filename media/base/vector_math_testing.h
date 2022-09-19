@@ -42,6 +42,19 @@ MEDIA_SHMEM_EXPORT std::pair<float, float> EWMAAndMaxPower_SSE(
     const float src[],
     int len,
     float smoothing_factor);
+MEDIA_SHMEM_EXPORT void FMAC_AVX2(const float src[],
+                                  float scale,
+                                  int len,
+                                  float dest[]);
+MEDIA_SHMEM_EXPORT void FMUL_AVX2(const float src[],
+                                  float scale,
+                                  int len,
+                                  float dest[]);
+MEDIA_SHMEM_EXPORT std::pair<float, float> EWMAAndMaxPower_AVX2(
+    float initial_value,
+    const float src[],
+    int len,
+    float smoothing_factor);
 #endif
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)

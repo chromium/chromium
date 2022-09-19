@@ -5,6 +5,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/cpu.h"
 #include "base/memory/aligned_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringize_macros.h"
@@ -80,6 +81,16 @@ TEST_F(VectorMathTest, FMAC) {
         input_vector_.get(), kScale, kVectorSize, output_vector_.get());
     VerifyOutput(kResult);
   }
+  {
+    base::CPU cpu;
+    if (cpu.has_avx2() && cpu.has_fma3()) {
+      SCOPED_TRACE("FMAC_AVX2");
+      FillTestVectors(kInputFillValue, kOutputFillValue);
+      vector_math::FMAC_AVX2(input_vector_.get(), kScale, kVectorSize,
+                             output_vector_.get());
+      VerifyOutput(kResult);
+    }
+  }
 #endif
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
@@ -120,6 +131,16 @@ TEST_F(VectorMathTest, FMUL) {
     vector_math::FMUL_SSE(
         input_vector_.get(), kScale, kVectorSize, output_vector_.get());
     VerifyOutput(kResult);
+  }
+  {
+    base::CPU cpu;
+    if (cpu.has_avx2()) {
+      SCOPED_TRACE("FMUL_AVX2");
+      FillTestVectors(kInputFillValue, kOutputFillValue);
+      vector_math::FMUL_AVX2(input_vector_.get(), kScale, kVectorSize,
+                             output_vector_.get());
+      VerifyOutput(kResult);
+    }
   }
 #endif
 
@@ -218,6 +239,17 @@ class EWMATestScenario {
           initial_value_, data_.get(), data_len_, smoothing_factor_);
       EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
       EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
+    }
+    {
+      base::CPU cpu;
+      if (cpu.has_avx2() && cpu.has_fma3()) {
+        SCOPED_TRACE("EWMAAndMaxPower_AVX2");
+        const std::pair<float, float>& result =
+            vector_math::EWMAAndMaxPower_AVX2(initial_value_, data_.get(),
+                                              data_len_, smoothing_factor_);
+        EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
+        EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
+      }
     }
 #endif
 

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/cpu.h"
 #include "base/memory/aligned_memory.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -86,38 +87,43 @@ class VectorMathPerfTest : public testing::Test {
   std::unique_ptr<float, base::AlignedFreeDeleter> output_vector_;
 };
 
-// Define platform dependent function names for SIMD optimized methods.
-#if defined(ARCH_CPU_X86_FAMILY)
-#define FMAC_FUNC FMAC_SSE
-#define FMUL_FUNC FMUL_SSE
-#define EWMAAndMaxPower_FUNC EWMAAndMaxPower_SSE
-#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
-#define FMAC_FUNC FMAC_NEON
-#define FMUL_FUNC FMUL_NEON
-#define EWMAAndMaxPower_FUNC EWMAAndMaxPower_NEON
-#endif
-
 // Benchmarks for each optimized vector_math::FMAC() method.
 // Benchmark FMAC_C().
 TEST_F(VectorMathPerfTest, FMAC_unoptimized) {
   RunBenchmark(vector_math::FMAC_C, true, "_fmac", "unoptimized");
 }
 
-#if defined(FMAC_FUNC)
 // Benchmark FMAC_FUNC() with unaligned size.
 TEST_F(VectorMathPerfTest, FMAC_optimized_unaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
-  RunBenchmark(vector_math::FMAC_FUNC, false, "_fmac", "optimized_unaligned");
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx2() && cpu.has_fma3()) {
+    RunBenchmark(vector_math::FMAC_AVX2, false, "_fmac", "optimized_unaligned");
+  } else if (cpu.has_sse2()) {
+    RunBenchmark(vector_math::FMAC_SSE, false, "_fmac", "optimized_unaligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMAC_NEON, false, "_fmac", "optimized_unaligned");
+#endif
 }
 
 // Benchmark FMAC_FUNC() with aligned size.
 TEST_F(VectorMathPerfTest, FMAC_optimized_aligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
-  RunBenchmark(vector_math::FMAC_FUNC, true, "_fmac", "optimized_aligned");
-}
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx2() && cpu.has_fma3()) {
+    RunBenchmark(vector_math::FMAC_AVX2, true, "_fmac", "optimized_aligned");
+  } else if (cpu.has_sse2()) {
+    RunBenchmark(vector_math::FMAC_SSE, true, "_fmac", "optimized_aligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMAC_NEON, true, "_fmac", "optimized_aligned");
 #endif
+}
 
 // Benchmarks for each optimized vector_math::FMUL() method.
 // Benchmark FMUL_C().
@@ -125,21 +131,37 @@ TEST_F(VectorMathPerfTest, FMUL_unoptimized) {
   RunBenchmark(vector_math::FMUL_C, true, "_fmul", "unoptimized");
 }
 
-#if defined(FMUL_FUNC)
 // Benchmark FMUL_FUNC() with unaligned size.
 TEST_F(VectorMathPerfTest, FMUL_optimized_unaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
-  RunBenchmark(vector_math::FMUL_FUNC, false, "_fmul", "optimized_unaligned");
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx2()) {
+    RunBenchmark(vector_math::FMUL_AVX2, false, "_fmul", "optimized_unaligned");
+  } else if (cpu.has_sse2()) {
+    RunBenchmark(vector_math::FMUL_SSE, false, "_fmul", "optimized_unaligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, false, "_fmul", "optimized_unaligned");
+#endif
 }
 
 // Benchmark FMUL_FUNC() with aligned size.
 TEST_F(VectorMathPerfTest, FMUL_optimized_aligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
-  RunBenchmark(vector_math::FMUL_FUNC, true, "_fmul", "optimized_aligned");
-}
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx2()) {
+    RunBenchmark(vector_math::FMUL_AVX2, true, "_fmul", "optimized_aligned");
+  } else if (cpu.has_sse2()) {
+    RunBenchmark(vector_math::FMUL_SSE, true, "_fmul", "optimized_aligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::FMUL_NEON, true, "_fmul", "optimized_aligned");
 #endif
+}
 
 // Benchmarks for each optimized vector_math::EWMAAndMaxPower() method.
 // Benchmark EWMAAndMaxPower_C().
@@ -148,22 +170,42 @@ TEST_F(VectorMathPerfTest, EWMAAndMaxPower_unoptimized) {
                "_ewma_and_max_power", "unoptimized");
 }
 
-#if defined(EWMAAndMaxPower_FUNC)
 // Benchmark EWMAAndMaxPower_FUNC() with unaligned size.
 TEST_F(VectorMathPerfTest, EWMAAndMaxPower_optimized_unaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
-  RunBenchmark(vector_math::EWMAAndMaxPower_FUNC, kVectorSize - 1,
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx2() && cpu.has_fma3()) {
+    RunBenchmark(vector_math::EWMAAndMaxPower_AVX2, kVectorSize - 1,
+                 "_ewma_and_max_power", "optimized_unaligned");
+  } else if (cpu.has_sse2()) {
+    RunBenchmark(vector_math::EWMAAndMaxPower_SSE, kVectorSize - 1,
+                 "_ewma_and_max_power", "optimized_unaligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::EWMAAndMaxPower_NEON, kVectorSize - 1,
                "_ewma_and_max_power", "optimized_unaligned");
+#endif
 }
 
 // Benchmark EWMAAndMaxPower_FUNC() with aligned size.
 TEST_F(VectorMathPerfTest, EWMAAndMaxPower_optimized_aligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
-  RunBenchmark(vector_math::EWMAAndMaxPower_FUNC, kVectorSize,
+#if defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  if (cpu.has_avx2() && cpu.has_fma3()) {
+    RunBenchmark(vector_math::EWMAAndMaxPower_AVX2, kVectorSize,
+                 "_ewma_and_max_power", "optimized_aligned");
+  } else if (cpu.has_sse2()) {
+    RunBenchmark(vector_math::EWMAAndMaxPower_SSE, kVectorSize,
+                 "_ewma_and_max_power", "optimized_aligned");
+  }
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  RunBenchmark(vector_math::EWMAAndMaxPower_NEON, kVectorSize,
                "_ewma_and_max_power", "optimized_aligned");
-}
 #endif
+}
 
 } // namespace media
