@@ -2500,6 +2500,7 @@ if (!is_android) {
     if (is_linux) {
       sources += [
         "../browser/chrome_main_process_singleton_browsertest.cc",
+        "../browser/headless/headless_mode_browsertest_linux.cc",
         "../browser/process_singleton_browsertest.cc",
       ]
     }

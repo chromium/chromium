@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 INSTANTIATE_TEST_SUITE_P(HeadlessModeBrowserTestWithStartWindowMode,
