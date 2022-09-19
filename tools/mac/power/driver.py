@@ -11,6 +11,7 @@ import pandas as pd
 import signal
 import subprocess
 import sys
+import datetime
 import time
 import typing
 
@@ -165,46 +166,43 @@ class DriverContext:
                                        "powermetrics.plist")
     power_sampler_output = os.path.join(self._output_dir, scenario_driver.name,
                                         "power_sampler.json")
-    power_sampler_battery_output = os.path.join(self._output_dir,
-                                                scenario_driver.name,
-                                                "power_sampler_battery.json")
 
     powermetrics_process = None
     power_sampler_process = None
-    power_sampler_battery_process = None
     browser_process = None
+
+    cycle_length_in_secs = scenario_driver.CycleDuration().total_seconds()
+    if cycle_length_in_secs < 60:
+      raise ValueError("Cycle length must be more than 60 seconds!")
+    elif cycle_length_in_secs % 60 != 0:
+      logging.warning("Cycle has a duration not divisible by 60 secs."
+                      "This is suboptimal for measurment variance.")
     try:
       scenario_driver.Launch()
       if hasattr(scenario_driver, 'browser'):
         browser_process = scenario_driver.browser.browser_process
 
+
       powermetrics_args = [
           "sudo", "powermetrics", "-f", "plist", "--samplers",
           "tasks,cpu_power,gpu_power,thermal,disk,network",
           "--show-process-coalition", "--show-process-gpu",
-          "--show-process-energy", "-i", "10000", "--output-file",
-          powermetrics_output
+          "--show-process-energy", "-i", f"{int(cycle_length_in_secs*1000)}",
+          "--output-file", powermetrics_output
       ]
+
       powermetrics_process = subprocess.Popen(powermetrics_args,
                                               stdout=subprocess.PIPE,
                                               stdin=subprocess.PIPE)
-      power_sampler_battery_args = [
-          self._power_sample_path, "--sample-on-notification",
-          "--samplers=battery",
-          f"--timeout={int(scenario_driver.duration.total_seconds())}",
-          f"--json-output-file={power_sampler_battery_output}"
-      ]
-      power_sampler_battery_process = subprocess.Popen(
-          power_sampler_battery_args,
-          stdout=subprocess.PIPE,
-          stdin=subprocess.PIPE)
 
       power_sampler_args = [
-          self._power_sample_path, "--sample-interval=10",
-          "--samplers=smc,user_idle_level,main_display",
+          self._power_sample_path, "--sample-on-notification",
+          f"--sample-every-notification={int(cycle_length_in_secs/60)}",
+          "--samplers=battery,smc,user_idle_level,main_display",
           f"--timeout={int(scenario_driver.duration.total_seconds())}",
           f"--json-output-file={power_sampler_output}"
       ]
+
       if browser_process is not None:
         power_sampler_args += [
             f"--resource-coalition-pid={browser_process.pid}"
@@ -214,14 +212,11 @@ class DriverContext:
                                                stdin=subprocess.PIPE)
       scenario_driver.Wait()
       power_sampler_process.wait()
-      power_sampler_battery_process.wait()
 
     finally:
       scenario_driver.TearDown()
       if power_sampler_process:
         utils.TerminateProcess(power_sampler_process)
-      if power_sampler_battery_process:
-        utils.TerminateProcess(power_sampler_battery_process)
       if powermetrics_process:
         # Force powermetrics to flush data.
         utils.SendSignalToRootProcess(powermetrics_process, signal.SIGIO)

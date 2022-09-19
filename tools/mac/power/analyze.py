@@ -141,20 +141,8 @@ def main():
         power_dataframe['sample_time'])
     power_dataframe.set_index('sample_time', inplace=True)
 
-    with open(os.path.join(subdir,
-                           "power_sampler_battery.json")) as battery_file:
-      battery_data = json.load(battery_file)
-    battery_dataframe = pd.DataFrame.from_records(
-        battery_data['data_rows'],
-        columns=[key
-                 for key in battery_data['column_labels']] + ["sample_time"])
-    battery_dataframe['sample_time'] = NormalizeMicrosecondsSampleTime(
-        battery_dataframe['sample_time'])
-    battery_dataframe.set_index('sample_time', inplace=True)
-
     # Join all data sources by sample_time.
-    scenario_data = powermetrics_dataframe.join(
-        power_dataframe, how='outer').join(battery_dataframe, how='outer')
+    scenario_data = powermetrics_dataframe.join(power_dataframe, how='outer')
 
     summary_path = os.path.join(subdir, 'summary.csv')
     logging.info(f'Outputing results in {os.path.abspath(summary_path)}')

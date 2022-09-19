@@ -75,6 +75,12 @@ class ScenarioOSADriver(abc.ABC):
     """
     pass
 
+  def CycleDuration(self) -> datetime.timedelta:
+    """Returns the duration of a cycle in the scenario. Not all
+     scenario have a notion of cycles. For those which don't a
+     cycle is defined as the duration of the whole scenario"""
+    return self.duration
+
   def IsRunning(self) -> bool:
     """Returns true if the script is currently running.
     """
@@ -199,6 +205,11 @@ class NavigationScenario(ScenarioWithBrowserOSADriver):
             "sites": ",".join([f'"{site}"' for site in sites])
         })
 
+    self.cycle_duration = len(sites) * navigation_duration
+
+  def CycleDuration(self) -> datetime.timedelta:
+    return self.cycle_duration
+
 
 class MeetScenario(ScenarioWithBrowserOSADriver):
   """Scenario that has the browser join a Google Meet room.
@@ -267,12 +278,17 @@ def MakeScenarioDriver(scenario_name,
     else:
       raise ValueError("Invalid navigation scenario.")
 
-    return NavigationScenario(
-        browser_driver,
-        navigation_duration=datetime.timedelta(seconds=15),
-        navigation_cycles=140,
-        sites=NAVIGATED_SITES,
-        scenario_name=scenario_name)
+    # Aim for a benchmark that lasts up to 1 hour.
+    navigation_duration_in_seconds = 15
+    navigation_cycles = (
+        60 * 60) / len(NAVIGATED_SITES) / navigation_duration_in_seconds
+
+    return NavigationScenario(browser_driver,
+                              navigation_duration=datetime.timedelta(
+                                  seconds=navigation_duration_in_seconds),
+                              navigation_cycles=navigation_cycles,
+                              sites=NAVIGATED_SITES,
+                              scenario_name=scenario_name)
   if "zero_window" == scenario_name:
     return ZeroWindowScenario(browser_driver, datetime.timedelta(minutes=60))
   return None

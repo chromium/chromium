@@ -51,7 +51,8 @@ constexpr char kSwitchSampleInterval[] = "sample-interval";
 constexpr char kSwitchSampleCount[] = "sample-count";
 constexpr char kSwitchTimeout[] = "timeout";
 constexpr char kSwitchJsonOutputFile[] = "json-output-file";
-constexpr char kSwitchSampleOnNotification[] = "sample-on-notification";
+constexpr char kSwitchSampleEveryNthNotification[] =
+    "sample-every-nth-notification";
 constexpr char kSwitchResourceCoalitionPid[] = "resource-coalition-pid";
 constexpr char kSwitchSimulateUserActive[] = "simulate-user-active";
 constexpr char kSwitchNoSamplers[] = "no-samplers";
@@ -63,7 +64,8 @@ in CSV or JSON format.
 Options:
   --samplers=<samplers>           Comma separated list of samplers.
   --sample-interval=<num>         Sample on a <num> second interval.
-  --sample-on-notification        Sample on power manager notifications.
+  --sample-every-nth-notification        Sample on power manager notifications.
+      Respond to every nth notification only.
       Note that interval and event notifications are mutually exclusive.
   --sample-count=<num>            Collect <num> samples before exiting.
   --no-samplers                   Use no samplers.
@@ -151,10 +153,10 @@ int main(int argc, char** argv) {
 
   base::TimeDelta sampling_interval = base::Seconds(60);
   if (command_line.HasSwitch(kSwitchSampleInterval)) {
-    if (command_line.HasSwitch(kSwitchSampleOnNotification)) {
+    if (command_line.HasSwitch(kSwitchSampleEveryNthNotification)) {
       PrintUsage(
           "--sample-interval should not be specified with "
-          "--sample-on-notification.");
+          "--sample-every-nth-notification.");
       return kStatusInvalidParam;
     }
 
@@ -177,7 +179,7 @@ int main(int argc, char** argv) {
 
     std::string sample_count_switch =
         command_line.GetSwitchValueASCII(kSwitchSampleCount);
-    if (!base::StringToInt64(sample_count_switch, &sample_count) &&
+    if (!base::StringToInt64(sample_count_switch, &sample_count) ||
         sample_count < 1) {
       PrintUsage("sample-count must be numeric and larger than 0.");
       return kStatusInvalidParam;
@@ -212,7 +214,7 @@ int main(int argc, char** argv) {
   }
 
   std::unique_ptr<base::SamplingEventSource> event_source;
-  if (command_line.HasSwitch(kSwitchSampleOnNotification)) {
+  if (command_line.HasSwitch(kSwitchSampleEveryNthNotification)) {
     event_source = std::make_unique<base::IOPMPowerSourceSamplingEventSource>();
   } else {
     event_source =
@@ -220,7 +222,20 @@ int main(int argc, char** argv) {
   }
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::NS_RUNLOOP);
-  power_sampler::SamplingController controller;
+
+  int64_t sample_every = 1;
+  if (command_line.HasSwitch(kSwitchSampleEveryNthNotification)) {
+    std::string sample_every_switch =
+        command_line.GetSwitchValueASCII(kSwitchSampleEveryNthNotification);
+    if (!base::StringToInt64(sample_every_switch, &sample_every) ||
+        sample_every < 1) {
+      PrintUsage(
+          "sample-every-nth-notification must be numeric and larger than 0.");
+      return kStatusInvalidParam;
+    }
+  }
+
+  power_sampler::SamplingController controller(sample_every);
 
   std::unique_ptr<power_sampler::UserActiveSimulator> user_active_simulator;
   if (command_line.HasSwitch(kSwitchSimulateUserActive)) {
