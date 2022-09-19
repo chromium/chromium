@@ -481,31 +481,16 @@ const ui::ImageModel PageInfoViewFactory::GetEnforcedCookieControlsIcon(
     CookieControlsEnforcement enforcement) {
   switch (enforcement) {
     case CookieControlsEnforcement::kEnforcedByExtension:
-      return GetEnforcedByExtensionIcon();
+      return ui::ImageModel::FromVectorIcon(vector_icons::kExtensionIcon,
+                                            ui::kColorIcon, GetIconSize());
     case CookieControlsEnforcement::kEnforcedByPolicy:
-      return GetEnforcedByPolicyIcon();
+      return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                            ui::kColorIcon, GetIconSize());
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
-      return GetEnforcedBySettingsIcon();
+      return ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                            ui::kColorIcon, GetIconSize());
     case CookieControlsEnforcement::kNoEnforcement:
       NOTREACHED();
       return ui::ImageModel();
   }
-}
-
-// static
-const ui::ImageModel PageInfoViewFactory::GetEnforcedByPolicyIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                        ui::kColorIcon, GetIconSize());
-}
-
-// static
-const ui::ImageModel PageInfoViewFactory::GetEnforcedByExtensionIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kExtensionIcon,
-                                        ui::kColorIcon, GetIconSize());
-}
-
-// static
-const ui::ImageModel PageInfoViewFactory::GetEnforcedBySettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
-                                        ui::kColorIcon, GetIconSize());
 }

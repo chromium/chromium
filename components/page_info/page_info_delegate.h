@@ -69,7 +69,6 @@ class PageInfoDelegate {
   // Returns absl::nullopt if `site_url` is not recognised as a member of any
   // FPS or if FPS functionality is not allowed .
   virtual absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) = 0;
-  virtual bool IsFpsManaged() = 0;
 
   // Creates an infobars::ContentInfoBarManager and an InfoBarDelegate using it,
   // if possible. Returns true if an InfoBarDelegate was created, false

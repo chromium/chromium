@@ -175,11 +175,6 @@ absl::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
       ->GetFirstPartySetOwnerForDisplay(site_url);
 }
 
-bool ChromePageInfoDelegate::IsFpsManaged() {
-  return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
-      ->IsFirstPartySetsDataAccessManaged();
-}
-
 bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents_);
