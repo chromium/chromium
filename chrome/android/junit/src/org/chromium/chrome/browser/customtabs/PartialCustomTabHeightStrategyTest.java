@@ -33,6 +33,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -397,7 +398,12 @@ public class PartialCustomTabHeightStrategyTest {
 
     private void assertTabIsAtInitialPos(WindowManager.LayoutParams attrs) {
         if (mWindowAboveNavbar) {
-            assertEquals(INITIAL_HEIGHT, attrs.height);
+            if (attrs.gravity == Gravity.BOTTOM) {
+                assertEquals(INITIAL_HEIGHT, attrs.height);
+            } else if (attrs.gravity == Gravity.NO_GRAVITY) {
+                // Tab is in motion. Check y since the it is in full height.
+                assertEquals(INITIAL_HEIGHT + NAVBAR_HEIGHT, attrs.y);
+            }
         } else {
             assertEquals(MAX_INIT_POS, attrs.y);
         }
@@ -788,7 +794,7 @@ public class PartialCustomTabHeightStrategyTest {
         // Try to drag up and verify that the location does not change.
         actionDown(handleStrategy, timestamp, INITIAL_HEIGHT - 100);
         actionMove(handleStrategy, timestamp, INITIAL_HEIGHT - 250);
-        assertTabIsAtInitialPos(mAttributeResults.get(0));
+        assertTabIsAtInitialPos(getWindowAttributes());
     }
 
     @Test
