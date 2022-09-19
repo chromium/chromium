@@ -1334,4 +1334,41 @@ public class PostMessageTest {
         }, handler);
         Assert.assertEquals("msg1", container.waitForMessageCallback().getStringValue());
     }
+
+    private static final String COPY_PORT_MESSAGE_FROM_WINDOW = "<!DOCTYPE html><html><body>"
+            + "    <script>"
+            + "        var port = null;"
+            + "        onmessage = function (e) {"
+            + "            if (e.ports[0]) port = e.ports[0];"
+            + "            else port.postMessage(e.data);"
+            + "        };"
+            + "   </script>"
+            + "</body></html>";
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    // Regression test of https://issuetracker.google.com/245837736
+    public void testMessageListenerAvailableAfterPortGarbageCollected() throws Throwable {
+        loadPage(COPY_PORT_MESSAGE_FROM_WINDOW);
+        final ChannelContainer container = new ChannelContainer();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            MessagePort[] ports = mAwContents.createMessageChannel();
+            ports[0].setMessageCallback((message, p) -> container.notifyCalled(message), null);
+            mAwContents.postMessageToMainFrame(
+                    new MessagePayload("*"), "*", new MessagePort[] {ports[1]});
+            ports = null;
+        });
+        for (int i = 0; i < 100; ++i) {
+            final String message = HELLO + i;
+            Runtime.getRuntime().gc();
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+                // Trigger GC to make ports[0] being garbage collected. Note that despite that what
+                // JavaDoc says about invoking "gc()", both Dalvik and ART actually run the
+                // collector.
+                mAwContents.postMessageToMainFrame(new MessagePayload(message), "*", null);
+            });
+            Assert.assertEquals(message, container.waitForMessageCallback().getStringValue());
+        }
+    }
 }
