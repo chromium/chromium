@@ -1232,22 +1232,21 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_LongPressSelection) {
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, TextSelection) {
   SetupTest("web_view/text_selection",
             "/extensions/platform_apps/web_view/text_selection/guest.html");
-  ASSERT_TRUE(DeprecatedGuestWebContents());
+  ASSERT_TRUE(GetGuestView());
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       GetPlatformAppWindow()));
 
   // Wait until guest sees a context menu.
   ExtensionTestMessageListener ctx_listener("MSG_CONTEXTMENU");
   ContextMenuWaiter menu_observer;
-  SimulateRWHMouseClick(
-      DeprecatedGuestWebContents()->GetRenderViewHost()->GetWidget(),
-      blink::WebMouseEvent::Button::kRight, 20, 20);
+  SimulateRWHMouseClick(GetGuestRenderFrameHost()->GetRenderWidgetHost(),
+                        blink::WebMouseEvent::Button::kRight, 20, 20);
   menu_observer.WaitForMenuOpenAndClose();
   ASSERT_TRUE(ctx_listener.WaitUntilSatisfied());
 
   // Now verify that the selection text propagates properly to RWHV.
   content::RenderWidgetHostView* guest_rwhv =
-      DeprecatedGuestWebContents()->GetRenderWidgetHostView();
+      GetGuestRenderFrameHost()->GetView();
   ASSERT_TRUE(guest_rwhv);
   std::string selected_text = base::UTF16ToUTF8(guest_rwhv->GetSelectedText());
   ASSERT_GE(selected_text.size(), 10u);
