@@ -9675,10 +9675,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::UNKNOWN;
   }
 
-  // Only show glanceables flag for canary/unknown channels.
+  // Skip glanceables flag on stable channel.
   if (!strcmp(kWelcomeScreenInternalName, entry.internal_name)) {
-    return channel != version_info::Channel::CANARY &&
-           channel != version_info::Channel::UNKNOWN;
+    return channel == version_info::Channel::STABLE;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
