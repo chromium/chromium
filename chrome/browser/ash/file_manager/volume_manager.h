@@ -569,6 +569,10 @@ class VolumeManager : public KeyedService,
     return &io_task_controller_;
   }
 
+  friend std::ostream& operator<<(std::ostream& out, const VolumeManager& vm) {
+    return out << "VolumeManager[" << vm.id_ << "]";
+  }
+
  private:
   // Comparator sorting Volume objects by volume ID .
   struct SortByVolumeId {
@@ -633,6 +637,9 @@ class VolumeManager : public KeyedService,
                                     const guest_os::VmType vm_type,
                                     RemoveSftpGuestOsVolumeCallback callback,
                                     ash::MountError error);
+
+  static int counter_;
+  const int id_ = ++counter_;  // Only used in log traces
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_integration_service_;

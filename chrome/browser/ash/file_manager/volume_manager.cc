@@ -674,6 +674,8 @@ std::unique_ptr<Volume> Volume::CreateForTesting(
   return volume;
 }
 
+int VolumeManager::counter_ = 0;
+
 VolumeManager::VolumeManager(
     Profile* profile,
     drive::DriveIntegrationService* drive_integration_service,
@@ -692,24 +694,32 @@ VolumeManager::VolumeManager(
               profile_,
               arc::ArcFileSystemOperationRunner::GetForBrowserContext(
                   profile_))) {
-  DCHECK(disk_mount_manager);
+  DCHECK(profile_);
+  DCHECK(disk_mount_manager_);
+  VLOG(1) << *this << "::Constructor with Profile: " << profile->GetDebugName();
 }
 
-VolumeManager::~VolumeManager() = default;
+VolumeManager::~VolumeManager() {
+  VLOG(1) << *this << "::Destructor";
+}
 
 VolumeManager* VolumeManager::Get(content::BrowserContext* context) {
   return VolumeManagerFactory::Get(context);
 }
 
 void VolumeManager::Initialize() {
+  VLOG(1) << *this << "::Initialize";
+
   // If in the Sign in profile or the lock screen app profile or lock screen
   // profile, skip mounting and listening for mount events.
   if (!ash::ProfileHelper::IsRegularProfile(profile_)) {
+    VLOG(1) << *this << ": Not a regular profile: " << profile_->GetDebugName();
     return;
   }
 
   if (!fusebox_mounter_)
     fusebox_mounter_.reset(FuseBoxMounter::Create());
+
   // The fusebox_mounter_ is enabled by a chrome flag: Create() will return
   // nullptr if the flag is disabled. Check it before attempting to Mount.
   if (fusebox_mounter_)
@@ -791,6 +801,8 @@ void VolumeManager::Initialize() {
 }
 
 void VolumeManager::Shutdown() {
+  VLOG(1) << *this << "::Shutdown";
+
   for (auto& observer : observers_) {
     observer.OnShutdownStart(this);
   }
@@ -802,8 +814,10 @@ void VolumeManager::Shutdown() {
   disk_mount_manager_->RemoveObserver(this);
   documents_provider_root_manager_->RemoveObserver(this);
   documents_provider_root_manager_.reset();
-  if (storage_monitor::StorageMonitor::GetInstance())
-    storage_monitor::StorageMonitor::GetInstance()->RemoveObserver(this);
+
+  if (storage_monitor::StorageMonitor* const p =
+          storage_monitor::StorageMonitor::GetInstance())
+    p->RemoveObserver(this);
 
   if (drive_integration_service_)
     drive_integration_service_->RemoveObserver(this);
@@ -814,10 +828,10 @@ void VolumeManager::Shutdown() {
   // Unsubscribe from ARC file system events.
   if (base::FeatureList::IsEnabled(arc::kMediaViewFeature) &&
       arc::IsArcAllowedForProfile(profile_)) {
-    auto* session_manager = arc::ArcSessionManager::Get();
     // TODO(crbug.com/672829): We need nullptr check here because
     // ArcSessionManager may or may not be alive at this point.
-    if (session_manager)
+    if (arc::ArcSessionManager* const session_manager =
+            arc::ArcSessionManager::Get())
       session_manager->RemoveObserver(this);
   }
 
@@ -1347,9 +1361,10 @@ void VolumeManager::OnFuseboxAttachStorageProvidedFileSystem(
     const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
     MountContext volume_context,
     int error) {
-  LOG_IF(ERROR, error) << "failed attaching fsp " << fsid;
-  if (error)
+  if (error) {
+    LOG(ERROR) << "Cannot attach FSP '" << fsid << "': error " << error;
     return;
+  }
 
   // Create a Volume for the fusebox FSP storage device.
   const base::FilePath mount_path =
@@ -1605,9 +1620,10 @@ void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& subdir,
                                               const std::string& label,
                                               bool read_only,
                                               int error) {
-  LOG_IF(ERROR, error) << "failed attaching mtp " << fsid;
-  if (error)
+  if (error) {
+    LOG(ERROR) << "Cannot attach MTP '" << fsid << "': error " << error;
     return;
+  }
 
   // Create a Volume for the fusebox MTP storage device.
   const base::FilePath mount_path =
@@ -1785,7 +1801,7 @@ void VolumeManager::RemoveSmbFsVolume(const base::FilePath& mount_point) {
 
 void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
   if (!success) {
-    LOG(ERROR) << "Failed to refresh disk mount manager";
+    LOG(ERROR) << "Cannot refresh disk mount manager";
     return;
   }
 
@@ -1847,10 +1863,13 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
 }
 
 void VolumeManager::OnStorageMonitorInitialized() {
-  std::vector<storage_monitor::StorageInfo> storages =
+  VLOG(1) << *this << "::OnStorageMonitorInitialized";
+
+  const std::vector<storage_monitor::StorageInfo> storages =
       storage_monitor::StorageMonitor::GetInstance()->GetAllAvailableStorages();
-  for (auto& storage : storages)
+  for (const storage_monitor::StorageInfo& storage : storages)
     OnRemovableStorageAttached(storage);
+
   storage_monitor::StorageMonitor::GetInstance()->AddObserver(this);
 }
 
@@ -1961,7 +1980,7 @@ void VolumeManager::OnSshfsCrostiniUnmountCallback(
     return;
   }
 
-  LOG(ERROR) << "Unmounting " << sshfs_mount_path.value() << " failed";
+  LOG(ERROR) << "Cannot unmount '" << sshfs_mount_path << "'";
   if (callback)
     std::move(callback).Run(false);
 }
@@ -1985,7 +2004,8 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     return;
   }
 
-  LOG(ERROR) << "Unmounting SFTP path failed with error: " << error;
+  LOG(ERROR) << "Cannot unmount SFTP path '" << sftp_mount_path
+             << "': " << error;
   if (callback)
     std::move(callback).Run(false);
 }
