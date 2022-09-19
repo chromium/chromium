@@ -185,12 +185,14 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 - (instancetype)initWithFrame:(CGRect)frame {
   return [self initWithFrame:frame
       showTopIncognitoImageAndTitle:YES
-          stackViewHorizontalMargin:kStackViewHorizontalMargin];
+          stackViewHorizontalMargin:kStackViewHorizontalMargin
+                  stackViewMaxWidth:kStackViewMaxWidth];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
     showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle
-        stackViewHorizontalMargin:(CGFloat)stackViewHorizontalMargin {
+        stackViewHorizontalMargin:(CGFloat)stackViewHorizontalMargin
+                stackViewMaxWidth:(CGFloat)stackViewMaxWidth {
   self = [super initWithFrame:frame];
   if (self) {
     _dragDropHandler = [[URLDragDropHandler alloc] init];
@@ -276,7 +278,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 
       // Ensure that the stackview width is constrained.
       [self.stackView.widthAnchor
-          constraintLessThanOrEqualToConstant:kStackViewMaxWidth],
+          constraintLessThanOrEqualToConstant:stackViewMaxWidth],
 
       // Set a minimum top margin and make the bottom guide twice as tall as the
       // top guide.

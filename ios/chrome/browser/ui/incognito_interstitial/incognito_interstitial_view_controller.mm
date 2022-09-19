@@ -90,14 +90,16 @@ const int kURLLabelDefaultNumberOfLines = 3;
     RevampedIncognitoView* revampedIncognitoView =
         [[RevampedIncognitoView alloc] initWithFrame:CGRectZero
                        showTopIncognitoImageAndTitle:NO
-                           stackViewHorizontalMargin:0];
+                           stackViewHorizontalMargin:0
+                                   stackViewMaxWidth:CGFLOAT_MAX];
     revampedIncognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
     incognitoView = revampedIncognitoView;
   } else {
     IncognitoView* revampedIncognitoView =
         [[IncognitoView alloc] initWithFrame:CGRectZero
                showTopIncognitoImageAndTitle:NO
-                   stackViewHorizontalMargin:0];
+                   stackViewHorizontalMargin:0
+                           stackViewMaxWidth:CGFLOAT_MAX];
     revampedIncognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
     incognitoView = revampedIncognitoView;
   }
