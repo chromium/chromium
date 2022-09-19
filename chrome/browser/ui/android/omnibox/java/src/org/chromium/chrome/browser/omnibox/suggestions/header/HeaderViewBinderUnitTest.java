@@ -139,6 +139,8 @@ public class HeaderViewBinderUnitTest {
 
     @Test
     public void actionIcon_accessibilityAnnouncementsReflectExpandedState() {
+        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, false);
+
         final AccessibilityNodeInfo info = mock(AccessibilityNodeInfo.class);
         Bundle infoExtras = new Bundle();
         when(info.getExtras()).thenReturn(infoExtras);
@@ -168,6 +170,27 @@ public class HeaderViewBinderUnitTest {
         // Restore Chevron.
         mModel.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, false);
         verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderChevron(false);
+    }
+
+    @Test
+    public void headerView_removeSuggestionHeaderChevronRemovesAccessibilityControl() {
+        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, true);
+
+        final AccessibilityNodeInfo info = mock(AccessibilityNodeInfo.class);
+        Bundle infoExtras = new Bundle();
+        when(info.getExtras()).thenReturn(infoExtras);
+
+        // Expand.
+        mModel.set(HeaderViewProperties.IS_COLLAPSED, false);
+        mHeaderView.onInitializeAccessibilityNodeInfo(info);
+        verify(info, never()).addAction(AccessibilityAction.ACTION_COLLAPSE);
+        verify(info, never()).addAction(AccessibilityAction.ACTION_EXPAND);
+
+        // Collapse.
+        mModel.set(HeaderViewProperties.IS_COLLAPSED, true);
+        mHeaderView.onInitializeAccessibilityNodeInfo(info);
+        verify(info, never()).addAction(AccessibilityAction.ACTION_COLLAPSE);
+        verify(info, never()).addAction(AccessibilityAction.ACTION_EXPAND);
     }
 
     @Test

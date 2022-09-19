@@ -47,7 +47,6 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         TypedValue themeRes = new TypedValue();
         getContext().getTheme().resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
         setBackgroundResource(themeRes.resourceId);
-        setClickable(true);
         setFocusable(true);
 
         mHeaderText = new TextView(context);
@@ -67,29 +66,6 @@ public class HeaderView extends SimpleHorizontalLayoutView {
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_action_icon_width),
                 LayoutParams.MATCH_PARENT));
         addView(mHeaderIcon);
-        ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(
-                    View host, AccessibilityNodeInfoCompat info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-                AccessibilityActionCompat action = mIsCollapsed
-                        ? AccessibilityActionCompat.ACTION_EXPAND
-                        : AccessibilityActionCompat.ACTION_COLLAPSE;
-
-                info.addAction(new AccessibilityActionCompat(
-                        AccessibilityEvent.TYPE_VIEW_CLICKED, action.getLabel()));
-                info.addAction(action);
-            }
-
-            @Override
-            public boolean performAccessibilityAction(View host, int action, Bundle arguments) {
-                if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND
-                        || action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
-                    return performClick();
-                }
-                return super.performAccessibilityAction(host, action, arguments);
-            }
-        });
     }
 
     /** Return ImageView used to present group header chevron. */
@@ -134,6 +110,34 @@ public class HeaderView extends SimpleHorizontalLayoutView {
      */
     void setShouldRemoveSuggestionHeaderChevron(boolean shouldRemoveSuggestionHeaderChevron) {
         mHeaderIcon.setVisibility(shouldRemoveSuggestionHeaderChevron ? GONE : VISIBLE);
+        setClickable(!shouldRemoveSuggestionHeaderChevron);
+
+        // Remove extra accessibility announcement for expanded state, and remove click action.
+        if (!shouldRemoveSuggestionHeaderChevron) {
+            ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(
+                        View host, AccessibilityNodeInfoCompat info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    AccessibilityActionCompat action = mIsCollapsed
+                            ? AccessibilityActionCompat.ACTION_EXPAND
+                            : AccessibilityActionCompat.ACTION_COLLAPSE;
+
+                    info.addAction(new AccessibilityActionCompat(
+                            AccessibilityEvent.TYPE_VIEW_CLICKED, action.getLabel()));
+                    info.addAction(action);
+                }
+
+                @Override
+                public boolean performAccessibilityAction(View host, int action, Bundle arguments) {
+                    if (action == AccessibilityNodeInfoCompat.ACTION_EXPAND
+                            || action == AccessibilityNodeInfoCompat.ACTION_COLLAPSE) {
+                        return performClick();
+                    }
+                    return super.performAccessibilityAction(host, action, arguments);
+                }
+            });
+        }
     }
 
     /**
