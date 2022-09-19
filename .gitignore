@@ -151,6 +151,7 @@ vs-chromium-project.txt
 /chrome/installer_util_strings.xml
 /chrome/interactive_ui_tests_run.xml
 /chrome/services/soda/internal
+/chrome/services/speech/internal
 /chrome/setup.xml
 /chrome/setup_unittests.xml
 /chrome/sync_integration_tests_run.xml
