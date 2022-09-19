@@ -33,6 +33,9 @@ class FindInPageManagerImpl : public FindInPageManager,
   explicit FindInPageManagerImpl(web::WebState* web_state);
   ~FindInPageManagerImpl() override;
 
+  // Need to overload FindInPageManager::CreateForWebState() as the default
+  // implementation inherited from WebStateUserData<FindInPageManager> would
+  // create a FindInPageManager which is a pure abstract class.
   static void CreateForWebState(WebState* web_state);
 
   // FindInPageManager overrides

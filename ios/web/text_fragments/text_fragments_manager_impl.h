@@ -29,8 +29,11 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   explicit TextFragmentsManagerImpl(WebState* web_state);
   ~TextFragmentsManagerImpl() override;
 
-  // WebStateUserData methods:
+  // Need to overload TextFragmentsManager::CreateForWebState() as the default
+  // implementation inherited from WebStateUserData<TextFragmentsManager> would
+  // create a TextFragmentsManager which is a pure abstract class.
   static void CreateForWebState(WebState* web_state);
+
   static TextFragmentsManagerImpl* FromWebState(WebState* web_state);
 
   // TextFragmentsManager methods:
