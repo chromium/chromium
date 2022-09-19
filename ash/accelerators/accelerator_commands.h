@@ -17,6 +17,9 @@
 namespace ash {
 namespace accelerators {
 
+// Activate desk on the left/right.
+ASH_EXPORT void ActivateDesk(bool activate_left);
+
 // Activate desk 1 to 8.
 ASH_EXPORT void ActivateDeskAtIndex(AcceleratorAction action);
 
@@ -101,11 +104,17 @@ ASH_EXPORT void MediaStop();
 // Toggle microphone mute.
 ASH_EXPORT void MicrophoneMuteToggle();
 
+// Move active window to the desk on the left/right.
+ASH_EXPORT void MoveActiveItem(bool going_left);
+
 // Create a new desk.
 ASH_EXPORT void NewDesk();
 
 // Open a new incognito browser window.
 ASH_EXPORT void NewIncognitoWindow();
+
+// Open a new tab.
+ASH_EXPORT void NewTab();
 
 // Open a new browser window.
 ASH_EXPORT void NewWindow();
@@ -164,6 +173,9 @@ ASH_EXPORT void ShowTaskManager();
 
 // Put device in sleep mode(suspend).
 ASH_EXPORT void Suspend();
+
+// Turn the ambient mode on or off.
+ASH_EXPORT void ToggleAmbientMode();
 
 // Assign active window to all desks.
 ASH_EXPORT void ToggleAssignToAllDesk();

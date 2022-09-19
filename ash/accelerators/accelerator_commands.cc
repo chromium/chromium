@@ -9,6 +9,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/ambient/ambient_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -342,6 +343,20 @@ void EnterImageCaptureMode(CaptureModeSource source,
 
 }  // namespace
 
+void ActivateDesk(bool activate_left) {
+  auto* desks_controller = DesksController::Get();
+  const bool success = desks_controller->ActivateAdjacentDesk(
+      activate_left, DesksSwitchSource::kDeskSwitchShortcut);
+  if (!success)
+    return;
+
+  if (activate_left) {
+    base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateLeft"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateRight"));
+  }
+}
+
 void ActivateDeskAtIndex(AcceleratorAction action) {
   DCHECK_GE(action, DESKS_ACTIVATE_0);
   DCHECK_LE(action, DESKS_ACTIVATE_7);
@@ -531,6 +546,54 @@ void MicrophoneMuteToggle() {
   audio_handler->SetInputMute(mute);
 }
 
+void MoveActiveItem(bool going_left) {
+  auto* desks_controller = DesksController::Get();
+  if (desks_controller->AreDesksBeingModified())
+    return;
+
+  aura::Window* window_to_move = nullptr;
+  auto* overview_controller = Shell::Get()->overview_controller();
+  const bool in_overview = overview_controller->InOverviewSession();
+  if (in_overview) {
+    window_to_move =
+        overview_controller->overview_session()->GetHighlightedWindow();
+  } else {
+    window_to_move = window_util::GetActiveWindow();
+  }
+
+  if (!window_to_move || !desks_util::BelongsToActiveDesk(window_to_move))
+    return;
+
+  Desk* target_desk = nullptr;
+  if (going_left) {
+    target_desk = desks_controller->GetPreviousDesk();
+    base::RecordAction(base::UserMetricsAction("Accel_Desks_MoveWindowLeft"));
+  } else {
+    target_desk = desks_controller->GetNextDesk();
+    base::RecordAction(base::UserMetricsAction("Accel_Desks_MoveWindowRight"));
+  }
+
+  if (!target_desk)
+    return;
+
+  if (!in_overview) {
+    desks_animations::PerformWindowMoveToDeskAnimation(window_to_move,
+                                                       going_left);
+  }
+
+  if (!desks_controller->MoveWindowFromActiveDeskTo(
+          window_to_move, target_desk, window_to_move->GetRootWindow(),
+          DesksMoveWindowFromActiveDeskSource::kShortcut)) {
+    return;
+  }
+
+  if (in_overview) {
+    // We should not exit overview as a result of this shortcut.
+    DCHECK(overview_controller->InOverviewSession());
+    overview_controller->overview_session()->PositionWindows(/*animate=*/true);
+  }
+}
+
 void NewDesk() {
   auto* desks_controller = DesksController::Get();
   if (!desks_controller->CanCreateDesks()) {
@@ -554,6 +617,10 @@ void NewIncognitoWindow() {
   NewWindowDelegate::GetPrimary()->NewWindow(
       /*is_incognito=*/true,
       /*should_trigger_session_restore=*/false);
+}
+
+void NewTab() {
+  NewWindowDelegate::GetPrimary()->NewTab();
 }
 
 void NewWindow() {
@@ -707,6 +774,10 @@ void ShowTaskManager() {
 
 void Suspend() {
   chromeos::PowerManagerClient::Get()->RequestSuspend();
+}
+
+void ToggleAmbientMode() {
+  Shell::Get()->ambient_controller()->ToggleInSessionUi();
 }
 
 void ToggleAssignToAllDesk() {

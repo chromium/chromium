@@ -202,67 +202,9 @@ void RecordToggleFullscreen(const ui::Accelerator& accelerator) {
     base::RecordAction(UserMetricsAction("Accel_Fullscreen_F4"));
 }
 
-void HandleActivateDesk(const ui::Accelerator& accelerator,
-                        bool activate_left) {
-  auto* desks_controller = DesksController::Get();
-  const bool success = desks_controller->ActivateAdjacentDesk(
-      activate_left, DesksSwitchSource::kDeskSwitchShortcut);
-  if (!success)
-    return;
-
-  if (activate_left) {
-    base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateLeft"));
-  } else {
-    base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateRight"));
-  }
-}
-
-void HandleMoveActiveItem(const ui::Accelerator& accelerator, bool going_left) {
-  auto* desks_controller = DesksController::Get();
-  if (desks_controller->AreDesksBeingModified())
-    return;
-
-  aura::Window* window_to_move = nullptr;
-  auto* overview_controller = Shell::Get()->overview_controller();
-  const bool in_overview = overview_controller->InOverviewSession();
-  if (in_overview) {
-    window_to_move =
-        overview_controller->overview_session()->GetHighlightedWindow();
-  } else {
-    window_to_move = window_util::GetActiveWindow();
-  }
-
-  if (!window_to_move || !desks_util::BelongsToActiveDesk(window_to_move))
-    return;
-
-  Desk* target_desk = nullptr;
-  if (going_left) {
-    target_desk = desks_controller->GetPreviousDesk();
-    base::RecordAction(base::UserMetricsAction("Accel_Desks_MoveWindowLeft"));
-  } else {
-    target_desk = desks_controller->GetNextDesk();
-    base::RecordAction(base::UserMetricsAction("Accel_Desks_MoveWindowRight"));
-  }
-
-  if (!target_desk)
-    return;
-
-  if (!in_overview) {
-    desks_animations::PerformWindowMoveToDeskAnimation(window_to_move,
-                                                       going_left);
-  }
-
-  if (!desks_controller->MoveWindowFromActiveDeskTo(
-          window_to_move, target_desk, window_to_move->GetRootWindow(),
-          DesksMoveWindowFromActiveDeskSource::kShortcut)) {
-    return;
-  }
-
-  if (in_overview) {
-    // We should not exit overview as a result of this shortcut.
-    DCHECK(overview_controller->InOverviewSession());
-    overview_controller->overview_session()->PositionWindows(/*animate=*/true);
-  }
+void RecordNewTab(const ui::Accelerator& accelerator) {
+  if (accelerator.key_code() == ui::VKEY_T)
+    base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
 }
 
 // TODO(zentaro): This is duplicated in accelerator_commands.cc. Remove
@@ -295,12 +237,6 @@ bool CanHandleNewIncognitoWindow() {
   absl::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return user_type && *user_type != user_manager::USER_TYPE_GUEST;
-}
-
-void HandleNewTab(const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_T)
-    base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
-  NewWindowDelegate::GetPrimary()->NewTab();
 }
 
 bool CanCycleInputMethod() {
@@ -468,10 +404,6 @@ bool CanHandleShowStylusTools() {
 
 bool CanHandleStartAmbientMode() {
   return chromeos::features::IsAmbientModeEnabled();
-}
-
-void HandleToggleAmbientMode(const ui::Accelerator& accelerator) {
-  Shell::Get()->ambient_controller()->ToggleInSessionUi();
 }
 
 void HandleToggleAssistant(const ui::Accelerator& accelerator) {
@@ -1230,16 +1162,20 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::CycleForwardMru();
       break;
     case DESKS_ACTIVATE_DESK_LEFT:
-      HandleActivateDesk(accelerator, /*activate_left=*/true);
+      // UMA metrics are recorded in the function.
+      accelerators::ActivateDesk(/*activate_left=*/true);
       break;
     case DESKS_ACTIVATE_DESK_RIGHT:
-      HandleActivateDesk(accelerator, /*activate_left=*/false);
+      // UMA metrics are recorded in the function.
+      accelerators::ActivateDesk(/*activate_left=*/false);
       break;
     case DESKS_MOVE_ACTIVE_ITEM_LEFT:
-      HandleMoveActiveItem(accelerator, /*going_left=*/true);
+      // UMA metrics are recorded in the function.
+      accelerators::MoveActiveItem(/*going_left=*/true);
       break;
     case DESKS_MOVE_ACTIVE_ITEM_RIGHT:
-      HandleMoveActiveItem(accelerator, /*going_left=*/false);
+      // UMA metrics are recorded in the function.
+      accelerators::MoveActiveItem(/*going_left=*/false);
       break;
     case DESKS_NEW_DESK:
       // UMA metrics are recorded in the function.
@@ -1438,7 +1374,8 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::NewIncognitoWindow();
       break;
     case NEW_TAB:
-      HandleNewTab(accelerator);
+      RecordNewTab(accelerator);
+      accelerators::NewTab();
       break;
     case NEW_WINDOW:
       base::RecordAction(base::UserMetricsAction("Accel_New_Window"));
@@ -1530,7 +1467,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ShowTaskManager();
       break;
     case START_AMBIENT_MODE:
-      HandleToggleAmbientMode(accelerator);
+      accelerators::ToggleAmbientMode();
       break;
     case START_ASSISTANT:
       HandleToggleAssistant(accelerator);
