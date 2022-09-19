@@ -3,18 +3,29 @@
     border-bottom: var(--cr-separator-line);
     display: flex;
     flex-direction: row;
-    padding-bottom: 10px;
-    padding-top: 10px;
+    padding-bottom: 12px;
+    padding-top: 12px;
   }
 
   #acceleratorViewList {
     display: grid;
+    flex: 1;
     row-gap: 5px;
-    width: 50%;
   }
 
   #descriptionText {
-    width: 50%;
+    align-items: center;
+    display: flex;
+    width: 320px;
+  }
+
+  #lockIconContainer {
+    align-items: center;
+    display: flex;
+  }
+
+  #lockIconContainer[hidden] {
+    display: none;  /* Required for flexbox hidden. */
   }
 </style>
 

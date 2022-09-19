@@ -1,6 +1,7 @@
 <style>
   #title {
     font-weight: bold;
+    margin-bottom: 20px;
   }
 
   #rowList {
@@ -9,7 +10,7 @@
   }
 </style>
 
-<div id="container">
+<div id="container" part="container">
   <div id="title">[[title]]</div>
   <div id="rowList">
     <template id="list" is="dom-repeat" items="[[acceleratorContainer]]">
