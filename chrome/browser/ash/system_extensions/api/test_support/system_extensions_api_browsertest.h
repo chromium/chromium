@@ -91,8 +91,6 @@ class TestChromeContentBrowserClient : public ChromeContentBrowserClient {
 // promise_test(async() => {
 //  assert_true(await chromeos.foo());
 // });
-//
-// done();  // Needed to tell the framework we finished registering tests.
 // ```
 // (For more information about testharness.js see:
 // https://web-platform-tests.org/writing-tests/testharness-api.html)
@@ -124,6 +122,54 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
   // Runs `test_file_name`.
   void RunTest(base::StringPiece test_file_name);
 
+  // Multi-run test functions:
+  //
+  // Multi-run tests are useful when the test requires the service worker
+  // to be stopped and started during a test. On the C++ side, these tests
+  // consist of a `InitMultiRunTest()` call and `WaitForRun()` calls for each
+  // additional run. On the JavaScript side, these tests consist of calls
+  // `test_run()` for each test code that needs to run when the service worker
+  // runs again.
+  //
+  // For example:
+  // ```C++
+  // IN_PROC_BROWSER_TEST_F(FooBrowserTest, Foo) {
+  //   // Setups the required infra to run a multi-run test.
+  //   InitMultiRunTest("foo.js");
+  //
+  //   // Wait for the service worker to wake up and run "first run".
+  //   WaitForRun("first run");
+  //
+  //   StopServiceWorkers();
+  //
+  //   // Perform an action that would wake up the service worker.
+  //   ui::test::EventGenerator generator;
+  //   generator.PressKey(ui::KeyboardCode::VKEY_A, ui::EF_ALT_DOWN);
+  //
+  //   // Wait for the service worker to wake up and run the "test properties"
+  //   // run.
+  //   WaitForRun("test properties");
+  // }
+  //
+  // ```js
+  // importScripts('test_support.js');
+  //
+  // const fooPromise = new Promise(resolve => {
+  //   chromeos.windowManagement.addEventListener('foo', resolve);
+  // });
+  //
+  // // Run named `'first_run'`.
+  // test_run(() => {}, 'first run');
+  //
+  // // Run named `'test properties'`.
+  // test_run(async (t) => {
+  //   let event = await fooPromise;
+  //   assert_equals(event.type, 'foo');
+  // }, 'test properties');
+  // ```
+  void InitMultiRunTest(base::StringPiece test_file_name);
+  void WaitForRun(base::StringPiece run_name);
+
   // Allows subclasses to register RenderProcessHost interfaces they need for
   // tests.
   template <typename Interface>
@@ -133,13 +179,24 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
     test_chrome_content_browser_client_->AddRendererInterface(callback);
   }
 
+  // Stops all service workers, including System Extensions service workers.
+  void StopServiceWorkers();
+
   // InProcessBrowserTest
   void SetUpOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
  private:
-  testing::AssertionResult RunTestImpl(base::StringPiece test_file_name_expr,
-                                       base::StringPiece test_file_name);
+  void MaybeInstallSystemExtension(base::StringPiece test_file_name);
+
+  testing::AssertionResult WaitForRunImpl(base::StringPiece run_name_expr,
+                                          base::StringPiece run_name);
+
+  testing::AssertionResult WaitForTestCompletion(
+      base::StringPiece test_file_name_expr,
+      base::StringPiece test_file_name);
+
+  std::string multi_run_test_file_name_;
 
   const base::FilePath this_dir_;
   const base::FilePath tests_dir_;
@@ -151,6 +208,8 @@ class SystemExtensionsApiBrowserTest : public InProcessBrowserTest {
       test_chrome_content_browser_client_;
   std::unique_ptr<TestRunner> test_runner_;
   base::test::ScopedFeatureList feature_list_;
+
+  bool system_extension_installed_ = false;
 };
 
 }  // namespace ash

@@ -37,4 +37,8 @@ interface TestRunner {
   // Called by the testharness when all tests finish running.
   OnCompletion(array<TestResult> tests_results,
                TestHarnessResult testharness_result);
+
+  // Called by testharnessreport.js to get the name of the current run.
+  // Returns null if this is not a multi run test.
+  GetCurrentRunName() => (string? run_name);
 };

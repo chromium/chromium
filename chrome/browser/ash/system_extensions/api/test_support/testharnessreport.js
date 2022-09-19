@@ -18,8 +18,8 @@
   const TestResult = systemExtensionsTest.mojom.TestResult;
   const TestStatus = systemExtensionsTest.mojom.TestStatus;
 
-  const testRunner = new systemExtensionsTest.mojom.TestRunnerRemote;
-  testRunner.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
+  globalThis.testRunner = new systemExtensionsTest.mojom.TestRunnerRemote;
+  globalThis.testRunner.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
 
   // Simulating an event before the service worker is installed, fails because
   // the service worker is not considered registered yet. We have to wait for
@@ -32,7 +32,29 @@
     globalThis.addEventListener('activate', wrapper);
   });
 
-  promise_setup(() => activatePromise, {
+  async function async_setup() {
+    if (registration.active) {
+      // In the first run, testharness.js uses the 'install' event to know when
+      // all tests have been registered.
+      //
+      // In subsequent runs, testharness.js waits for a `message` event to know
+      // when all tests have been resgistered. On the Web platform, this event
+      // is sent from a page. System extensions fake this event because they
+      // don't have an associated page.
+      //
+      // Use setTimeout so that the event is fired after tests have been
+      // registered.
+      setTimeout(() => globalThis.dispatchEvent(new Event('message')), 0);
+
+      // If the service worker is already active, then no need to wait for the
+      // 'activate' event.
+      return;
+    }
+
+    await activatePromise;
+  }
+
+  promise_setup(async_setup, {
     // The default output formats test results into an HTML table, but for
     // the System Extensions, we output the test results to the console.
     'output': false,
@@ -78,14 +100,27 @@
     assert_unreached('unrecognized test harness status');
   }
 
+  const skippedTests = new Set();
+  globalThis.skipTest =
+      (testName) => {
+        skippedTests.add(testName);
+      }
+
   add_completion_callback((tests, testharnessStatus) => {
     const testResults = []
     for (const test of tests) {
+      // Multi-run tests skip tests. In those cases, there
+      // is no need to send the result to the browser.
+      if (skippedTests.has(test.name)) {
+        continue;
+      }
+
       const testResult = new TestResult();
       testResult.name = test.name;
       testResult.message = test.message;
       testResult.stack = test.stack;
       testResult.status = convertTestStatus(test.status);
+
       testResults.push(testResult);
     }
 

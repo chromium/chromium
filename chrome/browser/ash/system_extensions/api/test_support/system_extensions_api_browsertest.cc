@@ -13,9 +13,12 @@
 #include "chrome/browser/ash/system_extensions/api/test_support/system_extensions_test_runner.test-mojom.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -58,23 +61,87 @@ constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
 // Class that receives events from the running test.
 class TestRunner : public system_extensions_test::mojom::TestRunner {
  public:
-  TestRunner() = default;
+  TestRunner() : run_loop_(std::make_unique<base::RunLoop>()) {}
 
   ~TestRunner() override = default;
+
+  void SetIsMultiRunTest() { is_multi_run_test_ = true; }
+
+  void SetCurrentRunName(base::StringPiece run_name) {
+    current_run_name_ = std::string(run_name);
+    // A test might be waiting to know the run's name.
+    if (pending_get_current_run_name_callback_)
+      std::move(pending_get_current_run_name_callback_).Run(current_run_name_);
+  }
+
+  // Returns once the test calls `OnCompletion` i.e. when `run_name` finishes
+  // running.
+  testing::AssertionResult WaitForRunCompletion(base::StringPiece run_name) {
+    SetCurrentRunName(run_name);
+    return WaitForCompletion();
+  }
 
   // Returns once the test calls `OnCompletion` i.e. when the test finishes
   // running.
   testing::AssertionResult WaitForCompletion() {
-    run_loop_.Run();
+    run_loop_->Run();
 
-    if (!result_.has_value())
+    if (is_multi_run_test_) {
+      // Reset the RunLoop so that it can be used again for the next run.
+      run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    if (!testharness_result_)
       return testing::AssertionFailure() << "Test timed out.";
 
-    return result_.value();
+    if (testharness_result_->status !=
+        system_extensions_test::mojom::TestHarnessStatus::kOk) {
+      return testing::AssertionFailure()
+             << "Test harness failure.\n"
+             << testharness_result_->message.value() << "\n"
+             << testharness_result_->stack.value();
+    }
+
+    if (tests_results_.size() == 0) {
+      if (is_multi_run_test_) {
+        return testing::AssertionFailure()
+               << "No run named \"" << current_run_name_ << "\" ran. "
+               << "Make sure the name in WaitForRun() matches the run name "
+               << "in JavaScript.";
+      }
+      return testing::AssertionFailure() << "No tests ran.";
+    }
+
+    // We do this to keep this method simple. If we decide multiple tests per
+    // file are needed, we can change this.
+    if (tests_results_.size() > 1u) {
+      return testing::AssertionFailure()
+             << "Only one test per file is currently supported.";
+    }
+
+    const auto& test_result = tests_results_[0];
+    CHECK(!(is_multi_run_test_ && current_run_name_ != test_result->name))
+        << "Wrong run ran.\n"
+        << "Expected: \"" << current_run_name_ << "\"\n"
+        << "But instead ran: \"" << test_result->name << "\"";
+
+    if (test_result->status !=
+        system_extensions_test::mojom::TestStatus::kPass) {
+      auto result = testing::AssertionFailure();
+      if (is_multi_run_test_)
+        result << "Run: " << current_run_name_ << "\n";
+
+      return result << test_result->message.value() << "\n"
+                    << test_result->stack.value();
+    }
+
+    return testing::AssertionSuccess();
   }
 
   void Bind(mojo::PendingReceiver<system_extensions_test::mojom::TestRunner>
                 pending_receiver) {
+    if (receiver_.is_bound())
+      receiver_.reset();
     receiver_.Bind(std::move(pending_receiver));
   }
 
@@ -83,43 +150,37 @@ class TestRunner : public system_extensions_test::mojom::TestRunner {
       std::vector<system_extensions_test::mojom::TestResultPtr> tests_results,
       system_extensions_test::mojom::TestHarnessResultPtr testharness_result)
       override {
-    base::ScopedClosureRunner scoped_runner(run_loop_.QuitClosure());
+    base::ScopedClosureRunner scoped_runner(run_loop_->QuitClosure());
+    testharness_result_ = std::move(testharness_result);
+    tests_results_ = std::move(tests_results);
+  }
 
-    if (testharness_result->status !=
-        system_extensions_test::mojom::TestHarnessStatus::kOk) {
-      result_ = testing::AssertionFailure()
-                << "Test harness failure.\n"
-                << testharness_result->message.value() << "\n"
-                << testharness_result->stack.value();
+  void GetCurrentRunName(GetCurrentRunNameCallback callback) override {
+    if (!is_multi_run_test_) {
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    if (!current_run_name_.empty()) {
+      std::move(callback).Run(current_run_name_);
       return;
     }
 
-    // We do this to keep this method simple. If we decide multiple tests per
-    // file are needed, we can change this.
-    if (tests_results.size() != 1u) {
-      result_ = testing::AssertionFailure()
-                << "Only one test per file is currently supported.";
-      return;
-    }
-
-    const auto& test_result = tests_results[0];
-    if (test_result->status !=
-        system_extensions_test::mojom::TestStatus::kPass) {
-      result_ = testing::AssertionFailure()
-                << test_result->message.value() << "\n"
-                << test_result->stack.value();
-      return;
-    }
-
-    result_ = testing::AssertionSuccess();
+    pending_get_current_run_name_callback_ = std::move(callback);
   }
 
  private:
   mojo::Receiver<system_extensions_test::mojom::TestRunner> receiver_{this};
 
-  absl::optional<testing::AssertionResult> result_;
+  system_extensions_test::mojom::TestHarnessResultPtr testharness_result_;
+  std::vector<system_extensions_test::mojom::TestResultPtr> tests_results_;
 
-  base::RunLoop run_loop_;
+  bool is_multi_run_test_ = false;
+  std::string current_run_name_;
+  GetCurrentRunNameCallback pending_get_current_run_name_callback_;
+
+  // Uses a unique_ptr so that it can be reset and used in multiple runs. It
+  // should never be nullptr.
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 base::FilePath GetAbsolutePathFromSrcRelative(base::StringPiece dir) {
@@ -166,13 +227,51 @@ void SystemExtensionsApiBrowserTest::SetUpCommandLine(
   command_line->AppendSwitchASCII(::switches::kEnableBlinkFeatures, "MojoJS");
 }
 
-void SystemExtensionsApiBrowserTest::RunTest(base::StringPiece test_file_name) {
-  EXPECT_PRED_FORMAT1(RunTestImpl, test_file_name);
+void SystemExtensionsApiBrowserTest::StopServiceWorkers() {
+  auto* worker_context = browser()
+                             ->profile()
+                             ->GetDefaultStoragePartition()
+                             ->GetServiceWorkerContext();
+  base::RunLoop run_loop;
+  worker_context->StopAllServiceWorkers(run_loop.QuitClosure());
+  run_loop.Run();
 }
 
-testing::AssertionResult SystemExtensionsApiBrowserTest::RunTestImpl(
+void SystemExtensionsApiBrowserTest::InitMultiRunTest(
+    base::StringPiece test_file_name) {
+  multi_run_test_file_name_ = std::string(test_file_name);
+  test_runner_->SetIsMultiRunTest();
+}
+
+void SystemExtensionsApiBrowserTest::WaitForRun(base::StringPiece run_name) {
+  // Should only be used for multi-run tests.
+  DCHECK(!multi_run_test_file_name_.empty());
+  MaybeInstallSystemExtension(multi_run_test_file_name_);
+  EXPECT_PRED_FORMAT1(WaitForRunImpl, run_name);
+}
+
+testing::AssertionResult SystemExtensionsApiBrowserTest::WaitForRunImpl(
+    base::StringPiece run_name_expr,
+    base::StringPiece run_name) {
+  return test_runner_->WaitForRunCompletion(run_name);
+}
+
+void SystemExtensionsApiBrowserTest::RunTest(base::StringPiece test_file_name) {
+  MaybeInstallSystemExtension(test_file_name);
+  EXPECT_PRED_FORMAT1(WaitForTestCompletion, test_file_name);
+}
+
+testing::AssertionResult SystemExtensionsApiBrowserTest::WaitForTestCompletion(
     base::StringPiece test_file_name_expr,
     base::StringPiece test_file_name) {
+  return test_runner_->WaitForCompletion();
+}
+
+void SystemExtensionsApiBrowserTest::MaybeInstallSystemExtension(
+    base::StringPiece test_file_name) {
+  if (system_extension_installed_)
+    return;
+
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::ScopedTempDir system_extension_dir;
@@ -270,8 +369,7 @@ testing::AssertionResult SystemExtensionsApiBrowserTest::RunTestImpl(
         run_loop.Quit();
       }));
   run_loop.Run();
-
-  return test_runner_->WaitForCompletion();
+  system_extension_installed_ = true;
 }
 
 }  // namespace ash
