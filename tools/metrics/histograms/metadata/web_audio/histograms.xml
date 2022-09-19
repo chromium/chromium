@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.OfflineAudioContext.CreateTime" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-12-31">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
