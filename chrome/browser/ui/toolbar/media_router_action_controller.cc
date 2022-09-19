@@ -63,7 +63,7 @@ void MediaRouterActionController::OnIssuesCleared() {
 void MediaRouterActionController::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes) {
   has_local_display_route_ =
-      base::ranges::find_if(
+      base::ranges::any_of(
           routes, [this](const media_router::MediaRoute& route) {
             // The Cast icon should be hidden if there only are
             // non-local and non-display routes.
@@ -84,7 +84,7 @@ void MediaRouterActionController::OnRoutesUpdated(
             // mirroring or local file sources.
             return route.media_source().IsTabMirroringSource() ||
                    route.media_source().IsDesktopMirroringSource();
-          }) != routes.end();
+          });
   MaybeAddOrRemoveAction();
 }
 

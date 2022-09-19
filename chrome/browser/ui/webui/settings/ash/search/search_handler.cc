@@ -25,18 +25,18 @@ namespace local_search_service = ::ash::local_search_service;
 
 bool ContainsSectionResult(const std::vector<mojom::SearchResultPtr>& results,
                            mojom::Section section) {
-  return base::ranges::find_if(results, [section](const auto& result) {
-           return result->type == mojom::SearchResultType::kSection &&
-                  section == result->id->get_section();
-         }) != results.end();
+  return base::ranges::any_of(results, [section](const auto& result) {
+    return result->type == mojom::SearchResultType::kSection &&
+           section == result->id->get_section();
+  });
 }
 
 bool ContainsSubpageResult(const std::vector<mojom::SearchResultPtr>& results,
                            mojom::Subpage subpage) {
-  return base::ranges::find_if(results, [subpage](const auto& result) {
-           return result->type == mojom::SearchResultType::kSubpage &&
-                  subpage == result->id->get_subpage();
-         }) != results.end();
+  return base::ranges::any_of(results, [subpage](const auto& result) {
+    return result->type == mojom::SearchResultType::kSubpage &&
+           subpage == result->id->get_subpage();
+  });
 }
 
 }  // namespace

@@ -212,9 +212,8 @@ BrowserAppShelfItemController::GetMatchingInstances(
 
 int BrowserAppShelfItemController::GetInstanceCommand(
     const base::UnguessableToken& id) {
-  auto it = base::ranges::find_if(
-      command_to_instance_map_,
-      [&id](const auto& pair) { return pair.second == id; });
+  auto it = base::ranges::find(command_to_instance_map_, id,
+                               &CommandToInstanceMap::value_type::second);
   DCHECK(it != command_to_instance_map_.end());
   return it->first;
 }

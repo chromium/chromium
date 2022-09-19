@@ -69,13 +69,11 @@ namespace {
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
 bool ProfileHasOtherTabbedBrowser(Profile* profile) {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  auto other_tabbed_browser =
-      base::ranges::find_if(*browser_list, [profile](Browser* browser) {
+  return base::ranges::any_of(
+      *BrowserList::GetInstance(), [profile](Browser* browser) {
         return browser->profile() == profile && browser->is_type_normal() &&
                !browser->tab_strip_model()->empty();
       });
-  return other_tabbed_browser != browser_list->end();
 }
 
 // Validates the URL whether it is allowed to be opened at launching. Dangerous

@@ -269,11 +269,10 @@ bool QueryResultManager::AreSourcesValidForCastMode(
   bool has_cast_mode = cast_mode_it != cast_mode_sources_.end();
   // If a source has already been registered, then it must be associated with
   // |cast_mode|.
-  return base::ranges::find_if(sources, [=](const MediaSource& source) {
-           return base::Contains(sinks_observers_, source) &&
-                  (!has_cast_mode ||
-                   !base::Contains(cast_mode_it->second, source));
-         }) == sources.end();
+  return base::ranges::none_of(sources, [=](const MediaSource& source) {
+    return base::Contains(sinks_observers_, source) &&
+           (!has_cast_mode || !base::Contains(cast_mode_it->second, source));
+  });
 }
 
 void QueryResultManager::NotifyOnResultsUpdated() {

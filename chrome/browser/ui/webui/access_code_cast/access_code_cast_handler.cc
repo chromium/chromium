@@ -195,9 +195,9 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   DCHECK(media_route_starter_) << "Must have a MediaRouteStarter to complete!";
 
   // Verify that the sink is in QRM.
-  if (base::ranges::find_if(cast_mode_set_, [this](MediaCastMode cast_mode) {
+  if (base::ranges::none_of(cast_mode_set_, [this](MediaCastMode cast_mode) {
         return media_route_starter_->SinkSupportsCastMode(*sink_id_, cast_mode);
-      }) == cast_mode_set_.end()) {
+      })) {
     // sink hasn't been added to QRM yet.
     return;
   }

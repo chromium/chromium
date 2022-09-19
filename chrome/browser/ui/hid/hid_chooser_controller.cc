@@ -63,14 +63,14 @@ bool FilterMatch(const blink::mojom::HidDeviceFilterPtr& filter,
       }
     } else if (filter->usage->is_usage_and_page()) {
       const auto& usage_and_page = filter->usage->get_usage_and_page();
-      auto find_it = base::ranges::find_if(
-          device.collections,
-          [&usage_and_page](const device::mojom::HidCollectionInfoPtr& c) {
-            return usage_and_page->usage_page == c->usage->usage_page &&
-                   usage_and_page->usage == c->usage->usage;
-          });
-      if (find_it == device.collections.end())
+      if (base::ranges::none_of(
+              device.collections,
+              [&usage_and_page](const device::mojom::HidCollectionInfoPtr& c) {
+                return usage_and_page->usage_page == c->usage->usage_page &&
+                       usage_and_page->usage == c->usage->usage;
+              })) {
         return false;
+      }
     }
   }
   return true;
@@ -392,10 +392,8 @@ void HidChooserController::UpdateDeviceInfo(
   auto physical_device_it = device_map_.find(id);
   DCHECK(physical_device_it != device_map_.end());
   auto& device_infos = physical_device_it->second;
-  auto device_it = base::ranges::find_if(
-      device_infos, [&device](const device::mojom::HidDeviceInfoPtr& d) {
-        return d->guid == device.guid;
-      });
+  auto device_it = base::ranges::find(device_infos, device.guid,
+                                      &device::mojom::HidDeviceInfo::guid);
   DCHECK(device_it != device_infos.end());
   *device_it = device.Clone();
 }

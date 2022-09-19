@@ -174,10 +174,9 @@ ExtensionsMenuViewUnitTest::GetInstalledExtensionMenuItemView(
     const std::string& name) {
   base::flat_set<InstalledExtensionMenuItemView*> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
-  auto iter = base::ranges::find_if(
-      menu_items, [name](InstalledExtensionMenuItemView* item) {
-        return base::UTF16ToUTF8(item->view_controller()->GetActionName()) ==
-               name;
+  auto iter = base::ranges::find(
+      menu_items, name, [](InstalledExtensionMenuItemView* item) {
+        return base::UTF16ToUTF8(item->view_controller()->GetActionName());
       });
   return iter == menu_items.end() ? nullptr : *iter;
 }

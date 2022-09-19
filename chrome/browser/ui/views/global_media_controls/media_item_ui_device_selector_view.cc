@@ -220,10 +220,9 @@ void MediaItemUIDeviceSelectorView::UpdateCurrentAudioDevice(
     current_audio_device_entry_view_->SetHighlighted(false);
 
   // Find DeviceEntryView* from |device_entry_ui_map_| with |current_device_id|.
-  auto it = base::ranges::find_if(
-      device_entry_ui_map_, [&current_device_id](const auto& pair) {
-        return pair.second->raw_device_id() == current_device_id;
-      });
+  auto it = base::ranges::find(
+      device_entry_ui_map_, current_device_id,
+      [](const auto& pair) { return pair.second->raw_device_id(); });
 
   if (it == device_entry_ui_map_.end()) {
     current_audio_device_entry_view_ = nullptr;

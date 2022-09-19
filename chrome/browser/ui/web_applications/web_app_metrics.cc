@@ -175,10 +175,8 @@ void WebAppMetrics::OnTabStripModelChanged(
   // closed, despite IsInAppWindow returning false at this point.
   if (change.type() == TabStripModelChange::kRemoved &&
       tab_strip_model->empty()) {
-    auto iter = base::ranges::find_if(
-        *BrowserList::GetInstance(), [&tab_strip_model](Browser* item) {
-          return item->tab_strip_model() == tab_strip_model;
-        });
+    auto iter = base::ranges::find(*BrowserList::GetInstance(), tab_strip_model,
+                                   &Browser::tab_strip_model);
     if (iter != BrowserList::GetInstance()->end() &&
         (*iter)->type() == Browser::TYPE_APP)
       initial_mode = TabSwitching::kForegroundClosing;

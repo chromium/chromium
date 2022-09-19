@@ -30,9 +30,9 @@ class DefaultSearchIconBrowserTest : public InProcessBrowserTest {
 
     TemplateURLService::TemplateURLVector template_urls =
         template_url_service->GetTemplateURLs();
-    auto iter = base::ranges::find_if(
+    auto iter = base::ranges::find_if_not(
         template_urls, [&](const TemplateURL* template_url) {
-          return current_default_template_url != template_url;
+          return current_default_template_url == template_url;
         });
 
     ASSERT_NE(template_urls.end(), iter);

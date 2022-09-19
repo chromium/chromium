@@ -210,10 +210,10 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
 
   void TriggerExtensionButton(const std::string& id) {
     auto menu_items = GetInstalledExtensionMenuItemViews();
-    auto iter = base::ranges::find_if(
-        menu_items, [id](InstalledExtensionMenuItemView* view) {
-          return view->view_controller()->GetId() == id;
-        });
+    auto iter = base::ranges::find(menu_items, id,
+                                   [](InstalledExtensionMenuItemView* view) {
+                                     return view->view_controller()->GetId();
+                                   });
     ASSERT_TRUE(iter != menu_items.end());
 
     ClickButton((*iter)->primary_action_button_for_testing());

@@ -16,11 +16,9 @@ namespace {
 // overwritten with |media::AudioDeviceDescription::kDefaultDeviceId|.
 void MaybeRemoveDefaultDevice(media::AudioDeviceDescriptions& descriptions) {
   // Determine which of the audio devices is the fallback "default" device.
-  auto default_device_it =
-      base::ranges::find_if(descriptions, [](const auto& description) {
-        return description.unique_id ==
-               media::AudioDeviceDescription::kDefaultDeviceId;
-      });
+  auto default_device_it = base::ranges::find(
+      descriptions, media::AudioDeviceDescription::kDefaultDeviceId,
+      &media::AudioDeviceDescription::unique_id);
 
   // If there is no default device, there is nothing to remove.
   if (default_device_it == descriptions.end())
