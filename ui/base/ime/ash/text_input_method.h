@@ -132,9 +132,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
 
   // Returns whether the IME is ready to accept key events for testing.
   virtual bool IsReadyForTesting() = 0;
-
- protected:
-  TextInputMethod() = default;
 };
 
 }  // namespace ui
