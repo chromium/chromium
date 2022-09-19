@@ -35,8 +35,8 @@ class HistoryClustersInternalsPageHandlerImpl
 
  private:
   // history_clusters::mojom::PageHandler:
-  // Will ask `history_service_` for visits.
   void GetVisitsJson(GetVisitsJsonCallback callback) override;
+  void PrintKeywordBagStateToLogMessages() override;
 
   // Gets annotated visits from HistoryService.
   void GetAnnotatedVisits(

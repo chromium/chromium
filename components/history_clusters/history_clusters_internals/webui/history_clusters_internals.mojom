@@ -17,6 +17,11 @@ interface PageHandler {
   // Requests for the visits to be serialized to JSON. Will invoke
   // callback when JSON string is ready.
   GetVisitsJson() => (string visits_json);
+
+  // Requests that the HistoryClustersService prints the keyword bag state to
+  // the log messages. These log messages will be sent to the page via
+  // `OnLogMessageAdded()`.
+  PrintKeywordBagStateToLogMessages();
 };
 
 // Renderer-side handler for internal page to process the updates from

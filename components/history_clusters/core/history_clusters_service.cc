@@ -266,6 +266,22 @@ void HistoryClustersService::ClearKeywordCache() {
   cache_keyword_query_task_.reset();
 }
 
+void HistoryClustersService::PrintKeywordBagStateToLogMessage() const {
+  NotifyDebugMessage("-- Printing Short-Time Keyword Bag --");
+  NotifyDebugMessage("Timestamp: " +
+                     base::TimeToISO8601(short_keyword_cache_timestamp_));
+  NotifyDebugMessage(GetDebugJSONForKeywordMap(short_keyword_cache_));
+  NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(short_url_keywords_cache_));
+
+  NotifyDebugMessage("-- Printing All-Time Keyword Bag --");
+  NotifyDebugMessage("Timestamp: " +
+                     base::TimeToISO8601(all_keywords_cache_timestamp_));
+  NotifyDebugMessage(GetDebugJSONForKeywordMap(all_keywords_cache_));
+  NotifyDebugMessage(GetDebugJSONForUrlKeywordSet(all_url_keywords_cache_));
+
+  NotifyDebugMessage("-- Printing Keyword Bags Done --");
+}
+
 void HistoryClustersService::StartKeywordCacheRefresh() {
   // If `all_keywords_cache_` is older than 2 hours, update it with the keywords
   // of all clusters. Otherwise, update `short_keyword_cache_` with the

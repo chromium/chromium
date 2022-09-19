@@ -50,12 +50,20 @@ function getProxy(): HistoryClustersInternalsBrowserProxy {
   return HistoryClustersInternalsBrowserProxy.getInstance();
 }
 
+/**
+ * The callback to button#print-keyword-bag-state that prints the keyword bag.
+ */
+function onPrintKeywordBagState() {
+  getProxy().getHandler().printKeywordBagStateToLogMessages();
+}
 
 function initialize() {
   const logMessageContainer = $('log-message-container') as HTMLTableElement;
 
   $('log-messages-dump').addEventListener('click', onLogMessagesDump);
   $('visits-dump').addEventListener('click', onVisitsDumpRequested);
+  $('print-keyword-bag-state')
+      .addEventListener('click', onPrintKeywordBagState);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
       (message: string) => {

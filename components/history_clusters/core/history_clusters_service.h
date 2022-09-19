@@ -197,6 +197,10 @@ class HistoryClustersService : public base::SupportsUserData,
   // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
   void ClearKeywordCache();
 
+  // Prints the keyword bag state to the log messages. For example, a button on
+  // chrome://history-clusters-internals triggers this.
+  void PrintKeywordBagStateToLogMessage() const;
+
  private:
   friend class HistoryClustersServiceTestApi;
 

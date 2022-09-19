@@ -50,6 +50,15 @@ void HistoryClustersInternalsPageHandlerImpl::GetVisitsJson(
                      /*previously_retrieved_visits=*/{}, std::move(callback));
 }
 
+void HistoryClustersInternalsPageHandlerImpl::
+    PrintKeywordBagStateToLogMessages() {
+  if (history_clusters_service_) {
+    history_clusters_service_->PrintKeywordBagStateToLogMessage();
+  } else {
+    OnDebugMessage("Service is nullptr.");
+  }
+}
+
 void HistoryClustersInternalsPageHandlerImpl::GetAnnotatedVisits(
     history_clusters::QueryClustersContinuationParams continuation_params,
     std::vector<history::AnnotatedVisit> previously_retrieved_visits,
