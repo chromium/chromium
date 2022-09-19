@@ -87,10 +87,32 @@ class TestUDPClientSocket : public DatagramClientSocket {
     NOTIMPLEMENTED();
     return ERR_NOT_IMPLEMENTED;
   }
+
   int ConnectUsingDefaultNetwork(const IPEndPoint& address) override {
     NOTIMPLEMENTED();
     return ERR_NOT_IMPLEMENTED;
   }
+
+  int ConnectAsync(const IPEndPoint& address,
+                   CompletionOnceCallback callback) override {
+    NOTIMPLEMENTED();
+    return ERR_NOT_IMPLEMENTED;
+  }
+
+  int ConnectUsingNetworkAsync(handles::NetworkHandle network,
+                               const IPEndPoint& address,
+                               CompletionOnceCallback callback) override {
+    NOTIMPLEMENTED();
+    return ERR_NOT_IMPLEMENTED;
+  }
+
+  int ConnectUsingDefaultNetworkAsync(
+      const IPEndPoint& address,
+      CompletionOnceCallback callback) override {
+    NOTIMPLEMENTED();
+    return ERR_NOT_IMPLEMENTED;
+  }
+
   handles::NetworkHandle GetBoundNetwork() const override {
     return handles::kInvalidNetworkHandle;
   }

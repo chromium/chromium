@@ -39,6 +39,14 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   int ConnectUsingNetwork(handles::NetworkHandle network,
                           const IPEndPoint& address) override;
   int ConnectUsingDefaultNetwork(const IPEndPoint& address) override;
+  int ConnectAsync(const IPEndPoint& address,
+                   CompletionOnceCallback callback) override;
+  int ConnectUsingNetworkAsync(handles::NetworkHandle network,
+                               const IPEndPoint& address,
+                               CompletionOnceCallback callback) override;
+  int ConnectUsingDefaultNetworkAsync(const IPEndPoint& address,
+                                      CompletionOnceCallback callback) override;
+
   handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
   int Read(IOBuffer* buf,

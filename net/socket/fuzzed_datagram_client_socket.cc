@@ -62,6 +62,34 @@ int FuzzedDatagramClientSocket::FuzzedDatagramClientSocket::
   return ERR_NOT_IMPLEMENTED;
 }
 
+int FuzzedDatagramClientSocket::ConnectAsync(const IPEndPoint& address,
+                                             CompletionOnceCallback callback) {
+  CHECK(!connected_);
+  int rv = Connect(address);
+  DCHECK_NE(rv, ERR_IO_PENDING);
+  if (data_provider_->ConsumeBool()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), rv));
+    return ERR_IO_PENDING;
+  }
+  return rv;
+}
+
+int FuzzedDatagramClientSocket::ConnectUsingNetworkAsync(
+    handles::NetworkHandle network,
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  CHECK(!connected_);
+  return ERR_NOT_IMPLEMENTED;
+}
+
+int FuzzedDatagramClientSocket::ConnectUsingDefaultNetworkAsync(
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  CHECK(!connected_);
+  return ERR_NOT_IMPLEMENTED;
+}
+
 handles::NetworkHandle FuzzedDatagramClientSocket::GetBoundNetwork() const {
   return handles::kInvalidNetworkHandle;
 }

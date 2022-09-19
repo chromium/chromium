@@ -4,6 +4,8 @@
 
 #include "net/socket/udp_client_socket.h"
 
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
@@ -73,6 +75,26 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
     return rv;
   network_ = network;
   return socket_.Connect(address);
+}
+
+int UDPClientSocket::ConnectAsync(const IPEndPoint& address,
+                                  CompletionOnceCallback callback) {
+  DCHECK(callback);
+  return Connect(address);
+}
+
+int UDPClientSocket::ConnectUsingNetworkAsync(handles::NetworkHandle network,
+                                              const IPEndPoint& address,
+                                              CompletionOnceCallback callback) {
+  DCHECK(callback);
+  return ConnectUsingNetwork(network, address);
+}
+
+int UDPClientSocket::ConnectUsingDefaultNetworkAsync(
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  DCHECK(callback);
+  return ConnectUsingDefaultNetwork(address);
 }
 
 handles::NetworkHandle UDPClientSocket::GetBoundNetwork() const {

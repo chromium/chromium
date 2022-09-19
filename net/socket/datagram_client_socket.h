@@ -23,6 +23,7 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
 
   // Initialize this socket as a client socket to server at |address|.
   // Returns a network error code.
+  // TODO(liza): Remove this method once consumers have been updated.
   virtual int Connect(const IPEndPoint& address) = 0;
 
   // Binds this socket to |network| and initializes socket as a client socket
@@ -30,12 +31,36 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
   // received via |network|. This call will fail if |network| has disconnected.
   // Communication using this socket will fail if |network| disconnects.
   // Returns a net error code.
+  // TODO(liza): Remove this method once consumers have been updated.
   virtual int ConnectUsingNetwork(handles::NetworkHandle network,
                                   const IPEndPoint& address) = 0;
 
   // Same as ConnectUsingNetwork, except that the current default network is
   // used. Returns a net error code.
+  // TODO(liza): Remove this method once consumers have been updated.
   virtual int ConnectUsingDefaultNetwork(const IPEndPoint& address) = 0;
+
+  // Same as Connect, but it can run asynchronously or synchronously. Returns a
+  // network error code.
+  // TODO(liza): Rename this to Connect once consumers have been updated.
+  virtual int ConnectAsync(const IPEndPoint& address,
+                           CompletionOnceCallback callback) = 0;
+
+  // Same as ConnectUsingNetwork, but it can run asynchronously or
+  // synchronously. Returns a network error code.
+  // TODO(liza): Rename this to ConnectUsingNetwork once consumers have been
+  // updated.
+  virtual int ConnectUsingNetworkAsync(handles::NetworkHandle network,
+                                       const IPEndPoint& address,
+                                       CompletionOnceCallback callback) = 0;
+
+  // Same as ConnectUsConnectUsingDefaultNetworkingNetwork, but it can run
+  // asynchronously or synchronously. Returns a network error code.
+  // TODO(liza): Rename this to ConnectUsingDefaultNetwork once consumers have
+  // been updated.
+  virtual int ConnectUsingDefaultNetworkAsync(
+      const IPEndPoint& address,
+      CompletionOnceCallback callback) = 0;
 
   // Returns the network that either ConnectUsingNetwork() or
   // ConnectUsingDefaultNetwork() bound this socket to. Returns

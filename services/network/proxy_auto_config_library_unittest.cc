@@ -148,6 +148,23 @@ class MockUDPSocket : public net::DatagramClientSocket {
     ADD_FAILURE() << "Called ConnectUsingDefaultNetwork()";
     return net::ERR_UNEXPECTED;
   }
+  int ConnectAsync(const net::IPEndPoint& address,
+                   net::CompletionOnceCallback callback) override {
+    ADD_FAILURE() << "Called ConnectAsync()";
+    return net::ERR_UNEXPECTED;
+  }
+  int ConnectUsingNetworkAsync(net::handles::NetworkHandle network,
+                               const net::IPEndPoint& address,
+                               net::CompletionOnceCallback callback) override {
+    ADD_FAILURE() << "Called ConnectUsingNetworkAsync()";
+    return net::ERR_UNEXPECTED;
+  }
+  int ConnectUsingDefaultNetworkAsync(
+      const net::IPEndPoint& address,
+      net::CompletionOnceCallback callback) override {
+    ADD_FAILURE() << "Called ConnectUsingDefaultNetworkAsync()";
+    return net::ERR_UNEXPECTED;
+  }
   net::handles::NetworkHandle GetBoundNetwork() const override {
     ADD_FAILURE() << "Called GetBoundNetwork()";
     return network_;

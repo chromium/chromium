@@ -1613,6 +1613,7 @@ const NetLogWithSource& MockUDPClientSocket::NetLog() const {
 int MockUDPClientSocket::Connect(const IPEndPoint& address) {
   if (!data_)
     return ERR_UNEXPECTED;
+  DCHECK_NE(data_->connect_data().result, ERR_IO_PENDING);
   connected_ = true;
   peer_addr_ = address;
   return data_->connect_data().result;
@@ -1623,6 +1624,7 @@ int MockUDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
   DCHECK(!connected_);
   if (!data_)
     return ERR_UNEXPECTED;
+  DCHECK_NE(data_->connect_data().result, ERR_IO_PENDING);
   network_ = network;
   connected_ = true;
   peer_addr_ = address;
@@ -1633,10 +1635,66 @@ int MockUDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   DCHECK(!connected_);
   if (!data_)
     return ERR_UNEXPECTED;
+  DCHECK_NE(data_->connect_data().result, ERR_IO_PENDING);
   network_ = kDefaultNetworkForTests;
   connected_ = true;
   peer_addr_ = address;
   return data_->connect_data().result;
+}
+
+int MockUDPClientSocket::ConnectAsync(const IPEndPoint& address,
+                                      CompletionOnceCallback callback) {
+  DCHECK(callback);
+  if (!data_) {
+    return ERR_UNEXPECTED;
+  }
+  connected_ = true;
+  peer_addr_ = address;
+  int result = data_->connect_data().result;
+  IoMode mode = data_->connect_data().mode;
+  if (mode == SYNCHRONOUS) {
+    return result;
+  }
+  RunCallbackAsync(std::move(callback), result);
+  return ERR_IO_PENDING;
+}
+
+int MockUDPClientSocket::ConnectUsingNetworkAsync(
+    handles::NetworkHandle network,
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  DCHECK(callback);
+  DCHECK(!connected_);
+  if (!data_)
+    return ERR_UNEXPECTED;
+  network_ = network;
+  connected_ = true;
+  peer_addr_ = address;
+  int result = data_->connect_data().result;
+  IoMode mode = data_->connect_data().mode;
+  if (mode == SYNCHRONOUS) {
+    return result;
+  }
+  RunCallbackAsync(std::move(callback), result);
+  return ERR_IO_PENDING;
+}
+
+int MockUDPClientSocket::ConnectUsingDefaultNetworkAsync(
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  DCHECK(!connected_);
+  if (!data_)
+    return ERR_UNEXPECTED;
+  network_ = kDefaultNetworkForTests;
+  connected_ = true;
+  peer_addr_ = address;
+  int result = data_->connect_data().result;
+  IoMode mode = data_->connect_data().mode;
+  if (mode == SYNCHRONOUS) {
+    return result;
+  }
+  RunCallbackAsync(std::move(callback), result);
+  return ERR_IO_PENDING;
 }
 
 handles::NetworkHandle MockUDPClientSocket::GetBoundNetwork() const {

@@ -155,7 +155,7 @@ class UDPSocketTest : public PlatformTest, public WithTaskEnvironment {
   // Run unit test for a connection test.
   // |use_nonblocking_io| is used to switch between overlapped and non-blocking
   // IO on Windows. It has no effect in other ports.
-  void ConnectTest(bool use_nonblocking_io);
+  void ConnectTest(bool use_nonblocking_io, bool use_async);
 
  protected:
   static const int kMaxRead = 1024;
@@ -172,7 +172,7 @@ void ReadCompleteCallback(int* result_out,
   std::move(callback).Run();
 }
 
-void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
+void UDPSocketTest::ConnectTest(bool use_nonblocking_io, bool use_async) {
   std::string simple_message("hello world!");
   RecordingNetLogObserver net_log_observer;
   // Setup the server to listen.
@@ -192,8 +192,19 @@ void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
   if (use_nonblocking_io)
     client->UseNonBlockingIO();
 
-  EXPECT_THAT(client->Connect(server_address), IsOk());
-
+  if (!use_async) {
+    EXPECT_THAT(client->Connect(server_address), IsOk());
+  } else {
+    TestCompletionCallback callback;
+    int rv = client->ConnectAsync(server_address, callback.callback());
+    if (rv != OK) {
+      ASSERT_EQ(rv, ERR_IO_PENDING);
+      rv = callback.WaitForResult();
+      EXPECT_EQ(rv, OK);
+    } else {
+      EXPECT_EQ(rv, OK);
+    }
+  }
   // Client sends to the server.
   EXPECT_EQ(simple_message.length(),
             static_cast<size_t>(WriteSocket(client.get(), simple_message)));
@@ -280,12 +291,15 @@ void UDPSocketTest::ConnectTest(bool use_nonblocking_io) {
 
 TEST_F(UDPSocketTest, Connect) {
   // The variable |use_nonblocking_io| has no effect in non-Windows ports.
-  ConnectTest(false);
+  // Run ConnectTest once with sync connect and once with async connect
+  ConnectTest(false, false);
+  ConnectTest(false, true);
 }
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(UDPSocketTest, ConnectNonBlocking) {
-  ConnectTest(true);
+  ConnectTest(true, false);
+  ConnectTest(true, true);
 }
 #endif
 
@@ -843,6 +857,63 @@ TEST_F(UDPSocketTest, ConnectUsingNetwork) {
   EXPECT_EQ(
       ERR_NOT_IMPLEMENTED,
       socket.ConnectUsingNetwork(wrong_network_handle, fake_server_address));
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+TEST_F(UDPSocketTest, ConnectUsingNetworkAsync) {
+  // The specific value of this address doesn't really matter, and no
+  // server needs to be running here. The test only needs to call
+  // ConnectUsingNetwork() and won't send any datagrams.
+  const IPEndPoint fake_server_address(IPAddress::IPv4Localhost(), 8080);
+  const handles::NetworkHandle wrong_network_handle = 65536;
+  TestCompletionCallback callback;
+#if BUILDFLAG(IS_ANDROID)
+  NetworkChangeNotifierFactoryAndroid ncn_factory;
+  NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
+  std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
+  if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
+    GTEST_SKIP() << "Network handles are required to test BindToNetwork.";
+
+  {
+    // Connecting using a not existing network should fail but not report
+    // ERR_NOT_IMPLEMENTED when network handles are supported.
+    UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr,
+                           NetLogSource());
+    int rv = socket.ConnectUsingNetworkAsync(
+        wrong_network_handle, fake_server_address, callback.callback());
+
+    if (rv == ERR_IO_PENDING) {
+      rv = callback.WaitForResult();
+    }
+    EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
+    EXPECT_NE(OK, rv);
+    EXPECT_NE(NetworkChangeNotifier::GetDefaultNetwork(),
+              socket.GetBoundNetwork());
+  }
+
+  {
+    // Connecting using an existing network should succeed when
+    // NetworkChangeNotifier returns a valid default network.
+    UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr,
+                           NetLogSource());
+    TestCompletionCallback callback;
+    const handles::NetworkHandle network_handle =
+        NetworkChangeNotifier::GetDefaultNetwork();
+    if (network_handle != handles::kInvalidNetworkHandle) {
+      int rv = socket.ConnectUsingNetworkAsync(
+          network_handle, fake_server_address, callback.callback());
+      if (rv == ERR_IO_PENDING) {
+        rv = callback.WaitForResult();
+      }
+      EXPECT_EQ(OK, rv);
+      EXPECT_EQ(network_handle, socket.GetBoundNetwork());
+    }
+  }
+#else
+  UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource());
+  EXPECT_EQ(ERR_NOT_IMPLEMENTED, socket.ConnectUsingNetworkAsync(
+                                     wrong_network_handle, fake_server_address,
+                                     callback.callback()));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -1418,7 +1489,7 @@ TEST_F(UDPSocketTest, RecordRadioWakeUpTrigger) {
   android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kCell);
 
-  ConnectTest(/*use_nonblocking_io=*/false);
+  ConnectTest(/*use_nonblocking_io=*/false, false);
 
   // Check the write is recorded as a possible radio wake-up trigger.
   histograms.ExpectTotalCount(
