@@ -318,6 +318,8 @@ crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-i
 
 crbug.com/951628 [ passthrough ] conformance/rendering/blending.html [ Failure ]
 
+crbug.com/angleproject/7672 [ angle-swiftshader passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
+
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
 # New validation was not implemented on the validating command decoder.
