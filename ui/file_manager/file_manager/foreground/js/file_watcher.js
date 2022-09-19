@@ -96,9 +96,11 @@ export class FileWatcher extends EventTarget {
           chrome.fileManagerPrivate.removeFileWatch(
               this.watchedDirectoryEntry_, result => {
                 if (chrome.runtime.lastError) {
-                  console.warn(
-                      'Failed to remove the watcher because of: ' +
-                      chrome.runtime.lastError.message);
+                  console.warn(`Cannot remove watcher for (redacted): ${
+                      chrome.runtime.lastError.message}`);
+                  console.info(`Cannot remove watcher for '${
+                      this.watchedDirectoryEntry_.toURL()}': ${
+                      chrome.runtime.lastError.message}`);
                 }
                 // Even on error reset the watcher locally, so at least the
                 // notifications are discarded.
