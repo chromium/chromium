@@ -121,7 +121,7 @@ public class ManualFillingTestHelper {
         }
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();
-        cacheCredentials(new String[0], new String[0], false); // This caches the empty state.
+        cacheCredentials("mpark@gmail.com", "S3cr3t"); // Providing suggestions ensures visibility.
         if (waitForNode) DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
     }
 
