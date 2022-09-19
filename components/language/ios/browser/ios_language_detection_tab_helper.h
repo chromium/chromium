@@ -44,22 +44,16 @@ class IOSLanguageDetectionTabHelper
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Attach a new helper to the given WebState. We cannot use the implementation
-  // from WebStateUserData as we are injecting the histogram and translate
-  // callback differently on iOS and iOS WebView.
-  static void CreateForWebState(web::WebState* web_state,
-                                UrlLanguageHistogram* url_language_histogram);
-
   // Called on page language detection.
   void OnLanguageDetermined(const translate::LanguageDetectionDetails& details);
 
  private:
-  base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  IOSLanguageDetectionTabHelper(
-      UrlLanguageHistogram* const url_language_histogram);
   friend class web::WebStateUserData<IOSLanguageDetectionTabHelper>;
 
+  IOSLanguageDetectionTabHelper(web::WebState* web_state,
+                                UrlLanguageHistogram* url_language_histogram);
+
+  base::ObserverList<Observer, true>::Unchecked observer_list_;
   UrlLanguageHistogram* const url_language_histogram_;
 
   WEB_STATE_USER_DATA_KEY_DECL();

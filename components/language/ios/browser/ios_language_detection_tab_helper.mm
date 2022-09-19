@@ -11,24 +11,13 @@
 namespace language {
 
 IOSLanguageDetectionTabHelper::IOSLanguageDetectionTabHelper(
-    UrlLanguageHistogram* const url_language_histogram)
+    web::WebState* web_state,
+    UrlLanguageHistogram* url_language_histogram)
     : url_language_histogram_(url_language_histogram) {}
 
 IOSLanguageDetectionTabHelper::~IOSLanguageDetectionTabHelper() {
   for (auto& observer : observer_list_) {
     observer.IOSLanguageDetectionTabHelperWasDestroyed(this);
-  }
-}
-
-// static
-void IOSLanguageDetectionTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    UrlLanguageHistogram* const url_language_histogram) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new IOSLanguageDetectionTabHelper(
-                               url_language_histogram)));
   }
 }
 
