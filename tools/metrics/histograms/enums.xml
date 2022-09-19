@@ -157,6 +157,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="0" label="Presentation"/>
   <int value="1" label="Tab mirroring"/>
   <int value="2" label="Desktop mirroring"/>
+  <int value="3" label="Remote playback"/>
 </enum>
 
 <enum name="AccessCodeCastDialogCloseReason">

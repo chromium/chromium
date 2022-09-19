@@ -103,7 +103,6 @@ test("components_unittests") {
 
   deps = [
     "//base",
-    "//components/access_code_cast/common:unit_tests",
     "//components/apdu:unit_tests",
     "//components/assist_ranker:unit_tests",
     "//components/autofill/core/browser:unit_tests",
@@ -526,6 +525,7 @@ test("components_unittests") {
   # Desktop - only deps.
   if (!is_android && !is_ios) {
     deps += [
+      "//components/access_code_cast/common:unit_tests",
       # See comment in components / guest_view / browser / BUILD.gn for why
       # guest_view is currently non - mobile.
       "//components/guest_view/browser:unit_tests",

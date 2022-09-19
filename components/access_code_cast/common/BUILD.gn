@@ -18,4 +18,7 @@ source_set("unit_tests") {
     "//components/access_code_cast/common",
     "//testing/gtest",
   ]
+  data = [
+    "//tools/metrics/histograms/enums.xml",
+  ]
 }
