@@ -88,7 +88,7 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   // Never nullptr.
   base::WeakPtr<HistoryClustersService> weak_history_clusters_service_;
   const IncompleteVisitMap incomplete_visit_context_annotations_;
-  // Can be nullptr.
+  // Non-owning pointer, but never nullptr.
   ClusteringBackend* const backend_;
   // Non-owning pointer, but never nullptr.
   history::HistoryService* const history_service_;

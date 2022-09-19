@@ -36,7 +36,7 @@ HistoryClustersServiceTaskUpdateClusters::
     ~HistoryClustersServiceTaskUpdateClusters() = default;
 
 void HistoryClustersServiceTaskUpdateClusters::Start() {
-  if (!backend_ || continuation_params_.exhausted_all_visits) {
+  if (continuation_params_.exhausted_all_visits) {
     done_ = true;
     std::move(callback_).Run();
     return;
@@ -56,8 +56,10 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
     std::vector<int64_t> old_clusters,
     std::vector<history::AnnotatedVisit> annotated_visits,
     QueryClustersContinuationParams continuation_params) {
-  if (weak_history_clusters_service_ &&
-      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+  if (!weak_history_clusters_service_)
+    return;
+
+  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "UPDATE CLUSTERS TASK - VISITS %zu:", annotated_visits.size()));
     weak_history_clusters_service_->NotifyDebugMessage(
@@ -83,8 +85,10 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotModelClusters(
     std::vector<int64_t> old_cluster_ids,
     QueryClustersContinuationParams continuation_params,
     std::vector<history::Cluster> clusters) {
-  if (weak_history_clusters_service_ &&
-      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+  if (!weak_history_clusters_service_)
+    return;
+
+  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "UPDATE CLUSTERS TASK - CLUSTERS %zu:", clusters.size()));
     weak_history_clusters_service_->NotifyDebugMessage(

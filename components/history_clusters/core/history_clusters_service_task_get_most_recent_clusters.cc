@@ -53,20 +53,14 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
   // Shouldn't request more clusters if history has been exhausted.
   DCHECK(!continuation_params_.exhausted_all_visits);
 
-  if (!backend_ || continuation_params_.exhausted_unclustered_visits) {
-    // If visits can't be clustered, either because `backend_` is null, or all
-    // unclustered visits have already been clustered and returned, then return
-    // persisted clusters.
-    if (weak_history_clusters_service_) {
-      if (!backend_) {
-        weak_history_clusters_service_->NotifyDebugMessage(
-            "HistoryClustersServiceTaskGetMostRecentClusters::Start() Error: "
-            "ClusteringBackend is nullptr. Returning most recent clusters.");
-      } else {
-        weak_history_clusters_service_->NotifyDebugMessage(
-            "HistoryClustersServiceTaskGetMostRecentClusters::Start() "
-            "exhausted unclustered visits. Returning most recent clusters.");
-      }
+  if (continuation_params_.exhausted_unclustered_visits) {
+    // If all unclustered visits have already been clustered and returned, then
+    // return persisted clusters.
+    if (weak_history_clusters_service_ &&
+        weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+      weak_history_clusters_service_->NotifyDebugMessage(
+          "HistoryClustersServiceTaskGetMostRecentClusters::Start() "
+          "exhausted unclustered visits. Returning most recent clusters.");
     }
     ReturnMostRecentPersistedClusters(continuation_params_.continuation_time);
 
@@ -101,10 +95,11 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
         std::vector<int64_t> old_clusters_unused,
         std::vector<history::AnnotatedVisit> annotated_visits,
         QueryClustersContinuationParams continuation_params) {
+  if (!weak_history_clusters_service_)
+    return;
   DCHECK(backend_);
 
-  if (weak_history_clusters_service_ &&
-      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(
         "HistoryClustersServiceTaskGetMostRecentClusters::"
         "OnGotAnnotatedVisitsToCluster("
@@ -147,14 +142,16 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
 void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
     QueryClustersContinuationParams continuation_params,
     std::vector<history::Cluster> clusters) {
+  if (!weak_history_clusters_service_)
+    return;
+
   base::UmaHistogramTimes(
       "History.Clusters.Backend.GetClustersLatency",
       base::TimeTicks::Now() - backend_get_clusters_start_time_);
   base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
                                clusters.size());
 
-  if (weak_history_clusters_service_ &&
-      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "GET MOST RECENT CLUSTERS TASK - CLUSTERS %zu:", clusters.size()));
     weak_history_clusters_service_->NotifyDebugMessage(
@@ -181,8 +178,10 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     OnGotMostRecentPersistedClusters(std::vector<history::Cluster> clusters) {
+  if (!weak_history_clusters_service_)
+    return;
+
   if (GetConfig().persist_clusters_in_history_db && !recluster_ &&
-      weak_history_clusters_service_ &&
       weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "GET MOST RECENT CLUSTERS TASK - PERSISTED CLUSTERS %zu:",
