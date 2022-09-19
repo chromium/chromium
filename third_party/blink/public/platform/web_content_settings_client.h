@@ -114,6 +114,12 @@ class WebContentSettingsClient {
   // frame.
   virtual bool ShouldAutoupgradeMixedContent() { return true; }
 
+  // Controls whether the SharedElementTransition callback needs to be larger
+  // than default.
+  virtual bool IncreaseSharedElementTransitionCallbackTimeout() const {
+    return false;
+  }
+
   virtual ~WebContentSettingsClient() = default;
 };
 

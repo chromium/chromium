@@ -10,6 +10,7 @@
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -538,10 +539,17 @@ void DocumentTransition::PauseRendering() {
   DCHECK(rendering_paused_scope_);
   client.UnregisterFromCommitObservation(this);
 
-  // Based on the viz side timeout to hold snapshots for 5 seconds.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink",
                                     "DocumentTransition::PauseRendering", this);
-  constexpr base::TimeDelta kTimeout = base::Seconds(4);
+  const base::TimeDelta kTimeout = [this]() {
+    if (auto* settings = document_->GetFrame()->GetContentSettingsClient();
+        settings &&
+        settings->IncreaseSharedElementTransitionCallbackTimeout()) {
+      return base::Seconds(15);
+    } else {
+      return base::Seconds(4);
+    }
+  }();
   document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
       ->PostDelayedTask(
           FROM_HERE,

@@ -16,10 +16,10 @@
 namespace viz {
 namespace {
 
-// Expire saved frames after 5 seconds.
+// Expire saved frames after 15 seconds.
 // TODO(vmpstr): Figure out if we need to change this for cross-origin
 // animations, since the network delay can cause us to wait longer.
-constexpr base::TimeDelta kExpiryTime = base::Seconds(5);
+constexpr base::TimeDelta kExpiryTime = base::Seconds(15);
 
 }  // namespace
 
