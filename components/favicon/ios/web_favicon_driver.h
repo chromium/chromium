@@ -31,9 +31,6 @@ class WebFaviconDriver : public web::WebStateObserver,
 
   ~WebFaviconDriver() override;
 
-  static void CreateForWebState(web::WebState* web_state,
-                                CoreFaviconService* favicon_service);
-
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
   bool FaviconIsValid() const override;
