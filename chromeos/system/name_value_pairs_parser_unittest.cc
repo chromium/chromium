@@ -141,7 +141,7 @@ name4="value4"
 
 TEST(NameValuePairsParser, TestParseNameValuePairsFromCrossystemTool) {
   // Sample output is taken from the /usr/bin/crosssytem tool.
-  const char* command[] = {
+  const std::vector<std::string> command = {
       "/bin/echo",
       "arch                   = x86           # Platform architecture\n"
       "cros_debug             = 1             # OS should allow debug\n"
@@ -156,7 +156,7 @@ TEST(NameValuePairsParser, TestParseNameValuePairsFromCrossystemTool) {
 
   NameValuePairsParser::NameValueMap map;
   NameValuePairsParser parser(&map);
-  parser.ParseNameValuePairsFromTool(std::size(command), command,
+  parser.ParseNameValuePairsFromTool(command,
                                      NameValuePairsFormat::kCrossystem);
   EXPECT_EQ(7u, map.size());
   EXPECT_EQ("x86", map["arch"]);

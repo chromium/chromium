@@ -9,10 +9,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 
-namespace chromeos {
-namespace system {
+namespace chromeos::system {
 
 // Activation date key.
 COMPONENT_EXPORT(CHROMEOS_SYSTEM) extern const char kActivateDateKey[];
@@ -147,7 +145,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProvider {
 
   // Returns true if the named machine statistic (e.g. "hardware_class") is
   // found and stores it in |result| (if provided). Probing for the existence of
-  // a statistic by setting |result| to nullptr supresses the usual warning in
+  // a statistic by setting |result| to nullptr suppresses the usual warning in
   // case the statistic is not found.
   virtual bool GetMachineStatistic(const std::string& name,
                                    std::string* result) = 0;
@@ -176,11 +174,10 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProvider {
   static void SetTestProvider(StatisticsProvider* test_provider);
 
  protected:
-  virtual ~StatisticsProvider() {}
+  virtual ~StatisticsProvider() = default;
 };
 
-}  // namespace system
-}  // namespace chromeos
+}  // namespace chromeos::system
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.

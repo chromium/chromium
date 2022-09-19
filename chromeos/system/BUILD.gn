@@ -52,6 +52,8 @@ component("system") {
       "scheduler_configuration_manager_base.h",
       "statistics_provider.cc",
       "statistics_provider.h",
+      "statistics_provider_impl.cc",
+      "statistics_provider_impl.h",
     ]
   }
 }
