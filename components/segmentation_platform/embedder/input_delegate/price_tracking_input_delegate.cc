@@ -4,6 +4,9 @@
 
 #include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
 
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
@@ -11,8 +14,10 @@
 namespace segmentation_platform::processing {
 
 PriceTrackingInputDelegate::PriceTrackingInputDelegate(
-    ShoppingServiceGetter shopping_service_getter)
+    ShoppingServiceGetter shopping_service_getter,
+    BookmarkModelGetter bookmark_model_getter)
     : shopping_service_getter_(std::move(shopping_service_getter)),
+      bookmark_model_getter_(std::move(bookmark_model_getter)),
       weak_ptr_factory_(this) {}
 
 PriceTrackingInputDelegate::~PriceTrackingInputDelegate() = default;
@@ -43,6 +48,27 @@ void PriceTrackingInputDelegate::Process(
   if (!shopping_service) {
     std::move(callback).Run(/*error=*/true, Tensor());
     return;
+  }
+
+  bookmarks::BookmarkModel* bookmark_model = bookmark_model_getter_.Run();
+  if (!bookmark_model) {
+    std::move(callback).Run(/*error=*/true, Tensor());
+    return;
+  }
+
+  const bookmarks::BookmarkNode* bookmark_node =
+      bookmark_model->GetMostRecentlyAddedUserNodeForURL(url);
+
+  if (bookmark_node) {
+    bool is_price_tracked =
+        commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
+
+    if (is_price_tracked) {
+      std::vector<ProcessedValue> output;
+      output.emplace_back(0.0f);
+      std::move(callback).Run(/*error=*/false, std::move(output));
+      return;
+    }
   }
 
   shopping_service->GetProductInfoForUrl(

@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android_v2.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/query_tiles/switches.h"
@@ -244,9 +246,11 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
     auto shopping_service_getter = base::BindRepeating(
         commerce::ShoppingServiceFactory::GetForBrowserContextIfExists,
         context);
+    auto bookmark_model_getter = base::BindRepeating(
+        BookmarkModelFactory::GetForBrowserContext, context);
     auto price_tracking_input_delegate =
         std::make_unique<processing::PriceTrackingInputDelegate>(
-            shopping_service_getter);
+            shopping_service_getter, bookmark_model_getter);
     config
         ->input_delegates[proto::CustomInput_FillPolicy_PRICE_TRACKING_HINTS] =
         std::move(price_tracking_input_delegate);
