@@ -192,8 +192,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2AppServiceMetrics) {
   navigation_observer.StartWatchingNewWebContents();
 
   proxy->Launch(*GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::HELP),
-                ui::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard,
-                apps::MakeWindowInfo(display::kDefaultDisplayId));
+                ui::EF_NONE, apps::LaunchSource::kFromKeyboard,
+                std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 
   navigation_observer.Wait();
   // The HELP app is 18, see DefaultAppName in
