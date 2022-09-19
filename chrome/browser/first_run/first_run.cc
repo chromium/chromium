@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/first_run/first_run_internal.h"
 #include "chrome/browser/google/google_brand.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/importer/external_process_importer_host.h"
 #include "chrome/browser/importer/importer_list.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
@@ -413,8 +414,12 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
   DCHECK(!user_data_dir.empty());
 
   if (initial_prefs.get()) {
-    if (!internal::ShowPostInstallEULAIfNeeded(initial_prefs.get()))
+    // Don't show EULA when running in headless mode since this would
+    // effectively block the UI because there is no one to accept it.
+    if (!headless::IsChromeNativeHeadless() &&
+        !internal::ShowPostInstallEULAIfNeeded(initial_prefs.get())) {
       return EULA_EXIT_NOW;
+    }
 
     std::unique_ptr<base::DictionaryValue> initial_dictionary =
         initial_prefs->initial_dictionary().CreateDeepCopy();
