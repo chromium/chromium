@@ -290,8 +290,10 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForClientView() const {
   // TODO(crbug/1361945): Make accessibilityHitTest support the window controls
   // overlay mode.
   gfx::Rect client_view_bounds = bounds();
-  int top_inset =
-      browser_view()->IsWindowControlsOverlayEnabled() ? 0 : GetTopInset(false);
+  int top_inset = (browser_view()->IsWindowControlsOverlayEnabled() ||
+                   browser_view()->IsImmersiveModeEnabled())
+                      ? 0
+                      : GetTopInset(false);
   client_view_bounds.Inset(gfx::Insets::TLBR(top_inset, 0, 0, 0));
   return client_view_bounds;
 }
