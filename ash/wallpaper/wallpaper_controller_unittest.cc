@@ -24,6 +24,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
@@ -4047,12 +4048,9 @@ TEST_F(WallpaperControllerTest,
 
   // Fast forward by one hour and attempt a system's color mode change.
   task_environment()->FastForwardBy(base::Hours(1));
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  controller_->OnColorModeChanged(true);
+  Shell::Get()->dark_light_mode_controller()->ToggleColorMode();
   RunAllTasksUntilIdle();
-  // TODO(crbug.com/1362424): Figure out why this is flaky.
-  // EXPECT_EQ(2, GetWallpaperCount());
+  EXPECT_EQ(2, GetWallpaperCount());
   // Expect the refresh timer doesn't reset.
   EXPECT_EQ(
       run_time,
