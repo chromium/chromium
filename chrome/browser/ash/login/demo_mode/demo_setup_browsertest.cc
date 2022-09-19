@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
@@ -60,6 +62,7 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -334,12 +337,13 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 
   void AcceptTermsAndExpectDemoSetupProgress() {
+    test::LockDemoDeviceInstallAttributes();
+    // TODO(b/246012796): If possible, re-enable waiting on the setup screen to
+    // be shown
     if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
       WaitForConsolidatedConsentScreen();
 
-      OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
       test::TapConsolidatedConsentAccept();
-      setup_progress_waiter.Wait();
     } else {
       test::WaitForEulaScreen();
       test::TapEulaAccept();
@@ -348,11 +352,7 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
 
       test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
 
-      // As setup screen shows only progress indicator and disappears afterwards
-      // we need to set up waiter before the action that triggers the screen.
-      OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
       AcceptArcTos();
-      setup_progress_waiter.Wait();
     }
   }
 
@@ -428,7 +428,9 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     EXPECT_EQ("admin-fr@cros-demo-mode.com",
               DemoSetupController::GetSubOrganizationEmail());
 
-    OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+    // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
+    // it's shown again when Demo setup completes
+    LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
     EXPECT_TRUE(StartupUtils::IsOobeCompleted());
     EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
@@ -524,7 +526,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_EQ("admin-us@cros-demo-mode.com",
             DemoSetupController::GetSubOrganizationEmail());
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
+  // it's shown again when Demo setup completes
+  LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
@@ -586,7 +590,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_EQ("admin-us@cros-demo-mode.com",
             DemoSetupController::GetSubOrganizationEmail());
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
+  // it's shown again when Demo setup completes
+  LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
   EXPECT_EQ("ABC", g_browser_process->local_state()->GetString(
                        prefs::kDemoModeRetailerId));
@@ -813,6 +819,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, RetryOnErrorScreen) {
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
   AcceptTermsAndExpectDemoSetupFailure();
+  test::LockDemoDeviceInstallAttributes();
 
   // We need to create another mock after showing error dialog.
   enrollment_helper_.ResetMock();
@@ -823,7 +830,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, RetryOnErrorScreen) {
 
   test::OobeJS().ClickOnPath(kDemoSetupErrorDialogRetry);
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
+  // it's shown again when Demo setup completes
+  LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
@@ -970,7 +979,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
   EXPECT_EQ("admin-ca@cros-demo-mode.com",
             DemoSetupController::GetSubOrganizationEmail());
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
+  // it's shown again when Demo setup completes
+  LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
@@ -1093,7 +1104,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
   EXPECT_EQ("admin-us-blazey@cros-demo-mode.com",
             DemoSetupController::GetSubOrganizationEmail());
 
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+  // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
+  // it's shown again when Demo setup completes
+  LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());

@@ -43,6 +43,10 @@ void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result);
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,
                                 base::ScopedTempDir* temp_dir);
 
+// Set Install Attributes as part of faked enrollment so that the device is
+// considered enterprise managed
+void LockDemoDeviceInstallAttributes();
+
 }  // namespace test
 }  // namespace ash
 

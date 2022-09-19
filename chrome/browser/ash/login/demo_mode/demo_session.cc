@@ -544,8 +544,9 @@ void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
 void DemoSession::OnSessionStateChanged() {
   switch (session_manager::SessionManager::Get()->session_state()) {
     case session_manager::SessionState::LOGIN_PRIMARY:
-      EnsureResourcesLoaded(base::BindOnce(&DemoSession::ShowSplashScreen,
-                                           weak_ptr_factory_.GetWeakPtr()));
+      EnsureResourcesLoaded(
+          base::BindOnce(&DemoSession::ConfigureAndStartSplashScreen,
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
     case session_manager::SessionState::ACTIVE:
       if (ShouldRemoveSplashScreen())
@@ -620,19 +621,32 @@ void DemoSession::OnDemoAppComponentLoaded(
       FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));
 }
 
-void DemoSession::ShowSplashScreen() {
-  const std::string current_locale = g_browser_process->GetApplicationLocale();
-  base::FilePath image_path = demo_resources_->path()
-                                  .Append(kSplashScreensPath)
-                                  .Append(current_locale + ".jpg");
-  if (!base::PathExists(image_path)) {
-    image_path =
-        demo_resources_->path().Append(kSplashScreensPath).Append("en-US.jpg");
-  }
+base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,
+                                        base::FilePath fallback_path) {
+  return base::PathExists(localized_image_path) ? localized_image_path
+                                                : fallback_path;
+}
+
+void DemoSession::ShowSplashScreen(base::FilePath image_path) {
   WallpaperControllerClientImpl::Get()->ShowAlwaysOnTopWallpaper(image_path);
   remove_splash_screen_fallback_timer_->Start(
       FROM_HERE, kRemoveSplashScreenTimeout,
       base::BindOnce(&DemoSession::RemoveSplashScreen,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DemoSession::ConfigureAndStartSplashScreen() {
+  const std::string current_locale = g_browser_process->GetApplicationLocale();
+  base::FilePath localized_image_path = demo_resources_->path()
+                                            .Append(kSplashScreensPath)
+                                            .Append(current_locale + ".jpg");
+  base::FilePath fallback_path =
+      demo_resources_->path().Append(kSplashScreensPath).Append("en-US.jpg");
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetSplashScreenImagePath, localized_image_path,
+                     fallback_path),
+      base::BindOnce(&DemoSession::ShowSplashScreen,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 

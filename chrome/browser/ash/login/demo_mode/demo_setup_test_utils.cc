@@ -7,8 +7,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace ash {
@@ -98,6 +102,26 @@ bool SetupDummyOfflinePolicyDir(const std::string& account_id,
     return false;
   }
   return true;
+}
+
+// Helper InstallAttributes::LockResultCallback implementation.
+void OnEnterpriseDeviceLock(base::OnceClosure runner_quit_task,
+                            InstallAttributes::LockResult in_locked) {
+  LOG(INFO) << "Enterprise lock  = " << in_locked;
+  std::move(runner_quit_task).Run();
+}
+
+void LockDemoDeviceInstallAttributes() {
+  base::RunLoop run_loop;
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  LOG(INFO) << "Locking demo mode install attributes";
+  connector->GetInstallAttributes()->LockDevice(
+      policy::DEVICE_MODE_ENTERPRISE, "domain.com",
+      std::string(),  // realm
+      "device-id",
+      base::BindOnce(&OnEnterpriseDeviceLock, run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 }  // namespace test

@@ -203,8 +203,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // launch the app upon installation.
   void InstallAppFromUpdateUrl(const std::string& id);
 
-  // Shows the splash screen after demo mode resources are installed.
-  void ShowSplashScreen();
+  // Find image path then show the splash screen.
+  void ConfigureAndStartSplashScreen();
+
+  // Show, and set the fallback timeout to remove, the splash screen.
+  void ShowSplashScreen(base::FilePath image_path);
 
   // Removes the splash screen.
   void RemoveSplashScreen();
