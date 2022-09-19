@@ -4,7 +4,6 @@
 
 #include "ui/views/view.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -20,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -298,7 +298,7 @@ Widget* View::GetWidget() {
 
 void View::ReorderChildView(View* view, size_t index) {
   DCHECK_EQ(view->parent_, this);
-  const auto i = std::find(children_.begin(), children_.end(), view);
+  const auto i = base::ranges::find(children_, view);
   DCHECK(i != children_.end());
 
   // If |view| is already at the desired position, there's nothing to do.
@@ -354,7 +354,7 @@ bool View::Contains(const View* view) const {
 }
 
 View::Views::const_iterator View::FindChild(const View* view) const {
-  return std::find(children_.cbegin(), children_.cend(), view);
+  return base::ranges::find(children_, view);
 }
 
 absl::optional<size_t> View::GetIndexOf(const View* view) const {
@@ -768,8 +768,7 @@ void View::RemoveLayerBeneathView(ui::Layer* old_layer) {
 }
 
 void View::RemoveLayerBeneathViewKeepInLayerTree(ui::Layer* old_layer) {
-  auto layer_pos =
-      std::find(layers_beneath_.begin(), layers_beneath_.end(), old_layer);
+  auto layer_pos = base::ranges::find(layers_beneath_, old_layer);
   DCHECK(layer_pos != layers_beneath_.end())
       << "Attempted to remove a layer that was never added.";
   layers_beneath_.erase(layer_pos);
@@ -1602,7 +1601,7 @@ void View::RemoveAccelerator(const ui::Accelerator& accelerator) {
     return;
   }
 
-  auto i(std::find(accelerators_->begin(), accelerators_->end(), accelerator));
+  auto i(base::ranges::find(*accelerators_, accelerator));
   if (i == accelerators_->end()) {
     NOTREACHED() << "Removing non-existing accelerator";
     return;
@@ -2671,7 +2670,7 @@ void View::DoRemoveChildView(View* view,
                              View* new_parent) {
   DCHECK(view);
 
-  const auto i = std::find(children_.cbegin(), children_.cend(), view);
+  const auto i = FindChild(view);
   if (i == children_.cend())
     return;
 
@@ -2869,8 +2868,7 @@ void View::AddDescendantToNotify(View* view) {
 
 void View::RemoveDescendantToNotify(View* view) {
   DCHECK(view && descendants_to_notify_);
-  auto i(std::find(descendants_to_notify_->begin(),
-                   descendants_to_notify_->end(), view));
+  auto i = base::ranges::find(*descendants_to_notify_, view);
   DCHECK(i != descendants_to_notify_->end());
   descendants_to_notify_->erase(i);
   if (descendants_to_notify_->empty())
@@ -3220,9 +3218,8 @@ void View::SetFocusSiblings(View* view, Views::const_iterator pos) {
       // |view| was inserted at the end, but the end of the child list may not
       // be the last focusable element. Try to hook in after the last focusable
       // child.
-      View* const old_last =
-          *std::find_if(children_.cbegin(), pos,
-                        [](View* v) { return !v->next_focusable_view_; });
+      View* const old_last = *base::ranges::find_if_not(
+          children_.cbegin(), pos, &View::next_focusable_view_);
       DCHECK_NE(old_last, view);
       view->InsertAfterInFocusList(old_last);
     } else {

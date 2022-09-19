@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -609,8 +610,8 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
     v->ConvertPointToTarget(v, child, &point_in_child_coords);
     return child->HitTestPoint(point_in_child_coords);
   };
-  const auto i = std::find_if(v->children().rbegin(), v->children().rend(),
-                              is_point_in_child);
+  const auto i =
+      base::ranges::find_if(base::Reversed(v->children()), is_point_in_child);
   // If it's not inside any of our children, it's inside this view.
   return (i == v->children().rend()) ? GetNativeViewAccessible()
                                      : (*i)->GetNativeViewAccessible();
@@ -790,8 +791,7 @@ absl::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
   if (views_in_group.empty())
     return absl::nullopt;
   // Check this is in views_in_group; it may be removed if it is ignored.
-  auto found_view =
-      std::find(views_in_group.begin(), views_in_group.end(), view());
+  auto found_view = base::ranges::find(views_in_group, view());
   if (found_view == views_in_group.end())
     return absl::nullopt;
 
@@ -812,8 +812,7 @@ absl::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
   if (views_in_group.empty())
     return absl::nullopt;
   // Check this is in views_in_group; it may be removed if it is ignored.
-  auto found_view =
-      std::find(views_in_group.begin(), views_in_group.end(), view());
+  auto found_view = base::ranges::find(views_in_group, view());
   if (found_view == views_in_group.end())
     return absl::nullopt;
 
@@ -874,8 +873,7 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
     return ViewAccessibilityUtils::IsFocusedChildWidget(child_widget,
                                                         focused_view);
   };
-  const auto i = std::find_if(visible_widgets.cbegin(), visible_widgets.cend(),
-                              is_focused_child);
+  const auto i = base::ranges::find_if(visible_widgets, is_focused_child);
   // In order to support the "read title (NVDAKey+T)" and "read window
   // (NVDAKey+B)" commands in the NVDA screen reader, hide the rest of the UI
   // from the accessibility tree when a modal dialog is showing.

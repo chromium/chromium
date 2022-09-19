@@ -45,11 +45,10 @@ void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;
   GetViewsInGroupFromParent(group, &views);
-  const auto i =
-      std::find_if(views.cbegin(), views.cend(), [](const auto* view) {
-        // Why don't we check the runtime type like is done in SetChecked()?
-        return static_cast<const RadioButton*>(view)->GetChecked();
-      });
+  const auto i = base::ranges::find_if(views, [](const auto* view) {
+    // Why don't we check the runtime type like is done in SetChecked()?
+    return static_cast<const RadioButton*>(view)->GetChecked();
+  });
   return (i == views.cend()) ? nullptr : *i;
 }
 

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -54,9 +52,9 @@ void SublevelManager::OrderChildWidget(Widget* child) {
   auto insert_it = FindInsertPosition(child);
 
   // Find the closest previous widget at the same level.
-  auto prev_it = std::find_if(
-      std::make_reverse_iterator(insert_it), std::crend(children_),
-      [&](Widget* widget) { return widget->GetZOrderLevel() == child_level; });
+  auto prev_it = base::ranges::find(std::make_reverse_iterator(insert_it),
+                                    std::crend(children_), child_level,
+                                    &Widget::GetZOrderLevel);
 
   if (prev_it == children_.rend()) {
     // x11 bug: stacking above the base `owner_` will cause `child` to become
@@ -64,10 +62,8 @@ void SublevelManager::OrderChildWidget(Widget* child) {
     // position `child` relative to the next child widget.
 
     // Find the closest next widget at the same level.
-    auto next_it =
-        std::find_if(insert_it, std::cend(children_), [&](Widget* widget) {
-          return widget->GetZOrderLevel() == child_level;
-        });
+    auto next_it = base::ranges::find(insert_it, std::cend(children_),
+                                      child_level, &Widget::GetZOrderLevel);
 
     // Put `child` below `next_it`.
     if (next_it != std::end(children_)) {

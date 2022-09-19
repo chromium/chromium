@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "base/ranges/algorithm.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -26,10 +27,9 @@ Widget* ViewAccessibilityUtils::GetFocusedChildWidgetForAccessibility(
   Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView(),
                              &child_widgets);
   const auto i =
-      std::find_if(child_widgets.cbegin(), child_widgets.cend(),
-                   [focused_view](auto* child_widget) {
-                     return IsFocusedChildWidget(child_widget, focused_view);
-                   });
+      base::ranges::find_if(child_widgets, [focused_view](auto* child_widget) {
+        return IsFocusedChildWidget(child_widget, focused_view);
+      });
   return (i == child_widgets.cend()) ? nullptr : *i;
 }
 

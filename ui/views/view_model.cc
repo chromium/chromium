@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -54,9 +55,7 @@ void ViewModelBase::Clear() {
 }
 
 absl::optional<size_t> ViewModelBase::GetIndexOfView(const View* view) const {
-  const auto i =
-      std::find_if(entries_.cbegin(), entries_.cend(),
-                   [view](const auto& entry) { return entry.view == view; });
+  const auto i = base::ranges::find(entries_, view, &Entry::view);
   return (i == entries_.cend())
              ? absl::nullopt
              : absl::make_optional(static_cast<size_t>(i - entries_.cbegin()));

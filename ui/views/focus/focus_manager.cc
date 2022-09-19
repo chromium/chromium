@@ -4,7 +4,6 @@
 
 #include "ui/views/focus/focus_manager.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/rtl.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -92,8 +92,7 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
       base::EraseIf(views, [this](View* v) {
         return v != focused_view_ && !v->IsAccessibilityFocusable();
       });
-      View::Views::const_iterator i(
-          std::find(views.begin(), views.end(), focused_view_));
+      View::Views::const_iterator i = base::ranges::find(views, focused_view_);
       DCHECK(i != views.end());
       auto index = static_cast<size_t>(i - views.begin());
       if (next && index == views.size() - 1)
@@ -180,10 +179,10 @@ bool FocusManager::RotatePaneFocus(Direction direction,
   // Check to see if a pane already has focus and update the index accordingly.
   const views::View* focused_view = GetFocusedView();
   if (focused_view) {
-    const auto i = std::find_if(panes.cbegin(), panes.cend(),
-                                [focused_view](const auto* pane) {
-                                  return pane && pane->Contains(focused_view);
-                                });
+    const auto i =
+        base::ranges::find_if(panes, [focused_view](const auto* pane) {
+          return pane && pane->Contains(focused_view);
+        });
     if (i != panes.cend())
       index = static_cast<size_t>(i - panes.cbegin());
   }

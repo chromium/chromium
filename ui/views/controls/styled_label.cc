@@ -261,11 +261,8 @@ void StyledLabel::Layout() {
         // Transfer ownership for any views in layout_views_->owned_views or
         // custom_views_.  The actual pointer is the same in both arms below.
         if (view->GetProperty(kStyledLabelCustomViewKey)) {
-          auto custom_view =
-              std::find_if(custom_views_.begin(), custom_views_.end(),
-                           [view](const auto& current_custom_view) {
-                             return current_custom_view.get() == view;
-                           });
+          auto custom_view = base::ranges::find(custom_views_, view,
+                                                &std::unique_ptr<View>::get);
           DCHECK(custom_view != custom_views_.end());
           AddChildView(std::move(*custom_view));
           custom_views_.erase(custom_view);

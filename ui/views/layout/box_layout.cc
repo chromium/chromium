@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_class_properties.h"
 
@@ -670,8 +672,8 @@ View* BoxLayout::FirstVisibleView() const {
 
 View* BoxLayout::LastVisibleView() const {
   const auto& children = host_->children();
-  const auto i = std::find_if(
-      children.crbegin(), children.crend(),
+  const auto i = base::ranges::find_if(
+      base::Reversed(children),
       [this](View* v) { return ViewWrapper(this, v).VisibleToLayout(); });
   return (i == children.crend()) ? nullptr : *i;
 }
