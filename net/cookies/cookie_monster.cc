@@ -1125,8 +1125,10 @@ void CookieMonster::TrimDuplicateCookiesForKey(
 }
 
 std::vector<CanonicalCookie*>
-CookieMonster::FindCookiesForRegistryControlledHost(const GURL& url,
-                                                    CookieMap* cookie_map) {
+CookieMonster::FindCookiesForRegistryControlledHost(
+    const GURL& url,
+    CookieMap* cookie_map,
+    CookieMonster::PartitionedCookieMap::iterator* partition_it) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!cookie_map)
@@ -1146,7 +1148,14 @@ CookieMonster::FindCookiesForRegistryControlledHost(const GURL& url,
 
     // If the cookie is expired, delete it.
     if (cc->IsExpired(current_time)) {
-      InternalDeleteCookie(curit, true, DELETE_COOKIE_EXPIRED);
+      if (cc->IsPartitioned()) {
+        DCHECK(partition_it);
+        DCHECK_EQ((*partition_it)->second.get(), cookie_map);
+        InternalDeletePartitionedCookie(*partition_it, curit, true,
+                                        DELETE_COOKIE_EXPIRED);
+      } else {
+        InternalDeleteCookie(curit, true, DELETE_COOKIE_EXPIRED);
+      }
       continue;
     }
     cookies.push_back(cc);
@@ -1165,7 +1174,7 @@ CookieMonster::FindPartitionedCookiesForRegistryControlledHost(
   if (it == partitioned_cookies_.end())
     return std::vector<CanonicalCookie*>();
 
-  return FindCookiesForRegistryControlledHost(url, it->second.get());
+  return FindCookiesForRegistryControlledHost(url, it->second.get(), &it);
 }
 
 void CookieMonster::FilterCookiesWithOptions(
