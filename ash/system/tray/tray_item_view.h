@@ -91,6 +91,10 @@ class ASH_EXPORT TrayItemView : public views::View,
   // Returns whether the shelf is horizontal.
   bool IsHorizontalAlignment() const;
 
+  // Perform visibility animation for this view. This function can be overridden
+  // so that the visibility animation can be customized.
+  virtual void PerformVisibilityAnimation(bool visible);
+
  private:
   // views::View.
   void ChildPreferredSizeChanged(View* child) override;
