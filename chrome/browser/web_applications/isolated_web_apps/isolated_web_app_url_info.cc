@@ -9,8 +9,14 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition_config.h"
 
 namespace web_app {
+
+namespace {
+const char kIsolatedAppPartitionPrefix[] = "iwa-";
+}
 
 // static
 base::expected<IsolatedWebAppUrlInfo, std::string>
@@ -50,6 +56,17 @@ const url::Origin& IsolatedWebAppUrlInfo::origin() const {
 
 const AppId& IsolatedWebAppUrlInfo::app_id() const {
   return app_id_;
+}
+
+content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
+    content::BrowserContext* browser_context) const {
+  // We add a prefix to `partition_domain` to avoid potential name conflicts
+  // with Chrome Apps, which use their id/hostname as `partition_domain`.
+  return content::StoragePartitionConfig::Create(
+      browser_context,
+      /*partition_domain=*/kIsolatedAppPartitionPrefix + origin().host(),
+      /*partition_name=*/"",
+      /*in_memory=*/false);
 }
 
 base::expected<web_package::SignedWebBundleId, std::string>

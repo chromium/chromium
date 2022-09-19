@@ -5,7 +5,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include <utility>
 
+#include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "content/public/browser/storage_partition_config.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -98,6 +101,23 @@ TEST_F(IsolatedWebAppUrlInfoTest, AppIdIsHashedOrigin) {
       IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));
 
   EXPECT_THAT(url_info->app_id(), Eq("ckmbeioemjmabdoddhjadagkjknpeigi"));
+}
+
+TEST_F(IsolatedWebAppUrlInfoTest, StoragePartitionConfigUsesOrigin) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile testing_profile;
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));
+
+  auto expected_config = content::StoragePartitionConfig::Create(
+      &testing_profile,
+      /*partition_domain=*/
+      "iwa-aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic",
+      /*partition_name=*/"",
+      /*in_memory=*/false);
+  EXPECT_THAT(url_info->storage_partition_config(&testing_profile),
+              Eq(expected_config));
 }
 
 class IsolatedWebAppGURLConversionTest

@@ -28,6 +28,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -155,6 +156,7 @@
 #include "chrome/browser/universal_web_contents_observers.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/webapps/web_app_offline.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
@@ -1650,7 +1652,7 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
     const GURL& site) {
   // Default to the browser-wide storage partition and override based on |site|
   // below.
-  content::StoragePartitionConfig storage_partition_config =
+  content::StoragePartitionConfig default_storage_partition_config =
       content::StoragePartitionConfig::CreateDefault(browser_context);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1661,11 +1663,19 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
         site.host(), browser_context);
   }
 
-  // TODO(crbug.com/1212263): Isolated PWAs are tracked by origin, but this
-  // function takes a site, so it will only work correctly when the site equals
-  // the full origin.
   if (content::SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
           browser_context, site)) {
+    if (site.SchemeIs(chrome::kIsolatedAppScheme)) {
+      const base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
+          iwa_url_info = web_app::IsolatedWebAppUrlInfo::Create(site);
+      if (!iwa_url_info.has_value()) {
+        LOG(ERROR) << "Invalid isolated-app URL: " << site;
+        return default_storage_partition_config;
+      }
+      return iwa_url_info->storage_partition_config(browser_context);
+    }
+
+    // TODO(crbug.com/1363756): Remove this path once IWAs are off HTTPS.
     Profile* profile = Profile::FromBrowserContext(browser_context);
     const std::string* isolation_key = web_app::GetStorageIsolationKey(
         profile->GetPrefs(), url::Origin::Create(site));
@@ -1679,7 +1689,7 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
   }
 #endif
 
-  return storage_partition_config;
+  return default_storage_partition_config;
 }
 
 std::unique_ptr<content::WebContentsViewDelegate>
@@ -2278,9 +2288,11 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
                  .GetExtensionOrAppByURL(url);
   }
   if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
+    // TODO(crbug.com/1363756): Remove the GetStorageIsolationKey call.
     Profile* profile = Profile::FromBrowserContext(browser_context);
-    return web_app::GetStorageIsolationKey(profile->GetPrefs(),
-                                           url::Origin::Create(url));
+    return url.SchemeIs(chrome::kIsolatedAppScheme) ||
+           !!web_app::GetStorageIsolationKey(profile->GetPrefs(),
+                                             url::Origin::Create(url));
   }
 #endif
   return false;
