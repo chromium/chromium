@@ -124,6 +124,15 @@ MessagePortDescriptor WebMessagePort::PassPort() {
   return port;
 }
 
+const base::UnguessableToken& WebMessagePort::GetEmbedderAgentClusterID() {
+  // This is creating a single agent cluster ID that would represent the
+  // embedder in MessagePort IPCs. While we could create a new ID on each call,
+  // providing a consistent one saves RNG work and could be useful in the future
+  // if we'd want to consistently identify messages from the embedder.
+  static const auto agent_cluster_id = base::UnguessableToken::Create();
+  return agent_cluster_id;
+}
+
 WebMessagePort::WebMessagePort(MessagePortDescriptor&& port)
     : port_(std::move(port)), is_closed_(false), is_transferable_(true) {
   DCHECK(port_.IsValid());
@@ -156,6 +165,10 @@ bool WebMessagePort::PostMessage(Message&& message) {
       blink::EncodeWebMessagePayload(WebMessagePayload(message.data));
   transferable_message.ports =
       blink::MessagePortChannel::CreateFromHandles(std::move(ports));
+
+  // Get the embedder assigned cluster ID, as these messages originate from the
+  // embedder.
+  transferable_message.sender_agent_cluster_id = GetEmbedderAgentClusterID();
 
   // TODO(chrisha): Notify the instrumentation delegate of a message being sent!
 

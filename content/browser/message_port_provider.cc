@@ -45,6 +45,10 @@ void PostMessageToFrameInternal(
 
   blink::TransferableMessage message = blink::EncodeWebMessagePayload(data);
   message.ports = std::move(channels);
+  // As the message is posted from the embedder and not from another renderer,
+  // set the agent cluster ID to the embedder's.
+  message.sender_agent_cluster_id =
+      blink::WebMessagePort::GetEmbedderAgentClusterID();
 
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(&page.GetMainDocument());

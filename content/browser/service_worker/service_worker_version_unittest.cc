@@ -913,8 +913,11 @@ TEST_F(ServiceWorkerVersionTest, RequestTimeout) {
       ReceiveServiceWorkerStatus(&error_status, run_loop.QuitClosure()));
 
   // Dispatch a dummy event.
+  auto message_event = blink::mojom::ExtendableMessageEvent::New();
+  message_event->message.sender_agent_cluster_id =
+      base::UnguessableToken::Create();
   version_->endpoint()->DispatchExtendableMessageEvent(
-      blink::mojom::ExtendableMessageEvent::New(),
+      std::move(message_event),
       version_->CreateSimpleEventCallback(request_id));
   worker->RunUntilDispatchMessageEvent();
 

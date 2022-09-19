@@ -1401,9 +1401,9 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEventInternal(
       }
     }
     if (!event_to_dispatch) {
-      if (!msg.locked_agent_cluster_id ||
+      if (!msg.locked_to_sender_agent_cluster ||
           GetExecutionContext()->IsSameAgentCluster(
-              *msg.locked_agent_cluster_id)) {
+              msg.sender_agent_cluster_id)) {
         observer = MakeGarbageCollected<WaitUntilObserver>(
             this, WaitUntilObserver::kMessage, event_id);
         event_to_dispatch = ExtendableMessageEvent::Create(
@@ -1437,9 +1437,10 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEventInternal(
     }
   }
   if (!event_to_dispatch) {
-    if (!msg.locked_agent_cluster_id ||
+    DCHECK(!msg.locked_to_sender_agent_cluster || msg.sender_agent_cluster_id);
+    if (!msg.locked_to_sender_agent_cluster ||
         GetExecutionContext()->IsSameAgentCluster(
-            *msg.locked_agent_cluster_id)) {
+            msg.sender_agent_cluster_id)) {
       observer = MakeGarbageCollected<WaitUntilObserver>(
           this, WaitUntilObserver::kMessage, event_id);
       event_to_dispatch = ExtendableMessageEvent::Create(

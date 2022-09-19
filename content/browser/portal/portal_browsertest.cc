@@ -2607,10 +2607,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateOnTwoPortals) {
       [](Portal* portal_a, Portal* portal_b, const GURL&,
          blink::mojom::ReferrerPtr,
          blink::mojom::Portal::NavigateCallback callback) {
-        portal_a->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                           0, base::DoNothing());
-        portal_b->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                           0, base::DoNothing());
+        blink::TransferableMessage message1;
+        message1.sender_agent_cluster_id = base::UnguessableToken::Create();
+        blink::TransferableMessage message2;
+        message2.sender_agent_cluster_id = base::UnguessableToken::Create();
+        portal_a->Activate(std::move(message1), base::TimeTicks::Now(), 0,
+                           base::DoNothing());
+        portal_b->Activate(std::move(message2), base::TimeTicks::Now(), 0,
+                           base::DoNothing());
         std::move(callback).Run();
       },
       portal_a, portal_b));
@@ -2640,10 +2644,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallActivateTwice) {
   portal_interceptor->SetNavigateCallback(base::BindRepeating(
       [](Portal* portal, const GURL&, blink::mojom::ReferrerPtr,
          blink::mojom::Portal::NavigateCallback callback) {
-        portal->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                         0, base::DoNothing());
-        portal->Activate(blink::TransferableMessage(), base::TimeTicks::Now(),
-                         0, base::DoNothing());
+        blink::TransferableMessage message1;
+        message1.sender_agent_cluster_id = base::UnguessableToken::Create();
+        blink::TransferableMessage message2;
+        message2.sender_agent_cluster_id = base::UnguessableToken::Create();
+        portal->Activate(std::move(message1), base::TimeTicks::Now(), 0,
+                         base::DoNothing());
+        portal->Activate(std::move(message2), base::TimeTicks::Now(), 0,
+                         base::DoNothing());
         std::move(callback).Run();
       },
       portal));

@@ -98,26 +98,30 @@ void BroadcastChannel::postMessage(const ScriptValue& message,
   if (execution_context->IsWindow()) {
     Document* document = To<LocalDOMWindow>(execution_context)->document();
     if (document->IsPrerendering()) {
-      document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-          &BroadcastChannel::PostMessageInternal, WrapWeakPersistent(this),
-          std::move(value),
-          execution_context->GetSecurityOrigin()->IsolatedCopy()));
+      document->AddPostPrerenderingActivationStep(
+          WTF::BindOnce(&BroadcastChannel::PostMessageInternal,
+                        WrapWeakPersistent(this), std::move(value),
+                        execution_context->GetSecurityOrigin()->IsolatedCopy(),
+                        execution_context->GetAgentClusterID()));
       return;
     }
   }
 
   PostMessageInternal(std::move(value),
-                      execution_context->GetSecurityOrigin()->IsolatedCopy());
+                      execution_context->GetSecurityOrigin()->IsolatedCopy(),
+                      execution_context->GetAgentClusterID());
 }
 
 void BroadcastChannel::PostMessageInternal(
     scoped_refptr<SerializedScriptValue> value,
-    scoped_refptr<SecurityOrigin> sender_origin) {
+    scoped_refptr<SecurityOrigin> sender_origin,
+    const base::UnguessableToken sender_agent_cluster_id) {
   if (!receiver_.is_bound())
     return;
   BlinkCloneableMessage msg;
   msg.message = std::move(value);
   msg.sender_origin = std::move(sender_origin);
+  msg.sender_agent_cluster_id = sender_agent_cluster_id;
   remote_client_->OnMessage(std::move(msg));
 }
 
@@ -155,9 +159,9 @@ void BroadcastChannel::Trace(Visitor* visitor) const {
 void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
   // Queue a task to dispatch the event.
   MessageEvent* event;
-  if (!message.locked_agent_cluster_id ||
+  if (!message.locked_to_sender_agent_cluster ||
       GetExecutionContext()->IsSameAgentCluster(
-          *message.locked_agent_cluster_id)) {
+          message.sender_agent_cluster_id)) {
     event = MessageEvent::Create(
         nullptr, std::move(message.message),
         GetExecutionContext()->GetSecurityOrigin()->ToString());

@@ -98,11 +98,8 @@ void ServiceWorker::postMessage(ScriptState* script_state,
   if (exception_state.HadException())
     return;
 
-  if (msg.message->IsLockedToAgentCluster()) {
-    msg.locked_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
-  } else {
-    msg.locked_agent_cluster_id = absl::nullopt;
-  }
+  msg.sender_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
+  msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
 
   // Defer postMessage() from a prerendered page until page activation.
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-service-workers

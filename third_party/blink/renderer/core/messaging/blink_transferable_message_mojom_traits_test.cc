@@ -63,6 +63,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
     transferables.array_buffers.push_back(array_buffer);
     BlinkTransferableMessage msg;
     msg.sender_origin = SecurityOrigin::CreateUniqueOpaque();
+    msg.sender_agent_cluster_id = base::UnguessableToken::Create();
     msg.message = BuildSerializedScriptValue(scope.GetIsolate(), v8_buffer,
                                              transferables);
     mojo_message = mojom::blink::TransferableMessage::SerializeAsMessage(&msg);
@@ -104,6 +105,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   transferables.array_buffers.push_back(original_array_buffer);
   BlinkTransferableMessage msg;
   msg.sender_origin = SecurityOrigin::CreateUniqueOpaque();
+  msg.sender_agent_cluster_id = base::UnguessableToken::Create();
   msg.message =
       BuildSerializedScriptValue(scope.GetIsolate(), v8_buffer, transferables);
   mojo::Message mojo_message =
@@ -148,6 +150,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
     transferables.image_bitmaps.push_back(image_bitmap);
     BlinkTransferableMessage msg;
     msg.sender_origin = SecurityOrigin::CreateUniqueOpaque();
+    msg.sender_agent_cluster_id = base::UnguessableToken::Create();
     msg.message =
         BuildSerializedScriptValue(scope.GetIsolate(), wrapper, transferables);
     mojo_message = mojom::blink::TransferableMessage::SerializeAsMessage(&msg);
@@ -174,6 +177,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   transferables.image_bitmaps.push_back(std::move(original_bitmap));
   BlinkTransferableMessage msg;
   msg.sender_origin = SecurityOrigin::CreateUniqueOpaque();
+  msg.sender_agent_cluster_id = base::UnguessableToken::Create();
   msg.message =
       BuildSerializedScriptValue(scope.GetIsolate(), wrapper, transferables);
   mojo::Message mojo_message =

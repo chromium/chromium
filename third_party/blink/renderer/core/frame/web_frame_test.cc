@@ -1618,6 +1618,7 @@ TEST_F(WebFrameTest, PostMessageEvent) {
     message.message = SerializedScriptValue::NullValue();
     message.sender_origin =
         SecurityOrigin::CreateFromString("https://origin.com");
+    message.sender_agent_cluster_id = base::UnguessableToken::Create();
     return message;
   };
 

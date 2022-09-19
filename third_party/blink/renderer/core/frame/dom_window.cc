@@ -856,21 +856,18 @@ BlinkTransferableMessage
 DOMWindow::PostedMessage::ToBlinkTransferableMessage() && {
   BlinkTransferableMessage result;
 
-  // Message data and cluster ID (optional).
   result.message = std::move(data);
-  if (result.message->IsLockedToAgentCluster())
-    result.locked_agent_cluster_id = source->GetAgentClusterID();
+  result.sender_agent_cluster_id = source->GetAgentClusterID();
+  result.locked_to_sender_agent_cluster =
+      result.message->IsLockedToAgentCluster();
 
-  // Ports
   result.ports = std::move(channels);
 
-  // User activation
   if (user_activation) {
     result.user_activation = mojom::blink::UserActivationSnapshot::New(
         user_activation->hasBeenActive(), user_activation->isActive());
   }
 
-  // Capability delegation
   result.delegated_capability = delegated_capability;
 
   return result;

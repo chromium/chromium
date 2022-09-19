@@ -707,8 +707,10 @@ TEST_F(ServiceWorkerProviderContextTest, PostMessageToClient) {
   provider_impl->SetClient(client.get());
   ASSERT_FALSE(client->was_receive_message_called());
 
+  blink::TransferableMessage message;
+  message.sender_agent_cluster_id = base::UnguessableToken::Create();
   container_remote->PostMessageToClient(std::move(object_info),
-                                        blink::TransferableMessage());
+                                        std::move(message));
   base::RunLoop().RunUntilIdle();
 
   // The passed reference should be owned by the provider client (but the

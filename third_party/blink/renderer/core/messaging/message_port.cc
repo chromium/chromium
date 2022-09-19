@@ -125,11 +125,8 @@ void MessagePort::postMessage(ScriptState* script_state,
   if (debugger)
     msg.sender_stack_trace_id = debugger->StoreCurrentStackTrace("postMessage");
 
-  if (msg.message->IsLockedToAgentCluster()) {
-    msg.locked_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
-  } else {
-    msg.locked_agent_cluster_id = absl::nullopt;
-  }
+  msg.sender_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
+  msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
 
   mojo::Message mojo_message =
       mojom::blink::TransferableMessage::WrapAsMessage(std::move(msg));
@@ -325,8 +322,9 @@ Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
     }
   }
 
-  if (message.locked_agent_cluster_id) {
-    if (!context->IsSameAgentCluster(*message.locked_agent_cluster_id)) {
+  if (message.locked_to_sender_agent_cluster) {
+    DCHECK(message.sender_agent_cluster_id);
+    if (!context->IsSameAgentCluster(message.sender_agent_cluster_id)) {
       UseCounter::Count(
           context,
           WebFeature::kMessageEventSharedArrayBufferDifferentAgentCluster);

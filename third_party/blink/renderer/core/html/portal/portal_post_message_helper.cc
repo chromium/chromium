@@ -50,6 +50,9 @@ BlinkTransferableMessage PortalPostMessageHelper::CreateMessage(
   transferable_message.sender_origin =
       execution_context->GetSecurityOrigin()->IsolatedCopy();
 
+  transferable_message.sender_agent_cluster_id =
+      execution_context->GetAgentClusterID();
+
   if (ThreadDebugger* debugger =
           ThreadDebugger::From(script_state->GetIsolate())) {
     transferable_message.sender_stack_trace_id =

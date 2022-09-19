@@ -196,6 +196,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     NavigateToPageAndWaitForReadyTitle("/test.html");
     blink::TransferableMessage msg =
         blink::EncodeWebMessagePayload(message_data);
+    msg.sender_agent_cluster_id = base::UnguessableToken::Create();
 
     GURL url = embedded_test_server()->GetURL("/scope/");
     GetServiceWorkerContext()->StartServiceWorkerAndDispatchMessage(

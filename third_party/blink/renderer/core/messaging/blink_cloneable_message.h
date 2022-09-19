@@ -27,7 +27,8 @@ struct CORE_EXPORT BlinkCloneableMessage {
   scoped_refptr<blink::SerializedScriptValue> message;
   scoped_refptr<const blink::SecurityOrigin> sender_origin;
   v8_inspector::V8StackTraceId sender_stack_trace_id;
-  absl::optional<base::UnguessableToken> locked_agent_cluster_id;
+  base::UnguessableToken sender_agent_cluster_id;
+  bool locked_to_sender_agent_cluster = false;
 };
 
 }  // namespace blink

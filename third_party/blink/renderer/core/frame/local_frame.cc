@@ -3147,15 +3147,14 @@ void LocalFrame::PostMessageEvent(
 
   // If the agent cluster id had a value it means this was locked when it
   // was serialized.
-  if (message.locked_agent_cluster_id)
+  if (message.locked_to_sender_agent_cluster)
     message_event->LockToAgentCluster();
 
   // Finally dispatch the message to the DOM Window.
   DomWindow()->DispatchMessageEventWithOriginCheck(
       target_security_origin.get(), message_event,
       std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr),
-      message.locked_agent_cluster_id ? message.locked_agent_cluster_id.value()
-                                      : base::UnguessableToken());
+      message.sender_agent_cluster_id);
 }
 
 bool LocalFrame::ShouldThrottleDownload() {

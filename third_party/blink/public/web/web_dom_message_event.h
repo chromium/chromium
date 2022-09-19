@@ -63,19 +63,9 @@ class BLINK_EXPORT WebDOMMessageEvent : public WebDOMEvent {
 
   WebString Origin() const;
 
-  absl::optional<base::UnguessableToken> locked_agent_cluster_id() const {
-    return locked_agent_cluster_id_;
-  }
-
 #if INSIDE_BLINK
-  explicit WebDOMMessageEvent(
-      MessageEvent* e,
-      absl::optional<base::UnguessableToken> locked_agent_cluster_id)
-      : WebDOMEvent(e), locked_agent_cluster_id_(locked_agent_cluster_id) {}
+  explicit WebDOMMessageEvent(MessageEvent* e) : WebDOMEvent(e) {}
 #endif
-
- private:
-  absl::optional<base::UnguessableToken> locked_agent_cluster_id_;
 };
 
 }  // namespace blink

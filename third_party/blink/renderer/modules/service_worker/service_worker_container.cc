@@ -673,9 +673,9 @@ void ServiceWorkerContainer::DispatchMessageEvent(
     }
   }
   if (!event) {
-    if (!msg.locked_agent_cluster_id ||
+    if (!msg.locked_to_sender_agent_cluster ||
         GetExecutionContext()->IsSameAgentCluster(
-            *msg.locked_agent_cluster_id)) {
+            msg.sender_agent_cluster_id)) {
       event = MessageEvent::Create(
           ports, std::move(msg.message),
           GetExecutionContext()->GetSecurityOrigin()->ToString(),

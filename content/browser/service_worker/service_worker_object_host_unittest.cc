@@ -321,6 +321,7 @@ TEST_F(ServiceWorkerObjectHostTest,
     // by calling DispatchExtendableMessageEvent on |object_host|.
     // Expected status is kOk.
     blink::TransferableMessage message;
+    message.sender_agent_cluster_id = base::UnguessableToken::Create();
     SetUpDummyMessagePort(&message.ports);
     base::RunLoop loop;
     CallDispatchExtendableMessageEvent(
@@ -351,6 +352,7 @@ TEST_F(ServiceWorkerObjectHostTest,
     // by calling DispatchExtendableMessageEvent on |object_host|.
     // Expected status is kErrorTimeout.
     blink::TransferableMessage message;
+    message.sender_agent_cluster_id = base::UnguessableToken::Create();
     SetUpDummyMessagePort(&message.ports);
     base::RunLoop loop;
     CallDispatchExtendableMessageEvent(
@@ -417,6 +419,7 @@ TEST_F(ServiceWorkerObjectHostTest, DispatchExtendableMessageEvent_FromClient) {
 
   // Simulate postMessage() from the window client to the worker.
   blink::TransferableMessage message;
+  message.sender_agent_cluster_id = base::UnguessableToken::Create();
   SetUpDummyMessagePort(&message.ports);
   bool called = false;
   blink::ServiceWorkerStatusCode status =

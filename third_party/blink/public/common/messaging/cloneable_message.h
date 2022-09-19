@@ -64,10 +64,12 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   int64_t stack_trace_debugger_id_second = 0;
   bool stack_trace_should_pause = false;
 
-  // If not null, this message is locked to the given agent cluster ID.
+  // The sender's agent cluster ID.
   // See
   // https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-agent-cluster-formalism
-  absl::optional<base::UnguessableToken> locked_agent_cluster_id;
+  base::UnguessableToken sender_agent_cluster_id;
+  // If true, this message is locked to the sender agent cluster ID.
+  bool locked_to_sender_agent_cluster = false;
 
   // Tokens required to clone FileSystemFileHandles and/or
   // FileSystemDirectoryHandles.

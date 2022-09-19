@@ -157,6 +157,10 @@ class BLINK_COMMON_EXPORT WebMessagePort : public mojo::MessageReceiver {
   // false). This can only be called if "is_transferable()" returns true.
   MessagePortDescriptor PassPort();
 
+  // Maintains a static agent cluster ID that is used as the cluster ID in
+  // casees where the embedder is the one calling PostMessage.
+  static const base::UnguessableToken& GetEmbedderAgentClusterID();
+
  private:
   // Creates a message port that wraps the provided |port|. This provided |port|
   // must be valid. This is private as it should only be called by message

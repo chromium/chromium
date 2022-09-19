@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/messaging/transferable_message_mojom_traits.h"
+#include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 
 namespace content::android {
@@ -104,6 +105,10 @@ void AppWebMessagePort::PostMessage(
           base::android::ScopedJavaLocalRef<jobject>(j_message_payload)));
   transferable_message.ports =
       blink::MessagePortChannel::CreateFromHandles(Release(env, j_ports));
+  // As the message is posted from an Android app and not from another renderer,
+  // set the agent cluster ID to the embedder's.
+  transferable_message.sender_agent_cluster_id =
+      blink::WebMessagePort::GetEmbedderAgentClusterID();
 
   mojo::Message mojo_message =
       blink::mojom::TransferableMessage::SerializeAsMessage(

@@ -39,7 +39,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
       std::make_pair(message.stack_trace_debugger_id_first,
                      message.stack_trace_debugger_id_second),
       message.stack_trace_should_pause);
-  result.locked_agent_cluster_id = message.locked_agent_cluster_id;
+  result.sender_agent_cluster_id = message.sender_agent_cluster_id;
+  result.locked_to_sender_agent_cluster =
+      message.locked_to_sender_agent_cluster;
   result.ports.AppendRange(message.ports.begin(), message.ports.end());
   for (auto& channel : message.stream_channels) {
     result.message->GetStreams().push_back(

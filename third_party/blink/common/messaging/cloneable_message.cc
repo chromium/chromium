@@ -67,6 +67,7 @@ CloneableMessage CloneableMessage::ShallowClone() const {
     clone.file_system_access_tokens.push_back(std::move(cloned_token));
     token = source_token.Unbind();
   }
+  clone.sender_agent_cluster_id = sender_agent_cluster_id;
   return clone;
 }
 

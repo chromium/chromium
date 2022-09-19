@@ -1344,7 +1344,7 @@ void LocalFrameMojoHandler::OnPortalActivated(
   DOMWindowPortalHost::portalHost(*dom_window)->OnPortalActivated();
   frame_->GetPage()->SetInsidePortal(false);
 
-  DCHECK(!data.locked_agent_cluster_id)
+  DCHECK(!data.locked_to_sender_agent_cluster)
       << "portal activation is always cross-agent-cluster and should be "
          "diagnosed early";
   MessagePortArray* ports =
