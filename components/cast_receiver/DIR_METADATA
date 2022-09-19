@@ -7,5 +7,5 @@
 #   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 monorail {
-  component: "Internals>Cast"
+  component: "Internals>Cast>Receiver"
 }
