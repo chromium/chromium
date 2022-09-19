@@ -352,36 +352,6 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 };
 
-// A print backend service requires initialization prior to being used for a
-// query/command.  Verify that a query fails if one tries to use a new service
-// without having performed initialization.
-IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
-  // Launch the service, but without initializing to desired locale.
-  LaunchUninitialized();
-
-  mojom::DefaultPrinterNameResultPtr default_printer_name;
-  mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps;
-
-  // Safe to use base::Unretained(this) since waiting locally on the callback
-  // forces a shorter lifetime than `this`.
-  GetPrintBackendService()->GetDefaultPrinterName(
-      base::BindOnce(&PrintBackendBrowserTest::OnDidGetDefaultPrinterName,
-                     base::Unretained(this), std::ref(default_printer_name)));
-  WaitUntilCallbackReceived();
-  ASSERT_TRUE(default_printer_name->is_result_code());
-  EXPECT_EQ(default_printer_name->get_result_code(),
-            mojom::ResultCode::kFailed);
-
-  GetPrintBackendService()->GetPrinterSemanticCapsAndDefaults(
-      kDefaultPrinterName,
-      base::BindOnce(
-          &PrintBackendBrowserTest::OnDidGetPrinterSemanticCapsAndDefaults,
-          base::Unretained(this), std::ref(printer_caps)));
-  WaitUntilCallbackReceived();
-  ASSERT_TRUE(printer_caps->is_result_code());
-  EXPECT_EQ(printer_caps->get_result_code(), mojom::ResultCode::kFailed);
-}
-
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, EnumeratePrinters) {
   LaunchService();
   AddDefaultPrinter();
