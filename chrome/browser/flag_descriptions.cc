@@ -392,11 +392,16 @@ const char kAutofillEnableMerchantOptOutErrorDialogDescription[] =
     "message will appear letting the user know that the merchant has opted "
     "out.";
 
+const char kAutofillEnableCardArtImageName[] = "Enable showing card art images";
+const char kAutofillEnableCardArtImageDescription[] =
+    "When enabled, card product images (instead of network icons) will be "
+    "shown in Payments Autofill UI.";
+
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
-    "in Payments UI.";
+    "in Payments Autofill UI.";
 
 const char kAutofillEnableOfferNotificationForPromoCodesName[] =
     "Extend Autofill offers and rewards notification to promo code offers";

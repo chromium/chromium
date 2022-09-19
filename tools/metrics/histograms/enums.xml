@@ -58641,6 +58641,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentShowSuggestionFavicons:enabled"/>
   <int value="-757379927" label="Canvas2DImageChromium:enabled"/>
   <int value="-757282194" label="EnableFilesystemInIncognito:enabled"/>
+  <int value="-755068996" label="AutofillEnableCardArtImage:disabled"/>
   <int value="-754726495" label="WebUITabStripContextMenuAfterTap:enabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
@@ -61756,6 +61757,7 @@ from previous Chrome versions.
   <int value="1172226600" label="BorealisStorageBallooning:disabled"/>
   <int value="1173244409" label="AutofillUseMobileLabelDisambiguation:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
+  <int value="1175660959" label="AutofillEnableCardArtImage:enabled"/>
   <int value="1176183341" label="SearchHistoryLink:enabled"/>
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>

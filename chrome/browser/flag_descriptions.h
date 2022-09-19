@@ -215,6 +215,9 @@ extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 extern const char kAutofillEnableMerchantOptOutErrorDialogName[];
 extern const char kAutofillEnableMerchantOptOutErrorDialogDescription[];
 
+extern const char kAutofillEnableCardArtImageName[];
+extern const char kAutofillEnableCardArtImageDescription[];
+
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 

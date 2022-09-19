@@ -16,12 +16,13 @@ namespace features {
 extern const base::Feature kAutofillAlwaysReturnCloudTokenizedCard;
 extern const base::Feature kAutofillAutoTriggerManualFallbackForCards;
 extern const base::Feature kAutofillCreditCardAuthentication;
+extern const base::Feature kAutofillEnableCardArtImage;
+extern const base::Feature kAutofillEnableCardProductName;
 extern const base::Feature
     kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse;
 extern const base::Feature kAutofillEnableFIDOProgressDialog;
 extern const base::Feature kAutofillEnableManualFallbackForVirtualCards;
 extern const base::Feature kAutofillEnableMerchantOptOutErrorDialog;
-extern const base::Feature kAutofillEnableCardProductName;
 extern const base::Feature kAutofillEnableOfferNotificationForPromoCodes;
 extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
 extern const base::Feature kAutofillEnableRemadeDownstreamMetrics;

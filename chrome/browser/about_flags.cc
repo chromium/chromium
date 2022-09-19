@@ -9531,7 +9531,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-nearby-share-fuse-box", flag_descriptions::kArcNearbyShareFuseBoxName,
      flag_descriptions::kArcNearbyShareFuseBoxDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShareFuseBox)}
+     FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShareFuseBox)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -9540,6 +9540,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidPermissionsCacheDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(::features::kAndroidPermissionsCache)},
 #endif
+
+    {"autofill-enable-card-art-image",
+     flag_descriptions::kAutofillEnableCardArtImageName,
+     flag_descriptions::kAutofillEnableCardArtImageDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

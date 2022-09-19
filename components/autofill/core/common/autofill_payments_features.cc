@@ -47,6 +47,16 @@ const base::Feature kAutofillCreditCardAuthentication{
 #endif
 };
 
+// When enabled, card art images (instead of network icons) will be shown in
+// Payments Autofill UI.
+const base::Feature kAutofillEnableCardArtImage{
+    "AutofillEnableCardArtImage", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, card product name (instead of issuer network) will be shown in
+// Payments Autofill UI.
+const base::Feature kAutofillEnableCardProductName{
+    "AutofillEnableCardProductName", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, the GetDetailsForEnrollResponseDetails in the
 // UploadCardResponseDetails will be parsed, which will allow the Virtual Card
 // Enrollment flow to skip making a new GetDetailsForEnroll request. This is an
@@ -74,11 +84,6 @@ const base::Feature kAutofillEnableManualFallbackForVirtualCards{
 const base::Feature kAutofillEnableMerchantOptOutErrorDialog{
     "AutofillEnableMerchantOptOutErrorDialog",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, card product name (instead of issuer network) will be shown in
-// Payments UI.
-const base::Feature kAutofillEnableCardProductName{
-    "AutofillEnableCardProductName", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible merchant promo code offer or reward.

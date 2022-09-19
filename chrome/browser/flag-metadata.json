@@ -451,6 +451,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "autofill-enable-card-art-image",
+    "owners": [ "vishwasuppoor", "siyua" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "autofill-enable-card-product-name",
     "owners": [ "vishwasuppoor", "siyua" ],
     "expiry_milestone": 120
