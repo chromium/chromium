@@ -23,13 +23,14 @@ message LicenseType {
   enum LicenseTypeEnum {
     // Unknown/undefined
     UNDEFINED = 0;
-    // Chrome Device Management Perpetual, unused as 1 & 2 are in the same
-    // license pool.
+    // Chrome Device Management Perpetual
     CDM_PERPETUAL = 1;
-    // Chrome Device Management Annual, unused
+    // Chrome Device Management Annual
     CDM_ANNUAL = 2;
     // Chrome Kiosk
     KIOSK = 3;
+    // Chrome Enterprise bundled license
+    CDM_PACKAGED = 4;
   }
 
   optional LicenseTypeEnum license_type = 1;
@@ -2532,6 +2533,9 @@ message DeviceStateRetrievalResponse {
 
   // Initial device state if |restore_mode| is |RESTORE_MODE_NONE|.
   optional DeviceInitialEnrollmentStateResponse initial_state_response = 4;
+
+  // license type the device used in last enrollment
+  optional LicenseType license_type = 5;
 }
 
 // Request from device to server to retrieve the enrollment mode and domain for
