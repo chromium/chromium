@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_LACROS_DATA_MIGRATION_SCREEN_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -19,11 +20,12 @@ namespace ash {
 
 // A screen that shows loading spinner during user data is copied to lacros
 // directory. The screen is shown during login.
-class LacrosDataMigrationScreen
-    : public BaseScreen,
-      public chromeos::PowerManagerClient::Observer {
+class LacrosDataMigrationScreen : public BaseScreen,
+                                  public chromeos::PowerManagerClient::Observer,
+                                  public OobeUI::Observer {
  public:
-  explicit LacrosDataMigrationScreen(LacrosDataMigrationScreenView* view);
+  explicit LacrosDataMigrationScreen(
+      base::WeakPtr<LacrosDataMigrationScreenView> view);
   ~LacrosDataMigrationScreen() override;
   LacrosDataMigrationScreen(const LacrosDataMigrationScreen&) = delete;
   LacrosDataMigrationScreen& operator=(const LacrosDataMigrationScreen&) =
@@ -31,10 +33,6 @@ class LacrosDataMigrationScreen
 
   // Called when `view` gets visible.
   void OnViewVisible();
-
-  // Called when `view` has been destroyed. If this instance is destroyed before
-  // the `view` it should call view->Unbind().
-  void OnViewDestroyed(LacrosDataMigrationScreenView* view);
 
   // Passed to `BrowserDataMigrator` as a callback to transmit the progress
   // value. `progress` is then passed to `LacrosDataMigrationView`.
@@ -63,7 +61,12 @@ class LacrosDataMigrationScreen
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
+
+  // OobeUI::Observer:
+  void OnCurrentScreenChanged(OobeScreenId current_screen,
+                              OobeScreenId new_screen) override;
+  void OnDestroyingOobeUI() override;
 
   // Updates the low battery message.
   void UpdateLowBatteryStatus();
@@ -78,7 +81,7 @@ class LacrosDataMigrationScreen
 
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
-  LacrosDataMigrationScreenView* view_;
+  base::WeakPtr<LacrosDataMigrationScreenView> view_;
   std::unique_ptr<BrowserDataMigrator> migrator_;
   bool skip_post_show_button_for_testing_ = false;
   base::RepeatingClosure attempt_restart_;
@@ -87,6 +90,8 @@ class LacrosDataMigrationScreen
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_manager_subscription_{this};
+
+  base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
 
   base::WeakPtrFactory<LacrosDataMigrationScreen> weak_factory_{this};
 };

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -14,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -36,20 +38,15 @@ constexpr double kInsufficientBatteryPercent = 50;
 }  // namespace
 
 LacrosDataMigrationScreen::LacrosDataMigrationScreen(
-    LacrosDataMigrationScreenView* view)
+    base::WeakPtr<LacrosDataMigrationScreenView> view)
     : BaseScreen(LacrosDataMigrationScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
-      view_(view),
+      view_(std::move(view)),
       attempt_restart_(base::BindRepeating(&chrome::AttemptRestart)) {
   DCHECK(view_);
-  if (view_)
-    view_->Bind(this);
 }
 
-LacrosDataMigrationScreen::~LacrosDataMigrationScreen() {
-  if (view_)
-    view_->Unbind();
-}
+LacrosDataMigrationScreen::~LacrosDataMigrationScreen() = default;
 
 void LacrosDataMigrationScreen::OnViewVisible() {
   // If set, do not post `ShowSkipButton()`.
@@ -63,12 +60,6 @@ void LacrosDataMigrationScreen::OnViewVisible() {
       base::BindOnce(&LacrosDataMigrationScreen::ShowSkipButton,
                      weak_factory_.GetWeakPtr()),
       kShowSkipButtonDuration);
-}
-
-void LacrosDataMigrationScreen::OnViewDestroyed(
-    LacrosDataMigrationScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void LacrosDataMigrationScreen::ShowImpl() {
@@ -148,6 +139,11 @@ void LacrosDataMigrationScreen::ShowImpl() {
                      base::BindOnce(&LacrosDataMigrationScreen::OnMigrated,
                                     weak_factory_.GetWeakPtr()));
 
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetOobeUI()) {
+    observation_.Observe(LoginDisplayHost::default_host()->GetOobeUI());
+  }
+
   // Show the screen.
   view_->Show();
 
@@ -156,15 +152,18 @@ void LacrosDataMigrationScreen::ShowImpl() {
 }
 
 void LacrosDataMigrationScreen::OnProgressUpdate(int progress) {
-  view_->SetProgressValue(progress);
+  if (view_) {
+    view_->SetProgressValue(progress);
+  }
 }
 
 void LacrosDataMigrationScreen::ShowSkipButton() {
-  view_->ShowSkipButton();
+  if (view_) {
+    view_->ShowSkipButton();
+  }
 }
-
-void LacrosDataMigrationScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void LacrosDataMigrationScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSkip) {
     LOG(WARNING) << "User has skipped the migration.";
     if (migrator_) {
@@ -189,8 +188,21 @@ void LacrosDataMigrationScreen::OnUserActionDeprecated(
         base::BindOnce(&LacrosDataMigrationScreen::OnLocalStateCommited,
                        weak_factory_.GetWeakPtr()));
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
+}
+
+void LacrosDataMigrationScreen::OnCurrentScreenChanged(
+    OobeScreenId current_screen,
+    OobeScreenId new_screen) {
+  if (new_screen == LacrosDataMigrationScreenView::kScreenId) {
+    OnViewVisible();
+    observation_.Reset();
+  }
+}
+
+void LacrosDataMigrationScreen::OnDestroyingOobeUI() {
+  observation_.Reset();
 }
 
 void LacrosDataMigrationScreen::OnMigrated(BrowserDataMigrator::Result result) {
@@ -230,10 +242,12 @@ void LacrosDataMigrationScreen::UpdateLowBatteryStatus() {
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value())
     return;
-  view_->SetLowBatteryStatus(
-      proto->battery_state() ==
-          power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
-      proto->battery_percent() < kInsufficientBatteryPercent);
+  if (view_) {
+    view_->SetLowBatteryStatus(
+        proto->battery_state() ==
+            power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
+        proto->battery_percent() < kInsufficientBatteryPercent);
+  }
 }
 
 device::mojom::WakeLock* LacrosDataMigrationScreen::GetWakeLock() {
