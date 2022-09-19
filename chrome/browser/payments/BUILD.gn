@@ -27,6 +27,7 @@ source_set("browser_tests") {
     "payment_handler_just_in_time_installation_browsertest.cc",
     "payment_handler_ui_browsertest.cc",
     "payment_handler_uninstall_browsertest.cc",
+    "payment_method_redirect_browsertest.cc",
     "payment_request_app_store_billing_browsertest.cc",
     "payment_request_can_make_payment_browsertest.cc",
     "payment_request_can_make_payment_event_browsertest.cc",
