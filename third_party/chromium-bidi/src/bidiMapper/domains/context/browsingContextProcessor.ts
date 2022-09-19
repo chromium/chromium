@@ -279,9 +279,18 @@ export class BrowsingContextProcessor {
       newWindow: params.type === 'window',
     });
 
+    // Wait for the new tab to be loaded to avoid race conditions in the
+    // `browsingContext` events, when the `browsingContext.domContentLoaded` and
+    // `browsingContext.load` events from the initial `about:blank` navigation
+    // are emitted after the next navigation is started.
+    // Details: https://github.com/web-platform-tests/wpt/issues/35846
+    const contextId = result.targetId;
+    const context = BrowsingContextProcessor.#getKnownContext(contextId);
+    await context.awaitLoaded();
+
     return {
       result: {
-        context: result.targetId,
+        context: contextId,
         parent: null,
         url: 'about:blank',
         children: [],

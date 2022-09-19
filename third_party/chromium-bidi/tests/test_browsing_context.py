@@ -256,20 +256,22 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
         "method": "browsingContext.create",
         "params": {"type": "tab"}})
 
-    # Read 4 messages. The order can vary in headless and headful modes, so sort
-    # is needed:
-    # * `browsingContext.create` result.
+    # Read event messages. The order can vary in headless and headful modes, so
+    # sort is needed:
     # * `browsingContext.contextCreated` event.
     # * `browsingContext.domContentLoaded` event.
     # * `browsingContext.load` event.
     messages = [await read_JSON_message(websocket),
                 await read_JSON_message(websocket),
-                await read_JSON_message(websocket),
                 await read_JSON_message(websocket)]
 
     messages.sort(key=lambda x: x["method"] if "method" in x else "")
-    [command_result, context_created_event, dom_content_loaded_event,
+    [context_created_event, dom_content_loaded_event,
      load_event] = messages
+
+    # Read the `browsingContext.create` command result. It should be sent after
+    # all the loading events.
+    command_result = await read_JSON_message(websocket)
 
     new_context_id = command_result['result']['context']
 

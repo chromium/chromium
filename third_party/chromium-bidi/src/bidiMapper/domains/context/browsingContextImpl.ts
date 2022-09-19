@@ -193,6 +193,10 @@ export class BrowsingContextImpl {
     this.#children.delete(childContextId);
   }
 
+  async awaitLoaded(): Promise<void> {
+    await this.#targetDefers.Page.lifecycleEvent.load;
+  }
+
   public serializeToBidiValue(
     maxDepth: number,
     isRoot: boolean
