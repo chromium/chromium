@@ -220,12 +220,13 @@ void SiteIsolationPolicy::PersistUserTriggeredIsolatedOrigin(
   // unlimited size.
   // TODO(alexmos): Cap the maximum number of entries and evict older entries.
   // See https://crbug.com/1172407.
-  ListPrefUpdate update(user_prefs::UserPrefs::Get(context),
-                        site_isolation::prefs::kUserTriggeredIsolatedOrigins);
-  base::Value* list = update.Get();
+  ScopedListPrefUpdate update(
+      user_prefs::UserPrefs::Get(context),
+      site_isolation::prefs::kUserTriggeredIsolatedOrigins);
+  base::Value::List& list = update.Get();
   base::Value value(origin.Serialize());
-  if (!base::Contains(list->GetListDeprecated(), value))
-    list->Append(std::move(value));
+  if (!base::Contains(list, value))
+    list.Append(std::move(value));
 }
 
 // static
@@ -235,14 +236,14 @@ void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
   // Web-triggered isolated origins are stored in a dictionary of (origin,
   // timestamp) pairs.  The number of entries is capped by a field trial param,
   // and older entries are evicted.
-  DictionaryPrefUpdate update(
+  ScopedDictPrefUpdate update(
       user_prefs::UserPrefs::Get(context),
       site_isolation::prefs::kWebTriggeredIsolatedOrigins);
-  base::Value* dict = update.Get();
+  base::Value::Dict& dict = update.Get();
 
   // Add the origin.  If it already exists, this will just update the
   // timestamp.
-  dict->SetKey(origin.Serialize(), base::TimeToValue(base::Time::Now()));
+  dict.Set(origin.Serialize(), base::TimeToValue(base::Time::Now()));
 
   // Check whether the maximum number of stored sites was exceeded and remove
   // one or more entries, starting with the oldest timestamp. Note that more
@@ -250,10 +251,9 @@ void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
   // could change over time (via a change in the field trial param).
   size_t max_size =
       ::features::kSiteIsolationForCrossOriginOpenerPolicyMaxSitesParam.Get();
-  while (dict->DictSize() > max_size) {
-    auto items = dict->DictItems();
+  while (dict.size() > max_size) {
     auto oldest_site_time_pair = std::min_element(
-        items.begin(), items.end(), [](auto pair_a, auto pair_b) {
+        dict.begin(), dict.end(), [](auto pair_a, auto pair_b) {
           absl::optional<base::Time> time_a = base::ValueToTime(pair_a.second);
           absl::optional<base::Time> time_b = base::ValueToTime(pair_b.second);
           // has_value() should always be true unless the prefs were corrupted.
@@ -261,7 +261,7 @@ void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
           return (time_a.has_value() ? time_a.value() : base::Time::Min()) <
                  (time_b.has_value() ? time_b.value() : base::Time::Min());
         });
-    dict->RemoveKey(oldest_site_time_pair->first);
+    dict.erase(oldest_site_time_pair);
   }
 }
 
@@ -317,11 +317,11 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
     }
     // Remove expired entries (as well as those with an invalid timestamp).
     if (!expired_entries.empty()) {
-      DictionaryPrefUpdate update(pref_service,
+      ScopedDictPrefUpdate update(pref_service,
                                   prefs::kWebTriggeredIsolatedOrigins);
-      base::Value* updated_dict = update.Get();
+      base::Value::Dict& updated_dict = update.Get();
       for (const auto& entry : expired_entries)
-        updated_dict->RemoveKey(entry);
+        updated_dict.Remove(entry);
     }
 
     if (!origins.empty()) {

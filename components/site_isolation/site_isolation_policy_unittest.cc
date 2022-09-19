@@ -243,15 +243,15 @@ TEST_F(WebTriggeredIsolatedOriginsPolicyTest, PersistIsolatedOrigin) {
 TEST_F(WebTriggeredIsolatedOriginsPolicyTest, UpdatedMaxSize) {
   // Populate the pref manually with more entries than the 3 allowed by the
   // field trial param.
-  DictionaryPrefUpdate update(
+  ScopedDictPrefUpdate update(
       user_prefs::UserPrefs::Get(browser_context()),
       site_isolation::prefs::kWebTriggeredIsolatedOrigins);
-  base::Value* dict = update.Get();
-  dict->SetKey("https://foo1.com", base::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo2.com", base::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo3.com", base::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo4.com", base::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo5.com", base::TimeToValue(base::Time::Now()));
+  base::Value::Dict& dict = update.Get();
+  dict.Set("https://foo1.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo2.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo3.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo4.com", base::TimeToValue(base::Time::Now()));
+  dict.Set("https://foo5.com", base::TimeToValue(base::Time::Now()));
   EXPECT_THAT(GetStoredOrigins(),
               testing::UnorderedElementsAre(
                   "https://foo1.com", "https://foo2.com", "https://foo3.com",
@@ -346,10 +346,10 @@ TEST_F(PasswordSiteIsolationPolicyTest, ApplyPersistedIsolatedOrigins) {
 
   // Add foo.com and bar.com to stored isolated origins.
   {
-    ListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
-    base::Value* list = update.Get();
-    list->Append("http://foo.com");
-    list->Append("https://bar.com");
+    ScopedListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
+    base::Value::List& list = update.Get();
+    list.Append("http://foo.com");
+    list.Append("https://bar.com");
   }
 
   // New SiteInstances for foo.com and bar.com shouldn't require a dedicated
@@ -427,9 +427,8 @@ TEST_F(NoPasswordSiteIsolationPolicyTest,
 
   // Add foo.com to stored isolated origins.
   {
-    ListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
-    base::Value* list = update.Get();
-    list->Append("http://foo.com");
+    ScopedListPrefUpdate update(prefs(), prefs::kUserTriggeredIsolatedOrigins);
+    update->Append("http://foo.com");
   }
 
   // Applying saved isolated origins should have no effect, since site
