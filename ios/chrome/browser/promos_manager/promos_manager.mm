@@ -97,17 +97,26 @@ void PromosManager::RecordImpression(promos_manager::Promo promo) {
   ListPrefUpdate update(local_state_, prefs::kIosPromosManagerImpressions);
   base::Value::List& impression_history = update->GetList();
   impression_history.Append(std::move(impression));
+
+  impression_history_ = ImpressionHistory(
+      local_state_->GetList(prefs::kIosPromosManagerImpressions));
 }
 
 void PromosManager::RegisterPromoForContinuousDisplay(
     promos_manager::Promo promo) {
   ConditionallyAppendPromoToPrefList(
       promo, prefs::kIosPromosManagerActivePromos, local_state_);
+
+  active_promos_ =
+      ActivePromos(local_state_->GetList(prefs::kIosPromosManagerActivePromos));
 }
 
 void PromosManager::RegisterPromoForSingleDisplay(promos_manager::Promo promo) {
   ConditionallyAppendPromoToPrefList(
       promo, prefs::kIosPromosManagerSingleDisplayActivePromos, local_state_);
+
+  single_display_active_promos_ = ActivePromos(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos));
 }
 
 void PromosManager::DeregisterPromo(promos_manager::Promo promo) {
@@ -128,6 +137,11 @@ void PromosManager::DeregisterPromo(promos_manager::Promo promo) {
   // promos lists.
   active_promos.EraseValue(base::Value(promo_name));
   single_display_promos.EraseValue(base::Value(promo_name));
+
+  active_promos_ =
+      ActivePromos(local_state_->GetList(prefs::kIosPromosManagerActivePromos));
+  single_display_active_promos_ = ActivePromos(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos));
 }
 
 void PromosManager::InitializePromoImpressionLimits(

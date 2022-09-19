@@ -216,6 +216,9 @@ class PromosManager {
                            RegistersPromoForContinuousDisplay);
   FRIEND_TEST_ALL_PREFIXES(
       PromosManagerTest,
+      RegistersPromoForContinuousDisplayAndImmediatelyUpdateVariables);
+  FRIEND_TEST_ALL_PREFIXES(
+      PromosManagerTest,
       RegistersPromoForContinuousDisplayForEmptyActivePromos);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            RegistersAlreadyRegisteredPromoForContinuousDisplay);
@@ -223,6 +226,9 @@ class PromosManager {
       PromosManagerTest,
       RegistersAlreadyRegisteredPromoForContinuousDisplayForEmptyActivePromos);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, RegistersPromoForSingleDisplay);
+  FRIEND_TEST_ALL_PREFIXES(
+      PromosManagerTest,
+      RegistersPromoForSingleDisplayAndImmediatelyUpdateVariables);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            RegistersPromoForSingleDisplayForEmptyActivePromos);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
@@ -233,7 +239,11 @@ class PromosManager {
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            RegistersPromoSpecificImpressionLimits);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, RecordsImpression);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           RecordsImpressionAndImmediatelyUpdateVariables);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, DeregistersActivePromo);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           DeregistersActivePromoAndImmediatelyUpdateVariables);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, DeregistersNonExistentPromo);
 };
 
