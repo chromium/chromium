@@ -209,7 +209,10 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
               atIndex:(size_t)index
             fromModel:(ui::MenuModel*)model
     withColorProvider:(const ui::ColorProvider*)colorProvider {
-  NSString* label = l10n_util::FixUpWindowsStyleLabel(model->GetLabelAt(index));
+  auto rawLabel = model->GetLabelAt(index);
+  NSString* label = model->MayHaveMnemonicsAt(index)
+                        ? l10n_util::FixUpWindowsStyleLabel(rawLabel)
+                        : base::SysUTF16ToNSString(rawLabel);
   base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc]
       initWithTitle:label
              action:@selector(itemSelected:)

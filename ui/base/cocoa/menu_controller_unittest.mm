@@ -746,6 +746,24 @@ TEST_F(MenuControllerTest, InitDoesNotBuildMenuWithoutColorProvider) {
   EXPECT_EQ(originalMenu, [menu menu]);
 }
 
+// Tests that Windows-style ampersand mnemonics are stripped by default, but
+// remain if the `MayHaveMnemonics` is false.
+TEST_F(MenuControllerTest, Ampersands) {
+  Delegate delegate;
+  SimpleMenuModel model(&delegate);
+  model.AddItem(1, u"&New");
+  model.AddItem(2, u"Gin & Tonic");
+  model.SetMayHaveMnemonicsAt(1, false);
+
+  base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
+               initWithModel:&model
+                    delegate:nil
+      useWithPopUpButtonCell:NO]);
+
+  EXPECT_NSEQ([[[menu menu] itemAtIndex:0] title], @"New");
+  EXPECT_NSEQ([[[menu menu] itemAtIndex:1] title], @"Gin & Tonic");
+}
+
 }  // namespace
 
 }  // namespace ui
