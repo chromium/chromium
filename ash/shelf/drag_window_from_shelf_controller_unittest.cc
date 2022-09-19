@@ -444,7 +444,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
   EndDrag(gfx::Point(0, 400), absl::nullopt);
   EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
   EXPECT_FALSE(overview_controller->InOverviewSession());
-  EXPECT_EQ(split_view_controller()->left_window(), window.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window.get());
 }
 
 // Test if overview is active and splitview is not active, fling in overview may
@@ -681,14 +681,14 @@ TEST_F(DragWindowFromShelfControllerTest,
             drag_indicators->current_window_dragging_state());
 
   Drag(gfx::Point(0, 200), 0.5f, 0.5f);
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             drag_indicators->current_window_dragging_state());
 
   Drag(gfx::Point(0, 350), 0.5f, 0.5f);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromShelf,
             drag_indicators->current_window_dragging_state());
   Drag(gfx::Point(0, 200), 0.5f, 0.5f);
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             drag_indicators->current_window_dragging_state());
   Drag(gfx::Point(200, 200), 0.5f, 0.5f);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromShelf,
@@ -1175,8 +1175,8 @@ TEST_F(DragWindowFromShelfControllerTest, DropsIntoOverviewAtCorrectPosition) {
   generator->MoveMouseTo(gfx::ToRoundedPoint(
       GetOverviewItemForWindow(window2.get())->target_bounds().CenterPoint()));
   generator->DragMouseTo(799, 400);
-  EXPECT_EQ(window1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(window2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(window1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(window2.get(), split_view_controller()->secondary_window());
   ToggleOverview();
   StartDrag(window1.get(), Shelf::ForWindow(Shell::GetPrimaryRootWindow())
                                ->GetIdealBounds()

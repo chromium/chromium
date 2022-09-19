@@ -74,12 +74,12 @@ class ASH_EXPORT SplitViewDragIndicators {
     // Currently dragging in the |SplitViewController::SnapPosition::kPrimary|
     // snap area, and the dragged window is eligible to be snapped in split
     // view.
-    kToSnapLeft,
+    kToSnapPrimary,
 
     // Currently dragging in the |SplitViewController::SnapPosition::kSecondary|
     // snap area, and the dragged window is eligible to be snapped in split
     // view.
-    kToSnapRight
+    kToSnapSecondary
   };
 
   // |SplitViewController::SnapPosition::kPrimary|, if |window_dragging_state|

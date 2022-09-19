@@ -312,13 +312,13 @@ TEST_F(SplitViewDragIndicatorsTest,
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             window_dragging_state());
   overview_session_->Drag(item, gfx::PointF(edge_inset, y_position));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             window_dragging_state());
 
   // Snap window to the left.
   overview_session_->CompleteDrag(item, gfx::PointF(edge_inset, y_position));
   ASSERT_TRUE(split_view_controller()->InSplitViewMode());
-  ASSERT_EQ(SplitViewController::State::kLeftSnapped,
+  ASSERT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
 
   // Drag from overview and snap to the right.
@@ -329,7 +329,7 @@ TEST_F(SplitViewDragIndicatorsTest,
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             window_dragging_state());
   overview_session_->Drag(item, gfx::PointF(screen_width - 1, y_position));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             window_dragging_state());
   overview_session_->CompleteDrag(item, start_location);
 }
@@ -398,10 +398,10 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
 
   // Verify that only one highlight shows up for the snap states.
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapLeft);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary);
   check_helper(indicator.get(), to_int(IndicatorType::kLeftHighlight));
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   check_helper(indicator.get(), to_int(IndicatorType::kRightHighlight));
 
   // Verify that only snap previews are shown for window dragging from shelf.
@@ -411,13 +411,13 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
       SplitViewDragIndicators::WindowDraggingState::kFromShelf);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapLeft);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary);
   check_helper(indicator.get(), to_int(IndicatorType::kLeftHighlight));
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromShelf);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   check_helper(indicator.get(), to_int(IndicatorType::kRightHighlight));
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromShelf);
@@ -436,7 +436,7 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   check_helper(indicator.get(), to_int(IndicatorType::kRightHighlight));
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
@@ -455,7 +455,7 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
   check_helper(indicator.get(), 0);
   indicator->SetWindowDraggingState(
-      SplitViewDragIndicators::WindowDraggingState::kToSnapRight);
+      SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary);
   indicator->SetWindowDraggingState(
       SplitViewDragIndicators::WindowDraggingState::kFromTop);
   check_helper(indicator.get(), 0);

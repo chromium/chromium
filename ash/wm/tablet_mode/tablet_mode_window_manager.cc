@@ -295,8 +295,8 @@ void TabletModeWindowManager::OnOverviewModeEndingAnimationComplete(
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk);
   for (auto* window : windows) {
-    if (split_view_controller->left_window() != window &&
-        split_view_controller->right_window() != window) {
+    if (split_view_controller->primary_window() != window &&
+        split_view_controller->secondary_window() != window) {
       MaximizeIfSnapped(window);
     }
   }

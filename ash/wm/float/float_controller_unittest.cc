@@ -494,8 +494,8 @@ TEST_F(TabletWindowFloatTest, DraggingSnapping) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  ASSERT_FALSE(split_view_controller->left_window());
-  ASSERT_FALSE(split_view_controller->right_window());
+  ASSERT_FALSE(split_view_controller->primary_window());
+  ASSERT_FALSE(split_view_controller->secondary_window());
 
   // Move the mouse to towards the right edge. Test that on release, it snaps
   // right.
@@ -504,7 +504,7 @@ TEST_F(TabletWindowFloatTest, DraggingSnapping) {
   event_generator->set_current_screen_location(
       header_view->GetBoundsInScreen().CenterPoint());
   event_generator->DragMouseTo(1580, 500);
-  EXPECT_EQ(split_view_controller->right_window(), window.get());
+  EXPECT_EQ(split_view_controller->secondary_window(), window.get());
   ASSERT_TRUE(WindowState::Get(window.get())->IsSnapped());
 
   // Float the window so we can drag it again.
@@ -516,7 +516,7 @@ TEST_F(TabletWindowFloatTest, DraggingSnapping) {
   event_generator->set_current_screen_location(
       header_view->GetBoundsInScreen().CenterPoint());
   event_generator->DragMouseTo(20, 500);
-  EXPECT_EQ(split_view_controller->left_window(), window.get());
+  EXPECT_EQ(split_view_controller->primary_window(), window.get());
 }
 
 // Tests the functionality of tucking a window in tablet mode. Tucking a window
@@ -646,8 +646,8 @@ TEST_F(TabletWindowFloatSplitviewTest, FloatToSnapped) {
   WindowState::Get(window.get())->OnWMEvent(&snap_left);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(split_view_controller->BothSnapped());
-  EXPECT_EQ(split_view_controller->left_window(), window.get());
-  EXPECT_EQ(split_view_controller->right_window(), other_window.get());
+  EXPECT_EQ(split_view_controller->primary_window(), window.get());
+  EXPECT_EQ(split_view_controller->secondary_window(), other_window.get());
 }
 
 }  // namespace ash

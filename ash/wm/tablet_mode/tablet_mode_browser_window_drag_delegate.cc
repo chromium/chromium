@@ -259,8 +259,8 @@ void TabletModeBrowserWindowDragDelegate::MergeBackToSourceWindowIfApplicable(
             ? drag_position < split_view_controller_->divider_position()
             : drag_position > split_view_controller_->divider_position();
     aura::Window* window_on_opposite_side =
-        is_dragging_on_left ? split_view_controller_->right_window()
-                            : split_view_controller_->left_window();
+        is_dragging_on_left ? split_view_controller_->secondary_window()
+                            : split_view_controller_->primary_window();
     if (source_window == window_on_opposite_side)
       return;
   }

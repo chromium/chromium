@@ -136,8 +136,8 @@ aura::Window* GetBottomMostSnappedWindowForDeskContainer(
       SplitViewController::Get(desk_container);
   if (desks_util::IsActiveDeskContainer(desk_container) &&
       split_view_controller->InSplitViewMode()) {
-    aura::Window* left_window = split_view_controller->left_window();
-    aura::Window* right_window = split_view_controller->right_window();
+    aura::Window* left_window = split_view_controller->primary_window();
+    aura::Window* right_window = split_view_controller->secondary_window();
     for (auto* child : desk_container->children()) {
       if (child == left_window || child == right_window)
         return child;
@@ -594,10 +594,10 @@ bool BackdropController::BackdropShouldFullscreen() {
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
   SplitViewController::State state = split_view_controller->state();
-  if ((state == SplitViewController::State::kLeftSnapped &&
-       window_having_backdrop_ == split_view_controller->left_window()) ||
-      (state == SplitViewController::State::kRightSnapped &&
-       window_having_backdrop_ == split_view_controller->right_window())) {
+  if ((state == SplitViewController::State::kPrimarySnapped &&
+       window_having_backdrop_ == split_view_controller->primary_window()) ||
+      (state == SplitViewController::State::kSecondarySnapped &&
+       window_having_backdrop_ == split_view_controller->secondary_window())) {
     return false;
   }
 
@@ -610,10 +610,10 @@ gfx::Rect BackdropController::GetBackdropBounds() {
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
   SplitViewController::State state = split_view_controller->state();
-  DCHECK(state == SplitViewController::State::kLeftSnapped ||
-         state == SplitViewController::State::kRightSnapped);
+  DCHECK(state == SplitViewController::State::kPrimarySnapped ||
+         state == SplitViewController::State::kSecondarySnapped);
   SplitViewController::SnapPosition snap_position =
-      (state == SplitViewController::State::kLeftSnapped)
+      (state == SplitViewController::State::kPrimarySnapped)
           ? SplitViewController::SnapPosition::kPrimary
           : SplitViewController::SnapPosition::kSecondary;
   return split_view_controller->GetSnappedWindowBoundsInScreen(

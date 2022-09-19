@@ -2743,14 +2743,14 @@ TEST_F(TabletModeDesksTest, RestoreSplitViewOnDeskSwitch) {
       win1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       win2.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(win2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
 
   // Desk 2 has no windows, so the SplitViewController should be tracking no
   // windows.
   ActivateDesk(desk_2);
-  EXPECT_EQ(nullptr, split_view_controller()->left_window());
-  EXPECT_EQ(nullptr, split_view_controller()->right_window());
+  EXPECT_EQ(nullptr, split_view_controller()->primary_window());
+  EXPECT_EQ(nullptr, split_view_controller()->secondary_window());
   // However, the snapped windows on desk 1 should retain their snapped state.
   EXPECT_TRUE(WindowState::Get(win1.get())->IsSnapped());
   EXPECT_TRUE(WindowState::Get(win2.get())->IsSnapped());
@@ -2762,13 +2762,13 @@ TEST_F(TabletModeDesksTest, RestoreSplitViewOnDeskSwitch) {
       win3.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       win4.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_EQ(win3.get(), split_view_controller()->left_window());
-  EXPECT_EQ(win4.get(), split_view_controller()->right_window());
+  EXPECT_EQ(win3.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(win4.get(), split_view_controller()->secondary_window());
 
   // Switch back to desk 1, and expect the snapped windows are restored.
   ActivateDesk(desk_1);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(win2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
   EXPECT_TRUE(WindowState::Get(win3.get())->IsSnapped());
   EXPECT_TRUE(WindowState::Get(win4.get())->IsSnapped());
 }
@@ -2783,8 +2783,8 @@ TEST_F(TabletModeDesksTest, SnappedStateRetainedOnSwitchingDesksFromOverview) {
       win1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       win2.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(win2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
 
   // Enter overview and switch to desk_2 using its mini_view. Overview should
   // end, but TabletModeWindowManager should not maximize the snapped windows
@@ -2815,8 +2815,8 @@ TEST_F(TabletModeDesksTest, SnappedStateRetainedOnSwitchingDesksFromOverview) {
       win3.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       win4.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_EQ(win3.get(), split_view_controller()->left_window());
-  EXPECT_EQ(win4.get(), split_view_controller()->right_window());
+  EXPECT_EQ(win3.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(win4.get(), split_view_controller()->secondary_window());
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -2860,7 +2860,7 @@ TEST_F(
   EXPECT_TRUE(EnterOverview());
   split_view_controller()->SnapWindow(
       win1.get(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
   EXPECT_FALSE(split_view_controller()->CanSnapWindow(win2.get()));
   EXPECT_FALSE(split_view_controller()->CanSnapWindow(win3.get()));
 
@@ -2896,9 +2896,9 @@ TEST_F(
     waiter.Wait();
   }
   EXPECT_TRUE(WindowState::Get(win1.get())->IsSnapped());
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
@@ -2916,8 +2916,8 @@ TEST_F(TabletModeDesksTest, OverviewStateOnSwitchToDeskWithSplitView) {
       win1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       win2.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(win2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
   auto* overview_controller = Shell::Get()->overview_controller();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   ActivateDesk(desk_2);
@@ -2925,8 +2925,8 @@ TEST_F(TabletModeDesksTest, OverviewStateOnSwitchToDeskWithSplitView) {
   auto win3 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   split_view_controller()->SnapWindow(
       win3.get(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_EQ(win3.get(), split_view_controller()->left_window());
-  EXPECT_EQ(nullptr, split_view_controller()->right_window());
+  EXPECT_EQ(win3.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(nullptr, split_view_controller()->secondary_window());
 
   // Switching to the desk that has only one snapped window to be restored in
   // SplitView should enter overview mode, whereas switching to one that has two
@@ -2947,19 +2947,19 @@ TEST_F(TabletModeDesksTest, RemovingDesksWithSplitView) {
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   split_view_controller()->SnapWindow(
       win1.get(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(nullptr, split_view_controller()->right_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(nullptr, split_view_controller()->secondary_window());
   ActivateDesk(desk_2);
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   split_view_controller()->SnapWindow(
       win2.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_EQ(nullptr, split_view_controller()->left_window());
-  EXPECT_EQ(win2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(nullptr, split_view_controller()->primary_window());
+  EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
 
   // Removing desk_2 will cause both snapped windows to merge in SplitView.
   RemoveDesk(desk_2);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(win2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(win2.get(), split_view_controller()->secondary_window());
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller()->state());
 }
@@ -2972,21 +2972,21 @@ TEST_F(TabletModeDesksTest, RemoveDeskWithMaximizedWindowAndMergeWithSnapped) {
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   split_view_controller()->SnapWindow(
       win1.get(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(nullptr, split_view_controller()->right_window());
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(nullptr, split_view_controller()->secondary_window());
   ActivateDesk(desk_2);
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  EXPECT_EQ(nullptr, split_view_controller()->left_window());
-  EXPECT_EQ(nullptr, split_view_controller()->right_window());
+  EXPECT_EQ(nullptr, split_view_controller()->primary_window());
+  EXPECT_EQ(nullptr, split_view_controller()->secondary_window());
   EXPECT_TRUE(WindowState::Get(win2.get())->IsMaximized());
 
   // Removing desk_2 will cause us to enter overview mode without any crashes.
   // SplitView will remain left snapped.
   RemoveDesk(desk_2);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_EQ(win1.get(), split_view_controller()->left_window());
-  EXPECT_EQ(nullptr, split_view_controller()->right_window());
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(nullptr, split_view_controller()->secondary_window());
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
 }
 
@@ -3144,7 +3144,7 @@ TEST_F(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
   // Snap the window in this orientation.
   split_view_controller()->SnapWindow(
       window.get(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
   // Create a second desk, switch to it, and change back the orientation to

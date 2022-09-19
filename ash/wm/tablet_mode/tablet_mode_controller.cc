@@ -1168,8 +1168,8 @@ void TabletModeController::FinishInitTabletMode() {
   // no snapped window).
   const auto state =
       SplitViewController::Get(Shell::GetPrimaryRootWindow())->state();
-  if (state == SplitViewController::State::kLeftSnapped ||
-      state == SplitViewController::State::kRightSnapped) {
+  if (state == SplitViewController::State::kPrimarySnapped ||
+      state == SplitViewController::State::kSecondarySnapped) {
     Shell::Get()->overview_controller()->StartOverview(
         OverviewStartAction::kSplitView);
   }

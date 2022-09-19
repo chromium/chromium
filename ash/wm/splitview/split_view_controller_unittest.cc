@@ -387,9 +387,9 @@ TEST_F(SplitViewControllerTest, Basic) {
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_NE(split_view_controller()->left_window(), window2.get());
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_NE(split_view_controller()->primary_window(), window2.get());
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(window1->GetBoundsInScreen(),
             split_view_controller()->GetSnappedWindowBoundsInScreen(
@@ -399,8 +399,8 @@ TEST_F(SplitViewControllerTest, Basic) {
       window2.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
-  EXPECT_NE(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
+  EXPECT_NE(split_view_controller()->secondary_window(), window1.get());
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(window2->GetBoundsInScreen(),
             split_view_controller()->GetSnappedWindowBoundsInScreen(
@@ -468,7 +468,7 @@ TEST_F(SplitViewControllerTest, WindowCloseTest) {
   window1.reset();
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
   // Since left window was closed, its default snap position changed to RIGHT.
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SplitViewController::SnapPosition::kSecondary);
@@ -501,7 +501,7 @@ TEST_F(SplitViewControllerTest, WindowCloseTest) {
   window4.reset();
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_EQ(split_view_controller()->default_snap_position(),
             SplitViewController::SnapPosition::kPrimary);
   // Now overview window grid can be opened.
@@ -551,7 +551,7 @@ TEST_F(SplitViewControllerTest, MinimizeWindowTest) {
   WindowState::Get(window1.get())->OnWMEvent(&minimize_event);
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
   // Since left window was minimized, its default snap position changed to
   // RIGHT.
   EXPECT_EQ(split_view_controller()->default_snap_position(),
@@ -657,17 +657,17 @@ TEST_F(SplitViewControllerTest, WindowActivationTest) {
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
 
   wm::ActivateWindow(window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
 
   wm::ActivateWindow(window3.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window3.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window3.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
 }
@@ -715,8 +715,8 @@ TEST_F(SplitViewControllerTest, DISABLED_ExitOverviewTest) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   // Activate |window1| in preparation to verify that it stays active when
   // overview mode is ended.
   wm::ActivateWindow(window1.get());
@@ -725,7 +725,7 @@ TEST_F(SplitViewControllerTest, DISABLED_ExitOverviewTest) {
   WaitForOverviewExitAnimation();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->right_window(), window3.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window3.get());
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
   CheckOverviewEnterExitHistogram("ExitInSplitView", {1, 0}, {0, 1});
 }
@@ -784,7 +784,7 @@ TEST_F(SplitViewControllerTest, DISABLED_EnterOverviewModeTest) {
   WaitForOverviewEnterAnimation();
   CheckOverviewEnterExitHistogram("EnterInSplitView", {0, 1}, {0, 0});
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_FALSE(
       base::Contains(GetWindowsInOverviewGrids(),
                      split_view_controller()->GetDefaultSnappedWindow()));
@@ -1384,8 +1384,8 @@ TEST_F(SplitViewControllerTest, SwapWindows) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  ASSERT_EQ(split_view_controller()->left_window(), window1.get());
-  ASSERT_EQ(split_view_controller()->right_window(), window2.get());
+  ASSERT_EQ(split_view_controller()->primary_window(), window1.get());
+  ASSERT_EQ(split_view_controller()->secondary_window(), window2.get());
 
   gfx::Rect left_bounds = window1->GetBoundsInScreen();
   gfx::Rect right_bounds = window2->GetBoundsInScreen();
@@ -1393,8 +1393,8 @@ TEST_F(SplitViewControllerTest, SwapWindows) {
   // Verify that after swapping windows, the windows and their bounds have been
   // swapped.
   split_view_controller()->SwapWindows();
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_EQ(left_bounds, window2->GetBoundsInScreen());
   EXPECT_EQ(right_bounds, window1->GetBoundsInScreen());
 
@@ -1405,15 +1405,15 @@ TEST_F(SplitViewControllerTest, SwapWindows) {
       window1.get(), SplitViewController::SnapPosition::kSecondary);
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kPrimary);
-  ASSERT_EQ(split_view_controller()->right_window(), window1.get());
-  ASSERT_EQ(split_view_controller()->left_window(), window2.get());
+  ASSERT_EQ(split_view_controller()->secondary_window(), window1.get());
+  ASSERT_EQ(split_view_controller()->primary_window(), window2.get());
 
   left_bounds = window2->GetBoundsInScreen();
   right_bounds = window1->GetBoundsInScreen();
 
   split_view_controller()->SwapWindows();
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
   EXPECT_EQ(right_bounds, window2->GetBoundsInScreen());
 
@@ -1425,8 +1425,8 @@ TEST_F(SplitViewControllerTest, SwapWindows) {
   GetEventGenerator()->set_current_screen_location(divider_center);
   GetEventGenerator()->DoubleClickLeftButton();
 
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_EQ(left_bounds, window2->GetBoundsInScreen());
   EXPECT_EQ(right_bounds, window1->GetBoundsInScreen());
 }
@@ -1443,8 +1443,8 @@ TEST_F(SplitViewControllerTest, DoubleTapDivider) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  ASSERT_EQ(split_view_controller()->left_window(), window1.get());
-  ASSERT_EQ(split_view_controller()->right_window(), window2.get());
+  ASSERT_EQ(split_view_controller()->primary_window(), window1.get());
+  ASSERT_EQ(split_view_controller()->secondary_window(), window2.get());
 
   gfx::Rect left_bounds = window1->GetBoundsInScreen();
   gfx::Rect right_bounds = window2->GetBoundsInScreen();
@@ -1457,8 +1457,8 @@ TEST_F(SplitViewControllerTest, DoubleTapDivider) {
   GetEventGenerator()->GestureTapAt(divider_center);
   GetEventGenerator()->GestureTapAt(divider_center);
 
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_EQ(left_bounds, window2->GetBoundsInScreen());
   EXPECT_EQ(right_bounds, window1->GetBoundsInScreen());
 }
@@ -1474,8 +1474,8 @@ TEST_F(SplitViewControllerTest, DragAndDoubleClickDivider) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  ASSERT_EQ(split_view_controller()->left_window(), window1.get());
-  ASSERT_EQ(split_view_controller()->right_window(), window2.get());
+  ASSERT_EQ(split_view_controller()->primary_window(), window1.get());
+  ASSERT_EQ(split_view_controller()->secondary_window(), window2.get());
 
   // Drag the divider and double click it before the snap animation moves it.
   const gfx::Point divider_center =
@@ -1486,8 +1486,8 @@ TEST_F(SplitViewControllerTest, DragAndDoubleClickDivider) {
   GetEventGenerator()->DragMouseBy(20, 0);
   GetEventGenerator()->DoubleClickLeftButton();
 
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
 }
 
 // Verify the left and right windows do not get swapped when the divider is
@@ -1501,8 +1501,8 @@ TEST_F(SplitViewControllerTest, DragAndDoubleTapDivider) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  ASSERT_EQ(split_view_controller()->left_window(), window1.get());
-  ASSERT_EQ(split_view_controller()->right_window(), window2.get());
+  ASSERT_EQ(split_view_controller()->primary_window(), window1.get());
+  ASSERT_EQ(split_view_controller()->secondary_window(), window2.get());
 
   // Drag the divider and double tap it before the snap animation moves it.
   const gfx::Point divider_center =
@@ -1515,8 +1515,8 @@ TEST_F(SplitViewControllerTest, DragAndDoubleTapDivider) {
   GetEventGenerator()->GestureTapAt(drag_destination);
   GetEventGenerator()->GestureTapAt(drag_destination);
 
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
 }
 
 // Verify overview does not steal focus from a split view window when trading
@@ -1543,8 +1543,8 @@ TEST_F(SplitViewControllerTest, StartDraggingDividerDuringSnapAnimation) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  ASSERT_EQ(split_view_controller()->left_window(), window1.get());
-  ASSERT_EQ(split_view_controller()->right_window(), window2.get());
+  ASSERT_EQ(split_view_controller()->primary_window(), window1.get());
+  ASSERT_EQ(split_view_controller()->secondary_window(), window2.get());
 
   // Drag the divider and then try to start dragging it again without waiting
   // for the snap animation.
@@ -1720,7 +1720,7 @@ TEST_F(SplitViewControllerTest, LongPressInOverviewMode) {
 
   LongPressOnOverivewButtonTray();
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   // This scenario should not trigger animation.
   CheckOverviewEnterExitHistogram("NoTransition", {1, 0}, {0, 0});
 }
@@ -2267,7 +2267,7 @@ TEST_F(SplitViewControllerTest, NewWindowTest) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   ToggleOverview();
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Now new a window. Test it won't end the overview mode
@@ -3158,7 +3158,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   WindowSnapWMEvent wm_left_snap_event(WM_EVENT_SNAP_PRIMARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -3169,7 +3169,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   WindowSnapWMEvent wm_right_snap_event(WM_EVENT_SNAP_SECONDARY);
   WindowState::Get(window1.get())->OnWMEvent(&wm_right_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
@@ -3177,7 +3177,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   // Sending WM_EVENT_SNAP_SECONDARY to |window2| will replace |window1|.
   WindowState::Get(window2.get())->OnWMEvent(&wm_right_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_session->IsWindowInOverview(window1.get()));
@@ -3185,15 +3185,15 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   // Sending WM_EVENT_SNAP_PRIMARY to |window1| to snap |window1|.
   WindowState::Get(window1.get())->OnWMEvent(&wm_left_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_FALSE(overview_controller->InOverviewSession());
 
   // Sending WM_EVENT_SNAP_SECONDARY to |window1| will replace |window2| and put
   // |window2| in overview.
   WindowState::Get(window1.get())->OnWMEvent(&wm_right_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_TRUE(overview_controller->InOverviewSession());
   overview_session = overview_controller->overview_session();
@@ -3223,7 +3223,7 @@ TEST_F(SplitViewControllerTest, WMSnapEvent) {
   // |window2| remains in overview.
   WindowState::Get(window1.get())->OnWMEvent(&wm_right_snap_event);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
@@ -3750,13 +3750,13 @@ TEST_F(SplitViewTabDraggingTest, DragMaximizedWindow) {
   resizer = StartDrag(window1.get(), window1.get());
   ASSERT_TRUE(resizer.get());
   DragWindowTo(resizer.get(), gfx::Point(0, 300));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState(resizer.get()));
   CompleteDrag(std::move(resizer));
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Maximize the snapped window to end split view mode and overview mode.
@@ -3802,7 +3802,7 @@ TEST_F(SplitViewTabDraggingTest, DragMaximizedWindow) {
   resizer = StartDrag(window1.get(), window2.get());
   ASSERT_TRUE(resizer.get());
   DragWindowTo(resizer.get(), gfx::Point(600, 300));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             GetWindowDraggingState(resizer.get()));
   // The source window's bounds should be the same as the left snapped window
   // bounds as it's to be snapped to LEFT.
@@ -3811,7 +3811,7 @@ TEST_F(SplitViewTabDraggingTest, DragMaximizedWindow) {
                 SplitViewController::SnapPosition::kPrimary, window2.get()));
   EXPECT_FALSE(window1->GetProperty(chromeos::kCanAttachToAnotherWindowKey));
   DragWindowTo(resizer.get(), gfx::Point(0, 300));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState(resizer.get()));
   // The source window's bounds should be the same as the right snapped window
   // bounds as it's to be snapped to RIGHT.
@@ -3822,8 +3822,8 @@ TEST_F(SplitViewTabDraggingTest, DragMaximizedWindow) {
 
   CompleteDrag(std::move(resizer));
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -3894,8 +3894,8 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
       window2.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
 
   // 1. If the dragged window is the source window:
   std::unique_ptr<WindowResizer> resizer =
@@ -3904,7 +3904,7 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             GetWindowDraggingState(resizer.get()));
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
   // In this case overview grid will be opened, containing |window3|.
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   OverviewSession* overview_session =
@@ -3922,8 +3922,8 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   WaitForOverviewExitAnimation();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   CheckOverviewEnterExitHistogram("ExitInSplitViewByDrag", {0, 0}, {0, 1});
 
@@ -3934,14 +3934,14 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   DragWindowTo(resizer.get(), gfx::Point(600, 300));
   // Preview window shows up on overview side of screen.
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             GetWindowDraggingState(resizer.get()));
   CheckOverviewEnterExitHistogram("EnterInSplitViewByDrag2", {0, 0}, {0, 1});
 
   CompleteDrag(std::move(resizer));
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+            SplitViewController::State::kSecondarySnapped);
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   overview_session = Shell::Get()->overview_controller()->overview_session();
   EXPECT_FALSE(overview_session->IsWindowInOverview(window1.get()));
@@ -3961,7 +3961,7 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   // all its tabs are attached into another window), nothing changes.
   resizer = StartDrag(window1.get(), window1.get());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   ASSERT_TRUE(resizer.get());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   CheckOverviewEnterExitHistogram("EnterInSplitViewByDrag3", {0, 0}, {0, 2});
@@ -3970,7 +3970,7 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   resizer.reset();
   window1.reset();
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // Still in overview.
   CheckOverviewEnterExitHistogram("DoNotExitInSplitViewByDrag3", {0, 0},
@@ -3983,8 +3983,8 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   WaitForOverviewExitAnimation();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   CheckOverviewEnterExitHistogram("ExitInSplitViewBySnap2", {0, 0}, {0, 3});
 
   // 2. If the dragged window is not the source window:
@@ -3994,8 +3994,8 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   ASSERT_TRUE(resizer.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             GetWindowDraggingState(resizer.get()));
@@ -4024,8 +4024,8 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   CompleteDrag(std::move(resizer));
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window3.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window3.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   CheckOverviewEnterExitHistogram("DoNotEnterInSplitViewByDrag2", {0, 0},
                                   {0, 3});
@@ -4036,15 +4036,15 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   ASSERT_TRUE(resizer.get());
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window3.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window3.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   CheckOverviewEnterExitHistogram("DoNotEnterInSplitViewByDrag3", {0, 0},
                                   {0, 3});
 
   DragWindowTo(resizer.get(), gfx::Point(0, 300));
   // Preview window shows up on overview side of screen.
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState(resizer.get()));
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   CheckOverviewEnterExitHistogram("DoNotEnterInSplitViewByDrag4", {0, 0},
@@ -4053,8 +4053,8 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   CompleteDrag(std::move(resizer));
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
@@ -4085,8 +4085,8 @@ TEST_F(SplitViewTabDraggingTest, DISABLED_DragSnappedWindowWhileOverviewOpen) {
   WaitForOverviewEnterAnimation();
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   CheckOverviewEnterExitHistogram("EnterInSplitView", {0, 1}, {0, 0});
 
   // 1. If the dragged window is the source window:
@@ -4135,12 +4135,12 @@ TEST_F(SplitViewTabDraggingTest, DISABLED_DragSnappedWindowWhileOverviewOpen) {
   CheckOverviewEnterExitHistogram("DoNotExitInSplitView2", {0, 2}, {1, 0});
 
   DragWindowTo(resizer.get(), gfx::Point(0, 300));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState(resizer.get()));
   CompleteDrag(std::move(resizer));
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   OverviewSession* overview_session =
       Shell::Get()->overview_controller()->overview_session();
@@ -4181,12 +4181,12 @@ TEST_F(SplitViewTabDraggingTest, DISABLED_DragSnappedWindowWhileOverviewOpen) {
   // screen. After that, the old snapped window will be put back in overview.
   DragWindowTo(resizer.get(), gfx::Point(0, 500));
   // Preview window shows up on overview side of screen.
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState(resizer.get()));
   CompleteDrag(std::move(resizer));
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   overview_session = Shell::Get()->overview_controller()->overview_session();
   EXPECT_TRUE(overview_session->IsWindowInOverview(window1.get()));
@@ -4202,14 +4202,14 @@ TEST_F(SplitViewTabDraggingTest, DISABLED_DragSnappedWindowWhileOverviewOpen) {
   ASSERT_TRUE(resizer.get());
   DragWindowTo(resizer.get(), gfx::Point(600, 500));
   // Preview window shows up on overview side of screen.
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             GetWindowDraggingState(resizer.get()));
   CompleteDrag(std::move(resizer));
   WaitForOverviewExitAnimation();
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window2.get());
-  EXPECT_EQ(split_view_controller()->right_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window2.get());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window1.get());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   CheckOverviewEnterExitHistogram("ExitInSplitView", {0, 2}, {1, 1});
 }
@@ -4240,7 +4240,7 @@ TEST_F(SplitViewTabDraggingTest, ShowNewWindowItemWhenDragStarts) {
   // Overview should have been opened.
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
 
   // Test that the new window item widget shows up as the first one of the
   // windows in the grid.
@@ -4266,7 +4266,7 @@ TEST_F(SplitViewTabDraggingTest, ShowNewWindowItemWhenDragStarts) {
 
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
   // Test that the dragged window has been added to the overview mode, and it is
   // added at the front of the grid.
   EXPECT_EQ(current_grid->window_list().size(), 2u);
@@ -4321,7 +4321,7 @@ TEST_F(SplitViewTabDraggingTest, OverviewExitAnimationTest) {
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // Split view should still be active.
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
   // The value should be properly initialized.
   EXPECT_TRUE(overview_observer->overview_animate_when_exiting());
 
@@ -4449,7 +4449,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
 
   CompleteDrag(std::move(resizer));
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
   EXPECT_TRUE(selector_controller->InOverviewSession());
 
   // Snap another window should end overview.
@@ -4465,7 +4465,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
   resizer = StartDrag(window1.get(), window1.get());
   EXPECT_TRUE(selector_controller->InOverviewSession());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
 
   current_grid = selector_controller->overview_session()->GetGridWithRootWindow(
       window1->GetRootWindow());
@@ -4507,7 +4507,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
   CompleteDrag(std::move(resizer));
 
   // |window1| should now snap to left. |window2| is put back in overview.
-  EXPECT_EQ(split_view_controller()->left_window(), window1.get());
+  EXPECT_EQ(split_view_controller()->primary_window(), window1.get());
   EXPECT_TRUE(selector_controller->InOverviewSession());
   EXPECT_TRUE(selector_controller->overview_session()->IsWindowInOverview(
       window2.get()));
@@ -4649,11 +4649,11 @@ TEST_F(SplitViewTabDraggingTest, DropWindowIntoOverviewOnDragPositionTest) {
   resizer = StartDrag(browser_window1.get(), browser_window1.get());
   drop_target_bounds = GetDropTargetBoundsDuringDrag(browser_window1.get());
   DragWindowTo(resizer.get(), gfx::Point(0, drop_target_bounds.y() + 10));
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState(resizer.get()));
   CompleteDrag(std::move(resizer));
   EXPECT_TRUE(WindowState::Get(browser_window1.get())->IsSnapped());
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
 
   // Should not consider the drag position if splitview is active. Window should
@@ -4816,7 +4816,7 @@ TEST_F(SplitViewTabDraggingTest, OverviewEndedOnWindowDrag) {
   EXPECT_TRUE(selector_controller->overview_session()->IsWindowInOverview(
       window2.get()));
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_TRUE(window_state2->IsSnapped());
 
   // Drags |window1| by a small distance. Both splitview and overview should be
@@ -5107,14 +5107,14 @@ TEST_F(SplitViewTabDraggingTest, DragActiveWindow) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   std::unique_ptr<aura::Window> dragged_window(
       CreateWindowWithType(bounds, AppType::BROWSER));
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   std::unique_ptr<WindowResizer> resizer =
@@ -5168,7 +5168,7 @@ TEST_F(SplitViewTabDraggingTest, DividerBarOnTopAfterDragEnds) {
   resizer.reset();
   dragged_window.reset();
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kRightSnapped);
+            SplitViewController::State::kSecondarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_NE(ui::ZOrderLevel::kNormal,
             split_view_divider()->divider_widget()->GetZOrderLevel());
@@ -5392,9 +5392,9 @@ TEST_F(SplitViewAppDraggingTest, DragActiveMaximizedWindow) {
   EndScrollSequence();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(split_view_controller()->left_window(), window());
+  EXPECT_EQ(split_view_controller()->primary_window(), window());
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_TRUE(WindowState::Get(window())->IsSnapped());
 
   // FLING the window with small velocity (smaller than
@@ -5482,7 +5482,7 @@ TEST_F(SplitViewAppDraggingTest, AutoHideShelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
   EndScrollSequence();
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
+            SplitViewController::State::kPrimarySnapped);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   // Shelf should be shown after drag and snapped window should be covered by
   // the auto-hide-shown shelf.
@@ -5514,7 +5514,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenPreviewAreaIsShown) {
   // window to the left should drop the window to overview.
   gfx::PointF location(0, long_scroll_delta);
   SendScrollStartAndUpdate(location);
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState());
   Fling(location, /*velocity_y*/ 0, /*velocity_x=*/large_velocity);
   OverviewController* overview_controller = Shell::Get()->overview_controller();
@@ -5527,7 +5527,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenPreviewAreaIsShown) {
   // Fling to the right with small velocity when trying to snap the
   // window to the left should still snap the window to left.
   SendScrollStartAndUpdate(location);
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             GetWindowDraggingState());
   Fling(location, /*velocity_y*/ 0, /*velocity_x=*/small_velocity);
   EXPECT_TRUE(WindowState::Get(window())->IsSnapped());
@@ -5538,7 +5538,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenPreviewAreaIsShown) {
   // to the right should drop the window to overvie.
   location = gfx::PointF(display_bounds.right(), long_scroll_delta);
   SendScrollStartAndUpdate(location);
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             GetWindowDraggingState());
   Fling(location, /*velocity_y*/ 0, /*velocity_x=*/-large_velocity);
   overview_session = overview_controller->overview_session();
@@ -5549,7 +5549,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenPreviewAreaIsShown) {
   // Fling to the left with small velocity when trying to snap the
   // window to the right should still snap the window to right.
   SendScrollStartAndUpdate(location);
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             GetWindowDraggingState());
   Fling(location, /*velocity_y*/ 0, /*velocity_x=*/-small_velocity);
   EXPECT_TRUE(WindowState::Get(window())->IsSnapped());
@@ -5589,7 +5589,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
   OverviewController* selector_controller = Shell::Get()->overview_controller();
   EXPECT_TRUE(
       selector_controller->overview_session()->IsWindowInOverview(window()));
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
   EXPECT_TRUE(IsTabletMode());
   ToggleOverview();
@@ -5605,7 +5605,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
   Fling(location, /*velocity_y=*/0, /*velocity_x=*/-large_velocity);
   EXPECT_TRUE(
       selector_controller->overview_session()->IsWindowInOverview(window()));
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
   ToggleOverview();
 
@@ -5618,7 +5618,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
   Fling(location, /*velocity_y=*/0, /*velocity_x=*/large_velocity);
   EXPECT_TRUE(
       selector_controller->overview_session()->IsWindowInOverview(window()));
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
   ToggleOverview();
 
@@ -5632,7 +5632,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
   Fling(location, /*velocity_y=*/0, /*velocity_x=*/-large_velocity);
   EXPECT_TRUE(
       selector_controller->overview_session()->IsWindowInOverview(window()));
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
   ToggleOverview();
 
@@ -5645,7 +5645,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
   Fling(location, /*velocity_y=*/0, /*velocity_x=*/large_velocity);
   EXPECT_TRUE(
       selector_controller->overview_session()->IsWindowInOverview(window()));
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
   ToggleOverview();
 
@@ -5658,7 +5658,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
   Fling(location, /*velocity_y=*/0, /*velocity_x=*/-large_velocity);
   EXPECT_TRUE(
       selector_controller->overview_session()->IsWindowInOverview(window()));
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
   ToggleOverview();
 
@@ -5668,10 +5668,10 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
             split_view_controller()->state());
   SendScrollStartAndUpdate(location);
   Fling(location, /*velocity_y=*/0, /*velocity_x=*/large_velocity);
-  EXPECT_EQ(split_view_controller()->right_window(), window());
+  EXPECT_EQ(split_view_controller()->secondary_window(), window());
   EXPECT_TRUE(selector_controller->overview_session()->IsWindowInOverview(
       window2.get()));
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
 }
 

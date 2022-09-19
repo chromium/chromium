@@ -36,8 +36,8 @@ BackGestureStartScenarioType GetStartScenarioType(
                : BackGestureStartScenarioType::kNonSnappedWindow;
   }
 
-  const auto* left_window = split_view_controller->left_window();
-  const auto* right_window = split_view_controller->right_window();
+  const auto* left_window = split_view_controller->primary_window();
+  const auto* right_window = split_view_controller->secondary_window();
   const bool is_primary = IsCurrentScreenOrientationPrimary();
   const auto* physical_left_or_top_window =
       is_primary ? left_window : right_window;

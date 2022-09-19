@@ -250,8 +250,8 @@ aura::Window* GetWindowForDragToHomeOrOverview(
   } else if (is_in_splitview) {
     // If split view mode is active, use the event location to decide which
     // window should be the dragged window.
-    aura::Window* left_window = split_view_controller->left_window();
-    aura::Window* right_window = split_view_controller->right_window();
+    aura::Window* left_window = split_view_controller->primary_window();
+    aura::Window* right_window = split_view_controller->secondary_window();
     const int divider_position = split_view_controller->divider_position();
     const bool is_landscape = IsCurrentScreenOrientationLandscape();
     const bool is_primary = IsCurrentScreenOrientationPrimary();

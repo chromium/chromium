@@ -351,14 +351,14 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
 
       switch (WindowState::Get(window)->GetStateType()) {
         case WindowStateType::kPrimarySnapped:
-          if (!split_view_controller->left_window()) {
+          if (!split_view_controller->primary_window()) {
             split_view_controller->SnapWindow(
                 window, SplitViewController::SnapPosition::kPrimary);
           }
           break;
 
         case WindowStateType::kSecondarySnapped:
-          if (!split_view_controller->right_window()) {
+          if (!split_view_controller->secondary_window()) {
             split_view_controller->SnapWindow(
                 window, SplitViewController::SnapPosition::kSecondary);
           }
@@ -379,8 +379,8 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   // windows.
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   SplitViewController::State state = split_view_controller->state();
-  if (state == SplitViewController::State::kLeftSnapped ||
-      state == SplitViewController::State::kRightSnapped) {
+  if (state == SplitViewController::State::kPrimarySnapped ||
+      state == SplitViewController::State::kSecondarySnapped) {
     overview_controller->StartOverview(OverviewStartAction::kSplitView);
   } else if (state == SplitViewController::State::kBothSnapped) {
     overview_controller->EndOverview(OverviewEndAction::kSplitView);

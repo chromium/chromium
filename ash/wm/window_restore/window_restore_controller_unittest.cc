@@ -833,8 +833,8 @@ TEST_F(WindowRestoreControllerTest, TabletSnapWindow) {
   EXPECT_EQ(split_view_controller->GetSnappedWindowBoundsInScreen(
                 SplitViewController::SnapPosition::kSecondary, nullptr),
             right_window->GetBoundsInScreen());
-  EXPECT_EQ(left_window, split_view_controller->left_window());
-  EXPECT_EQ(right_window, split_view_controller->right_window());
+  EXPECT_EQ(left_window, split_view_controller->primary_window());
+  EXPECT_EQ(right_window, split_view_controller->secondary_window());
 
   TabletModeControllerTestApi().LeaveTabletMode();
 

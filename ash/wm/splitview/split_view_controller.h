@@ -95,11 +95,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kClamshellType,
   };
 
-  // TODO(crbug.com/1233194): Rename left/right to primary/secondary.
   enum class State {
     kNoSnap,
-    kLeftSnapped,
-    kRightSnapped,
+    kPrimarySnapped,
+    kSecondarySnapped,
     kBothSnapped,
   };
 
@@ -199,18 +198,18 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // windows is not snapped.
   void SwapWindows();
 
-  // |window| should be |left_window_| or |right_window_|, and this function
-  // returns |LEFT| or |RIGHT| accordingly.
+  // |window| should be |primary_window_| or |secondary_window_|, and this
+  // function returns |LEFT| or |RIGHT| accordingly.
   SnapPosition GetPositionOfSnappedWindow(const aura::Window* window) const;
 
   // |position| should be |LEFT| or |RIGHT|, and this function returns
-  // |left_window_| or |right_window_| accordingly.
+  // |primary_window_| or |secondary_window_| accordingly.
   aura::Window* GetSnappedWindow(SnapPosition position);
 
   // Returns the default snapped window. It's the window that remains open until
   // the split mode ends. It's decided by |default_snap_position_|. E.g., If
   // |default_snap_position_| equals LEFT, then the default snapped window is
-  // |left_window_|. All the other window will open on the right side.
+  // |primary_window_|. All the other window will open on the right side.
   aura::Window* GetDefaultSnappedWindow();
 
   // Gets snapped bounds based on |snap_position|, the side of the screen to
@@ -359,8 +358,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          aura::Window* lost_active) override;
 
   aura::Window* root_window() const { return root_window_; }
-  aura::Window* left_window() { return left_window_; }
-  aura::Window* right_window() { return right_window_; }
+  aura::Window* primary_window() { return primary_window_; }
+  aura::Window* secondary_window() { return secondary_window_; }
   int divider_position() const { return divider_position_; }
   State state() const { return state_; }
   SnapPosition default_snap_position() const { return default_snap_position_; }
@@ -390,15 +389,15 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kWindowFloated,
   };
 
-  // These functions return |left_window_| and |right_window_|, swapped in
-  // nonprimary screen orientations. Note that they may return null.
+  // These functions return |primary_window_| and |secondary_window_|, swapped
+  // in nonprimary screen orientations. Note that they may return null.
   aura::Window* GetPhysicalLeftOrTopWindow();
   aura::Window* GetPhysicalRightOrBottomWindow();
 
   // Start observing |window|.
   void StartObserving(aura::Window* window);
   // Stop observing the window at associated with |snap_position|. Also updates
-  // shadows and sets |left_window_| or |right_window_| to nullptr.
+  // shadows and sets |primary_window_| or |secondary_window_| to nullptr.
   void StopObserving(SnapPosition snap_position);
 
   // Update split view state and notify its observer about the change.
@@ -557,9 +556,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Root window the split view is in.
   aura::Window* root_window_;
 
-  // The current left/right snapped window.
-  aura::Window* left_window_ = nullptr;
-  aura::Window* right_window_ = nullptr;
+  // The current primary/secondary snapped window.
+  aura::Window* primary_window_ = nullptr;
+  aura::Window* secondary_window_ = nullptr;
 
   // Observe the windows that are to be snapped in split screen.
   std::unique_ptr<ToBeSnappedWindowsObserver> to_be_snapped_windows_observer_;
@@ -585,11 +584,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // The distance between the origin of the divider and the origin of the
   // current display's work area in screen coordinates.
   //     |<---     divider_position_    --->|
-  //     ----------------------------------------------------------
-  //     |                                  | |                    |
-  //     |        left_window_              | |   right_window_    |
-  //     |                                  | |                    |
-  //     ----------------------------------------------------------
+  //     ---------------------------------------------------------------
+  //     |                                  | |                        |
+  //     |        primary_window_           | |   secondary_window_    |
+  //     |                                  | |                        |
+  //     ---------------------------------------------------------------
   int divider_position_ = -1;
 
   // The closest position ratio of divider among kFixedPositionRatios,

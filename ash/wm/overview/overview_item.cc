@@ -523,8 +523,8 @@ void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   } else {
     const SplitViewController::State state =
         SplitViewController::Get(root_window_)->state();
-    visible = state == SplitViewController::State::kLeftSnapped ||
-              state == SplitViewController::State::kRightSnapped;
+    visible = state == SplitViewController::State::kPrimarySnapped ||
+              state == SplitViewController::State::kSecondarySnapped;
   }
 
   if (!visible && !cannot_snap_widget_)

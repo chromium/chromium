@@ -581,8 +581,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
   split_view_controller()->SnapWindow(
       window.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->state(),
-            SplitViewController::State::kLeftSnapped);
-  EXPECT_EQ(split_view_controller()->left_window(), window.get());
+            SplitViewController::State::kPrimarySnapped);
+  EXPECT_EQ(split_view_controller()->primary_window(), window.get());
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   // Enable the docked magnifier and expect that both overview and split view

@@ -390,9 +390,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     const SplitViewController::State split_view_state =
         SplitViewController::Get(Shell::GetPrimaryRootWindow())->state();
     // Prevent overview from stealing focus if |split_view_state| is
-    // |SplitViewController::State::kLeftSnapped| or
-    // |SplitViewController::State::kRightSnapped|. Here are all the cases where
-    // |split_view_state| will now have one of those two values:
+    // |SplitViewController::State::kPrimarySnapped| or
+    // |SplitViewController::State::kSecondarySnapped|. Here are all the cases
+    // where |split_view_state| will now have one of those two values:
     // 1. The active window is maximized in tablet mode. The user presses Alt+[.
     // 2. The active window is maximized in tablet mode. The user presses Alt+].
     // 3. The active window is snapped on the right in tablet split view.
@@ -409,8 +409,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // |SplitViewController::OnOverviewModeStarting|, because in case of
     // |SplitViewController::State::kBothSnapped|, that function will insert one
     // of the two snapped windows to overview.
-    if (split_view_state == SplitViewController::State::kLeftSnapped ||
-        split_view_state == SplitViewController::State::kRightSnapped) {
+    if (split_view_state == SplitViewController::State::kPrimarySnapped ||
+        split_view_state == SplitViewController::State::kSecondarySnapped) {
       should_focus_overview_ = false;
     } else {
       // Avoid stealing activation from a dragged active window.

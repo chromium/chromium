@@ -44,11 +44,11 @@ void SplitViewTestApi::SwapWindows() {
 }
 
 aura::Window* SplitViewTestApi::GetLeftWindow() const {
-  return split_view_controller()->left_window();
+  return split_view_controller()->primary_window();
 }
 
 aura::Window* SplitViewTestApi::GetRightWindow() const {
-  return split_view_controller()->right_window();
+  return split_view_controller()->secondary_window();
 }
 
 }  // namespace ash

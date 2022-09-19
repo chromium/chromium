@@ -98,9 +98,9 @@ gfx::Rect GetWorkAreaBoundsNoOverlapWithShelf(aura::Window* root_window) {
 SplitViewController::SnapPosition SplitViewDragIndicators::GetSnapPosition(
     WindowDraggingState window_dragging_state) {
   switch (window_dragging_state) {
-    case WindowDraggingState::kToSnapLeft:
+    case WindowDraggingState::kToSnapPrimary:
       return SplitViewController::SnapPosition::kPrimary;
-    case WindowDraggingState::kToSnapRight:
+    case WindowDraggingState::kToSnapSecondary:
       return SplitViewController::SnapPosition::kSecondary;
     default:
       return SplitViewController::SnapPosition::kNone;
@@ -119,9 +119,9 @@ SplitViewDragIndicators::ComputeWindowDraggingState(
     case SplitViewController::SnapPosition::kNone:
       return non_snap_state;
     case SplitViewController::SnapPosition::kPrimary:
-      return WindowDraggingState::kToSnapLeft;
+      return WindowDraggingState::kToSnapPrimary;
     case SplitViewController::SnapPosition::kSecondary:
-      return WindowDraggingState::kToSnapRight;
+      return WindowDraggingState::kToSnapSecondary;
   }
 }
 

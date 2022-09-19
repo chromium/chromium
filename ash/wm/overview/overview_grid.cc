@@ -322,8 +322,8 @@ float GetWantedDropTargetOpacity(
   switch (window_dragging_state) {
     case SplitViewDragIndicators::WindowDraggingState::kNoDrag:
     case SplitViewDragIndicators::WindowDraggingState::kOtherDisplay:
-    case SplitViewDragIndicators::WindowDraggingState::kToSnapLeft:
-    case SplitViewDragIndicators::WindowDraggingState::kToSnapRight:
+    case SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary:
+    case SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary:
       return 0.f;
     case SplitViewDragIndicators::WindowDraggingState::kFromOverview:
     case SplitViewDragIndicators::WindowDraggingState::kFromTop:
@@ -450,7 +450,7 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
     window_list_.push_back(
         std::make_unique<OverviewItem>(window, overview_session_, this));
 
-    UpdateNumIncognitoUnsupportedWindows(window, /*increment*/true);
+    UpdateNumIncognitoUnsupportedWindows(window, /*increment*/ true);
   }
 }
 
@@ -647,7 +647,7 @@ void OverviewGrid::AddItem(aura::Window* window,
   DCHECK(!GetOverviewItemContaining(window));
   DCHECK_LE(index, window_list_.size());
 
-  UpdateNumIncognitoUnsupportedWindows(window, /*increment*/true);
+  UpdateNumIncognitoUnsupportedWindows(window, /*increment*/ true);
 
   window_list_.insert(
       window_list_.begin() + index,
@@ -714,7 +714,7 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   DCHECK(iter != window_list_.rend());
 
   UpdateNumIncognitoUnsupportedWindows(overview_item->GetWindow(),
-                                       /*increment*/false);
+                                       /*increment*/ false);
 
   // This can also be called when shutting down |this|, at which the item will
   // be cleaning up and its associated view may be nullptr. |overview_item|

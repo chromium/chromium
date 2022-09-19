@@ -406,7 +406,7 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
     overview_session_->SelectWindow(item_);
   } else if (split_view_controller->CanSnapWindow(item_->GetWindow())) {
     SnapWindow(split_view_controller,
-               split_state == SplitViewController::State::kLeftSnapped
+               split_state == SplitViewController::State::kPrimarySnapped
                    ? SplitViewController::SnapPosition::kSecondary
                    : SplitViewController::SnapPosition::kPrimary);
   } else {

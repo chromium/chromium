@@ -438,7 +438,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(GetScreenInPixelsPoint(300, 800));
   ASSERT_TRUE(drag_indicators());
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapRight,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             drag_indicators()->current_window_dragging_state());
   EXPECT_EQ(overview_grid()->bounds().y(),
             desks_bar_widget()->GetWindowBoundsInScreen().y());
@@ -455,7 +455,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   // widget is no longer shifted.
   event_generator->MoveMouseTo(GetScreenInPixelsPoint(300, 0));
   ASSERT_TRUE(drag_indicators());
-  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapLeft,
+  EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             drag_indicators()->current_window_dragging_state());
   EXPECT_EQ(overview_grid()->bounds().y(),
             desks_bar_widget()->GetWindowBoundsInScreen().y());
@@ -464,9 +464,9 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   // remains unshifted.
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(overview_controller()->InOverviewSession());
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_EQ(overview_grid()->bounds().y(),
             desks_bar_widget()->GetWindowBoundsInScreen().y());
 }

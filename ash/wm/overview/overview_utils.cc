@@ -205,11 +205,11 @@ gfx::Rect GetGridBoundsInScreen(
   // convert |window_dragging_state| to a split view state.
   if (!split_view_controller->InSplitViewMode() && window_dragging_state) {
     switch (*window_dragging_state) {
-      case SplitViewDragIndicators::WindowDraggingState::kToSnapLeft:
-        state = SplitViewController::State::kLeftSnapped;
+      case SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary:
+        state = SplitViewController::State::kPrimarySnapped;
         break;
-      case SplitViewDragIndicators::WindowDraggingState::kToSnapRight:
-        state = SplitViewController::State::kRightSnapped;
+      case SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary:
+        state = SplitViewController::State::kSecondarySnapped;
         break;
       default:
         break;
@@ -221,13 +221,13 @@ gfx::Rect GetGridBoundsInScreen(
       WorkAreaInsets::ForWindow(target_root)->ComputeStableWorkArea();
   absl::optional<SplitViewController::SnapPosition> opposite_position;
   switch (state) {
-    case SplitViewController::State::kLeftSnapped:
+    case SplitViewController::State::kPrimarySnapped:
       bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
           SplitViewController::SnapPosition::kSecondary,
           /*window_for_minimum_size=*/nullptr);
       opposite_position = SplitViewController::SnapPosition::kSecondary;
       break;
-    case SplitViewController::State::kRightSnapped:
+    case SplitViewController::State::kSecondarySnapped:
       bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
           SplitViewController::SnapPosition::kPrimary,
           /*window_for_minimum_size=*/nullptr);

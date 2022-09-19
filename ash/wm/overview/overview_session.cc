@@ -861,8 +861,8 @@ void OverviewSession::OnWindowActivating(
   // snapping an ARC window.
   SplitViewController* split_view_controller =
       SplitViewController::Get(gained_active);
-  if (split_view_controller->left_window() ||
-      split_view_controller->right_window()) {
+  if (split_view_controller->primary_window() ||
+      split_view_controller->secondary_window()) {
     RestoreWindowActivation(false);
     return;
   }

@@ -1197,9 +1197,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveNoSnap) {
 TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnap) {
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedLeft();
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1209,9 +1209,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnap) {
 TEST_F(TabletModeControllerTest, StartTabletActiveRightSnap) {
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedRight();
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(window.get(), split_view_controller()->secondary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1227,8 +1227,8 @@ TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnapPreviousRightSnap) {
   tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller()->state());
-  EXPECT_EQ(left_window.get(), split_view_controller()->left_window());
-  EXPECT_EQ(right_window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(left_window.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(right_window.get(), split_view_controller()->secondary_window());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(left_window.get(), window_util::GetActiveWindow());
 }
@@ -1244,8 +1244,8 @@ TEST_F(TabletModeControllerTest, StartTabletActiveRightSnapPreviousLeftSnap) {
   tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller()->state());
-  EXPECT_EQ(left_window.get(), split_view_controller()->left_window());
-  EXPECT_EQ(right_window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(left_window.get(), split_view_controller()->primary_window());
+  EXPECT_EQ(right_window.get(), split_view_controller()->secondary_window());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(right_window.get(), window_util::GetActiveWindow());
 }
@@ -1260,9 +1260,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveTransientChildOfLeftSnap) {
   ::wm::AddTransientChild(parent.get(), child.get());
   wm::ActivateWindow(child.get());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(parent.get(), split_view_controller()->left_window());
+  EXPECT_EQ(parent.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(child.get(), window_util::GetActiveWindow());
 }
@@ -1278,9 +1278,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveAppListPreviousLeftSnap) {
   ASSERT_TRUE(app_list_window);
   ASSERT_TRUE(wm::IsActiveWindow(app_list_window));
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1297,9 +1297,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveDraggedPreviousLeftSnap) {
       dragged_window.get(), gfx::PointF(), HTCAPTION,
       ToplevelWindowEventHandler::EndClosure()));
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(snapped_window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(snapped_window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(snapped_window.get(), window_util::GetActiveWindow());
 }
@@ -1316,9 +1316,9 @@ TEST_F(TabletModeControllerTest,
       CreateDesktopWindowSnappedLeft();
   wm::ActivateWindow(window_hidden_from_overview.get());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(snapped_window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(snapped_window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(snapped_window.get(), window_util::GetActiveWindow());
 }
@@ -1339,9 +1339,9 @@ TEST_F(TabletModeControllerTest,
       dragged_window.get(), gfx::PointF(), HTCAPTION,
       ToplevelWindowEventHandler::EndClosure()));
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(parent.get(), split_view_controller()->left_window());
+  EXPECT_EQ(parent.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(parent.get(), window_util::GetActiveWindow());
 }
@@ -1425,9 +1425,9 @@ TEST_F(TabletModeControllerTest,
   right_window_state->OnWMEvent(&snap_to_right);
   ASSERT_EQ(left_window.get(), window_util::GetActiveWindow());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(left_window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(left_window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(left_window.get(), window_util::GetActiveWindow());
 }
@@ -1455,9 +1455,9 @@ TEST_F(TabletModeControllerTest,
       CreateDesktopWindowSnappedRight();
   ASSERT_EQ(right_window.get(), window_util::GetActiveWindow());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kRightSnapped,
+  EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(right_window.get(), split_view_controller()->right_window());
+  EXPECT_EQ(right_window.get(), split_view_controller()->secondary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(right_window.get(), window_util::GetActiveWindow());
 }
@@ -1483,9 +1483,9 @@ TEST_F(TabletModeControllerTest, StartTabletActiveLeftSnapPreviousLeftSnap) {
   std::unique_ptr<aura::Window> window2 = CreateDesktopWindowSnappedLeft();
   wm::ActivateWindow(window1.get());
   tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window1.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window1.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window1.get(), window_util::GetActiveWindow());
 }
@@ -1501,9 +1501,9 @@ TEST_F(TabletModeControllerTest,
   // Make sure display mirroring triggers without any crashes.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, Shell::GetAllRootWindows().size());
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
-  EXPECT_EQ(window.get(), split_view_controller()->left_window());
+  EXPECT_EQ(window.get(), split_view_controller()->primary_window());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 }
@@ -1546,9 +1546,9 @@ TEST_F(TabletModeControllerTest,
   wm::ActivateWindow(window1.get());
   tablet_mode_controller()->SetEnabledForTest(true);
   // After display mirroring triggers, as the split view state will still be
-  // |SplitViewController::State::kLeftSnapped|, check for overview mode.
+  // |SplitViewController::State::kPrimarySnapped|, check for overview mode.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+  EXPECT_EQ(SplitViewController::State::kPrimarySnapped,
             split_view_controller()->state());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 }

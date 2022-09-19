@@ -135,10 +135,10 @@ void ActivateUnderneathWindowInSplitViewMode(
     return;
 
   const bool is_rtl = base::i18n::IsRTL();
-  auto* left_window = is_rtl ? split_view_controller->right_window()
-                             : split_view_controller->left_window();
-  auto* right_window = is_rtl ? split_view_controller->left_window()
-                              : split_view_controller->right_window();
+  auto* left_window = is_rtl ? split_view_controller->secondary_window()
+                             : split_view_controller->primary_window();
+  auto* right_window = is_rtl ? split_view_controller->primary_window()
+                              : split_view_controller->secondary_window();
   const chromeos::OrientationType current_orientation =
       GetCurrentScreenOrientation();
   if (current_orientation == chromeos::OrientationType::kLandscapePrimary) {

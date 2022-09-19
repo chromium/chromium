@@ -409,14 +409,14 @@ TEST_F(OverviewButtonTrayTest, SplitviewModeQuickSwitch) {
   // Verify that after double tapping, we have switched to |window3|, even
   // though |window1| is more recently used.
   PerformDoubleTap();
-  EXPECT_EQ(window3.get(), split_view_controller()->right_window());
+  EXPECT_EQ(window3.get(), split_view_controller()->secondary_window());
   EXPECT_EQ(window3.get(), window_util::GetActiveWindow());
 
   // Focus |window1|. Verify that after double tapping, |window2| is the on the
   // right side for splitview.
   wm::ActivateWindow(window1.get());
   PerformDoubleTap();
-  EXPECT_EQ(window2.get(), split_view_controller()->right_window());
+  EXPECT_EQ(window2.get(), split_view_controller()->secondary_window());
   EXPECT_EQ(window2.get(), window_util::GetActiveWindow());
 
   split_view_controller()->EndSplitView();

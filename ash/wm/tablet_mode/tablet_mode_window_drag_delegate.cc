@@ -477,18 +477,18 @@ bool TabletModeWindowDragDelegate::ShouldFlingIntoOverview(
   // opposite snap position when preview area is shown.
   if (IsCurrentScreenOrientationPrimary()) {
     if (window_dragging_state ==
-        SplitViewDragIndicators::WindowDraggingState::kToSnapLeft) {
+        SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary) {
       return velocity > kFlingToOverviewFromSnappingAreaThreshold;
     } else if (window_dragging_state ==
-               SplitViewDragIndicators::WindowDraggingState::kToSnapRight) {
+               SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary) {
       return -velocity > kFlingToOverviewFromSnappingAreaThreshold;
     }
   } else {
     if (window_dragging_state ==
-        SplitViewDragIndicators::WindowDraggingState::kToSnapLeft) {
+        SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary) {
       return -velocity > kFlingToOverviewFromSnappingAreaThreshold;
     } else if (window_dragging_state ==
-               SplitViewDragIndicators::WindowDraggingState::kToSnapRight) {
+               SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary) {
       return velocity > kFlingToOverviewFromSnappingAreaThreshold;
     }
   }
