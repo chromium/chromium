@@ -247,6 +247,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardLoginScreen.clamshell",
   "inputs.VirtualKeyboardLoginScreen.tablet",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
+
+  # https://crbug.com/1365284
+  "crostini.RestartApp.clamshell_stable",
 ]
 
 # To create filters to be used on specific builders add them like this:
