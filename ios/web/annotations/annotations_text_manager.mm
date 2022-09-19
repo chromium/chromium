@@ -30,15 +30,6 @@ AnnotationsTextManager::~AnnotationsTextManager() {
   web_state_ = nullptr;
 }
 
-// static
-void AnnotationsTextManager::CreateForWebState(WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           std::make_unique<AnnotationsTextManager>(web_state));
-  }
-}
-
 void AnnotationsTextManager::AddObserver(AnnotationsTextObserver* observer) {
   observers_.AddObserver(observer);
 }
