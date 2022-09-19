@@ -6081,7 +6081,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
 
 // Checks that content scripts work in an out-of-process iframe in a <webview>
 // tag.
-IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
+// TODO(crbug.com/1363124): Fix flakiness on win10_chromium_x64_rel_ng. The test
+// is also disabled on mac11-arm64-rel using filter.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ContentScriptInOOPIF DISABLED_ContentScriptInOOPIF
+#else
+#define MAYBE_ContentScriptInOOPIF ContentScriptInOOPIF
+#endif
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, MAYBE_ContentScriptInOOPIF) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
