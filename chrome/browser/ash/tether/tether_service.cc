@@ -106,9 +106,8 @@ TetherService::TetherService(
       network_state_handler_(network_state_handler),
       session_manager_(session_manager),
       notification_presenter_(
-          std::make_unique<chromeos::tether::TetherNotificationPresenter>(
-              profile_,
-              NetworkConnect::Get())),
+          std::make_unique<TetherNotificationPresenter>(profile_,
+                                                        NetworkConnect::Get())),
       gms_core_notifications_state_tracker_(
           std::make_unique<GmsCoreNotificationsStateTrackerImpl>()),
       tether_host_fetcher_(

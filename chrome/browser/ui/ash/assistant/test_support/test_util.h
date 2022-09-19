@@ -10,8 +10,7 @@
 
 #include "ui/views/view.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Finds any descendents of |parent| with the desired |class_name| and pushes
 // them onto the strongly typed |result| vector.
@@ -39,7 +38,6 @@ void FindDescendentsOfClass(views::View* parent, std::vector<T*>* result) {
   FindDescendentsOfClass(parent, T::kViewClassName, result);
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_TEST_SUPPORT_TEST_UTIL_H_

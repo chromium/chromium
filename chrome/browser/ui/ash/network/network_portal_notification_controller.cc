@@ -75,7 +75,7 @@ std::unique_ptr<message_center::Notification> CreatePost2022Notification(
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           NetworkPortalNotificationController::kNotificationId,
           l10n_util::GetStringUTF16(
@@ -96,7 +96,7 @@ std::unique_ptr<message_center::Notification> CreatePre2022Notification(
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::NotifierId notifier_id,
     bool is_wifi) {
-  return ash::CreateSystemNotification(
+  return CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       NetworkPortalNotificationController::kNotificationId,
       l10n_util::GetStringUTF16(
@@ -231,7 +231,7 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
       NotificationCatalogName::kNetworkPortalDetector);
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
   std::unique_ptr<message_center::Notification> notification;
-  if (ash::features::IsCaptivePortalUI2022Enabled()) {
+  if (features::IsCaptivePortalUI2022Enabled()) {
     notification = CreatePost2022Notification(
         network, notification_delegate, notifier_id, is_wifi, portal_state);
   } else {

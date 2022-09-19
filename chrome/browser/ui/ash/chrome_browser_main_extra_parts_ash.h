@@ -39,7 +39,7 @@ class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
 class MediaClientImpl;
 class MobileDataNotifications;
-class NetworkConnectDelegateChromeOS;
+class NetworkConnectDelegate;
 class NightLightClient;
 class ProjectorAppClientImpl;
 class ProjectorClientImpl;
@@ -86,7 +86,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<UserProfileLoadedObserver> user_profile_loaded_observer_;
 
   // Initialized in PreProfileInit in all configs before Shell init:
-  std::unique_ptr<NetworkConnectDelegateChromeOS> network_connect_delegate_;
+  std::unique_ptr<NetworkConnectDelegate> network_connect_delegate_;
   std::unique_ptr<CastConfigControllerMediaRouter>
       cast_config_controller_media_router_;
 

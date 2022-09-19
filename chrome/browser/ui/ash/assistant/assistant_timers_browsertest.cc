@@ -37,13 +37,12 @@
 #include "ui/message_center/views/notification_view.h"
 #include "ui/views/controls/button/label_button.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
-using message_center::MessageCenter;
-using message_center::MessageCenterObserver;
+using ::message_center::MessageCenter;
+using ::message_center::MessageCenterObserver;
 
 // Please remember to set auth token when *not* running in |kReplay| mode.
 constexpr auto kMode = FakeS3Mode::kReplay;
@@ -76,8 +75,8 @@ constexpr int kVersion = 1;
 // Helpers ---------------------------------------------------------------------
 
 // Returns the status area widget.
-ash::StatusAreaWidget* FindStatusAreaWidget() {
-  return ash::Shelf::ForWindow(ash::Shell::GetRootWindowForNewWindows())
+StatusAreaWidget* FindStatusAreaWidget() {
+  return Shelf::ForWindow(Shell::GetRootWindowForNewWindows())
       ->shelf_widget()
       ->status_area_widget();
 }
@@ -109,7 +108,7 @@ std::vector<message_center::Notification*> FindVisibleNotificationsByPrefixedId(
 // Returns the view for the specified |notification|.
 message_center::MessageView* FindViewForNotification(
     const message_center::Notification* notification) {
-  ash::UnifiedMessageListView* unified_message_list_view =
+  UnifiedMessageListView* unified_message_list_view =
       FindStatusAreaWidget()
           ->unified_system_tray()
           ->message_center_bubble()
@@ -194,8 +193,7 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
   AssistantTimersBrowserTest() {
     // TODO(b/190633242): enable sandbox in browser tests.
-    feature_list_.InitAndDisableFeature(
-        ash::assistant::features::kEnableLibAssistantSandbox);
+    feature_list_.InitAndDisableFeature(features::kEnableLibAssistantSandbox);
 
     // Do not log to file in test. Otherwise multiple tests may create/delete
     // the log file at the same time. See http://crbug.com/1307868.
@@ -213,7 +211,7 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
     if (!tester()->IsVisible())
       tester()->PressAssistantKey();
     if (ash::features::IsProductivityLauncherEnabled()) {
-      ash::AppListTestApi().WaitForBubbleWindow(
+      AppListTestApi().WaitForBubbleWindow(
           /*wait_for_opening_animation=*/true);
     }
   }
@@ -393,5 +391,4 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
   notification_update_run_loop.Run();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

@@ -45,7 +45,7 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
-#include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
+#include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
@@ -140,8 +140,7 @@ void ChromeBrowserMainExtraPartsAsh::PreCreateMainMessageLoop() {
 
 void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // NetworkConnect handles the network connection state machine for the UI.
-  network_connect_delegate_ =
-      std::make_unique<NetworkConnectDelegateChromeOS>();
+  network_connect_delegate_ = std::make_unique<NetworkConnectDelegate>();
   ash::NetworkConnect::Initialize(network_connect_delegate_.get());
 
   cast_config_controller_media_router_ =

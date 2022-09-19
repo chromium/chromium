@@ -7,13 +7,11 @@
 
 #include <string>
 
-namespace chromeos {
-namespace enrollment {
+namespace ash::enrollment {
 
 // Creates and shows the dialog for certificate-based network enrollment.
 bool CreateEnrollmentDialog(const std::string& network_id);
 
-}  // namespace enrollment
-}  // namespace chromeos
+}  // namespace ash::enrollment
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_ENROLLMENT_DIALOG_VIEW_H_

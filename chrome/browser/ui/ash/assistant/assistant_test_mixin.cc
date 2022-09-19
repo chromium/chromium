@@ -32,8 +32,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -48,10 +47,9 @@ LoginManagerMixin::TestUserInfo GetTestUserInfo() {
 // Waiter that blocks in the |Wait| method until a given |AssistantStatus|
 // is reached, or until a timeout is hit.
 // On timeout this will abort the test with a useful error message.
-class AssistantStatusWaiter : private ash::AssistantStateObserver {
+class AssistantStatusWaiter : private AssistantStateObserver {
  public:
-  AssistantStatusWaiter(ash::AssistantState* state,
-                        ash::assistant::AssistantStatus expected_status)
+  AssistantStatusWaiter(AssistantState* state, AssistantStatus expected_status)
       : state_(state), expected_status_(expected_status) {
     state_->AddObserver(this);
   }
@@ -73,14 +71,13 @@ class AssistantStatusWaiter : private ash::AssistantStateObserver {
   }
 
  private:
-  void OnAssistantStatusChanged(
-      ash::assistant::AssistantStatus status) override {
+  void OnAssistantStatusChanged(AssistantStatus status) override {
     if (status == expected_status_ && quit_loop_)
       std::move(quit_loop_).Run();
   }
 
-  ash::AssistantState* const state_;
-  ash::assistant::AssistantStatus const expected_status_;
+  AssistantState* const state_;
+  AssistantStatus const expected_status_;
 
   base::OnceClosure quit_loop_;
 };
@@ -222,8 +219,7 @@ class TypedResponseWaiter : public ResponseWaiter {
   absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
     if (view->GetClassName() == class_name_) {
-      return static_cast<ash::AssistantUiElementView*>(view)
-          ->ToStringForTesting();
+      return static_cast<AssistantUiElementView*>(view)->ToStringForTesting();
     }
     return absl::nullopt;
   }
@@ -249,10 +245,8 @@ class TypedExpectedResponseWaiter : public ExpectedResponseWaiter {
   // ExpectedResponseWaiter overrides:
   absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const override {
-    if (view->GetClassName() == class_name_) {
-      return static_cast<ash::AssistantUiElementView*>(view)
-          ->ToStringForTesting();
-    }
+    if (view->GetClassName() == class_name_)
+      return static_cast<AssistantUiElementView*>(view)->ToStringForTesting();
     return absl::nullopt;
   }
 
@@ -378,7 +372,7 @@ AssistantTestMixin::AssistantTestMixin(
     : InProcessBrowserTestMixin(host),
       fake_s3_server_(test_data_version),
       mode_(mode),
-      test_api_(ash::AssistantTestApi::Create()),
+      test_api_(AssistantTestApi::Create()),
       user_mixin_(std::make_unique<LoggedInUserMixin>(host,
                                                       test_base,
                                                       GetTestUserInfo(),
@@ -420,7 +414,7 @@ void AssistantTestMixin::StartAssistantAndWaitForReady(
   SetPreferVoice(false);
 
   AssistantStatusWaiter waiter(test_api_->GetAssistantState(),
-                               ash::assistant::AssistantStatus::READY);
+                               AssistantStatus::READY);
   waiter.RunUntilExpectedStatus();
 }
 
@@ -545,7 +539,7 @@ std::vector<base::TimeDelta> AssistantTestMixin::ExpectAndReturnTimersResponse(
 }
 
 void AssistantTestMixin::PressAssistantKey() {
-  SendKeyPress(ui::VKEY_ASSISTANT);
+  SendKeyPress(::ui::VKEY_ASSISTANT);
 }
 
 bool AssistantTestMixin::IsVisible() {
@@ -580,9 +574,9 @@ PrefService* AssistantTestMixin::GetUserPreferences() {
   return ProfileManager::GetPrimaryUserProfile()->GetPrefs();
 }
 
-void AssistantTestMixin::SendKeyPress(ui::KeyboardCode key) {
-  ui::test::EventGenerator event_generator(test_api_->root_window());
-  event_generator.PressKey(key, /*flags=*/ui::EF_NONE);
+void AssistantTestMixin::SendKeyPress(::ui::KeyboardCode key) {
+  ::ui::test::EventGenerator event_generator(test_api_->root_window());
+  event_generator.PressKey(key, /*flags=*/::ui::EF_NONE);
 }
 
 void AssistantTestMixin::DisableAssistant() {
@@ -591,9 +585,8 @@ void AssistantTestMixin::DisableAssistant() {
 
   // Then wait for the Service to shutdown.
   AssistantStatusWaiter waiter(test_api_->GetAssistantState(),
-                               ash::assistant::AssistantStatus::NOT_READY);
+                               AssistantStatus::NOT_READY);
   waiter.RunUntilExpectedStatus();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

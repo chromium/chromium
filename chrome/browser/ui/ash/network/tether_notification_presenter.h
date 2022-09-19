@@ -26,7 +26,7 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
-namespace chromeos::tether {
+namespace ash::tether {
 
 // Produces notifications associated with CrOS tether network events and alerts
 // observers about interactions with those notifications.
@@ -35,7 +35,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // Caller must ensure that |profile| and |network_connect| outlive this
   // instance.
   TetherNotificationPresenter(Profile* profile,
-                              ash::NetworkConnect* network_connect);
+                              NetworkConnect* network_connect);
 
   TetherNotificationPresenter(const TetherNotificationPresenter&) = delete;
   TetherNotificationPresenter& operator=(const TetherNotificationPresenter&) =
@@ -96,7 +96,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
 
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,
-      const ash::NotificationCatalogName& catalog_name,
+      const NotificationCatalogName& catalog_name,
       const std::u16string& title,
       const std::u16string& message,
       const gfx::ImageSkia& small_image,
@@ -111,7 +111,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
   void RemoveNotificationIfVisible(const std::string& notification_id);
 
   Profile* profile_;
-  ash::NetworkConnect* network_connect_;
+  NetworkConnect* network_connect_;
 
   // The ID of the currently showing notification.
   std::string showing_notification_id_;
@@ -125,6 +125,6 @@ class TetherNotificationPresenter : public NotificationPresenter {
   base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos::tether
+}  // namespace ash::tether
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_TETHER_NOTIFICATION_PRESENTER_H_
