@@ -178,6 +178,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       ignore_isolated_world_origin_(params->ignore_isolated_world_origin),
       trust_token_redemption_policy_(params->trust_token_redemption_policy),
       isolation_info_(params->isolation_info),
+      automatically_assign_isolation_info_(
+          params->automatically_assign_isolation_info),
       debug_tag_(params->debug_tag),
       cross_origin_embedder_policy_(
           params->client_security_state
@@ -298,6 +300,13 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer =
         GetDevToolsObserver(resource_request);
 
+    const net::IsolationInfo* isolation_info_ptr = &isolation_info_;
+    auto isolation_info = URLLoader::GetIsolationInfo(
+        isolation_info_, automatically_assign_isolation_info_,
+        resource_request);
+    if (isolation_info)
+      isolation_info_ptr = &isolation_info.value();
+
     auto loader = std::make_unique<CorsURLLoader>(
         std::move(receiver), process_id_, request_id, options,
         base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
@@ -308,7 +317,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         std::move(client), traffic_annotation, inner_url_loader_factory,
         factory_override_ ? nullptr : network_loader_factory_.get(),
         origin_access_list_, GetAllowAnyCorsExemptHeaderForBrowser(),
-        HasFactoryOverride(!!factory_override_), isolation_info_,
+        HasFactoryOverride(!!factory_override_), *isolation_info_ptr,
         std::move(devtools_observer), client_security_state_.get(),
         cross_origin_embedder_policy_, context_);
     auto* raw_loader = loader.get();

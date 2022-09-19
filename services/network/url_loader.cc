@@ -677,21 +677,11 @@ URLLoader::URLLoader(
   url_request_->set_referrer_policy(request.referrer_policy);
   url_request_->set_upgrade_if_insecure(request.upgrade_if_insecure);
 
-  if (!factory_params_.isolation_info.IsEmpty()) {
-    url_request_->set_isolation_info(factory_params_.isolation_info);
-  } else if (request.trusted_params &&
-             !request.trusted_params->isolation_info.IsEmpty()) {
-    url_request_->set_isolation_info(request.trusted_params->isolation_info);
-    if (request.credentials_mode != network::mojom::CredentialsMode::kOmit) {
-      DCHECK(url_request_->isolation_info().site_for_cookies().IsEquivalent(
-          request.site_for_cookies));
-    }
-  } else if (factory_params_.automatically_assign_isolation_info) {
-    url::Origin origin = url::Origin::Create(request.url);
-    url_request_->set_isolation_info(
-        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                   origin, origin, net::SiteForCookies()));
-  }
+  auto isolation_info = GetIsolationInfo(
+      factory_params_.isolation_info,
+      factory_params_.automatically_assign_isolation_info, request);
+  if (isolation_info)
+    url_request_->set_isolation_info(isolation_info.value());
 
   if (context.ShouldRequireNetworkIsolationKey())
     DCHECK(!url_request_->isolation_info().IsEmpty());
@@ -1465,6 +1455,32 @@ bool URLLoader::HasFetchStreamingUploadBody(const ResourceRequest* request) {
   const auto& element = elements->front();
   return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
          element.As<network::DataElementChunkedDataPipe>().read_only_once();
+}
+
+// static
+absl::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
+    const net::IsolationInfo& factory_isolation_info,
+    bool automatically_assign_isolation_info,
+    const ResourceRequest& request) {
+  if (!factory_isolation_info.IsEmpty())
+    return factory_isolation_info;
+
+  if (request.trusted_params &&
+      !request.trusted_params->isolation_info.IsEmpty()) {
+    if (request.credentials_mode != network::mojom::CredentialsMode::kOmit) {
+      DCHECK(request.trusted_params->isolation_info.site_for_cookies()
+                 .IsEquivalent(request.site_for_cookies));
+    }
+    return request.trusted_params->isolation_info;
+  }
+
+  if (automatically_assign_isolation_info) {
+    url::Origin origin = url::Origin::Create(request.url);
+    return net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                      origin, origin, net::SiteForCookies());
+  }
+
+  return absl::nullopt;
 }
 
 // static

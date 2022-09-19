@@ -461,6 +461,14 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
     return absl::nullopt;
   }
 
+  // We hit a DCHECK failure without this early return. Let's have this
+  // workaround for now.
+  // TODO(crbug.com/1360815): Remove this, and handle this request correctly.
+  if (resource_request.trusted_params &&
+      !resource_request.trusted_params->isolation_info.IsEmpty()) {
+    return absl::nullopt;
+  }
+
   absl::optional<std::string> cache_key = GenerateCacheKeyForResourceRequest(
       resource_request, network_isolation_key);
   if (!cache_key.has_value())

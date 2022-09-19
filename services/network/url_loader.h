@@ -291,6 +291,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   static bool HasFetchStreamingUploadBody(const ResourceRequest*);
 
+  static absl::optional<net::IsolationInfo> GetIsolationInfo(
+      const net::IsolationInfo& factory_isolation_info,
+      bool automatically_assign_isolation_info,
+      const ResourceRequest& request);
+
   static void ResetPervasivePayloadsListForTesting();
 
  private:
