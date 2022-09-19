@@ -20,6 +20,7 @@
 
 namespace service_manager {
 
+// (DEPRECATED) Prefer mojo::BinderMap instead.
 template <typename... BinderArgs>
 class BinderRegistryWithArgs {
  public:
