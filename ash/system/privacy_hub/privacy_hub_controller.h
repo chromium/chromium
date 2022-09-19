@@ -38,7 +38,7 @@ class ASH_EXPORT PrivacyHubController {
   void set_frontend(PrivacyHubDelegate* ptr) { frontend_ = ptr; }
 
   // Returns the adapter that can be used to modify the frontend
-  PrivacyHubDelegate& frontend() { return *frontend_; }
+  PrivacyHubDelegate* frontend() { return frontend_; }
 
  private:
   CameraPrivacySwitchController camera_controller_;

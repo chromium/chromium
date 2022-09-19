@@ -102,10 +102,12 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStatusChanged(
     int32_t camera_id,
     cros::mojom::CameraPrivacySwitchState state) {
   camera_privacy_switch_state_ = state;
-  Shell::Get()
-      ->privacy_hub_controller()
-      ->frontend()
-      .CameraHardwareToggleChanged(state);
+  PrivacyHubDelegate* const frontend =
+      Shell::Get()->privacy_hub_controller()->frontend();
+  if (frontend) {
+    // This event can be received before the frontend delegate is registered
+    frontend->CameraHardwareToggleChanged(state);
+  }
 }
 
 cros::mojom::CameraPrivacySwitchState

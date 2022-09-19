@@ -76,19 +76,24 @@ void MicrophonePrivacySwitchController::SetSystemMute() {
 }
 
 void MicrophonePrivacySwitchController::OnAudioNodesChanged() {
-  Shell::Get()
-      ->privacy_hub_controller()
-      ->frontend()
-      .AvailabilityOfMicrophoneChanged(
-          CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage());
+  PrivacyHubDelegate* const frontend =
+      Shell::Get()->privacy_hub_controller()->frontend();
+
+  if (frontend) {
+    // This may be called before the webui registers a frontend delegate
+    frontend->AvailabilityOfMicrophoneChanged(
+        CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage());
+  }
 }
 
 void MicrophonePrivacySwitchController::OnMicrophoneMuteSwitchValueChanged(
     bool muted) {
-  Shell::Get()
-      ->privacy_hub_controller()
-      ->frontend()
-      .MicrophoneHardwareToggleChanged(muted);
+  PrivacyHubDelegate* const frontend =
+      Shell::Get()->privacy_hub_controller()->frontend();
+  if (frontend) {
+    // In case this is called before the webui registers a frontend delegate
+    frontend->MicrophoneHardwareToggleChanged(muted);
+  }
 }
 
 }  // namespace ash
