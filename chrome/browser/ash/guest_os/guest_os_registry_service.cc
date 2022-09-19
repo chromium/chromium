@@ -827,12 +827,12 @@ void GuestOsRegistryService::ClearApplicationList(
     const std::string& vm_name,
     const std::string& container_name) {
   std::vector<std::string> removed_apps;
-  // The DictionaryPrefUpdate should be destructed before calling the observer.
+  // The ScopedDictPrefUpdate should be destructed before calling the observer.
   {
-    DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-    base::Value* apps = update.Get();
+    ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+    base::Value::Dict& apps = update.Get();
 
-    for (const auto item : apps->DictItems()) {
+    for (const auto item : apps) {
       Registration registration(item.first, item.second.Clone());
       if (vm_type != registration.VmType()) {
         continue;
@@ -848,7 +848,7 @@ void GuestOsRegistryService::ClearApplicationList(
     }
     for (const std::string& removed_app : removed_apps) {
       RemoveAppData(removed_app);
-      apps->RemoveKey(removed_app);
+      apps.Remove(removed_app);
     }
   }
 
@@ -885,10 +885,10 @@ void GuestOsRegistryService::UpdateApplicationList(
   std::vector<std::string> removed_apps;
   std::vector<std::string> inserted_apps;
 
-  // The DictionaryPrefUpdate should be destructed before calling the observer.
+  // The ScopedDictPrefUpdate should be destructed before calling the observer.
   {
-    DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-    base::Value* apps = update.Get();
+    ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+    base::Value::Dict& apps = update.Get();
     for (const App& app : app_list.apps()) {
       if (app.desktop_file_id().empty()) {
         LOG(WARNING) << "Received app with missing desktop file id";
@@ -911,7 +911,7 @@ void GuestOsRegistryService::UpdateApplicationList(
           pref_registration, app_list.vm_type(), app_list.vm_name(),
           app_list.container_name(), app, std::move(name));
 
-      base::Value* old_app = apps->FindKey(app_id);
+      base::Value* old_app = apps.Find(app_id);
       if (old_app && EqualsExcludingTimestamps(pref_registration, *old_app)) {
         continue;
       }
@@ -940,10 +940,10 @@ void GuestOsRegistryService::UpdateApplicationList(
                                  old_last_launch_time->Clone());
       }
 
-      apps->SetKey(app_id, std::move(pref_registration));
+      apps.Set(app_id, std::move(pref_registration));
     }
 
-    for (const auto item : apps->DictItems()) {
+    for (const auto item : apps) {
       std::string vm_name =
           GetStringKey(item.second, guest_os::prefs::kVmNameKey);
       std::string container_name =
@@ -960,7 +960,7 @@ void GuestOsRegistryService::UpdateApplicationList(
 
     for (const std::string& removed_app : removed_apps) {
       RemoveAppData(removed_app);
-      apps->RemoveKey(removed_app);
+      apps.Remove(removed_app);
     }
   }
 
@@ -1026,9 +1026,8 @@ void GuestOsRegistryService::RemoveObserver(Observer* observer) {
 }
 
 void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
-  DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-  base::Value* apps = update.Get();
-  base::Value* app = apps->FindKey(app_id);
+  ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+  base::Value* app = update->Find(app_id);
   DCHECK(app);
   SetCurrentTime(app, guest_os::prefs::kAppLastLaunchTimeKey);
 }
@@ -1042,17 +1041,17 @@ void GuestOsRegistryService::SetCurrentTime(base::Value* dictionary,
 
 void GuestOsRegistryService::SetAppScaled(const std::string& app_id,
                                           bool scaled) {
-  DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
-  base::Value* apps = update.Get();
+  ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
+  base::Value::Dict& apps = update.Get();
 
-  base::Value* app = apps->FindKey(app_id);
+  base::Value::Dict* app = apps.FindDict(app_id);
   if (!app) {
     LOG(ERROR)
         << "Tried to set display scaled property on the app with this app_id "
         << app_id << " that doesn't exist in the registry.";
     return;
   }
-  app->SetKey(guest_os::prefs::kAppScaledKey, base::Value(scaled));
+  app->Set(guest_os::prefs::kAppScaledKey, scaled);
 }
 
 // static

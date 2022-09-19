@@ -533,8 +533,8 @@ void GuestOsSharePath::UnsharePath(const std::string& vm_name,
 
   if (unpersist) {
     PrefService* pref_service = profile_->GetPrefs();
-    DictionaryPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
-    RemovePersistedPathFromPrefs(update->GetDict(), vm_name, path);
+    ScopedDictPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
+    RemovePersistedPathFromPrefs(*update, vm_name, path);
   }
 
   CallSeneschalUnsharePath(vm_name, path, std::move(callback));
@@ -582,8 +582,8 @@ void GuestOsSharePath::SharePersistedPaths(const std::string& vm_name,
 void GuestOsSharePath::RegisterPersistedPath(const std::string& vm_name,
                                              const base::FilePath& path) {
   PrefService* pref_service = profile_->GetPrefs();
-  DictionaryPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
-  base::Value::Dict& shared_paths = update->GetDict();
+  ScopedDictPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
+  base::Value::Dict& shared_paths = *update;
   // Check if path is already shared so we know whether we need to add it.
   bool already_shared = false;
   // Remove any paths that are children of this path.

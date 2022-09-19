@@ -98,10 +98,10 @@ std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id) {
 }
 
 void RemoveDuplicateContainerEntries(PrefService* prefs) {
-  ListPrefUpdate updater(prefs, prefs::kGuestOsContainers);
+  ScopedListPrefUpdate updater(prefs, prefs::kGuestOsContainers);
 
   std::set<GuestId> seen_containers;
-  auto& containers = updater->GetList();
+  auto& containers = *updater;
   for (auto it = containers.begin(); it != containers.end();) {
     GuestId id(*it);
     if (seen_containers.find(id) == seen_containers.end()) {
@@ -129,8 +129,8 @@ std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type) {
 void AddContainerToPrefs(Profile* profile,
                          const GuestId& container_id,
                          base::Value::Dict properties) {
-  ListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
-  if (base::ranges::any_of(updater->GetListDeprecated(), [&](const auto& dict) {
+  ScopedListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
+  if (base::ranges::any_of(*updater, [&](const auto& dict) {
         return MatchContainerDict(dict, container_id);
       })) {
     return;
@@ -147,8 +147,8 @@ void AddContainerToPrefs(Profile* profile,
 
 void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
   auto* pref_service = profile->GetPrefs();
-  ListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
-  base::Value::List& update_list = updater->GetList();
+  ScopedListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
+  base::Value::List& update_list = updater.Get();
   auto it = std::find_if(
       update_list.begin(), update_list.end(),
       [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
@@ -158,8 +158,8 @@ void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
 
 void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
   auto* pref_service = profile->GetPrefs();
-  ListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
-  base::Value::List& update_list = updater->GetList();
+  ScopedListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
+  base::Value::List& update_list = updater.Get();
   auto it = std::find_if(
       update_list.begin(), update_list.end(),
       [&](const auto& dict) { return VmTypeFromPref(dict) == vm_type; });
@@ -183,11 +183,11 @@ void UpdateContainerPref(Profile* profile,
                          const GuestId& container_id,
                          const std::string& key,
                          base::Value value) {
-  ListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
+  ScopedListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
   auto it = std::find_if(
-      updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
+      updater->begin(), updater->end(),
       [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
-  if (it != updater->GetListDeprecated().end()) {
+  if (it != updater->end()) {
     if (base::Contains(*kPropertiesAllowList, key)) {
       it->SetKey(key, std::move(value));
     } else {

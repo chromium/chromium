@@ -254,12 +254,11 @@ class GuestOsSharePathTest : public testing::Test {
     share_path_ = root_.Append("path-to-share");
     shared_path_ = root_.Append("already-shared");
     ASSERT_TRUE(base::CreateDirectory(shared_path_));
-    DictionaryPrefUpdate update(profile()->GetPrefs(),
+    ScopedDictPrefUpdate update(profile()->GetPrefs(),
                                 prefs::kGuestOSPathsSharedToVms);
-    base::Value* shared_paths = update.Get();
-    base::Value termina(base::Value::Type::LIST);
-    termina.Append(base::Value(crostini::kCrostiniDefaultVmName));
-    shared_paths->SetKey(shared_path_.value(), std::move(termina));
+    base::Value::List termina;
+    termina.Append(crostini::kCrostiniDefaultVmName);
+    update->Set(shared_path_.value(), std::move(termina));
     volume_downloads_ = file_manager::Volume::CreateForDownloads(root_);
     guest_os_share_path_->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
                                              shared_path_);
@@ -812,12 +811,11 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathSuccess) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::Value* shared_paths = update.Get();
-  base::Value vms(base::Value::Type::LIST);
-  vms.Append(base::Value("vm-running"));
-  shared_paths->SetKey(shared_path_.value(), std::move(vms));
+  base::Value::List vms;
+  vms.Append("vm-running");
+  update->Set(shared_path_.value(), std::move(vms));
   guest_os_share_path_->UnsharePath(
       "vm-running", shared_path_, true,
       base::BindOnce(&GuestOsSharePathTest::UnsharePathCallback,
@@ -839,12 +837,11 @@ TEST_F(GuestOsSharePathTest, UnsharePathRoot) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathVmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::Value* shared_paths = update.Get();
-  base::Value vms(base::Value::Type::LIST);
-  vms.Append(base::Value("vm-not-running"));
-  shared_paths->SetKey(shared_path_.value(), std::move(vms));
+  base::Value::List vms;
+  vms.Append("vm-not-running");
+  update->Set(shared_path_.value(), std::move(vms));
   guest_os_share_path_->UnsharePath(
       "vm-not-running", shared_path_, true,
       base::BindOnce(&GuestOsSharePathTest::UnsharePathCallback,
@@ -856,12 +853,11 @@ TEST_F(GuestOsSharePathTest, UnsharePathVmNotRunning) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathPluginVmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::Value* shared_paths = update.Get();
-  base::Value vms(base::Value::Type::LIST);
-  vms.Append(base::Value("PvmDefault"));
-  shared_paths->SetKey(shared_path_.value(), std::move(vms));
+  base::Value::List vms;
+  vms.Append("PvmDefault");
+  update->Set(shared_path_.value(), std::move(vms));
   guest_os_share_path_->UnsharePath(
       "PvmDefault", shared_path_, true,
       base::BindOnce(&GuestOsSharePathTest::UnsharePathCallback,
@@ -874,12 +870,11 @@ TEST_F(GuestOsSharePathTest, UnsharePathPluginVmNotRunning) {
 // Tests that it cannot unshare path when ARCVM is not running.
 TEST_F(GuestOsSharePathTest, UnsharePathArcvmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::Value* shared_paths = update.Get();
-  base::Value vms(base::Value::Type::LIST);
-  vms.Append(base::Value(arc::kArcVmName));
-  shared_paths->SetKey(shared_path_.value(), std::move(vms));
+  base::Value::List vms;
+  vms.Append(arc::kArcVmName);
+  update->Set(shared_path_.value(), std::move(vms));
 
   // Remove VmInfo from |arc_session_manager_| to simulate a stopped ARCVM.
   vm_tools::concierge::VmStoppedSignal stop_signal;

@@ -94,13 +94,13 @@ void GuestOsMimeTypesService::ClearMimeTypes(
     const std::string& vm_name,
     const std::string& container_name) {
   VLOG(1) << "ClearMimeTypes(" << vm_name << ", " << container_name << ")";
-  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::Value* mime_types = update.Get();
-  base::Value* vm = mime_types->FindDictKey(vm_name);
+  ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
+  base::Value::Dict& mime_types = update.Get();
+  base::Value::Dict* vm = mime_types.FindDict(vm_name);
   if (vm) {
-    vm->RemoveKey(container_name);
-    if (container_name.empty() || vm->DictEmpty()) {
-      mime_types->RemoveKey(vm_name);
+    vm->Remove(container_name);
+    if (container_name.empty() || vm->empty()) {
+      mime_types.Remove(vm_name);
     }
   }
 }
@@ -128,14 +128,10 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
   }
   VLOG(1) << "UpdateMimeTypes(" << mime_type_mappings.vm_name() << ", "
           << mime_type_mappings.container_name() << ")=" << exts;
-  DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::Value* mime_types = update.Get();
-  base::Value* vm = mime_types->FindDictKey(mime_type_mappings.vm_name());
-  if (!vm) {
-    vm = mime_types->SetKey(mime_type_mappings.vm_name(),
-                            base::Value(base::Value::Type::DICTIONARY));
-  }
-  vm->SetKey(mime_type_mappings.container_name(), std::move(exts));
+  ScopedDictPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
+  base::Value::Dict& mime_types = update.Get();
+  base::Value::Dict* vm = mime_types.EnsureDict(mime_type_mappings.vm_name());
+  vm->Set(mime_type_mappings.container_name(), std::move(exts));
 }
 
 }  // namespace guest_os

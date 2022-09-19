@@ -141,9 +141,8 @@ void LaunchTerminalImpl(Profile* profile,
 }  // namespace
 
 void RemoveTerminalFromRegistry(PrefService* prefs) {
-  DictionaryPrefUpdate update(prefs, guest_os::prefs::kGuestOsRegistry);
-  base::Value* apps = update.Get();
-  apps->RemoveKey(kTerminalSystemAppId);
+  ScopedDictPrefUpdate update(prefs, guest_os::prefs::kGuestOsRegistry);
+  update->Remove(kTerminalSystemAppId);
 }
 
 const std::string& GetTerminalHomeUrl() {
