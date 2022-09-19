@@ -1145,14 +1145,12 @@ TEST_F(TranslateMessageTest, CreateTranslateMessageSucceedsThenFails) {
 TEST_F(TranslateMessageTest, TranslationDismissedInProgressByTimer) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateDeniedCount)
-      ->GetDict()
-      .Set("fr", 100);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", 100);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateIgnoredCount)
-      ->GetDict()
-      .Set("fr", 100);
+      ->Set("fr", 100);
 
   // Show the translate message and click "Translate".
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
@@ -1180,14 +1178,12 @@ TEST_F(TranslateMessageTest, TranslationDismissedInProgressByTimer) {
 TEST_F(TranslateMessageTest, TranslationDismissedInProgressByGesture) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateDeniedCount)
-      ->GetDict()
-      .Set("fr", 100);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", 100);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateIgnoredCount)
-      ->GetDict()
-      .Set("fr", 100);
+      ->Set("fr", 100);
 
   // Show the translate message and click "Translate".
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
@@ -1215,14 +1211,12 @@ TEST_F(TranslateMessageTest, TranslationDismissedInProgressByGesture) {
 TEST_F(TranslateMessageTest, TranslationIgnored) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", 100);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", 100);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateDeniedCount)
-      ->GetDict()
-      .Set("fr", 100);
+      ->Set("fr", 100);
 
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
@@ -1318,14 +1312,12 @@ TEST_F(TranslateMessageTest, TranslationNotIgnoredBecauseErrorOccurred) {
 TEST_F(TranslateMessageTest, TranslationDenied) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", 100);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", 100);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateIgnoredCount)
-      ->GetDict()
-      .Set("fr", 100);
+      ->Set("fr", 100);
 
   EXPECT_CALL(*bridge_, CreateTranslateMessage(
                             env, _, _, kDefaultDismissalDurationSeconds))
@@ -1420,14 +1412,12 @@ TEST_F(TranslateMessageTest, TranslationNotDeniedBecauseErrorOccurred) {
 TEST_F(TranslateMessageTest, AutoAlwaysTranslate) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", GetAutoAlwaysThreshold() - 1);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", GetAutoAlwaysThreshold() - 1);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAutoAlwaysCount)
-      ->GetDict()
-      .Set("fr", GetMaximumNumberOfAutoAlways() - 1);
+      ->Set("fr", GetMaximumNumberOfAutoAlways() - 1);
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1478,14 +1468,12 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslatePastAcceptedThreshold) {
   // Once the translation happens, this count will be 1 larger than the
   // threshold. This test is to make sure that the comparison is
   // greater-than-or-equal, not just equality.
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", GetAutoAlwaysThreshold());
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", GetAutoAlwaysThreshold());
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAutoAlwaysCount)
-      ->GetDict()
-      .Set("fr", GetMaximumNumberOfAutoAlways() - 1);
+      ->Set("fr", GetMaximumNumberOfAutoAlways() - 1);
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1508,14 +1496,12 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslatePastAcceptedThreshold) {
 TEST_F(TranslateMessageTest, AutoAlwaysTranslateDismissedInProgress) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", GetAutoAlwaysThreshold() - 1);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", GetAutoAlwaysThreshold() - 1);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAutoAlwaysCount)
-      ->GetDict()
-      .Set("fr", GetMaximumNumberOfAutoAlways() - 1);
+      ->Set("fr", GetMaximumNumberOfAutoAlways() - 1);
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1559,14 +1545,12 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateDismissedInProgress) {
 TEST_F(TranslateMessageTest, AutoAlwaysTranslateThresholdNotReached) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", GetAutoAlwaysThreshold() - 2);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", GetAutoAlwaysThreshold() - 2);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAutoAlwaysCount)
-      ->GetDict()
-      .Set("fr", GetMaximumNumberOfAutoAlways() - 1);
+      ->Set("fr", GetMaximumNumberOfAutoAlways() - 1);
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1593,14 +1577,12 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateThresholdNotReached) {
 TEST_F(TranslateMessageTest, AutoAlwaysTranslatePastMaximumTimes) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", GetAutoAlwaysThreshold() - 1);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", GetAutoAlwaysThreshold() - 1);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAutoAlwaysCount)
-      ->GetDict()
-      .Set("fr", GetMaximumNumberOfAutoAlways());
+      ->Set("fr", GetMaximumNumberOfAutoAlways());
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1628,14 +1610,12 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslatePastMaximumTimes) {
 TEST_F(TranslateMessageTest, AutoAlwaysTranslateInterruptedByOverflowMenu) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAcceptedCount)
-      ->GetDict()
-      .Set("fr", GetAutoAlwaysThreshold() - 1);
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", GetAutoAlwaysThreshold() - 1);
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAutoAlwaysCount)
-      ->GetDict()
-      .Set("fr", GetMaximumNumberOfAutoAlways() - 1);
+      ->Set("fr", GetMaximumNumberOfAutoAlways() - 1);
 
   EXPECT_FALSE(
       translate_prefs_->IsLanguagePairOnAlwaysTranslateList("fr", "en"));
@@ -1669,10 +1649,9 @@ TEST_F(TranslateMessageTest, AutoAlwaysTranslateInterruptedByOverflowMenu) {
 TEST_F(TranslateMessageTest, AutoNeverTranslate) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateDeniedCount)
-      ->GetDict()
-      .Set("fr", GetAutoNeverThreshold() - 1);
+      ->Set("fr", GetAutoNeverThreshold() - 1);
 
   EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
 
@@ -1733,14 +1712,12 @@ TEST_F(TranslateMessageTest, AutoNeverTranslate) {
 TEST_F(TranslateMessageTest, AutoNeverTranslatePastMaximumTimes) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DictionaryPrefUpdate(pref_service_.get(),
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateDeniedCount)
-      ->GetDict()
-      .Set("fr", GetAutoNeverThreshold());
-  DictionaryPrefUpdate(pref_service_.get(),
+      ->Set("fr", GetAutoNeverThreshold());
+  ScopedDictPrefUpdate(pref_service_.get(),
                        TranslatePrefs::kPrefTranslateAutoNeverCount)
-      ->GetDict()
-      .Set("fr", GetMaximumNumberOfAutoNever());
+      ->Set("fr", GetMaximumNumberOfAutoNever());
 
   EXPECT_FALSE(translate_prefs_->IsBlockedLanguage("fr"));
 

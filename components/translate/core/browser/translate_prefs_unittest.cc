@@ -942,9 +942,9 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
       prefs_.GetList(TranslatePrefs::kPrefNeverPromptSitesDeprecated).size(),
       2u);
   // Also put one of those sites on the new pref but migrated incorrectly.
-  DictionaryPrefUpdate never_prompt_list_update(
+  ScopedDictPrefUpdate never_prompt_list_update(
       &prefs_, prefs::kPrefNeverPromptSitesWithTime);
-  base::Value::Dict& never_prompt_list = never_prompt_list_update->GetDict();
+  base::Value::Dict& never_prompt_list = never_prompt_list_update.Get();
   never_prompt_list.Set("migratedWrong.com", 0);
 
   // Now migrate and fix the prefs.
@@ -960,9 +960,9 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
 // Regression test for https://crbug.com/1295549
 TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
   // Add sites with invalid times.
-  DictionaryPrefUpdate never_prompt_list_update(
+  ScopedDictPrefUpdate never_prompt_list_update(
       &prefs_, prefs::kPrefNeverPromptSitesWithTime);
-  base::Value::Dict& never_prompt_list = never_prompt_list_update->GetDict();
+  base::Value::Dict& never_prompt_list = never_prompt_list_update.Get();
   never_prompt_list.Set("not-a-string.com", 0);
   never_prompt_list.Set("not-a-valid-time.com", "foo");
   // Add the null time (valid time).
@@ -975,9 +975,9 @@ TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
 }
 
 TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
-  ListPrefUpdate update(&prefs_,
-                        TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::Value::List& never_prompt_list = update->GetList();
+  ScopedListPrefUpdate update(&prefs_,
+                              TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+  base::Value::List& never_prompt_list = update.Get();
   never_prompt_list.Append(1);
   never_prompt_list.Append("unmigrated.com");
   translate_prefs_->MigrateNeverPromptSites();
