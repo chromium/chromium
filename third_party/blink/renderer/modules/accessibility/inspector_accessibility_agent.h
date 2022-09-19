@@ -24,6 +24,9 @@ class LocalFrame;
 using protocol::Accessibility::AXNode;
 using protocol::Accessibility::AXNodeId;
 
+typedef blink::protocol::Accessibility::Backend::QueryAXTreeCallback
+    QueryAXTreeCallback;
+
 class MODULES_EXPORT InspectorAccessibilityAgent
     : public InspectorBaseAgent<protocol::Accessibility::Metainfo> {
  public:
@@ -68,15 +71,15 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       protocol::Maybe<String> frame_id,
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
           out_nodes) override;
-  protocol::Response queryAXTree(
-      protocol::Maybe<int> dom_node_id,
-      protocol::Maybe<int> backend_node_id,
-      protocol::Maybe<String> object_id,
-      protocol::Maybe<String> accessibleName,
-      protocol::Maybe<String> role,
-      std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
-      override;
-
+  // Invoked by CDP clients such as Puppeteer. See
+  // third_party/blink/public/devtools_protocol/browser_protocol.pdl for me
+  // details.
+  void queryAXTree(protocol::Maybe<int> dom_node_id,
+                   protocol::Maybe<int> backend_node_id,
+                   protocol::Maybe<String> object_id,
+                   protocol::Maybe<String> accessibleName,
+                   protocol::Maybe<String> role,
+                   std::unique_ptr<QueryAXTreeCallback>) override;
   // An event was fired on the given AXObject, which should now also be
   // considered modified (as if AXObjectModified was called on it).
   void AXEventFired(AXObject* object, ax::mojom::blink::Event event);
@@ -86,11 +89,25 @@ class MODULES_EXPORT InspectorAccessibilityAgent
 
   // Called by the AXObjectCache when a11y is clean and it is safe to traverse
   // the a11y tree and fetch object properties.
-  void AXReadyCallback(Document& document) {}
+  void AXReadyCallback(Document& document);
 
   void RefreshFrontendNodes(TimerBase*);
 
  private:
+  // Used to store the queries received by queryAXTree. The queries are
+  // processed once the a11y tree is clean and ready for traversing
+  // (AXReadyCallback).
+  struct AXQuery {
+   public:
+    protocol::Maybe<int> dom_node_id;
+    protocol::Maybe<int> backend_node_id;
+    protocol::Maybe<String> object_id;
+    protocol::Maybe<String> accessible_name;
+    protocol::Maybe<String> role;
+    std::unique_ptr<QueryAXTreeCallback> callback;
+  };
+
+  void CompleteQuery(AXQuery&);
   bool MarkAXObjectDirty(AXObject* ax_object);
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
   // For idempotence, call enable().
@@ -131,6 +148,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   HeapHashMap<WeakMember<Document>, std::unique_ptr<AXContext>>
       document_to_context_map_;
   HeapTaskRunnerTimer<InspectorAccessibilityAgent> timer_;
+
+  HeapHashMap<WeakMember<Document>, Vector<AXQuery>> queries_;
 };
 
 }  // namespace blink

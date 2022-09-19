@@ -2453,7 +2453,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   for (auto agent : agents_)
     agent->AXReadyCallback(document);
 
-  // TODO(chrishtr) Accessibility serializations should happen now, on the
+  // TODO(chrishtr): Accessibility serializations should happen now, on the
   // condition that enough time has passed since the last serialization.
 }
 

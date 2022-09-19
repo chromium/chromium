@@ -9,7 +9,8 @@
         "export_header": "third_party/blink/renderer/core/core_export.h",
         "options": [
             {
-                "domain": "Accessibility"
+                "domain": "Accessibility",
+                "async": ["queryAXTree"]
             },
             {
                 "domain": "Animation"

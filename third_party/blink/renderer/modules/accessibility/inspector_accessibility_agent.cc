@@ -1002,18 +1002,20 @@ void InspectorAccessibilityAgent::AddChildren(
   }
 }
 
-Response InspectorAccessibilityAgent::queryAXTree(
+void InspectorAccessibilityAgent::queryAXTree(
     Maybe<int> dom_node_id,
     Maybe<int> backend_node_id,
     Maybe<String> object_id,
     Maybe<String> accessible_name,
     Maybe<String> role,
-    std::unique_ptr<protocol::Array<AXNode>>* nodes) {
+    std::unique_ptr<QueryAXTreeCallback> callback) {
   Node* root_dom_node = nullptr;
   Response response = dom_agent_->AssertNode(dom_node_id, backend_node_id,
                                              object_id, root_dom_node);
-  if (!response.IsSuccess())
-    return response;
+  if (!response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
 
   // Shadow roots are missing from a11y tree.
   // We start searching the host element instead as a11y tree does not
@@ -1021,8 +1023,58 @@ Response InspectorAccessibilityAgent::queryAXTree(
   if (root_dom_node->IsShadowRoot()) {
     root_dom_node = root_dom_node->OwnerShadowHost();
   }
-  if (!root_dom_node)
-    return Response::InvalidParams("Root DOM node could not be found");
+  if (!root_dom_node) {
+    callback->sendFailure(
+        Response::InvalidParams("Root DOM node could not be found"));
+    return;
+  }
+
+  Document& document = root_dom_node->GetDocument();
+  RetainAXContextForDocument(&document);
+  AXContext ax_context(document, ui::kAXModeComplete);
+
+  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+  AXQuery query = {std::move(dom_node_id), std::move(backend_node_id),
+                   std::move(object_id),   std::move(accessible_name),
+                   std::move(role),        std::move(callback)};
+  auto it = queries_.find(&document);
+  if (it != queries_.end()) {
+    it->value.push_back(std::move(query));
+  } else {
+    Vector<AXQuery> vector;
+    vector.emplace_back(std::move(query));
+    queries_.insert(&document, std::move(vector));
+  }
+  // The agent might not be enabled because querying is allowed without
+  // enabling the Accessibility domain. Therefore, we register the agent
+  // with the cache to receive the AXReadyCallback.
+  cache.AddInspectorAgent(this);
+  // ScheduleVisualUpdate() ensures the lifecycle doesn't get stalled,
+  // and therefore ensures we get the AXReadyCallback callback as soon as a11y
+  // is clean again.
+  cache.ScheduleVisualUpdate(document);
+}
+
+void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
+  Node* root_dom_node = nullptr;
+
+  Response response = dom_agent_->AssertNode(
+      query.dom_node_id, query.backend_node_id, query.object_id, root_dom_node);
+  if (!response.IsSuccess()) {
+    query.callback->sendFailure(response);
+    return;
+  }
+
+  // Shadow roots are missing from a11y tree.
+  // We start searching the host element instead as a11y tree does not
+  // care about shadow roots.
+  if (root_dom_node->IsShadowRoot())
+    root_dom_node = root_dom_node->OwnerShadowHost();
+  if (!root_dom_node) {
+    query.callback->sendFailure(
+        Response::InvalidParams("Root DOM node could not be found"));
+    return;
+  }
   Document& document = root_dom_node->GetDocument();
 
   document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
@@ -1032,7 +1084,8 @@ Response InspectorAccessibilityAgent::queryAXTree(
   RetainAXContextForDocument(&document);
   AXContext ax_context(document, ui::kAXModeComplete);
 
-  *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+  std::unique_ptr<protocol::Array<AXNode>> nodes =
+      std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
   AXObject* root_ax_node = cache.GetOrCreate(root_dom_node);
 
@@ -1058,27 +1111,37 @@ Response InspectorAccessibilityAgent::queryAXTree(
     // if querying by name: skip if name of current object does not match.
     // For now, we need to handle names of ignored nodes separately, since they
     // do not get a name assigned when serializing to AXNodeData.
-    if (ignored && accessible_name.isJust() &&
-        accessible_name.fromJust() != ax_object->ComputedName()) {
+    if (ignored && query.accessible_name.isJust() &&
+        query.accessible_name.fromJust() != ax_object->ComputedName()) {
       continue;
     }
-    if (!ignored && accessible_name.isJust() &&
-        accessible_name.fromJust().Utf8() !=
+    if (!ignored && query.accessible_name.isJust() &&
+        query.accessible_name.fromJust().Utf8() !=
             node_data.GetStringAttribute(
                 ax::mojom::blink::StringAttribute::kName)) {
       continue;
     }
 
     // if querying by role: skip if role of current object does not match.
-    if (role.isJust() && role.fromJust() != AXObject::RoleName(node_data.role))
+    if (query.role.isJust() &&
+        query.role.fromJust() != AXObject::RoleName(node_data.role))
       continue;
 
     // both name and role are OK, so we can add current object to the result.
-    (*nodes)->push_back(BuildProtocolAXNodeForAXObject(
+    nodes->push_back(BuildProtocolAXNodeForAXObject(
         *ax_object, /* force_name_and_role */ true));
   }
 
-  return Response::Success();
+  query.callback->sendSuccess(std::move(nodes));
+}
+
+void InspectorAccessibilityAgent::AXReadyCallback(Document& document) {
+  auto it = queries_.find(&document);
+  if (it == queries_.end())
+    return;
+  for (auto& query : it->value)
+    CompleteQuery(query);
+  queries_.erase(&document);
 }
 
 void InspectorAccessibilityAgent::RefreshFrontendNodes(TimerBase*) {
@@ -1229,6 +1292,7 @@ void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {
   visitor->Trace(document_to_context_map_);
   visitor->Trace(dirty_nodes_);
   visitor->Trace(timer_);
+  visitor->Trace(queries_);
   InspectorBaseAgent::Trace(visitor);
 }
 
