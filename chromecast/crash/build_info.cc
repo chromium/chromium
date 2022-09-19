@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "chromecast/base/version.h"
-
 namespace chromecast {
 namespace {
 
@@ -31,6 +31,12 @@ const std::string VersionToCrashString(const std::string& cast_build_revision) {
 
 const std::string GetVersionString() {
   return VersionToCrashString(CAST_BUILD_REVISION);
+}
+
+const std::string GetVersionString(const std::string& cast_release_number,
+                                   const std::string& cast_incremental_number) {
+  return VersionToCrashString(
+      base::JoinString({cast_release_number, cast_incremental_number}, "."));
 }
 
 const std::string VersionToVariant(const std::string& cast_build_revision) {

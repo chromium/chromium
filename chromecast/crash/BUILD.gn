@@ -11,7 +11,10 @@ cast_source_set("build_info") {
     "build_info.h",
   ]
 
-  deps = [ "//chromecast/base:cast_version" ]
+  deps = [
+    "//base",
+    "//chromecast/base:cast_version",
+  ]
 }
 
 cast_source_set("crash_storage") {

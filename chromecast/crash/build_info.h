@@ -11,6 +11,8 @@ namespace chromecast {
 
 // Returns a short, readable version string.
 const std::string GetVersionString();
+const std::string GetVersionString(const std::string& cast_release_number,
+                                   const std::string& cast_incremental_number);
 
 // Return whether build is "user", or "eng"
 const std::string GetBuildVariant();

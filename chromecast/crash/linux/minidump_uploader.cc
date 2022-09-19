@@ -216,7 +216,8 @@ bool MinidumpUploader::DoWork() {
     LOG(INFO) << "Uploading crash to " << upload_location_;
     CastCrashdumpData crashdump_data;
     crashdump_data.product = kProductName;
-    crashdump_data.version = GetVersionString();
+    crashdump_data.version = GetVersionString(
+        dump.params().cast_release_version, dump.params().cast_build_number);
     crashdump_data.guid = client_id;
     crashdump_data.ptime = uptime_stream.str();
     crashdump_data.comments = comment.str();

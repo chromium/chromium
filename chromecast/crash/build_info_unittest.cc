@@ -19,6 +19,11 @@ TEST(VersionStringTest, VersionStringIsNonEmpty) {
   ASSERT_FALSE(GetVersionString().empty());
 }
 
+TEST(VersionStringTest, VersionStringIsCorrect) {
+  ASSERT_EQ(GetVersionString(kReleaseBuild, kIncrementalEngBuild),
+            "1.51.224083.1.51.eng");
+}
+
 TEST(VersionStringTest, ReleaseVersionUnchanged) {
   ASSERT_EQ(VersionToCrashString(kReleaseBuild), kReleaseBuild);
 }
