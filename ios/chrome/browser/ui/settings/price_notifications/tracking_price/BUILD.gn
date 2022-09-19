@@ -1,0 +1,39 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tracking_price") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tracking_price_mediator.h",
+    "tracking_price_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":tracking_price_ui",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ui/base",
+  ]
+}
+
+source_set("tracking_price_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tracking_price_consumer.h",
+    "tracking_price_view_controller_delegate.h",
+  ]
+  deps = [ "//ios/chrome/browser/ui/table_view" ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tracking_price_constants.h",
+    "tracking_price_constants.mm",
+  ]
+}
