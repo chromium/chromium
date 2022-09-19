@@ -22,9 +22,12 @@ def CheckChange(input_api, output_api):
           [input_api.python3_executable, 'extract_actions.py', '--presubmit'],
           cwd=cwd)
       if exit_code != 0:
-        return [output_api.PresubmitError(
-            'actions.xml is not up to date or is not formatted correctly; '
-            'run tools/metrics/actions/extract_actions.py to fix')]
+        return [
+            output_api.PresubmitError(
+                'tools/metrics/actions/actions.xml is not up to date or is not '
+                'formatted correctly; run tools/metrics/actions/'
+                'extract_actions.py to fix')
+        ]
   return []
 
 
