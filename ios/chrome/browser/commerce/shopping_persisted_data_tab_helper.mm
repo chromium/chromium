@@ -79,23 +79,6 @@ ShoppingPersistedDataTabHelper::PriceDrop::PriceDrop()
 
 ShoppingPersistedDataTabHelper::PriceDrop::~PriceDrop() = default;
 
-void ShoppingPersistedDataTabHelper::CreateForWebState(
-    web::WebState* web_state) {
-  if (FromWebState(web_state))
-    return;
-  web_state->SetUserData(
-      UserDataKey(),
-      base::WrapUnique(new ShoppingPersistedDataTabHelper(web_state)));
-  OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-  if (!optimization_guide_service)
-    return;
-
-  optimization_guide_service->RegisterOptimizationTypes(
-      {optimization_guide::proto::PRICE_TRACKING});
-}
-
 const ShoppingPersistedDataTabHelper::PriceDrop*
 ShoppingPersistedDataTabHelper::GetPriceDrop() {
   if (!IsPriceAlertsEligible(web_state_->GetBrowserState()))
@@ -146,6 +129,16 @@ ShoppingPersistedDataTabHelper::ShoppingPersistedDataTabHelper(
     web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
+
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
+
+  if (!optimization_guide_service)
+    return;
+
+  optimization_guide_service->RegisterOptimizationTypes(
+      {optimization_guide::proto::PRICE_TRACKING});
 }
 
 // static

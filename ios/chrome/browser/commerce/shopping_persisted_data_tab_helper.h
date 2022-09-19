@@ -15,10 +15,6 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 // Price drop data is logged at different stages during the user's session.
 // These identifiers enable differentiation in the metrics based on when
 // the price drop data was logged.
@@ -38,8 +34,6 @@ class ShoppingPersistedDataTabHelper
       public web::WebStateUserData<ShoppingPersistedDataTabHelper> {
  public:
   ~ShoppingPersistedDataTabHelper() override;
-
-  static void CreateForWebState(web::WebState* web_state);
 
   // Reduction in price for the offer corresponding to the
   // ShoppingPersistedDataTabHelper::WebState::URL - if it exists.
