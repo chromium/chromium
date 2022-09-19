@@ -126,7 +126,7 @@ const base::FeatureParam<AlternateBucketDistributionMode>::Option
 const base::FeatureParam<AlternateBucketDistributionMode>
     kPartitionAllocAlternateBucketDistributionParam{
         &kPartitionAllocUseAlternateDistribution, "mode",
-        AlternateBucketDistributionMode::kCoarser,
+        AlternateBucketDistributionMode::kDefault,
         &kPartitionAllocAlternateDistributionOption};
 
 // If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
