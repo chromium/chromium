@@ -28,6 +28,10 @@ base::FilePath GetSignedExePath() {
   return GetTestDataDir().AppendASCII("signed.exe");
 }
 
+base::FilePath GetMultiSignedExePath() {
+  return GetTestDataDir().AppendASCII("multi-signed.exe");
+}
+
 base::FilePath GetMetadataExePath() {
   return GetTestDataDir().AppendASCII("metadata.exe");
 }

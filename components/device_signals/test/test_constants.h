@@ -19,6 +19,10 @@ base::FilePath GetTestDataDir();
 // Returns an absolute path to the signed.exe file in the test data directory.
 base::FilePath GetSignedExePath();
 
+// Returns an absolute path to the multi-signed.exe file in the test data
+// directory.
+base::FilePath GetMultiSignedExePath();
+
 // Returns an absolute path to the metadata.exe file in the test data directory.
 base::FilePath GetMetadataExePath();
 

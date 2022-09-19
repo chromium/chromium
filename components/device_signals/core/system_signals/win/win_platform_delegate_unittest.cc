@@ -26,8 +26,12 @@ namespace {
 constexpr char kEnvironmentVariableName[] = "TestEnvironmentVariablePath";
 constexpr char kTestFileName[] = "test_file";
 
-constexpr char kExpectedBase64PublicKey[] =
+constexpr char kExpectedSignedBase64PublicKey[] =
     "Rsw3wqh8gUxnMU8j2jGvvBMZqpe6OhIxn/WeEVg+pYQ=";
+constexpr char kExpectedMultiSignedPrimaryBase64PublicKey[] =
+    "ir/0opX6HPqsQlv4dFWqSx+nilORf7Q9474b2lGYZ94=";
+constexpr char kExpectedMultiSignedSecondaryBase64PublicKey[] =
+    "tzTDLyjSfGIMobYniu5f0JwZ5uSo0nmBV7T566A3vcQ=";
 
 constexpr base::FilePath::CharType kInexistantFileName[] =
     FILE_PATH_LITERAL("does_not_exit");
@@ -102,10 +106,29 @@ TEST_F(WinPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_Signed) {
 
   std::string base64_encoded_public_key;
   base::Base64Encode(public_keys.value()[0], &base64_encoded_public_key);
-  EXPECT_EQ(base64_encoded_public_key, kExpectedBase64PublicKey);
+  EXPECT_EQ(base64_encoded_public_key, kExpectedSignedBase64PublicKey);
 }
 
-TEST_F(WinPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_Empty) {
+TEST_F(WinPlatformDelegateTest,
+       GetSigningCertificatesPublicKeyHashes_MultiSigned) {
+  base::FilePath multi_signed_exe_path = test::GetMultiSignedExePath();
+  ASSERT_TRUE(base::PathExists(multi_signed_exe_path));
+
+  auto public_keys = platform_delegate_.GetSigningCertificatesPublicKeyHashes(
+      multi_signed_exe_path);
+  ASSERT_TRUE(public_keys);
+  ASSERT_EQ(public_keys->size(), 2U);
+
+  std::string base64_encoded_public_key;
+  base::Base64Encode(public_keys.value()[0], &base64_encoded_public_key);
+  EXPECT_EQ(base64_encoded_public_key,
+            kExpectedMultiSignedPrimaryBase64PublicKey);
+  base::Base64Encode(public_keys.value()[1], &base64_encoded_public_key);
+  EXPECT_EQ(base64_encoded_public_key,
+            kExpectedMultiSignedSecondaryBase64PublicKey);
+}
+
+TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeysHash_Empty) {
   base::FilePath empty_exe_path = test::GetEmptyExePath();
   ASSERT_TRUE(base::PathExists(empty_exe_path));
 
