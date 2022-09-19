@@ -69,7 +69,8 @@ TemplateStore::~TemplateStore() = default;
 
 void TemplateStore::FetchTemplates(GetTemplatesCallback callback) {
   fetcher_->Start(base::BindOnce(&TemplateStore::OnFetchTemplateComplete,
-                                 base::Unretained(this), std::move(callback)));
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(callback)));
 }
 
 void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
@@ -88,8 +89,7 @@ void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
   } else {
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
-        base::BindOnce(&TemplateStore::BuildDefaultTemplates,
-                       base::Unretained(this)),
+        base::BindOnce(&TemplateStore::BuildDefaultTemplates),
         base::BindOnce(&TemplateStore::OnTemplatesReceived,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -101,6 +101,7 @@ void TemplateStore::OnFetchTemplateComplete(GetTemplatesCallback callback,
                       ParseTemplatesFromString(response_body));
 }
 
+// static
 std::vector<NoteTemplate> TemplateStore::BuildDefaultTemplates() {
   std::vector<NoteTemplate> templates = {
       GetClassicTemplate(),  GetFriendlyTemplate(),   GetFreshTemplate(),

@@ -71,7 +71,7 @@ class TemplateStore {
 
   // Function which generates the ordered list of default templates to be
   // offered to the user.
-  std::vector<NoteTemplate> BuildDefaultTemplates();
+  static std::vector<NoteTemplate> BuildDefaultTemplates();
 
   // Function which generates the ordered list of pulled templates to be
   // offered to the user.
