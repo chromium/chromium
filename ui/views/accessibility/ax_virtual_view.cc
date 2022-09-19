@@ -63,8 +63,9 @@ AXVirtualView::~AXVirtualView() {
          "not both.";
 
   if (ax_platform_node_) {
-    ax_platform_node_->Destroy();
-    ax_platform_node_ = nullptr;
+    // Clear ax_platform_node_ and return another raw_ptr instance that is
+    // allowed to dangle.
+    ax_platform_node_.ExtractAsDangling()->Destroy();
   }
 
 #if defined(USE_AURA)
