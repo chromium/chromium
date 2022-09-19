@@ -4343,34 +4343,40 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, NestedGuestContainerBounds) {
 IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInMimeHandlerView) {
   TestHelper("testNavigateToPDFInWebview", "web_view/shim", NO_TEST_SERVER);
 
-  std::vector<content::WebContents*> guest_web_contents_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_web_contents_list);
-  ASSERT_EQ(2u, guest_web_contents_list.size());
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
 
-  content::WebContents* web_view_contents = guest_web_contents_list[0];
-  content::WebContents* mime_handler_view_contents = guest_web_contents_list[1];
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_view_contents));
+  content::RenderFrameHost* web_view_rfh = guest_rfh_list[0];
+  content::RenderFrameHost* mime_handler_view_rfh = guest_rfh_list[1];
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_view_rfh));
 
   // Ensure the <webview> has a previous entry, so we can navigate back to it.
-  ASSERT_TRUE(web_view_contents->GetController().CanGoBack());
+  EXPECT_EQ(true,
+            content::EvalJs(GetEmbedderWebContents(),
+                            "document.querySelector('webview').canGoBack();")
+                .ExtractBool());
 
   // Open a context menu for the MimeHandlerViewGuest. Since the <webview> can
   // navigate back, the Back item should be enabled.
   content::ContextMenuParams params;
-  TestRenderViewContextMenu menu(
-      *mime_handler_view_contents->GetPrimaryMainFrame(), params);
+  TestRenderViewContextMenu menu(*mime_handler_view_rfh, params);
   menu.Init();
   ASSERT_TRUE(menu.IsCommandIdEnabled(IDC_BACK));
 
   // Verify that the Back item causes the <webview> to navigate back to the
   // previous entry.
-  content::TestNavigationObserver observer(web_view_contents);
+  content::TestFrameNavigationObserver observer(web_view_rfh);
   menu.ExecuteCommand(IDC_BACK, 0);
   observer.Wait();
-  EXPECT_EQ(GURL(url::kAboutBlankURL),
-            web_view_contents->GetLastCommittedURL());
+
+  std::vector<content::RenderFrameHost*> guest_rfh_list2;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list2);
+  ASSERT_EQ(1u, guest_rfh_list2.size());
+
+  content::RenderFrameHost* web_view_rfh2 = guest_rfh_list2[0];
+  EXPECT_EQ(GURL(url::kAboutBlankURL), web_view_rfh2->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewPdfTest, Shim_TestDialogInPdf) {
