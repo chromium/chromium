@@ -388,11 +388,10 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     state_ = PlatformWindowState::kNormal;
   }
 
-  bool did_send_delegate_notification = !!requested_window_show_state_count_;
+  const bool did_send_delegate_notification =
+      !!requested_window_show_state_count_;
   if (requested_window_show_state_count_)
     requested_window_show_state_count_--;
-
-  const bool did_window_show_state_change = old_state != state_;
 
   // Update state before notifying delegate.
   const bool did_active_change = is_active_ != window_states.is_activated;
@@ -442,7 +441,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   // Thus, we must store previous bounds to restore later.
   SetOrResetRestoredBounds();
 
-  if (did_window_show_state_change && !did_send_delegate_notification) {
+  if (old_state != state_ && !did_send_delegate_notification) {
     previous_state_ = old_state;
     delegate()->OnWindowStateChanged(previous_state_, state_);
   }

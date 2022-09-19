@@ -182,16 +182,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
 
   if (SupportsClientFrameShadow()) {
     // Set the frame decoration insets.
-    // For a window in maximised or minimised state, insets should be zero, see
-    // https://crbug.com/1281211.  However, if we also set zero insets when the
-    // window is being initialised and has unknown state, it will be inflated on
-    // later steps.
-    // See https://crbug.com/1287212 for details.
-    const auto window_state = window->GetPlatformWindowState();
-    gfx::Insets insets = (window_state == ui::PlatformWindowState::kUnknown ||
-                          window_state == ui::PlatformWindowState::kNormal)
-                             ? layout->MirroredFrameBorderInsets()
-                             : gfx::Insets();
+    gfx::Insets insets = layout->MirroredFrameBorderInsets();
     const auto tiled_edges = browser_frame_->tiled_edges();
     if (tiled_edges.left)
       insets.set_left(0);
