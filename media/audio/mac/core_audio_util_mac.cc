@@ -321,7 +321,8 @@ bool IsInputDevice(AudioObjectID device_id) {
     auto direction =
         GetDeviceUint32Property(stream_id, kAudioStreamPropertyDirection,
                                 kAudioObjectPropertyScopeGlobal);
-    DCHECK(direction.has_value());
+    if (!direction.has_value())
+      continue;
     const UInt32 kDirectionOutput = 0;
     const UInt32 kDirectionInput = 1;
     if (direction == kDirectionOutput) {
