@@ -632,8 +632,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       forSectionWithIdentifier:sectionID];
   for (TableViewItem<ReadingListListItem>* item in items) {
     item.type = ItemTypeItem;
-    [self.dataSource fetchFaviconForItem:item];
     [model addItem:item toSectionWithIdentifier:sectionID];
+    [self.dataSource fetchFaviconForItem:item];
   }
 }
 
