@@ -432,22 +432,20 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   void PopupTestHelper(const gfx::Point& padding) {
     PopupCreatedObserver popup_observer;
     popup_observer.Init();
+    ASSERT_TRUE(embedder_web_contents());
     // Press alt+DOWN to open popup.
     bool alt = true;
-    content::SimulateKeyPress(DeprecatedGuestWebContents(),
-                              ui::DomKey::ARROW_DOWN, ui::DomCode::ARROW_DOWN,
-                              ui::VKEY_DOWN, false, false, alt, false);
+    content::SimulateKeyPress(embedder_web_contents(), ui::DomKey::ARROW_DOWN,
+                              ui::DomCode::ARROW_DOWN, ui::VKEY_DOWN, false,
+                              false, alt, false);
     popup_observer.Wait();
 
     content::RenderWidgetHost* popup_rwh =
         popup_observer.last_render_widget_host();
     gfx::Rect popup_bounds = popup_rwh->GetView()->GetViewBounds();
 
-    content::RenderViewHost* embedder_rvh = GetFirstAppWindowWebContents()
-                                                ->GetPrimaryMainFrame()
-                                                ->GetRenderViewHost();
     gfx::Rect embedder_bounds =
-        embedder_rvh->GetWidget()->GetView()->GetViewBounds();
+        embedder_web_contents()->GetRenderWidgetHostView()->GetViewBounds();
     gfx::Vector2d diff = popup_bounds.origin() - embedder_bounds.origin();
     LOG(INFO) << "DIFF: x = " << diff.x() << ", y = " << diff.y();
 
@@ -463,7 +461,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     EXPECT_LE(std::abs(diff.y() - top_spacing), threshold_px);
 
     // Close the popup.
-    content::SimulateKeyPress(DeprecatedGuestWebContents(), ui::DomKey::ESCAPE,
+    content::SimulateKeyPress(embedder_web_contents(), ui::DomKey::ESCAPE,
                               ui::DomCode::ESCAPE, ui::VKEY_ESCAPE, false,
                               false, false, false);
   }
@@ -921,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_NewWindow_OpenInNewTab) {
 IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
                        PopupPositioningBasic) {
   TestHelper("testBasic", "web_view/popup_positioning", NO_TEST_SERVER);
-  ASSERT_TRUE(DeprecatedGuestWebContents());
+  ASSERT_TRUE(GetGuestView());
   PopupTestHelper(gfx::Point());
 
   // TODO(lazyboy): Move the embedder window to a random location and
@@ -936,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
 IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
                        PopupPositioningMoved) {
   TestHelper("testMoved", "web_view/popup_positioning", NO_TEST_SERVER);
-  ASSERT_TRUE(DeprecatedGuestWebContents());
+  ASSERT_TRUE(GetGuestView());
   PopupTestHelper(gfx::Point(20, 0));
 }
 
