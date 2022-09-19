@@ -23,7 +23,6 @@ group("polymer3_elements") {
     ":hw_data_collection_module",
     ":multidevice_setup_module",
     ":offline_ad_login_module",
-    ":oobe_eula_module",
     ":os_install_module",
     ":os_trial_module",
     ":recommend_apps_module",
@@ -66,7 +65,7 @@ js_type_check("closure_compile_local") {
     ":managed_terms_of_service",
     ":marketing_opt_in",
     ":offline_ad_login.m",
-    ":oobe_eula.m",
+    ":oobe_eula",
     ":oobe_reset",
     ":os_install.m",
     ":os_trial.m",
@@ -411,8 +410,8 @@ js_library("offline_ad_login.m") {
   extra_deps = [ ":offline_ad_login_module" ]
 }
 
-js_library("oobe_eula.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_eula.m.js" ]
+js_library("oobe_eula") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_eula.js" ]
   deps = [
     "../../:display_manager.m",
     "../../components:web_view_helper.m",
@@ -428,7 +427,7 @@ js_library("oobe_eula.m") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
   ]
-  extra_deps = [ ":oobe_eula_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_reset") {
@@ -753,15 +752,6 @@ polymer_modulizer("offline_ad_login") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("oobe_eula") {
-  js_file = "oobe_eula.js"
-  html_file = "oobe_eula.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-  migrated_imports = oobe_migrated_imports
-}
-
 polymer_modulizer("os_install") {
   js_file = "os_install.js"
   html_file = "os_install.html"
@@ -836,6 +826,7 @@ html_to_js("web_components") {
     "local_state_error.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",
+    "oobe_eula.js",
     "oobe_reset.js",
     "parental_handoff.js",
     "pin_setup.js",
