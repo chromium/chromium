@@ -120,8 +120,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
         extension_app->id(),
         apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                             false /* preferred_containner */),
-        apps::mojom::LaunchSource::kFromTest,
-        apps::MakeWindowInfo(
+        apps::LaunchSource::kFromTest,
+        std::make_unique<apps::WindowInfo>(
             display::Screen::GetScreen()->GetPrimaryDisplay().id()));
     app_loaded_observer.Wait();
   }

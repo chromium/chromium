@@ -105,8 +105,8 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
       app_service_proxy_->SetDialogCreatedCallbackForTesting(
           run_loop.QuitClosure());
       app_instance_->SendRefreshAppList(apps);
-      app_service_proxy_->Launch(
-          app_id_, ui::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal);
+      app_service_proxy_->Launch(app_id_, ui::EF_NONE,
+                                 apps::LaunchSource::kFromChromeInternal);
     } else {
       std::map<std::string, apps::PauseData> pause_data;
       pause_data[app_id_].hours = 3;

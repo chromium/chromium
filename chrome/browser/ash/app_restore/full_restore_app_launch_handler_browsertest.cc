@@ -69,7 +69,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -2721,29 +2720,28 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
   FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() = default;
   ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override = default;
 
-  Browser* LaunchSystemWebApp(
-      const GURL& gurl,
-      ash::SystemWebAppType system_app_type,
-      apps::mojom::LaunchSource launch_source =
-          apps::mojom::LaunchSource::kFromChromeInternal) {
+  Browser* LaunchSystemWebApp(const GURL& gurl,
+                              ash::SystemWebAppType system_app_type,
+                              apps::LaunchSource launch_source =
+                                  apps::LaunchSource::kFromChromeInternal) {
     WaitForTestSystemAppInstall();
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     content::TestNavigationObserver navigation_observer(gurl);
     navigation_observer.StartWatchingNewWebContents();
 
-    proxy->Launch(*GetManager().GetAppIdForSystemApp(system_app_type),
-                  ui::EF_NONE, launch_source,
-                  apps::MakeWindowInfo(display::kDefaultDisplayId));
+    proxy->Launch(
+        *GetManager().GetAppIdForSystemApp(system_app_type), ui::EF_NONE,
+        launch_source,
+        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 
     navigation_observer.Wait();
 
     return BrowserList::GetInstance()->GetLastActive();
   }
 
-  Browser* LaunchSystemWebApp(
-      apps::mojom::LaunchSource launch_source =
-          apps::mojom::LaunchSource::kFromChromeInternal) {
+  Browser* LaunchSystemWebApp(apps::LaunchSource launch_source =
+                                  apps::LaunchSource::kFromChromeInternal) {
     return LaunchSystemWebApp(GURL("chrome://help-app/"),
                               ash::SystemWebAppType::HELP, launch_source);
   }
@@ -2751,8 +2749,8 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
   // Launches the media system web app. Used when a test needs to use a
   // different system web app.
   Browser* LaunchMediaSystemWebApp(
-      apps::mojom::LaunchSource launch_source =
-          apps::mojom::LaunchSource::kFromChromeInternal) {
+      apps::LaunchSource launch_source =
+          apps::LaunchSource::kFromChromeInternal) {
     return LaunchSystemWebApp(GURL("chrome://media-app/"),
                               ash::SystemWebAppType::MEDIA, launch_source);
   }
@@ -3035,7 +3033,7 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
 
   // Launch another app from kFromShelf, so start the save timer,
   Browser* app_browser2 =
-      LaunchMediaSystemWebApp(apps::mojom::LaunchSource::kFromShelf);
+      LaunchMediaSystemWebApp(apps::LaunchSource::kFromShelf);
   ASSERT_TRUE(app_browser2);
   aura::Window* window2 = app_browser2->window()->GetNativeWindow();
   int32_t window_id2 = window2->GetProperty(::app_restore::kWindowIdKey);

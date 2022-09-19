@@ -66,7 +66,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller_factory.h"
@@ -205,8 +204,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   auto* proxy = GetAppServiceProxy(browser()->profile());
 
   proxy->Launch(GetManager().GetAppIdForSystemApp(GetMockAppType()).value(),
-                ui::EF_NONE, apps::mojom::LaunchSource::kFromAppListGrid,
-                apps::MakeWindowInfo(display::kDefaultDisplayId));
+                ui::EF_NONE, apps::LaunchSource::kFromAppListGrid,
+                std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
   navigation_observer.Wait();
 
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);
@@ -223,14 +222,14 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   navigation_observer.StartWatchingNewWebContents();
 
   auto* proxy = GetAppServiceProxy(browser()->profile());
-  auto intent = apps::mojom::Intent::New();
-  intent->action = apps_util::kIntentActionView;
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
   intent->mime_type = "text/plain";
 
   proxy->LaunchAppWithIntent(
       GetManager().GetAppIdForSystemApp(GetMockAppType()).value(), ui::EF_NONE,
-      std::move(intent), apps::mojom::LaunchSource::kFromAppListGrid,
-      apps::MakeWindowInfo(display::kDefaultDisplayId), {});
+      std::move(intent), apps::LaunchSource::kFromAppListGrid,
+      std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
+      base::DoNothing());
   navigation_observer.Wait();
 
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);
