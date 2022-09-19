@@ -2968,7 +2968,8 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnFrameworkUpdate) {
 
 // This verifies that app icons are invalidated in case icon version was
 // changed which means ARC sends icons using updated processing.
-TEST_P(ArcAppModelIconTest, IconInvalidationOnIconVersionUpdate) {
+// TODO(crbug.com/1364812): Flaky.
+TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnIconVersionUpdate) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
 
