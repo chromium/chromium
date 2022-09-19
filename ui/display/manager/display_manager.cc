@@ -4,7 +4,6 @@
 
 #include "ui/display/manager/display_manager.h"
 
-#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <map>
@@ -20,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -111,10 +111,10 @@ ManagedDisplayInfo::ManagedDisplayModeList::const_iterator FindDisplayMode(
     const ManagedDisplayMode& target_mode) {
   const ManagedDisplayInfo::ManagedDisplayModeList& modes =
       info.display_modes();
-  return std::find_if(modes.begin(), modes.end(),
-                      [target_mode](const ManagedDisplayMode& mode) {
-                        return target_mode.IsEquivalent(mode);
-                      });
+  return base::ranges::find_if(modes,
+                               [target_mode](const ManagedDisplayMode& mode) {
+                                 return target_mode.IsEquivalent(mode);
+                               });
 }
 
 void SetInternalManagedDisplayModeList(ManagedDisplayInfo* info) {
@@ -182,10 +182,8 @@ bool GetDisplayModeForNextResolution(const ManagedDisplayInfo& info,
                          info.device_scale_factor());
   const gfx::Size resolution = tmp.GetSizeInDIP();
 
-  auto iter = std::find_if(modes.begin(), modes.end(),
-                           [resolution](const ManagedDisplayMode& mode) {
-                             return mode.GetSizeInDIP() == resolution;
-                           });
+  auto iter =
+      base::ranges::find(modes, resolution, &ManagedDisplayMode::GetSizeInDIP);
   if (iter == modes.end())
     return false;
   *mode = *FindNextMode(modes, iter - modes.begin(), up);
@@ -197,9 +195,8 @@ bool GetDisplayModeForNextResolution(const ManagedDisplayInfo& info,
 // if the corresponding info was not found.
 const ManagedDisplayInfo* FindInfoById(const DisplayInfoList& display_info_list,
                                        int64_t id) {
-  const auto iter = std::find_if(
-      display_info_list.begin(), display_info_list.end(),
-      [id](const ManagedDisplayInfo& info) { return info.id() == id; });
+  const auto iter =
+      base::ranges::find(display_info_list, id, &ManagedDisplayInfo::id);
 
   if (iter == display_info_list.end())
     return nullptr;
@@ -1315,11 +1312,8 @@ const ManagedDisplayInfo& DisplayManager::GetDisplayInfo(
 
 const Display DisplayManager::GetMirroringDisplayById(
     int64_t display_id) const {
-  auto iter = std::find_if(software_mirroring_display_list_.begin(),
-                           software_mirroring_display_list_.end(),
-                           [display_id](const Display& display) {
-                             return display.id() == display_id;
-                           });
+  auto iter = base::ranges::find(software_mirroring_display_list_, display_id,
+                                 &Display::id);
   return iter == software_mirroring_display_list_.end() ? Display() : *iter;
 }
 
@@ -1638,11 +1632,8 @@ bool DisplayManager::UpdateDisplayBounds(int64_t display_id,
   display_info_[display_id].SetBounds(new_bounds);
   // Don't notify observers if the mirrored window has changed.
   if (IsInSoftwareMirrorMode() &&
-      std::find_if(software_mirroring_display_list_.begin(),
-                   software_mirroring_display_list_.end(),
-                   [display_id](const Display& display) {
-                     return display.id() == display_id;
-                   }) != software_mirroring_display_list_.end()) {
+      base::Contains(software_mirroring_display_list_, display_id,
+                     &Display::id)) {
     return false;
   }
 
@@ -1739,9 +1730,7 @@ void DisplayManager::ResetDisplayZoom(int64_t display_id) {
     const ManagedDisplayInfo& display_info = GetDisplayInfo(kUnifiedDisplayId);
     const ManagedDisplayInfo::ManagedDisplayModeList& modes =
         display_info.display_modes();
-    auto iter = std::find_if(
-        modes.begin(), modes.end(),
-        [](const ManagedDisplayMode& mode) { return mode.native(); });
+    auto iter = base::ranges::find_if(modes, &ManagedDisplayMode::native);
     SetDisplayMode(kUnifiedDisplayId, *iter);
     return;
   }
@@ -1780,12 +1769,8 @@ void DisplayManager::CreateSoftwareMirroringDisplayInfo(
         if (HasInternalDisplay()) {
           // Use the internal display as mirroring source.
           source_id = Display::InternalDisplayId();
-          auto iter =
-              std::find_if(display_info_list->begin(), display_info_list->end(),
-                           [source_id](const ManagedDisplayInfo& info) {
-                             return info.id() == source_id;
-                           });
-          if (iter == display_info_list->end()) {
+          if (!base::Contains(*display_info_list, source_id,
+                              &ManagedDisplayInfo::id)) {
             // It is possible that internal display is removed (e.g. Use
             // Chromebook in Dock mode with two or more external displays). In
             // this case, we use the first connected display as mirroring
@@ -1978,8 +1963,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
 
   // Find the default mode.
   auto default_mode_iter =
-      std::find_if(modes.begin(), modes.end(),
-                   [](const ManagedDisplayMode mode) { return mode.native(); });
+      base::ranges::find_if(modes, &ManagedDisplayMode::native);
   DCHECK(default_mode_iter != modes.end());
 
   if (default_mode_iter != modes.end()) {
@@ -2055,9 +2039,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
 }
 
 Display* DisplayManager::FindDisplayForId(int64_t id) {
-  auto iter =
-      std::find_if(active_display_list_.begin(), active_display_list_.end(),
-                   [id](const Display& display) { return display.id() == id; });
+  auto iter = base::ranges::find(active_display_list_, id, &Display::id);
   if (iter != active_display_list_.end())
     return &(*iter);
   return nullptr;

@@ -4,10 +4,10 @@
 
 #include "ui/display/display_finder.h"
 
-#include <algorithm>
 #include <limits>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -56,10 +56,10 @@ const Display* FindDisplayWithBiggestIntersection(const Displays& displays,
 Displays::const_iterator FindDisplayContainingPoint(
     const Displays& displays,
     const gfx::Point& point_in_screen) {
-  return std::find_if(displays.begin(), displays.end(),
-                      [point_in_screen](const Display& display) {
-                        return display.bounds().Contains(point_in_screen);
-                      });
+  return base::ranges::find_if(
+      displays, [point_in_screen](const Display& display) {
+        return display.bounds().Contains(point_in_screen);
+      });
 }
 
 }  // namespace display

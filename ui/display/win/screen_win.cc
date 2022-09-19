@@ -371,9 +371,8 @@ std::vector<ScreenWinDisplay> DisplayInfosToScreenWinDisplays(
   }
   // Find and extract the primary display.
   std::vector<DisplayInfo> display_infos_remaining = display_infos;
-  auto primary_display_iter = std::find_if(
-      display_infos_remaining.begin(), display_infos_remaining.end(),
-      [](const DisplayInfo& display_info) {
+  auto primary_display_iter = base::ranges::find_if(
+      display_infos_remaining, [](const DisplayInfo& display_info) {
         return display_info.screen_rect().origin().IsOrigin();
       });
   DCHECK(primary_display_iter != display_infos_remaining.end());
@@ -713,10 +712,9 @@ void ScreenWin::SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayWithDisplayId(int64_t id) {
   if (!g_instance)
     return ScreenWinDisplay();
-  const auto it = std::find_if(
-      g_instance->screen_win_displays_.cbegin(),
-      g_instance->screen_win_displays_.cend(),
-      [id](const auto& display) { return display.display().id() == id; });
+  const auto it = base::ranges::find(
+      g_instance->screen_win_displays_, id,
+      [](const auto& display) { return display.display().id(); });
   // There is 1:1 correspondence between MONITORINFOEX and ScreenWinDisplay.
   // If we found no screens, either there are no screens, or we're in the midst
   // of updating our screens (see crbug.com/768845); either way, hand out the
@@ -981,9 +979,9 @@ ScreenWinDisplay ScreenWin::GetPrimaryScreenWinDisplay() const {
 ScreenWinDisplay ScreenWin::GetScreenWinDisplay(
     const MONITORINFOEX& monitor_info) const {
   const int64_t id = DisplayInfo::DeviceIdFromDeviceName(monitor_info.szDevice);
-  const auto it = std::find_if(
-      screen_win_displays_.cbegin(), screen_win_displays_.cend(),
-      [id](const auto& display) { return display.display().id() == id; });
+  const auto it = base::ranges::find(
+      screen_win_displays_, id,
+      [](const auto& display) { return display.display().id(); });
   // There is 1:1 correspondence between MONITORINFOEX and ScreenWinDisplay.
   // If we found no screens, either there are no screens, or we're in the midst
   // of updating our screens (see crbug.com/768845); either way, hand out the

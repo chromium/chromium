@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/display_manager_util.h"
 #include "ui/display/types/display_snapshot.h"
@@ -113,10 +114,8 @@ void ApplyContentProtectionTask::OnGetHDCPState(
       hdcped_displays;
   // Lookup the displays again since display configuration may have changed.
   for (const auto& request : hdcp_requests_) {
-    auto it = std::find_if(displays.begin(), displays.end(),
-                           [id = request.display_id](DisplaySnapshot* display) {
-                             return id == display->display_id();
-                           });
+    auto it = base::ranges::find(displays, request.display_id,
+                                 &DisplaySnapshot::display_id);
     if (it == displays.end()) {
       std::move(callback_).Run(Status::FAILURE);
       return;

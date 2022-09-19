@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
@@ -48,10 +49,7 @@ struct DisplayState {
 bool IsDisplayIdInDisplayStateList(
     int64_t display_id,
     const DisplayConfigurator::DisplayStateList& display_list) {
-  return std::find_if(display_list.begin(), display_list.end(),
-                      [display_id](DisplaySnapshot* display) {
-                        return display->display_id() == display_id;
-                      }) != display_list.end();
+  return base::Contains(display_list, display_id, &DisplaySnapshot::display_id);
 }
 
 // Returns true if a platform native |mode| is equal to a |managed_mode|.

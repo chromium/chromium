@@ -4,7 +4,6 @@
 
 #include "ui/display/manager/touch_device_manager.h"
 
-#include <algorithm>
 #include <set>
 #include <string>
 #include <tuple>
@@ -13,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -105,8 +105,7 @@ bool IsInternalDevice(const ui::TouchscreenDevice& device) {
 // Returns a pointer to the internal display from the list of |displays|. Will
 // return null if there is no internal display in the list.
 ManagedDisplayInfo* GetInternalDisplay(ManagedDisplayInfoList* displays) {
-  auto it =
-      std::find_if(displays->begin(), displays->end(), &IsInternalDisplay);
+  auto it = base::ranges::find_if(*displays, &IsInternalDisplay);
   return it == displays->end() ? nullptr : *it;
 }
 
@@ -415,10 +414,7 @@ void TouchDeviceManager::AssociateDevicesWithCollision(
 
     // Find the display associated with |display_id| from |displays|.
     ManagedDisplayInfoList::iterator display_it =
-        std::find_if(displays->begin(), displays->end(),
-                     [&display_id](ManagedDisplayInfo* info) {
-                       return info->id() == display_id;
-                     });
+        base::ranges::find(*displays, display_id, &ManagedDisplayInfo::id);
 
     if (display_it != displays->end()) {
       VLOG(2) << "=> Matched device " << (*device_it).name << " to display "
@@ -494,9 +490,8 @@ void TouchDeviceManager::AssociateSameSizeDevices(
     const gfx::Size native_size = display->GetNativeModeSize();
 
     // Try to find an input device with roughly the same size as the display.
-    DeviceList::iterator device_it = std::find_if(
-        devices->begin(), devices->end(),
-        [&native_size](const ui::TouchscreenDevice& device) {
+    DeviceList::iterator device_it = base::ranges::find_if(
+        *devices, [&native_size](const ui::TouchscreenDevice& device) {
           // Allow 1 pixel difference between screen and touchscreen
           // resolutions. Because in some cases for monitor resolution
           // 1024x768 touchscreen's resolution would be 1024x768, but for

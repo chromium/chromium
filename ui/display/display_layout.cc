@@ -4,7 +4,6 @@
 
 #include "ui/display/display_layout.h"
 
-#include <algorithm>
 #include <map>
 #include <set>
 #include <sstream>
@@ -14,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "ui/display/display.h"
@@ -36,13 +36,6 @@ const char kUnknown[] = "unknown";
 // to change this value in case to support even larger displays.
 const int kMaxValidOffset = 10000;
 
-bool IsIdInList(int64_t id, const DisplayIdList& list) {
-  const auto iter =
-      std::find_if(list.begin(), list.end(),
-                   [id](int64_t display_id) { return display_id == id; });
-  return iter != list.end();
-}
-
 bool ComparePlacements(const DisplayPlacement& d1, const DisplayPlacement& d2) {
   return CompareDisplayIds(d1.display_id, d2.display_id);
 }
@@ -58,9 +51,7 @@ DisplayIdList DisplayListToDisplayIdList(const Displays& displays) {
 
 // Ruturns nullptr if display with |id| is not found.
 Display* FindDisplayById(Displays* display_list, int64_t id) {
-  auto iter =
-      std::find_if(display_list->begin(), display_list->end(),
-                   [id](const Display& display) { return display.id() == id; });
+  auto iter = base::ranges::find(*display_list, id, &Display::id);
   return iter == display_list->end() ? nullptr : &(*iter);
 }
 
@@ -163,11 +154,8 @@ void MaybeReparentTargetDisplay(
     Display* parent_display = FindDisplayById(display_list, parent_display_id);
     DCHECK(parent_display);
 
-    auto target_display_placement_itr =
-        std::find_if(placement_list->begin(), placement_list->end(),
-                     [&target_display](const DisplayPlacement& p) {
-                       return p.display_id == target_display->id();
-                     });
+    auto target_display_placement_itr = base::ranges::find(
+        *placement_list, target_display->id(), &DisplayPlacement::display_id);
     DCHECK(target_display_placement_itr != placement_list->end());
     target_display_placement = &(*target_display_placement_itr);
     if (AreDisplaysTouching(*target_display, *parent_display,
@@ -543,7 +531,7 @@ void DisplayLayout::ApplyToDisplayList(Displays* display_list,
 bool DisplayLayout::Validate(const DisplayIdList& list,
                              const DisplayLayout& layout) {
   // The primary display should be in the list.
-  if (!IsIdInList(layout.primary_id, list)) {
+  if (!base::Contains(list, layout.primary_id)) {
     LOG(ERROR) << "The primary id: " << layout.primary_id
                << " is not in the id list.";
     return false;
@@ -577,12 +565,12 @@ bool DisplayLayout::Validate(const DisplayIdList& list,
       LOG(ERROR) << "display_id must not be same as parent_display_id";
       return false;
     }
-    if (!IsIdInList(placement.display_id, list)) {
+    if (!base::Contains(list, placement.display_id)) {
       LOG(ERROR) << "display_id is not in the id list:" << placement.ToString();
       return false;
     }
 
-    if (!IsIdInList(placement.parent_display_id, list)) {
+    if (!base::Contains(list, placement.parent_display_id)) {
       LOG(ERROR) << "parent_display_id is not in the id list:"
                  << placement.ToString();
       return false;
@@ -658,11 +646,8 @@ std::string DisplayLayout::ToString() const {
 }
 
 DisplayPlacement DisplayLayout::FindPlacementById(int64_t display_id) const {
-  const auto iter =
-      std::find_if(placement_list.begin(), placement_list.end(),
-                   [display_id](const DisplayPlacement& placement) {
-                     return placement.display_id == display_id;
-                   });
+  const auto iter = base::ranges::find(placement_list, display_id,
+                                       &DisplayPlacement::display_id);
   return (iter == placement_list.end()) ? DisplayPlacement()
                                         : DisplayPlacement(*iter);
 }
