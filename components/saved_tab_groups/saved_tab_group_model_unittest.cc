@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace {
@@ -80,7 +80,7 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
                                           const std::u16string& title) {
     SavedTabGroupTab tab(GURL(base_path_ + url),
                          base::GUID::GenerateRandomV4());
-    tab.SetTitle(title).SetFavicon(favicon::GetDefaultFavicon());
+    tab.SetTitle(title).SetFavicon(gfx::Image());
     return tab;
   }
 
@@ -187,7 +187,7 @@ class SavedTabGroupModelTest : public ::testing::Test {
                                           const std::u16string& title) {
     SavedTabGroupTab tab(GURL(base_path_ + url),
                          base::GUID::GenerateRandomV4());
-    tab.SetTitle(title).SetFavicon(favicon::GetDefaultFavicon());
+    tab.SetTitle(title).SetFavicon(gfx::Image());
     return tab;
   }
 

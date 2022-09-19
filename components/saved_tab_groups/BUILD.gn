@@ -6,6 +6,9 @@ source_set("core") {
   sources = [
     "saved_tab_group.cc",
     "saved_tab_group.h",
+    "saved_tab_group_model.cc",
+    "saved_tab_group_model.h",
+    "saved_tab_group_model_observer.h",
     "saved_tab_group_sync_bridge_base.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
@@ -22,7 +25,10 @@ source_set("core") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "saved_tab_group_proto_conversion_unittest.cc" ]
+  sources = [
+    "saved_tab_group_model_unittest.cc",
+    "saved_tab_group_proto_conversion_unittest.cc",
+  ]
   deps = [
     ":core",
     "//base",
