@@ -22,7 +22,7 @@ namespace password_manager {
 namespace {
 
 MATCHER_P3(FormHasOriginUsernamePassword, origin, username, password, "") {
-  return arg.signon_realm == origin && arg.GetURL() == GURL(origin) &&
+  return arg.GetFirstSignonRealm() == origin && arg.GetURL() == GURL(origin) &&
          arg.username == base::UTF8ToUTF16(username) &&
          arg.password == base::UTF8ToUTF16(password);
 }

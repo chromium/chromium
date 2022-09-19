@@ -41,7 +41,6 @@ password_manager::CredentialUIEntry ConvertJavaObjectToCredential(
   password_manager::CredentialFacet credential_facet;
   credential_facet.url = std::move(url);
   credential_facet.signon_realm = std::move(signon_realm);
-  entry.signon_realm = credential_facet.signon_realm;
   entry.facets.push_back(std::move(credential_facet));
 
   entry.username = ConvertJavaStringToUTF16(
@@ -111,7 +110,8 @@ void PasswordCheckBridge::GetCompromisedCredentials(
     const auto& credential = credentials[i];
     Java_PasswordCheckBridge_insertCredential(
         env, java_credentials, i,
-        base::android::ConvertUTF8ToJavaString(env, credential.signon_realm),
+        base::android::ConvertUTF8ToJavaString(
+            env, credential.GetFirstSignonRealm()),
         url::GURLAndroid::FromNativeGURL(env, credential.GetURL()),
         base::android::ConvertUTF16ToJavaString(env, credential.username),
         base::android::ConvertUTF16ToJavaString(env, credential.display_origin),

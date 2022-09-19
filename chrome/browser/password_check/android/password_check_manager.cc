@@ -151,7 +151,8 @@ void PasswordCheckManager::OnEditCredential(
       password_manager::CredentialUIEntry(forms[0]),
       CredentialEditBridge::IsInsecureCredential(true),
       GetUsernamesForRealm(saved_passwords_presenter_.GetSavedCredentials(),
-                           credential.signon_realm, is_using_account_store),
+                           credential.GetFirstSignonRealm(),
+                           is_using_account_store),
       &saved_passwords_presenter_,
       base::BindOnce(&PasswordCheckManager::OnEditUIDismissed,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -255,13 +256,14 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   CredentialFacet credential_facet;
   credential_facet.display_name = credential.GetDisplayName();
   credential_facet.url = credential.GetURL();
-  credential_facet.signon_realm = credential.signon_realm;
+  credential_facet.signon_realm = credential.GetFirstSignonRealm();
+  credential_facet.affiliated_web_realm = credential.GetAffiliatedWebRealm();
 
   // UI is only be created after the list of available password check
   // scripts has been refreshed.
   DCHECK(AreScriptsRefreshed());
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-      credential.signon_realm);
+      credential.GetFirstSignonRealm());
 
   if (facet.IsValidAndroidFacetURI()) {
     ui_credential.package_name = facet.android_package_name();
@@ -278,9 +280,9 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
     }
     // In case no affiliated_web_realm could be obtained we should not have an
     // associated url for android credential.
-    credential_facet.url = credential.affiliated_web_realm.empty()
+    credential_facet.url = credential.GetAffiliatedWebRealm().empty()
                                ? GURL::EmptyGURL()
-                               : GURL(credential.affiliated_web_realm);
+                               : GURL(credential.GetAffiliatedWebRealm());
 
   } else {
     ui_credential.display_origin = url_formatter::FormatUrl(

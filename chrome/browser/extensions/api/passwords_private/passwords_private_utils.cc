@@ -26,7 +26,7 @@ api::passwords_private::UrlCollection CreateUrlCollectionFromCredential(
   api::passwords_private::UrlCollection urls;
   urls.shown = GetShownOrigin(credential);
   urls.link = GetShownUrl(credential).spec();
-  urls.signon_realm = credential.signon_realm;
+  urls.signon_realm = credential.GetFirstSignonRealm();
   return urls;
 }
 

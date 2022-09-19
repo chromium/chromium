@@ -254,7 +254,7 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
   credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
       passwords_[index], IsInsecureCredential(false),
       GetUsernamesForRealm(saved_passwords_presenter_.GetSavedCredentials(),
-                           passwords_[index].signon_realm,
+                           passwords_[index].GetFirstSignonRealm(),
                            is_using_account_store),
       &saved_passwords_presenter_,
       base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,

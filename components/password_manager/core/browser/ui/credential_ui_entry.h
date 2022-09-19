@@ -15,11 +15,27 @@
 
 namespace password_manager {
 
+using DisplayName = base::StrongAlias<class DisplayNameTag, std::string>;
+using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;
+using AffiliatedWebRealm =
+    base::StrongAlias<class AffiliatedWebRealmTag, std::string>;
+
 // CredentialUIEntry is converted to represent a group of credentials with the
 // same username and password and are under the same affiliation (for example:
 // apple.com and apple.de). CredentialFacet is a simple struct to keep track of
 // each credential's display name, url and sign-on realm.
 struct CredentialFacet {
+  CredentialFacet();
+  explicit CredentialFacet(DisplayName display_name,
+                           GURL url,
+                           SignonRealm signon_realm,
+                           AffiliatedWebRealm affiliated_web_realm);
+  ~CredentialFacet();
+  CredentialFacet(const CredentialFacet& other);
+  CredentialFacet(CredentialFacet&& other);
+  CredentialFacet& operator=(const CredentialFacet& other);
+  CredentialFacet& operator=(CredentialFacet&& other);
+
   // The display name for the website or the Android application.
   std::string display_name;
 
@@ -32,6 +48,10 @@ struct CredentialFacet {
   // The "Realm" for the sign-on. Please refer to the PasswordSpecifics
   // documentation for more details.
   std::string signon_realm;
+
+  // The web realm affiliated with the Android application, if the it is an
+  // Android credential. Otherwise, the string is empty.
+  std::string affiliated_web_realm;
 };
 
 // Simple struct that represents an entry inside Settings UI. Allows implicit
@@ -58,17 +78,6 @@ struct CredentialUIEntry {
   // List of facets represented by this entry which contains the display name,
   // url and sign-on realm of a credential.
   std::vector<CredentialFacet> facets;
-
-  // The "Realm" for the sign-on. This is scheme, host, port for SCHEME_HTML.
-  // Dialog based forms also contain the HTTP realm. Android based forms will
-  // contain a string of the form "android://<hash of cert>@<package name>"
-  // TODO(crbug.com/1360896): Remove unused member.
-  std::string signon_realm;
-
-  // The web realm affiliated with the Android application, if the it is an
-  // Android credential. Otherwise, the string is empty.
-  // TODO(crbug.com/1360896): Move this to CredentialFacet.
-  std::string affiliated_web_realm;
 
   // The current username.
   std::u16string username;
@@ -108,6 +117,14 @@ struct CredentialUIEntry {
   // Returns the first display name among all the display names in the facets
   // associated with this entry.
   std::string GetDisplayName() const;
+
+  // Returns the first sign-on realm among all the sign-on realms in the facets
+  // associated with this entry.
+  std::string GetFirstSignonRealm() const;
+
+  // Returns the first affiliated web realm among all the affiliated web realms
+  // in the facets associated with this entry.
+  std::string GetAffiliatedWebRealm() const;
 
   // Returns the first URL among all the URLs in the facets associated with this
   // entry.

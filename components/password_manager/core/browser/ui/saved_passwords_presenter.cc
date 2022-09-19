@@ -62,7 +62,7 @@ password_manager::PasswordForm GenerateFormFromCredential(
     password_manager::PasswordForm::Type type) {
   password_manager::PasswordForm form;
   form.url = credential.GetURL();
-  form.signon_realm = credential.signon_realm;
+  form.signon_realm = credential.GetFirstSignonRealm();
   form.username_value = credential.username;
   form.password_value = credential.password;
   form.type = type;
@@ -196,7 +196,7 @@ SavedPasswordsPresenter::GetExpectedAddResult(
 
   auto have_equal_username_and_realm =
       [&credential](const PasswordForm& entry) {
-        return credential.signon_realm == entry.signon_realm &&
+        return credential.GetFirstSignonRealm() == entry.signon_realm &&
                credential.username == entry.username_value;
       };
   auto have_equal_username_and_realm_in_profile_store =
@@ -268,8 +268,8 @@ void SavedPasswordsPresenter::UnblocklistBothStores(
   // Try to unblocklist in both stores anyway because if credentials don't
   // exist, the unblocklist operation is no-op.
   auto form_digest =
-      PasswordFormDigest(PasswordForm::Scheme::kHtml, credential.signon_realm,
-                         credential.GetURL());
+      PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                         credential.GetFirstSignonRealm(), credential.GetURL());
   profile_store_->Unblocklist(form_digest);
   if (account_store_)
     account_store_->Unblocklist(form_digest);

@@ -164,8 +164,8 @@ CreatePasswordUiEntryFromCredentialUiEntry(
   entry.username = base::UTF16ToUTF8(credential.username);
   entry.id = id;
   entry.stored_in = extensions::StoreSetFromCredential(credential);
-  entry.is_android_credential =
-      password_manager::IsValidAndroidFacetURI(credential.signon_realm);
+  entry.is_android_credential = password_manager::IsValidAndroidFacetURI(
+      credential.GetFirstSignonRealm());
   if (!credential.federation_origin.opaque()) {
     std::u16string formatted_origin =
         url_formatter::FormatOriginForSecurityDisplay(
@@ -303,8 +303,6 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   facet.url = password_manager_util::StripAuthAndParams(
       password_manager_util::ConstructGURLWithScheme(url));
   facet.signon_realm = password_manager::GetSignonRealm(facet.url);
-  // TODO(crbug.com/1360896): Remove this in part 2.
-  credential.signon_realm = facet.signon_realm;
   credential.facets.push_back(std::move(facet));
   credential.username = username;
   credential.password = password;

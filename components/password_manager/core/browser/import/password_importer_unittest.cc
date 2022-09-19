@@ -161,7 +161,7 @@ TEST_F(PasswordImporterTest, CSVImport) {
   EXPECT_EQ(1u, results.number_imported);
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].GetURL());
-  EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].signon_realm);
+  EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].GetFirstSignonRealm());
   EXPECT_EQ(kTestUsername, stored_passwords()[0].username);
   EXPECT_EQ(kTestPassword, stored_passwords()[0].password);
 }
@@ -772,7 +772,7 @@ TEST_F(PasswordImporterTest, PartialImportSucceeds) {
 
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].GetURL());
-  EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].signon_realm);
+  EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].GetFirstSignonRealm());
   EXPECT_EQ(kTestUsername, stored_passwords()[0].username);
   EXPECT_EQ(kTestPassword, stored_passwords()[0].password);
 

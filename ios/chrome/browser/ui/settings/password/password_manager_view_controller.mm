@@ -967,8 +967,8 @@ bool ShouldShowSettingsUI() {
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
     if (self.mostRecentlyUpdatedPassword->username == credential.username &&
-        self.mostRecentlyUpdatedPassword->signon_realm ==
-            credential.signon_realm) {
+        self.mostRecentlyUpdatedPassword->GetFirstSignonRealm() ==
+            credential.GetFirstSignonRealm()) {
       self.mostRecentlyUpdatedItem = passwordItem;
       self.mostRecentlyUpdatedPassword = absl::nullopt;
     }
@@ -1003,8 +1003,8 @@ bool ShouldShowSettingsUI() {
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
     if (self.mostRecentlyUpdatedPassword->username == credential.username &&
-        self.mostRecentlyUpdatedPassword->signon_realm ==
-            credential.signon_realm) {
+        self.mostRecentlyUpdatedPassword->GetFirstSignonRealm() ==
+            credential.GetFirstSignonRealm()) {
       self.legacyMostRecentlyUpdatedItem = passwordItem;
       self.mostRecentlyUpdatedPassword = absl::nullopt;
     }

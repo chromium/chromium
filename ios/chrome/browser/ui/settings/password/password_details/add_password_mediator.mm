@@ -40,7 +40,7 @@ bool CheckForDuplicates(
   auto have_equal_username_and_realm =
       [&signon_realm,
        &username_value](const password_manager::CredentialUIEntry& credential) {
-        return signon_realm == credential.signon_realm &&
+        return signon_realm == credential.GetFirstSignonRealm() &&
                username_value == credential.username;
       };
   if (base::ranges::any_of(credentials, have_equal_username_and_realm))
@@ -122,7 +122,6 @@ bool CheckForDuplicates(
 
   password_manager::CredentialUIEntry credential;
   std::string signonRealm = password_manager::GetSignonRealm(self.URL);
-  credential.signon_realm = signonRealm;
   credential.username = SysNSStringToUTF16(username);
   credential.password = SysNSStringToUTF16(password);
   credential.stored_in = {password_manager::PasswordForm::Store::kProfileStore};
@@ -164,7 +163,7 @@ bool CheckForDuplicates(
   std::u16string username_value = SysNSStringToUTF16(username);
   for (const auto& credential :
        _manager->GetSavedPasswordsPresenter()->GetSavedCredentials()) {
-    if (credential.signon_realm == signon_realm &&
+    if (credential.GetFirstSignonRealm() == signon_realm &&
         credential.username == username_value) {
       [self.delegate showPasswordDetailsControllerWithCredential:credential];
       return;

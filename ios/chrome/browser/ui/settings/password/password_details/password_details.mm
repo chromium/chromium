@@ -21,12 +21,12 @@
   self = [super init];
   if (self) {
     auto facetUri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-        credential.signon_realm);
+        credential.GetFirstSignonRealm());
     if (facetUri.IsValidAndroidFacetURI()) {
       std::string display_name = credential.GetDisplayName();
       if (!display_name.empty()) {
         _changePasswordURL = password_manager::CreateChangePasswordUrl(
-            GURL(credential.affiliated_web_realm));
+            GURL(credential.GetAffiliatedWebRealm()));
         _origin = base::SysUTF8ToNSString(display_name);
         _website = base::SysUTF8ToNSString(display_name);
       } else {

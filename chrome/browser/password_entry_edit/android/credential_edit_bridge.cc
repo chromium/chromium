@@ -109,7 +109,7 @@ void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {
 
 std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-      credential_.signon_realm);
+      credential_.GetFirstSignonRealm());
   std::string display_name = credential_.GetDisplayName();
 
   if (facet.IsValidAndroidFacetURI()) {

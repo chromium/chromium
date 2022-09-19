@@ -576,7 +576,7 @@ const CredentialUIEntry* PasswordCheckDelegate::FindMatchingEntry(
   if (!entry)
     return nullptr;
 
-  if (credential.urls.signon_realm != entry->signon_realm ||
+  if (credential.urls.signon_realm != entry->GetFirstSignonRealm() ||
       credential.username != base::UTF16ToUTF8(entry->username) ||
       (credential.password &&
        *credential.password != base::UTF16ToUTF8(entry->password))) {
@@ -624,7 +624,7 @@ PasswordCheckDelegate::ConstructInsecureCredential(
     const CredentialUIEntry& entry) {
   api::passwords_private::PasswordUiEntry api_credential;
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
-      entry.signon_realm);
+      entry.GetFirstSignonRealm());
   api_credential.is_android_credential = facet.IsValidAndroidFacetURI();
   api_credential.id = id_generator_->GenerateId(entry);
   api_credential.username = base::UTF16ToUTF8(entry.username);
@@ -636,7 +636,7 @@ PasswordCheckDelegate::ConstructInsecureCredential(
     // affiliation information instead of the origin.
     if (!entry.GetDisplayName().empty()) {
       api_credential.change_password_url =
-          GetChangePasswordUrl(GURL(entry.affiliated_web_realm));
+          GetChangePasswordUrl(GURL(entry.GetAffiliatedWebRealm()));
     }
   } else {
     api_credential.change_password_url = GetChangePasswordUrl(entry_url);
@@ -652,7 +652,7 @@ PasswordCheckDelegate::ConstructInsecureCredential(
       password_manager::features::kPasswordChangeInSettingsWeakCredentialsParam
           .Get()) {
     GURL url = api_credential.is_android_credential
-                   ? GURL(entry.affiliated_web_realm)
+                   ? GURL(entry.GetAffiliatedWebRealm())
                    : entry_url;
     api_credential.has_startable_script =
         !url.is_empty() && GetPasswordScriptsFetcher()->IsScriptAvailable(

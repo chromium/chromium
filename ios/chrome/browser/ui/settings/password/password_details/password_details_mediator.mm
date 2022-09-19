@@ -47,7 +47,7 @@ using base::SysNSStringToUTF16;
     auto credentials =
         manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
     for (const auto& cred : credentials) {
-      if (cred.signon_realm == credential.signon_realm) {
+      if (cred.GetFirstSignonRealm() == credential.GetFirstSignonRealm()) {
         [usernames addObject:base::SysUTF16ToNSString(cred.username)];
       }
     }

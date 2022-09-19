@@ -44,7 +44,7 @@ std::string CreateSortKey(const CredentialUIEntry& credential) {
   std::string shown_origin = GetShownOrigin(credential);
 
   const auto facet_uri =
-      FacetURI::FromPotentiallyInvalidSpec(credential.signon_realm);
+      FacetURI::FromPotentiallyInvalidSpec(credential.GetFirstSignonRealm());
   const bool is_android_uri = facet_uri.IsValidAndroidFacetURI();
 
   if (is_android_uri) {

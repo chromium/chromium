@@ -12,6 +12,32 @@
 
 namespace password_manager {
 
+// CredentialFacet
+
+CredentialFacet::CredentialFacet() = default;
+
+CredentialFacet::CredentialFacet(DisplayName display_name,
+                                 GURL url,
+                                 SignonRealm signon_realm,
+                                 AffiliatedWebRealm affiliated_web_realm)
+    : display_name(std::move(display_name)),
+      url(std::move(url)),
+      signon_realm(std::move(signon_realm)),
+      affiliated_web_realm(std::move(affiliated_web_realm)) {}
+
+CredentialFacet::~CredentialFacet() = default;
+
+CredentialFacet::CredentialFacet(const CredentialFacet& other) = default;
+
+CredentialFacet::CredentialFacet(CredentialFacet&& other) = default;
+
+CredentialFacet& CredentialFacet::operator=(const CredentialFacet& other) =
+    default;
+
+CredentialFacet& CredentialFacet::operator=(CredentialFacet&& other) = default;
+
+// CredentialUIEntry
+
 bool CredentialUIEntry::Less::operator()(const CredentialUIEntry& lhs,
                                          const CredentialUIEntry& rhs) const {
   return CreateSortKey(lhs) < CreateSortKey(rhs);
@@ -20,9 +46,7 @@ bool CredentialUIEntry::Less::operator()(const CredentialUIEntry& lhs,
 CredentialUIEntry::CredentialUIEntry() = default;
 
 CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
-    : signon_realm(form.signon_realm),
-      affiliated_web_realm(form.affiliated_web_realm),
-      username(form.username_value),
+    : username(form.username_value),
       password(form.password_value),
       federation_origin(form.federation_origin),
       password_issues(form.password_issues),
@@ -41,6 +65,8 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
   facet.display_name = form.app_display_name;
   facet.url = form.url;
   facet.signon_realm = form.signon_realm;
+  facet.affiliated_web_realm = form.affiliated_web_realm;
+
   facets.push_back(std::move(facet));
 
   if (form.IsUsingAccountStore())
@@ -51,14 +77,14 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
 
 CredentialUIEntry::CredentialUIEntry(const CSVPassword& csv_password,
                                      PasswordForm::Store to_store)
-    : signon_realm(IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
-                       ? csv_password.GetURL().value().spec()
-                       : GetSignonRealm(csv_password.GetURL().value())),
-      username(base::UTF8ToUTF16(csv_password.GetUsername())),
+    : username(base::UTF8ToUTF16(csv_password.GetUsername())),
       password(base::UTF8ToUTF16(csv_password.GetPassword())) {
   CredentialFacet facet;
   facet.url = csv_password.GetURL().value();
-  facet.signon_realm = GetSignonRealm(csv_password.GetURL().value());
+  facet.signon_realm =
+      IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
+          ? csv_password.GetURL().value().spec()
+          : GetSignonRealm(csv_password.GetURL().value());
   facets.push_back(std::move(facet));
 
   DCHECK_EQ(csv_password.GetParseStatus(), CSVPassword::Status::kOK);
@@ -100,6 +126,16 @@ const base::Time CredentialUIEntry::GetLastLeakedOrPhishedTime() const {
 std::string CredentialUIEntry::GetDisplayName() const {
   DCHECK(!facets.empty());
   return facets[0].display_name;
+}
+
+std::string CredentialUIEntry::GetFirstSignonRealm() const {
+  DCHECK(!facets.empty());
+  return facets[0].signon_realm;
+}
+
+std::string CredentialUIEntry::GetAffiliatedWebRealm() const {
+  DCHECK(!facets.empty());
+  return facets[0].affiliated_web_realm;
 }
 
 GURL CredentialUIEntry::GetURL() const {
