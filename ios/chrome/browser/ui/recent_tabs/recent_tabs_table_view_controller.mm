@@ -526,16 +526,22 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Needs to be called inside a performBatchUpdates block.
 - (void)removeSessionSections {
   NSMutableIndexSet* indexesToBeDeleted = [NSMutableIndexSet indexSet];
+  NSMutableIndexSet* sectionIdentifiersToBeDeleted =
+      [NSMutableIndexSet indexSet];
   for (NSInteger index = 0; index < [self.tableViewModel numberOfSections];
        index++) {
     NSInteger sectionIdentifier =
         [self.tableViewModel sectionIdentifierForSectionIndex:index];
     if (sectionIdentifier >= kFirstSessionSectionIdentifier) {
-      [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
+      [sectionIdentifiersToBeDeleted addIndex:sectionIdentifier];
       [indexesToBeDeleted addIndex:index];
     }
   }
 
+  [sectionIdentifiersToBeDeleted
+      enumerateIndexesUsingBlock:^(NSUInteger sectionIdentifier, BOOL* stop) {
+        [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
+      }];
   [self.tableView deleteSections:indexesToBeDeleted
                 withRowAnimation:UITableViewRowAnimationNone];
 }
