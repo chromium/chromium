@@ -111,6 +111,8 @@ extern const char kDeferFeatureList[];
 extern const char kUseCastBrowserPrefConfig[];
 extern const char kInProcessBroker[];
 
+extern const char kCastMojoBrokerPath[];
+
 }  // namespace switches
 
 namespace chromecast {

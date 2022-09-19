@@ -228,6 +228,10 @@ const char kUseCastBrowserPrefConfig[] = "use-cast-browser-pref-config";
 // host the service broker.
 const char kInProcessBroker[] = "in-process-broker";
 
+// Command-line arg to change the Unix domain socket path to connect to the
+// Cast Mojo broker.
+const char kCastMojoBrokerPath[] = "cast-mojo-broker-path";
+
 }  // namespace switches
 
 namespace chromecast {
