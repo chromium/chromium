@@ -110,22 +110,26 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
     current_requests_count_ = 0;
     EnableDeepScanning(enable, scan_succeeds);
 
-    content::WebContentsViewDelegate::DropCompletionResult result =
-        scan_succeeds
-            ? content::WebContentsViewDelegate::DropCompletionResult::kContinue
-            : content::WebContentsViewDelegate::DropCompletionResult::kAbort;
     bool called = false;
     HandleOnPerformDrop(
         contents(), data,
-        base::BindOnce(
-            [](content::WebContentsViewDelegate::DropCompletionResult
-                   expected_result,
-               bool* called,
-               content::WebContentsViewDelegate::DropCompletionResult result) {
-              EXPECT_EQ(expected_result, result);
-              *called = true;
-            },
-            result, &called));
+        base::BindLambdaForTesting(
+            [&data, &scan_succeeds,
+             &called](absl::optional<content::DropData> result_data) {
+              if (scan_succeeds) {
+                EXPECT_TRUE(result_data.has_value());
+                EXPECT_EQ(result_data->filenames.size(), data.filenames.size());
+                for (size_t i = 0; i < result_data->filenames.size(); ++i) {
+                  EXPECT_EQ(result_data->filenames[i], data.filenames[i]);
+                }
+                EXPECT_EQ(result_data->url_title, data.url_title);
+                EXPECT_EQ(result_data->text, data.text);
+                EXPECT_EQ(result_data->html, data.html);
+              } else {
+                EXPECT_FALSE(result_data.has_value());
+              }
+              called = true;
+            }));
     if (enable)
       RunUntilDone();
 

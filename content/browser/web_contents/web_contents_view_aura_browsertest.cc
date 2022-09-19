@@ -75,18 +75,24 @@ void GiveItSomeTime() {
 // deep scans of data.
 class TestWebContentsViewDelegate : public WebContentsViewDelegate {
  public:
-  TestWebContentsViewDelegate(DropCompletionResult result) : result_(result) {}
+  TestWebContentsViewDelegate(bool allow_drop) : allow_drop_(allow_drop) {}
 
   void OnPerformDrop(const DropData& drop_data,
                      DropCompletionCallback callback) override {
-    callback_ = std::move(callback);
+    if (allow_drop_)
+      drop_callback_ = base::BindOnce(std::move(callback), drop_data);
+    else
+      drop_callback_ = base::BindOnce(std::move(callback), absl::nullopt);
   }
 
-  void FinishScan() { std::move(callback_).Run(result_); }
+  void FinishScan() {
+    if (!drop_callback_.is_null())
+      std::move(drop_callback_).Run();
+  }
 
  private:
-  DropCompletionResult result_;
-  DropCompletionCallback callback_;
+  bool allow_drop_;
+  base::OnceClosure drop_callback_;
 };
 
 }  // namespace
@@ -647,8 +653,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanOK) {
   drag_dest_delegate_.Reset();
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
 
-  auto delegate = std::make_unique<TestWebContentsViewDelegate>(
-      WebContentsViewDelegate::DropCompletionResult::kContinue);
+  auto delegate =
+      std::make_unique<TestWebContentsViewDelegate>(/*allow_drop*/ true);
   TestWebContentsViewDelegate* delegate_ptr = delegate.get();
   view->SetDelegateForTesting(std::move(delegate));
 
@@ -705,8 +711,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DeepScanBad) {
   drag_dest_delegate_.Reset();
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
 
-  auto delegate = std::make_unique<TestWebContentsViewDelegate>(
-      WebContentsViewDelegate::DropCompletionResult::kAbort);
+  auto delegate =
+      std::make_unique<TestWebContentsViewDelegate>(/*allow_drop*/ false);
   TestWebContentsViewDelegate* delegate_ptr = delegate.get();
   view->SetDelegateForTesting(std::move(delegate));
 

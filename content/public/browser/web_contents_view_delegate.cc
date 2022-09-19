@@ -60,7 +60,7 @@ void* WebContentsViewDelegate::CreateRenderWidgetHostViewDelegate(
 
 void WebContentsViewDelegate::OnPerformDrop(const DropData& drop_data,
                                             DropCompletionCallback callback) {
-  return std::move(callback).Run(DropCompletionResult::kContinue);
+  return std::move(callback).Run(drop_data);
 }
 
 }  // namespace content

@@ -16,7 +16,7 @@ struct DropData;
 // WebContentsViewDelegate::OnPerformDrop() for each platform.
 void HandleOnPerformDrop(
     content::WebContents* web_contents,
-    const content::DropData& drop_data,
+    content::DropData drop_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback);
 
 #endif  // CHROME_BROWSER_UI_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_HANDLE_DROP_H_

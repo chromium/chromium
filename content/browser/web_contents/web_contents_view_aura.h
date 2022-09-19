@@ -278,9 +278,11 @@ class CONTENT_EXPORT WebContentsViewAura
   void CompleteDragExit();
 
   // Called from PerformDropCallback() to finish processing the drop.
-  void FinishOnPerformDropCallback(
-      OnPerformDropContext context,
-      WebContentsViewDelegate::DropCompletionResult result);
+  // The override with `drop_data` updates `current_drop_data_` before
+  // completing the drop.
+  void FinishOnPerformDrop(OnPerformDropContext context);
+  void FinishOnPerformDropCallback(OnPerformDropContext context,
+                                   absl::optional<DropData> drop_data);
 
   // Completes a drop operation by communicating the drop data to the renderer
   // process.

@@ -18,10 +18,12 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/clipboard/file_info.h"
 
 namespace {
 
 void CompletionCallback(
+    content::DropData drop_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback,
     const enterprise_connectors::ContentAnalysisDelegate::Data& data,
     const enterprise_connectors::ContentAnalysisDelegate::Result& result) {
@@ -30,15 +32,14 @@ void CompletionCallback(
                   !base::Contains(result.paths_results, false);
 
   std::move(callback).Run(
-      all_true
-          ? content::WebContentsViewDelegate::DropCompletionResult::kContinue
-          : content::WebContentsViewDelegate::DropCompletionResult::kAbort);
+      all_true ? absl::optional<content::DropData>(std::move(drop_data))
+               : absl::nullopt);
 }
 
 enterprise_connectors::ContentAnalysisDelegate::Data GetPathsToScan(
-    const content::DropData& drop_data,
+    const std::vector<ui::FileInfo>& filenames,
     enterprise_connectors::ContentAnalysisDelegate::Data data) {
-  for (const auto& file : drop_data.filenames) {
+  for (const auto& file : filenames) {
     base::File::Info info;
 
     // Ignore the path if it's a symbolic link.
@@ -68,8 +69,10 @@ class HandleDropScanData : public content::WebContentsObserver {
  public:
   HandleDropScanData(
       content::WebContents* web_contents,
+      content::DropData drop_data,
       content::WebContentsViewDelegate::DropCompletionCallback callback)
       : content::WebContentsObserver(web_contents),
+        drop_data_(std::move(drop_data)),
         callback_(std::move(callback)) {}
 
   void ScanData(
@@ -78,7 +81,8 @@ class HandleDropScanData : public content::WebContentsObserver {
 
     enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
         web_contents(), std::move(analysis_data),
-        base::BindOnce(&CompletionCallback, std::move(callback_)),
+        base::BindOnce(&CompletionCallback, std::move(drop_data_),
+                       std::move(callback_)),
         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
 
     delete this;
@@ -91,6 +95,7 @@ class HandleDropScanData : public content::WebContentsObserver {
   }
 
  private:
+  content::DropData drop_data_;
   content::WebContentsViewDelegate::DropCompletionCallback callback_;
 
   base::WeakPtrFactory<HandleDropScanData> weakptr_factory_{this};
@@ -100,7 +105,7 @@ class HandleDropScanData : public content::WebContentsObserver {
 
 void HandleOnPerformDrop(
     content::WebContents* web_contents,
-    const content::DropData& drop_data,
+    content::DropData drop_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback) {
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   Profile* profile =
@@ -111,8 +116,7 @@ void HandleOnPerformDrop(
           : enterprise_connectors::AnalysisConnector::FILE_ATTACHED;
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile, web_contents->GetLastCommittedURL(), &data, connector)) {
-    std::move(callback).Run(
-        content::WebContentsViewDelegate::DropCompletionResult::kContinue);
+    std::move(callback).Run(std::move(drop_data));
     return;
   }
 
@@ -133,19 +137,18 @@ void HandleOnPerformDrop(
   }
 
   auto* handle_drop_scan_data =
-      new HandleDropScanData(web_contents, std::move(scan_callback));
+      new HandleDropScanData(web_contents, drop_data, std::move(scan_callback));
   if (drop_data.filenames.empty()) {
     handle_drop_scan_data->ScanData(std::move(data));
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&GetPathsToScan, drop_data, std::move(data)),
+        base::BindOnce(&GetPathsToScan, drop_data.filenames, std::move(data)),
         base::BindOnce(&HandleDropScanData::ScanData,
                        handle_drop_scan_data->GetWeakPtr()));
   }
 
   if (!callback.is_null()) {
-    std::move(callback).Run(
-        content::WebContentsViewDelegate::DropCompletionResult::kContinue);
+    std::move(callback).Run(std::move(drop_data));
   }
 }

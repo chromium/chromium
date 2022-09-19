@@ -52,6 +52,7 @@ DropContext::DropContext(
       target_rwh(target_rwh) {}
 
 DropContext::DropContext(const DropContext& other) = default;
+DropContext::DropContext(DropContext&& other) = default;
 
 DropContext::~DropContext() = default;
 
@@ -91,20 +92,16 @@ content::GlobalRoutingID GetRenderViewHostID(content::RenderViewHost* rvh) {
                                   rvh->GetRoutingID());
 }
 
-void DropCompletionCallback(
-    WebDragDest* drag_dest,
-    const content::DropContext context,
-    content::WebContentsViewDelegate::DropCompletionResult result) {
+void DropCompletionCallback(WebDragDest* drag_dest,
+                            const content::DropContext context,
+                            absl::optional<content::DropData> drop_data) {
   // This is an async callback. Make sure RWH is still valid.
   if (!context.target_rwh ||
       ![drag_dest isValidDragTarget:context.target_rwh.get()]) {
     return;
   }
 
-  bool success =
-      result ==
-      content::WebContentsViewDelegate::DropCompletionResult::kContinue;
-  [drag_dest completeDropAsync:success withContext:context];
+  [drag_dest completeDropAsync:drop_data withContext:context];
 }
 
 }  // namespace
@@ -342,10 +339,11 @@ void DropCompletionCallback(
                                  /*screen_pt=*/info->location_in_screen,
                                  /*modifier_flags=*/GetModifierFlags(),
                                  /*target_rwh=*/targetRWH->GetWeakPtr());
-
+    // Use a separate variable since `context` is about to move.
+    content::DropData drop_data = context.drop_data;
     webContentsViewDelegate->OnPerformDrop(
-        context.drop_data,
-        base::BindOnce(&DropCompletionCallback, self, context));
+        std::move(drop_data),
+        base::BindOnce(&DropCompletionCallback, self, std::move(context)));
   } else {
     if (_delegate)
       _delegate->OnDrop();
@@ -359,13 +357,13 @@ void DropCompletionCallback(
   return YES;
 }
 
-- (void)completeDropAsync:(BOOL)success
+- (void)completeDropAsync:(absl::optional<content::DropData>)dropData
               withContext:(const content::DropContext)context {
-  if (success) {
+  if (dropData.has_value()) {
     if (_delegate)
       _delegate->OnDrop();
     context.target_rwh->DragTargetDrop(
-        context.drop_data, context.client_pt, context.screen_pt,
+        dropData.value(), context.client_pt, context.screen_pt,
         context.modifier_flags, base::DoNothing());
   } else {
     if (_delegate)
