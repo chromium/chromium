@@ -4,30 +4,44 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 
+#include <memory>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -58,7 +72,11 @@ void CompleteWith404(
   loader_client->OnReceiveResponse(std::move(response_head),
                                    std::move(consumer_handle), absl::nullopt);
 
-  loader_client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+  network::URLLoaderCompletionStatus status(net::OK);
+  status.encoded_data_length = 0;
+  status.encoded_body_length = 0;
+  status.decoded_body_length = 0;
+  loader_client->OnComplete(status);
 }
 
 void LogErrorMessageToConsole(int frame_tree_node_id,
@@ -110,6 +128,134 @@ FindIsolatedWebApp(Profile* profile, const IsolatedWebAppUrlInfo& url_info) {
   return *iwa;
 }
 
+class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
+ public:
+  IsolatedWebAppURLLoader(
+      IsolatedWebAppReaderRegistry* isolated_web_app_reader_registry,
+      const base::FilePath& web_bundle_path,
+      web_package::SignedWebBundleId web_bundle_id,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
+      const network::ResourceRequest& resource_request,
+      int frame_tree_node_id)
+      : loader_client_(std::move(loader_client)),
+        resource_request_(resource_request),
+        frame_tree_node_id_(frame_tree_node_id) {
+    isolated_web_app_reader_registry->ReadResponse(
+        web_bundle_path, web_bundle_id, resource_request,
+        base::BindOnce(&IsolatedWebAppURLLoader::OnResponseRead,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  IsolatedWebAppURLLoader(const IsolatedWebAppURLLoader&) = delete;
+  IsolatedWebAppURLLoader& operator=(const IsolatedWebAppURLLoader&) = delete;
+
+  ~IsolatedWebAppURLLoader() override = default;
+
+ private:
+  void OnResponseRead(
+      base::expected<IsolatedWebAppReaderRegistry::Response,
+                     IsolatedWebAppReaderRegistry::ReadResponseError>
+          response) {
+    if (!loader_client_.is_connected())
+      return;
+
+    if (!response.has_value()) {
+      LogErrorMessageToConsole(
+          frame_tree_node_id_,
+          base::StringPrintf(
+              "Failed to read response from Signed Web Bundle: %s",
+              response.error().message.c_str()));
+      switch (response.error().type) {
+        case IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError:
+          loader_client_->OnComplete(
+              network::URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
+          return;
+        case IsolatedWebAppReaderRegistry::ReadResponseError::Type::
+            kResponseNotFound:
+          // Return a synthetic 404 response.
+          CompleteWith404(std::move(loader_client_));
+          return;
+      }
+    }
+
+    // TODO(crbug.com/990733): For the initial implementation, we allow only
+    // net::HTTP_OK, but we should clarify acceptable status code in the spec.
+    if (response->head()->response_code != net::HTTP_OK) {
+      LogErrorMessageToConsole(
+          frame_tree_node_id_,
+          base::StringPrintf(
+              "Failed to read response from Signed Web Bundle: The response "
+              "has an unsupported HTTP status code: %d (only status code %d is "
+              "allowed).",
+              response->head()->response_code, net::HTTP_OK));
+      loader_client_->OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
+      return;
+    }
+
+    auto response_head = web_package::CreateResourceResponse(response->head());
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes =
+        std::min(base::strict_cast<uint64_t>(
+                     network::features::GetDataPipeDefaultAllocationSize()),
+                 response->head()->payload_length);
+
+    auto result =
+        mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
+    if (result != MOJO_RESULT_OK) {
+      loader_client_->OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+      return;
+    }
+    body_length_ = response->head()->payload_length;
+    loader_client_->OnReceiveResponse(
+        std::move(response_head), std::move(consumer_handle), absl::nullopt);
+
+    response->ReadBody(
+        std::move(producer_handle),
+        base::BindOnce(&IsolatedWebAppURLLoader::FinishReadingBody,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  void FinishReadingBody(net::Error net_error) {
+    if (!loader_client_.is_connected())
+      return;
+
+    network::URLLoaderCompletionStatus status(net_error);
+    // For these values we use the same `body_length_` as we don't currently
+    // provide encoding in Web Bundles.
+    status.encoded_data_length = body_length_;
+    status.encoded_body_length = body_length_;
+    status.decoded_body_length = body_length_;
+    loader_client_->OnComplete(status);
+  }
+
+  // network::mojom::URLLoader implementation
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override {
+    NOTREACHED();
+  }
+  void SetPriority(net::RequestPriority priority,
+                   int intra_priority_value) override {}
+  void PauseReadingBodyFromNet() override {}
+  void ResumeReadingBodyFromNet() override {}
+
+  mojo::Remote<network::mojom::URLLoaderClient> loader_client_;
+  int64_t body_length_;
+  const network::ResourceRequest resource_request_;
+  const int frame_tree_node_id_;
+
+  base::WeakPtrFactory<IsolatedWebAppURLLoader> weak_factory_{this};
+};
+
 }  // namespace
 
 IsolatedWebAppURLLoaderFactory::IsolatedWebAppURLLoaderFactory(
@@ -118,7 +264,9 @@ IsolatedWebAppURLLoaderFactory::IsolatedWebAppURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
       frame_tree_node_id_(frame_tree_node_id),
-      profile_(profile) {}
+      profile_(profile) {
+  profile_observation_.Observe(profile);
+}
 
 IsolatedWebAppURLLoaderFactory::~IsolatedWebAppURLLoaderFactory() = default;
 
@@ -140,6 +288,13 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
+  base::expected<web_package::SignedWebBundleId, std::string> web_bundle_id =
+      url_info->ParseSignedWebBundleId();
+  if (!web_bundle_id.has_value()) {
+    LogErrorAndFail(web_bundle_id.error(), std::move(loader_client));
+    return;
+  }
+
   base::expected<std::reference_wrapper<const WebApp>, std::string> iwa =
       FindIsolatedWebApp(profile_, *url_info);
   if (!iwa.has_value()) {
@@ -148,15 +303,50 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
   }
 
   IsolationData isolation_data = iwa->get().isolation_data().value();
-  if (absl::holds_alternative<IsolationData::DevModeProxy>(
-          isolation_data.content)) {
-    CompleteWith404(mojo::Remote<network::mojom::URLLoaderClient>(
-        std::move(loader_client)));
-    return;
-  }
+  absl::visit(
+      base::Overloaded{
+          [&](IsolationData::InstalledBundle content) {
+            auto* isolated_web_app_reader_registry =
+                IsolatedWebAppReaderRegistryFactory::GetForProfile(profile_);
+            if (!isolated_web_app_reader_registry) {
+              LogErrorAndFail("Support for Isolated Web Apps is not enabled.",
+                              std::move(loader_client));
+              return;
+            }
 
-  LogErrorAndFail("IsolatedWebAppURLLoaderFactory not implemented",
-                  std::move(loader_client));
+            const base::FilePath web_bundle_path =
+                base::FilePath::FromUTF8Unsafe(content.path);
+
+            auto loader = std::make_unique<IsolatedWebAppURLLoader>(
+                isolated_web_app_reader_registry, web_bundle_path,
+                *web_bundle_id, std::move(loader_client), resource_request,
+                frame_tree_node_id_);
+            mojo::MakeSelfOwnedReceiver(
+                std::move(std::move(loader)),
+                mojo::PendingReceiver<network::mojom::URLLoader>(
+                    std::move(loader_receiver)));
+          },
+          [&loader_client](IsolationData::DevModeBundle content) {
+            // TODO: Implement dev mode bundles.
+            CompleteWith404(mojo::Remote<network::mojom::URLLoaderClient>(
+                std::move(loader_client)));
+          },
+          [&loader_client](IsolationData::DevModeProxy content) {
+            // TODO: Implement dev mode proxy.
+            CompleteWith404(mojo::Remote<network::mojom::URLLoaderClient>(
+                std::move(loader_client)));
+          }},
+      isolation_data.content);
+}
+
+void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(
+    Profile* profile) {
+  if (profile == profile_) {
+    // When `profile_` gets destroyed, `this` factory is not able to serve any
+    // more requests.
+    profile_observation_.Reset();
+    DisconnectReceiversAndDestroy();
+  }
 }
 
 void IsolatedWebAppURLLoaderFactory::LogErrorAndFail(

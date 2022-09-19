@@ -8,13 +8,14 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-
-class Profile;
 
 namespace content {
 class BrowserContext;
@@ -32,7 +33,8 @@ namespace web_app {
 
 // A URLLoaderFactory used for the isolated-app:// scheme.
 class IsolatedWebAppURLLoaderFactory
-    : public network::SelfDeletingURLLoaderFactory {
+    : public network::SelfDeletingURLLoaderFactory,
+      public ProfileObserver {
  public:
   // Returns mojo::PendingRemote to a newly constructed
   // IsolatedWebAppURLLoaderFactory. The factory is self-owned - it will delete
@@ -69,8 +71,14 @@ class IsolatedWebAppURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   const int frame_tree_node_id_;
+  // It is safe to store a pointer to a `Profile` here, since `this` is freed
+  // via `profile_observation_` when the `Profile` is destroyed.
   const raw_ptr<Profile> profile_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace web_app
