@@ -323,15 +323,16 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 }
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
-// TODO(crbug.com/1359286): Disabled due to flakiness. Re-enabled when fixed.
-- (void)DISABLED_testTypeJavaScriptIntoOmnibox {
+- (void)testTypeJavaScriptIntoOmnibox {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
-  [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:alert('Hello');\n"];
+  [ChromeEarlGreyUI
+      focusOmniboxAndType:@"javascript:alert('JS Alert Text');\n"];
 
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Hello")]
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(@"JS Alert Text")]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
