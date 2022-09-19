@@ -205,6 +205,8 @@ std::vector<uint8_t> GetKeyDataFromJsonTestCase(
 blink::WebCryptoNamedCurve GetCurveNameFromDictionary(
     const base::DictionaryValue* dict);
 
+blink::WebCryptoNamedCurve CurveNameToCurve(const std::string& name);
+
 // Creates an HMAC import algorithm whose inner hash algorithm is determined by
 // the specified algorithm ID. It is an error to call this method with a hash
 // algorithm that is not SHA*.
