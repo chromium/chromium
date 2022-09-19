@@ -112,19 +112,19 @@ void EasyUnlockKeyManager::DeviceDataToRemoteDeviceDictionary(
 
 // static
 bool EasyUnlockKeyManager::RemoteDeviceDictionaryToDeviceData(
-    const base::DictionaryValue& dict,
+    const base::Value::Dict& dict,
     EasyUnlockDeviceKeyData* data) {
   const std::string* bluetooth_address_ptr =
-      dict.FindStringKey(key_names::kKeyBluetoothAddress);
+      dict.FindString(key_names::kKeyBluetoothAddress);
   const std::string* public_key_ptr =
-      dict.FindStringPath(key_names::kKeyPermitId);
-  const std::string* psk_ptr = dict.FindStringKey(key_names::kKeyPsk);
+      dict.FindStringByDottedPath(key_names::kKeyPermitId);
+  const std::string* psk_ptr = dict.FindString(key_names::kKeyPsk);
 
   if (!bluetooth_address_ptr || !public_key_ptr || !psk_ptr)
     return false;
 
   const std::string* serialized_beacon_seeds =
-      dict.FindStringKey(key_names::kKeySerializedBeaconSeeds);
+      dict.FindString(key_names::kKeySerializedBeaconSeeds);
   if (serialized_beacon_seeds) {
     data->serialized_beacon_seeds = *serialized_beacon_seeds;
   } else {
@@ -140,7 +140,7 @@ bool EasyUnlockKeyManager::RemoteDeviceDictionaryToDeviceData(
   // it's an older Dictionary that didn't include this `unlock_key` field --
   // only one device was persisted, and it was implicitly assumed to be the
   // unlock key -- thus `unlock_key` should default to being true.
-  data->unlock_key = dict.FindBoolPath(key_names::kKeyUnlockKey).value_or(true);
+  data->unlock_key = dict.FindBool(key_names::kKeyUnlockKey).value_or(true);
   data->bluetooth_address.swap(bluetooth_address);
   data->public_key.swap(public_key);
   data->psk.swap(psk);
@@ -166,12 +166,11 @@ bool EasyUnlockKeyManager::RemoteDeviceRefListToDeviceDataList(
     EasyUnlockDeviceKeyDataList* data_list) {
   EasyUnlockDeviceKeyDataList parsed_devices;
   for (const auto& entry : device_list) {
-    const base::DictionaryValue* dict;
-    if (!entry.GetAsDictionary(&dict) || !dict)
+    if (!entry.is_dict())
       return false;
 
     EasyUnlockDeviceKeyData data;
-    if (!RemoteDeviceDictionaryToDeviceData(*dict, &data))
+    if (!RemoteDeviceDictionaryToDeviceData(entry.GetDict(), &data))
       return false;
 
     parsed_devices.push_back(data);

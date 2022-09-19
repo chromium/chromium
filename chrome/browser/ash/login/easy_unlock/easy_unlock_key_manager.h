@@ -64,9 +64,8 @@ class EasyUnlockKeyManager {
       const AccountId& account_id,
       const EasyUnlockDeviceKeyData& data,
       base::DictionaryValue* dict);
-  static bool RemoteDeviceDictionaryToDeviceData(
-      const base::DictionaryValue& dict,
-      EasyUnlockDeviceKeyData* data);
+  static bool RemoteDeviceDictionaryToDeviceData(const base::Value::Dict& dict,
+                                                 EasyUnlockDeviceKeyData* data);
 
   // Helpers to convert between EasyUnlockDeviceKeyDataList and remote devices
   // ListValue.
