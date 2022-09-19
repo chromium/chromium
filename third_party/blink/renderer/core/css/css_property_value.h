@@ -72,11 +72,12 @@ class CORE_EXPORT CSSPropertyValue {
                   index_in_shorthands_vector,
                   important,
                   implicit),
-        value_(value, Member<const CSSValue>::AtomicInitializerTag{}) {}
+        value_(value, decltype(value_)::AtomicInitializerTag{}) {}
 
   // FIXME: Remove this.
   CSSPropertyValue(CSSPropertyValueMetadata metadata, const CSSValue& value)
-      : metadata_(metadata), value_(value) {}
+      : metadata_(metadata),
+        value_(value, decltype(value_)::AtomicInitializerTag{}) {}
 
   CSSPropertyID Id() const { return metadata_.PropertyID(); }
   bool IsSetFromShorthand() const { return metadata_.is_set_from_shorthand_; }
