@@ -77,8 +77,7 @@ if (window.internals)
   var y = dialogRect.top + dialogRect.height / 2;
 
   promise_test(async () => {
-      if (window.internals)
-        assert_equals(rootScroller, internals.effectiveRootScroller(document), 'implicit root scroller');
+      await waitFor( () => { return rootScroller == internals.effectiveRootScroller(document); } );
 
       // Sanity check - there should be no initial scroll.
       assert_equals(dialog.scrollLeft, 0);
