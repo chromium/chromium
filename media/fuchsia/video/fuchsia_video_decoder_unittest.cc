@@ -300,10 +300,11 @@ class TestFuchsiaMediaResourceProvider
   }
   void CreateVideoDecoder(
       media::VideoCodec codec,
-      bool secure_memory,
+      media::mojom::VideoDecoderSecureMemoryMode secure_mode,
       fidl::InterfaceRequest<fuchsia::media::StreamProcessor>
           stream_processor_request) final {
-    EXPECT_FALSE(secure_memory);
+    EXPECT_TRUE(secure_mode ==
+                media::mojom::VideoDecoderSecureMemoryMode::CLEAR);
 
     fuchsia::mediacodec::CreateDecoder_Params decoder_params;
     decoder_params.mutable_input_details()->set_format_details_version_ordinal(
@@ -343,7 +344,8 @@ class FuchsiaVideoDecoderTest : public testing::Test {
             base::MakeRefCounted<TestRasterContextProvider>()),
         decoder_(std::make_unique<FuchsiaVideoDecoder>(
             raster_context_provider_.get(),
-            &test_media_resource_provider_)) {}
+            &test_media_resource_provider_,
+            /*allow_overlays=*/false)) {}
 
   FuchsiaVideoDecoderTest(const FuchsiaVideoDecoderTest&) = delete;
   FuchsiaVideoDecoderTest& operator=(const FuchsiaVideoDecoderTest&) = delete;

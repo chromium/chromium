@@ -6,6 +6,7 @@ source_set("video") {
   visibility = [
     ":unittests",
     "//content/renderer/*",
+    "//third_party/blink/renderer/modules/webcodecs/*",
   ]
   sources = [
     "fuchsia_decoder_factory.cc",

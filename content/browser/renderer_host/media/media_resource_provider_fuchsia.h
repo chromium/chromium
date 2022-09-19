@@ -38,7 +38,7 @@ class MediaResourceProviderFuchsia final
           request) final;
   void CreateVideoDecoder(
       media::VideoCodec codec,
-      bool secure_memory,
+      media::mojom::VideoDecoderSecureMemoryMode secure_mode,
       fidl::InterfaceRequest<fuchsia::media::StreamProcessor>
           stream_processor_request) final;
 };

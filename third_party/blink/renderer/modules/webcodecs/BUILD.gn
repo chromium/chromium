@@ -111,6 +111,9 @@ blink_modules_sources("webcodecs") {
   if (media_use_openh264) {
     deps += [ "//third_party/openh264:encoder" ]
   }
+  if (is_fuchsia) {
+    deps += [ "//media/fuchsia/video" ]
+  }
   public_deps = [ "//third_party/blink/renderer/modules/webaudio:webaudio" ]
 }
 

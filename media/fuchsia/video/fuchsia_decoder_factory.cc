@@ -7,15 +7,16 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace media {
 
 FuchsiaDecoderFactory::FuchsiaDecoderFactory(
-    blink::BrowserInterfaceBrokerProxy* interface_broker) {
-  interface_broker->GetInterface(
-      media_resource_provider_handle_.InitWithNewPipeAndPassReceiver());
-}
+    mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
+        media_resource_provider_handle,
+    bool allow_overlays)
+    : media_resource_provider_handle_(
+          std::move(media_resource_provider_handle)),
+      allow_overlays_(allow_overlays) {}
 
 FuchsiaDecoderFactory::~FuchsiaDecoderFactory() = default;
 
@@ -55,7 +56,7 @@ void FuchsiaDecoderFactory::CreateVideoDecoders(
     // TODO(crbug.com/995902) Handle lost context.
     if (context_provider) {
       video_decoders->push_back(std::make_unique<FuchsiaVideoDecoder>(
-          context_provider, media_resource_provider_.get()));
+          context_provider, media_resource_provider_.get(), allow_overlays_));
     } else {
       LOG(ERROR) << "Can't create FuchsiaVideoDecoder due to GPU context loss.";
     }

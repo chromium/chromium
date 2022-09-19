@@ -17,6 +17,18 @@ struct StreamProcessorRequest {
   handle<platform> request;
 };
 
+enum VideoDecoderSecureMemoryMode {
+  // Input and output buffers are not protected.
+  CLEAR,
+
+  // Input and output buffers must be allocated in protected memory.
+  SECURE,
+
+  // Input buffers are not protected. Output buffers may be allocated in
+  // protected memory.
+  CLEAR_INPUT,
+};
+
 // Interface used by the renderer to connect to CDM and mediacodec resources.
 // Instances are document-scoped.
 interface FuchsiaMediaResourceProvider {
@@ -27,6 +39,6 @@ interface FuchsiaMediaResourceProvider {
 
   // Create connection to fuchsia::media::StreamProcessor for the specified
   // `codec`.
-  CreateVideoDecoder(VideoCodec codec, bool secure_memory,
+  CreateVideoDecoder(VideoCodec codec, VideoDecoderSecureMemoryMode secure_mode,
                      StreamProcessorRequest stream_processor_request);
 };

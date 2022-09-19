@@ -93,7 +93,7 @@ void MediaResourceProviderFuchsia::CreateCdm(
 
 void MediaResourceProviderFuchsia::CreateVideoDecoder(
     media::VideoCodec codec,
-    bool secure_mode,
+    media::mojom::VideoDecoderSecureMemoryMode secure_mode,
     fidl::InterfaceRequest<fuchsia::media::StreamProcessor>
         stream_processor_request) {
   fuchsia::mediacodec::CreateDecoder_Params decoder_params;
@@ -109,15 +109,25 @@ void MediaResourceProviderFuchsia::CreateVideoDecoder(
   }
   decoder_params.mutable_input_details()->set_mime_type(mime_type.value());
 
-  if (secure_mode) {
-    decoder_params.set_secure_input_mode(
-        fuchsia::mediacodec::SecureMemoryMode::ON);
-  }
+  switch (secure_mode) {
+    case media::mojom::VideoDecoderSecureMemoryMode::CLEAR:
+      // Use defaults for non-secure mode.
+      break;
 
-  if (secure_mode || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                         switches::kForceProtectedVideoOutputBuffers)) {
-    decoder_params.set_secure_output_mode(
-        fuchsia::mediacodec::SecureMemoryMode::ON);
+    case media::mojom::VideoDecoderSecureMemoryMode::SECURE:
+      decoder_params.set_secure_input_mode(
+          fuchsia::mediacodec::SecureMemoryMode::ON);
+      decoder_params.set_secure_output_mode(
+          fuchsia::mediacodec::SecureMemoryMode::ON);
+      break;
+
+    case media::mojom::VideoDecoderSecureMemoryMode::CLEAR_INPUT:
+      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kForceProtectedVideoOutputBuffers)) {
+        decoder_params.set_secure_output_mode(
+            fuchsia::mediacodec::SecureMemoryMode::ON);
+      }
+      break;
   }
 
   // Video demuxers return each video frame in a separate packet. This field

@@ -9,16 +9,14 @@
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace blink {
-class BrowserInterfaceBrokerProxy;
-}  // namespace blink
-
 namespace media {
 
 class FuchsiaDecoderFactory final : public DecoderFactory {
  public:
-  explicit FuchsiaDecoderFactory(
-      blink::BrowserInterfaceBrokerProxy* interface_broker);
+  FuchsiaDecoderFactory(
+      mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
+          media_resource_provider_handle,
+      bool allow_overlays);
   ~FuchsiaDecoderFactory() final;
 
   // DecoderFactory implementation.
@@ -38,6 +36,8 @@ class FuchsiaDecoderFactory final : public DecoderFactory {
  private:
   mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
       media_resource_provider_handle_;
+  const bool allow_overlays_;
+
   mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
       media_resource_provider_;
 };

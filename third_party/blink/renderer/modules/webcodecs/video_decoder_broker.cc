@@ -37,6 +37,10 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/color_space.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "media/fuchsia/video/fuchsia_decoder_factory.h"
+#endif
+
 using DecoderDetails = blink::VideoDecoderBroker::DecoderDetails;
 
 namespace WTF {
@@ -106,6 +110,11 @@ class MediaVideoTaskWrapper {
         WTF::CrossThreadBindOnce(&MediaVideoTaskWrapper::BindOnTaskRunner,
                                  WTF::CrossThreadUnretained(this),
                                  std::move(media_interface_factory)));
+
+#if BUILDFLAG(IS_FUCHSIA)
+    execution_context.GetBrowserInterfaceBroker().GetInterface(
+        fuchsia_media_resource_provider_.InitWithNewPipeAndPassReceiver());
+#endif
 
     // TODO(sandersd): Target color space is used by DXVA VDA to pick an
     // efficient conversion for FP16 HDR content, and for no other purpose.
@@ -198,12 +207,17 @@ class MediaVideoTaskWrapper {
     // Bind the |interface_factory_| above before passing to
     // |external_decoder_factory|.
     std::unique_ptr<media::DecoderFactory> external_decoder_factory;
-#if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
     if (hardware_preference_ != HardwarePreference::kPreferSoftware) {
+#if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
       external_decoder_factory = std::make_unique<media::MojoDecoderFactory>(
           media_interface_factory_.get());
-    }
+#elif BUILDFLAG(IS_FUCHSIA)
+      DCHECK(fuchsia_media_resource_provider_);
+      external_decoder_factory = std::make_unique<media::FuchsiaDecoderFactory>(
+          std::move(fuchsia_media_resource_provider_),
+          /*allow_overlays=*/false);
 #endif
+    }
 
     if (hardware_preference_ == HardwarePreference::kPreferHardware) {
       decoder_factory_ = std::move(external_decoder_factory);
@@ -316,6 +330,11 @@ class MediaVideoTaskWrapper {
   gfx::ColorSpace target_color_space_;
   HardwarePreference hardware_preference_ = HardwarePreference::kNoPreference;
   bool decoder_factory_needs_update_ = true;
+
+#if BUILDFLAG(IS_FUCHSIA)
+  mojo::PendingRemote<media::mojom::FuchsiaMediaResourceProvider>
+      fuchsia_media_resource_provider_;
+#endif
 
   std::unique_ptr<media::MediaLog> media_log_;
 

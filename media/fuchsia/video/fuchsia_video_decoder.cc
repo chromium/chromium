@@ -8,10 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -28,15 +26,12 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_frame.h"
-#include "media/base/video_util.h"
 #include "media/fuchsia/cdm/fuchsia_cdm_context.h"
-#include "media/fuchsia/cdm/fuchsia_decryptor.h"
 #include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
 #include "media/fuchsia/common/decrypting_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
@@ -183,11 +178,13 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
 FuchsiaVideoDecoder::FuchsiaVideoDecoder(
     scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-    media::mojom::FuchsiaMediaResourceProvider* media_resource_provider)
+    media::mojom::FuchsiaMediaResourceProvider* media_resource_provider,
+    bool allow_overlays)
     : raster_context_provider_(raster_context_provider),
       media_resource_provider_(media_resource_provider),
-      use_overlays_for_video_(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseOverlaysForVideo)),
+      use_overlays_for_video_(allow_overlays &&
+                              base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                  switches::kUseOverlaysForVideo)),
       sysmem_allocator_("CrFuchsiaVideoDecoder"),
       client_native_pixmap_factory_(
           ui::CreateClientNativePixmapFactoryOzone()) {
@@ -224,7 +221,6 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                      const OutputCB& output_cb,
                                      const WaitingCB& waiting_cb) {
   DCHECK(output_cb);
-  DCHECK(waiting_cb);
   DCHECK(decode_callbacks_.empty());
 
   auto done_callback = BindToCurrentLoop(std::move(init_cb));
@@ -249,12 +245,30 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   decoder_.reset();
 
   // Initialize the stream.
-  bool secure_mode = false;
+  bool secure_input = false;
   DecoderStatus status = InitializeSysmemBufferStream(
-      config.is_encrypted(), cdm_context, &secure_mode);
+      config.is_encrypted(), cdm_context, &secure_input);
+
   if (!status.is_ok()) {
     std::move(done_callback).Run(status);
     return;
+  }
+
+  media::mojom::VideoDecoderSecureMemoryMode secure_mode =
+      media::mojom::VideoDecoderSecureMemoryMode::CLEAR_INPUT;
+  if (secure_input) {
+    if (!use_overlays_for_video_) {
+      DLOG(ERROR) << "Protected content can be rendered only using overlays.";
+      std::move(done_callback)
+          .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedConfig,
+                             FROM_HERE));
+      return;
+    }
+    secure_mode = media::mojom::VideoDecoderSecureMemoryMode::SECURE;
+  } else if (!use_overlays_for_video_) {
+    // Protected output buffers can be rendered only using overlays. If overlays
+    // are not allowed then the output buffers cannot be protected.
+    secure_mode = media::mojom::VideoDecoderSecureMemoryMode::CLEAR;
   }
 
   // Reset output buffers since we won't be able to re-use them.
@@ -317,6 +331,9 @@ DecoderStatus FuchsiaVideoDecoder::InitializeSysmemBufferStream(
   max_decoder_requests_ = kNumInputBuffers + 1;
 
   if (is_encrypted) {
+    // `waiting_cb_` is required for encrypted streams.
+    DCHECK(waiting_cb_);
+
     // Caller makes sure |cdm_context| is available if the stream is encrypted.
     if (!cdm_context) {
       DLOG(ERROR) << "No cdm context for encrypted stream.";
