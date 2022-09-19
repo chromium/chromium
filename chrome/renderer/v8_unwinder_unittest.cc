@@ -13,16 +13,25 @@
 #include "base/location.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gin/public/isolate_holder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
 
 namespace {
+
+using ::testing::AllOf;
+using ::testing::AnyOf;
+using ::testing::Contains;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::NotNull;
+using ::testing::Pointee;
+using ::testing::Property;
 
 v8::Local<v8::String> ToV8String(const char* str) {
   return v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), str)
@@ -564,11 +573,12 @@ TEST(V8UnwinderTest, MAYBE_UnwindThroughV8Frames) {
                                scenario.GetOuterFunctionAddressRange()});
 
   // The stack should contain a frame from a JavaScript module.
-  EXPECT_TRUE(
-      base::ranges::any_of(sample, [&](const base::Frame& frame) {
-        return frame.module &&
-               (frame.module->GetId() ==
-                    V8Unwinder::kV8EmbeddedCodeRangeBuildId ||
-                frame.module->GetId() == V8Unwinder::kV8CodeRangeBuildId);
-      }));
+  EXPECT_THAT(sample,
+              Contains(Field(
+                  "module", &base::Frame::module,
+                  AllOf(NotNull(),
+                        Pointee(Property(
+                            "module.id", &base::ModuleCache::Module::GetId,
+                            AnyOf(Eq(V8Unwinder::kV8EmbeddedCodeRangeBuildId),
+                                  Eq(V8Unwinder::kV8CodeRangeBuildId))))))));
 }
