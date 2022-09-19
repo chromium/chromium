@@ -464,10 +464,12 @@ class CONTENT_EXPORT BrowserAccessibilityManager
                               ui::AXNodeID node_id) const override;
   ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
 
+  // AXPlatformTreeManager overrides.
   ui::AXPlatformNode* GetPlatformNodeFromTree(
       const ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
   ui::AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
+  ui::AXPlatformNodeDelegate* RootDelegate() const override;
 
   BrowserAccessibilityDelegate* delegate() const { return delegate_; }
 

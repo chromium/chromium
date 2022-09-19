@@ -1719,6 +1719,10 @@ ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
   return parent_node;
 }
 
+ui::AXPlatformNodeDelegate* BrowserAccessibilityManager::RootDelegate() const {
+  return GetBrowserAccessibilityRoot();
+}
+
 BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
     const {
   if (IsRootTree())

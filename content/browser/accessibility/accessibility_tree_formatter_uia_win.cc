@@ -127,7 +127,7 @@ void GetUIARoot(ui::AXPlatformNodeDelegate* start,
       content::BrowserAccessibility::FromAXPlatformNodeDelegate(start);
   // Start by getting the root element for the HWND hosting the web content.
   HWND hwnd = start_internal->manager()
-                  ->GetBrowserAccessibilityRoot()
+                  ->RootDelegate()
                   ->GetTargetForNativeAccessibilityEvent();
   uia->ElementFromHandle(hwnd, root);
 }
