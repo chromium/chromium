@@ -1230,6 +1230,9 @@ extern const char kPageInfoboutThisPageDescriptionPlaceholderDescription[];
 extern const char kPageInfoboutThisPagePersistentEntryName[];
 extern const char kPageInfoboutThisPagePersistentEntryDescription[];
 
+extern const char kPageInfoCookiesSubpageName[];
+extern const char kPageInfoCookiesSubpageDescription[];
+
 extern const char kPageInfoMoreAboutThisPageName[];
 extern const char kPageInfoMoreAboutThisPageDescription[];
 

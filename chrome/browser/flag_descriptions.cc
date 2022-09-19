@@ -2207,6 +2207,11 @@ const char kPageInfoboutThisPagePersistentEntryDescription[] =
     "Registers a SidePanel entry on pageload if 'AboutThisPage' info is "
     "available";
 
+const char kPageInfoCookiesSubpageName[] = "Cookies subpage in page info";
+const char kPageInfoCookiesSubpageDescription[] =
+    "Enable the Cookies subpage in page info for managing cookies and site "
+    "data.";
+
 const char kPageInfoMoreAboutThisPageName[] =
     "'More about this page' link in page info";
 const char kPageInfoMoreAboutThisPageDescription[] =
