@@ -36,10 +36,6 @@ class FollowTabHelper : public web::WebStateObserver,
 
   ~FollowTabHelper() override;
 
-  // Creates the TabHelper and attaches to `web_state`. `web_state` must not be
-  // null.
-  static void CreateForWebState(web::WebState* web_state);
-
   // Sets the presenter for follow in-product help (IPH). `presenter` is not
   // retained by this tab helper.
   void set_follow_iph_presenter(id<FollowIPHPresenter> presenter) {

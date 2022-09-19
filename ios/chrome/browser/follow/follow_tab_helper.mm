@@ -62,15 +62,6 @@ FollowTabHelper::~FollowTabHelper() {
   DCHECK(!web_state_);
 }
 
-// static
-void FollowTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new FollowTabHelper(web_state)));
-  }
-}
-
 FollowTabHelper::FollowTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   // Ensure that follow is not enabled for incognito.
