@@ -14,6 +14,8 @@
 
 namespace content {
 
+using RetargetEventType = ui::AXTreeManager::RetargetEventType;
+
 class BrowserAccessibilityTest : public ::testing::Test {
  public:
   BrowserAccessibilityTest();
@@ -82,9 +84,9 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(text_obj->CanFireEvents());
 #endif
-  BrowserAccessibility* retarget = manager->RetargetForEvents(
-      text_obj, BrowserAccessibilityManager::RetargetEventType::
-                    RetargetEventTypeBlinkHover);
+  BrowserAccessibility* retarget =
+      manager->RetargetBrowserAccessibilityForEvents(
+          text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   EXPECT_TRUE(retarget->CanFireEvents());
 
   manager.reset();
