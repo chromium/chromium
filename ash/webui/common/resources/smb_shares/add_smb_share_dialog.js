@@ -9,23 +9,23 @@
  * destroyed when finished, and re-created when shown again.
  */
 
-import '../../../cr_elements/cr_button/cr_button.js';
-import '../../../cr_elements/cr_checkbox/cr_checkbox.js';
-import '../../../cr_elements/cr_dialog/cr_dialog.js';
-import '../../../cr_elements/cr_input/cr_input.js';
-import '../../../cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
-import '../../../cr_elements/icons.html.js';
-import '../../../cr_elements/cr_shared_style.css.js';
-import '../../../cr_elements/cr_shared_vars.css.js';
-import '../../../cr_elements/md_select.css.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {WebUIListenerBehavior} from '//resources/cr_elements/web_ui_listener_behavior.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
-import {loadTimeData} from '../../../js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '../../../cr_elements/web_ui_listener_behavior.js';
-
+import {getTemplate} from './add_smb_share_dialog.html.js';
 import {SmbAuthMethod, SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from './smb_browser_proxy.js';
 
 /** @enum{number} */
@@ -49,7 +49,7 @@ const SMB_SHARE_URL_REGEX =
 Polymer({
   is: 'add-smb-share-dialog',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [I18nBehavior, WebUIListenerBehavior],
 

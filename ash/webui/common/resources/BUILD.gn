@@ -32,6 +32,7 @@ web_component_files = [
   "multidevice_setup/setup_succeeded_page.js",
   "multidevice_setup/start_setup_page.js",
   "multidevice_setup/ui_page.js",
+  "smb_shares/add_smb_share_dialog.js",
   "traffic_counters/traffic_counters.js",
 ]
 
@@ -47,6 +48,7 @@ non_web_component_files = [
   "post_message_api/post_message_api_client.js",
   "post_message_api/post_message_api_request_handler.js",
   "post_message_api/post_message_api_server.js",
+  "smb_shares/smb_browser_proxy.js",
   "traffic_counters/traffic_counters_adapter.js",
 ]
 
@@ -169,6 +171,8 @@ checked_in_dts_files = [
 
   "cr_picture/cr_camera.d.ts",
   "cr_picture/cr_picture_pane.d.ts",
+  "smb_shares/add_smb_share_dialog.d.ts",
+  "smb_shares/smb_browser_proxy.d.ts",
   "traffic_counters/traffic_counters_adapter.d.ts",
   "traffic_counters/traffic_counters.d.ts",
 ]
@@ -184,6 +188,7 @@ group("closure_compile") {
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",
     "post_message_api:closure_compile",
+    "smb_shares:closure_compile_module",
     "traffic_counters:closure_compile_module",
   ]
 }

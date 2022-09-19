@@ -13,7 +13,6 @@ group("closure_compile") {
     "network:closure_compile_module",
     "network_health:closure_compile_module",
     "quick_unlock:closure_compile_module",
-    "smb_shares:closure_compile_module",
   ]
 }
 
@@ -24,6 +23,5 @@ group("web_components") {
     "network:web_components",
     "network_health:web_components",
     "quick_unlock:web_components",
-    "smb_shares:web_components",
   ]
 }
