@@ -24,6 +24,7 @@ PrintBackendServiceTestImpl::~PrintBackendServiceTestImpl() = default;
 void PrintBackendServiceTestImpl::Init(const std::string& locale) {
   DCHECK(test_print_backend_);
   print_backend_ = test_print_backend_;
+  PrintBackendServiceImpl::InitCommon(locale);
 }
 
 void PrintBackendServiceTestImpl::EnumeratePrinters(

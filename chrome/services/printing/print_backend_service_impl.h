@@ -88,6 +88,10 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   PrintBackendServiceImpl& operator=(const PrintBackendServiceImpl&) = delete;
   ~PrintBackendServiceImpl() override;
 
+ protected:
+  // Common initialization for both production and test instances.
+  void InitCommon(const std::string& locale);
+
  private:
   friend class PrintBackendServiceTestImpl;
 

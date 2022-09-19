@@ -395,10 +395,20 @@ PrintBackendServiceImpl::PrintBackendServiceImpl(
 
 PrintBackendServiceImpl::~PrintBackendServiceImpl() = default;
 
+void PrintBackendServiceImpl::InitCommon(const std::string& locale) {
+  context_delegate_.SetAppLocale(locale);
+}
+
 void PrintBackendServiceImpl::Init(const std::string& locale) {
+  // Test classes should not invoke this base initialization method, as process
+  // initialization is very different for test frameworks.  Test classes
+  // will also provide their own test version of a `PrintBackend`.
+  // Common initialization for production and testing should instead reside in
+  // `InitCommon()`.
   InitializeProcessForPrinting();
   print_backend_ = PrintBackend::CreateInstance(locale);
-  context_delegate_.SetAppLocale(locale);
+
+  InitCommon(locale);
 }
 
 // TODO(crbug.com/1225111)  Do nothing, this is just to assist an idle timeout
