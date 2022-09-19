@@ -232,7 +232,7 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
 
   const ExecutionContext* execution_context = GetExecutionContext();
 
-  if (property_names.IsEmpty()) {
+  if (property_names.empty()) {
     for (CSSPropertyID property_id : CSSPropertyIDList()) {
       const CSSProperty& property_class =
           CSSProperty::Get(ResolveCSSPropertyID(property_id));

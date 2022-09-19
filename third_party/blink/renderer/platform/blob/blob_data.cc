@@ -235,7 +235,7 @@ void BlobData::AppendDataInternal(base::span<const char> data,
     return;
   bool should_embed_bytes = current_memory_population_ + data.size() <=
                             DataElementBytes::kMaximumEmbeddedDataSize;
-  if (!elements_.IsEmpty() && elements_.back()->is_bytes()) {
+  if (!elements_.empty() && elements_.back()->is_bytes()) {
     // Append bytes to previous element.
     DCHECK(last_bytes_provider_);
     DCHECK(last_bytes_provider_receiver_);

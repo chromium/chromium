@@ -115,7 +115,7 @@ void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
 bool CheckPseudoHasFastRejectFilter::FastReject(
     const Vector<unsigned>& pseudo_has_argument_hashes) const {
   DCHECK(filter_.get());
-  if (pseudo_has_argument_hashes.IsEmpty())
+  if (pseudo_has_argument_hashes.empty())
     return false;
   for (unsigned hash : pseudo_has_argument_hashes) {
     if (!filter_->MayContain(hash))

@@ -133,7 +133,7 @@ mojom::blink::ContactsManager* ContactsManager::GetContactsManager(
 
 const Vector<String>& ContactsManager::GetProperties(
     ScriptState* script_state) {
-  if (properties_.IsEmpty()) {
+  if (properties_.empty()) {
     properties_ = {kEmail, kName, kTel};
 
     if (RuntimeEnabledFeatures::ContactsManagerExtraPropertiesEnabled(
@@ -167,7 +167,7 @@ ScriptPromise ContactsManager::select(
     return ScriptPromise();
   }
 
-  if (properties.IsEmpty()) {
+  if (properties.empty()) {
     exception_state.ThrowTypeError("At least one property must be provided");
     return ScriptPromise();
   }

@@ -75,7 +75,7 @@ MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(
 
   // 1.24.1. Step 1 & 2.
   MediaStreamTrackVector audio_tracks = media_stream.getAudioTracks();
-  if (audio_tracks.IsEmpty()) {
+  if (audio_tracks.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "MediaStream has no audio track");
     return nullptr;

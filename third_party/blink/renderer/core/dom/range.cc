@@ -1742,7 +1742,7 @@ gfx::RectF Range::BoundingRect() const {
     result.Union(quad.BoundingBox());  // Skips empty rects.
 
   // If all rects are empty, return the first rect.
-  if (result.IsEmpty() && !quads.IsEmpty())
+  if (result.IsEmpty() && !quads.empty())
     return quads.front().BoundingBox();
 
   return result;

@@ -323,7 +323,7 @@ void MIDIOutput::DidOpen(bool opened) {
         base::checked_cast<wtf_size_t>(data.first->length()), data.second);
   }
   queued_data.clear();
-  DCHECK(pending_data_.IsEmpty());
+  DCHECK(pending_data_.empty());
 }
 
 void MIDIOutput::Trace(Visitor* visitor) const {

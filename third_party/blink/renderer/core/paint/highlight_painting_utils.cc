@@ -365,7 +365,7 @@ HighlightPaintingUtils::SelectionTextDecoration(
   const Vector<AppliedTextDecoration>& pseudo_style_decorations =
       pseudo_style.AppliedTextDecorations();
 
-  if (style_decorations.IsEmpty())
+  if (style_decorations.empty())
     return absl::nullopt;
 
   absl::optional<AppliedTextDecoration> highlight_text_decoration =

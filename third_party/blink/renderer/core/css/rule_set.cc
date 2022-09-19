@@ -430,8 +430,8 @@ void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
   // interval's layer. Note that the implicit outer layer may also be
   // represented by a nullptr.
   const CascadeLayer* last_interval_layer =
-      layer_intervals_.IsEmpty() ? implicit_outer_layer_.Get()
-                                 : layer_intervals_.back().value.Get();
+      layer_intervals_.empty() ? implicit_outer_layer_.Get()
+                               : layer_intervals_.back().value.Get();
   if (!cascade_layer)
     cascade_layer = implicit_outer_layer_;
   if (cascade_layer == last_interval_layer)
@@ -449,7 +449,7 @@ static void AddRuleToIntervals(const T* value,
                                unsigned position,
                                HeapVector<RuleSet::Interval<T>>& intervals) {
   const T* last_value =
-      intervals.IsEmpty() ? nullptr : intervals.back().value.Get();
+      intervals.empty() ? nullptr : intervals.back().value.Get();
   if (value == last_value)
     return;
 
@@ -645,7 +645,7 @@ void RuleMap::Compact() {
   if (compacted) {
     return;
   }
-  if (backing.IsEmpty()) {
+  if (backing.empty()) {
     // Nothing to do.
     compacted = true;
     return;

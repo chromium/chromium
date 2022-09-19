@@ -326,9 +326,9 @@ void NGOutOfFlowLayoutPart::HandleFragmentation(
 
 #if DCHECK_IS_ON()
   if (column_balancing_info) {
-    DCHECK(!column_balancing_info->columns.IsEmpty());
-    DCHECK(!column_balancing_info->out_of_flow_fragmentainer_descendants
-                .IsEmpty());
+    DCHECK(!column_balancing_info->columns.empty());
+    DCHECK(
+        !column_balancing_info->out_of_flow_fragmentainer_descendants.empty());
   }
 #endif
   base::AutoReset<ColumnBalancingInfo*> balancing_scope(&column_balancing_info_,
@@ -348,16 +348,16 @@ void NGOutOfFlowLayoutPart::HandleFragmentation(
     if (column_balancing_info_) {
       column_balancing_info_->SwapOutOfFlowFragmentainerDescendants(
           &fragmentainer_descendants);
-      DCHECK(!fragmentainer_descendants.IsEmpty());
+      DCHECK(!fragmentainer_descendants.empty());
     } else {
       HandleMulticolsWithPendingOOFs(container_builder_);
       if (container_builder_->HasOutOfFlowFragmentainerDescendants()) {
         container_builder_->SwapOutOfFlowFragmentainerDescendants(
             &fragmentainer_descendants);
-        DCHECK(!fragmentainer_descendants.IsEmpty());
+        DCHECK(!fragmentainer_descendants.empty());
       }
     }
-    if (!fragmentainer_descendants.IsEmpty()) {
+    if (!fragmentainer_descendants.empty()) {
       LogicalOffset fragmentainer_progression = GetFragmentainerProgression(
           *container_builder_, GetFragmentainerType());
       LayoutFragmentainerDescendants(&fragmentainer_descendants,
@@ -930,7 +930,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     for (const auto& descendant :
          NGFragmentedOutOfFlowData::OutOfFlowPositionedFragmentainerDescendants(
              *multicol_box_fragment)) {
-      if (oof_nodes_to_layout.IsEmpty() &&
+      if (oof_nodes_to_layout.empty() &&
           multicol_info->fixedpos_containing_block.Fragment() &&
           previous_multicol_break_token) {
         // At this point, the multicol offset is the offset from the fixedpos
@@ -1012,7 +1012,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // remove any such OOF nodes from the nearest multicol's list of OOF
   // descendants during OOF node propagation, which may cause
   // |oof_nodes_to_layout| to be empty. Return early if this is the case.
-  if (oof_nodes_to_layout.IsEmpty())
+  if (oof_nodes_to_layout.empty())
     return;
 
   DCHECK(!limited_multicol_container_builder
@@ -1286,7 +1286,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         // fragmentainer at an index that does not yet exist in
         // |descendants_to_layout|.
         if (index == descendants_to_layout.size() - 1 &&
-            !fragmented_descendants.IsEmpty())
+            !fragmented_descendants.empty())
           descendants_to_layout.resize(index + 2);
       }
       descendants_to_layout.Shrink(0);
@@ -1862,7 +1862,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   // no OOF children to be added, we will still need to add an empty
   // fragmentainer in its place. Otherwise, return early since there is no work
   // to do.
-  if (pending_descendants.IsEmpty() && descendants_continued.IsEmpty() &&
+  if (pending_descendants.empty() && descendants_continued.empty() &&
       !is_new_fragment)
     return;
 
@@ -1924,7 +1924,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
 
     if (container_builder_->Node().IsPaginatedRoot() &&
         !is_known_to_have_more_fragmentainers &&
-        !fragmented_descendants->IsEmpty()) {
+        !fragmented_descendants->empty()) {
       // This will be the last fragmentainer, unless we have regular
       // (i.e. non-repeated) out-of-flow positioned elements that fragmented.
       bool has_descendant_with_break = false;

@@ -977,7 +977,7 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
 bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetName(), html_names::kTemplateTag.LocalName());
   if (!tree_.OpenElements()->HasTemplateInHTMLScope()) {
-    DCHECK(template_insertion_modes_.IsEmpty() ||
+    DCHECK(template_insertion_modes_.empty() ||
            (template_insertion_modes_.size() == 1 &&
             IsA<HTMLTemplateElement>(fragment_context_.ContextElement())));
     ParseError(token);
@@ -2604,7 +2604,7 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
     case kInRowMode:
       // Emit parse error based on what elements are still open.
       DVLOG(1) << "Not implemented.";
-      if (!template_insertion_modes_.IsEmpty() &&
+      if (!template_insertion_modes_.empty() &&
           ProcessEndOfFileForInTemplateContents(token))
         return;
       break;
@@ -2634,7 +2634,7 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
     case kInSelectMode:
       if (tree_.CurrentNode() != tree_.OpenElements()->RootNode())
         ParseError(token);
-      if (!template_insertion_modes_.IsEmpty() &&
+      if (!template_insertion_modes_.empty() &&
           ProcessEndOfFileForInTemplateContents(token))
         return;
       break;
@@ -2966,7 +2966,7 @@ void HTMLTreeBuilder::Finished() {
   if (IsParsingFragment())
     return;
 
-  DCHECK(template_insertion_modes_.IsEmpty());
+  DCHECK(template_insertion_modes_.empty());
 #if DCHECK_IS_ON()
   DCHECK(is_attached_);
 #endif

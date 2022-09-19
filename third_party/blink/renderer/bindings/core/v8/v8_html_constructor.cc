@@ -116,7 +116,7 @@ void V8HTMLConstructor::HtmlConstructor(
 
   // 8. If definition's construction stack is empty...
   Element* element;
-  if (definition->GetConstructionStack().IsEmpty()) {
+  if (definition->GetConstructionStack().empty()) {
     // This is an element being created with 'new' from script
     element = definition->CreateElementForConstructor(*window->document());
   } else {

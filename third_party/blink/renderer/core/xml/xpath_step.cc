@@ -68,9 +68,8 @@ void Step::Optimize() {
   HeapVector<Member<Predicate>> remaining_predicates;
   for (const auto& predicate : predicates_) {
     if ((!predicate->IsContextPositionSensitive() ||
-         GetNodeTest().MergedPredicates().IsEmpty()) &&
-        !predicate->IsContextSizeSensitive() &&
-        remaining_predicates.IsEmpty()) {
+         GetNodeTest().MergedPredicates().empty()) &&
+        !predicate->IsContextSizeSensitive() && remaining_predicates.empty()) {
       GetNodeTest().MergedPredicates().push_back(predicate);
     } else {
       remaining_predicates.push_back(predicate);

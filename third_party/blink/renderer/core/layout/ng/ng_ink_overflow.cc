@@ -458,7 +458,7 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
 
   // Following effects, such as shadows, operate on the text decorations,
   // so compute text decoration overflow first.
-  if (!style.AppliedTextDecorations().IsEmpty() && scaled_font.PrimaryFont()) {
+  if (!style.AppliedTextDecorations().empty() && scaled_font.PrimaryFont()) {
     LayoutRect decoration_rect = ComputeTextDecorationOverflow(
         style, scaled_font, rect_in_container.offset, ink_overflow,
         inline_context);
@@ -526,7 +526,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const PhysicalOffset& offset_in_container,
     const LayoutRect& ink_overflow,
     const NGInlinePaintContext* inline_context) {
-  DCHECK(!style.AppliedTextDecorations().IsEmpty());
+  DCHECK(!style.AppliedTextDecorations().empty());
   // Ideally we should pass MinimumThickness1(false) if this function is
   // called for NGFragmentItem::kSvgText. However it requires to add arguments
   // to some functions.

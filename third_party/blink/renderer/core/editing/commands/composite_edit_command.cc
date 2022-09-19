@@ -884,7 +884,7 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
   if (text_layout_object->ContainsReversedText())
     std::sort(sorted_text_boxes.begin(), sorted_text_boxes.end(),
               InlineTextBox::CompareByStart);
-  InlineTextBox* box = sorted_text_boxes.IsEmpty()
+  InlineTextBox* box = sorted_text_boxes.empty()
                            ? nullptr
                            : sorted_text_boxes[sorted_text_boxes_position];
 

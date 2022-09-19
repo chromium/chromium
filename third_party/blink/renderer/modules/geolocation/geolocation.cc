@@ -342,7 +342,7 @@ void Geolocation::HandleError(GeolocationPositionError* error) {
   DCHECK(error);
 
   DCHECK(one_shots_being_invoked_->IsEmpty());
-  DCHECK(watchers_being_invoked_.IsEmpty());
+  DCHECK(watchers_being_invoked_.empty());
 
   if (error->IsFatal()) {
     // Stop the timers of |one_shots_| and |watchers_| before swapping/copying
@@ -405,7 +405,7 @@ void Geolocation::MakeSuccessCallbacks() {
   DCHECK(last_position_);
 
   DCHECK(one_shots_being_invoked_->IsEmpty());
-  DCHECK(watchers_being_invoked_.IsEmpty());
+  DCHECK(watchers_being_invoked_.empty());
 
   // Set |one_shots_being_invoked_| and |watchers_being_invoked_| to the
   // callbacks to be invoked, which must not change during invocation of
@@ -533,7 +533,7 @@ void Geolocation::PageVisibilityChanged() {
 
 bool Geolocation::HasPendingActivity() const {
   return !one_shots_->IsEmpty() || !one_shots_being_invoked_->IsEmpty() ||
-         !watchers_->IsEmpty() || !watchers_being_invoked_.IsEmpty();
+         !watchers_->IsEmpty() || !watchers_being_invoked_.empty();
 }
 
 void Geolocation::OnGeolocationConnectionError() {

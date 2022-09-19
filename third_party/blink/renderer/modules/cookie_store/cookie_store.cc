@@ -386,7 +386,7 @@ void CookieStore::OnCookieChange(
     network::mojom::blink::CookieChangeInfoPtr change) {
   HeapVector<Member<CookieListItem>> changed, deleted;
   CookieChangeEvent::ToEventInfo(change, changed, deleted);
-  if (changed.IsEmpty() && deleted.IsEmpty()) {
+  if (changed.empty() && deleted.empty()) {
     // The backend only reported OVERWRITE events, which are dropped.
     return;
   }
@@ -479,7 +479,7 @@ void CookieStore::GetAllForUrlToGetResult(
     return;
   ScriptState::Scope scope(script_state);
 
-  if (backend_cookies.IsEmpty()) {
+  if (backend_cookies.empty()) {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return;
   }

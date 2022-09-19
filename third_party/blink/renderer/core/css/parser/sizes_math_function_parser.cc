@@ -40,7 +40,7 @@ bool SizesMathFunctionParser::HandleOperator(Vector<CSSParserToken>& stack,
                         incoming_operator_priority))
     return false;
 
-  while (!stack.IsEmpty()) {
+  while (!stack.empty()) {
     // While there is an operator (op2) at the top of the stack,
     // determine its precedence, and...
     const CSSParserToken& top_of_stack = stack.back();
@@ -72,7 +72,7 @@ bool SizesMathFunctionParser::HandleRightParenthesis(
   // Also count the number of commas to get the number of function
   // parameters if this right parenthesis closes a function.
   wtf_size_t comma_count = 0;
-  while (!stack.IsEmpty() && stack.back().GetType() != kLeftParenthesisToken &&
+  while (!stack.empty() && stack.back().GetType() != kLeftParenthesisToken &&
          stack.back().GetType() != kFunctionToken) {
     if (stack.back().GetType() == kCommaToken)
       ++comma_count;
@@ -82,7 +82,7 @@ bool SizesMathFunctionParser::HandleRightParenthesis(
   }
   // If the stack runs out without finding a left parenthesis, then there
   // are mismatched parentheses.
-  if (stack.IsEmpty())
+  if (stack.empty())
     return false;
 
   CSSParserToken left_side = stack.back();
@@ -119,14 +119,14 @@ bool SizesMathFunctionParser::HandleComma(Vector<CSSParserToken>& stack,
   // Treat comma as a binary right-associative operation for now, so that
   // when reaching the right parenthesis of the function, we can get the
   // number of parameters by counting the number of commas.
-  while (!stack.IsEmpty() && stack.back().GetType() != kFunctionToken &&
+  while (!stack.empty() && stack.back().GetType() != kFunctionToken &&
          stack.back().GetType() != kLeftParenthesisToken &&
          stack.back().GetType() != kCommaToken) {
     AppendOperator(stack.back());
     stack.pop_back();
   }
   // Commas are allowed as function parameter separators only
-  if (stack.IsEmpty() || stack.back().GetType() == kLeftParenthesisToken)
+  if (stack.empty() || stack.back().GetType() == kLeftParenthesisToken)
     return false;
   stack.push_back(token);
   return true;
@@ -234,7 +234,7 @@ bool SizesMathFunctionParser::CalcToReversePolishNotation(
 
   // When there are no more tokens to read:
   // While there are still operator tokens in the stack:
-  while (!stack.IsEmpty()) {
+  while (!stack.empty()) {
     // If the operator token on the top of the stack is a parenthesis, then
     // there are unclosed parentheses.
     CSSParserTokenType type = stack.back().GetType();

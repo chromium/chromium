@@ -42,7 +42,7 @@ class CORE_EXPORT LayoutShiftRegion {
   }
 
   const Vector<gfx::Rect>& GetRects() const { return rects_; }
-  bool IsEmpty() const { return rects_.IsEmpty(); }
+  bool IsEmpty() const { return rects_.empty(); }
   void Reset() { rects_.clear(); }
 
   uint64_t Area() const;

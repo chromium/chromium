@@ -102,7 +102,7 @@ DepthOrderedLayoutObjectList::Unordered() const {
 
 const HeapVector<LayoutObjectWithDepth>&
 DepthOrderedLayoutObjectList::Ordered() {
-  if (data_->objects_.IsEmpty() || !data_->ordered_objects_.IsEmpty())
+  if (data_->objects_.IsEmpty() || !data_->ordered_objects_.empty())
     return data_->ordered_objects_;
 
   CopyToVector(data_->objects_, data_->ordered_objects_);

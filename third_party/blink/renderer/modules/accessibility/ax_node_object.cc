@@ -3089,7 +3089,7 @@ void AXNodeObject::Dropeffects(
   TokenVectorFromAttribute(GetElement(), str_dropeffects,
                            html_names::kAriaDropeffectAttr);
 
-  if (str_dropeffects.IsEmpty()) {
+  if (str_dropeffects.empty()) {
     dropeffects.push_back(ax::mojom::blink::Dropeffect::kNone);
     return;
   }
@@ -3390,7 +3390,7 @@ String AXNodeObject::TextAlternative(
     for (NameSource& name_source : *name_sources) {
       if (!name_source.text.IsNull() && !name_source.superseded) {
         name_from = name_source.type;
-        if (!name_source.related_objects.IsEmpty())
+        if (!name_source.related_objects.empty())
           *related_objects = name_source.related_objects;
         return name_source.text;
       }
@@ -3852,7 +3852,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
       continue;
 
     if (ui::CanHaveInlineTextBoxChildren(work_obj->RoleValue())) {
-      if (work_obj->CachedChildrenIncludingIgnored().IsEmpty()) {
+      if (work_obj->CachedChildrenIncludingIgnored().empty()) {
         // We only need to add inline textbox children if they aren't present.
         // Although some platforms (e.g. Android), load inline text boxes
         // on subtrees that may later be stale, once they are stale, the old
@@ -4188,7 +4188,7 @@ void AXNodeObject::AddChildren() {
   // childrenChanged should have been called, which leads to children_dirty_
   // being true, then UpdateChildrenIfNecessary() clears the children before
   // calling AddChildren().
-  DCHECK(children_.IsEmpty())
+  DCHECK(children_.empty())
       << "\nParent still has " << children_.size() << " children before adding:"
       << "\nParent is " << ToString(true, true) << "\nFirst child is "
       << children_[0]->ToString(true, true);
@@ -4549,7 +4549,7 @@ AtomicString AXNodeObject::Language() const {
     AtomicString lang = document_element->ComputeInheritedLanguage();
     Vector<String> languages;
     String(lang).Split(',', languages);
-    if (!languages.IsEmpty())
+    if (!languages.empty())
       return AtomicString(languages[0].StripWhiteSpace());
   }
 
@@ -5685,7 +5685,7 @@ String AXNodeObject::Description(
     for (DescriptionSource& description_source : *description_sources) {
       if (!description_source.text.IsNull() && !description_source.superseded) {
         description_from = description_source.type;
-        if (!description_source.related_objects.IsEmpty())
+        if (!description_source.related_objects.empty())
           *related_objects = description_source.related_objects;
         return description_source.text;
       }

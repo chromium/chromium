@@ -506,7 +506,7 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
   if (name == svg_names::kBeginAttr) {
-    if (!conditions_.IsEmpty()) {
+    if (!conditions_.empty()) {
       ClearConditions();
       ParseBeginOrEnd(FastGetAttribute(svg_names::kEndAttr), kEnd);
     }
@@ -517,7 +517,7 @@ void SVGSMILElement::ParseAttribute(const AttributeModificationParams& params) {
       InstanceListChanged();
     }
   } else if (name == svg_names::kEndAttr) {
-    if (!conditions_.IsEmpty()) {
+    if (!conditions_.empty()) {
       ClearConditions();
       ParseBeginOrEnd(FastGetAttribute(svg_names::kBeginAttr), kBegin);
     }

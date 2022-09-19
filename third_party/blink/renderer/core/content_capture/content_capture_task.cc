@@ -104,7 +104,7 @@ bool ContentCaptureTask::CaptureContent() {
   if (histogram_reporter_)
     histogram_reporter_->OnCaptureContentStarted();
   bool result = CaptureContent(buffer);
-  if (!buffer.IsEmpty())
+  if (!buffer.empty())
     task_session_->SetCapturedContent(buffer);
   if (histogram_reporter_)
     histogram_reporter_->OnCaptureContentEnded(buffer.size());

@@ -405,7 +405,7 @@ String LocaleICU::DateTimeFormatWithoutSeconds() {
 }
 
 const Vector<String>& LocaleICU::ShortMonthLabels() {
-  if (!short_month_labels_.IsEmpty())
+  if (!short_month_labels_.empty())
     return short_month_labels_;
   if (InitializeShortDateFormat()) {
     if (std::unique_ptr<Vector<String>> labels = CreateLabelVector(
@@ -421,7 +421,7 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
 }
 
 const Vector<String>& LocaleICU::StandAloneMonthLabels() {
-  if (!stand_alone_month_labels_.IsEmpty())
+  if (!stand_alone_month_labels_.empty())
     return stand_alone_month_labels_;
   UDateFormat* month_formatter = OpenDateFormatForStandAloneMonthLabels(false);
   if (month_formatter) {
@@ -438,7 +438,7 @@ const Vector<String>& LocaleICU::StandAloneMonthLabels() {
 }
 
 const Vector<String>& LocaleICU::ShortStandAloneMonthLabels() {
-  if (!short_stand_alone_month_labels_.IsEmpty())
+  if (!short_stand_alone_month_labels_.empty())
     return short_stand_alone_month_labels_;
   UDateFormat* month_formatter = OpenDateFormatForStandAloneMonthLabels(true);
   if (month_formatter) {

@@ -44,7 +44,7 @@ MediaStreamSet::MediaStreamSet(
     return;
   }
 
-  if (stream_descriptors.IsEmpty()) {
+  if (stream_descriptors.empty()) {
     // No streams -> all streams are initialized, meaning the set
     // itself is fully initialized.
     context->GetTaskRunner(TaskType::kInternalMedia)

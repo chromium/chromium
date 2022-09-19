@@ -216,7 +216,7 @@ std::unique_ptr<AXValueSource> CreateValueSource(NameSource& name_source) {
   String type = ValueSourceType(name_source.type);
   std::unique_ptr<AXValueSource> value_source =
       AXValueSource::create().setType(type).build();
-  if (!name_source.related_objects.IsEmpty()) {
+  if (!name_source.related_objects.empty()) {
     if (name_source.attribute == html_names::kAriaLabelledbyAttr ||
         name_source.attribute == html_names::kAriaLabeledbyAttr) {
       std::unique_ptr<AXValue> attribute_value = CreateRelatedNodeListValue(

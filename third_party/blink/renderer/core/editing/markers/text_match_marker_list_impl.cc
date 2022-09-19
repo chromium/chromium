@@ -22,7 +22,7 @@ DocumentMarker::MarkerType TextMatchMarkerListImpl::MarkerType() const {
 }
 
 bool TextMatchMarkerListImpl::IsEmpty() const {
-  return markers_.IsEmpty();
+  return markers_.empty();
 }
 
 void TextMatchMarkerListImpl::Add(DocumentMarker* marker) {

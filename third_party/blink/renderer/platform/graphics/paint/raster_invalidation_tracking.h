@@ -81,7 +81,7 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
                        const String& debug_name,
                        const gfx::Rect&,
                        PaintInvalidationReason);
-  bool HasInvalidations() const { return !invalidations_.IsEmpty(); }
+  bool HasInvalidations() const { return !invalidations_.empty(); }
   const Vector<RasterInvalidationInfo>& Invalidations() const {
     return invalidations_;
   }

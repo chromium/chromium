@@ -35,7 +35,7 @@ NDEFMessage* NDEFMessage::Create(const ScriptState* script_state,
 
   // NDEFMessageInit#records is a required field.
   DCHECK(init->hasRecords());
-  if (init->records().IsEmpty()) {
+  if (init->records().empty()) {
     exception_state.ThrowTypeError(
         "NDEFMessageInit#records being empty makes no sense.");
     return nullptr;

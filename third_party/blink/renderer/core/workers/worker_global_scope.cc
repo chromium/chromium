@@ -265,7 +265,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
   // |this| roughly corresponds to the current settings object.
 
   // Step 3: "If urls is empty, return."
-  if (urls.IsEmpty())
+  if (urls.empty())
     return;
 
   // Step 4: "Parse each value in urls relative to settings object. If any fail,

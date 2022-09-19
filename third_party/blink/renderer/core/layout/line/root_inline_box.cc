@@ -607,7 +607,7 @@ void RootInlineBox::AscentAndDescentForBox(
   bool include_leading = IncludeLeadingForBox(box);
   bool set_used_font_with_leading = false;
 
-  if (used_fonts && !used_fonts->IsEmpty() &&
+  if (used_fonts && !used_fonts->empty() &&
       (box->GetLineLayoutItem()
            .Style(IsFirstLineStyle())
            ->LineHeight()

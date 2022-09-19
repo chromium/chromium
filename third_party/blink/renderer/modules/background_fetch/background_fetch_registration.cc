@@ -253,7 +253,7 @@ void BackgroundFetchRegistration::DidGetMatchingRequests(
   }
 
   if (!return_all) {
-    if (settled_fetches.IsEmpty()) {
+    if (settled_fetches.empty()) {
       // Nothing was matched. Resolve with `undefined`.
       resolver->Resolve();
       return;
@@ -374,7 +374,7 @@ bool BackgroundFetchRegistration::HasPendingActivity() const {
   if (GetExecutionContext()->IsContextDestroyed())
     return false;
 
-  return !observers_.IsEmpty();
+  return !observers_.empty();
 }
 
 void BackgroundFetchRegistration::UpdateUI(

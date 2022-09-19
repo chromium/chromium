@@ -120,7 +120,7 @@ void MultipartImageResourceParser::Finish() {
     return;
   // If we have any pending data and we're not in a header, go ahead and send
   // it to the client.
-  if (!is_parsing_headers_ && !data_.IsEmpty())
+  if (!is_parsing_headers_ && !data_.empty())
     client_->MultipartDataReceived(data_.data(), data_.size());
   data_.clear();
   saw_last_boundary_ = true;

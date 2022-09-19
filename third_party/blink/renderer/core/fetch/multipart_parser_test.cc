@@ -17,7 +17,7 @@ namespace blink {
 namespace {
 
 String toString(const Vector<char>& data) {
-  if (data.IsEmpty())
+  if (data.empty())
     return String("");
   return String(data.data(), data.size());
 }

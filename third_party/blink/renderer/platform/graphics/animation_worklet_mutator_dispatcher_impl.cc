@@ -123,7 +123,7 @@ void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
   DCHECK(client_);
   DCHECK(host_queue_->BelongsToCurrentThread());
   DCHECK(mutator_input_map_.IsEmpty());
-  DCHECK(outputs_->get().IsEmpty());
+  DCHECK(outputs_->get().empty());
 
   mutator_input_map_ = CreateInputMap(*mutator_input);
   if (mutator_input_map_.IsEmpty())
@@ -305,7 +305,7 @@ AnimationWorkletMutatorDispatcherImpl::CreateInputMap(
 void AnimationWorkletMutatorDispatcherImpl::RequestMutations(
     CrossThreadOnceClosure done_callback) {
   DCHECK(client_);
-  DCHECK(outputs_->get().IsEmpty());
+  DCHECK(outputs_->get().empty());
 
   int num_requests = mutator_map_.size();
   if (num_requests == 0) {

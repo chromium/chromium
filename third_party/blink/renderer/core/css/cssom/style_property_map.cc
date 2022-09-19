@@ -232,14 +232,14 @@ const CSSValue* CoerceStyleValuesOrStrings(
   DCHECK(property.IsRepeated());
   DCHECK_EQ(property.IDEquals(CSSPropertyID::kVariable),
             !custom_property_name.IsNull());
-  if (values.IsEmpty())
+  if (values.empty())
     return nullptr;
 
   CSSStyleValueVector style_values =
       StyleValueFactory::CoerceStyleValuesOrStrings(
           property, custom_property_name, values, execution_context);
 
-  if (style_values.IsEmpty())
+  if (style_values.empty())
     return nullptr;
 
   CSSValueList* result = CssValueListForPropertyID(property.PropertyID());
@@ -339,7 +339,7 @@ void StylePropertyMap::append(
     const String& property_name,
     const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
     ExceptionState& exception_state) {
-  if (values.IsEmpty())
+  if (values.empty())
     return;
 
   const CSSPropertyID property_id =

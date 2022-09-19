@@ -443,11 +443,11 @@ Element* HTMLCollection::namedItem(const AtomicString& name) const {
 
   const NamedItemCache& cache = GetNamedItemCache();
   const auto* id_results = cache.GetElementsById(name);
-  if (id_results && !id_results->IsEmpty())
+  if (id_results && !id_results->empty())
     return id_results->front();
 
   const auto* name_results = cache.GetElementsByName(name);
-  if (name_results && !name_results->IsEmpty())
+  if (name_results && !name_results->empty())
     return name_results->front();
 
   return nullptr;
@@ -529,7 +529,7 @@ void HTMLCollection::UpdateIdNameCache() const {
 
 void HTMLCollection::NamedItems(const AtomicString& name,
                                 HeapVector<Member<Element>>& result) const {
-  DCHECK(result.IsEmpty());
+  DCHECK(result.empty());
   if (name.IsEmpty())
     return;
 

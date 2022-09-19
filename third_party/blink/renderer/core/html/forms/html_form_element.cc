@@ -943,7 +943,7 @@ void HTMLFormElement::GetNamedElements(
   Element* element_from_past = ElementFromPastNamesMap(name);
   if (named_items.size() && named_items.front() != element_from_past) {
     AddToPastNamesMap(named_items.front().Get(), name);
-  } else if (element_from_past && named_items.IsEmpty()) {
+  } else if (element_from_past && named_items.empty()) {
     named_items.push_back(element_from_past);
     UseCounter::Count(GetDocument(),
                       WebFeature::kFormNameAccessForPastNamesMap);
@@ -977,7 +977,7 @@ V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(
   {
     HeapVector<Member<Element>> elements;
     GetNamedElements(name, elements);
-    if (elements.IsEmpty())
+    if (elements.empty())
       return nullptr;
   }
 
@@ -985,10 +985,10 @@ V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(
   // but if the first the size cannot be zero.
   HeapVector<Member<Element>> elements;
   GetNamedElements(name, elements);
-  DCHECK(!elements.IsEmpty());
+  DCHECK(!elements.empty());
 
   bool only_match_img =
-      !elements.IsEmpty() && IsA<HTMLImageElement>(*elements.front());
+      !elements.empty() && IsA<HTMLImageElement>(*elements.front());
   if (only_match_img) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kFormNameAccessForImageElement);

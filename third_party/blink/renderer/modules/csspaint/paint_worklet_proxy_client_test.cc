@@ -184,7 +184,7 @@ TEST_F(PaintWorkletProxyClientTest, AddGlobalScopes) {
       CreateThreadAndProvidePaintWorkletProxyClient(
           &GetDocument(), reporting_proxy_.get(), proxy_client_);
 
-  EXPECT_TRUE(proxy_client_->GetGlobalScopesForTesting().IsEmpty());
+  EXPECT_TRUE(proxy_client_->GetGlobalScopesForTesting().empty());
 
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(

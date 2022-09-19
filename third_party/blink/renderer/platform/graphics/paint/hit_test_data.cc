@@ -30,13 +30,13 @@ String HitTestData::ToString() const {
   sb.Append("{");
 
   bool printed_top_level_field = false;
-  if (!touch_action_rects.IsEmpty()) {
+  if (!touch_action_rects.empty()) {
     sb.Append("touch_action_rects: ");
     sb.Append(RectsAsString<TouchActionRect>(touch_action_rects));
     printed_top_level_field = true;
   }
 
-  if (!wheel_event_rects.IsEmpty()) {
+  if (!wheel_event_rects.empty()) {
     sb.Append("wheel_event_rects: ");
     sb.Append(RectsAsString<gfx::Rect>(wheel_event_rects));
     printed_top_level_field = true;

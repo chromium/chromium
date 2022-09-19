@@ -869,7 +869,7 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
   // start offset.
   const DocumentMarkerVector& suggestion_markers =
       MarkersFor(text, DocumentMarker::MarkerTypes::Suggestion());
-  if (suggestion_markers.IsEmpty()) {
+  if (suggestion_markers.empty()) {
     // If there are no suggestion markers, we can return early as a minor
     // performance optimization.
     markers_to_paint.AppendVector(MarkersFor(

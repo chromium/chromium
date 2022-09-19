@@ -205,7 +205,7 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(MatchResultICU& result) const {
   DCHECK_LE(result.start + result.length, text_length);
   DCHECK_GT(result.length, 0u);
 
-  if (!normalized_search_text_.IsEmpty() && !IsCorrectKanaMatch(text, result))
+  if (!normalized_search_text_.empty() && !IsCorrectKanaMatch(text, result))
     return true;
 
   if ((options_ & kWholeWord) && !IsWholeWordMatch(text, text_length, result))

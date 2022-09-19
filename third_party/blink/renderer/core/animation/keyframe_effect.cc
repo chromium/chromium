@@ -384,11 +384,11 @@ void KeyframeEffect::StartAnimationOnCompositor(
       *effect_target_, group, start_time, time_offset, SpecifiedTiming(),
       NormalizedTiming(), GetAnimation(), *compositor_animation, *Model(),
       compositor_keyframe_model_ids_, animation_playback_rate);
-  DCHECK(!compositor_keyframe_model_ids_.IsEmpty());
+  DCHECK(!compositor_keyframe_model_ids_.empty());
 }
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor() const {
-  return !compositor_keyframe_model_ids_.IsEmpty();
+  return !compositor_keyframe_model_ids_.empty();
 }
 
 bool KeyframeEffect::HasActiveAnimationsOnCompositor(
@@ -593,7 +593,7 @@ void KeyframeEffect::ApplyEffects() {
     HeapVector<Member<Interpolation>> interpolations;
     model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
                    NormalizedTiming().iteration_duration, interpolations);
-    if (!interpolations.IsEmpty()) {
+    if (!interpolations.empty()) {
       auto* sampled_effect =
           MakeGarbageCollected<SampledEffect>(this, owner_->SequenceNumber());
       sampled_effect->MutableInterpolations().swap(interpolations);

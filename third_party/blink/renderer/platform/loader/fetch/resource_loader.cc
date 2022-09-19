@@ -1647,7 +1647,7 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
   // aliases: if any one of the aliases is on the denylist, then the
   // request will be deemed on the denylist and treated accordingly (blocked
   // and/or tagged).
-  out_metric_info->has_aliases = !dns_aliases.IsEmpty();
+  out_metric_info->has_aliases = !dns_aliases.empty();
   out_metric_info->list_length = dns_aliases.size();
 
   // If there are no aliases, we have no reason to block based on them.

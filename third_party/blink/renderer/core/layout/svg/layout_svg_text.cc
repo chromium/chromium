@@ -76,7 +76,7 @@ LayoutSVGText::LayoutSVGText(Element* node)
 }
 
 LayoutSVGText::~LayoutSVGText() {
-  DCHECK(descendant_text_nodes_.IsEmpty());
+  DCHECK(descendant_text_nodes_.empty());
 }
 
 void LayoutSVGText::Trace(Visitor* visitor) const {
@@ -129,7 +129,7 @@ void LayoutSVGText::SubtreeStructureChanged(
     LayoutInvalidationReasonForTracing reason) {
   NOT_DESTROYED();
   if (BeingDestroyed() || !EverHadLayout()) {
-    DCHECK(descendant_text_nodes_.IsEmpty());
+    DCHECK(descendant_text_nodes_.empty());
     return;
   }
   if (DocumentBeingDestroyed())

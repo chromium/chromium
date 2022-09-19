@@ -195,7 +195,7 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage);
   WindowPostMessageOptions* options = WindowPostMessageOptions::Create();
   options->setTargetOrigin(target_origin);
-  if (!transfer.IsEmpty())
+  if (!transfer.empty())
     options->setTransfer(transfer);
   postMessage(isolate, message, options, exception_state);
 }
@@ -567,7 +567,7 @@ void DOMWindow::InstallCoopAccessMonitor(
 // Check if the accessing context would be able to access this window if COOP
 // was enforced. If this isn't a report is sent.
 void DOMWindow::ReportCoopAccess(const char* property_name) {
-  if (coop_access_monitor_.IsEmpty())  // Fast early return. Very likely true.
+  if (coop_access_monitor_.empty())  // Fast early return. Very likely true.
     return;
 
   v8::Isolate* isolate = window_proxy_manager_->GetIsolate();

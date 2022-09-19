@@ -81,7 +81,7 @@ TEST(ResourceResponseTest, AddHttpHeaderFieldWithMultipleValues) {
 TEST(ResourceResponseTest, DnsAliasesCanBeSetAndAccessed) {
   ResourceResponse response(CreateTestResponse());
 
-  EXPECT_TRUE(response.DnsAliases().IsEmpty());
+  EXPECT_TRUE(response.DnsAliases().empty());
 
   Vector<String> aliases({"alias1", "alias2"});
   response.SetDnsAliases(aliases);

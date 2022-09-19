@@ -328,7 +328,7 @@ void V8ScriptValueSerializer::FinalizeTransfer(
   if (transferables_)
     array_buffers.AppendVector(transferables_->array_buffers);
 
-  if (!array_buffers.IsEmpty()) {
+  if (!array_buffers.empty()) {
     serialized_script_value_->TransferArrayBuffers(isolate, array_buffers,
                                                    exception_state);
     if (exception_state.HadException())

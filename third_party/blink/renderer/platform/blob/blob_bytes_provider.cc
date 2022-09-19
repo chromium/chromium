@@ -134,8 +134,8 @@ BlobBytesProvider::~BlobBytesProvider() {
 void BlobBytesProvider::AppendData(scoped_refptr<RawData> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!data_.IsEmpty()) {
-    uint64_t last_offset = offsets_.IsEmpty() ? 0 : offsets_.back();
+  if (!data_.empty()) {
+    uint64_t last_offset = offsets_.empty() ? 0 : offsets_.back();
     offsets_.push_back(last_offset + data_.back()->length());
   }
   data_.push_back(std::move(data));
@@ -144,7 +144,7 @@ void BlobBytesProvider::AppendData(scoped_refptr<RawData> data) {
 void BlobBytesProvider::AppendData(base::span<const char> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (data_.IsEmpty() ||
+  if (data_.empty() ||
       data_.back()->length() + data.size() > kMaxConsolidatedItemSizeInBytes) {
     AppendData(RawData::Create());
   }

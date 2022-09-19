@@ -228,7 +228,7 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
   const PhysicalRect text_rect = ComputeTextFrameRect(PhysicalOffset());
   LayoutRect ink_overflow = text_rect.ToLayoutRect();
 
-  if (!style.AppliedTextDecorations().IsEmpty()) {
+  if (!style.AppliedTextDecorations().empty()) {
     // |LayoutNGTextCombine| does not support decorating box, as it is not
     // supported in vertical flow and text-combine is only for vertical flow.
     const LayoutRect decoration_rect =

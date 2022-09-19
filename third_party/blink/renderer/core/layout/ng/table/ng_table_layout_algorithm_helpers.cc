@@ -559,7 +559,7 @@ void DistributeColspanCellToColumnsAuto(
     const NGTableTypes::ColspanCell& colspan_cell,
     LayoutUnit inline_border_spacing,
     NGTableTypes::Columns* column_constraints) {
-  if (column_constraints->data.IsEmpty())
+  if (column_constraints->data.empty())
     return;
   unsigned effective_span =
       std::min(colspan_cell.span,
@@ -764,7 +764,7 @@ void DistributeExcessBlockSizeToRows(
     return;
 
   // Step 1: percentage rows grow to no more than their percentage size.
-  if (!percent_rows_with_deficit.IsEmpty()) {
+  if (!percent_rows_with_deficit.empty()) {
     // Don't distribute more than the percent block-size deficit.
     LayoutUnit percent_distributable_block_size =
         std::min(percent_block_size_deficit, distributable_block_size);
@@ -790,7 +790,7 @@ void DistributeExcessBlockSizeToRows(
   }
 
   // Step 2: Distribute to rows that have an originating rowspan.
-  if (!rows_with_originating_rowspan.IsEmpty()) {
+  if (!rows_with_originating_rowspan.empty()) {
     LayoutUnit remaining_deficit = distributable_block_size;
     for (auto& index : rows_with_originating_rowspan) {
       auto& row = rows->at(index);
@@ -807,7 +807,7 @@ void DistributeExcessBlockSizeToRows(
 
   // Step 3: "unconstrained non-empty rows" grow in proportion to current
   // block size.
-  if (!unconstrained_non_empty_rows.IsEmpty()) {
+  if (!unconstrained_non_empty_rows.empty()) {
     LayoutUnit remaining_deficit = distributable_block_size;
     for (auto& index : unconstrained_non_empty_rows) {
       auto& row = rows->at(index);
@@ -824,7 +824,7 @@ void DistributeExcessBlockSizeToRows(
 
   // Step 4: Empty row distribution
   // At this point all rows are empty and/or constrained.
-  if (!empty_rows.IsEmpty()) {
+  if (!empty_rows.empty()) {
     const bool has_only_empty_rows = empty_rows.size() == row_count;
     if (is_rowspan_distribution) {
       // If we are doing a rowspan distribution, *and* only have empty rows,
@@ -842,7 +842,7 @@ void DistributeExcessBlockSizeToRows(
       LayoutUnit remaining_deficit = distributable_block_size;
       // If there are constrained and unconstrained empty rows, only
       // the unconstrained rows grow.
-      Vector<wtf_size_t>& rows_to_grow = !unconstrained_empty_rows.IsEmpty()
+      Vector<wtf_size_t>& rows_to_grow = !unconstrained_empty_rows.empty()
                                              ? unconstrained_empty_rows
                                              : empty_rows;
       for (auto& index : rows_to_grow) {
@@ -860,7 +860,7 @@ void DistributeExcessBlockSizeToRows(
 
   // Step 5: Grow non-empty rows in proportion to current block size.
   // It grows constrained, and unconstrained rows.
-  if (!non_empty_rows.IsEmpty()) {
+  if (!non_empty_rows.empty()) {
     LayoutUnit remaining_deficit = distributable_block_size;
     for (auto& index : non_empty_rows) {
       auto& row = rows->at(index);
@@ -986,7 +986,7 @@ NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
     LayoutUnit assignable_table_inline_size,
     bool is_fixed_layout,
     const NGTableTypes::Columns& column_constraints) {
-  if (column_constraints.data.IsEmpty())
+  if (column_constraints.data.empty())
     return Vector<LayoutUnit>();
   if (is_fixed_layout) {
     return SynchronizeAssignableTableInlineSizeAndColumnsFixed(
@@ -1032,7 +1032,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
     LayoutUnit table_block_size,
     NGTableTypes::Sections* sections,
     NGTableTypes::Rows* rows) {
-  if (sections->IsEmpty())
+  if (sections->empty())
     return;
 
   // Determine the table's block-size which we can distribute into.
@@ -1117,7 +1117,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
   // </table>
   // The sections will be [20px, 60px, 20px]. The <tbody> doesn't grow as its
   // hit its minimum, remaining space distributed according to their percent.
-  if (!percent_sections.IsEmpty() && percent_size_guess > minimum_size_guess) {
+  if (!percent_sections.empty() && percent_size_guess > minimum_size_guess) {
     const LayoutUnit distributable_size =
         std::min(percent_size_guess, distributable_table_block_size) -
         minimum_size_guess;
@@ -1156,26 +1156,26 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
   Vector<wtf_size_t>* sections_to_grow;
   LayoutUnit sections_size;
   if (has_tbody) {
-    if (!tbody_auto_sections.IsEmpty()) {
+    if (!tbody_auto_sections.empty()) {
       sections_to_grow = &tbody_auto_sections;
       sections_size = tbody_auto_sections_size;
-    } else if (!tbody_fixed_sections.IsEmpty()) {
+    } else if (!tbody_fixed_sections.empty()) {
       sections_to_grow = &tbody_fixed_sections;
       sections_size = tbody_fixed_sections_size;
     } else {
-      DCHECK(!tbody_percent_sections.IsEmpty());
+      DCHECK(!tbody_percent_sections.empty());
       sections_to_grow = &tbody_percent_sections;
       sections_size = tbody_percent_sections_size;
     }
   } else {
-    if (!auto_sections.IsEmpty()) {
+    if (!auto_sections.empty()) {
       sections_to_grow = &auto_sections;
       sections_size = auto_sections_size;
-    } else if (!fixed_sections.IsEmpty()) {
+    } else if (!fixed_sections.empty()) {
       sections_to_grow = &fixed_sections;
       sections_size = fixed_sections_size;
     } else {
-      DCHECK(!percent_sections.IsEmpty());
+      DCHECK(!percent_sections.empty());
       sections_to_grow = &percent_sections;
       sections_size = percent_sections_size;
     }

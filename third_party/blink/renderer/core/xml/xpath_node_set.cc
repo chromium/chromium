@@ -249,7 +249,7 @@ void NodeSet::TraversalSort() const {
 }
 
 void NodeSet::Reverse() {
-  if (nodes_.IsEmpty())
+  if (nodes_.empty())
     return;
 
   unsigned from = 0;

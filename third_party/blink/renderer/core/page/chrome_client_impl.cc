@@ -179,7 +179,7 @@ ChromeClientImpl::ChromeClientImpl(WebViewImpl* web_view)
 }
 
 ChromeClientImpl::~ChromeClientImpl() {
-  DCHECK(file_chooser_queue_.IsEmpty());
+  DCHECK(file_chooser_queue_.empty());
 }
 
 void ChromeClientImpl::Trace(Visitor* visitor) const {
@@ -771,14 +771,14 @@ void ChromeClientImpl::OpenFileChooser(
 }
 
 void ChromeClientImpl::DidCompleteFileChooser(FileChooser& chooser) {
-  if (!file_chooser_queue_.IsEmpty() &&
+  if (!file_chooser_queue_.empty() &&
       file_chooser_queue_.front().get() != &chooser) {
     // This function is called even if |chooser| wasn't stored in
     // file_chooser_queue_.
     return;
   }
   file_chooser_queue_.EraseAt(0);
-  if (file_chooser_queue_.IsEmpty())
+  if (file_chooser_queue_.empty())
     return;
   FileChooser* next_chooser = file_chooser_queue_.front().get();
   if (next_chooser->OpenFileChooser(*this))

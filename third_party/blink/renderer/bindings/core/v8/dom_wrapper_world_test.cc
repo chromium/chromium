@@ -33,7 +33,7 @@ void WorkerThreadFunc(
   // Worlds on the main thread should not be visible from the worker thread.
   Vector<scoped_refptr<DOMWrapperWorld>> initial_worlds;
   DOMWrapperWorld::AllWorldsInCurrentThread(initial_worlds);
-  EXPECT_TRUE(initial_worlds.IsEmpty());
+  EXPECT_TRUE(initial_worlds.empty());
 
   // Create worlds on the worker thread and verify them.
   v8::Isolate* isolate = thread->GetIsolate();

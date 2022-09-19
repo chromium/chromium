@@ -125,7 +125,7 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaSetNoMediaStreamInitialized) {
       v8_scope.GetExecutionContext(), descriptors,
       UserMediaRequestType::kDisplayMediaSet,
       base::BindLambdaForTesting([&run_loop](MediaStreamVector streams) {
-        EXPECT_TRUE(streams.IsEmpty());
+        EXPECT_TRUE(streams.empty());
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -170,7 +170,7 @@ TEST_F(MediaStreamSetTest, GetDisplayMediaNoMediaStreamInitialized) {
       v8_scope.GetExecutionContext(), descriptors,
       UserMediaRequestType::kDisplayMedia,
       base::BindLambdaForTesting([&run_loop](MediaStreamVector streams) {
-        EXPECT_TRUE(streams.IsEmpty());
+        EXPECT_TRUE(streams.empty());
         run_loop.Quit();
       }));
   run_loop.Run();

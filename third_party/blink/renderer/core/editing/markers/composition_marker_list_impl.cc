@@ -13,7 +13,7 @@ DocumentMarker::MarkerType CompositionMarkerListImpl::MarkerType() const {
 }
 
 bool CompositionMarkerListImpl::IsEmpty() const {
-  return markers_.IsEmpty();
+  return markers_.empty();
 }
 
 void CompositionMarkerListImpl::Add(DocumentMarker* marker) {

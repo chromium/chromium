@@ -374,7 +374,7 @@ LayoutBox* ListGridIterator::NextGridItem() {
     child_index_ = 0;
     cell_node_ = track->Cells().Head();
     DCHECK(cell_node_);
-    DCHECK(!cell_node_->Items().IsEmpty());
+    DCHECK(!cell_node_->Items().empty());
     return cell_node_->Items()[child_index_++];
   }
 
@@ -390,7 +390,7 @@ LayoutBox* ListGridIterator::NextGridItem() {
       if (!cell_node_)
         return nullptr;
 
-      DCHECK(!cell_node_->Items().IsEmpty());
+      DCHECK(!cell_node_->Items().empty());
       candidate = cell_node_->Items()[child_index_++];
     }
     // Skip items already processed in an earlier cell of the track.

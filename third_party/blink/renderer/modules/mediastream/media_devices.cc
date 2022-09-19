@@ -112,7 +112,7 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
  private:
   void OnSuccessGetDisplayMediaSet(const MediaStreamVector& streams) {
-    DCHECK(!streams.IsEmpty());
+    DCHECK(!streams.empty());
     DCHECK_EQ(UserMediaRequestType::kDisplayMediaSet, media_type_);
     resolver_->Resolve(streams);
   }
@@ -638,13 +638,13 @@ void MediaDevices::DevicesEnumerated(
                 mojom::blink::MediaDeviceType::NUM_MEDIA_DEVICE_TYPES),
             enumeration.size());
 
-  if (!video_input_capabilities.IsEmpty()) {
+  if (!video_input_capabilities.empty()) {
     DCHECK_EQ(enumeration[static_cast<wtf_size_t>(
                               mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT)]
                   .size(),
               video_input_capabilities.size());
   }
-  if (!audio_input_capabilities.IsEmpty()) {
+  if (!audio_input_capabilities.empty()) {
     DCHECK_EQ(enumeration[static_cast<wtf_size_t>(
                               mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT)]
                   .size(),
@@ -671,12 +671,12 @@ void MediaDevices::DevicesEnumerated(
                 String::FromUTF8(device_info.device_id), device_label,
                 String::FromUTF8(device_info.group_id), device_type);
         if (device_type == mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT &&
-            !video_input_capabilities.IsEmpty()) {
+            !video_input_capabilities.empty()) {
           input_device_info->SetVideoInputCapabilities(
               std::move(video_input_capabilities[j]));
         }
         if (device_type == mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT &&
-            !audio_input_capabilities.IsEmpty()) {
+            !audio_input_capabilities.empty()) {
           input_device_info->SetAudioInputCapabilities(
               std::move(audio_input_capabilities[j]));
         }

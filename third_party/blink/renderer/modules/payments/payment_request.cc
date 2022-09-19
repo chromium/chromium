@@ -275,7 +275,7 @@ const WTF::HashSet<String> GetAppStoreBillingMethods() {
 
 bool RequestingOnlyAppStoreBillingMethods(
     const Vector<payments::mojom::blink::PaymentMethodDataPtr>& method_data) {
-  DCHECK(!method_data.IsEmpty());
+  DCHECK(!method_data.empty());
   const WTF::HashSet<String> billing_methods = GetAppStoreBillingMethods();
   for (const auto& method : method_data) {
     if (!billing_methods.Contains(method->supported_method))
@@ -663,7 +663,7 @@ void ValidateAndConvertPaymentMethodData(
     HashSet<String>& method_names,
     ExecutionContext& execution_context,
     ExceptionState& exception_state) {
-  if (input.IsEmpty()) {
+  if (input.empty()) {
     exception_state.ThrowTypeError("At least one payment method is required");
     return;
   }

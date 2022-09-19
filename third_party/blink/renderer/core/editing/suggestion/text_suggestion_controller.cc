@@ -240,7 +240,7 @@ void TextSuggestionController::HandlePotentialSuggestionTap(
     return;
 
   const auto* marker = DynamicTo<SuggestionMarker>(node_and_marker.second);
-  if (marker && marker->Suggestions().IsEmpty())
+  if (marker && marker->Suggestions().empty())
     return;
 
   if (!text_suggestion_host_.is_bound()) {
@@ -272,7 +272,7 @@ void TextSuggestionController::ReplaceActiveSuggestionRange(
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::ActiveSuggestion());
 
-  if (node_marker_pairs.IsEmpty())
+  if (node_marker_pairs.empty())
     return;
 
   const Text* const marker_text_node = node_marker_pairs.front().first;
@@ -397,7 +397,7 @@ void TextSuggestionController::SuggestionMenuTimeoutCallback(
       node_suggestion_marker_pairs =
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Suggestion());
-  if (!node_suggestion_marker_pairs.IsEmpty()) {
+  if (!node_suggestion_marker_pairs.empty()) {
     ShowSuggestionMenu(node_suggestion_marker_pairs, max_number_of_suggestions);
     return;
   }
@@ -407,7 +407,7 @@ void TextSuggestionController::SuggestionMenuTimeoutCallback(
       node_spelling_marker_pairs =
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Misspelling());
-  if (!node_spelling_marker_pairs.IsEmpty())
+  if (!node_spelling_marker_pairs.empty())
     ShowSpellCheckMenu(node_spelling_marker_pairs.front());
 
   // If we get here, that means the user tapped on a spellcheck or suggestion
@@ -459,7 +459,7 @@ void TextSuggestionController::ShowSuggestionMenu(
     const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
         node_suggestion_marker_pairs,
     size_t max_number_of_suggestions) {
-  DCHECK(!node_suggestion_marker_pairs.IsEmpty());
+  DCHECK(!node_suggestion_marker_pairs.empty());
 
   SuggestionInfosWithNodeAndHighlightColor
       suggestion_infos_with_node_and_highlight_color = ComputeSuggestionInfos(
@@ -467,7 +467,7 @@ void TextSuggestionController::ShowSuggestionMenu(
 
   Vector<TextSuggestionInfo>& suggestion_infos =
       suggestion_infos_with_node_and_highlight_color.suggestion_infos;
-  if (suggestion_infos.IsEmpty())
+  if (suggestion_infos.empty())
     return;
 
   int span_union_start = suggestion_infos[0].span_start;

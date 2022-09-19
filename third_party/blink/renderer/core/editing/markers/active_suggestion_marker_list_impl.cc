@@ -13,7 +13,7 @@ DocumentMarker::MarkerType ActiveSuggestionMarkerListImpl::MarkerType() const {
 }
 
 bool ActiveSuggestionMarkerListImpl::IsEmpty() const {
-  return markers_.IsEmpty();
+  return markers_.empty();
 }
 
 void ActiveSuggestionMarkerListImpl::Add(DocumentMarker* marker) {

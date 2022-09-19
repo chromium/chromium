@@ -308,7 +308,7 @@ TEST_F(AnimationKeyframeEffectModel, ZeroKeyframes) {
       MakeGarbageCollected<StringKeyframeEffectModel>(StringKeyframeVector());
   HeapVector<Member<Interpolation>> values;
   effect->Sample(0, 0.5, kDuration, values);
-  EXPECT_TRUE(values.IsEmpty());
+  EXPECT_TRUE(values.empty());
 }
 
 // FIXME: Re-enable this test once compositing of CompositeAdd is supported.

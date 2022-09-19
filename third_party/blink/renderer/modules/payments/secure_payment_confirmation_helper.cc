@@ -57,7 +57,7 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
   if (exception_state.HadException())
     return nullptr;
 
-  if (request->credentialIds().IsEmpty()) {
+  if (request->credentialIds().empty()) {
     exception_state.ThrowRangeError(
         "The \"secure-payment-confirmation\" method requires a non-empty "
         "\"credentialIds\" field.");

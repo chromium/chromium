@@ -402,7 +402,7 @@ void PausableScriptExecutor::HandleResults(
     switch (want_result_option_) {
       case mojom::blink::WantResultOption::kWantResult:
       case mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed:
-        if (!results.IsEmpty() && !results.back().IsEmpty()) {
+        if (!results.empty() && !results.back().IsEmpty()) {
           v8::Context::Scope context_scope(script_state_->GetContext());
           std::unique_ptr<WebV8ValueConverter> converter =
               Platform::Current()->CreateWebV8ValueConverter();

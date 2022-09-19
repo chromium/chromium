@@ -220,7 +220,7 @@ void SensorProxyImpl::OnPollingTimer(TimerBase*) {
 }
 
 bool SensorProxyImpl::ShouldProcessReadings() const {
-  return IsInitialized() && !suspended_ && !active_frequencies_.IsEmpty();
+  return IsInitialized() && !suspended_ && !active_frequencies_.empty();
 }
 
 void SensorProxyImpl::UpdatePollingStatus() {
@@ -250,7 +250,7 @@ void SensorProxyImpl::RemoveActiveFrequency(double frequency) {
   active_frequencies_.erase(it);
   UpdatePollingStatus();
 
-  if (active_frequencies_.IsEmpty())
+  if (active_frequencies_.empty())
     reading_ = device::SensorReading();
 }
 

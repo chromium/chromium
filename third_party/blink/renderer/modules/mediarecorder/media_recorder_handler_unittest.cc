@@ -140,10 +140,10 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
 
   bool recording() const { return media_recorder_handler_->recording_; }
   bool hasVideoRecorders() const {
-    return !media_recorder_handler_->video_recorders_.IsEmpty();
+    return !media_recorder_handler_->video_recorders_.empty();
   }
   bool hasAudioRecorders() const {
-    return !media_recorder_handler_->audio_recorders_.IsEmpty();
+    return !media_recorder_handler_->audio_recorders_.empty();
   }
 
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame) {

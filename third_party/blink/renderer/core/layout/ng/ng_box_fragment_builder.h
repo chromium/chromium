@@ -323,7 +323,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     // We should either do block fragmentation as part of normal layout, or
     // pre-set a break token.
     DCHECK(!did_break_self_);
-    DCHECK(child_break_tokens_.IsEmpty());
+    DCHECK(child_break_tokens_.empty());
 
     break_token_ = break_token;
   }
@@ -347,7 +347,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // token for this fragment nevertheless, so that we re-enter, descend and
   // resume at the broken children in the next fragmentainer.
   bool HasChildBreakInside() const {
-    if (!child_break_tokens_.IsEmpty())
+    if (!child_break_tokens_.empty())
       return true;
     // Inline nodes produce a "finished" trailing break token even if we don't
     // need to block-fragment.
@@ -711,7 +711,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool HasForcedBreak() const { return has_forced_break_; }
 
   const NGBreakToken* LastChildBreakToken() const {
-    DCHECK(!child_break_tokens_.IsEmpty());
+    DCHECK(!child_break_tokens_.empty());
     return child_break_tokens_.back().Get();
   }
 

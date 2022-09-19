@@ -314,7 +314,7 @@ void Function::SetArguments(HeapVector<Member<Expression>>& args) {
 
   // Some functions use context node as implicit argument, so when explicit
   // arguments are added, they may no longer be context node sensitive.
-  if (name_ != "lang" && !args.IsEmpty())
+  if (name_ != "lang" && !args.empty())
     SetIsContextNodeSensitive(false);
 
   for (Expression* arg : args)

@@ -361,13 +361,13 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       has_last_baseline_(false),
       use_last_baseline_for_inline_baseline_(false),
       has_fragmented_out_of_flow_data_(
-          !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
+          !builder->oof_positioned_fragmentainer_descendants_.empty() ||
           !builder->multicols_with_pending_oofs_.IsEmpty()),
       has_out_of_flow_fragment_child_(builder->HasOutOfFlowFragmentChild()),
       has_out_of_flow_in_fragmentainer_subtree_(
           builder->HasOutOfFlowInFragmentainerSubtree()),
       break_token_(std::move(builder->break_token_)),
-      oof_data_(builder->oof_positioned_descendants_.IsEmpty() &&
+      oof_data_(builder->oof_positioned_descendants_.empty() &&
                         !builder->AnchorQuery() &&
                         !has_fragmented_out_of_flow_data_
                     ? nullptr
@@ -390,7 +390,7 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
   const WritingModeConverter converter(
       {builder->Style().GetWritingMode(), builder->Direction()}, Size());
 
-  if (!builder->oof_positioned_descendants_.IsEmpty()) {
+  if (!builder->oof_positioned_descendants_.empty()) {
     if (!oof_data)
       oof_data = MakeGarbageCollected<OutOfFlowData>();
     oof_data->oof_positioned_descendants.ReserveCapacity(
@@ -504,7 +504,7 @@ NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
   auto* oof_data =
       reinterpret_cast<NGFragmentedOutOfFlowData*>(oof_data_.Get());
   DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
-         !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty());
+         !oof_data->oof_positioned_fragmentainer_descendants.empty());
   return oof_data;
 }
 

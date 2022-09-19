@@ -160,7 +160,7 @@ DOMPlugin* MakeFakePlugin(String plugin_name, LocalDOMWindow* window) {
 HeapVector<Member<DOMMimeType>> DOMPluginArray::GetFixedMimeTypeArray() {
   DCHECK(should_return_fixed_plugin_data_);
   HeapVector<Member<DOMMimeType>> mimetypes;
-  if (dom_plugins_.IsEmpty())
+  if (dom_plugins_.empty())
     return mimetypes;
   DCHECK_EQ(dom_plugins_[0]->length(), 2u);
   mimetypes.push_back(dom_plugins_[0]->item(0));

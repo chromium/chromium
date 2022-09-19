@@ -236,7 +236,7 @@ void TextTrack::addCue(TextTrackCue* cue) {
 
 void TextTrack::SetCSSStyleSheets(
     HeapVector<Member<CSSStyleSheet>> style_sheets) {
-  DCHECK(style_sheets_.IsEmpty());
+  DCHECK(style_sheets_.empty());
   style_sheets_ = std::move(style_sheets);
 }
 

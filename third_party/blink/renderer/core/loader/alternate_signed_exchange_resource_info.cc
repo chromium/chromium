@@ -168,7 +168,7 @@ AlternateSignedExchangeResourceInfo::FindMatchingEntry(
   if (it == alternative_resources_.end())
     return nullptr;
   const Vector<std::unique_ptr<Entry>>& entries = it->value;
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
   if (entries[0]->variants().IsNull())
     return entries[0].get();
 

@@ -316,7 +316,7 @@ void FileSystemDirectoryHandle::IsSameEntryImpl(
              FileSystemAccessErrorPtr result,
              const absl::optional<Vector<String>>& path) {
             std::move(callback).Run(std::move(result),
-                                    path.has_value() && path->IsEmpty());
+                                    path.has_value() && path->empty());
           },
           std::move(callback)));
 }

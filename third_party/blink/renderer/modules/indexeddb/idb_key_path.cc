@@ -147,7 +147,7 @@ bool IDBKeyPath::IsValid() const {
       return IDBIsValidKeyPath(string_);
 
     case mojom::IDBKeyPathType::Array:
-      if (array_.IsEmpty())
+      if (array_.empty())
         return false;
       for (const auto& element : array_) {
         if (!IDBIsValidKeyPath(element))

@@ -29,7 +29,7 @@ void WebSocketMessageChunkAccumulator::SetTaskRunnerForTesting(
 }
 
 void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
-  if (!segments_.IsEmpty()) {
+  if (!segments_.empty()) {
     const size_t to_be_written =
         std::min(data.size(), kSegmentSize - GetLastSegmentSize());
     memcpy(segments_.back().get() + GetLastSegmentSize(), data.data(),
@@ -39,7 +39,7 @@ void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
   }
   while (!data.empty()) {
     SegmentPtr segment_ptr;
-    if (pool_.IsEmpty()) {
+    if (pool_.empty()) {
       segment_ptr = CreateSegment();
     } else {
       segment_ptr = std::move(pool_.back());
@@ -56,7 +56,7 @@ void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
 Vector<base::span<const char>> WebSocketMessageChunkAccumulator::GetView()
     const {
   Vector<base::span<const char>> view;
-  if (segments_.IsEmpty()) {
+  if (segments_.empty()) {
     return view;
   }
 

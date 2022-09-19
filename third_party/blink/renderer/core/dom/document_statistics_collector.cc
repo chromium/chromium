@@ -82,7 +82,7 @@ bool MatchAttributes(const Element& element, const Vector<String>& words) {
 bool IsGoodForScoring(const WebDistillabilityFeatures& features,
                       const Element& element) {
   DEFINE_STATIC_LOCAL(Vector<String>, unlikely_candidates, ());
-  if (unlikely_candidates.IsEmpty()) {
+  if (unlikely_candidates.empty()) {
     auto words = {
         "banner",  "combx",      "comment", "community",  "disqus",  "extra",
         "foot",    "header",     "menu",    "related",    "remark",  "rss",
@@ -93,7 +93,7 @@ bool IsGoodForScoring(const WebDistillabilityFeatures& features,
     }
   }
   DEFINE_STATIC_LOCAL(Vector<String>, highly_likely_candidates, ());
-  if (highly_likely_candidates.IsEmpty()) {
+  if (highly_likely_candidates.empty()) {
     auto words = {"and", "article", "body", "column", "main", "shadow"};
     for (auto* word : words) {
       highly_likely_candidates.push_back(word);

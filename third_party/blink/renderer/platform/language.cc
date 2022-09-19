@@ -96,14 +96,14 @@ void OverrideUserPreferredLanguagesForTesting(
 
 AtomicString DefaultLanguage() {
   Vector<AtomicString>& override = PreferredLanguagesOverride();
-  if (!override.IsEmpty())
+  if (!override.empty())
     return override[0];
   return PlatformLanguage();
 }
 
 Vector<AtomicString> UserPreferredLanguages() {
   Vector<AtomicString>& override = PreferredLanguagesOverride();
-  if (!override.IsEmpty())
+  if (!override.empty())
     return override;
 
   Vector<AtomicString> languages;

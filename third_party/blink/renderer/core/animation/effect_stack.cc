@@ -79,7 +79,7 @@ void CopyNewAnimationsToActiveInterpolationsMap(
   for (const auto& new_animation : new_animations) {
     HeapVector<Member<Interpolation>> sample;
     new_animation->Sample(sample);
-    if (!sample.IsEmpty())
+    if (!sample.empty())
       CopyToActiveInterpolationsMap(sample, property_handle_filter, result);
   }
 }
@@ -216,7 +216,7 @@ void EffectStack::RemoveRedundantSampledEffects() {
 
   wtf_size_t new_size = 0;
   for (auto& sampled_effect : sampled_effects_) {
-    if (!sampled_effect->Interpolations().IsEmpty())
+    if (!sampled_effect->Interpolations().empty())
       sampled_effects_[new_size++].Swap(sampled_effect);
     else if (sampled_effect->Effect())
       sampled_effect->Effect()->NotifySampledEffectRemovedFromEffectStack();

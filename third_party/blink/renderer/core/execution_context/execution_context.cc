@@ -308,7 +308,7 @@ void ExecutionContext::DispatchErrorEvent(
   if (!DispatchErrorEventInternal(error_event, sanitize_script_errors))
     ExceptionThrown(error_event);
 
-  if (pending_exceptions_.IsEmpty())
+  if (pending_exceptions_.empty())
     return;
   for (ErrorEvent* e : pending_exceptions_)
     ExceptionThrown(e);

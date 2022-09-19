@@ -130,7 +130,7 @@ void MulticolPartWalker::AddNextColumnBreakToken(
 
 void MulticolPartWalker::UpdateNextColumnBreakToken(
     const NGContainerFragmentBuilder::ChildrenVector& children) {
-  if (children.IsEmpty())
+  if (children.empty())
     return;
   const blink::NGPhysicalFragment* last_child =
       children[children.size() - 1].fragment;
@@ -1212,7 +1212,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSizeInternal(
 
    private:
     ContentRun* TallestRun() const {
-      DCHECK(!runs_.IsEmpty());
+      DCHECK(!runs_.empty());
       auto* const it = std::max_element(
           runs_.begin(), runs_.end(),
           [](const ContentRun& run1, const ContentRun& run2) {

@@ -818,7 +818,7 @@ bool FlexLayoutAlgorithm::ShouldApplyMinSizeAutoForChild(
 }
 
 LayoutUnit FlexLayoutAlgorithm::IntrinsicContentBlockSize() const {
-  if (flex_lines_.IsEmpty())
+  if (flex_lines_.empty())
     return LayoutUnit();
 
   if (IsColumnFlow()) {
@@ -843,7 +843,7 @@ void FlexLayoutAlgorithm::AlignFlexLines(
       gap_between_lines_ == 0) {
     return;
   }
-  if (flex_lines_.IsEmpty() || !IsMultiline())
+  if (flex_lines_.empty() || !IsMultiline())
     return;
   LayoutUnit available_cross_axis_space =
       cross_axis_content_extent - (flex_lines_.size() - 1) * gap_between_lines_;
@@ -1210,7 +1210,7 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
     LayoutUnit border_scrollbar_padding_before) {
   DCHECK(IsColumnFlow());
   DCHECK(Style()->ResolvedIsColumnReverseFlexDirection());
-  DCHECK(all_items_.IsEmpty() || IsNGFlexBox())
+  DCHECK(all_items_.empty() || IsNGFlexBox())
       << "This method relies on NG having passed in 0 for initial main axis "
          "offset for column-reverse flex boxes. That needs to be fixed if this "
          "method is to be used in legacy.";
@@ -1235,7 +1235,7 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
 }
 
 bool FlexLayoutAlgorithm::IsNGFlexBox() const {
-  DCHECK(!all_items_.IsEmpty())
+  DCHECK(!all_items_.empty())
       << "You can't call IsNGFlexBox before adding items.";
   // The FlexItems created by legacy will have an empty ng_input_node. An NG
   // FlexItem's ng_input_node will have a LayoutBox.

@@ -346,7 +346,7 @@ void DeferredTaskHandler::RequestToDeleteHandlersOnMainThread() {
   // don't unnecessarily post a task.  Be consistent with
   // `DeleteHandlersOnMainThread()` so we don't accidentally return early when
   // there are handlers that could be deleted.
-  if (rendering_orphan_handlers_.IsEmpty() &&
+  if (rendering_orphan_handlers_.empty() &&
       finished_tail_processing_handlers_.size() == 0) {
     return;
   }

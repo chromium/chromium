@@ -152,7 +152,7 @@ double AudioDSPKernelProcessor::TailTime() const {
   base::AutoTryLock try_locker(process_lock_);
   if (try_locker.is_acquired()) {
     // It is expected that all the kernels have the same tailTime.
-    return !kernels_.IsEmpty() ? kernels_.front()->TailTime() : 0;
+    return !kernels_.empty() ? kernels_.front()->TailTime() : 0;
   }
   // Since we don't want to block the Audio Device thread, we return a large
   // value instead of trying to acquire the lock.
@@ -164,7 +164,7 @@ double AudioDSPKernelProcessor::LatencyTime() const {
   base::AutoTryLock try_locker(process_lock_);
   if (try_locker.is_acquired()) {
     // It is expected that all the kernels have the same latencyTime.
-    return !kernels_.IsEmpty() ? kernels_.front()->LatencyTime() : 0;
+    return !kernels_.empty() ? kernels_.front()->LatencyTime() : 0;
   }
   // Since we don't want to block the Audio Device thread, we return a large
   // value instead of trying to acquire the lock.

@@ -228,7 +228,7 @@ class ErrorContext {
 
   // Join all of the string literals into a single String.
   String ToString() const {
-    if (messages_.IsEmpty())
+    if (messages_.empty())
       return String();
 
     StringBuilder result;

@@ -60,7 +60,7 @@ void PresentationConnectionList::DispatchConnectionAvailableEvent(
 }
 
 bool PresentationConnectionList::IsEmpty() {
-  return connections_.IsEmpty();
+  return connections_.empty();
 }
 
 void PresentationConnectionList::Trace(Visitor* visitor) const {

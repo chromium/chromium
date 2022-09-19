@@ -1135,7 +1135,7 @@ unsigned JPEGImageDecoder::DesiredScaleNumerator(wtf_size_t max_decoded_bytes,
 }
 
 bool JPEGImageDecoder::ShouldGenerateAllSizes() const {
-  return supported_decode_sizes_.IsEmpty();
+  return supported_decode_sizes_.empty();
 }
 
 void JPEGImageDecoder::DecodeToYUV() {
@@ -1333,7 +1333,7 @@ bool JPEGImageDecoder::OutputScanlines() {
   if (HasImagePlanes())
     return OutputRawData(reader_.get(), image_planes_.get());
 
-  if (frame_buffer_cache_.IsEmpty())
+  if (frame_buffer_cache_.empty())
     return false;
 
   jpeg_decompress_struct* info = reader_->Info();
@@ -1396,7 +1396,7 @@ bool JPEGImageDecoder::OutputScanlines() {
 }
 
 void JPEGImageDecoder::Complete() {
-  if (frame_buffer_cache_.IsEmpty())
+  if (frame_buffer_cache_.empty())
     return;
 
   frame_buffer_cache_[0].SetHasAlpha(false);

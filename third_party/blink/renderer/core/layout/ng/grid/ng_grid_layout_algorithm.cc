@@ -2112,7 +2112,7 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
       }
     }
 
-    if (sets_to_grow.IsEmpty())
+    if (sets_to_grow.empty())
       continue;
 
     // Subtract the corresponding size (base size or growth limit) of every
@@ -2135,13 +2135,13 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     if (!is_group_spanning_flex_track || AreEqual<double>(flex_factor_sum, 0)) {
       DistributeExtraSpaceToSetsEqually(
           extra_space, contribution_type, &sets_to_grow,
-          sets_to_grow_beyond_limit.IsEmpty() ? &sets_to_grow
-                                              : &sets_to_grow_beyond_limit);
+          sets_to_grow_beyond_limit.empty() ? &sets_to_grow
+                                            : &sets_to_grow_beyond_limit);
     } else {
       // 'fr' units are only allowed as a maximum in track definitions, meaning
       // that no set has an intrinsic max track sizing function that would allow
       // it to grow beyond limits (see |ShouldUsedSizeGrowBeyondLimit|).
-      DCHECK(sets_to_grow_beyond_limit.IsEmpty());
+      DCHECK(sets_to_grow_beyond_limit.empty());
       DistributeExtraSpaceToWeightedSets(extra_space, flex_factor_sum,
                                          contribution_type, &sets_to_grow);
     }
@@ -2331,7 +2331,7 @@ void NGGridLayoutAlgorithm::StretchAutoTracks(
     }
   }
 
-  if (sets_to_grow.IsEmpty())
+  if (sets_to_grow.empty())
     return;
 
   LayoutUnit free_space =
@@ -2401,7 +2401,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     // Remove the gutters between spanned tracks.
     leftover_space -= gutter_size * (total_track_count - 1);
 
-    if (leftover_space < 0 || flexible_sets.IsEmpty())
+    if (leftover_space < 0 || flexible_sets.empty())
       return 0;
 
     // From css-grid-2 spec: "If the product of the hypothetical fr size and

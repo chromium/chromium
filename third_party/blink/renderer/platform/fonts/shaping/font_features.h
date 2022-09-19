@@ -26,7 +26,7 @@ class PLATFORM_EXPORT FontFeatures {
   void Initialize(const FontDescription&);
 
   wtf_size_t size() const { return features_.size(); }
-  bool IsEmpty() const { return features_.IsEmpty(); }
+  bool IsEmpty() const { return features_.empty(); }
 
   const hb_feature_t* data() const { return features_.data(); }
 

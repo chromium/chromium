@@ -77,7 +77,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const Vector<String>& strs) {
   if (!context || !ShouldSample(feature))
     return;
-  if (strs.IsEmpty())
+  if (strs.empty())
     return;
   IdentifiableTokenBuilder builder;
   for (const auto& str : strs) {

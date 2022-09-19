@@ -52,7 +52,7 @@ class MODULES_EXPORT RTCEncodedAudioFramesAttachment
   ~RTCEncodedAudioFramesAttachment() override = default;
 
   bool IsLockedToAgentCluster() const override {
-    return !encoded_audio_frames_.IsEmpty();
+    return !encoded_audio_frames_.empty();
   }
 
   Vector<scoped_refptr<RTCEncodedAudioFrameDelegate>>& EncodedAudioFrames() {

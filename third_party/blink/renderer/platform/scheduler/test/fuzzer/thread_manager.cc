@@ -246,7 +246,7 @@ void ThreadManager::ExecuteSetQueueEnabledAction(
   scoped_refptr<TaskQueueWithVoters> chosen_task_queue =
       GetTaskQueueFor(action.task_queue_id());
 
-  if (chosen_task_queue->voters.IsEmpty()) {
+  if (chosen_task_queue->voters.empty()) {
     chosen_task_queue->voters.push_back(
         chosen_task_queue->queue.get()->CreateQueueEnabledVoter());
   }
@@ -308,7 +308,7 @@ void ThreadManager::ExecuteCancelTaskAction(
                                   NowTicks());
 
   AutoLock lock(lock_);
-  if (!pending_tasks_.IsEmpty()) {
+  if (!pending_tasks_.empty()) {
     wtf_size_t task_index = action.task_id() % pending_tasks_.size();
     pending_tasks_[task_index]->weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -396,7 +396,7 @@ void ThreadManager::DeleteTask(Task* task) {
 scoped_refptr<TaskQueueWithVoters> ThreadManager::GetTaskQueueFor(
     uint64_t task_queue_id) {
   AutoLock lock(lock_);
-  DCHECK(!task_queues_.IsEmpty());
+  DCHECK(!task_queues_.empty());
   return task_queues_[task_queue_id % task_queues_.size()].get();
 }
 

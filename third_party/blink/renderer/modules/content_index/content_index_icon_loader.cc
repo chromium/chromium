@@ -80,8 +80,8 @@ void ContentIndexIconLoader::Start(
     mojom::blink::ContentDescriptionPtr description,
     const Vector<gfx::Size>& icon_sizes,
     IconsCallback callback) {
-  DCHECK(!description->icons.IsEmpty());
-  DCHECK(!icon_sizes.IsEmpty());
+  DCHECK(!description->icons.empty());
+  DCHECK(!icon_sizes.empty());
 
   auto image_resources = ToImageResource(execution_context, description->icons);
 

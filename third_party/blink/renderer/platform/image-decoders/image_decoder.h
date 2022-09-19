@@ -411,7 +411,7 @@ class PLATFORM_EXPORT ImageDecoder {
     // Not all animated image formats share these requirements. Blocking
     // all animated formats is overly aggressive. If a need arises for an
     // external memory allocator for animated images, this should be changed.
-    if (frame_buffer_cache_.IsEmpty()) {
+    if (frame_buffer_cache_.empty()) {
       // Ensure that InitializeNewFrame is called, after parsing if
       // necessary.
       if (!FrameCount())

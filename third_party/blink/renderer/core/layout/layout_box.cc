@@ -309,7 +309,7 @@ LayoutUnit ListBoxDefaultItemHeight(const LayoutBox& box) {
 LayoutUnit ListBoxItemHeight(const HTMLSelectElement& select,
                              const LayoutBox& box) {
   const auto& items = select.GetListItems();
-  if (items.IsEmpty() || box.ShouldApplySizeContainment())
+  if (items.empty() || box.ShouldApplySizeContainment())
     return ListBoxDefaultItemHeight(box);
 
   LayoutUnit max_height;
@@ -3400,11 +3400,11 @@ void LayoutBox::RestoreLegacyLayoutResults(
   if (layout_result)
     SetLayoutResult(layout_result, 0);
   else
-    DCHECK(layout_results_.IsEmpty());
+    DCHECK(layout_results_.empty());
 }
 
 void LayoutBox::FinalizeLayoutResults() {
-  DCHECK(!layout_results_.IsEmpty());
+  DCHECK(!layout_results_.empty());
   DCHECK(!layout_results_.back()->PhysicalFragment().BreakToken());
   // If we've added all the results we were going to, and the node establishes
   // an inline formatting context, we have some finalization to do.
@@ -3456,7 +3456,7 @@ void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
 
 const NGLayoutResult* LayoutBox::GetCachedLayoutResult() const {
   NOT_DESTROYED();
-  if (layout_results_.IsEmpty())
+  if (layout_results_.empty())
     return nullptr;
   // Only return re-usable results.
   const NGLayoutResult* result = layout_results_[0];

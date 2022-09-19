@@ -296,7 +296,7 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
       WriteIfNotDefault(ts, "line cap", style.CapStyle(), kButtCap);
       WriteIfNotDefault(ts, "line join", style.JoinStyle(), kMiterJoin);
       WriteIfNotDefault(ts, "dash offset", dash_offset, 0.0);
-      if (!dash_array.IsEmpty())
+      if (!dash_array.empty())
         WriteNameValuePair(ts, "dash array", dash_array);
 
       ts << "}]";
@@ -425,7 +425,7 @@ static inline void WriteSVGInlineTextBox(WTF::TextStream& ts,
                                          SVGInlineTextBox* text_box,
                                          int indent) {
   Vector<SVGTextFragment>& fragments = text_box->TextFragments();
-  if (fragments.IsEmpty())
+  if (fragments.empty())
     return;
 
   LineLayoutSVGInlineText text_line_layout =

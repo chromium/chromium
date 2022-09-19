@@ -684,7 +684,7 @@ void CachedStorageArea::EnqueueStorageEvent(const String& key,
 // static
 String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
                                               FormatOption format_option) {
-  if (input.IsEmpty())
+  if (input.empty())
     return g_empty_string;
   const wtf_size_t input_size = input.size();
   String result;

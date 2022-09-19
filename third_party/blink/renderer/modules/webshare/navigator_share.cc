@@ -66,7 +66,7 @@ bool HasFiles(const ShareData& data) {
   if (!data.hasFiles())
     return false;
 
-  return !data.files().IsEmpty();
+  return !data.files().empty();
 }
 
 // Returns true unless |share(data)| would reject with TypeError.

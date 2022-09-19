@@ -593,7 +593,7 @@ TEST_F(DocumentTest, SynchronousMutationNotifier) {
 
   Node* text_node = GetDocument().createTextNode("0123456789");
   bold_node->AppendChild(text_node);
-  EXPECT_TRUE(observer.RemovedNodes().IsEmpty());
+  EXPECT_TRUE(observer.RemovedNodes().empty());
 
   text_node->remove();
   ASSERT_EQ(1u, observer.RemovedNodes().size());

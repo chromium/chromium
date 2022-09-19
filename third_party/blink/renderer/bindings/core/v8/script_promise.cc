@@ -45,7 +45,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
  public:
   static ScriptPromise All(ScriptState* script_state,
                            const HeapVector<ScriptPromise>& promises) {
-    if (promises.IsEmpty())
+    if (promises.empty())
       return ScriptPromise::Cast(script_state,
                                  v8::Array::New(script_state->GetIsolate()));
     return (MakeGarbageCollected<PromiseAllHandler>(script_state, promises))
@@ -55,7 +55,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
   PromiseAllHandler(ScriptState* script_state,
                     HeapVector<ScriptPromise> promises)
       : number_of_pending_promises_(promises.size()), resolver_(script_state) {
-    DCHECK(!promises.IsEmpty());
+    DCHECK(!promises.empty());
     values_.resize(promises.size());
     for (wtf_size_t i = 0; i < promises.size(); ++i) {
       promises[i].Then(CreateFulfillFunction(script_state, i),

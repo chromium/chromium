@@ -36,7 +36,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
   Vector<OpenTypeMathStretchData::GlyphPartRecord> parts =
       OpenTypeMathSupport::GetGlyphPartRecords(harfbuzz_face, base_glyph,
                                                stretch_axis, italic_correction);
-  if (parts.IsEmpty())
+  if (parts.empty())
     return absl::nullopt;
 
   hb_font_t* const hb_font = harfbuzz_face->GetScaledFont();

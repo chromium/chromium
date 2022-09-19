@@ -1545,7 +1545,7 @@ void HTMLDocumentParser::FetchQueuedPreloads() {
   DCHECK(preloader_);
   TRACE_EVENT0("blink", "HTMLDocumentParser::FetchQueuedPreloads");
 
-  if (!queued_preloads_.IsEmpty()) {
+  if (!queued_preloads_.empty()) {
     base::ElapsedTimer timer;
     preloader_->TakeAndPreload(queued_preloads_);
     base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
@@ -1610,7 +1610,7 @@ void HTMLDocumentParser::AddPreloadDataOnBackgroundThread(
     base::AutoLock lock(pending_preload_lock_);
     // Only post a task if the preload data is empty. Otherwise, a task has
     // already been posted and will consume the new data.
-    should_post_task = pending_preload_data_.IsEmpty();
+    should_post_task = pending_preload_data_.empty();
     pending_preload_data_.push_back(std::move(preload_data));
   }
 

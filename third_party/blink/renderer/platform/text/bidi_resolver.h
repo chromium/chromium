@@ -390,7 +390,7 @@ class BidiResolver final {
 template <class Iterator, class Run, class IsolatedRun>
 BidiResolver<Iterator, Run, IsolatedRun>::~BidiResolver() {
   // The owner of this resolver should have handled the isolated runs.
-  DCHECK(isolated_runs_.IsEmpty());
+  DCHECK(isolated_runs_.empty());
   DCHECK(!runs_.RunCount());
 }
 #endif
@@ -602,7 +602,7 @@ bool BidiResolver<Iterator, Run, IsolatedRun>::CommitExplicitEmbedding(
   // ignores (skips over) the isolated content, including embedding levels.
   // We should never accrue embedding levels while skipping over isolated
   // content.
-  DCHECK(!InIsolate() || current_explicit_embedding_sequence_.IsEmpty());
+  DCHECK(!InIsolate() || current_explicit_embedding_sequence_.empty());
 
   unsigned char from_level = Context()->Level();
   scoped_refptr<BidiContext> to_context = Context();
@@ -1204,7 +1204,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
     }
 
     Increment();
-    if (!current_explicit_embedding_sequence_.IsEmpty()) {
+    if (!current_explicit_embedding_sequence_.empty()) {
       bool committed = CommitExplicitEmbedding(runs_);
       if (committed && last_line_ended) {
         current_ = end;

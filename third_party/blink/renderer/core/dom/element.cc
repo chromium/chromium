@@ -2013,7 +2013,7 @@ gfx::Rect Element::BoundsInWidget() const {
       GetLayoutBoxModelObject()->AbsoluteQuads(quads);
   }
 
-  if (quads.IsEmpty())
+  if (quads.empty())
     return gfx::Rect();
 
   gfx::RectF result;
@@ -2132,7 +2132,7 @@ DOMRectList* Element::getClientRects() {
       this, DocumentUpdateReason::kJavaScript);
   Vector<gfx::QuadF> quads;
   ClientQuads(quads);
-  if (quads.IsEmpty())
+  if (quads.empty())
     return MakeGarbageCollected<DOMRectList>();
 
   LayoutObject* element_layout_object = GetLayoutObject();
@@ -2145,7 +2145,7 @@ DOMRectList* Element::getClientRects() {
 gfx::RectF Element::GetBoundingClientRectNoLifecycleUpdateNoAdjustment() const {
   Vector<gfx::QuadF> quads;
   ClientQuads(quads);
-  if (quads.IsEmpty())
+  if (quads.empty())
     return gfx::RectF();
 
   gfx::RectF result;
@@ -2648,7 +2648,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
         document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
                                                        forcing_level);
       }
-      while (!document.PopupStack().IsEmpty()) {
+      while (!document.PopupStack().empty()) {
         document.PopupStack().back()->HidePopUpInternal(focus_behavior,
                                                         forcing_level);
       }
@@ -2669,7 +2669,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
     }
     // Then hide everything in the popup=auto stack up to the specified
     // endpoint.
-    while (!document.PopupStack().IsEmpty()) {
+    while (!document.PopupStack().empty()) {
       if (document.PopupStack().back() == hint_ancestor) {
         document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
                                                        forcing_level);
@@ -2741,7 +2741,7 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
     // is already hidden, it won't be in the stack.
     if (PopupType() == PopupValueType::kAuto) {
       auto& stack = document.PopupStack();
-      DCHECK(!stack.IsEmpty());
+      DCHECK(!stack.empty());
       DCHECK_EQ(stack.back(), this);
       stack.pop_back();
     } else {
@@ -3314,7 +3314,7 @@ void Element::ParserSetAttributes(
   DCHECK(!parentNode());
   DCHECK(!element_data_);
 
-  if (!attribute_vector.IsEmpty()) {
+  if (!attribute_vector.empty()) {
     if (GetDocument().GetElementDataCache())
       element_data_ =
           GetDocument()
@@ -4676,7 +4676,7 @@ void Element::UpdateCallbackSelectors(const ComputedStyle* old_style,
       old_style ? old_style->CallbackSelectors() : empty_vector;
   const Vector<String>& new_callback_selectors =
       new_style ? new_style->CallbackSelectors() : empty_vector;
-  if (old_callback_selectors.IsEmpty() && new_callback_selectors.IsEmpty())
+  if (old_callback_selectors.empty() && new_callback_selectors.empty())
     return;
   if (old_callback_selectors != new_callback_selectors)
     CSSSelectorWatch::From(GetDocument())
@@ -6739,10 +6739,10 @@ const ComputedStyle* Element::EnsureComputedStyle(
   // and the back() element is the "top-most" ancestor in the chain.
   HeapVector<Member<Element>> ancestors = CollectAncestorsToEnsure(*this);
 
-  Element* top = ancestors.IsEmpty() ? this : ancestors.back().Get();
+  Element* top = ancestors.empty() ? this : ancestors.back().Get();
   auto style_recalc_context = StyleRecalcContext::FromAncestors(*top);
 
-  while (!ancestors.IsEmpty()) {
+  while (!ancestors.empty()) {
     Element* ancestor = ancestors.back();
     ancestors.pop_back();
     const ComputedStyle* style =
@@ -7275,7 +7275,7 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   if (pseudo_id == kPseudoIdPageTransition) {
     DCHECK_EQ(this, GetDocument().documentElement());
-    return !GetDocument().GetStyleEngine().DocumentTransitionTags().IsEmpty();
+    return !GetDocument().GetStyleEngine().DocumentTransitionTags().empty();
   }
   if (pseudo_id == kPseudoIdBackdrop && !IsInTopLayer())
     return false;
@@ -7881,7 +7881,7 @@ void Element::DetachAttrNodeFromElementWithValue(Attr* attr_node,
   wtf_size_t index = list->Find(attr_node);
   DCHECK_NE(index, kNotFound);
   list->EraseAt(index);
-  if (list->IsEmpty())
+  if (list->empty())
     RemoveAttrNodeList();
 }
 
@@ -8471,7 +8471,7 @@ void Element::RecalcTransitionPseudoTreeStyle(
   DCHECK_EQ(this, GetDocument().documentElement());
 
   auto* old_transition_pseudo = GetPseudoElement(kPseudoIdPageTransition);
-  if (document_transition_tags.IsEmpty() && !old_transition_pseudo)
+  if (document_transition_tags.empty() && !old_transition_pseudo)
     return;
 
   const StyleRecalcChange style_recalc_change;
@@ -8519,7 +8519,7 @@ void Element::RebuildTransitionPseudoLayoutTree(
     const Vector<AtomicString>& document_transition_tags) {
   DCHECK_EQ(this, GetDocument().documentElement());
 
-  if (document_transition_tags.IsEmpty()) {
+  if (document_transition_tags.empty()) {
     DCHECK(!GetPseudoElement(kPseudoIdPageTransition));
     return;
   }

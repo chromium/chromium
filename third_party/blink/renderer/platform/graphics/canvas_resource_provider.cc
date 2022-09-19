@@ -1592,7 +1592,7 @@ void CanvasResourceProvider::OnDestroyResource() {
 }
 
 scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
-  if (canvas_resources_.IsEmpty()) {
+  if (canvas_resources_.empty()) {
     canvas_resources_.push_back(CreateResource());
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_)
@@ -1630,7 +1630,7 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::GetImportedResource()
   if (!IsSingleBuffered() || !SupportsSingleBuffering())
     return nullptr;
   DCHECK_LE(canvas_resources_.size(), 1u);
-  if (canvas_resources_.IsEmpty())
+  if (canvas_resources_.empty())
     return nullptr;
   return canvas_resources_.back();
 }

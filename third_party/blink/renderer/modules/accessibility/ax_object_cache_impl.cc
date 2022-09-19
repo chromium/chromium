@@ -2275,7 +2275,7 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
   // descendants change, no ChildrenChanged() processing is necessary, because
   // #root has no children.
   if (!obj->LastKnownIsIncludedInTreeValue() &&
-      obj->CachedChildrenIncludingIgnored().IsEmpty()) {
+      obj->CachedChildrenIncludingIgnored().empty()) {
     return;
   }
 
@@ -2520,10 +2520,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
 bool AXObjectCacheImpl::IsDirty() const {
   if (tree_updates_paused_)
     return false;
-  return !tree_update_callback_queue_main_.IsEmpty() ||
-         !tree_update_callback_queue_popup_.IsEmpty() ||
-         !notifications_to_post_main_.IsEmpty() ||
-         !notifications_to_post_popup_.IsEmpty() ||
+  return !tree_update_callback_queue_main_.empty() ||
+         !tree_update_callback_queue_popup_.empty() ||
+         !notifications_to_post_main_.empty() ||
+         !notifications_to_post_popup_.empty() ||
          !invalidated_ids_main_.IsEmpty() ||
          !invalidated_ids_popup_.IsEmpty() || relation_cache_->IsDirty();
 }
@@ -3862,7 +3862,7 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
     }
   }
   changed_bounds_ids_.clear();
-  if (!changes.IsEmpty()) {
+  if (!changes.empty()) {
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
         std::move(changes));
   }
@@ -3977,7 +3977,7 @@ void AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout(Node* node) {
       DocumentMarker::kSuggestion | DocumentMarker::kTextFragment |
       DocumentMarker::kCustomHighlight);
   if (!marker_controller.MarkersFor(*text_node, non_spelling_or_grammar_markers)
-           .IsEmpty()) {
+           .empty()) {
     ChildrenChangedWithCleanLayout(node);
     return;
   }
@@ -3991,7 +3991,7 @@ void AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout(Node* node) {
       DocumentMarker::DocumentMarker::kGrammar);
   bool has_spelling_or_grammar_markers =
       !marker_controller.MarkersFor(*text_node, spelling_and_grammar_markers)
-           .IsEmpty();
+           .empty();
   if (has_spelling_or_grammar_markers) {
     if (nodes_with_spelling_or_grammar_markers_.insert(node).is_new_entry)
       ChildrenChangedWithCleanLayout(node);

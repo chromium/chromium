@@ -177,7 +177,7 @@ V8UnionElementOrRadioNodeList* HTMLFormControlsCollection::namedGetter(
   HeapVector<Member<Element>> named_items;
   NamedItems(name, named_items);
 
-  if (named_items.IsEmpty())
+  if (named_items.empty())
     return nullptr;
 
   if (named_items.size() == 1) {

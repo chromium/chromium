@@ -738,14 +738,14 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
 
   const auto& neg_list = ChildLayers(layer, kNegativeZOrderChildren);
   PhysicalRect layer_bounds(layer_offset, layer->Size());
-  bool paints_background_separately = !neg_list.IsEmpty();
+  bool paints_background_separately = !neg_list.empty();
   if (should_dump && paints_background_separately) {
     Write(ts, *layer, layer_bounds, background_rect.Rect(),
           foreground_rect.Rect(), kLayerPaintPhaseBackground, indent, behavior,
           marked_layer);
   }
 
-  if (should_dump_children && !neg_list.IsEmpty()) {
+  if (should_dump_children && !neg_list.empty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
@@ -767,7 +767,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 
   const auto& normal_flow_list = ChildLayers(layer, kNormalFlowChildren);
-  if (should_dump_children && !normal_flow_list.IsEmpty()) {
+  if (should_dump_children && !normal_flow_list.empty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);
@@ -781,7 +781,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 
   const auto& pos_list = ChildLayers(layer, kPositiveZOrderChildren);
-  if (should_dump_children && !pos_list.IsEmpty()) {
+  if (should_dump_children && !pos_list.empty()) {
     int curr_indent = indent;
     if (behavior & kLayoutAsTextShowLayerNesting) {
       WriteIndent(ts, indent);

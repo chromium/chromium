@@ -228,7 +228,7 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectInfo) {
   EXPECT_EQ(url::Origin::Create(GURL(kFrobulateEnabledOrigin)),
             validation_params[0].origin.origin);
   EXPECT_TRUE(validation_params[0].origin.is_secure);
-  EXPECT_TRUE(validation_params[0].third_party_origin_info.IsEmpty());
+  EXPECT_TRUE(validation_params[0].third_party_origin_info.empty());
 
   // Check that the "expected" token is passed to the validator
   EXPECT_EQ(kTokenPlaceholder, validation_params[0].token);
@@ -255,7 +255,7 @@ TEST_F(OriginTrialContextTest,
   EXPECT_EQ(url::Origin::Create(GURL(kFrobulateEnabledOriginInsecure)),
             validation_params[0].origin.origin);
   EXPECT_FALSE(validation_params[0].origin.is_secure);
-  EXPECT_TRUE(validation_params[0].third_party_origin_info.IsEmpty());
+  EXPECT_TRUE(validation_params[0].third_party_origin_info.empty());
 }
 
 // Test that we're passing correct security information to the validator
@@ -445,7 +445,7 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
   ParsedPermissionsPolicy result;
   result = PermissionsPolicyParser::ParsePermissionsPolicyForTest(
       "frobulate=*", security_origin, nullptr, logger, feature_map, window);
-  EXPECT_TRUE(logger.GetMessages().IsEmpty());
+  EXPECT_TRUE(logger.GetMessages().empty());
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFrobulate,
             result[0].feature);

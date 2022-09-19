@@ -67,7 +67,7 @@ unsigned NGBidiParagraph::GetLogicalRun(unsigned start,
 }
 
 void NGBidiParagraph::GetLogicalRuns(const String& text, Runs* runs) const {
-  DCHECK(runs->IsEmpty());
+  DCHECK(runs->empty());
   for (unsigned start = 0; start < text.length();) {
     UBiDiLevel level;
     unsigned end = GetLogicalRun(start, &level);

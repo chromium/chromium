@@ -81,7 +81,7 @@ void HTMLTokenProducer::AbortBackgroundParsingImpl(
     return;
 
   tokenizer_ = std::make_unique<HTMLTokenizer>(parser_options_);
-  if (results_ && !results_->IsEmpty()) {
+  if (results_ && !results_->empty()) {
     // If abort is called after ParseNextToken() when no more data is available,
     // `current_result_index_` will be > than `current_result_index_`.
     const wtf_size_t index =
@@ -131,7 +131,7 @@ HTMLToken* HTMLTokenProducer::ParseNextToken() {
         }
         // The background producer should never return an empty results vector.
         results_ = next_results;
-        DCHECK(!results_->IsEmpty());
+        DCHECK(!results_->empty());
         current_result_index_ = 0;
       }
       BackgroundHTMLTokenProducerParseResult& current_result =

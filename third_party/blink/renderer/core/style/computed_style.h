@@ -507,7 +507,7 @@ class ComputedStyle : public ComputedStyleBase,
   // will-change: backdrop-filter.
   bool HasBackdropFilter() const {
     DCHECK(BackdropFilterInternal().Get());
-    return !BackdropFilterInternal()->operations_.Operations().IsEmpty();
+    return !BackdropFilterInternal()->operations_.Operations().empty();
   }
   void SetBackdropFilter(const FilterOperations& ops) {
     DCHECK(BackdropFilterInternal().Get());
@@ -532,7 +532,7 @@ class ComputedStyle : public ComputedStyleBase,
   // will-change: filter.
   bool HasFilter() const {
     DCHECK(FilterInternal().Get());
-    return !FilterInternal()->operations_.Operations().IsEmpty();
+    return !FilterInternal()->operations_.Operations().empty();
   }
   void SetFilter(const FilterOperations& v) {
     DCHECK(FilterInternal().Get());
@@ -1159,7 +1159,7 @@ class ComputedStyle : public ComputedStyleBase,
     return StrokePaint().HasCurrentColor() ||
            InternalVisitedStrokePaint().HasCurrentColor();
   }
-  bool HasDashArray() const { return !StrokeDashArray()->data.IsEmpty(); }
+  bool HasDashArray() const { return !StrokeDashArray()->data.empty(); }
   bool StrokeDashArrayDataEquivalent(const ComputedStyle&) const;
 
   // accent-color
@@ -2446,7 +2446,7 @@ class ComputedStyle : public ComputedStyleBase,
            Translate() || Rotate() || Scale();
   }
   bool HasTransformOperations() const {
-    return !Transform().Operations().IsEmpty();
+    return !Transform().Operations().empty();
   }
   ETransformStyle3D UsedTransformStyle3D() const {
     return HasGroupingPropertyForUsedTransformStyle3D()

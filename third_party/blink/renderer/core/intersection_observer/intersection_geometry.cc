@@ -56,7 +56,7 @@ void ApplyMargin(
     const Vector<Length>& margin,
     float zoom,
     const absl::optional<PhysicalRect>& resolution_rect = absl::nullopt) {
-  if (margin.IsEmpty())
+  if (margin.empty())
     return;
 
   // TODO(szager): Make sure the spec is clear that left/right margins are
@@ -75,7 +75,7 @@ void ApplyMargin(
 //   https://w3c.github.io/IntersectionObserver/#intersectionobserver-root-intersection-rectangle
 PhysicalRect InitializeRootRect(const LayoutObject* root,
                                 const Vector<Length>& margin) {
-  DCHECK(margin.IsEmpty() || margin.size() == 4);
+  DCHECK(margin.empty() || margin.size() == 4);
   PhysicalRect result;
   auto* layout_view = DynamicTo<LayoutView>(root);
   if (layout_view && root->GetDocument().GetFrame()->IsOutermostMainFrame()) {
@@ -260,7 +260,7 @@ IntersectionGeometry::IntersectionGeometry(const Node* root_node,
       intersection_ratio_(0),
       threshold_index_(0) {
   // Only one of root_margin or target_margin can be specified.
-  DCHECK(root_margin.IsEmpty() || target_margin.IsEmpty());
+  DCHECK(root_margin.empty() || target_margin.empty());
 
   if (cached_rects)
     cached_rects->valid = false;

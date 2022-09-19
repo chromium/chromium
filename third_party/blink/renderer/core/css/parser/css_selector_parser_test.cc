@@ -267,7 +267,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
             MakeGarbageCollected<CSSParserContext>(
                 kHTMLStandardMode, SecureContextMode::kInsecureContext),
             nullptr, arena);
-    EXPECT_EQ(!vector.IsEmpty(), test_case.valid);
+    EXPECT_EQ(!vector.empty(), test_case.valid);
     if (!test_case.valid)
       continue;
 

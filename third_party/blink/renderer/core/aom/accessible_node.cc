@@ -391,7 +391,7 @@ bool AccessibleNode::GetPropertyOrARIAAttribute(
 
   Vector<String> ids;
   value.Split(' ', ids);
-  if (ids.IsEmpty())
+  if (ids.empty())
     return false;
 
   TreeScope& scope = element->GetTreeScope();

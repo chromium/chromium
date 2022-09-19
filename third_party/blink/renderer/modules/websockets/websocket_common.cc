@@ -113,7 +113,7 @@ WebSocketCommon::ConnectResult WebSocketCommon::Connect(
   }
 
   String protocol_string;
-  if (!protocols.IsEmpty())
+  if (!protocols.empty())
     protocol_string = JoinStrings(protocols, kWebSocketSubprotocolSeparator);
 
   if (!channel->Connect(url_, protocol_string)) {

@@ -331,7 +331,7 @@ void LayoutTableSection::AddCell(LayoutTableCell* cell, LayoutTableRow* row) {
 
 bool LayoutTableSection::RowHasOnlySpanningCells(unsigned row) {
   NOT_DESTROYED();
-  if (grid_[row].grid_cells.IsEmpty())
+  if (grid_[row].grid_cells.empty())
     return false;
 
   for (const auto& grid_cell : grid_[row].grid_cells) {
@@ -976,7 +976,7 @@ int LayoutTableSection::CalcRowLogicalHeight() {
     row_pos_[r + 1] = std::max(row_pos_[r + 1], row_pos_[r]);
   }
 
-  if (!row_span_cells.IsEmpty())
+  if (!row_span_cells.empty())
     DistributeRowSpanHeightToRows(row_span_cells);
 
   DCHECK(!NeedsLayout());

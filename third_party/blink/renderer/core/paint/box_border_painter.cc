@@ -726,7 +726,7 @@ struct BoxBorderPainter::ComplexBorderInfo {
       if (IncludesEdge(border_painter.visible_edge_set_, side))
         sorted_sides.push_back(side);
     }
-    DCHECK(!sorted_sides.IsEmpty());
+    DCHECK(!sorted_sides.empty());
 
     // Then sort them in paint order, based on three (prioritized) criteria:
     // alpha, style, side.
@@ -778,13 +778,13 @@ struct BoxBorderPainter::ComplexBorderInfo {
         current_alpha = edge_alpha;
       }
 
-      DCHECK(!opacity_groups.IsEmpty());
+      DCHECK(!opacity_groups.empty());
       OpacityGroup& current_group = opacity_groups.back();
       current_group.sides.push_back(side);
       current_group.edge_flags |= EdgeFlagForSide(side);
     }
 
-    DCHECK(!opacity_groups.IsEmpty());
+    DCHECK(!opacity_groups.empty());
   }
 };
 

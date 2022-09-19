@@ -279,7 +279,7 @@ void Reverb::Reset() {
 }
 
 size_t Reverb::LatencyFrames() const {
-  return !convolvers_.IsEmpty() ? convolvers_.front()->LatencyFrames() : 0;
+  return !convolvers_.empty() ? convolvers_.front()->LatencyFrames() : 0;
 }
 
 }  // namespace blink

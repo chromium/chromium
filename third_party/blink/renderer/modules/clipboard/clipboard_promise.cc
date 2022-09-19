@@ -281,12 +281,12 @@ void ClipboardPromise::HandleWrite(
     return;
   }
   DCHECK(RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() ||
-         custom_format_items_.IsEmpty());
+         custom_format_items_.empty());
 
   // Input in standard formats is sanitized, so the write will be sanitized
   // unless there are custom formats.
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE,
-                    /*will_be_sanitized=*/custom_format_items_.IsEmpty(),
+                    /*will_be_sanitized=*/custom_format_items_.empty(),
                     WTF::BindOnce(&ClipboardPromise::HandleWriteWithPermission,
                                   WrapPersistent(this)));
 }

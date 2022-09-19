@@ -759,7 +759,7 @@ TEST_P(ParameterizedLayoutInlineTest, AddAnnotatedRegions) {
 
   Vector<AnnotatedRegionValue> regions3;
   GetLayoutObjectByElementId("target3")->AddAnnotatedRegions(regions3);
-  EXPECT_TRUE(regions3.IsEmpty());
+  EXPECT_TRUE(regions3.empty());
 }
 
 TEST_P(ParameterizedLayoutInlineTest, AddAnnotatedRegionsVerticalRL) {
@@ -793,7 +793,7 @@ TEST_P(ParameterizedLayoutInlineTest, AddAnnotatedRegionsVerticalRL) {
 
   Vector<AnnotatedRegionValue> regions3;
   GetLayoutObjectByElementId("target3")->AddAnnotatedRegions(regions3);
-  EXPECT_TRUE(regions3.IsEmpty());
+  EXPECT_TRUE(regions3.empty());
 }
 
 TEST_P(ParameterizedLayoutInlineTest, VisualOverflowRecalcLegacyLayout) {

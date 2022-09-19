@@ -706,7 +706,7 @@ void NGTableAlgorithmUtils::FinalizeTableCellLayout(
     NGBoxFragmentBuilder* builder) {
   const NGBlockNode& node = builder->Node();
   const NGConstraintSpace& space = builder->ConstraintSpace();
-  const bool has_inflow_children = !builder->Children().IsEmpty();
+  const bool has_inflow_children = !builder->Children().empty();
 
   // Hide table-cells if:
   //  - They are within a collapsed column(s).

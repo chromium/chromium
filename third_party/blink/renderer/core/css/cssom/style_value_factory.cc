@@ -294,7 +294,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
     return result;
   }
 
-  if ((property_id == CSSPropertyID::kVariable && !tokens.IsEmpty()) ||
+  if ((property_id == CSSPropertyID::kVariable && !tokens.empty()) ||
       CSSVariableParser::ContainsValidVariableReferences(range)) {
     const auto variable_data = CSSVariableData::Create(
         {range, StringView(css_text)}, false /* is_animation_tainted */,
@@ -342,7 +342,7 @@ CSSStyleValueVector StyleValueFactory::CoerceStyleValuesOrStrings(
         const auto& subvalues = StyleValueFactory::FromString(
             property.PropertyID(), custom_property_name, value->GetAsString(),
             parser_context);
-        if (subvalues.IsEmpty())
+        if (subvalues.empty())
           return CSSStyleValueVector();
 
         DCHECK(!subvalues.Contains(nullptr));

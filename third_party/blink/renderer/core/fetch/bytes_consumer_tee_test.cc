@@ -137,10 +137,10 @@ TEST_F(BytesConsumerTeeTest, CreateDone) {
   auto result2 = (MakeGarbageCollected<BytesConsumerTestReader>(dest2))->Run();
 
   EXPECT_EQ(Result::kDone, result1.first);
-  EXPECT_TRUE(result1.second.IsEmpty());
+  EXPECT_TRUE(result1.second.empty());
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, dest1->GetPublicState());
   EXPECT_EQ(Result::kDone, result2.first);
-  EXPECT_TRUE(result2.second.IsEmpty());
+  EXPECT_TRUE(result2.second.empty());
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, dest2->GetPublicState());
   EXPECT_FALSE(src->IsCancelled());
 
@@ -238,10 +238,10 @@ TEST_F(BytesConsumerTeeTest, Error) {
   auto result2 = (MakeGarbageCollected<BytesConsumerTestReader>(dest2))->Run();
 
   EXPECT_EQ(Result::kError, result1.first);
-  EXPECT_TRUE(result1.second.IsEmpty());
+  EXPECT_TRUE(result1.second.empty());
   EXPECT_EQ(BytesConsumer::PublicState::kErrored, dest1->GetPublicState());
   EXPECT_EQ(Result::kError, result2.first);
-  EXPECT_TRUE(result2.second.IsEmpty());
+  EXPECT_TRUE(result2.second.empty());
   EXPECT_EQ(BytesConsumer::PublicState::kErrored, dest2->GetPublicState());
   EXPECT_FALSE(src->IsCancelled());
 

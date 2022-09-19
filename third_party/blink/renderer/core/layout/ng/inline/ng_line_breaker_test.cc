@@ -78,11 +78,11 @@ class NGLineBreakerTest : public NGLayoutTest {
       trailing_whitespaces_.push_back(
           line_breaker.TrailingWhitespaceForTesting());
 
-      if (line_info.Results().IsEmpty())
+      if (line_info.Results().empty())
         break;
 
       break_token = line_breaker.CreateBreakToken(line_info);
-      if (fill_first_space_ && lines.IsEmpty()) {
+      if (fill_first_space_ && lines.empty()) {
         first_should_hang_trailing_space_ =
             line_info.ShouldHangTrailingSpaces();
         first_hang_width_ = line_info.HangWidthForAlignment();

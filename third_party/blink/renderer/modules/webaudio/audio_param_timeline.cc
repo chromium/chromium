@@ -589,7 +589,7 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
     new_events_.insert(events_[0].get());
   }
 
-  if (events_.IsEmpty()) {
+  if (events_.empty()) {
     events_.insert(0, std::move(event));
     new_events_.insert(events_[0].get());
     return;

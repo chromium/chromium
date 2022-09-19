@@ -96,7 +96,7 @@ PresentationRequest* PresentationRequest::Create(
       parsed_urls.push_back(parsed_url);
   }
 
-  if (parsed_urls.IsEmpty()) {
+  if (parsed_urls.empty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "An empty sequence of URLs is not supported.");

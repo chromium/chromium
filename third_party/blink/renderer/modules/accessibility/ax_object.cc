@@ -1857,7 +1857,7 @@ void AXObject::SerializeOtherScreenReaderAttributes(
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
   Vector<ax::mojom::blink::Dropeffect> dropeffects;
   Dropeffects(dropeffects);
-  if (!dropeffects.IsEmpty()) {
+  if (!dropeffects.empty()) {
     for (auto&& dropeffect : dropeffects) {
       node_data->AddDropeffect(dropeffect);
     }
@@ -3978,7 +3978,7 @@ String AXObject::AriaTextAlternative(
         AXObjectSet visited_copy = visited;
         text_alternative = TextFromElements(
             true, visited_copy, elements_from_attribute, related_objects);
-        if (!ids.IsEmpty())
+        if (!ids.empty())
           AXObjectCache().UpdateReverseTextRelations(this, ids);
         if (!text_alternative.IsNull()) {
           if (name_sources) {
@@ -5308,7 +5308,7 @@ AtomicString AXObject::Language() const {
         const String content_languages = document->ContentLanguage();
         Vector<String> languages;
         content_languages.Split(',', languages);
-        if (!languages.IsEmpty())
+        if (!languages.empty())
           return AtomicString(languages[0].StripWhiteSpace());
       }
 
@@ -5318,7 +5318,7 @@ AtomicString AXObject::Language() const {
             document->GetPage()->GetChromeClient().AcceptLanguages();
         Vector<String> languages;
         accept_languages.Split(',', languages);
-        if (!languages.IsEmpty())
+        if (!languages.empty())
           return AtomicString(languages[0].StripWhiteSpace());
       }
     }
@@ -6664,7 +6664,7 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
     ancestors2.push_back(ancestors2.back()->ParentObjectIncludedInTree());
 
   const AXObject* common_ancestor = nullptr;
-  while (!ancestors1.IsEmpty() && !ancestors2.IsEmpty() &&
+  while (!ancestors1.empty() && !ancestors2.empty() &&
          ancestors1.back() == ancestors2.back()) {
     common_ancestor = ancestors1.back();
     ancestors1.pop_back();
@@ -6672,9 +6672,9 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
   }
 
   if (common_ancestor) {
-    if (!ancestors1.IsEmpty())
+    if (!ancestors1.empty())
       *index_in_ancestor1 = ancestors1.back()->IndexInParent();
-    if (!ancestors2.IsEmpty())
+    if (!ancestors2.empty())
       *index_in_ancestor2 = ancestors2.back()->IndexInParent();
   }
 
@@ -6798,7 +6798,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       string_builder = string_builder + " isMissingParent";
     if (NeedsToUpdateChildren()) {
       string_builder = string_builder + " needsToUpdateChildren";
-    } else if (!children_.IsEmpty()) {
+    } else if (!children_.empty()) {
       string_builder = string_builder + " #children=";
       string_builder = string_builder + String::Number(children_.size());
     }

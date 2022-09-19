@@ -44,7 +44,7 @@ class TestIntersectionObserverDelegate : public IntersectionObserverDelegate {
     call_count_ = 0;
   }
   PhysicalRect LastIntersectionRect() const {
-    if (entries_.IsEmpty())
+    if (entries_.empty())
       return PhysicalRect();
     const IntersectionGeometry& geometry = entries_.back()->GetGeometry();
     return geometry.IntersectionRect();

@@ -2049,7 +2049,7 @@ const SelectorChecker::Activations* SelectorChecker::CalculateActivations(
     const Activations& outer_activations) const {
   auto* activations = MakeGarbageCollected<Activations>();
 
-  if (outer_activations.IsEmpty())
+  if (outer_activations.empty())
     return activations;
 
   const Activations* parent_activations = nullptr;

@@ -108,7 +108,7 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
   }
 
   // FIXME: Copy import rules.
-  DCHECK(o.import_rules_.IsEmpty());
+  DCHECK(o.import_rules_.empty());
 
   for (unsigned i = 0; i < namespace_rules_.size(); ++i) {
     namespace_rules_[i] =
@@ -132,7 +132,7 @@ bool StyleSheetContents::IsCacheableForResource() const {
   if (!LoadCompleted())
     return false;
   // FIXME: Support copying import rules.
-  if (!import_rules_.IsEmpty())
+  if (!import_rules_.empty())
     return false;
   // FIXME: Support cached stylesheets in import rules.
   if (owner_rule_)
@@ -152,7 +152,7 @@ bool StyleSheetContents::IsCacheableForResource() const {
 
 bool StyleSheetContents::IsCacheableForStyleElement() const {
   // FIXME: Support copying import rules.
-  if (!ImportRules().IsEmpty())
+  if (!ImportRules().empty())
     return false;
   // Until import rules are supported in cached sheets it's not possible for
   // loading to fail.
@@ -167,8 +167,8 @@ bool StyleSheetContents::IsCacheableForStyleElement() const {
 
 void StyleSheetContents::ParserAppendRule(StyleRuleBase* rule) {
   if (auto* layer_statement_rule = DynamicTo<StyleRuleLayerStatement>(rule)) {
-    if (import_rules_.IsEmpty() && namespace_rules_.IsEmpty() &&
-        child_rules_.IsEmpty()) {
+    if (import_rules_.empty() && namespace_rules_.empty() &&
+        child_rules_.empty()) {
       pre_import_layer_statement_rules_.push_back(layer_statement_rule);
       return;
     }
@@ -178,7 +178,7 @@ void StyleSheetContents::ParserAppendRule(StyleRuleBase* rule) {
   if (auto* import_rule = DynamicTo<StyleRuleImport>(rule)) {
     // Parser enforces that @import rules come before anything else other than
     // empty layer statements
-    DCHECK(child_rules_.IsEmpty());
+    DCHECK(child_rules_.empty());
     if (import_rule->MediaQueries())
       SetHasMediaQueries();
     import_rules_.push_back(import_rule);
@@ -190,7 +190,7 @@ void StyleSheetContents::ParserAppendRule(StyleRuleBase* rule) {
   if (auto* namespace_rule = DynamicTo<StyleRuleNamespace>(rule)) {
     // Parser enforces that @namespace rules come before all rules other than
     // import/charset rules and empty layer statements
-    DCHECK(child_rules_.IsEmpty());
+    DCHECK(child_rules_.empty());
     ParserAddNamespace(namespace_rule->Prefix(), namespace_rule->Uri());
     namespace_rules_.push_back(namespace_rule);
     return;
@@ -339,7 +339,7 @@ bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,
       return false;
     // Inserting @namespace rule when rules other than import/namespace/charset
     // are present is not allowed.
-    if (!child_rules_.IsEmpty())
+    if (!child_rules_.empty())
       return false;
 
     namespace_rules_.insert(index, namespace_rule);
@@ -381,7 +381,7 @@ bool StyleSheetContents::WrapperDeleteRule(unsigned index) {
   index -= import_rules_.size();
 
   if (index < namespace_rules_.size()) {
-    if (!child_rules_.IsEmpty())
+    if (!child_rules_.empty())
       return false;
     namespace_rules_.EraseAt(index);
     return true;

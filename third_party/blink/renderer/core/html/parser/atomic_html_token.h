@@ -330,7 +330,7 @@ void AtomicHTMLToken::InitializeAttributes(
   }
 
   // This is only called once, so `attributes_` should be empty.
-  DCHECK(attributes_.IsEmpty());
+  DCHECK(attributes_.empty());
   attributes_.ReserveInitialCapacity(size);
   for (const auto& attribute : attributes) {
     if (attribute.NameIsEmpty())

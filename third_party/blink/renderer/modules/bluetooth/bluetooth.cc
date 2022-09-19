@@ -242,7 +242,7 @@ void ConvertRequestDeviceOptions(
   result->accept_all_devices = options->acceptAllDevices();
 
   if (options->hasFilters()) {
-    if (options->filters().IsEmpty()) {
+    if (options->filters().empty()) {
       exception_state.ThrowTypeError(
           "'filters' member must be non-empty to find any devices.");
       return;
@@ -438,7 +438,7 @@ static void ConvertRequestLEScanOptions(
   result->keep_repeated_devices = options->keepRepeatedDevices();
 
   if (options->hasFilters()) {
-    if (options->filters().IsEmpty()) {
+    if (options->filters().empty()) {
       exception_state.ThrowTypeError(
           "'filters' member must be non-empty to find any devices.");
       return;

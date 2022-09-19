@@ -208,11 +208,11 @@ Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
     if (!result.Contains(layer))
       result.push_back(layer);
   }
-  if (!grammar.IsEmpty())
+  if (!grammar.empty())
     result.emplace_back(HighlightLayerType::kGrammar);
-  if (!spelling.IsEmpty())
+  if (!spelling.empty())
     result.emplace_back(HighlightLayerType::kSpelling);
-  if (!target.IsEmpty())
+  if (!target.empty())
     result.emplace_back(HighlightLayerType::kTargetText);
   if (selection)
     result.emplace_back(HighlightLayerType::kSelection);
@@ -255,8 +255,8 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
   // stored in terms of Text nodes anyway, so this check should never fail.
   const auto* text_node = DynamicTo<Text>(node);
   if (!text_node) {
-    DCHECK(custom.IsEmpty() && grammar.IsEmpty() && spelling.IsEmpty() &&
-           target.IsEmpty())
+    DCHECK(custom.empty() && grammar.empty() && spelling.empty() &&
+           target.empty())
         << "markers can not be painted without a valid Text node";
   } else {
     // We can save time by skipping marker-based highlights that are outside the
@@ -361,7 +361,7 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
   Vector<HighlightPart> result{};
   Vector<bool> active(layers.size());
   absl::optional<unsigned> prev_offset{};
-  if (edges.IsEmpty()) {
+  if (edges.empty()) {
     result.push_back(HighlightPart{originating_layer,
                                    originating.from,
                                    originating.to,

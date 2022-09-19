@@ -198,7 +198,7 @@ WTF::TextStream& FEColorMatrix::ExternalRepresentation(WTF::TextStream& ts,
   ts << "[feColorMatrix";
   FilterEffect::ExternalRepresentation(ts);
   ts << " type=\"" << type_ << "\"";
-  if (!values_.IsEmpty() && ValuesIsValidForType(type_, values_)) {
+  if (!values_.empty() && ValuesIsValidForType(type_, values_)) {
     ts << " values=\"";
     Vector<float>::const_iterator ptr = values_.begin();
     const Vector<float>::const_iterator end = values_.end();

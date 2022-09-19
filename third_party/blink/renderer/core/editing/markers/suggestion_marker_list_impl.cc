@@ -59,7 +59,7 @@ DocumentMarker::MarkerType SuggestionMarkerListImpl::MarkerType() const {
 }
 
 bool SuggestionMarkerListImpl::IsEmpty() const {
-  return markers_.IsEmpty();
+  return markers_.empty();
 }
 
 void SuggestionMarkerListImpl::Add(DocumentMarker* marker) {

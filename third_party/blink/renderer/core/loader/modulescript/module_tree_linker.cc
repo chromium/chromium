@@ -405,7 +405,7 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
     }
   }
 
-  if (module_requests.IsEmpty()) {
+  if (module_requests.empty()) {
     // <spec step="3">... if record.[[RequestedModules]] is empty,
     // asynchronously complete this algorithm with module script.</spec>
     //

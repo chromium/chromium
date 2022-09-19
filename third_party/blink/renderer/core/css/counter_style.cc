@@ -929,7 +929,7 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
 
 String CounterStyle::IndexesToString(
     const Vector<wtf_size_t>& symbol_indexes) const {
-  if (symbol_indexes.IsEmpty())
+  if (symbol_indexes.empty())
     return String();
 
   StringBuilder result;

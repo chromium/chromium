@@ -9,7 +9,7 @@
 namespace blink {
 
 bool HighlightPseudoMarkerListImpl::IsEmpty() const {
-  return markers_.IsEmpty();
+  return markers_.empty();
 }
 
 void HighlightPseudoMarkerListImpl::Add(DocumentMarker* marker) {

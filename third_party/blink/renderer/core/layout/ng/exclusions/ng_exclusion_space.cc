@@ -20,7 +20,7 @@ namespace {
 void InsertClosedArea(
     const NGExclusionSpaceInternal::NGClosedArea area,
     HeapVector<NGExclusionSpaceInternal::NGClosedArea, 4>& areas) {
-  if (areas.IsEmpty()) {
+  if (areas.empty()) {
     areas.emplace_back(area);
     return;
   }
@@ -66,7 +66,7 @@ bool HasSolidEdges(const Vector<NGExclusionSpaceInternal::NGShelfEdge>& edges,
                    LayoutUnit block_end) {
   // If there aren't any adjacent exclusions, we must be the initial shelf.
   // This always has "solid" edges on either side.
-  if (edges.IsEmpty())
+  if (edges.empty())
     return true;
 
   for (const auto& edge : edges) {
@@ -522,10 +522,10 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
 
         // If we didn't find any edges, the line_left/line_right of the shelf
         // are pushed out to be the minimum/maximum.
-        new_shelf.line_left = new_shelf.line_left_edges.IsEmpty()
+        new_shelf.line_left = new_shelf.line_left_edges.empty()
                                   ? LayoutUnit::Min()
                                   : shelf_copy->line_left;
-        new_shelf.line_right = new_shelf.line_right_edges.IsEmpty()
+        new_shelf.line_right = new_shelf.line_right_edges.empty()
                                    ? LayoutUnit::Max()
                                    : shelf_copy->line_right;
 

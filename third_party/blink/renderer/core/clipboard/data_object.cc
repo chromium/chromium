@@ -72,7 +72,7 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
                 std::move(file->file_system_access_token)));
       }
     }
-    if (files && !files->files.IsEmpty()) {
+    if (files && !files->files.empty()) {
       DraggedIsolatedFileSystem::PrepareForDataObject(data_object);
     } else {
       data_object->item_list_.push_back(DataObjectItem::CreateFromClipboard(
@@ -117,7 +117,7 @@ void DataObject::DeleteItem(uint32_t index) {
 }
 
 void DataObject::ClearAll() {
-  if (item_list_.IsEmpty())
+  if (item_list_.empty())
     return;
   item_list_.clear();
   NotifyItemListChanged();

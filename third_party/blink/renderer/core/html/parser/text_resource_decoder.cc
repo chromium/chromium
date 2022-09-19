@@ -145,7 +145,7 @@ void TextResourceDecoder::AddToBuffer(const char* data,
 
 void TextResourceDecoder::AddToBufferIfEmpty(const char* data,
                                              wtf_size_t data_length) {
-  if (buffer_.IsEmpty())
+  if (buffer_.empty())
     buffer_.Append(data, data_length);
 }
 
@@ -398,7 +398,7 @@ String TextResourceDecoder::Decode(const char* data, size_t data_len) {
   // and use the buffered content. Any case that depends on buffering (== return
   // the empty string) should call AddToBufferIfEmpty() if it needs more data to
   // make sure that the first data segment is buffered.
-  if (!buffer_.IsEmpty()) {
+  if (!buffer_.empty()) {
     AddToBuffer(data, len);
     data = buffer_.data();
     len = buffer_.size();

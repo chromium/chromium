@@ -144,7 +144,7 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   if (frame_generator_ && frame_generator_->DecodeFailed())
     return nullptr;
 
-  if (invalid_image_ || frame_data_.IsEmpty())
+  if (invalid_image_ || frame_data_.empty())
     return nullptr;
 
   DCHECK(frame_generator_);

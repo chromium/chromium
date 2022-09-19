@@ -1802,7 +1802,7 @@ HTMLInputElement::FilteredDataListOptions() const {
   if (Multiple() && type() == input_type_names::kEmail) {
     Vector<String> emails;
     editor_value.Split(',', true, emails);
-    if (!emails.IsEmpty())
+    if (!emails.empty())
       editor_value = emails.back().StripWhiteSpace();
   }
 

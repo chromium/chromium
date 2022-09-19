@@ -257,7 +257,7 @@ WindowPerformance::CreateNavigationTimingInstance() {
     return nullptr;
   HeapVector<Member<PerformanceServerTiming>> server_timing =
       PerformanceServerTiming::ParseServerTiming(*info);
-  if (!server_timing.IsEmpty())
+  if (!server_timing.empty())
     document_loader->CountUse(WebFeature::kPerformanceServerTiming);
 
   return MakeGarbageCollected<PerformanceNavigationTiming>(

@@ -152,7 +152,7 @@ TaskSession::DocumentSession* TaskSession::GetNextUnsentDocumentSession() {
 void TaskSession::SetCapturedContent(
     const Vector<cc::NodeInfo>& captured_content) {
   DCHECK(!HasUnsentData());
-  DCHECK(!captured_content.IsEmpty());
+  DCHECK(!captured_content.empty());
   GroupCapturedContentByDocument(captured_content);
   has_unsent_data_ = true;
 }

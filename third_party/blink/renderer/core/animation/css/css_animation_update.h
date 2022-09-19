@@ -263,15 +263,14 @@ class CORE_EXPORT CSSAnimationUpdate final {
   bool IsEmpty() const { return !HasUpdates() && !HasActiveInterpolations(); }
 
   bool HasUpdates() const {
-    return !new_animations_.IsEmpty() ||
-           !cancelled_animation_indices_.IsEmpty() ||
+    return !new_animations_.empty() || !cancelled_animation_indices_.empty() ||
            !suppressed_animations_.IsEmpty() ||
-           !animation_indices_with_pause_toggled_.IsEmpty() ||
-           !animations_with_updates_.IsEmpty() || !new_transitions_.IsEmpty() ||
+           !animation_indices_with_pause_toggled_.empty() ||
+           !animations_with_updates_.empty() || !new_transitions_.IsEmpty() ||
            !cancelled_transitions_.IsEmpty() ||
            !finished_transitions_.IsEmpty() ||
-           !updated_compositor_keyframes_.IsEmpty() ||
-           scroll_timeline_changed_ || !changed_view_timelines_.IsEmpty();
+           !updated_compositor_keyframes_.empty() || scroll_timeline_changed_ ||
+           !changed_view_timelines_.IsEmpty();
   }
 
   void Trace(Visitor* visitor) const {

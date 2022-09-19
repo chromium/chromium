@@ -33,11 +33,11 @@ void MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker(
     Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_removed) {
   // This fake implication is very limited. It is only used as a sanity check
   // if a stream was added or removed.
-  if (!receivers_added->IsEmpty()) {
+  if (!receivers_added->empty()) {
     WebVector<String> stream_ids = (*receivers_added)[0]->StreamIds();
     DCHECK_EQ(1u, stream_ids.size());
     remote_stream_id_ = stream_ids[0];
-  } else if (receivers_removed->IsEmpty()) {
+  } else if (receivers_removed->empty()) {
     remote_stream_id_ = String();
   }
 }

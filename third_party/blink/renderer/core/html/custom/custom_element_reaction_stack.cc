@@ -88,11 +88,11 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
   // https://html.spec.whatwg.org/C/#backup-element-queue
 
   DCHECK(!CEReactionsScope::Current());
-  DCHECK(stack_.IsEmpty());
+  DCHECK(stack_.empty());
   DCHECK(IsMainThread());
 
   // If the processing the backup element queue is not set:
-  if (!backup_queue_ || backup_queue_->IsEmpty()) {
+  if (!backup_queue_ || backup_queue_->empty()) {
     Microtask::EnqueueMicrotask(
         WTF::BindOnce(&CustomElementReactionStack::InvokeBackupQueue,
                       Persistent<CustomElementReactionStack>(this)));

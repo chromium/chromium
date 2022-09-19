@@ -124,7 +124,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
   if (path_) {
     path = *path_;
   } else {
-    if (coords_.IsEmpty())
+    if (coords_.empty())
       return path;
 
     switch (shape_) {

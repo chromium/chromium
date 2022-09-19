@@ -271,20 +271,20 @@ class CORE_EXPORT RuleFeatureSet {
     bool HasIdClassOrAttribute() const;
 
     void NarrowToClass(const AtomicString& class_name) {
-      if (Size() == 1 && (!ids.IsEmpty() || !classes.IsEmpty()))
+      if (Size() == 1 && (!ids.empty() || !classes.empty()))
         return;
       ClearFeatures();
       classes.push_back(class_name);
     }
     void NarrowToAttribute(const AtomicString& attribute) {
       if (Size() == 1 &&
-          (!ids.IsEmpty() || !classes.IsEmpty() || !attributes.IsEmpty()))
+          (!ids.empty() || !classes.empty() || !attributes.empty()))
         return;
       ClearFeatures();
       attributes.push_back(attribute);
     }
     void NarrowToId(const AtomicString& id) {
-      if (Size() == 1 && !ids.IsEmpty())
+      if (Size() == 1 && !ids.empty())
         return;
       ClearFeatures();
       ids.push_back(id);

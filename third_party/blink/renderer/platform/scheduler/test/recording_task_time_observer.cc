@@ -22,7 +22,7 @@ void RecordingTaskTimeObserver::WillProcessTask(base::TimeTicks start_time) {
 
 void RecordingTaskTimeObserver::DidProcessTask(base::TimeTicks start_time,
                                                base::TimeTicks end_time) {
-  DCHECK(!result_.IsEmpty());
+  DCHECK(!result_.empty());
   DCHECK_EQ(result_.back().first, start_time);
   result_.back().second = end_time;
 }

@@ -698,7 +698,7 @@ TEST_F(PageSchedulerImplTest, VirtualTimeSettings_NewFrameScheduler) {
           base::Milliseconds(1));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_TRUE(run_order.IsEmpty());
+  EXPECT_TRUE(run_order.empty());
 
   vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
   test_task_runner_->FastForwardUntilNoTasksRemain();
@@ -959,7 +959,7 @@ TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
                                            base::Unretained(&run_order)));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_TRUE(run_order.IsEmpty());
+  EXPECT_TRUE(run_order.empty());
 
   vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
   test_task_runner_->FastForwardUntilNoTasksRemain();

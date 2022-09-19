@@ -263,7 +263,7 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
   recycled_bitmaps_.Shrink(
       static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
 
-  if (!recycled_bitmaps_.IsEmpty()) {
+  if (!recycled_bitmaps_.empty()) {
     RegisteredBitmap registered = std::move(recycled_bitmaps_.back());
     recycled_bitmaps_.pop_back();
     DCHECK(registered.bitmap->size() == size);

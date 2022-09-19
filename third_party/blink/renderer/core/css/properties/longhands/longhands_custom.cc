@@ -1693,7 +1693,7 @@ const CSSValue* ColorScheme::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (style.ColorScheme().IsEmpty())
+  if (style.ColorScheme().empty())
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   for (auto ident : style.ColorScheme()) {
@@ -2017,7 +2017,7 @@ const CSSValue* ContainerName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  if (style.ContainerName().IsEmpty())
+  if (style.ContainerName().empty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
@@ -7800,7 +7800,7 @@ const CSSValue* ViewTimelineAxis::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
   const Vector<TimelineAxis>& vector = style.ViewTimelineAxis();
-  if (vector.IsEmpty())
+  if (vector.empty())
     return InitialValue();
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (TimelineAxis axis : vector) {
@@ -7829,7 +7829,7 @@ const CSSValue* ViewTimelineInset::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
   const Vector<TimelineInset>& vector = style.ViewTimelineInset();
-  if (vector.IsEmpty())
+  if (vector.empty())
     return InitialValue();
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (const TimelineInset& inset : vector) {
@@ -7864,7 +7864,7 @@ const CSSValue* ViewTimelineName::CSSValueFromComputedStyleInternal(
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
   const Vector<AtomicString>& vector = style.ViewTimelineName();
-  if (vector.IsEmpty())
+  if (vector.empty())
     return InitialValue();
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (const AtomicString& name : vector) {

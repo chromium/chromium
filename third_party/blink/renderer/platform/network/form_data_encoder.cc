@@ -242,7 +242,7 @@ void FormDataEncoder::AddKeyValuePairAsFormData(
     AppendNormalized(buffer, value);
     Append(buffer, "\r\n");
   } else {
-    if (!buffer.IsEmpty())
+    if (!buffer.empty())
       Append(buffer, '&');
     EncodeStringAsFormData(buffer, key, mode);
     Append(buffer, '=');

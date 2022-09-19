@@ -951,12 +951,12 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
     oof_children = flex_data->oof_children;
 
     use_empty_line_block_size =
-        flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
+        flex_line_outputs.empty() && Node().HasLineIfEmpty();
   } else {
     PlaceFlexItems(&flex_line_outputs, &oof_children);
 
     use_empty_line_block_size =
-        flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
+        flex_line_outputs.empty() && Node().HasLineIfEmpty();
     CalculateTotalIntrinsicBlockSize(use_empty_line_block_size);
   }
 
@@ -1041,7 +1041,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
   // for the first items in each column and break-after rules for last items in
   // each column.
   if (ConstraintSpace().ShouldPropagateChildBreakValues()) {
-    DCHECK(!row_break_between_outputs.IsEmpty());
+    DCHECK(!row_break_between_outputs.empty());
     container_builder_.SetInitialBreakBefore(row_break_between_outputs.front());
     container_builder_.SetPreviousBreakAfter(row_break_between_outputs.back());
   }
@@ -1187,8 +1187,8 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
     HeapVector<NGFlexLine>* flex_line_outputs) {
   auto& line_contexts = algorithm_.FlexLines();
   const LayoutUnit cross_axis_start_edge =
-      line_contexts.IsEmpty() ? LayoutUnit()
-                              : line_contexts[0].cross_axis_offset_;
+      line_contexts.empty() ? LayoutUnit()
+                            : line_contexts[0].cross_axis_offset_;
 
   LayoutUnit final_content_main_size =
       (container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum())
@@ -1199,7 +1199,7 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
   if (is_column_)
     std::swap(final_content_main_size, final_content_cross_size);
 
-  if (!algorithm_.IsMultiline() && !line_contexts.IsEmpty()) {
+  if (!algorithm_.IsMultiline() && !line_contexts.empty()) {
     line_contexts[0].cross_axis_extent_ = final_content_cross_size;
     (*flex_line_outputs)[0].line_cross_size = final_content_cross_size;
   }
@@ -2205,7 +2205,7 @@ NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   HeapVector<NGFlexLine> flex_line_outputs;
   HeapVector<Member<LayoutBox>> dummy_oof_children;
   PlaceFlexItems(&flex_line_outputs, &dummy_oof_children);
-  if (!flex_line_outputs.IsEmpty()) {
+  if (!flex_line_outputs.empty()) {
     largest_inline_size_contributions.max_size =
         flex_line_outputs.back().line_cross_size +
         flex_line_outputs.back().cross_axis_offset -

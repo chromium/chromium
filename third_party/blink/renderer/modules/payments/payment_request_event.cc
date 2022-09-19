@@ -137,7 +137,7 @@ const ScriptValue PaymentRequestEvent::paymentOptions(
 
 absl::optional<HeapVector<Member<PaymentShippingOption>>>
 PaymentRequestEvent::shippingOptions() const {
-  if (shipping_options_.IsEmpty())
+  if (shipping_options_.empty())
     return absl::nullopt;
   return shipping_options_;
 }

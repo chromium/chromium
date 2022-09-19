@@ -632,7 +632,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
 
   bool HasOutOfFlowPositionedDescendants() const {
-    return oof_data_ && !oof_data_->oof_positioned_descendants.IsEmpty();
+    return oof_data_ && !oof_data_->oof_positioned_descendants.empty();
   }
 
   base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()

@@ -120,7 +120,7 @@ inline NGInlinePaintContext::ScopedInlineItem::~ScopedInlineItem() {
   if (!inline_context_)
     return;
   inline_context_->last_decorations_ = last_decorations_;
-  if (!saved_decorating_boxes_.IsEmpty()) {
+  if (!saved_decorating_boxes_.empty()) {
     inline_context_->decorating_boxes_.swap(saved_decorating_boxes_);
     return;
   }

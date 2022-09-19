@@ -1164,12 +1164,12 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
   // Serialize audio and video track information (id and label) or an
   // empty string when there is no such track.
   String audio_track_info =
-      stream->getAudioTracks().IsEmpty()
+      stream->getAudioTracks().empty()
           ? String("")
           : String("id:") + stream->getAudioTracks()[0]->id() +
                 String(" label:") + stream->getAudioTracks()[0]->label();
   String video_track_info =
-      stream->getVideoTracks().IsEmpty()
+      stream->getVideoTracks().empty()
           ? String("")
           : String("id:") + stream->getVideoTracks()[0]->id() +
                 String(" label:") + stream->getVideoTracks()[0]->label();

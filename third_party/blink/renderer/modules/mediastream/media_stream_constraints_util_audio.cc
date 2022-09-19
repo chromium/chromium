@@ -372,7 +372,7 @@ class NumericDiscreteSetContainer {
     return std::make_tuple(0.0, absl::nullopt);
   }
 
-  bool IsEmpty() const { return allowed_values_.IsEmpty(); }
+  bool IsEmpty() const { return allowed_values_.empty(); }
 
  private:
   T SelectClosestValueTo(T target) const {
@@ -1226,7 +1226,7 @@ class DeviceContainer {
       else
         ++it;
     }
-    if (processing_based_containers_.IsEmpty()) {
+    if (processing_based_containers_.empty()) {
       DCHECK_NE(failed_constraint_name, nullptr);
       return failed_constraint_name;
     }
@@ -1459,7 +1459,7 @@ class CandidatesContainer {
     return std::make_tuple(best_score, best_settings);
   }
 
-  bool IsEmpty() const { return devices_.IsEmpty(); }
+  bool IsEmpty() const { return devices_.empty(); }
 
  private:
   std::string default_device_id_;
@@ -1525,7 +1525,7 @@ AudioCaptureSettings SelectSettingsAudioCapture(
     mojom::blink::MediaStreamType stream_type,
     bool should_disable_hardware_noise_suppression,
     bool is_reconfiguration_allowed) {
-  if (capabilities.IsEmpty())
+  if (capabilities.empty())
     return AudioCaptureSettings();
 
   std::string media_stream_source = GetMediaStreamSource(constraints);

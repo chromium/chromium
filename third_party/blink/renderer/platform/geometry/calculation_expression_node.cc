@@ -224,7 +224,7 @@ float CalculationExpressionOperationNode::Evaluate(
       return left * right;
     }
     case CalculationOperator::kMin: {
-      DCHECK(!children_.IsEmpty());
+      DCHECK(!children_.empty());
       float minimum = children_[0]->Evaluate(max_value, anchor_evaluator);
       for (auto& child : children_) {
         minimum =
@@ -233,7 +233,7 @@ float CalculationExpressionOperationNode::Evaluate(
       return minimum;
     }
     case CalculationOperator::kMax: {
-      DCHECK(!children_.IsEmpty());
+      DCHECK(!children_.empty());
       float maximum = children_[0]->Evaluate(max_value, anchor_evaluator);
       for (auto& child : children_) {
         maximum =
@@ -242,7 +242,7 @@ float CalculationExpressionOperationNode::Evaluate(
       return maximum;
     }
     case CalculationOperator::kClamp: {
-      DCHECK(!children_.IsEmpty());
+      DCHECK(!children_.empty());
       float min = children_[0]->Evaluate(max_value, anchor_evaluator);
       float val = children_[1]->Evaluate(max_value, anchor_evaluator);
       float max = children_[2]->Evaluate(max_value, anchor_evaluator);

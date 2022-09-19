@@ -368,14 +368,14 @@ TEST_P(CaretDisplayItemClientTest, BlinkingCaretNoInvalidation) {
   EXPECT_TRUE(GetCaretDisplayItemClient().IsValid());
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(GetCaretDisplayItemClient().IsValid());
-  EXPECT_TRUE(CaretRasterInvalidationTracking()->Invalidations().IsEmpty());
+  EXPECT_TRUE(CaretRasterInvalidationTracking()->Invalidations().empty());
 
   EXPECT_TRUE(IsVisibleIfActive());
   SetVisibleIfActive(true);
   EXPECT_TRUE(GetCaretDisplayItemClient().IsValid());
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(GetCaretDisplayItemClient().IsValid());
-  EXPECT_TRUE(CaretRasterInvalidationTracking()->Invalidations().IsEmpty());
+  EXPECT_TRUE(CaretRasterInvalidationTracking()->Invalidations().empty());
 
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }

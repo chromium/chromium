@@ -120,7 +120,7 @@ class PaintChunkSubset {
   }
 
   bool IsEmpty() const {
-    return UsesSubsetIndices() ? subset_indices_.IsEmpty()
+    return UsesSubsetIndices() ? subset_indices_.empty()
                                : begin_index_ == end_index_;
   }
 

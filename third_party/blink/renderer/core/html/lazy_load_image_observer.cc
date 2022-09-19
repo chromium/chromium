@@ -205,7 +205,7 @@ bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent() {
 
 void LazyLoadImageObserver::LoadIfNearViewport(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
 
   for (auto entry : entries) {
     Element* element = entry->target();
@@ -281,7 +281,7 @@ void LazyLoadImageObserver::OnLoadFinished(HTMLImageElement* image_element) {
 
 void LazyLoadImageObserver::OnVisibilityChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
 
   for (auto entry : entries) {
     auto* image_element = DynamicTo<HTMLImageElement>(entry->target());

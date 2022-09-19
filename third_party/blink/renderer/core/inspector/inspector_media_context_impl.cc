@@ -113,14 +113,14 @@ void MediaInspectorContextImpl::CullPlayers(const WebString& prefer_keep) {
     RemovePlayer(playerId);
   dead_players_.clear();
 
-  while (!expendable_players_.IsEmpty()) {
+  while (!expendable_players_.empty()) {
     if (total_event_count_ <= kMaxCachedPlayerEvents)
       return;
     RemovePlayer(expendable_players_.back());
     expendable_players_.pop_back();
   }
 
-  while (!unsent_players_.IsEmpty()) {
+  while (!unsent_players_.empty()) {
     if (total_event_count_ <= kMaxCachedPlayerEvents)
       return;
     RemovePlayer(unsent_players_.back());

@@ -371,7 +371,7 @@ void FillRelationships(AXObject& ax_object,
                        protocol::Array<AXProperty>& properties) {
   AXObject::AXObjectVector results;
   ax_object.AriaDescribedbyElements(results);
-  if (!results.IsEmpty()) {
+  if (!results.empty()) {
     properties.emplace_back(CreateRelatedNodeListProperty(
         AXPropertyNameEnum::Describedby, results,
         html_names::kAriaDescribedbyAttr, ax_object));
@@ -379,7 +379,7 @@ void FillRelationships(AXObject& ax_object,
   results.clear();
 
   ax_object.AriaOwnsElements(results);
-  if (!results.IsEmpty()) {
+  if (!results.empty()) {
     properties.emplace_back(
         CreateRelatedNodeListProperty(AXPropertyNameEnum::Owns, results,
                                       html_names::kAriaOwnsAttr, ax_object));
@@ -734,17 +734,17 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForUnignoredAXObject(
 
   AXObject::NameSources name_sources;
   String computed_name = ax_object.GetName(&name_sources);
-  if (!name_sources.IsEmpty()) {
+  if (!name_sources.empty()) {
     std::unique_ptr<AXValue> name =
         CreateValue(computed_name, AXValueTypeEnum::ComputedString);
-    if (!name_sources.IsEmpty()) {
+    if (!name_sources.empty()) {
       auto name_source_properties =
           std::make_unique<protocol::Array<AXValueSource>>();
       for (NameSource& name_source : name_sources) {
         name_source_properties->emplace_back(CreateValueSource(name_source));
         if (name_source.text.IsNull() || name_source.superseded)
           continue;
-        if (!name_source.related_objects.IsEmpty()) {
+        if (!name_source.related_objects.empty()) {
           properties->emplace_back(CreateRelatedNodeListProperty(
               AXPropertyNameEnum::Labelledby, name_source.related_objects));
         }
@@ -983,7 +983,7 @@ void InspectorAccessibilityAgent::AddChildren(
   reachable.AppendRange(ax_object.ChildrenIncludingIgnored().rbegin(),
                         ax_object.ChildrenIncludingIgnored().rend());
 
-  while (!reachable.IsEmpty()) {
+  while (!reachable.empty()) {
     AXObject* descendant = reachable.back();
     reachable.pop_back();
     if (descendant->IsDetached())
@@ -1040,7 +1040,7 @@ Response InspectorAccessibilityAgent::queryAXTree(
   if (root_ax_node)
     reachable.push_back(root_ax_node);
 
-  while (!reachable.IsEmpty()) {
+  while (!reachable.empty()) {
     AXObject* ax_object = reachable.back();
     if (ax_object->IsDetached() ||
         !ax_object->AccessibilityIsIncludedInTree()) {
@@ -1141,7 +1141,7 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
   if (subtree) {
     HeapVector<Member<AXObject>> reachable;
     reachable.push_back(ax_object);
-    while (!reachable.IsEmpty()) {
+    while (!reachable.empty()) {
       AXObject* descendant = reachable.back();
       reachable.pop_back();
       DCHECK(descendant->AccessibilityIsIncludedInTree());

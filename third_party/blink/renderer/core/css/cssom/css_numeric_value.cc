@@ -42,7 +42,7 @@ void PrependValueForArithmetic(CSSNumericValueVector& vector,
 template <class BinaryOperation>
 CSSUnitValue* MaybeSimplifyAsUnitValue(const CSSNumericValueVector& values,
                                        const BinaryOperation& op) {
-  DCHECK(!values.IsEmpty());
+  DCHECK(!values.empty());
 
   auto* first_unit_value = DynamicTo<CSSUnitValue>(values[0].Get());
   if (!first_unit_value)
@@ -62,7 +62,7 @@ CSSUnitValue* MaybeSimplifyAsUnitValue(const CSSNumericValueVector& values,
 }
 
 CSSUnitValue* MaybeMultiplyAsUnitValue(const CSSNumericValueVector& values) {
-  DCHECK(!values.IsEmpty());
+  DCHECK(!values.empty());
 
   // We are allowed one unit value with type other than kNumber.
   auto unit_other_than_number = CSSPrimitiveValue::UnitType::kNumber;

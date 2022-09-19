@@ -71,7 +71,7 @@ String GetLanguageCode(const String& language) {
   // Split function default is not allowed empty entry which cause potentical
   // crash when |langauge_codes| may be empty (for example, if |language| is
   // '-').
-  return language_codes.IsEmpty() ? "" : language_codes[0];
+  return language_codes.empty() ? "" : language_codes[0];
 }
 
 void MatchTargetLanguageWithAcceptLanguages(

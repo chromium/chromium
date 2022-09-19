@@ -466,7 +466,7 @@ TEST_F(WebTransportTest, SendConnect) {
   auto args = connector_.TakeConnectArgs();
   ASSERT_EQ(1u, args.size());
   EXPECT_EQ(KURL("https://example.com/"), args[0].url);
-  EXPECT_TRUE(args[0].fingerprints.IsEmpty());
+  EXPECT_TRUE(args[0].fingerprints.empty());
   EXPECT_TRUE(web_transport->HasPendingActivity());
 }
 

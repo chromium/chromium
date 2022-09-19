@@ -42,7 +42,7 @@ namespace {
 
 TEST(VectorTest, Basic) {
   Vector<int> int_vector;
-  EXPECT_TRUE(int_vector.IsEmpty());
+  EXPECT_TRUE(int_vector.empty());
   EXPECT_EQ(0ul, int_vector.size());
   EXPECT_EQ(0ul, int_vector.capacity());
 }
@@ -577,7 +577,7 @@ Vector<int> ReturnOneTwoThree() {
 
 TEST(VectorTest, InitializerList) {
   Vector<int> empty({});
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   Vector<int> one({1});
   ASSERT_EQ(1u, one.size());
@@ -595,7 +595,7 @@ TEST(VectorTest, InitializerList) {
   one_two_three.push_back(9999);
 
   empty = {};
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   one = {1};
   ASSERT_EQ(1u, one.size());

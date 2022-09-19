@@ -327,7 +327,7 @@ bool DocumentTransitionStyleTracker::FlattenAndVerifyElements(
             [](const FlatData* a, const FlatData* b) {
               return a->ordering < b->ordering;
             });
-  DCHECK(!root_data || !root_data->tags.IsEmpty());
+  DCHECK(!root_data || !root_data->tags.empty());
 
   auto have_root_tag = [&root_data](const AtomicString& tag) {
     return root_data && root_data->tags.Contains(tag);

@@ -172,7 +172,7 @@ TEST_F(PublicURLManagerTest, RevokeInvalidURL) {
   url_manager().Revoke(invalid_origin_url);
   url_store_receiver_.FlushForTesting();
   // Both should have been silently ignored.
-  EXPECT_TRUE(url_store_.revocations.IsEmpty());
+  EXPECT_TRUE(url_store_.revocations.empty());
 }
 
 }  // namespace blink

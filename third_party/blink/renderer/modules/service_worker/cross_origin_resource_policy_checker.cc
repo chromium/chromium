@@ -25,7 +25,7 @@ bool CrossOriginResourcePolicyChecker::IsBlocked(
     network::mojom::RequestMode request_mode,
     network::mojom::RequestDestination request_destination,
     const blink::Response& response) {
-  if (response.InternalURLList().IsEmpty()) {
+  if (response.InternalURLList().empty()) {
     // The response is synthesized in the service worker, so it's considered as
     // the same origin.
     return false;

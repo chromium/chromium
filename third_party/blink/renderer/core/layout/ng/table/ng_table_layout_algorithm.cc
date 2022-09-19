@@ -265,7 +265,7 @@ void ComputeLocationsFromColumns(
     bool* has_collapsed_columns) {
   *has_collapsed_columns = false;
   column_locations->resize(column_constraints.data.size());
-  if (column_locations->IsEmpty())
+  if (column_locations->empty())
     return;
   bool is_first_non_collpased_column = true;
   LayoutUnit column_offset = inline_border_spacing;
@@ -520,7 +520,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
       ComputeAssignableTableInlineSize(
           table, space, *column_constraints, caption_constraint,
           undistributable_space, table_border_padding, is_fixed_layout);
-  if (column_constraints->data.IsEmpty()) {
+  if (column_constraints->data.empty()) {
     return ComputeEmptyTableInlineSize(
         space, table.Style(), assignable_table_inline_size,
         undistributable_space, caption_constraint, table_border_padding,
@@ -598,7 +598,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
       /* shrink_collapsed */ false, &column_locations, &has_collapsed_columns);
 
   LayoutUnit table_inline_size_before_collapse;
-  const bool is_grid_empty = column_locations.IsEmpty();
+  const bool is_grid_empty = column_locations.empty();
   if (is_grid_empty) {
     table_inline_size_before_collapse = ComputeEmptyTableInlineSize(
         ConstraintSpace(), Style(), assignable_table_inline_size,

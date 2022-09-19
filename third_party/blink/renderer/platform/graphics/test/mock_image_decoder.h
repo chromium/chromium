@@ -106,7 +106,7 @@ class MockImageDecoder : public ImageDecoder {
   }
 
   void SetMemoryAllocator(SkBitmap::Allocator* allocator) override {
-    if (frame_buffer_cache_.IsEmpty()) {
+    if (frame_buffer_cache_.empty()) {
       // Ensure that InitializeNewFrame is called, after parsing if
       // necessary.
       if (!FrameCount())

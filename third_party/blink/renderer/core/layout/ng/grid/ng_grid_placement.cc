@@ -220,7 +220,7 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
       // We will need to sort the item vector if the new placed item should be
       // inserted to the ordered list before the last item in the vector.
       placed_items->needs_to_sort_item_vector |=
-          !non_auto_placed_items.IsEmpty() &&
+          !non_auto_placed_items.empty() &&
           *placed_item < *non_auto_placed_items.back();
 
       non_auto_placed_items.emplace_back(std::move(placed_item));
@@ -231,8 +231,8 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
         positions_locked_to_major_axis->emplace_back(&position);
     }
   }
-  return !positions_not_locked_to_major_axis->IsEmpty() ||
-         !positions_locked_to_major_axis->IsEmpty();
+  return !positions_not_locked_to_major_axis->empty() ||
+         !positions_locked_to_major_axis->empty();
 }
 
 void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
@@ -541,7 +541,7 @@ void NGGridPlacement::AutoPlacementCursor::UpdateItemsOverlappingMajorLine() {
                       items_overlapping_major_line_.end(),
                       ComparePlacedGridItemsByEnd));
 
-  while (!items_overlapping_major_line_.IsEmpty()) {
+  while (!items_overlapping_major_line_.empty()) {
     // Notice that the |EndOnPreviousMajorLine| of an item "A" is the first
     // position such that any upcoming grid position (located at a greater
     // major/minor position) is guaranteed to not overlap with "A".
@@ -606,7 +606,7 @@ void NGGridPlacement::AutoPlacementCursor::MoveToNextMajorLine(
   ++current_position_.major_line;
 
   if (should_move_to_next_item_major_end_line_ &&
-      !items_overlapping_major_line_.IsEmpty()) {
+      !items_overlapping_major_line_.empty()) {
     DCHECK_GE(items_overlapping_major_line_.front()->MajorEndLine(),
               current_position_.major_line);
     current_position_.major_line =

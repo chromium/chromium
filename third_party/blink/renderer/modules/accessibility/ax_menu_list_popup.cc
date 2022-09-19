@@ -111,7 +111,7 @@ void AXMenuListPopup::AddChildren() {
   if (!html_select_element)
     return;
 
-  DCHECK(children_.IsEmpty());
+  DCHECK(children_.empty());
   DCHECK(children_dirty_);
   children_dirty_ = false;
 

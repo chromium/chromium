@@ -514,9 +514,9 @@ UnpackedSerializedScriptValue* SerializedScriptValue::Unpack(
 }
 
 bool SerializedScriptValue::HasPackedContents() const {
-  return !array_buffer_contents_array_.IsEmpty() ||
-         !shared_array_buffers_contents_.IsEmpty() ||
-         !image_bitmap_contents_array_.IsEmpty();
+  return !array_buffer_contents_array_.empty() ||
+         !shared_array_buffers_contents_.empty() ||
+         !image_bitmap_contents_array_.empty();
 }
 
 bool SerializedScriptValue::ExtractTransferables(

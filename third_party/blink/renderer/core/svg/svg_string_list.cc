@@ -81,7 +81,7 @@ SVGParsingError SVGStringListBase::SetValueAsStringWithDelimiter(
 
 String SVGStringListBase::ValueAsStringWithDelimiter(
     char list_delimiter) const {
-  if (values_.IsEmpty())
+  if (values_.empty())
     return String();
 
   StringBuilder builder;

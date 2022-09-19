@@ -54,7 +54,7 @@ class MODULES_EXPORT RTCEncodedVideoFramesAttachment
   ~RTCEncodedVideoFramesAttachment() override = default;
 
   bool IsLockedToAgentCluster() const override {
-    return !encoded_video_frames_.IsEmpty();
+    return !encoded_video_frames_.empty();
   }
 
   Vector<scoped_refptr<RTCEncodedVideoFrameDelegate>>& EncodedVideoFrames() {

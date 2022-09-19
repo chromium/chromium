@@ -1211,7 +1211,7 @@ TEST_F(RTCPeerConnectionHandlerTest, CheckInsertableStreamsConfig) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, ThermalResourceDefaultValue) {
-  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
+  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().empty());
   pc_handler_->OnThermalStateChange(
       mojom::blink::DeviceThermalState::kCritical);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
@@ -1220,7 +1220,7 @@ TEST_F(RTCPeerConnectionHandlerTest, ThermalResourceDefaultValue) {
   bool expect_disabled = true;
 #endif
   // A ThermalResource is created in response to the thermal signal.
-  EXPECT_EQ(mock_peer_connection_->adaptation_resources().IsEmpty(),
+  EXPECT_EQ(mock_peer_connection_->adaptation_resources().empty(),
             expect_disabled);
 }
 
@@ -1230,11 +1230,11 @@ TEST_F(RTCPeerConnectionHandlerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kWebRtcThermalResource);
 
-  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
+  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().empty());
   pc_handler_->OnThermalStateChange(
       mojom::blink::DeviceThermalState::kCritical);
   // A ThermalResource is created in response to the thermal signal.
-  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
+  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().empty());
 }
 
 TEST_F(RTCPeerConnectionHandlerTest,
@@ -1243,7 +1243,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kWebRtcThermalResource);
 
-  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().IsEmpty());
+  EXPECT_TRUE(mock_peer_connection_->adaptation_resources().empty());
   // ThermalResource is created and injected on the fly.
   pc_handler_->OnThermalStateChange(
       mojom::blink::DeviceThermalState::kCritical);

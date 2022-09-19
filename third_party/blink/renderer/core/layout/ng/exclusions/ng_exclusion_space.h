@@ -159,7 +159,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   // Pre-initializes the exclusions vector to something used in a previous
   // layout pass, however keeps the number of exclusions as zero.
   void PreInitialize(const NGExclusionSpaceInternal& other) {
-    DCHECK(exclusions_->IsEmpty());
+    DCHECK(exclusions_->empty());
     DCHECK_GT(other.exclusions_->size(), 0u);
 
     exclusions_ = other.exclusions_;

@@ -177,12 +177,12 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
     const gfx::Size& size,
     SkAlphaType alpha_mode) {
   // Recycled SwapBuffers must be the same size.
-  if (!unused_swap_buffers_.IsEmpty() &&
+  if (!unused_swap_buffers_.empty() &&
       unused_swap_buffers_.back()->size != size) {
     unused_swap_buffers_.clear();
   }
 
-  if (unused_swap_buffers_.IsEmpty()) {
+  if (unused_swap_buffers_.empty()) {
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         Format(), size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
         alpha_mode,

@@ -1043,9 +1043,9 @@ LayoutUnit GridTrackSizingAlgorithm::InitialGrowthLimit(
 }
 
 void GridTrackSizingAlgorithm::InitializeTrackSizes() {
-  DCHECK(content_sized_tracks_index_.IsEmpty());
-  DCHECK(flexible_sized_tracks_index_.IsEmpty());
-  DCHECK(auto_sized_tracks_for_stretch_index_.IsEmpty());
+  DCHECK(content_sized_tracks_index_.empty());
+  DCHECK(flexible_sized_tracks_index_.empty());
+  DCHECK(auto_sized_tracks_for_stretch_index_.empty());
   DCHECK(!has_percent_sized_rows_indefinite_height_);
   Vector<GridTrack>& track_list = Tracks(direction_);
   bool indefinite_height =
@@ -1441,7 +1441,7 @@ void GridTrackSizingAlgorithm::IncreaseSizesToAccommodateSpanningItems(
         grow_beyond_growth_limits_tracks.push_back(&track);
     }
 
-    if (filtered_tracks.IsEmpty())
+    if (filtered_tracks.empty())
       continue;
 
     spanning_tracks_size +=
@@ -1453,7 +1453,7 @@ void GridTrackSizingAlgorithm::IncreaseSizesToAccommodateSpanningItems(
                              spanning_tracks_size;
     extra_space = extra_space.ClampNegativeToZero();
     auto& tracks_to_grow_beyond_growth_limits =
-        grow_beyond_growth_limits_tracks.IsEmpty()
+        grow_beyond_growth_limits_tracks.empty()
             ? filtered_tracks
             : grow_beyond_growth_limits_tracks;
     DistributeSpaceToTracks<phase>(
@@ -1563,7 +1563,7 @@ double GridTrackSizingAlgorithm::FindFrUnitSize(
   // already done before.
 
   // The function is not called if we don't have <flex> grid tracks.
-  DCHECK(!flexible_tracks_indexes.IsEmpty());
+  DCHECK(!flexible_tracks_indexes.empty());
 
   return ComputeFlexFactorUnitSize(all_tracks, flex_factor_sum, left_over_space,
                                    flexible_tracks_indexes);
@@ -1634,7 +1634,7 @@ void GridTrackSizingAlgorithm::ComputeFlexSizedTracksGrowth(
 
 void GridTrackSizingAlgorithm::StretchFlexibleTracks(
     absl::optional<LayoutUnit> free_space) {
-  if (flexible_sized_tracks_index_.IsEmpty())
+  if (flexible_sized_tracks_index_.empty())
     return;
 
   double flex_fraction = strategy_->FindUsedFlexFraction(
@@ -1666,7 +1666,7 @@ void GridTrackSizingAlgorithm::StretchFlexibleTracks(
 
 void GridTrackSizingAlgorithm::StretchAutoTracks() {
   LayoutUnit free_space = strategy_->FreeSpaceForStretchAutoTracksStep();
-  if (auto_sized_tracks_for_stretch_index_.IsEmpty() || (free_space <= 0) ||
+  if (auto_sized_tracks_for_stretch_index_.empty() || (free_space <= 0) ||
       (layout_grid_->ContentAlignment(direction_).Distribution() !=
        ContentDistributionType::kStretch))
     return;
@@ -1785,7 +1785,7 @@ void GridTrackSizingAlgorithm::Run() {
   }
 
   // Step 2.
-  if (!content_sized_tracks_index_.IsEmpty())
+  if (!content_sized_tracks_index_.empty())
     ResolveIntrinsicTrackSizes();
 
   // This is not exactly a step of the track sizing algorithm, but we use the

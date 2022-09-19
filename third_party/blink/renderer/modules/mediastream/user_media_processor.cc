@@ -193,7 +193,7 @@ void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
   *stream_type = MediaStreamType::NO_SERVICE;
 
   String source_constraint =
-      constraints.Basic().media_stream_source.Exact().IsEmpty()
+      constraints.Basic().media_stream_source.Exact().empty()
           ? String()
           : String(constraints.Basic().media_stream_source.Exact()[0]);
   if (!source_constraint.IsEmpty()) {
@@ -236,7 +236,7 @@ void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
   *stream_type = MediaStreamType::NO_SERVICE;
 
   String source_constraint =
-      constraints.Basic().media_stream_source.Exact().IsEmpty()
+      constraints.Basic().media_stream_source.Exact().empty()
           ? String()
           : String(constraints.Basic().media_stream_source.Exact()[0]);
   if (!source_constraint.IsEmpty()) {
@@ -418,7 +418,7 @@ class UserMediaProcessor::RequestInfo final
   void InitializeWebStreams(
       const String& label,
       const MediaStreamsComponentsVector& streams_components) {
-    DCHECK(!streams_components.IsEmpty());
+    DCHECK(!streams_components.empty());
 
     // TODO(crbug.com/1313021): Refactor descriptors to make the assumption of
     // at most one audio and video track explicit.
@@ -577,7 +577,7 @@ void UserMediaProcessor::RequestInfo::OnTrackStarted(
 }
 
 void UserMediaProcessor::RequestInfo::CheckAllTracksStarted() {
-  if (ready_callback_ && sources_waiting_for_callback_.IsEmpty()) {
+  if (ready_callback_ && sources_waiting_for_callback_.empty()) {
     std::move(ready_callback_).Run(this, request_result_, request_result_name_);
     // NOTE: |this| might now be deleted.
   }
@@ -795,7 +795,7 @@ UserMediaProcessor::DetermineExistingAudioSessionId() {
 
   // Return the session ID associated to the source that has the same settings
   // that have been previously selected, if one exists.
-  if (!matching_sources.IsEmpty()) {
+  if (!matching_sources.empty()) {
     for (auto& matching_source : matching_sources) {
       auto* audio_source = static_cast<MediaStreamAudioSource*>(
           matching_source->GetPlatformSource());
@@ -1609,7 +1609,7 @@ void UserMediaProcessor::StartTracks(const String& label) {
       GetMediaStreamDeviceObserver();
 
   if (media_stream_device_observer &&
-      !current_request_info_->devices_set().stream_devices.IsEmpty()) {
+      !current_request_info_->devices_set().stream_devices.empty()) {
     // TODO(crbug.com/1327960): Introduce interface to replace the four
     // separate callbacks.
     media_stream_device_observer->AddStreams(
@@ -2064,7 +2064,7 @@ void UserMediaProcessor::StopLocalSource(MediaStreamSource* source,
 
 bool UserMediaProcessor::HasActiveSources() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return !local_sources_.IsEmpty();
+  return !local_sources_.empty();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

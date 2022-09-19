@@ -88,7 +88,7 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   CSSSelectorVector</*UseArena=*/true> selector_vector =
       CSSParser::ParseSelector</*UseArena=*/true>(context, parent_contents,
                                                   selector_text, arena);
-  if (selector_vector.IsEmpty())
+  if (selector_vector.empty())
     return;
 
   Member<StyleRule> new_style_rule = StyleRule::Create</*UseArena=*/true>(

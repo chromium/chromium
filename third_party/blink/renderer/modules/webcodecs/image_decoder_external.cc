@@ -471,7 +471,7 @@ bool ImageDecoderExternal::HasPendingActivity() const {
   // will cause issues where WeakPtrs are valid between GC finalization and
   // destruction.
   const bool has_pending_activity =
-      !pending_decodes_.IsEmpty() || pending_metadata_requests_ > 0;
+      !pending_decodes_.empty() || pending_metadata_requests_ > 0;
 
   if (!has_pending_activity) {
     DCHECK(!weak_factory_.HasWeakPtrs());
@@ -558,7 +558,7 @@ void ImageDecoderExternal::OnDecodeReady(
   DCHECK(decoder_);
   DCHECK(!closed_);
   DCHECK(result);
-  DCHECK(!pending_decodes_.IsEmpty());
+  DCHECK(!pending_decodes_.empty());
 
   auto& request = pending_decodes_.front();
   DCHECK_EQ(request->frame_index, result->frame_index);
@@ -693,7 +693,7 @@ void ImageDecoderExternal::OnMetadata(
 void ImageDecoderExternal::SetFailed() {
   DVLOG(1) << __func__;
   if (failed_) {
-    DCHECK(pending_decodes_.IsEmpty());
+    DCHECK(pending_decodes_.empty());
     return;
   }
 

@@ -35,7 +35,7 @@ CSSNumericSumValue::UnitMap MultiplyUnitMaps(
 CSSMathProduct* CSSMathProduct::Create(
     const HeapVector<Member<V8CSSNumberish>>& args,
     ExceptionState& exception_state) {
-  if (args.IsEmpty()) {
+  if (args.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Arguments can't be empty");
     return nullptr;
@@ -95,7 +95,7 @@ void CSSMathProduct::BuildCSSText(Nested nested,
     result.Append(nested == Nested::kYes ? "(" : "calc(");
 
   const auto& values = NumericValues();
-  DCHECK(!values.IsEmpty());
+  DCHECK(!values.empty());
   values[0]->BuildCSSText(Nested::kYes, ParenLess::kNo, result);
 
   for (wtf_size_t i = 1; i < values.size(); i++) {

@@ -267,7 +267,7 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
 ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     const Vector<String>& origin_strings) {
   ParsedAllowlist allowlist;
-  if (origin_strings.IsEmpty()) {
+  if (origin_strings.empty()) {
     // If a policy entry has no listed origins (e.g. "feature_name1" in
     // allow="feature_name1; feature_name2 value"), enable the feature for:
     //     a. |self_origin|, if we are parsing a header policy (i.e.,
@@ -458,7 +458,7 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
       Vector<String> tokens;
       feature_entry.Split(' ', tokens);
 
-      if (tokens.IsEmpty())
+      if (tokens.empty())
         continue;
 
       PermissionsPolicyParser::Declaration declaration_node;
@@ -542,7 +542,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
         allowlist.push_back(allowlist_item);
     }
 
-    if (allowlist.IsEmpty())
+    if (allowlist.empty())
       allowlist.push_back("'none'");
 
     ir_root.push_back(

@@ -288,7 +288,7 @@ struct CORE_EXPORT GridItems {
   ConstIterator end() const { return {&item_data, item_data.size()}; }
 
   wtf_size_t Size() const { return item_data.size(); }
-  bool IsEmpty() const { return item_data.IsEmpty(); }
+  bool IsEmpty() const { return item_data.empty(); }
 
   GridItemData& operator[](wtf_size_t index) { return *item_data[index]; }
 

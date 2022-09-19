@@ -201,7 +201,7 @@ void MediaCustomControlsFullscreenDetector::UpdateDominantAndFullscreenStatus(
 
 void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  if (!viewport_intersection_observer_ || entries.IsEmpty())
+  if (!viewport_intersection_observer_ || entries.empty())
     return;
 
   auto* layout = VideoElement().GetLayoutObject();

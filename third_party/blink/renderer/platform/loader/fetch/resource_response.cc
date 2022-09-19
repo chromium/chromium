@@ -127,7 +127,7 @@ KURL ResourceResponse::ResponseUrl() const {
   // Instead it has |url_list_via_service_worker_| which is only populated when
   // the response came from a service worker, and that response was not created
   // through `new Response()`. Use it when available.
-  if (!url_list_via_service_worker_.IsEmpty()) {
+  if (!url_list_via_service_worker_.empty()) {
     DCHECK(WasFetchedViaServiceWorker());
     return url_list_via_service_worker_.back();
   }
@@ -146,7 +146,7 @@ KURL ResourceResponse::ResponseUrl() const {
 
 bool ResourceResponse::IsServiceWorkerPassThrough() const {
   return cache_storage_cache_name_.IsEmpty() &&
-         !url_list_via_service_worker_.IsEmpty() &&
+         !url_list_via_service_worker_.empty() &&
          ResponseUrl() == CurrentRequestUrl();
 }
 
@@ -261,7 +261,7 @@ void ResourceResponse::AddHttpHeaderField(const AtomicString& name,
 void ResourceResponse::AddHttpHeaderFieldWithMultipleValues(
     const AtomicString& name,
     const Vector<AtomicString>& values) {
-  if (values.IsEmpty())
+  if (values.empty())
     return;
 
   UpdateHeaderParsedState(name);

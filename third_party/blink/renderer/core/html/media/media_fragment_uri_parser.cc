@@ -149,7 +149,7 @@ void MediaFragmentURIParser::ParseFragments() {
 void MediaFragmentURIParser::ParseTimeFragment() {
   DCHECK_EQ(time_format_, kNone);
 
-  if (fragments_.IsEmpty())
+  if (fragments_.empty())
     ParseFragments();
 
   time_format_ = kInvalid;

@@ -105,7 +105,7 @@ URLSearchParams* URLSearchParams::Create(
     const Vector<std::pair<String, String>>& init,
     ExceptionState& exception_state) {
   URLSearchParams* instance = MakeGarbageCollected<URLSearchParams>(String());
-  if (init.IsEmpty())
+  if (init.empty())
     return instance;
   for (const auto& item : init)
     instance->AppendWithoutUpdate(item.first, item.second);

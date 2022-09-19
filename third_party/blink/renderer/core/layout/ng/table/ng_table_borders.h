@@ -192,7 +192,7 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
     wtf_size_t row_count;
   };
 
-  bool IsEmpty() const { return edges_.IsEmpty(); }
+  bool IsEmpty() const { return edges_.empty(); }
 
   bool IsCollapsed() const { return is_collapsed_; }
 

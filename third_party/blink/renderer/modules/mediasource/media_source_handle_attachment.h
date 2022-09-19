@@ -28,9 +28,7 @@ class MODULES_EXPORT MediaSourceHandleAttachment
   MediaSourceHandleAttachment();
   ~MediaSourceHandleAttachment() override;
 
-  bool IsLockedToAgentCluster() const override {
-    return !attachments_.IsEmpty();
-  }
+  bool IsLockedToAgentCluster() const override { return !attachments_.empty(); }
 
   size_t size() const { return attachments_.size(); }
 

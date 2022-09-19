@@ -123,7 +123,7 @@ void SimRequestBase::Complete(const Vector<char>& data) {
     ServePending();
   if (!started_)
     StartInternal();
-  if (!data.IsEmpty())
+  if (!data.empty())
     Write(data);
   Finish();
 }

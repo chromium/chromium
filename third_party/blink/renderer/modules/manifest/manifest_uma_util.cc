@@ -52,14 +52,13 @@ void ManifestUmaUtil::ParseSucceeded(
       "Manifest.HasProperty.orientation",
       manifest->orientation !=
           device::mojom::blink::ScreenOrientationLockType::DEFAULT);
-  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.icons",
-                        !manifest->icons.IsEmpty());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.icons", !manifest->icons.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.screenshots",
-                        !manifest->screenshots.IsEmpty());
+                        !manifest->screenshots.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.share_target",
                         manifest->share_target.get());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.protocol_handlers",
-                        !manifest->protocol_handlers.IsEmpty());
+                        !manifest->protocol_handlers.empty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.gcm_sender_id",
                         !manifest->gcm_sender_id.IsEmpty());
 }

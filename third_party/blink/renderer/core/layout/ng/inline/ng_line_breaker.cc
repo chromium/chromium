@@ -67,15 +67,15 @@ inline bool IsTrailableItemType(NGInlineItem::NGInlineItemType type) {
 }
 
 inline bool CanBreakAfterLast(const NGInlineItemResults& item_results) {
-  return !item_results.IsEmpty() && item_results.back().can_break_after;
+  return !item_results.empty() && item_results.back().can_break_after;
 }
 
 inline bool ShouldCreateLineBox(const NGInlineItemResults& item_results) {
-  return !item_results.IsEmpty() && item_results.back().should_create_line_box;
+  return !item_results.empty() && item_results.back().should_create_line_box;
 }
 
 inline bool HasUnpositionedFloats(const NGInlineItemResults& item_results) {
-  return !item_results.IsEmpty() && item_results.back().has_unpositioned_floats;
+  return !item_results.empty() && item_results.back().has_unpositioned_floats;
 }
 
 LayoutUnit ComputeInlineEndSize(const NGConstraintSpace& space,
@@ -94,7 +94,7 @@ bool NeedsAccurateEndPosition(const NGInlineItem& line_end_item) {
   DCHECK(line_end_item.Style());
   const ComputedStyle& line_end_style = *line_end_item.Style();
   return line_end_style.HasBoxDecorationBackground() ||
-         !line_end_style.AppliedTextDecorations().IsEmpty();
+         !line_end_style.AppliedTextDecorations().empty();
 }
 
 inline bool NeedsAccurateEndPosition(const NGLineInfo& line_info,
@@ -253,9 +253,9 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
   break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
   if (is_svg_text_) {
     const auto& char_data_list = node_.SvgCharacterDataList();
-    if (node_.SvgTextPathRangeList().IsEmpty() &&
-        node_.SvgTextLengthRangeList().IsEmpty() &&
-        (char_data_list.IsEmpty() ||
+    if (node_.SvgTextPathRangeList().empty() &&
+        node_.SvgTextLengthRangeList().empty() &&
+        (char_data_list.empty() ||
          (char_data_list.size() == 1 && char_data_list[0].first == 0))) {
       needs_svg_segmentation_ = false;
     } else {
@@ -488,7 +488,7 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   // NGLineInfo is not supposed to be re-used because it's not much gain and to
   // avoid rare code path.
   const NGInlineItemResults& item_results = line_info->Results();
-  DCHECK(item_results.IsEmpty());
+  DCHECK(item_results.empty());
 
   if (item_index_) {
     // We're past the first line
@@ -611,7 +611,7 @@ void NGLineBreaker::BreakLine(NGLineInfo* line_info) {
       else
         HandleEmptyText(item, line_info);
 #if DCHECK_IS_ON()
-      if (!item_results.IsEmpty())
+      if (!item_results.empty())
         item_results.back().CheckConsistency(true);
 #endif
       continue;
@@ -1537,7 +1537,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
 
     // Make the last item breakable after, even if it was nowrap.
     NGInlineItemResults* item_results = line_info->MutableResults();
-    DCHECK(!item_results->IsEmpty());
+    DCHECK(!item_results->empty());
     item_results->back().can_break_after = true;
   } else if (style.WhiteSpace() != EWhiteSpace::kBreakSpaces) {
     // Find the end of the run of space characters in this item.
@@ -1777,7 +1777,7 @@ void NGLineBreaker::HandleForcedLineBreak(const NGInlineItem* item,
         item->GetLayoutObject()->IsBR() &&
         exclusion_space_->NeedsClearancePastFragmentainer(
             item->Style()->Clear(*current_style_))) {
-      if (!line_info->Results().IsEmpty()) {
+      if (!line_info->Results().empty()) {
         state_ = LineBreakState::kDone;
         return;
       }
@@ -1878,7 +1878,7 @@ void NGLineBreaker::HandleBidiControlItem(const NGInlineItem& item,
                 character == kPopDirectionalFormattingCharacter;
   NGInlineItemResults* item_results = line_info->MutableResults();
   if (is_pop) {
-    if (!item_results->IsEmpty()) {
+    if (!item_results->empty()) {
       NGInlineItemResult* item_result = AddItem(item, line_info);
       NGInlineItemResult* last = &(*item_results)[item_results->size() - 2];
       // Honor the last |can_break_after| if it's true, in case it was
@@ -2034,7 +2034,7 @@ void NGLineBreaker::ComputeMinMaxContentSizeForBlockChild(
     if (depends_on_block_constraints_out_)
       *depends_on_block_constraints_out_ |= result.depends_on_block_constraints;
     if (max_size_cache_) {
-      if (max_size_cache_->IsEmpty())
+      if (max_size_cache_->empty())
         max_size_cache_->resize(Items().size());
       const unsigned item_index =
           base::checked_cast<unsigned>(&item - Items().begin());
@@ -2051,7 +2051,7 @@ void NGLineBreaker::HandleBlockInInline(const NGInlineItem& item,
                                         NGLineInfo* line_info) {
   DCHECK_EQ(item.Type(), NGInlineItem::kBlockInInline);
 
-  if (!line_info->Results().IsEmpty()) {
+  if (!line_info->Results().empty()) {
     // If there were any items, force a line break before this item.
     force_non_empty_if_last_line_ = false;
     HandleForcedLineBreak(nullptr, line_info);
@@ -2154,7 +2154,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
 
   // Make sure we populate the positioned_float inside the |item_result|.
   if (item_index_ <= handled_leading_floats_index_ &&
-      !leading_floats_.IsEmpty()) {
+      !leading_floats_.empty()) {
     DCHECK_LT(leading_floats_index_, leading_floats_.size());
     item_result->positioned_float = leading_floats_[leading_floats_index_++];
 
@@ -2511,7 +2511,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
     state_ = LineBreakState::kContinue;
     // TODO(kojii): Not all items need to rewind, but such case is rare and
     // rewinding all items simplifes the code.
-    if (!item_results->IsEmpty())
+    if (!item_results->empty())
       Rewind(0, line_info);
     ResetRewindLoopDetector();
     return;

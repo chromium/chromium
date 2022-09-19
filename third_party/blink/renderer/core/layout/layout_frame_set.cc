@@ -87,7 +87,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
 
   DCHECK_EQ(axis.sizes_.size(), deltas.size());
 
-  if (grid.IsEmpty()) {
+  if (grid.empty()) {
     axis.sizes_[0] = LayoutUnit(available_len);
     return;
   }

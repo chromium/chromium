@@ -103,7 +103,7 @@ inline void NoAllocDirectCallHost::ExitNoAllocDirectCallScope() {
 }
 
 inline bool NoAllocDirectCallHost::HasDeferredActions() {
-  return !deferred_actions_.IsEmpty();
+  return !deferred_actions_.empty();
 }
 
 inline NoAllocDirectCallScope::NoAllocDirectCallScope(

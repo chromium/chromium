@@ -601,7 +601,7 @@ Vector<gfx::Size> ManifestParser::ParseIconSizes(const JSONObject* icon) {
   for (auto& size : web_sizes)
     sizes.push_back(size);
 
-  if (sizes.IsEmpty())
+  if (sizes.empty())
     AddErrorInfo("found icon with no valid size.");
   return sizes;
 }
@@ -622,7 +622,7 @@ ManifestParser::ParseIconPurpose(const JSONObject* icon) {
                             keywords);
 
   // "any" is the default if there are no other keywords.
-  if (keywords.IsEmpty()) {
+  if (keywords.empty()) {
     purposes.push_back(mojom::blink::ManifestImageResource::Purpose::ANY);
     return purposes;
   }
@@ -649,7 +649,7 @@ ManifestParser::ParseIconPurpose(const JSONObject* icon) {
   // This implies there was at least one purpose given, but none recognised.
   // Instead of defaulting to "any" (which would not be future proof),
   // invalidate the whole icon.
-  if (purposes.IsEmpty()) {
+  if (purposes.empty()) {
     AddErrorInfo("found icon with no valid purpose; ignoring it.");
     return absl::nullopt;
   }
@@ -836,7 +836,7 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
     shortcut->short_name = ParseShortcutShortName(shortcut_object);
     shortcut->description = ParseShortcutDescription(shortcut_object);
     auto icons = ParseIcons(shortcut_object);
-    if (!icons.IsEmpty())
+    if (!icons.empty())
       shortcut->icons = std::move(icons);
 
     shortcuts.push_back(std::move(shortcut));
@@ -941,7 +941,7 @@ void ManifestParser::ParseFileFilter(
   }
 
   file->accept = ParseFileFilterAccept(file_object);
-  if (file->accept.IsEmpty())
+  if (file->accept.empty())
     return;
 
   files->push_back(std::move(file));
@@ -1010,7 +1010,7 @@ ManifestParser::ParseShareTargetParams(const JSONObject* share_target_params) {
   params->url = url.has_value() ? *url : String();
 
   auto files = ParseTargetFiles("files", share_target_params);
-  if (!files.IsEmpty())
+  if (!files.empty())
     params->files = std::move(files);
   return params;
 }
@@ -1220,7 +1220,7 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
       extensions.erase(erase_iter, extensions.end());
     }
 
-    if (!extensions.IsEmpty())
+    if (!extensions.empty())
       result.Set(mimetype, std::move(extensions));
 
     if (extension_overflow > 0)

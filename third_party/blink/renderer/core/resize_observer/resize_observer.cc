@@ -135,7 +135,7 @@ void ResizeObserver::disconnect() {
 }
 
 size_t ResizeObserver::GatherObservations(size_t deeper_than) {
-  DCHECK(active_observations_.IsEmpty());
+  DCHECK(active_observations_.empty());
 
   size_t min_observed_depth = ResizeObserverController::kDepthBottom;
   for (auto& observation : observations_) {
@@ -153,7 +153,7 @@ size_t ResizeObserver::GatherObservations(size_t deeper_than) {
 }
 
 void ResizeObserver::DeliverObservations() {
-  if (active_observations_.IsEmpty())
+  if (active_observations_.empty())
     return;
 
   HeapVector<Member<ResizeObserverEntry>> entries;
@@ -196,7 +196,7 @@ void ResizeObserver::ClearObservations() {
 }
 
 bool ResizeObserver::HasPendingActivity() const {
-  return !active_observations_.IsEmpty();
+  return !active_observations_.empty();
 }
 
 void ResizeObserver::Trace(Visitor* visitor) const {

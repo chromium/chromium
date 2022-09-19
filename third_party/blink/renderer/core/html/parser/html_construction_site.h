@@ -139,7 +139,7 @@ class HTMLConstructionSite final {
   }
 
   bool HasPendingTasks() {
-    return !pending_text_.IsEmpty() || !task_queue_.IsEmpty();
+    return !pending_text_.IsEmpty() || !task_queue_.empty();
   }
 
   void SetDefaultCompatibilityMode();

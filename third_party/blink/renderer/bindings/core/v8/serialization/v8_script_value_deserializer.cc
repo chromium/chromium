@@ -774,7 +774,7 @@ V8ScriptValueDeserializer::GetWasmModuleFromId(v8::Isolate* isolate,
     return v8::WasmModuleObject::FromCompiledModule(
         isolate, serialized_script_value_->WasmModules()[id]);
   }
-  CHECK(serialized_script_value_->WasmModules().IsEmpty());
+  CHECK(serialized_script_value_->WasmModules().empty());
   return v8::MaybeLocal<v8::WasmModuleObject>();
 }
 
@@ -801,7 +801,7 @@ V8ScriptValueDeserializer::GetSharedArrayBufferFromId(v8::Isolate* isolate,
   // If the id does not map to a valid index, it is expected that the
   // SerializedScriptValue emptied its shared ArrayBufferContents when crossing
   // a process boundary.
-  CHECK(shared_array_buffers_contents.IsEmpty());
+  CHECK(shared_array_buffers_contents.empty());
   return v8::MaybeLocal<v8::SharedArrayBuffer>();
 }
 

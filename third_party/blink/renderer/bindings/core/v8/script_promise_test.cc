@@ -541,7 +541,7 @@ TEST(ScriptPromiseTest, AllWithEmptyPromises) {
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
 
   EXPECT_FALSE(on_fulfilled.IsEmpty());
-  EXPECT_TRUE(ToStringArray(scope.GetIsolate(), on_fulfilled).IsEmpty());
+  EXPECT_TRUE(ToStringArray(scope.GetIsolate(), on_fulfilled).empty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 }
 

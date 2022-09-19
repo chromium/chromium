@@ -25,7 +25,7 @@ Vector<String> ParseAndSanitize(const String& accept_languages) {
       token.replace(2, 1, "-");
   }
 
-  if (languages.IsEmpty())
+  if (languages.empty())
     languages.push_back(DefaultLanguage());
 
   return languages;

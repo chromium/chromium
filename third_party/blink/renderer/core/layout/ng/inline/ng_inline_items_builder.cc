@@ -32,7 +32,7 @@ template <typename OffsetMappingBuilder>
 NGInlineItemsBuilderTemplate<
     OffsetMappingBuilder>::~NGInlineItemsBuilderTemplate() {
   DCHECK_EQ(0u, bidi_context_.size());
-  DCHECK_EQ(text_.length(), items_->IsEmpty() ? 0 : items_->back().EndOffset());
+  DCHECK_EQ(text_.length(), items_->empty() ? 0 : items_->back().EndOffset());
 }
 
 template <typename OffsetMappingBuilder>
@@ -915,7 +915,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
   DCHECK(!is_text_combine_);
   // At the forced break, add bidi controls to pop all contexts.
   // https://drafts.csswg.org/css-writing-modes-3/#bidi-embedding-breaks
-  if (!bidi_context_.IsEmpty()) {
+  if (!bidi_context_.empty()) {
     typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                          nullptr);
     // These bidi controls need to be associated with the |layout_object| so
@@ -936,7 +936,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
   item.SetEndCollapseType(NGInlineItem::kCollapsible, false);
 
   // Then re-add bidi controls to restore the bidi context.
-  if (!bidi_context_.IsEmpty()) {
+  if (!bidi_context_.empty()) {
     typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                          nullptr);
     for (const auto& bidi : bidi_context_) {
@@ -972,7 +972,7 @@ void NGInlineItemsBuilderTemplate<
   DCHECK(block_flow_->IsNGSVGText());
   DCHECK(text_chunk_offsets_);
 
-  if (bidi_context_.IsEmpty())
+  if (bidi_context_.empty())
     return;
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        nullptr);
@@ -1028,7 +1028,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendAtomicInline(
   // inline box can be different from the height of the atomic inline. Ensure
   // the inline box creates a box fragment so that its height is available in
   // the fragment tree.
-  if (!boxes_.IsEmpty()) {
+  if (!boxes_.empty()) {
     BoxInfo* current_box = &boxes_.back();
     if (!current_box->should_create_box_fragment)
       current_box->SetShouldCreateBoxFragment(items_);
@@ -1365,7 +1365,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitInline(
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Exit(
     LayoutObject* node) {
-  while (!bidi_context_.IsEmpty() && bidi_context_.back().node == node) {
+  while (!bidi_context_.empty() && bidi_context_.back().node == node) {
     AppendOpaque(NGInlineItem::kBidiControl, bidi_context_.back().exit);
     bidi_context_.pop_back();
   }
@@ -1394,7 +1394,7 @@ void NGInlineItemsBuilderTemplate<
 
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::SetIsSymbolMarker() {
-  DCHECK(!items_->IsEmpty());
+  DCHECK(!items_->empty());
   items_->back().SetIsSymbolMarker();
 }
 

@@ -105,7 +105,7 @@ class SMILAnimationSandwich : public GarbageCollected<SMILAnimationSandwich> {
   void UpdateActiveAnimationStack(SMILTime presentation_time);
   bool ApplyAnimationValues();
 
-  bool IsEmpty() { return sandwich_.IsEmpty(); }
+  bool IsEmpty() { return sandwich_.empty(); }
 
   void Trace(Visitor*) const;
 

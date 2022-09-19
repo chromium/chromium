@@ -322,7 +322,7 @@ CSSRule* CSSStyleSheet::item(unsigned index) {
   if (index >= rule_count)
     return nullptr;
 
-  if (child_rule_cssom_wrappers_.IsEmpty())
+  if (child_rule_cssom_wrappers_.empty())
     child_rule_cssom_wrappers_.Grow(rule_count);
   DCHECK_EQ(child_rule_cssom_wrappers_.size(), rule_count);
 
@@ -356,7 +356,7 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
     return 0;
   }
 
-  DCHECK(child_rule_cssom_wrappers_.IsEmpty() ||
+  DCHECK(child_rule_cssom_wrappers_.empty() ||
          child_rule_cssom_wrappers_.size() == contents_->RuleCount());
 
   if (index > length()) {
@@ -396,7 +396,7 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
           "Failed to insert the rule.");
     return 0;
   }
-  if (!child_rule_cssom_wrappers_.IsEmpty())
+  if (!child_rule_cssom_wrappers_.empty())
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
 
   return index;
@@ -410,7 +410,7 @@ void CSSStyleSheet::deleteRule(unsigned index,
     return;
   }
 
-  DCHECK(child_rule_cssom_wrappers_.IsEmpty() ||
+  DCHECK(child_rule_cssom_wrappers_.empty() ||
          child_rule_cssom_wrappers_.size() == contents_->RuleCount());
 
   if (index >= length()) {
@@ -435,7 +435,7 @@ void CSSStyleSheet::deleteRule(unsigned index,
     return;
   }
 
-  if (!child_rule_cssom_wrappers_.IsEmpty()) {
+  if (!child_rule_cssom_wrappers_.empty()) {
     if (child_rule_cssom_wrappers_[index])
       child_rule_cssom_wrappers_[index]->SetParentStyleSheet(nullptr);
     child_rule_cssom_wrappers_.EraseAt(index);

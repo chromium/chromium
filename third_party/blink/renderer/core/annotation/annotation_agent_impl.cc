@@ -162,7 +162,7 @@ void AnnotationAgentImpl::DidFinishAttach(const RangeInFlatTree* range) {
              .MarkersIntersectingRange(
                  attached_range_->ToEphemeralRange(),
                  DocumentMarker::MarkerTypes::TextFragment())
-             .IsEmpty()) {
+             .empty()) {
       return;
     }
 

@@ -934,7 +934,7 @@ ScriptPromise Fullscreen::ExitFullscreen(Document& doc,
   //
   // Note: |doc| is not set here, but |doc| will be the topmost local ancestor
   // in |Fullscreen::ContinueExitFullscreen| if |resize| is true.
-  if (!docs.IsEmpty() && docs.back() == &top_level_doc &&
+  if (!docs.empty() && docs.back() == &top_level_doc &&
       IsSimpleFullscreenDocument(top_level_doc)) {
     resize = true;
   }
@@ -983,7 +983,7 @@ void Fullscreen::DidExitFullscreen(Document& document) {
   Fullscreen& fullscreen = From(*document.domWindow());
   PendingExits exits;
   exits.swap(fullscreen.pending_exits_);
-  if (exits.IsEmpty()) {
+  if (exits.empty()) {
     FullyExitFullscreen(document, true /* ua_originated */);
   } else {
     for (const Member<PendingExit>& exit : exits)

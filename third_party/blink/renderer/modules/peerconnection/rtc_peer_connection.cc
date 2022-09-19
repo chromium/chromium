@@ -2525,7 +2525,7 @@ void RTCPeerConnection::DidNoteInterestingUsage(int usage_pattern) {
 
 void RTCPeerConnection::UnregisterPeerConnectionHandler() {
   if (peer_handler_unregistered_) {
-    DCHECK(scheduled_events_.IsEmpty())
+    DCHECK(scheduled_events_.empty())
         << "Undelivered events can cause memory leaks due to "
         << "WrapPersistent(this) in setup function callbacks";
     return;
@@ -2761,7 +2761,7 @@ void RTCPeerConnection::ScheduleDispatchEvent(Event* event) {
 void RTCPeerConnection::ScheduleDispatchEvent(Event* event,
                                               BoolFunction setup_function) {
   if (peer_handler_unregistered_) {
-    DCHECK(scheduled_events_.IsEmpty())
+    DCHECK(scheduled_events_.empty())
         << "Undelivered events can cause memory leaks due to "
         << "WrapPersistent(this) in setup function callbacks";
     return;
@@ -2797,7 +2797,7 @@ void RTCPeerConnection::ScheduleDispatchEvent(Event* event,
 
 void RTCPeerConnection::DispatchScheduledEvents() {
   if (peer_handler_unregistered_) {
-    DCHECK(scheduled_events_.IsEmpty())
+    DCHECK(scheduled_events_.empty())
         << "Undelivered events can cause memory leaks due to "
         << "WrapPersistent(this) in setup function callbacks";
     return;

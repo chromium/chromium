@@ -155,7 +155,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
           nullptr) {
     // Not allowed to recurse!
     DCHECK(!early_break_);
-    DCHECK(!additional_early_breaks_ || additional_early_breaks_->IsEmpty());
+    DCHECK(!additional_early_breaks_ || additional_early_breaks_->empty());
 
     NGLayoutAlgorithmParams params(
         Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),

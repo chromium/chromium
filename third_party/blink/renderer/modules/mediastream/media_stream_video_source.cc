@@ -135,7 +135,7 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
   // failed and |frame_adapter_->AddCallback| has not been called.
   GetTrackAdapter()->RemoveTrack(video_track);
 
-  if (tracks_.IsEmpty()) {
+  if (tracks_.empty()) {
     if (callback) {
       // Use StopForRestart() in order to get a notification of when the
       // source is actually stopped (if supported). The source will not be

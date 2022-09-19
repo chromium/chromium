@@ -94,7 +94,7 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
 }
 
 void ScopedStyleResolver::AddCounterStyleRules(const RuleSet& rule_set) {
-  if (rule_set.CounterStyleRules().IsEmpty())
+  if (rule_set.CounterStyleRules().empty())
     return;
   EnsureCounterStyleMap().AddCounterStyles(rule_set);
 }
@@ -225,7 +225,7 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
 
 template <class Func>
 void ScopedStyleResolver::ForAllStylesheets(const Func& func) {
-  if (style_sheets_.IsEmpty()) {
+  if (style_sheets_.empty()) {
     return;
   }
 

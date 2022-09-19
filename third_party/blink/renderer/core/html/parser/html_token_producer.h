@@ -90,7 +90,7 @@ class CORE_EXPORT HTMLTokenProducer {
   // This function is really only for assertions.
   HTMLTokenizer::State GetCurrentTokenizerState() const {
     if (IsUsingBackgroundProducer()) {
-      DCHECK(results_ && !results_->IsEmpty());
+      DCHECK(results_ && !results_->empty());
       return CurrentBackgroundProducerResult().tokenizer_snapshot.state;
     }
     return tokenizer_->GetState();

@@ -757,7 +757,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
   end = std::min(std::max(caret_min_offset, end), caret_max_offset);
 
   // This function is always called in sequence that this check should work.
-  bool has_checked_box_in_range = !quads.IsEmpty();
+  bool has_checked_box_in_range = !quads.empty();
 
   const LayoutBlock* block_for_flipping =
       UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
@@ -1349,7 +1349,7 @@ static float MaxWordFragmentWidth(LayoutText* layout_text,
 
   Vector<wtf_size_t, 8> hyphen_locations = hyphenation.HyphenLocations(
       StringView(layout_text->GetText(), word_offset, word_length));
-  if (hyphen_locations.IsEmpty())
+  if (hyphen_locations.empty())
     return 0;
 
   float minimum_fragment_width_to_consider =

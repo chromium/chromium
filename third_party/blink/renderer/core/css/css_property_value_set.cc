@@ -572,7 +572,7 @@ inline bool ContainsId(const CSSProperty* const set[],
 bool MutableCSSPropertyValueSet::RemovePropertiesInSet(
     const CSSProperty* const set[],
     unsigned length) {
-  if (property_vector_.IsEmpty())
+  if (property_vector_.empty())
     return false;
 
   CSSPropertyValue* properties = property_vector_.data();

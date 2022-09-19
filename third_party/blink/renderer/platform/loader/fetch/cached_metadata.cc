@@ -47,7 +47,7 @@ scoped_refptr<CachedMetadata> CachedMetadata::CreateFromSerializedData(
 CachedMetadata::CachedMetadata(Vector<uint8_t> data) {
   // Serialized metadata should have non-empty data.
   DCHECK_GT(data.size(), kCachedMetaDataStart);
-  DCHECK(!data.IsEmpty());
+  DCHECK(!data.empty());
   // Make sure that the first int in the data is the single entry marker.
   CHECK_EQ(*reinterpret_cast<const uint32_t*>(data.data()),
            CachedMetadataHandler::kSingleEntry);

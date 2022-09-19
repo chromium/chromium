@@ -810,7 +810,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
 
 TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  EXPECT_TRUE(style->GetVariableNames().IsEmpty());
+  EXPECT_TRUE(style->GetVariableNames().empty());
 }
 
 TEST_F(ComputedStyleTest, InitialVariableNames) {

@@ -152,13 +152,13 @@ void ShapeResult::EnsureGraphemes(const StringView& text) const {
 
   // Hit-testing, canvas, etc. may still call this function for 0-length text,
   // or glyphs may be missing at all.
-  if (runs_.IsEmpty())
+  if (runs_.empty())
     return;
 
-  bool is_computed = !runs_.front()->graphemes_.IsEmpty();
+  bool is_computed = !runs_.front()->graphemes_.empty();
 #if DCHECK_IS_ON()
   for (const auto& run : runs_)
-    DCHECK_EQ(is_computed, !run->graphemes_.IsEmpty());
+    DCHECK_EQ(is_computed, !run->graphemes_.empty());
 #endif
   if (is_computed)
     return;
@@ -428,7 +428,7 @@ size_t ShapeResult::ByteSize() const {
 
 bool ShapeResult::IsStartSafeToBreak() const {
   // Empty is likely a |SubRange| at the middle of a cluster or a ligature.
-  if (UNLIKELY(runs_.IsEmpty()))
+  if (UNLIKELY(runs_.empty()))
     return false;
   const RunInfo* run = nullptr;
   const HarfBuzzRunGlyphData* glyph_data = nullptr;
@@ -1343,7 +1343,7 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
       std::min(end_offset, EndIndex()) - std::max(start_offset, StartIndex());
 
   unsigned target_run_size_before = target->runs_.size();
-  bool should_merge = !target->runs_.IsEmpty();
+  bool should_merge = !target->runs_.empty();
   for (; run_index < runs_.size(); run_index++) {
     const auto& run = runs_[run_index];
     unsigned run_start = run->start_index_;
@@ -1428,7 +1428,7 @@ scoped_refptr<ShapeResult> ShapeResult::CopyAdjustedOffset(
 
 #if DCHECK_IS_ON()
 void ShapeResult::CheckConsistency() const {
-  if (runs_.IsEmpty()) {
+  if (runs_.empty()) {
     DCHECK_EQ(0u, num_characters_);
     DCHECK_EQ(0u, num_glyphs_);
     return;
@@ -1605,7 +1605,7 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
     TextDirection direction,
     OpenTypeMathStretchData::StretchAxis stretch_axis,
     const OpenTypeMathStretchData::AssemblyParameters& assembly_parameters) {
-  DCHECK(!assembly_parameters.parts.IsEmpty());
+  DCHECK(!assembly_parameters.parts.empty());
   DCHECK_LE(assembly_parameters.glyph_count, HarfBuzzRunGlyphData::kMaxGlyphs);
 
   bool is_horizontal_assembly =

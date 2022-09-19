@@ -348,11 +348,11 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
     const NGFragmentedOutOfFlowData* oof_data =
         fragment.FragmentedOutOfFlowData();
     return oof_data &&
-           !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty();
+           !oof_data->oof_positioned_fragmentainer_descendants.empty();
   }
 
   bool NeedsOOFPositionedInfoPropagation() const {
-    return !oof_positioned_fragmentainer_descendants.IsEmpty() ||
+    return !oof_positioned_fragmentainer_descendants.empty() ||
            !multicols_with_pending_oofs.IsEmpty();
   }
 
@@ -361,8 +361,7 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
       const NGPhysicalFragment& fragment) {
     const NGFragmentedOutOfFlowData* oof_data =
         fragment.FragmentedOutOfFlowData();
-    if (!oof_data ||
-        oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
+    if (!oof_data || oof_data->oof_positioned_fragmentainer_descendants.empty())
       return base::span<NGPhysicalOOFNodeForFragmentation>();
     HeapVector<NGPhysicalOOFNodeForFragmentation>& descendants =
         const_cast<HeapVector<NGPhysicalOOFNodeForFragmentation>&>(

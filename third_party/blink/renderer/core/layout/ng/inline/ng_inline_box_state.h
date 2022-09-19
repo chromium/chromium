@@ -104,7 +104,7 @@ struct NGInlineBoxState {
   // True if this box has a metrics, including pending ones. Pending metrics
   // will be activated in |EndBoxState()|.
   bool HasMetrics() const {
-    return !metrics.IsEmpty() || !pending_descendants.IsEmpty();
+    return !metrics.IsEmpty() || !pending_descendants.empty();
   }
 
   // Compute text metrics for a box. All text in a box share the same
@@ -179,7 +179,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
   void OnBlockInInline(const FontHeight& metrics, NGLogicalLineItems* line_box);
 
-  bool HasBoxFragments() const { return !box_data_list_.IsEmpty(); }
+  bool HasBoxFragments() const { return !box_data_list_.empty(); }
 
   // Notify when child is inserted at |index| to adjust child indexes.
   void ChildInserted(unsigned index);

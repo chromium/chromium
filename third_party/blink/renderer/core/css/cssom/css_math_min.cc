@@ -13,7 +13,7 @@ namespace blink {
 
 CSSMathMin* CSSMathMin::Create(const HeapVector<Member<V8CSSNumberish>>& args,
                                ExceptionState& exception_state) {
-  if (args.IsEmpty()) {
+  if (args.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Arguments can't be empty");
     return nullptr;

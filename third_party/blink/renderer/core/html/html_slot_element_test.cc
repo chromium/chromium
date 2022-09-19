@@ -184,7 +184,7 @@ TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
 
   auto* slot = To<HTMLSlotElement>(shadow_root.firstChild());
 
-  EXPECT_TRUE(slot->AssignedNodes().IsEmpty());
+  EXPECT_TRUE(slot->AssignedNodes().empty());
   EXPECT_EQ(2u, GetFlatTreeChildren(*slot).size());
 }
 

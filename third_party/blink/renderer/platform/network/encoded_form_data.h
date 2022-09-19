@@ -120,7 +120,7 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   void Flatten(Vector<char>&) const;  // omits files
   String FlattenToString() const;     // omits files
 
-  bool IsEmpty() const { return elements_.IsEmpty(); }
+  bool IsEmpty() const { return elements_.empty(); }
   const Vector<FormDataElement>& Elements() const { return elements_; }
   Vector<FormDataElement>& MutableElements() { return elements_; }
 

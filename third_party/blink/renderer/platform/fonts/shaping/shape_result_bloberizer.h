@@ -85,7 +85,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
            const gfx::Vector2dF& offset,
            unsigned character_index) {
     // cannot mix x-only/xy offsets
-    DCHECK(pending_glyphs_.IsEmpty() || HasPendingVerticalOffsets());
+    DCHECK(pending_glyphs_.empty() || HasPendingVerticalOffsets());
 
     if (UNLIKELY(font_data != pending_font_data_) ||
         UNLIKELY(canvas_rotation != pending_canvas_rotation_)) {

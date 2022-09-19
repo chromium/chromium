@@ -125,7 +125,7 @@ class CORE_EXPORT CSSAnimations final {
     return !previous_active_interpolations_for_animations_.IsEmpty();
   }
   bool IsEmpty() const {
-    return running_animations_.IsEmpty() && transitions_.IsEmpty() &&
+    return running_animations_.empty() && transitions_.IsEmpty() &&
            pending_update_.IsEmpty();
   }
   bool HasTimelines() const { return !timeline_data_.IsEmpty(); }

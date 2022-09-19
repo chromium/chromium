@@ -130,7 +130,7 @@ bool HasMediaQueries(const ActiveStyleSheetVector& active_style_sheets) {
   for (const auto& active_sheet : active_style_sheets) {
     if (const MediaQuerySet* media_queries =
             active_sheet.first->MediaQueries()) {
-      if (!media_queries->QueryVector().IsEmpty())
+      if (!media_queries->QueryVector().empty())
         return true;
     }
     StyleSheetContents* contents = active_sheet.first->Contents();

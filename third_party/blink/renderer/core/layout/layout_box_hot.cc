@@ -101,8 +101,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
 
   const bool use_layout_cache_slot =
-      new_space.CacheSlot() == NGCacheSlot::kLayout &&
-      !layout_results_.IsEmpty();
+      new_space.CacheSlot() == NGCacheSlot::kLayout && !layout_results_.empty();
   const NGLayoutResult* cached_layout_result = use_layout_cache_slot
                                                    ? GetCachedLayoutResult()
                                                    : GetCachedMeasureResult();

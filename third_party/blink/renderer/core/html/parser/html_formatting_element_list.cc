@@ -116,7 +116,7 @@ void HTMLFormattingElementList::ClearToLastMarker() {
 void HTMLFormattingElementList::TryToEnsureNoahsArkConditionQuickly(
     HTMLStackItem* new_item,
     HeapVector<Member<HTMLStackItem>>& remaining_candidates) {
-  DCHECK(remaining_candidates.IsEmpty());
+  DCHECK(remaining_candidates.empty());
 
   if (entries_.size() < kNoahsArkCapacity)
     return;
@@ -157,7 +157,7 @@ void HTMLFormattingElementList::EnsureNoahsArkCondition(
     HTMLStackItem* new_item) {
   HeapVector<Member<HTMLStackItem>> candidates;
   TryToEnsureNoahsArkConditionQuickly(new_item, candidates);
-  if (candidates.IsEmpty())
+  if (candidates.empty())
     return;
 
   // We pre-allocate and re-use this second vector to save one malloc per

@@ -562,8 +562,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
   DCHECK_LE(csp.size(), 1u);
 
   auto attributes = mojom::blink::IframeAttributes::New();
-  attributes->parsed_csp_attribute =
-      csp.IsEmpty() ? nullptr : std::move(csp[0]);
+  attributes->parsed_csp_attribute = csp.empty() ? nullptr : std::move(csp[0]);
   attributes->anonymous = anonymous_;
 
   attributes->id = ConvertToReportValue(id_);

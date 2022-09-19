@@ -434,7 +434,7 @@ void ImageResource::ResponseReceived(const ResourceResponse& response) {
     Vector<char> boundary = network_utils::ParseMultipartBoundary(
         response.HttpHeaderField(http_names::kContentType));
     // If there's no boundary, just handle the request normally.
-    if (!boundary.IsEmpty()) {
+    if (!boundary.empty()) {
       multipart_parser_ = MakeGarbageCollected<MultipartImageResourceParser>(
           response, boundary, this);
     }

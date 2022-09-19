@@ -1872,7 +1872,7 @@ bool PaintLayer::HitTestFragmentsWithPhase(
     const HitTestLocation& hit_test_location,
     HitTestPhase phase,
     bool& inside_clip_rect) const {
-  if (layer_fragments.IsEmpty())
+  if (layer_fragments.empty())
     return false;
 
   for (int i = layer_fragments.size() - 1; i >= 0; --i) {

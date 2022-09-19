@@ -636,7 +636,7 @@ ServiceWorkerContainer::CreateReadyProperty() {
 void ServiceWorkerContainer::EnableClientMessageQueue() {
   dom_content_loaded_observer_ = nullptr;
   if (is_client_message_queue_enabled_) {
-    DCHECK(queued_messages_.IsEmpty());
+    DCHECK(queued_messages_.empty());
     return;
   }
   is_client_message_queue_enabled_ = true;

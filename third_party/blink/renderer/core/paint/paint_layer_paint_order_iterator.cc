@@ -125,7 +125,7 @@ void PaintLayerPaintOrderReverseIterator::SetIndexToLastItem() {
   if (remaining_children_ & kNegativeZOrderChildren) {
     if (root_->StackingNode()) {
       const auto& neg_z_order_list = root_->StackingNode()->NegZOrderList();
-      if (!neg_z_order_list.IsEmpty()) {
+      if (!neg_z_order_list.empty()) {
         index_ = neg_z_order_list.size() - 1;
         return;
       }
@@ -142,7 +142,7 @@ void PaintLayerPaintOrderReverseIterator::SetIndexToLastItem() {
   if (remaining_children_ & kPositiveZOrderChildren) {
     if (root_->StackingNode()) {
       const auto& pos_z_order_list = root_->StackingNode()->PosZOrderList();
-      if (!pos_z_order_list.IsEmpty()) {
+      if (!pos_z_order_list.empty()) {
         index_ = pos_z_order_list.size() - 1;
         return;
       }

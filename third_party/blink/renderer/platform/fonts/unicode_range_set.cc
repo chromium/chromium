@@ -33,7 +33,7 @@ namespace blink {
 
 UnicodeRangeSet::UnicodeRangeSet(const Vector<UnicodeRange>& ranges)
     : ranges_(ranges) {
-  if (ranges_.IsEmpty())
+  if (ranges_.empty())
     return;
 
   std::sort(ranges_.begin(), ranges_.end());

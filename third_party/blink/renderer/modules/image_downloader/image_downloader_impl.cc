@@ -88,7 +88,7 @@ void FilterAndResizeImagesForMaximalSize(
   images->clear();
   original_image_sizes->clear();
 
-  if (unfiltered.IsEmpty())
+  if (unfiltered.empty())
     return;
 
   if (max_image_size == 0)

@@ -1165,7 +1165,7 @@ void WebTransport::Init(const String& url,
               hash->algorithm(), value_builder.ToString()));
     }
   }
-  if (!fingerprints.IsEmpty()) {
+  if (!fingerprints.empty()) {
     execution_context->CountUse(
         WebFeature::kWebTransportServerCertificateHashes);
   }

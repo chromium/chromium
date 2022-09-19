@@ -53,7 +53,7 @@ class PaintArtifactCompositor::OldPendingLayerMatcher {
   // Finds the next PendingLayer that can be matched by |new_layer|.
   // It's efficient if most of the pending layers can be matched sequentially.
   PendingLayer* Find(const PendingLayer& new_layer) {
-    if (pending_layers_.IsEmpty())
+    if (pending_layers_.empty())
       return nullptr;
     if (!new_layer.FirstPaintChunk().CanMatchOldChunk())
       return nullptr;
@@ -650,7 +650,7 @@ void PaintArtifactCompositor::Update(
       base::FeatureList::IsEnabled(features::kScrollUnification);
   // See: |UpdateRepaintedLayers| for repaint updates.
   DCHECK(needs_update_);
-  DCHECK(scroll_translation_nodes.IsEmpty() || unification_enabled);
+  DCHECK(scroll_translation_nodes.empty() || unification_enabled);
   DCHECK(root_layer_);
 
   TRACE_EVENT0("blink", "PaintArtifactCompositor::Update");

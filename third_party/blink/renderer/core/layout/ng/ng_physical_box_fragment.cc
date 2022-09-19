@@ -195,12 +195,11 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
 
   bool has_rare_data =
       builder->frame_set_layout_data_ || builder->mathml_paint_info_ ||
-      builder->table_grid_rect_ ||
-      !builder->table_column_geometries_.IsEmpty() ||
+      builder->table_grid_rect_ || !builder->table_column_geometries_.empty() ||
       builder->table_collapsed_borders_ ||
       builder->table_collapsed_borders_geometry_ ||
       builder->table_cell_column_index_ ||
-      !builder->table_section_row_offsets_.IsEmpty() || builder->page_name_;
+      !builder->table_section_row_offsets_.empty() || builder->page_name_;
 
   wtf_size_t num_fragment_items =
       builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
@@ -525,7 +524,7 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
     NGContainerFragmentBuilder* builder) {
   DCHECK(has_fragmented_out_of_flow_data_);
   DCHECK_EQ(has_fragmented_out_of_flow_data_,
-            !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
+            !builder->oof_positioned_fragmentainer_descendants_.empty() ||
                 !builder->multicols_with_pending_oofs_.IsEmpty());
   NGFragmentedOutOfFlowData* fragmented_data =
       MakeGarbageCollected<NGFragmentedOutOfFlowData>();
@@ -588,7 +587,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
       mathml_paint_info(std::move(builder->mathml_paint_info_)) {
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;
-  if (!builder->table_column_geometries_.IsEmpty())
+  if (!builder->table_column_geometries_.empty())
     table_column_geometries = builder->table_column_geometries_;
   if (builder->table_collapsed_borders_)
     table_collapsed_borders = std::move(builder->table_collapsed_borders_);
@@ -598,7 +597,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
   }
   if (builder->table_cell_column_index_)
     table_cell_column_index = *builder->table_cell_column_index_;
-  if (!builder->table_section_row_offsets_.IsEmpty()) {
+  if (!builder->table_section_row_offsets_.empty()) {
     table_section_start_row_index = builder->table_section_start_row_index_;
     table_section_row_offsets = std::move(builder->table_section_row_offsets_);
   }

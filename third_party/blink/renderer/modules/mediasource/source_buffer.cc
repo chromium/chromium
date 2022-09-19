@@ -1280,7 +1280,7 @@ void SourceBuffer::RemoveMediaTracks() {
   //     list.
   // Here, we perform batch removal of audio tracks, compiled in step 4.3.4,
   // above, along with conditional enqueueing of change event.
-  if (!audio_track_removal_ids.IsEmpty()) {
+  if (!audio_track_removal_ids.empty()) {
     attachment->RemoveAudioTracksFromMediaElement(
         tracer, audio_track_removal_ids,
         removed_enabled_audio_track /* enqueue_change_event */);
@@ -1325,7 +1325,7 @@ void SourceBuffer::RemoveMediaTracks() {
   //     list.
   // Here, we perform batch removal of video tracks, compiled in step 6.3.4,
   // above, along with conditional enqueueing of change event.
-  if (!video_track_removal_ids.IsEmpty()) {
+  if (!video_track_removal_ids.empty()) {
     attachment->RemoveVideoTracksFromMediaElement(
         tracer, video_track_removal_ids,
         removed_selected_video_track /* enqueue_change_event */);
@@ -1428,8 +1428,8 @@ void SourceBuffer::AddPlaceholderCrossThreadTracks(
   // SourceBufferState::OnNewConfigs()).
   bool enable_next_audio_track = true;
   bool select_next_video_track = true;
-  DCHECK(audio_track_ids_for_crossthread_removal_.IsEmpty());
-  DCHECK(video_track_ids_for_crossthread_removal_.IsEmpty());
+  DCHECK(audio_track_ids_for_crossthread_removal_.empty());
+  DCHECK(video_track_ids_for_crossthread_removal_.empty());
   for (const MediaTrackInfo& track_info : new_tracks) {
     if (track_info.track_type == WebMediaPlayer::kAudioTrack) {
       WebString label = track_info.label;
@@ -1491,13 +1491,13 @@ void SourceBuffer::RemovePlaceholderCrossThreadTracks(
   // lists on the media element. The event(s) may be extra, but likely unseen by
   // application unless it is attempting experimental AudioVideoTracks usage,
   // too.
-  if (!audio_track_ids_for_crossthread_removal_.IsEmpty()) {
+  if (!audio_track_ids_for_crossthread_removal_.empty()) {
     attachment->RemoveAudioTracksFromMediaElement(
         tracer, std::move(audio_track_ids_for_crossthread_removal_),
         true /* enqueue_change_event */);
   }
 
-  if (!video_track_ids_for_crossthread_removal_.IsEmpty()) {
+  if (!video_track_ids_for_crossthread_removal_.empty()) {
     attachment->RemoveVideoTracksFromMediaElement(
         tracer, std::move(video_track_ids_for_crossthread_removal_),
         true /* enqueue_change_event */);

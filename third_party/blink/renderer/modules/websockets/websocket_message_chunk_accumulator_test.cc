@@ -39,7 +39,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, Empty) {
   chunks.SetTaskRunnerForTesting(task_runner, task_runner->GetMockTickClock());
 
   EXPECT_EQ(chunks.GetSize(), 0u);
-  EXPECT_TRUE(chunks.GetView().IsEmpty());
+  EXPECT_TRUE(chunks.GetView().empty());
 }
 
 TEST_F(WebSocketMessageChunkAccumulatorTest, Append) {

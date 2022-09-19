@@ -185,9 +185,9 @@ class PLATFORM_EXPORT StringConstraint : public BaseConstraint {
 
   bool Matches(String value) const;
   bool IsUnconstrained() const override;
-  bool HasExact() const override { return !exact_.IsEmpty(); }
+  bool HasExact() const override { return !exact_.empty(); }
   String ToString() const override;
-  bool HasIdeal() const { return !ideal_.IsEmpty(); }
+  bool HasIdeal() const { return !ideal_.empty(); }
   const Vector<String>& Exact() const;
   const Vector<String>& Ideal() const;
 

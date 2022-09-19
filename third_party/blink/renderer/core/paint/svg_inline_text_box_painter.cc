@@ -145,7 +145,7 @@ void SVGInlineTextBoxPainter::Paint(const PaintInfo& paint_info,
         markers_to_paint, paint_info, paint_offset, style,
         text_layout_object.ScaledFont(), DocumentMarkerPaintPhase::kBackground);
 
-    if (!svg_inline_text_box_.TextFragments().IsEmpty())
+    if (!svg_inline_text_box_.TextFragments().empty())
       PaintTextFragments(paint_info, parent_layout_object);
 
     text_painter.PaintDocumentMarkers(
@@ -694,7 +694,7 @@ void SVGInlineTextBoxPainter::PaintTextMarkerForeground(
     const Font& font) {
   const Vector<SVGTextFragmentWithRange> text_match_info_list =
       CollectTextMatches(marker);
-  if (text_match_info_list.IsEmpty())
+  if (text_match_info_list.empty())
     return;
 
   Color text_color = LayoutTheme::GetTheme().PlatformTextSearchColor(
@@ -740,7 +740,7 @@ void SVGInlineTextBoxPainter::PaintTextMarkerBackground(
     const Font& font) {
   const Vector<SVGTextFragmentWithRange> text_match_info_list =
       CollectTextMatches(marker);
-  if (text_match_info_list.IsEmpty())
+  if (text_match_info_list.empty())
     return;
 
   Color color = LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(

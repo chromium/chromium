@@ -76,7 +76,7 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead_SignalError) {
   auto result = MakeGarbageCollected<BytesConsumerTestReader>(consumer)->Run(
       task_runner_.get());
   EXPECT_EQ(Result::kError, result.first);
-  EXPECT_TRUE(result.second.IsEmpty());
+  EXPECT_TRUE(result.second.empty());
 }
 
 // Verify that both the DataPipe must close and SignalComplete()

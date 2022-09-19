@@ -79,7 +79,7 @@ class ShapingLineBreakerTest : public FontTestBase {
     for (unsigned i = 0; i <= string.length(); i++) {
       unsigned next =
           breaker.NextBreakOpportunity(i, 0, string.length()).offset;
-      if (break_positions.IsEmpty() || break_positions.back() != next)
+      if (break_positions.empty() || break_positions.back() != next)
         break_positions.push_back(next);
     }
     return break_positions;
@@ -92,7 +92,7 @@ class ShapingLineBreakerTest : public FontTestBase {
     for (unsigned i = string.length(); i; i--) {
       unsigned previous = breaker.PreviousBreakOpportunity(i, 0).offset;
       if (previous &&
-          (break_positions.IsEmpty() || break_positions.back() != previous))
+          (break_positions.empty() || break_positions.back() != previous))
         break_positions.push_back(previous);
     }
     break_positions.Reverse();
@@ -407,7 +407,7 @@ TEST_P(BreakOpportunityTest, Next) {
   EXPECT_THAT(BreakPositionsByNext(breaker, string),
               testing::ElementsAreArray(data.break_positions));
 
-  if (!data.break_positions_with_soft_hyphen_disabled.IsEmpty()) {
+  if (!data.break_positions_with_soft_hyphen_disabled.empty()) {
     breaker.DisableSoftHyphen();
     EXPECT_THAT(BreakPositionsByNext(breaker, string),
                 testing::ElementsAreArray(
@@ -429,7 +429,7 @@ TEST_P(BreakOpportunityTest, Previous) {
   EXPECT_THAT(BreakPositionsByPrevious(breaker, string),
               testing::ElementsAreArray(data.break_positions));
 
-  if (!data.break_positions_with_soft_hyphen_disabled.IsEmpty()) {
+  if (!data.break_positions_with_soft_hyphen_disabled.empty()) {
     breaker.DisableSoftHyphen();
     EXPECT_THAT(BreakPositionsByPrevious(breaker, string),
                 testing::ElementsAreArray(

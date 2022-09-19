@@ -457,7 +457,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // Only force the refresh if there was or will be owned children; otherwise,
   // there is nothing to refresh even for a new AXObject replacing an old owner.
   if (previously_owned_child_ids == validated_owned_child_axids &&
-      (!force || previously_owned_child_ids.IsEmpty())) {
+      (!force || previously_owned_child_ids.empty())) {
     return;
   }
 
@@ -485,7 +485,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
 #endif
 
   // Finally, update the mapping from the owner to the list of child IDs.
-  if (validated_owned_child_axids.IsEmpty()) {
+  if (validated_owned_child_axids.empty()) {
     aria_owner_to_children_mapping_.erase(owner->AXObjectID());
   } else {
     aria_owner_to_children_mapping_.Set(owner->AXObjectID(),

@@ -151,7 +151,7 @@ void ParseThresholds(
       break;
   }
 
-  if (thresholds.IsEmpty())
+  if (thresholds.empty())
     thresholds.push_back(0.f);
 
   for (auto threshold_value : thresholds) {
@@ -433,7 +433,7 @@ static void AppendLength(StringBuilder& string_builder, const Length& length) {
 String IntersectionObserver::rootMargin() const {
   StringBuilder string_builder;
   const auto& margin = RootMargin();
-  if (margin.IsEmpty()) {
+  if (margin.empty()) {
     string_builder.Append("0px 0px 0px 0px");
   } else {
     DCHECK_EQ(margin.size(), 4u);

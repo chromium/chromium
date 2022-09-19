@@ -1016,7 +1016,7 @@ void HTMLMediaElement::InvokeLoadAlgorithm() {
     ready_state_ = kHaveNothing;
     ready_state_maximum_ = kHaveNothing;
 
-    DCHECK(!paused_ || play_promise_resolvers_.IsEmpty());
+    DCHECK(!paused_ || play_promise_resolvers_.empty());
 
     // 4.6 - If the paused attribute is false, then run these substeps
     if (!paused_) {
@@ -2695,7 +2695,7 @@ ScriptPromise HTMLMediaElement::playForBindings(ScriptState* script_state) {
 
   absl::optional<DOMExceptionCode> code = Play();
   if (code) {
-    DCHECK(!play_promise_resolvers_.IsEmpty());
+    DCHECK(!play_promise_resolvers_.empty());
     play_promise_resolvers_.pop_back();
 
     String message;
@@ -4439,9 +4439,9 @@ void HTMLMediaElement::ScheduleResolvePlayPromises() {
   // appended promise list or append the new promise to the current list. The
   // latter approach is preferred because it might be the less observable
   // change.
-  DCHECK(play_promise_resolve_list_.IsEmpty() ||
+  DCHECK(play_promise_resolve_list_.empty() ||
          play_promise_resolve_task_handle_.IsActive());
-  if (play_promise_resolvers_.IsEmpty())
+  if (play_promise_resolvers_.empty())
     return;
 
   play_promise_resolve_list_.AppendVector(play_promise_resolvers_);
@@ -4463,9 +4463,9 @@ void HTMLMediaElement::ScheduleRejectPlayPromises(PlayPromiseError code) {
   // appended promise list or append the new promise to the current list. The
   // latter approach is preferred because it might be the less observable
   // change.
-  DCHECK(play_promise_reject_list_.IsEmpty() ||
+  DCHECK(play_promise_reject_list_.empty() ||
          play_promise_reject_task_handle_.IsActive());
-  if (play_promise_resolvers_.IsEmpty())
+  if (play_promise_resolvers_.empty())
     return;
 
   play_promise_reject_list_.AppendVector(play_promise_resolvers_);

@@ -274,7 +274,7 @@ void PerformanceObserver::Deliver(absl::optional<int> dropped_entries_count) {
     return;
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
-  if (performance_entries_.IsEmpty())
+  if (performance_entries_.empty())
     return;
 
   PerformanceEntryVector performance_entries;

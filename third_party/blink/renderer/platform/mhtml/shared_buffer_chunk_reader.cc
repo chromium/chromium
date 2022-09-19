@@ -108,7 +108,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
       reached_end_of_file_ = true;
       if (separator_index_ > 0)
         chunk.Append(separator_.data(), separator_index_);
-      return !chunk.IsEmpty();
+      return !chunk.empty();
     }
     segment_ = it->data();
     segment_length_ = base::checked_cast<uint32_t>(it->size());

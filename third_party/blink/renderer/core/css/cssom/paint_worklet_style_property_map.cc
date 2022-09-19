@@ -162,7 +162,7 @@ CSSStyleValue* PaintWorkletStylePropertyMap::get(
     ExceptionState& exception_state) const {
   CSSStyleValueVector all_values =
       getAll(execution_context, property_name, exception_state);
-  return all_values.IsEmpty() ? nullptr : all_values[0];
+  return all_values.empty() ? nullptr : all_values[0];
 }
 
 CSSStyleValueVector PaintWorkletStylePropertyMap::getAll(
@@ -189,7 +189,7 @@ bool PaintWorkletStylePropertyMap::has(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  return !getAll(execution_context, property_name, exception_state).IsEmpty();
+  return !getAll(execution_context, property_name, exception_state).empty();
 }
 
 unsigned PaintWorkletStylePropertyMap::size() const {

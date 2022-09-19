@@ -87,7 +87,7 @@ struct LegacyDOMSnapshotAgent::VectorStringHashTraits
     return vec.IsHashTableDeletedValue();
   }
 
-  static bool IsEmptyValue(const Vector<String>& vec) { return vec.IsEmpty(); }
+  static bool IsEmptyValue(const Vector<String>& vec) { return vec.empty(); }
 
   static const bool kEmptyValueIsZero = false;
   static const bool safe_to_compare_to_empty_or_deleted = false;
@@ -220,7 +220,7 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
       InspectorDOMDebuggerAgent::CollectEventListeners(
           script_state->GetIsolate(), node, v8::Local<v8::Value>(), node, true,
           &event_information);
-      if (!event_information.IsEmpty()) {
+      if (!event_information.empty()) {
         value->setEventListeners(
             dom_debugger_agent_->BuildObjectsForEventListeners(
                 event_information, context, v8_inspector::StringView()));
@@ -408,7 +408,7 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
     auto* layout_text = To<LayoutText>(layout_object);
     layout_tree_node->setLayoutText(layout_text->GetText());
     Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
-    if (!text_boxes.IsEmpty()) {
+    if (!text_boxes.empty()) {
       auto inline_text_nodes = std::make_unique<
           protocol::Array<protocol::DOMSnapshot::InlineTextBox>>();
       for (const auto& text_box : text_boxes) {

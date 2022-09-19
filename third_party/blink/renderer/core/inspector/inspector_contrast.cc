@@ -45,7 +45,7 @@ void BlendWithColorsFromGradient(cssvalue::CSSGradientValue* gradient,
   const ComputedStyle& style = layout_object.StyleRef();
 
   Vector<Color> stop_colors = gradient->GetStopColors(document, style);
-  if (colors.IsEmpty()) {
+  if (colors.empty()) {
     colors.AppendRange(stop_colors.begin(), stop_colors.end());
   } else {
     if (colors.size() > 1) {
@@ -359,7 +359,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     if (background_color.Alpha() != 0) {
       found_non_transparent_color = true;
       if (background_color.HasAlpha()) {
-        if (colors.IsEmpty()) {
+        if (colors.empty()) {
           colors.push_back(background_color);
         } else {
           for (auto& color : colors)

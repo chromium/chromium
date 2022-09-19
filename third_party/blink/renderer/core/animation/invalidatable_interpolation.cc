@@ -220,7 +220,7 @@ double InvalidatableInterpolation::UnderlyingFraction() const {
 void InvalidatableInterpolation::ApplyStack(
     const ActiveInterpolations& interpolations,
     InterpolationEnvironment& environment) {
-  DCHECK(!interpolations.IsEmpty());
+  DCHECK(!interpolations.empty());
   wtf_size_t starting_index = 0;
 
   // Compute the underlying value to composite onto.

@@ -288,7 +288,7 @@ ExtractionStatus ExtractMetadata(const Element& root,
       }
     }
   }
-  if (entities.IsEmpty()) {
+  if (entities.empty()) {
     return ExtractionStatus::kEmpty;
   }
   return ExtractionStatus::kOK;

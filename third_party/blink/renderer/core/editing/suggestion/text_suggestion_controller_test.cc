@@ -524,7 +524,7 @@ TEST_F(TextSuggestionControllerTest, SuggestionMarkerWithEmptySuggestion) {
       node_suggestion_marker_pairs =
           GetFrame().GetDocument()->Markers().MarkersIntersectingRange(
               range_to_check, DocumentMarker::MarkerTypes::Suggestion());
-  EXPECT_FALSE(node_suggestion_marker_pairs.IsEmpty());
+  EXPECT_FALSE(node_suggestion_marker_pairs.empty());
 
   // Calling ShowSuggestionMenu() shouldn't crash. See crbug.com/901135.
   // ShowSuggestionMenu() may still get called because of race condition.

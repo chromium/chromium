@@ -96,7 +96,7 @@ bool NGGridTrackList::AddRepeater(
     const Vector<GridTrackSize, 1>& repeater_track_sizes,
     NGGridTrackRepeater::RepeatType repeat_type,
     wtf_size_t repeat_count) {
-  if (repeat_count == 0u || repeater_track_sizes.IsEmpty())
+  if (repeat_count == 0u || repeater_track_sizes.empty())
     return false;
 
   // If the repeater is auto or there isn't a repeater, the repeat_count should

@@ -310,7 +310,7 @@ uint64_t Sweeper::SweepImpl(SegmentTree& tree,
 }  // namespace
 
 uint64_t LayoutShiftRegion::Area() const {
-  if (rects_.IsEmpty())
+  if (rects_.empty())
     return 0;
 
   // Optimization: for a single rect, we don't need Sweeper.

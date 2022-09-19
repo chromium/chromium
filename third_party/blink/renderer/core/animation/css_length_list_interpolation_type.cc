@@ -46,7 +46,7 @@ InterpolationValue CSSLengthListInterpolationType::MaybeConvertNeutral(
 static InterpolationValue MaybeConvertLengthList(
     const Vector<Length>& length_list,
     float zoom) {
-  if (length_list.IsEmpty())
+  if (length_list.empty())
     return nullptr;
 
   return ListInterpolationFunctions::CreateList(

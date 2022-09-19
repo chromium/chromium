@@ -48,7 +48,7 @@ WebString CanonicalizeSelector(WebString web_selector,
       CSSParser::ParseSelector</*UseArena=*/true>(
           StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
           web_selector, arena);
-  if (selector_vector.IsEmpty()) {
+  if (selector_vector.empty()) {
     // Parse error.
     return {};
   }

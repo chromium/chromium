@@ -397,7 +397,7 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
     }
   }
 
-  if (promises.IsEmpty()) {
+  if (promises.empty()) {
     StreamsClosed();
     return promise;
   }

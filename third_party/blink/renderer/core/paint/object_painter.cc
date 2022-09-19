@@ -40,7 +40,7 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
   auto outline_rects = layout_object_.OutlineRects(
       &info, paint_offset,
       style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow());
-  if (outline_rects.IsEmpty())
+  if (outline_rects.empty())
     return;
 
   OutlinePainter::PaintOutlineRects(paint_info, layout_object_, outline_rects,

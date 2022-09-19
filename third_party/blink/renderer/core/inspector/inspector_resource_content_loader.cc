@@ -224,7 +224,7 @@ void InspectorResourceContentLoader::Cancel(int client_id) {
 }
 
 InspectorResourceContentLoader::~InspectorResourceContentLoader() {
-  DCHECK(resources_.IsEmpty());
+  DCHECK(resources_.empty());
 }
 
 void InspectorResourceContentLoader::Trace(Visitor* visitor) const {

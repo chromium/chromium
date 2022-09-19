@@ -215,13 +215,13 @@ inline void StyleSheetHandler::SetRuleHeaderEnd(const CharacterType* data_start,
   }
 
   current_rule_data_stack_.back()->rule_header_range.end = list_end_offset;
-  if (!current_rule_data_stack_.back()->selector_ranges.IsEmpty())
+  if (!current_rule_data_stack_.back()->selector_ranges.empty())
     current_rule_data_stack_.back()->selector_ranges.back().end =
         list_end_offset;
 }
 
 void StyleSheetHandler::EndRuleHeader(unsigned offset) {
-  DCHECK(!current_rule_data_stack_.IsEmpty());
+  DCHECK(!current_rule_data_stack_.empty());
 
   if (parsed_text_.Is8Bit())
     SetRuleHeaderEnd<LChar>(parsed_text_.Characters8(), offset);
@@ -238,7 +238,7 @@ void StyleSheetHandler::ObserveSelector(unsigned start_offset,
 
 void StyleSheetHandler::StartRuleBody(unsigned offset) {
   current_rule_data_ = nullptr;
-  DCHECK(!current_rule_data_stack_.IsEmpty());
+  DCHECK(!current_rule_data_stack_.empty());
   if (parsed_text_[offset] == '{')
     ++offset;  // Skip the rule body opening brace.
   current_rule_data_stack_.back()->rule_body_range.start = offset;
@@ -250,20 +250,20 @@ void StyleSheetHandler::EndRuleBody(unsigned offset) {
     current_rule_data_ = nullptr;
     current_rule_data_stack_.pop_back();
   }
-  DCHECK(!current_rule_data_stack_.IsEmpty());
+  DCHECK(!current_rule_data_stack_.empty());
   current_rule_data_stack_.back()->rule_body_range.end = offset;
   AddNewRuleToSourceTree(PopRuleData());
 }
 
 void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
-  if (current_rule_data_stack_.IsEmpty())
+  if (current_rule_data_stack_.empty())
     result_->push_back(rule);
   else
     current_rule_data_stack_.back()->child_rules.push_back(rule);
 }
 
 CSSRuleSourceData* StyleSheetHandler::PopRuleData() {
-  DCHECK(!current_rule_data_stack_.IsEmpty());
+  DCHECK(!current_rule_data_stack_.empty());
   current_rule_data_ = nullptr;
   CSSRuleSourceData* data = current_rule_data_stack_.back().Get();
   current_rule_data_stack_.pop_back();
@@ -274,7 +274,7 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
                                         unsigned end_offset,
                                         bool is_important,
                                         bool is_parsed) {
-  if (current_rule_data_stack_.IsEmpty() ||
+  if (current_rule_data_stack_.empty() ||
       !current_rule_data_stack_.back()->HasProperties())
     return;
 
@@ -306,7 +306,7 @@ void StyleSheetHandler::ObserveComment(unsigned start_offset,
                                        unsigned end_offset) {
   DCHECK_LE(end_offset, parsed_text_.length());
 
-  if (current_rule_data_stack_.IsEmpty() ||
+  if (current_rule_data_stack_.empty() ||
       !current_rule_data_stack_.back()->rule_header_range.end ||
       !current_rule_data_stack_.back()->HasProperties())
     return;

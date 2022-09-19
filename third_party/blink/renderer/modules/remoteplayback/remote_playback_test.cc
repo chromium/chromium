@@ -393,7 +393,7 @@ TEST_F(RemotePlaybackTest, IsListening) {
   remote_playback.watchAvailability(
       scope.GetScriptState(), availability_callback, scope.GetExceptionState());
 
-  ASSERT_TRUE(remote_playback.Urls().IsEmpty());
+  ASSERT_TRUE(remote_playback.Urls().empty());
   ASSERT_FALSE(IsListening(remote_playback));
 
   remote_playback.SourceChanged(WebURL(KURL("http://www.example.com")), true);
@@ -413,11 +413,11 @@ TEST_F(RemotePlaybackTest, IsListening) {
   remote_playback.AvailabilityChanged(mojom::ScreenAvailability::AVAILABLE);
 
   remote_playback.SourceChanged(WebURL(), false);
-  ASSERT_TRUE(remote_playback.Urls().IsEmpty());
+  ASSERT_TRUE(remote_playback.Urls().empty());
   ASSERT_FALSE(IsListening(remote_playback));
 
   remote_playback.SourceChanged(WebURL(KURL("@$@#@#")), true);
-  ASSERT_TRUE(remote_playback.Urls().IsEmpty());
+  ASSERT_TRUE(remote_playback.Urls().empty());
   ASSERT_FALSE(IsListening(remote_playback));
 
   // Runs pending promises.

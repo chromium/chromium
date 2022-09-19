@@ -281,7 +281,7 @@ class XRSession final
   bool EmulatedPosition() const {
     // If we don't have display info then we should be using the identity
     // reference space, which by definition will be emulating the position.
-    if (pending_views_.IsEmpty()) {
+    if (pending_views_.empty()) {
       return true;
     }
 

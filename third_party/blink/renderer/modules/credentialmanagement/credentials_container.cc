@@ -630,8 +630,8 @@ void OnMakePublicKeyCredentialComplete(
     return;
   }
   DCHECK(credential);
-  DCHECK(!credential->info->client_data_json.IsEmpty());
-  DCHECK(!credential->attestation_object.IsEmpty());
+  DCHECK(!credential->info->client_data_json.empty());
+  DCHECK(!credential->attestation_object.empty());
   UseCounter::Count(
       resolver->GetExecutionContext(),
       WebFeature::kCredentialManagerMakePublicKeyCredentialSuccess);
@@ -767,8 +767,8 @@ void OnGetAssertionComplete(
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status == AuthenticatorStatus::SUCCESS) {
     DCHECK(credential);
-    DCHECK(!credential->signature.IsEmpty());
-    DCHECK(!credential->info->authenticator_data.IsEmpty());
+    DCHECK(!credential->signature.empty());
+    DCHECK(!credential->info->authenticator_data.empty());
     UseCounter::Count(
         resolver->GetExecutionContext(),
         WebFeature::kCredentialManagerGetPublicKeyCredentialSuccess);
@@ -1173,7 +1173,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
         options->mediation() == "conditional";
     if (is_conditional_ui_request &&
         options->publicKey()->hasAllowCredentials() &&
-        !options->publicKey()->allowCredentials().IsEmpty()) {
+        !options->publicKey()->allowCredentials().empty()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "allowCredentials is not supported for conditionalPublicKey"));

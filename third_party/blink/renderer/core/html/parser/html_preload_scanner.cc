@@ -1147,7 +1147,7 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
       return pending_data;
     }
     // Incrementally add preloads when scanning in the background.
-    if (take_preload && !pending_data->requests.IsEmpty()) {
+    if (take_preload && !pending_data->requests.empty()) {
       take_preload.Run(std::move(pending_data));
       pending_data = std::make_unique<PendingPreloadData>();
     }

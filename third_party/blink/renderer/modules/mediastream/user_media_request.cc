@@ -445,8 +445,8 @@ UserMediaRequest* UserMediaRequest::Create(
       }
     }
 
-    if ((!audio.IsNull() && !audio.Advanced().IsEmpty()) ||
-        (!video.IsNull() && !video.Advanced().IsEmpty())) {
+    if ((!audio.IsNull() && !audio.Advanced().empty()) ||
+        (!video.IsNull() && !video.Advanced().empty())) {
       error_state.ThrowTypeError("Advanced constraints are not supported");
       return nullptr;
     }

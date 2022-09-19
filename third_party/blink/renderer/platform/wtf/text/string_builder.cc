@@ -208,7 +208,7 @@ void StringBuilder::CreateBuffer16(unsigned added_size) {
   buffer16_.ReserveInitialCapacity(capacity);
   is_8bit_ = false;
   length_ = 0;
-  if (!buffer8.IsEmpty()) {
+  if (!buffer8.empty()) {
     Append(buffer8.data(), length);
     return;
   }

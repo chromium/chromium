@@ -108,7 +108,7 @@ bool ExternalPopupMenu::ShowInternal() {
   bool allow_multiple_selection;
   GetPopupMenuInfo(*owner_element_, &item_height, &font_size, &selected_item,
                    &menu_items, &right_aligned, &allow_multiple_selection);
-  if (menu_items.IsEmpty())
+  if (menu_items.empty())
     return false;
 
   auto* execution_context = owner_element_->GetExecutionContext();
@@ -239,7 +239,7 @@ void ExternalPopupMenu::DidAcceptIndices(const Vector<int32_t>& indices) {
   HTMLSelectElement* owner_element = owner_element_;
   owner_element->PopupDidHide();
 
-  if (indices.IsEmpty()) {
+  if (indices.empty()) {
     owner_element->SelectOptionByPopup(-1);
   } else if (!owner_element->IsMultiple()) {
     owner_element->SelectOptionByPopup(

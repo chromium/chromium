@@ -291,7 +291,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
 
   // Process stack - will return when complete.
   while (true) {
-    DCHECK(!stack.IsEmpty());
+    DCHECK(!stack.empty());
     Record* top = stack.back().get();
     const wtf_size_t item_index = top->subkeys.size();
 
@@ -302,7 +302,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
       seen.pop_back();
       stack.pop_back();
 
-      if (stack.IsEmpty())
+      if (stack.empty())
         return key;
       top = stack.back().get();
       top->subkeys.push_back(std::move(key));

@@ -118,7 +118,7 @@ size_t QuantizeMemorySize(size_t size) {
   const int kNumberOfBuckets = 100;
   DEFINE_STATIC_LOCAL(Vector<size_t>, bucket_size_list, ());
 
-  if (bucket_size_list.IsEmpty()) {
+  if (bucket_size_list.empty()) {
     bucket_size_list.resize(kNumberOfBuckets);
 
     float size_of_next_bucket =

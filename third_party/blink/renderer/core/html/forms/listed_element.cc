@@ -520,7 +520,7 @@ void ListedElement::ShowValidationMessage() {
 bool ListedElement::reportValidity() {
   List unhandled_invalid_controls;
   bool is_valid = checkValidity(&unhandled_invalid_controls);
-  if (is_valid || unhandled_invalid_controls.IsEmpty())
+  if (is_valid || unhandled_invalid_controls.empty())
     return is_valid;
   DCHECK_EQ(unhandled_invalid_controls.size(), 1u);
   DCHECK_EQ(unhandled_invalid_controls[0].Get(), this);

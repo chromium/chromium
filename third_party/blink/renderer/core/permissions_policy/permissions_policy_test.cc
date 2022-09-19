@@ -581,7 +581,7 @@ TEST_F(PermissionsPolicyParserParsingTest,
           },
       });
 
-  EXPECT_TRUE(logger.GetMessages().IsEmpty());
+  EXPECT_TRUE(logger.GetMessages().empty());
 }
 
 TEST_F(PermissionsPolicyParserParsingTest,
@@ -604,7 +604,7 @@ TEST_F(PermissionsPolicyParserParsingTest,
           },
       });
 
-  EXPECT_TRUE(logger.GetMessages().IsEmpty());
+  EXPECT_TRUE(logger.GetMessages().empty());
 }
 
 TEST_F(PermissionsPolicyParserParsingTest,

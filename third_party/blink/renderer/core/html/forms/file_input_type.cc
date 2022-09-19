@@ -460,7 +460,7 @@ void FileInputType::SetFilesFromDirectory(const String& path) {
 }
 
 void FileInputType::SetFilesFromPaths(const Vector<String>& paths) {
-  if (paths.IsEmpty())
+  if (paths.empty())
     return;
 
   HTMLInputElement& input = GetElement();
@@ -485,7 +485,7 @@ void FileInputType::SetFilesFromPaths(const Vector<String>& paths) {
 bool FileInputType::ReceiveDroppedFiles(const DragData* drag_data) {
   Vector<String> paths;
   drag_data->AsFilePaths(paths);
-  if (paths.IsEmpty())
+  if (paths.empty())
     return false;
 
   if (!GetElement().FastHasAttribute(html_names::kWebkitdirectoryAttr)) {

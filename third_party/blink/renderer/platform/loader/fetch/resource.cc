@@ -488,7 +488,7 @@ size_t Resource::RedirectChainSize() const {
 }
 
 void Resource::SetRevalidatingRequest(const ResourceRequestHead& request) {
-  SECURITY_CHECK(redirect_chain_.IsEmpty());
+  SECURITY_CHECK(redirect_chain_.empty());
   SECURITY_CHECK(!is_unused_preload_);
   DCHECK(!request.IsNull());
   CHECK(!is_revalidation_start_forbidden_);
@@ -926,7 +926,7 @@ void Resource::ClearRangeRequestHeader() {
 
 void Resource::RevalidationSucceeded(
     const ResourceResponse& validating_response) {
-  SECURITY_CHECK(redirect_chain_.IsEmpty());
+  SECURITY_CHECK(redirect_chain_.empty());
   SECURITY_CHECK(
       EqualIgnoringFragmentIdentifier(validating_response.CurrentRequestUrl(),
                                       GetResponse().CurrentRequestUrl()));
@@ -950,7 +950,7 @@ void Resource::RevalidationSucceeded(
 }
 
 void Resource::RevalidationFailed() {
-  SECURITY_CHECK(redirect_chain_.IsEmpty());
+  SECURITY_CHECK(redirect_chain_.empty());
   ClearData();
   integrity_disposition_ = ResourceIntegrityDisposition::kNotChecked;
   integrity_report_info_.Clear();
@@ -1065,7 +1065,7 @@ bool Resource::CanUseCacheValidator() const {
     return false;
 
   // Do not revalidate Resource with redirects. https://crbug.com/613971
-  if (!RedirectChain().IsEmpty())
+  if (!RedirectChain().empty())
     return false;
 
   return GetResponse().HasCacheValidatorFields() ||

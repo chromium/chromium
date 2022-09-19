@@ -319,7 +319,7 @@ void InspectorDOMDebuggerAgent::DidRemoveDOMNode(Node* node) {
           InspectorDOMAgent::InnerFirstChild(child_node, include_whitespace));
       stack.push_back(
           InspectorDOMAgent::InnerNextSibling(child_node, include_whitespace));
-    } while (!stack.IsEmpty());
+    } while (!stack.empty());
   }
 }
 

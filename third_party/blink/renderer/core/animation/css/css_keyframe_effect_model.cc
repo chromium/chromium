@@ -141,13 +141,13 @@ CssKeyframeEffectModel::GetComputedKeyframes(Element* element) {
                                     missing_property_value_map);
   }
   if (from_properties.size() < all_properties.size() &&
-      !computed_keyframes.IsEmpty()) {
+      !computed_keyframes.empty()) {
     AddMissingProperties(
         missing_property_value_map, all_properties, from_properties,
         DynamicTo<StringKeyframe>(computed_keyframes[0].Get()));
   }
   if (to_properties.size() < all_properties.size() &&
-      !computed_keyframes.IsEmpty()) {
+      !computed_keyframes.empty()) {
     wtf_size_t index = keyframes.size() - 1;
     AddMissingProperties(
         missing_property_value_map, all_properties, to_properties,

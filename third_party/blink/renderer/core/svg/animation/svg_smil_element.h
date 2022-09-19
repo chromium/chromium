@@ -51,7 +51,7 @@ class CORE_EXPORT SMILInstanceTimeList {
   SMILTime NextAfter(SMILTime) const;
 
   wtf_size_t size() const { return instance_times_.size(); }
-  bool IsEmpty() const { return instance_times_.IsEmpty(); }
+  bool IsEmpty() const { return instance_times_.empty(); }
 
   using const_iterator = typename Vector<SMILTimeWithOrigin>::const_iterator;
   const_iterator begin() const { return instance_times_.begin(); }

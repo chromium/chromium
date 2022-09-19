@@ -23,7 +23,7 @@ std::unique_ptr<ImageDecoder> CreateICODecoder() {
 TEST(ICOImageDecoderTests, trunctedIco) {
   const Vector<char> data =
       ReadFile("/images/resources/png-in-ico.ico")->CopyAs<Vector<char>>();
-  ASSERT_FALSE(data.IsEmpty());
+  ASSERT_FALSE(data.empty());
 
   scoped_refptr<SharedBuffer> truncated_data =
       SharedBuffer::Create(data.data(), data.size() / 2);
@@ -41,7 +41,7 @@ TEST(ICOImageDecoderTests, trunctedIco) {
 TEST(ICOImageDecoderTests, errorInPngInIco) {
   const Vector<char> data =
       ReadFile("/images/resources/png-in-ico.ico")->CopyAs<Vector<char>>();
-  ASSERT_FALSE(data.IsEmpty());
+  ASSERT_FALSE(data.empty());
 
   // Modify the file to have a broken CRC in IHDR.
   constexpr size_t kCrcOffset = 22 + 29;

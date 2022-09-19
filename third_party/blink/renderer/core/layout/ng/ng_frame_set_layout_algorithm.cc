@@ -101,7 +101,7 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
   available_length = LayoutUnit(available_length.ToInt()).ClampNegativeToZero();
   Vector<LayoutUnit> sizes(count);
 
-  if (grid.IsEmpty()) {
+  if (grid.empty()) {
     sizes[0] = available_length;
     return sizes;
   }
@@ -181,7 +181,7 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
   // Relative columns/rows are our last priority. Divide the remaining space
   // proportionally over all relative columns/rows.
   // NOTE: the relative value of 0* is treated as 1*.
-  if (!relative_indices.IsEmpty()) {
+  if (!relative_indices.empty()) {
     wtf_size_t last_relative_index = WTF::kNotFound;
     int64_t remaining_relative = remaining_length.ToInt();
     for (auto i : relative_indices) {
@@ -210,7 +210,7 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
     // remaining space is spread evenly, for example: if we have a space of
     // 100px, the columns definition of 25%,25% used to result in two columns of
     // 25px. After this the columns will each be 50px in width.
-    if (!percent_indices.IsEmpty() && total_percent) {
+    if (!percent_indices.empty() && total_percent) {
       LayoutUnit remaining_percent = remaining_length;
       for (auto i : percent_indices) {
         LayoutUnit change_percent = AdjustSizeToRemainingSize(
@@ -236,14 +236,14 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
   // of a division. We cannot spread it evenly anymore. If we have any
   // percentage columns/rows simply spread the remainder equally over all
   // available percentage columns, regardless of their size.
-  if (remaining_length && !percent_indices.IsEmpty()) {
+  if (remaining_length && !percent_indices.empty()) {
     LayoutUnit remaining_percent = remaining_length;
     for (auto i : percent_indices) {
       int change_percent = (remaining_percent / percent_indices.size()).ToInt();
       sizes[i] += change_percent;
       remaining_length -= change_percent;
     }
-  } else if (remaining_length && !fixed_indices.IsEmpty()) {
+  } else if (remaining_length && !fixed_indices.empty()) {
     // If we don't have any percentage columns/rows we only have fixed columns.
     // Spread the remainder equally over all fixed columns/rows.
     LayoutUnit remaining_fixed = remaining_length;

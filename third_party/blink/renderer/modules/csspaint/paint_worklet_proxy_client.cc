@@ -184,7 +184,7 @@ sk_sp<PaintRecord> PaintWorkletProxyClient::Paint(
     return definition->Paint(compositor_input, animated_property_values);
   }
   // TODO: Can this happen? We don't register till all are here.
-  if (global_scopes_.IsEmpty())
+  if (global_scopes_.empty())
     return sk_make_sp<PaintRecord>();
 
   // PaintWorklets are stateless by spec. There are two ways script might try to

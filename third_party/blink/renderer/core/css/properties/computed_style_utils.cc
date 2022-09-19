@@ -1409,7 +1409,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   bool is_track_list_empty =
       is_layout_ng
           ? !computed_grid_track_list.TrackList().RepeaterCount()
-          : (legacy_track_sizes.IsEmpty() && auto_repeat_track_sizes.IsEmpty());
+          : (legacy_track_sizes.empty() && auto_repeat_track_sizes.empty());
   if (is_layout_grid && is_track_list_empty) {
     // For grids we should consider every listed track, whether implicitly or
     // explicitly created. Empty grids have a sole grid line per axis.
@@ -1460,7 +1460,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     return SpecifiedValueForGridTrackSize(v, style);
   };
 
-  if (auto_repeat_track_sizes.IsEmpty()) {
+  if (auto_repeat_track_sizes.empty()) {
     if (!is_layout_ng) {
       // If it's legacy grid or there's no repeat(), just add all the line names
       // and track sizes.
@@ -2415,7 +2415,7 @@ CSSValueList* ComputedStyleUtils::ValueForBorderRadiusShorthand(
 CSSValue* ComputedStyleUtils::StrokeDashArrayToCSSValueList(
     const SVGDashArray& dashes,
     const ComputedStyle& style) {
-  if (dashes.data.IsEmpty())
+  if (dashes.data.empty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
@@ -2492,7 +2492,7 @@ CSSValue* ComputedStyleUtils::ValueForShadowList(const ShadowList* shadow_list,
 CSSValue* ComputedStyleUtils::ValueForFilter(
     const ComputedStyle& style,
     const FilterOperations& filter_operations) {
-  if (filter_operations.Operations().IsEmpty())
+  if (filter_operations.Operations().empty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

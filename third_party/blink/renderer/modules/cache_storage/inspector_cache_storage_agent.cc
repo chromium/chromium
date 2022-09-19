@@ -415,7 +415,7 @@ class GetCacheKeysForRequestData {
                         CacheStorageErrorString(result->get_status()))
                         .Utf8()));
               } else {
-                if (result->get_keys().IsEmpty()) {
+                if (result->get_keys().empty()) {
                   auto array = std::make_unique<protocol::Array<DataEntry>>();
                   self->callback_->sendSuccess(std::move(array), 0);
                   return;

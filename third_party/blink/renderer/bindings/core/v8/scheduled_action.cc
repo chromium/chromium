@@ -96,7 +96,7 @@ ScheduledAction::~ScheduledAction() {
   // Verify that owning DOMTimer has eagerly disposed.
   DCHECK(!script_state_);
   DCHECK(!function_);
-  DCHECK(arguments_.IsEmpty());
+  DCHECK(arguments_.empty());
   DCHECK(code_.IsNull());
 }
 

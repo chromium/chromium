@@ -127,7 +127,7 @@ TEST_F(ManifestParserTest, ValidNoContentParses) {
   ASSERT_FALSE(manifest->has_background_color);
   ASSERT_TRUE(manifest->gcm_sender_id.IsNull());
   ASSERT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
-  ASSERT_TRUE(manifest->shortcuts.IsEmpty());
+  ASSERT_TRUE(manifest->shortcuts.empty());
 }
 
 TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
@@ -763,14 +763,14 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   // Smoke test: if no display_override, no value.
   {
     auto& manifest = ParseManifest(R"({ "display_override": [] })");
-    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_TRUE(manifest->display_override.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: if not array, value will be ignored
   {
     auto& manifest = ParseManifest(R"({ "display_override": 23 })");
-    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_TRUE(manifest->display_override.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'display_override' ignored, type array expected.",
               errors()[0]);
@@ -779,21 +779,21 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   // Smoke test: if array value is not a string, it will be ignored
   {
     auto& manifest = ParseManifest(R"({ "display_override": [ 23 ] })");
-    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_TRUE(manifest->display_override.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: if array value is not not recognized, it will be ignored
   {
     auto& manifest = ParseManifest(R"({ "display_override": [ "test" ] })");
-    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_TRUE(manifest->display_override.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Case insensitive
   {
     auto& manifest = ParseManifest(R"({ "display_override": [ "BROWSER" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBrowser);
     EXPECT_FALSE(IsManifestEmpty(manifest));
@@ -804,7 +804,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "display_override": [ " browser " ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBrowser);
     EXPECT_FALSE(IsManifestEmpty(manifest));
@@ -814,7 +814,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   // Accept 'browser'
   {
     auto& manifest = ParseManifest(R"({ "display_override": [ "browser" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBrowser);
     EXPECT_FALSE(IsManifestEmpty(manifest));
@@ -825,7 +825,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "browser", "minimal-ui" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBrowser);
     EXPECT_EQ(manifest->display_override[1],
@@ -840,7 +840,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     auto& manifest = ParseManifest(
         R"({ "display_override": [ 3, "browser", "invalid-display",
         "minimal-ui" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBrowser);
     EXPECT_EQ(manifest->display_override[1],
@@ -858,7 +858,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
         "minimal-ui", "standalone" ] })");
     EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kStandalone);
     EXPECT_EQ(0u, GetErrorCount());
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBrowser);
     EXPECT_EQ(manifest->display_override[1],
@@ -874,7 +874,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "browser", "minimal-ui",
         "browser" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBrowser);
     EXPECT_EQ(manifest->display_override[1],
@@ -890,7 +890,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(false);
     auto& manifest = ParseManifest(
         R"({ "display_override": [ "window-controls-overlay" ] })");
-    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_TRUE(manifest->display_override.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -899,7 +899,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     ScopedWebAppWindowControlsOverlayForTest window_controls_overlay(true);
     auto& manifest = ParseManifest(
         R"({ "display_override": [ "window-controls-overlay" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kWindowControlsOverlay);
     EXPECT_FALSE(IsManifestEmpty(manifest));
@@ -912,7 +912,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     feature_list.InitAndDisableFeature(blink::features::kWebAppBorderless);
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "borderless" ] })");
-    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_TRUE(manifest->display_override.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -922,7 +922,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
     auto& manifest =
         ParseManifest(R"({ "display_override": [ "borderless" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kBorderless);
     EXPECT_FALSE(IsManifestEmpty(manifest));
@@ -933,7 +933,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     ScopedWebAppTabStripForTest tabbed(false);
     auto& manifest = ParseManifest(R"({ "display_override": [ "tabbed" ] })");
-    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_TRUE(manifest->display_override.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -941,7 +941,7 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
   {
     ScopedWebAppTabStripForTest tabbed(true);
     auto& manifest = ParseManifest(R"({ "display_override": [ "tabbed" ] })");
-    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_FALSE(manifest->display_override.empty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kTabbed);
     EXPECT_FALSE(IsManifestEmpty(manifest));
@@ -1075,28 +1075,28 @@ TEST_F(ManifestParserTest, IconsParseRules) {
   // Smoke test: if no icon, no value.
   {
     auto& manifest = ParseManifest(R"({ "icons": [] })");
-    EXPECT_TRUE(manifest->icons.IsEmpty());
+    EXPECT_TRUE(manifest->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: if empty icon, no value.
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {} ] })");
-    EXPECT_TRUE(manifest->icons.IsEmpty());
+    EXPECT_TRUE(manifest->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: icon with invalid src, no value.
   {
     auto& manifest = ParseManifest(R"({ "icons": [ { "icons": [] } ] })");
-    EXPECT_TRUE(manifest->icons.IsEmpty());
+    EXPECT_TRUE(manifest->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: if icon with empty src, it will be present in the list.
   {
     auto& manifest = ParseManifest(R"({ "icons": [ { "src": "" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons.size(), 1u);
@@ -1108,7 +1108,7 @@ TEST_F(ManifestParserTest, IconsParseRules) {
   // Smoke test: if one icons with valid src, it will be present in the list.
   {
     auto& manifest = ParseManifest(R"({ "icons": [{ "src": "foo.jpg" }] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons.size(), 1u);
@@ -1122,14 +1122,14 @@ TEST_F(ManifestParserTest, ScreenshotsParseRules) {
   // Smoke test: if no screenshot, no value.
   {
     auto& manifest = ParseManifest(R"({ "screenshots": [] })");
-    EXPECT_TRUE(manifest->screenshots.IsEmpty());
+    EXPECT_TRUE(manifest->screenshots.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: if empty screenshot, no value.
   {
     auto& manifest = ParseManifest(R"({ "screenshots": [ {} ] })");
-    EXPECT_TRUE(manifest->screenshots.IsEmpty());
+    EXPECT_TRUE(manifest->screenshots.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -1137,14 +1137,14 @@ TEST_F(ManifestParserTest, ScreenshotsParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "screenshots": [ { "screenshots": [] } ] })");
-    EXPECT_TRUE(manifest->screenshots.IsEmpty());
+    EXPECT_TRUE(manifest->screenshots.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: if screenshot with empty src, it will be present in the list.
   {
     auto& manifest = ParseManifest(R"({ "screenshots": [ { "src": "" } ] })");
-    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+    EXPECT_FALSE(manifest->screenshots.empty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
@@ -1158,7 +1158,7 @@ TEST_F(ManifestParserTest, ScreenshotsParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "screenshots": [{ "src": "foo.jpg" }] })");
-    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+    EXPECT_FALSE(manifest->screenshots.empty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
@@ -1173,7 +1173,7 @@ TEST_F(ManifestParserTest, ScreenshotFormFactorParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "screenshots": [{ "src": "foo.jpg", "form_factor": "narrow" }] })");
-    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+    EXPECT_FALSE(manifest->screenshots.empty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
@@ -1187,7 +1187,7 @@ TEST_F(ManifestParserTest, ScreenshotFormFactorParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "screenshots": [{ "src": "foo.jpg"}] })");
-    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+    EXPECT_FALSE(manifest->screenshots.empty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
@@ -1201,7 +1201,7 @@ TEST_F(ManifestParserTest, ScreenshotFormFactorParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "screenshots": [{ "src": "foo.jpg", "form_factor": 1}] })");
-    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+    EXPECT_FALSE(manifest->screenshots.empty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
@@ -1215,7 +1215,7 @@ TEST_F(ManifestParserTest, ScreenshotFormFactorParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "screenshots": [{ "src": "foo.jpg", "form_factor": "windows"}] })");
-    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+    EXPECT_FALSE(manifest->screenshots.empty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
@@ -1230,7 +1230,7 @@ TEST_F(ManifestParserTest, IconSrcParseRules) {
   // Smoke test.
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "foo.png" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->src, KURL(DefaultDocumentUrl(), "foo.png"));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1239,7 +1239,7 @@ TEST_F(ManifestParserTest, IconSrcParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "   foo.png   " } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->src, KURL(DefaultDocumentUrl(), "foo.png"));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1247,7 +1247,7 @@ TEST_F(ManifestParserTest, IconSrcParseRules) {
   // Don't parse if property isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": {} } ] })");
-    EXPECT_TRUE(manifest->icons.IsEmpty());
+    EXPECT_TRUE(manifest->icons.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'src' ignored, type string expected.", errors()[0]);
   }
@@ -1255,7 +1255,7 @@ TEST_F(ManifestParserTest, IconSrcParseRules) {
   // Don't parse if property isn't a string.
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": 42 } ] })");
-    EXPECT_TRUE(manifest->icons.IsEmpty());
+    EXPECT_TRUE(manifest->icons.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'src' ignored, type string expected.", errors()[0]);
   }
@@ -1265,7 +1265,7 @@ TEST_F(ManifestParserTest, IconSrcParseRules) {
     auto& manifest = ParseManifestWithURLs(
         R"({ "icons": [ {"src": "icons/foo.png" } ] })",
         KURL("http://foo.com/landing/index.html"), DefaultManifestUrl());
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->src.GetString(),
               "http://foo.com/landing/icons/foo.png");
     EXPECT_EQ(0u, GetErrorCount());
@@ -1277,7 +1277,7 @@ TEST_F(ManifestParserTest, IconTypeParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "type": "foo" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->type, "foo");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1286,7 +1286,7 @@ TEST_F(ManifestParserTest, IconTypeParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "type": "  foo  " } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->type, "foo");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1295,7 +1295,7 @@ TEST_F(ManifestParserTest, IconTypeParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "type": {} } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_TRUE(manifest->icons[0]->type.IsEmpty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'type' ignored, type string expected.", errors()[0]);
@@ -1305,7 +1305,7 @@ TEST_F(ManifestParserTest, IconTypeParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "type": 42 } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_TRUE(manifest->icons[0]->type.IsEmpty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'type' ignored, type string expected.", errors()[0]);
@@ -1317,7 +1317,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "sizes": "42x42" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->sizes.size(), 1u);
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1326,7 +1326,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "sizes": "  42x42  " } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->sizes.size(), 1u);
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1335,7 +1335,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "sizes": {} } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->sizes.size(), 0u);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'sizes' ignored, type string expected.", errors()[0]);
@@ -1345,7 +1345,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "icons": [ {"src": "", "sizes": 42 } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->sizes.size(), 0u);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'sizes' ignored, type string expected.", errors()[0]);
@@ -1355,7 +1355,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "sizes": "42x42  48x48" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons[0]->sizes[0], gfx::Size(42, 42));
@@ -1367,7 +1367,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "sizes": "42X42  48X48" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons[0]->sizes[0], gfx::Size(42, 42));
@@ -1379,7 +1379,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "sizes": "42X42  42x42" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons[0]->sizes[0], gfx::Size(42, 42));
@@ -1391,7 +1391,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "sizes": "004X007  042x00" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->sizes.size(), 0u);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("found icon with no valid size.", errors()[0]);
@@ -1401,7 +1401,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "sizes": "e4X1.0  55ax1e10" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->sizes.size(), 0u);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("found icon with no valid size.", errors()[0]);
@@ -1412,7 +1412,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "sizes": "any AnY ANY aNy" } ] })");
     gfx::Size any = gfx::Size(0, 0);
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons[0]->sizes.size(), 4u);
@@ -1427,7 +1427,7 @@ TEST_F(ManifestParserTest, IconSizesParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "sizes": "x 40xx 1x2x3 x42 42xx42" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->sizes.size(), 0u);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("found icon with no valid size.", errors()[0]);
@@ -1447,7 +1447,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": "any" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->purpose.size(), 1u);
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1456,7 +1456,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": "  any  " } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
     EXPECT_EQ(manifest->icons[0]->purpose.size(), 1u);
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1464,7 +1464,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   // 'any' is added when property isn't present.
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons[0]->purpose.size(), 1u);
@@ -1478,7 +1478,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": 42 } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons[0]->purpose.size(), 1u);
@@ -1493,7 +1493,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": {} } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     EXPECT_EQ(icons[0]->purpose.size(), 1u);
@@ -1507,7 +1507,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": "Any Monochrome Maskable" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     ASSERT_EQ(icons[0]->purpose.size(), 3u);
@@ -1524,7 +1524,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": "  Any   Monochrome  " } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     ASSERT_EQ(icons[0]->purpose.size(), 2u);
@@ -1539,7 +1539,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": "monochrome monochrome" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     ASSERT_EQ(icons[0]->purpose.size(), 2u);
@@ -1554,7 +1554,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": "monochrome fizzbuzz" } ] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     ASSERT_EQ(icons[0]->purpose.size(), 1u);
@@ -1568,7 +1568,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "icons": [ {"src": "",
         "purpose": "fizzbuzz" } ] })");
-    ASSERT_TRUE(manifest->icons.IsEmpty());
+    ASSERT_TRUE(manifest->icons.empty());
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ(kPurposeInvalidValueError, errors()[0]);
   }
@@ -1578,7 +1578,7 @@ TEST_F(ManifestParserTest, IconPurposeParseRules) {
     auto& manifest = ParseManifest(
         R"({ "icons": [ {"src": "", "purpose": "fizzbuzz" },
                        {"src": "" }] })");
-    EXPECT_FALSE(manifest->icons.IsEmpty());
+    EXPECT_FALSE(manifest->icons.empty());
 
     auto& icons = manifest->icons;
     ASSERT_EQ(1u, icons.size());
@@ -1594,14 +1594,14 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
   // Smoke test: if no shortcut, no value.
   {
     auto& manifest = ParseManifest(R"({ "shortcuts": [] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // Smoke test: if empty shortcut, no value.
   {
     auto& manifest = ParseManifest(R"({ "shortcuts": [ {} ] })");
-    EXPECT_TRUE(manifest->icons.IsEmpty());
+    EXPECT_TRUE(manifest->icons.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'url' of 'shortcut' not present.", errors()[0]);
   }
@@ -1611,7 +1611,7 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "shortcuts": [ { "shortcuts": [] } ] })");
-    EXPECT_TRUE(manifest->icons.IsEmpty());
+    EXPECT_TRUE(manifest->icons.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'url' of 'shortcut' not present.", errors()[0]);
   }
@@ -1619,7 +1619,7 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
   // Smoke test: shortcut with no name, it will not be present in the list.
   {
     auto& manifest = ParseManifest(R"({ "shortcuts": [ { "url": "" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' of 'shortcut' not present.", errors()[0]);
   }
@@ -1627,7 +1627,7 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
   // Smoke test: shortcut with no url, it will not be present in the list.
   {
     auto& manifest = ParseManifest(R"({ "shortcuts": [ { "name": "" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'url' of 'shortcut' not present.", errors()[0]);
   }
@@ -1637,7 +1637,7 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "shortcuts": [ { "name": "", "url": "" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' of 'shortcut' is an empty string.", errors()[0]);
   }
@@ -1648,7 +1648,7 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [{ "name": "New Post", "url": "compose" }]
         })");
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
 
     auto& shortcuts = manifest->shortcuts;
     EXPECT_EQ(shortcuts.size(), 1u);
@@ -1718,7 +1718,7 @@ TEST_F(ManifestParserTest, ShortcutsParseRules) {
         errors()[0]);
 
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
     auto& shortcuts = manifest->shortcuts;
     EXPECT_EQ(shortcuts.size(), 10u);
     EXPECT_EQ(shortcuts[9]->name, "10");
@@ -1732,7 +1732,7 @@ TEST_F(ManifestParserTest, ShortcutNameParseRules) {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": "foo", "url": "NameParseTest" } ]
         })");
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
     EXPECT_EQ(manifest->shortcuts[0]->name, "foo");
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1750,7 +1750,7 @@ TEST_F(ManifestParserTest, ShortcutNameParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "shortcuts": [ {"url": "NameParseTest" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' of 'shortcut' not present.", errors()[0]);
   }
@@ -1759,7 +1759,7 @@ TEST_F(ManifestParserTest, ShortcutNameParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": {}, "url": "NameParseTest" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' of 'shortcut' ignored, type string expected.",
               errors()[0]);
@@ -1769,7 +1769,7 @@ TEST_F(ManifestParserTest, ShortcutNameParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": 42, "url": "NameParseTest" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' of 'shortcut' ignored, type string expected.",
               errors()[0]);
@@ -1779,7 +1779,7 @@ TEST_F(ManifestParserTest, ShortcutNameParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": "", "url": "NameParseTest" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'name' of 'shortcut' is an empty string.", errors()[0]);
   }
@@ -1913,7 +1913,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": "UrlParseTest", "url": "foo" } ]
         })");
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
     EXPECT_EQ(manifest->shortcuts[0]->url, KURL(DefaultDocumentUrl(), "foo"));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1921,7 +1921,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
   // Smoke test. Don't parse (with an error) when url is not present.
   {
     auto& manifest = ParseManifest(R"({ "shortcuts": [ { "name": "" } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'url' of 'shortcut' not present.", errors()[0]);
   }
@@ -1930,7 +1930,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": "UrlParseTest", "url": "   foo   " } ] })");
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
     EXPECT_EQ(manifest->shortcuts[0]->url, KURL(DefaultDocumentUrl(), "foo"));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1939,7 +1939,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": "UrlParseTest", "url": {} } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ("property 'url' ignored, type string expected.", errors()[0]);
     EXPECT_EQ("property 'url' of 'shortcut' not present.", errors()[1]);
@@ -1949,7 +1949,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({ "shortcuts": [ {"name": "UrlParseTest", "url": 42 } ] })");
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ("property 'url' ignored, type string expected.", errors()[0]);
     EXPECT_EQ("property 'url' of 'shortcut' not present.", errors()[1]);
@@ -1961,7 +1961,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
         R"({ "shortcuts": [ {"name": "UrlParseTest", "url": "foo" } ]
         })",
         KURL("http://foo.com/landing/manifest.json"), DefaultDocumentUrl());
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
     EXPECT_EQ(manifest->shortcuts[0]->url.GetString(),
               "http://foo.com/landing/foo");
     EXPECT_EQ(0u, GetErrorCount());
@@ -1974,7 +1974,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
         "http://bar.com/landing" } ]
         })",
         KURL("http://foo.com/landing/manifest.json"), DefaultDocumentUrl());
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ("property 'url' ignored, should be within scope of the manifest.",
               errors()[0]);
@@ -1990,7 +1990,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
         "UrlParseTest", "url": "shortcut" } ] })",
         KURL("http://foo.com/manifest.json"),
         KURL("http://foo.com/landing/index.html"));
-    EXPECT_TRUE(manifest->shortcuts.IsEmpty());
+    EXPECT_TRUE(manifest->shortcuts.empty());
     ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/landing");
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ("property 'url' ignored, should be within scope of the manifest.",
@@ -2008,7 +2008,7 @@ TEST_F(ManifestParserTest, ShortcutUrlParseRules) {
         "UrlParseTest", "url": "shortcut" } ] })",
         KURL("http://foo.com/land/manifest.json"),
         KURL("http://foo.com/index.html"));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
     ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/land");
     EXPECT_EQ(manifest->shortcuts[0]->url.GetString(),
               "http://foo.com/land/shortcut");
@@ -2023,8 +2023,8 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
         R"({ "shortcuts": [ {"name": "IconParseTest", "url": "foo",
         "icons": [] } ] })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
-    EXPECT_TRUE(manifest->shortcuts[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
+    EXPECT_TRUE(manifest->shortcuts[0]->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -2034,8 +2034,8 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
         R"({ "shortcuts": [ {"name": "IconParseTest", "url": "foo",
         "icons": [{}] } ] })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
-    EXPECT_TRUE(manifest->shortcuts[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
+    EXPECT_TRUE(manifest->shortcuts[0]->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -2045,8 +2045,8 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
         R"({ "shortcuts": [ {"name": "IconParseTest", "url": "foo",
         "icons": [{ "icons": [] }] } ] })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
-    EXPECT_TRUE(manifest->shortcuts[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
+    EXPECT_TRUE(manifest->shortcuts[0]->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -2056,8 +2056,8 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
         R"({ "shortcuts": [ {"name": "IconParseTest", "url": "foo",
         "icons": [ { "src": "" } ] } ] })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
-    EXPECT_FALSE(manifest->shortcuts[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
+    EXPECT_FALSE(manifest->shortcuts[0]->icons.empty());
 
     auto& icons = manifest->shortcuts[0]->icons;
     EXPECT_EQ(icons.size(), 1u);
@@ -2072,8 +2072,8 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
         R"({ "shortcuts": [ {"name": "IconParseTest", "url": "foo",
         "icons": [ { "src": "foo.jpg" } ] } ] })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
-    EXPECT_FALSE(manifest->shortcuts[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
+    EXPECT_FALSE(manifest->shortcuts[0]->icons.empty());
     auto& icons = manifest->shortcuts[0]->icons;
     EXPECT_EQ(icons.size(), 1u);
     EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/foo.jpg");
@@ -2087,8 +2087,8 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
         R"({ "shortcuts": [ {"name": "IconParseTest", "url": "foo",
         "icons": [ {"src": "foo.jpg"}, {"src": "bar.jpg"} ] } ] })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->shortcuts.IsEmpty());
-    EXPECT_FALSE(manifest->shortcuts[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->shortcuts.empty());
+    EXPECT_FALSE(manifest->shortcuts[0]->icons.empty());
     auto& icons = manifest->shortcuts[0]->icons;
     EXPECT_EQ(icons.size(), 2u);
     EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/foo.jpg");
@@ -2674,7 +2674,7 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
+    EXPECT_FALSE(manifest->file_handlers.empty());
     ASSERT_EQ(4U, manifest->file_handlers.size());
     EXPECT_EQ(mojom::blink::ManifestFileHandler::LaunchType::kMultipleClients,
               manifest->file_handlers[0]->launch_type);
@@ -2707,8 +2707,8 @@ TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
-    EXPECT_TRUE(manifest->file_handlers[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->file_handlers.empty());
+    EXPECT_TRUE(manifest->file_handlers[0]->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -2727,8 +2727,8 @@ TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
-    EXPECT_TRUE(manifest->file_handlers[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->file_handlers.empty());
+    EXPECT_TRUE(manifest->file_handlers[0]->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -2747,8 +2747,8 @@ TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
-    EXPECT_TRUE(manifest->file_handlers[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->file_handlers.empty());
+    EXPECT_TRUE(manifest->file_handlers[0]->icons.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
@@ -2768,8 +2768,8 @@ TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
-    EXPECT_FALSE(manifest->file_handlers[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->file_handlers.empty());
+    EXPECT_FALSE(manifest->file_handlers[0]->icons.empty());
 
     auto& icons = manifest->file_handlers[0]->icons;
     EXPECT_EQ(icons.size(), 1u);
@@ -2793,8 +2793,8 @@ TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
-    EXPECT_FALSE(manifest->file_handlers[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->file_handlers.empty());
+    EXPECT_FALSE(manifest->file_handlers[0]->icons.empty());
     auto& icons = manifest->file_handlers[0]->icons;
     EXPECT_EQ(icons.size(), 1u);
     EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/foo.jpg");
@@ -2817,8 +2817,8 @@ TEST_F(ManifestParserTest, FileHandlerIconsParseRules) {
           ]
         })");
     EXPECT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_FALSE(manifest->file_handlers.IsEmpty());
-    EXPECT_FALSE(manifest->file_handlers[0]->icons.IsEmpty());
+    EXPECT_FALSE(manifest->file_handlers.empty());
+    EXPECT_FALSE(manifest->file_handlers[0]->icons.empty());
     auto& icons = manifest->file_handlers[0]->icons;
     EXPECT_EQ(icons.size(), 2u);
     EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/foo.jpg");
@@ -4494,14 +4494,14 @@ TEST_F(ManifestParserTest, RelatedApplicationsParseRules) {
   // If no application, empty list.
   {
     auto& manifest = ParseManifest(R"({ "related_applications": []})");
-    EXPECT_TRUE(manifest->related_applications.IsEmpty());
+    EXPECT_TRUE(manifest->related_applications.empty());
     EXPECT_EQ(0u, GetErrorCount());
   }
 
   // If empty application, empty list.
   {
     auto& manifest = ParseManifest(R"({ "related_applications": [{}]})");
-    EXPECT_TRUE(manifest->related_applications.IsEmpty());
+    EXPECT_TRUE(manifest->related_applications.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("'platform' is a required field, related application ignored.",
               errors()[0]);
@@ -4511,7 +4511,7 @@ TEST_F(ManifestParserTest, RelatedApplicationsParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "related_applications": [{"platform": 123}]})");
-    EXPECT_TRUE(manifest->related_applications.IsEmpty());
+    EXPECT_TRUE(manifest->related_applications.empty());
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ("property 'platform' ignored, type string expected.",
               errors()[0]);
@@ -4525,7 +4525,7 @@ TEST_F(ManifestParserTest, RelatedApplicationsParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "related_applications": [{"id": "foo"}]})");
-    EXPECT_TRUE(manifest->related_applications.IsEmpty());
+    EXPECT_TRUE(manifest->related_applications.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("'platform' is a required field, related application ignored.",
               errors()[0]);
@@ -4535,7 +4535,7 @@ TEST_F(ManifestParserTest, RelatedApplicationsParseRules) {
   {
     auto& manifest =
         ParseManifest(R"({ "related_applications": [{"platform": "play"}]})");
-    EXPECT_TRUE(manifest->related_applications.IsEmpty());
+    EXPECT_TRUE(manifest->related_applications.empty());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("one of 'url' or 'id' is required, related application ignored.",
               errors()[0]);
@@ -4558,7 +4558,7 @@ TEST_F(ManifestParserTest, RelatedApplicationsParseRules) {
   {
     auto& manifest = ParseManifest(R"({ "related_applications": [
         {"platform": "play", "url": "http://www.foo.com:co&uk"}]})");
-    EXPECT_TRUE(manifest->related_applications.IsEmpty());
+    EXPECT_TRUE(manifest->related_applications.empty());
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ("property 'url' ignored, URL is invalid.", errors()[0]);
     EXPECT_EQ("one of 'url' or 'id' is required, related application ignored.",

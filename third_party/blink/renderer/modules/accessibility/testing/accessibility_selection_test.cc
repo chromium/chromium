@@ -219,11 +219,11 @@ class AXSelectionDeserializer final {
         << "There should be an equal number of '^'s and '|'s in the HTML that "
            "is being deserialized, or if caret placement is required, only a "
            "single '|'.";
-    if (foci_->IsEmpty())
+    if (foci_->empty())
       return {};
 
     Vector<AXSelection> ax_selections;
-    if (anchors_->IsEmpty()) {
+    if (anchors_->empty()) {
       // Handle the case when there is just a single '|' marker representing the
       // position of the caret.
       DCHECK(foci_->at(0).first);
@@ -275,7 +275,7 @@ class AXSelectionDeserializer final {
       builder.Append(character);
     }
 
-    if (base_offsets.IsEmpty() && extent_offsets.IsEmpty())
+    if (base_offsets.empty() && extent_offsets.empty())
       return;
 
     // Remove the markers, otherwise they would be duplicated if the AXSelection
@@ -379,7 +379,7 @@ AXSelection AccessibilitySelectionTest::SetSelectionText(
   const Vector<AXSelection> ax_selections =
       AXSelectionDeserializer(GetAXObjectCache())
           .Deserialize(selection_text, *body);
-  if (ax_selections.IsEmpty())
+  if (ax_selections.empty())
     return AXSelection::Builder().Build();
   return ax_selections.front();
 }
@@ -390,7 +390,7 @@ AXSelection AccessibilitySelectionTest::SetSelectionText(
   const Vector<AXSelection> ax_selections =
       AXSelectionDeserializer(GetAXObjectCache())
           .Deserialize(selection_text, element);
-  if (ax_selections.IsEmpty())
+  if (ax_selections.empty())
     return AXSelection::Builder().Build();
   return ax_selections.front();
 }

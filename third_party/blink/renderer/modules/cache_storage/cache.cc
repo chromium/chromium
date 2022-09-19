@@ -1072,7 +1072,7 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "Cache::AddAllImpl",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
 
-  if (request_list.IsEmpty())
+  if (request_list.empty())
     return ScriptPromise::CastUndefined(script_state);
 
   // Validate all requests before starting to load or store any of them.

@@ -236,7 +236,7 @@ OpenTypeMathSupport::GetGlyphPartRecords(
           harfbuzz_face, base_glyph, stretch_axis, std::move(getter),
           std::move(converter),
           absl::optional<OpenTypeMathStretchData::GlyphPartRecord>());
-  if (italic_correction && !parts.IsEmpty()) {
+  if (italic_correction && !parts.empty()) {
     hb_font_t* const hb_font = harfbuzz_face->GetScaledFont();
     // A GlyphAssembly subtable exists for the specified font, glyph and stretch
     // axis since it has been possible to retrieve the GlyphPartRecords. This

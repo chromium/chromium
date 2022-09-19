@@ -102,7 +102,7 @@ ScriptPromise DigitalGoodsService::getDetails(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (item_ids.IsEmpty()) {
+  if (item_ids.empty()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "Must specify at least one item ID."));
     return promise;

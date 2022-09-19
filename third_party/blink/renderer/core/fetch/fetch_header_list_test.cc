@@ -103,7 +103,7 @@ TEST(FetchHeaderListTest, Contains) {
 
 TEST(FetchHeaderListTest, SortAndCombine) {
   auto* headerList = MakeGarbageCollected<FetchHeaderList>();
-  EXPECT_TRUE(headerList->SortAndCombine().IsEmpty());
+  EXPECT_TRUE(headerList->SortAndCombine().empty());
   headerList->Append("content-type", "multipart/form-data");
   headerList->Append("ConTenT-TyPe", "application/xml");
   headerList->Append("Accept", "XYZ");

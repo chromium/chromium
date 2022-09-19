@@ -24,7 +24,7 @@ void SmoothScrollSequencer::QueueAnimation(
 }
 
 void SmoothScrollSequencer::RunQueuedAnimations() {
-  if (queue_.IsEmpty()) {
+  if (queue_.empty()) {
     current_scrollable_ = nullptr;
     scroll_type_ = mojom::blink::ScrollType::kProgrammatic;
     return;

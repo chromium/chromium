@@ -113,7 +113,7 @@ DOMWrapperWorld& DOMWrapperWorld::MainWorld() {
 
 void DOMWrapperWorld::AllWorldsInCurrentThread(
     Vector<scoped_refptr<DOMWrapperWorld>>& worlds) {
-  DCHECK(worlds.IsEmpty());
+  DCHECK(worlds.empty());
   WTF::CopyValuesToVector(GetWorldMap(), worlds);
   if (IsMainThread())
     worlds.push_back(&MainWorld());

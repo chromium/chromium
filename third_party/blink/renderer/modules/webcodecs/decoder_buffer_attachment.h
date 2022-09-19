@@ -22,7 +22,7 @@ class MODULES_EXPORT DecoderBufferAttachment
   DecoderBufferAttachment() = default;
   ~DecoderBufferAttachment() override = default;
 
-  bool IsLockedToAgentCluster() const override { return !buffers_.IsEmpty(); }
+  bool IsLockedToAgentCluster() const override { return !buffers_.empty(); }
 
   size_t size() const { return buffers_.size(); }
 

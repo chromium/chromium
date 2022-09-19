@@ -238,7 +238,7 @@ MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
 }
 
 MediaStreamVideoTrack::FrameDeliverer::~FrameDeliverer() {
-  DCHECK(callbacks_.IsEmpty());
+  DCHECK(callbacks_.empty());
 }
 
 void MediaStreamVideoTrack::FrameDeliverer::AddCallback(
@@ -688,8 +688,8 @@ MediaStreamVideoTrack::MediaStreamVideoTrack(
 
 MediaStreamVideoTrack::~MediaStreamVideoTrack() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DCHECK(sinks_.IsEmpty());
-  DCHECK(encoded_sinks_.IsEmpty());
+  DCHECK(sinks_.empty());
+  DCHECK(encoded_sinks_.empty());
   Stop();
   DVLOG(3) << "~MediaStreamVideoTrack()";
 }
@@ -773,7 +773,7 @@ void MediaStreamVideoTrack::RemoveSink(WebMediaStreamSink* sink) {
   source_->UpdateCapturingLinkSecure(this,
                                      secure_tracker_.is_capturing_secure());
   const bool can_discard_alpha =
-      sinks_.IsEmpty() ||
+      sinks_.empty() ||
       (alpha_using_sinks_.IsEmpty() && !alpha_discarding_sinks_.IsEmpty());
   source_->SetCanDiscardAlpha(can_discard_alpha);
   // Restart the timer with existing sinks.
@@ -794,7 +794,7 @@ void MediaStreamVideoTrack::UpdateSourceHasConsumers() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   if (!source_)
     return;
-  bool has_consumers = !sinks_.IsEmpty() || !encoded_sinks_.IsEmpty();
+  bool has_consumers = !sinks_.empty() || !encoded_sinks_.empty();
   source_->UpdateHasConsumers(this, has_consumers);
 }
 
@@ -805,7 +805,7 @@ void MediaStreamVideoTrack::SetEnabled(bool enabled) {
   // stream undecodable.
   bool maybe_await_key_frame = false;
   if (enabled && source_ && source_->SupportsEncodedOutput() &&
-      !encoded_sinks_.IsEmpty()) {
+      !encoded_sinks_.empty()) {
     RequestRefreshFrame();
     maybe_await_key_frame = true;
   }

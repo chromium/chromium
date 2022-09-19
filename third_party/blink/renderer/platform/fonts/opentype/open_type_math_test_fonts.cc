@@ -12,8 +12,8 @@ namespace blink {
 void retrieveGlyphForStretchyOperators(const blink::Font operatorsWoff,
                                        Vector<UChar32>& verticalGlyphs,
                                        Vector<UChar32>& horizontalGlyphs) {
-  DCHECK(verticalGlyphs.IsEmpty());
-  DCHECK(horizontalGlyphs.IsEmpty());
+  DCHECK(verticalGlyphs.empty());
+  DCHECK(horizontalGlyphs.empty());
   // For details, see createSizeVariants() and createStretchy() from
   // third_party/blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py
   for (unsigned i = 0; i < 4; i++) {

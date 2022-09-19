@@ -56,7 +56,7 @@ class SVGPathByteStream {
     data_.ReserveInitialCapacity(size);
   }
   void ShrinkToFit() { data_.ShrinkToFit(); }
-  bool IsEmpty() const { return data_.IsEmpty(); }
+  bool IsEmpty() const { return data_.empty(); }
   unsigned size() const { return data_.size(); }
 
   bool operator==(const SVGPathByteStream& other) const {

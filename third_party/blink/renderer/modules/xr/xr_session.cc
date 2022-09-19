@@ -510,7 +510,7 @@ const String& XRSession::depthDataFormat(ExceptionState& exception_state) {
 
 void XRSession::UpdateViews(
     const Vector<device::mojom::blink::XRViewPtr>& views) {
-  if (views.IsEmpty()) {
+  if (views.empty()) {
     // If there are no views provided for this frame, keep the views we
     // currently have from the previous frame.
     return;
@@ -798,7 +798,7 @@ ScriptPromise XRSession::requestHitTestSource(
       options_init->space()->NativeFromOffsetMatrix();
 
   if (RuntimeEnabledFeatures::WebXRHitTestEntityTypesEnabled() &&
-      options_init->hasEntityTypes() && options_init->entityTypes().IsEmpty()) {
+      options_init->hasEntityTypes() && options_init->entityTypes().empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kEntityTypesNotSpecified);
     return {};
@@ -874,7 +874,7 @@ ScriptPromise XRSession::requestHitTestSourceForTransientInput(
   }
 
   if (RuntimeEnabledFeatures::WebXRHitTestEntityTypesEnabled() &&
-      options_init->hasEntityTypes() && options_init->entityTypes().IsEmpty()) {
+      options_init->hasEntityTypes() && options_init->entityTypes().empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kEntityTypesNotSpecified);
     return {};
@@ -1498,7 +1498,7 @@ void XRSession::MaybeRequestFrame() {
   // If we have an outstanding callback registered, then we know that the page
   // actually wants frames.
   bool page_wants_frame =
-      !callback_collection_->IsEmpty() || !vfc_execution_queue_.IsEmpty();
+      !callback_collection_->IsEmpty() || !vfc_execution_queue_.empty();
 
   // A page can process frames if it has its appropriate base layer set and has
   // indicated that it actually wants frames.
@@ -2069,7 +2069,7 @@ void XRSession::OnInputStateChangeInternal(
   }
 
   // If there have been any changes, fire the input sources change event.
-  if (!added.IsEmpty() || !removed.IsEmpty()) {
+  if (!added.empty() || !removed.empty()) {
     DispatchEvent(*XRInputSourcesChangeEvent::Create(
         event_type_names::kInputsourceschange, this, added, removed));
   }
@@ -2273,7 +2273,7 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
         views_.clear();
         canvas_was_resized_ = false;
       }
-      if (views_.IsEmpty()) {
+      if (views_.empty()) {
         views_.emplace_back(MakeGarbageCollected<XRViewData>(
             device::mojom::blink::XREye::kNone,
             gfx::Rect(0, 0, output_width_, output_height_)));
@@ -2305,8 +2305,7 @@ const HeapVector<Member<XRViewData>>& XRSession::views() {
 }
 
 bool XRSession::HasPendingActivity() const {
-  return (!callback_collection_->IsEmpty() ||
-          !vfc_execution_queue_.IsEmpty()) &&
+  return (!callback_collection_->IsEmpty() || !vfc_execution_queue_.empty()) &&
          !ended_;
 }
 

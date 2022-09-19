@@ -88,7 +88,7 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
       (name->IsCustomProperty() && value->IsValueList())) {
     CSSStyleValueVector values =
         StyleValueFactory::CssValueToStyleValueVector(*name, *value);
-    return values.IsEmpty() ? nullptr : values[0];
+    return values.empty() ? nullptr : values[0];
   }
 
   return StyleValueFactory::CssValueToStyleValue(*name, *value);
@@ -126,7 +126,7 @@ bool StylePropertyMapReadOnlyMainThread::has(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
-  return !getAll(execution_context, property_name, exception_state).IsEmpty();
+  return !getAll(execution_context, property_name, exception_state).empty();
 }
 
 StylePropertyMapReadOnlyMainThread::IterationSource*

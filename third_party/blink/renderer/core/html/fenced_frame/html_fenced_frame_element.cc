@@ -760,7 +760,7 @@ void HTMLFencedFrameElement::StopResizeObserver() {
 
 void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
     const HeapVector<Member<ResizeObserverEntry>>& entries) {
-  if (entries.IsEmpty())
+  if (entries.empty())
     return;
   const Member<ResizeObserverEntry>& entry = entries.back();
   auto* element = To<HTMLFencedFrameElement>(entry->target());

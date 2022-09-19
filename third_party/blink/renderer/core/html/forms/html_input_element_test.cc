@@ -54,11 +54,11 @@ class HTMLInputElementTest : public PageTestBase {
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsNoList) {
   GetDocument().documentElement()->setInnerHTML("<input id=test>");
-  EXPECT_TRUE(TestElement().FilteredDataListOptions().IsEmpty());
+  EXPECT_TRUE(TestElement().FilteredDataListOptions().empty());
 
   GetDocument().documentElement()->setInnerHTML(
       "<input id=test list=dl1><datalist id=dl1></datalist>");
-  EXPECT_TRUE(TestElement().FilteredDataListOptions().IsEmpty());
+  EXPECT_TRUE(TestElement().FilteredDataListOptions().empty());
 }
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsContain) {

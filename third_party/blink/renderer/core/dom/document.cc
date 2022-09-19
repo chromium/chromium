@@ -616,7 +616,7 @@ const ListedElement::List& Document::UnassociatedListedElementsList::Get(
     const Document& owner) {
   if (dirty_) {
     const Node& root = owner.GetTreeScope().RootNode();
-    DCHECK(list_.IsEmpty());
+    DCHECK(list_.empty());
 
     // TODO(crbug.com/1243730): We do not consider shadow trees for now.
     for (HTMLElement& element : Traversal<HTMLElement>::StartsAfter(root)) {
@@ -3022,7 +3022,7 @@ static ui::AXMode ComputeAXModeFromAXContexts(Vector<AXContext*> ax_contexts) {
   for (AXContext* context : ax_contexts)
     ax_mode |= context->GetAXMode();
 
-  if (!ax_contexts.IsEmpty()) {
+  if (!ax_contexts.empty()) {
     DCHECK(!ax_mode.is_mode_off())
         << "The computed AX mode was empty but there were > 0 AXContext "
            "objects. A caller should have called RemoveAXContext().";
@@ -6798,7 +6798,7 @@ KURL Document::OpenSearchDescriptionURL() {
 }
 
 V8HTMLOrSVGScriptElement* Document::currentScriptForBinding() const {
-  if (current_script_stack_.IsEmpty())
+  if (current_script_stack_.empty())
     return nullptr;
   ScriptElementBase* script_element_base = current_script_stack_.back();
   if (!script_element_base)
@@ -6811,7 +6811,7 @@ void Document::PushCurrentScript(ScriptElementBase* new_current_script) {
 }
 
 void Document::PopCurrentScript(ScriptElementBase* script) {
-  DCHECK(!current_script_stack_.IsEmpty());
+  DCHECK(!current_script_stack_.empty());
   DCHECK_EQ(current_script_stack_.back(), script);
   current_script_stack_.pop_back();
 }
@@ -7579,7 +7579,7 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
 Element* Document::TopmostPopupAutoOrHint() const {
   if (PopupHintShowing())
     return PopupHintShowing();
-  if (PopupStack().IsEmpty())
+  if (PopupStack().empty())
     return nullptr;
   return PopupStack().back();
 }
@@ -8027,7 +8027,7 @@ void Document::FlushAutofocusCandidates() {
     return;
 
   // 3. If candidates is empty, then return.
-  if (autofocus_candidates_.IsEmpty())
+  if (autofocus_candidates_.empty())
     return;
 
   // 4. If topDocument's focused area is not topDocument itself, or
@@ -8058,7 +8058,7 @@ void Document::FlushAutofocusCandidates() {
   }
 
   // 5. While candidates is not empty:
-  while (!autofocus_candidates_.IsEmpty()) {
+  while (!autofocus_candidates_.empty()) {
     // 5.1. Let element be candidates[0].
     Element& element = *autofocus_candidates_[0];
 

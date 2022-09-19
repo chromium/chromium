@@ -31,7 +31,7 @@ CssSelectorFragmentAnchor* CssSelectorFragmentAnchor::TryCreate(
           ->fragmentDirective()
           .GetDirectives<CssSelectorDirective>();
 
-  if (css_selector_directives.IsEmpty())
+  if (css_selector_directives.empty())
     return nullptr;
 
   Element* anchor_node = nullptr;

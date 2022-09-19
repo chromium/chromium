@@ -102,8 +102,8 @@ TEST_F(DOMFeaturePolicyTest, TestGetAllowList) {
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "fullscreen"),
               UnorderedElementsAre("*"));
   EXPECT_TRUE(
-      GetPolicy()->getAllowlistForFeature(nullptr, "badfeature").IsEmpty());
-  EXPECT_TRUE(GetPolicy()->getAllowlistForFeature(nullptr, "midi").IsEmpty());
+      GetPolicy()->getAllowlistForFeature(nullptr, "badfeature").empty());
+  EXPECT_TRUE(GetPolicy()->getAllowlistForFeature(nullptr, "midi").empty());
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "sync-xhr"),
               UnorderedElementsAre("*"));
 }
@@ -151,8 +151,8 @@ TEST_F(IFramePolicyTest, TestGetAllowList) {
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "fullscreen"),
               UnorderedElementsAre(kSelfOrigin));
   EXPECT_TRUE(
-      GetPolicy()->getAllowlistForFeature(nullptr, "badfeature").IsEmpty());
-  EXPECT_TRUE(GetPolicy()->getAllowlistForFeature(nullptr, "midi").IsEmpty());
+      GetPolicy()->getAllowlistForFeature(nullptr, "badfeature").empty());
+  EXPECT_TRUE(GetPolicy()->getAllowlistForFeature(nullptr, "midi").empty());
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "sync-xhr"),
               UnorderedElementsAre("*"));
 }

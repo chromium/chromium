@@ -639,7 +639,7 @@ void CompositorAnimations::StartAnimationOnCompositor(
     const EffectModel& effect,
     Vector<int>& started_keyframe_model_ids,
     double animation_playback_rate) {
-  DCHECK(started_keyframe_model_ids.IsEmpty());
+  DCHECK(started_keyframe_model_ids.empty());
   // TODO(petermayo): Pass the PaintArtifactCompositor before
   // BlinkGenPropertyTrees is always on.
   DCHECK_EQ(CheckCanStartAnimationOnCompositor(
@@ -653,13 +653,13 @@ void CompositorAnimations::StartAnimationOnCompositor(
   GetAnimationOnCompositor(element, timing, normalized_timing, group,
                            start_time, time_offset, keyframe_effect,
                            keyframe_models, animation_playback_rate);
-  DCHECK(!keyframe_models.IsEmpty());
+  DCHECK(!keyframe_models.empty());
   for (auto& keyframe_model : keyframe_models) {
     int id = keyframe_model->id();
     compositor_animation.AddKeyframeModel(std::move(keyframe_model));
     started_keyframe_model_ids.push_back(id);
   }
-  DCHECK(!started_keyframe_model_ids.IsEmpty());
+  DCHECK(!started_keyframe_model_ids.empty());
 }
 
 void CompositorAnimations::CancelAnimationOnCompositor(
@@ -861,7 +861,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     const KeyframeEffectModelBase& effect,
     Vector<std::unique_ptr<cc::KeyframeModel>>& keyframe_models,
     double animation_playback_rate) {
-  DCHECK(keyframe_models.IsEmpty());
+  DCHECK(keyframe_models.empty());
   CompositorTiming compositor_timing;
   [[maybe_unused]] bool timing_valid =
       ConvertTimingForCompositor(timing, normalized_timing, time_offset,
@@ -1018,7 +1018,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     keyframe_model->set_fill_mode(compositor_timing.fill_mode);
     keyframe_models.push_back(std::move(keyframe_model));
   }
-  DCHECK(!keyframe_models.IsEmpty());
+  DCHECK(!keyframe_models.empty());
 }
 
 bool CompositorAnimations::CheckUsesCompositedScrolling(Node* target) {

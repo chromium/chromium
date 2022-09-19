@@ -178,7 +178,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     if (!const_has_rare_data_)
       return absl::nullopt;
     const auto* rare_data = ComputeRareDataAddress();
-    if (rare_data->table_section_row_offsets.IsEmpty())
+    if (rare_data->table_section_row_offsets.empty())
       return absl::nullopt;
     return rare_data->table_section_start_row_index;
   }

@@ -357,7 +357,7 @@ EBreakBetween NGBoxFragmentBuilder::JoinedBreakBetweenValue(
 void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK(is_new_fc_);
   DCHECK_NE(FragmentBlockSize(), kIndefiniteSize);
-  DCHECK(oof_positioned_descendants_.IsEmpty());
+  DCHECK(oof_positioned_descendants_.empty());
 
   if (delta == LayoutUnit())
     return;

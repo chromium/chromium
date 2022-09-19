@@ -73,7 +73,7 @@ class DocumentTransitionTest : public testing::Test,
   }
 
   bool ElementIsComposited(const char* id) {
-    return !CcLayersByDOMElementId(RootCcLayer(), id).IsEmpty();
+    return !CcLayersByDOMElementId(RootCcLayer(), id).empty();
   }
 
   // Testing the compositor interaction is not in scope for these unittests. So,

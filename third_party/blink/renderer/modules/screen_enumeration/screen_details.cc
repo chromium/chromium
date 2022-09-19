@@ -31,7 +31,7 @@ ScreenDetailed* ScreenDetails::currentScreen() const {
   if (!DomWindow())
     return nullptr;
 
-  if (screens_.IsEmpty())
+  if (screens_.empty())
     return nullptr;
 
   auto* it = base::ranges::find(screens_, current_display_id_,

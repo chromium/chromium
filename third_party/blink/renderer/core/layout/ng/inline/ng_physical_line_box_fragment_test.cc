@@ -30,7 +30,7 @@ class NGPhysicalLineBoxFragmentTest : public NGLayoutTest {
 
   const NGPhysicalLineBoxFragment* GetLineBox() const {
     HeapVector<Member<const NGPhysicalLineBoxFragment>> lines = GetLineBoxes();
-    if (!lines.IsEmpty())
+    if (!lines.empty())
       return lines.front();
     return nullptr;
   }

@@ -121,7 +121,7 @@ bool CSPSourceListIsSelf(
 
 bool CSPSourceListIsHashOrNoncePresent(
     const network::mojom::blink::CSPSourceList& source_list) {
-  return !source_list.nonces.IsEmpty() || !source_list.hashes.IsEmpty();
+  return !source_list.nonces.empty() || !source_list.hashes.empty();
 }
 
 bool CSPSourceListAllowsURLBasedMatching(

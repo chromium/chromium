@@ -76,7 +76,7 @@ class MODULES_EXPORT WebSocketMessageChunkAccumulator final {
   void OnTimerFired(TimerBase*);
 
   size_t GetLastSegmentSize() const {
-    DCHECK(!segments_.IsEmpty());
+    DCHECK(!segments_.empty());
     return size_ % kSegmentSize > 0 ? size_ % kSegmentSize : kSegmentSize;
   }
 

@@ -180,7 +180,7 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
 bool HasTimelines(const StyleResolverState& state) {
   if (!state.Style()->ScrollTimelineName().IsEmpty())
     return true;
-  if (!state.Style()->ViewTimelineName().IsEmpty())
+  if (!state.Style()->ViewTimelineName().empty())
     return true;
   if (ElementAnimations* element_animations = GetElementAnimations(state))
     return element_animations->CssAnimations().HasTimelines();
@@ -559,7 +559,7 @@ static void MatchVTTRules(const Element& element,
     return;
   const HeapVector<Member<CSSStyleSheet>>& styles =
       text_track->GetCSSStyleSheets();
-  if (!styles.IsEmpty()) {
+  if (!styles.empty()) {
     int style_sheet_index = 0;
     collector.ClearMatchedRules();
     for (CSSStyleSheet* style : styles) {

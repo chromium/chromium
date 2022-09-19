@@ -65,7 +65,7 @@ bool TextTrackCueList::Add(TextTrackCue* cue) {
   wtf_size_t index = FindInsertionIndex(cue);
 
   // FIXME: The cue should not exist in the list in the first place.
-  if (!list_.IsEmpty() && (index > 0) && (list_[index - 1].Get() == cue))
+  if (!list_.empty() && (index > 0) && (list_[index - 1].Get() == cue))
     return false;
 
   list_.insert(index, cue);
@@ -102,7 +102,7 @@ bool TextTrackCueList::Remove(TextTrackCue* cue) {
 }
 
 void TextTrackCueList::RemoveAll() {
-  if (list_.IsEmpty())
+  if (list_.empty())
     return;
 
   first_invalid_index_ = 0;

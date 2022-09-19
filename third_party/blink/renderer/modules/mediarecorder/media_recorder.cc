@@ -87,8 +87,8 @@ void AllocateVideoAndAudioBitrates(ExceptionState& exception_state,
                                    MediaStream* stream,
                                    uint32_t* audio_bits_per_second,
                                    uint32_t* video_bits_per_second) {
-  const bool use_video = !stream->getVideoTracks().IsEmpty();
-  const bool use_audio = !stream->getAudioTracks().IsEmpty();
+  const bool use_video = !stream->getVideoTracks().empty();
+  const bool use_audio = !stream->getAudioTracks().empty();
 
   // Clamp incoming values into a signed integer's range.
   // TODO(mcasas): This section would no be needed if the bit rates are signed

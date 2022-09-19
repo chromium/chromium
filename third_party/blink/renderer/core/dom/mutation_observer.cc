@@ -235,7 +235,7 @@ static SlotChangeList& ActiveSlotChangeList() {
   return *slot_change_list;
 }
 static void EnsureEnqueueMicrotask() {
-  if (ActiveMutationObservers().IsEmpty() && ActiveSlotChangeList().IsEmpty()) {
+  if (ActiveMutationObservers().IsEmpty() && ActiveSlotChangeList().empty()) {
     Microtask::EnqueueMicrotask(
         WTF::BindOnce(&MutationObserver::DeliverMutations));
   }
@@ -311,7 +311,7 @@ void MutationObserver::Deliver() {
   for (const auto& registration : transient_registrations)
     registration->ClearTransientRegistrations();
 
-  if (records_.IsEmpty())
+  if (records_.empty())
     return;
 
   MutationRecordVector records;

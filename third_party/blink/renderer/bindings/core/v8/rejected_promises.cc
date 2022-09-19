@@ -226,7 +226,7 @@ void RejectedPromises::HandlerAdded(v8::PromiseRejectMessage data) {
 }
 
 void RejectedPromises::Dispose() {
-  if (queue_.IsEmpty())
+  if (queue_.empty())
     return;
 
   ProcessQueueNow(std::move(queue_));
@@ -234,7 +234,7 @@ void RejectedPromises::Dispose() {
 }
 
 void RejectedPromises::ProcessQueue() {
-  if (queue_.IsEmpty())
+  if (queue_.empty())
     return;
 
   HeapHashMap<Member<ExecutionContext>, MessageQueue> queues;

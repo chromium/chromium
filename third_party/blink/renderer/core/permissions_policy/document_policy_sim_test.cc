@@ -69,7 +69,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyNoEffectWhenFlagNotSet) {
 
   // Should not receive a console error message caused by document policy
   // violation blocking document load.
-  EXPECT_TRUE(console_messages.IsEmpty());
+  EXPECT_TRUE(console_messages.empty());
 
   EXPECT_EQ(child_window->Url(), KURL("https://example.com/foo.html"));
 
@@ -133,7 +133,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
 
   // Should not receive a console error message caused by document policy
   // violation blocking document load.
-  EXPECT_TRUE(console_messages.IsEmpty());
+  EXPECT_TRUE(console_messages.empty());
 
   EXPECT_EQ(child_window->Url(), KURL("https://example.com/foo.html"));
 

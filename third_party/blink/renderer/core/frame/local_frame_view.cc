@@ -901,7 +901,7 @@ void LocalFrameView::UpdateLayout() {
         RuntimeCallStats::CounterId::kUpdateLayout);
   }
   layout_roots = layout_subtree_root_list_.Ordered();
-  if (layout_roots.IsEmpty())
+  if (layout_roots.empty())
     layout_roots.push_back(LayoutObjectWithDepth(GetLayoutView()));
   TRACE_EVENT_BEGIN1("devtools.timeline", "Layout", "beginData",
                      [&](perfetto::TracedValue context) {

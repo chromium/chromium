@@ -241,7 +241,7 @@ ScopedFocusNavigation::ScopedFocusNavigation(
     FocusController::OwnerMap& owner_map)
     : current_(current) {
   if (auto* slot = DynamicTo<HTMLSlotElement>(scoping_root_node)) {
-    if (slot->AssignedNodes().IsEmpty()) {
+    if (slot->AssignedNodes().empty()) {
       navigation_ = MakeGarbageCollected<FocusNavigation>(scoping_root_node,
                                                           *slot, owner_map);
     } else {
@@ -334,7 +334,7 @@ HTMLSlotElement* ScopedFocusNavigation::FindFallbackScopeOwnerSlot(
   Element* parent = const_cast<Element*>(element.parentElement());
   while (parent) {
     if (auto* slot = DynamicTo<HTMLSlotElement>(parent))
-      return slot->AssignedNodes().IsEmpty() ? slot : nullptr;
+      return slot->AssignedNodes().empty() ? slot : nullptr;
     parent = parent->parentElement();
   }
   return nullptr;

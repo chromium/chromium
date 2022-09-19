@@ -78,7 +78,7 @@ static const LegacyEncoding kEncodings[] = {
 static const WTF::TextEncoding GetEncodingFromDomain(const KURL& url) {
   Vector<String> tokens;
   url.Host().Split(".", tokens);
-  if (!tokens.IsEmpty()) {
+  if (!tokens.empty()) {
     auto tld = tokens.back();
     for (size_t i = 0; i < std::size(kEncodings); i++) {
       if (tld == kEncodings[i].domain)

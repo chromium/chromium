@@ -587,7 +587,7 @@ const String& NDEFRecord::mediaType() const {
 DOMDataView* NDEFRecord::data() const {
   // Step 4 in https://w3c.github.io/web-nfc/#dfn-parse-an-ndef-record
   if (record_type_ == "empty") {
-    DCHECK(payload_data_.IsEmpty());
+    DCHECK(payload_data_.empty());
     return nullptr;
   }
   DOMArrayBuffer* dom_buffer =

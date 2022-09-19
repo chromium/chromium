@@ -584,7 +584,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
   }
 
   // Update leading, trailing whitespace position.
-  if (!nodes_to_be_removed.IsEmpty()) {
+  if (!nodes_to_be_removed.empty()) {
     leading_whitespace_ = ComputePositionForNodeRemoval(
         leading_whitespace_, *(nodes_to_be_removed[0].Get()));
     trailing_whitespace_ = ComputePositionForNodeRemoval(

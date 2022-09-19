@@ -55,7 +55,7 @@ class CORE_EXPORT EventListenerMap final {
   EventListenerMap(const EventListenerMap&) = delete;
   EventListenerMap& operator=(const EventListenerMap&) = delete;
 
-  bool IsEmpty() const { return entries_.IsEmpty(); }
+  bool IsEmpty() const { return entries_.empty(); }
   bool Contains(const AtomicString& event_type) const;
   bool ContainsCapturing(const AtomicString& event_type) const;
   bool ContainsJSBasedEventListeners(const AtomicString& event_type) const;

@@ -54,7 +54,7 @@ StyleRecalcContext StyleRecalcContext::ForSlotChildren(
   // No assigned nodes means we will render the light tree children of the
   // slot as a fallback. Those children are in the same tree scope as the slot
   // which means the current container is the correct one.
-  if (slot.AssignedNodes().IsEmpty())
+  if (slot.AssignedNodes().empty())
     return *this;
 
   // The slot's flat tree children are children of the slot's shadow host, and

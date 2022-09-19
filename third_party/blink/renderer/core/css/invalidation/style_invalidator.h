@@ -102,7 +102,7 @@ class CORE_EXPORT StyleInvalidator {
     void PushInvalidationSet(const SiblingInvalidationSet&);
     bool MatchCurrentInvalidationSets(Element&, StyleInvalidator&);
 
-    bool IsEmpty() const { return invalidation_entries_.IsEmpty(); }
+    bool IsEmpty() const { return invalidation_entries_.empty(); }
     void Advance() { element_index_++; }
 
    private:

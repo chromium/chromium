@@ -304,7 +304,7 @@ FindBuffer::Results FindBuffer::FindMatches(const WebString& search_text,
   // We should return empty result if it's impossible to get a match (buffer is
   // empty or too short), or when something went wrong in layout, in which case
   // |offset_mapping_| is null.
-  if (buffer_.IsEmpty() || search_text.length() > buffer_.size() ||
+  if (buffer_.empty() || search_text.length() > buffer_.size() ||
       !offset_mapping_)
     return Results();
   String search_text_16_bit = search_text;

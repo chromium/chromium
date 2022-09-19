@@ -45,7 +45,7 @@ std::unique_ptr<TracedValue> CacheStorageTracedValue(
     const WTF::Vector<mojom::blink::FetchAPIRequestPtr>& requests) {
   auto value = std::make_unique<TracedValue>();
   value->SetInteger("count", requests.size());
-  if (!requests.IsEmpty()) {
+  if (!requests.empty()) {
     value->SetValue("first", CacheStorageTracedValue(requests.front()).get());
   }
   return value;
@@ -82,7 +82,7 @@ std::unique_ptr<TracedValue> CacheStorageTracedValue(
     const mojom::blink::FetchAPIResponsePtr& response) {
   auto value = std::make_unique<TracedValue>();
   if (response) {
-    if (!response->url_list.IsEmpty()) {
+    if (!response->url_list.empty()) {
       value->SetString("url", response->url_list.back().GetString());
     }
     value->SetString("type",
@@ -95,7 +95,7 @@ std::unique_ptr<TracedValue> CacheStorageTracedValue(
     const WTF::Vector<mojom::blink::FetchAPIResponsePtr>& responses) {
   auto value = std::make_unique<TracedValue>();
   value->SetInteger("count", responses.size());
-  if (!responses.IsEmpty()) {
+  if (!responses.empty()) {
     value->SetValue("first", CacheStorageTracedValue(responses.front()).get());
   }
   return value;
@@ -117,7 +117,7 @@ std::unique_ptr<TracedValue> CacheStorageTracedValue(
     const WTF::Vector<String>& string_list) {
   auto value = std::make_unique<TracedValue>();
   value->SetInteger("count", string_list.size());
-  if (!string_list.IsEmpty()) {
+  if (!string_list.empty()) {
     value->SetString("first", string_list.front());
   }
   return value;

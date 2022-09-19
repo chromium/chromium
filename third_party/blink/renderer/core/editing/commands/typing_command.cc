@@ -302,7 +302,7 @@ void TypingCommand::ForwardDeleteKeyPressed(Document& document,
 }
 
 String TypingCommand::TextDataForInputEvent() const {
-  if (commands_.IsEmpty() || IsIncrementalInsertion())
+  if (commands_.empty() || IsIncrementalInsertion())
     return text_to_insert_;
   return commands_.back()->TextDataForInputEvent();
 }
@@ -555,7 +555,7 @@ void TypingCommand::DoApply(EditingState* editing_state) {
     return;
 
   if (command_type_ == kDeleteKey) {
-    if (commands_.IsEmpty())
+    if (commands_.empty())
       opened_by_backward_delete_ = true;
   }
 

@@ -193,7 +193,7 @@ bool BuildSearchString(const HTMLFormElement& form,
     control->AppendToFormData(*form_data);
 
     for (const auto& entry : form_data->Entries()) {
-      if (!encoded_string->IsEmpty())
+      if (!encoded_string->empty())
         encoded_string->push_back('&');
       FormDataEncoder::EncodeStringAsFormData(*encoded_string,
                                               form_data->Encode(entry->name()),

@@ -246,7 +246,7 @@ MediaStream::MediaStream(ExecutionContext* context,
 MediaStream::~MediaStream() = default;
 
 bool MediaStream::HasPendingActivity() const {
-  return !scheduled_events_.IsEmpty();
+  return !scheduled_events_.empty();
 }
 
 bool MediaStream::EmptyOrOnlyEndedTracks() {

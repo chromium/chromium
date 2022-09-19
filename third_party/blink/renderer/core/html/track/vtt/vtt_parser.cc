@@ -104,13 +104,13 @@ VTTParser::VTTParser(VTTParserClient* client, Document& document)
 }
 
 void VTTParser::GetNewCues(HeapVector<Member<TextTrackCue>>& output_cues) {
-  DCHECK(output_cues.IsEmpty());
+  DCHECK(output_cues.empty());
   output_cues.swap(cue_list_);
 }
 
 void VTTParser::GetNewStyleSheets(
     HeapVector<Member<CSSStyleSheet>>& output_sheets) {
-  DCHECK(output_sheets.IsEmpty());
+  DCHECK(output_sheets.empty());
   output_sheets.swap(style_sheets_);
 }
 
@@ -618,7 +618,7 @@ void VTTTreeBuilder::ConstructTreeFromToken(Document& document) {
         child->setAttribute(VTTElement::LangAttributeName(),
                             language_stack_.back());
       }
-      if (!language_stack_.IsEmpty())
+      if (!language_stack_.empty())
         child->SetLanguage(language_stack_.back());
       current_node_->ParserAppendChild(child);
       current_node_ = child;

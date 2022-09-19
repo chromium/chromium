@@ -926,7 +926,7 @@ InspectorCSSAgent::BuildLayerDataObject(const CascadeLayer* layer,
           .setOrder(order)
           .build();
   const auto& sublayers = layer->GetDirectSubLayers();
-  if (sublayers.IsEmpty())
+  if (sublayers.empty())
     return layer_data;
 
   auto sublayers_data =

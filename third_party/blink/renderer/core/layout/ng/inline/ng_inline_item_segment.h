@@ -74,7 +74,7 @@ class CORE_EXPORT NGInlineItemSegments {
 
  public:
   unsigned size() const { return segments_.size(); }
-  bool IsEmpty() const { return segments_.IsEmpty(); }
+  bool IsEmpty() const { return segments_.empty(); }
 
   // Start/end offset of each segment/entire segments.
   unsigned OffsetForSegment(const NGInlineItemSegment& segment) const;

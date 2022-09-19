@@ -147,7 +147,7 @@ bool ShouldReportLetterSpacingUseCounter(const LayoutObject* layout_object,
         !IsLeftAligned(block_style)) &&
        HasLetterSpacingWorkAround(layout_object, first_line, block_flow)) ||
       // Workaround for `text-decoration` is complicated, just include all.
-      !style.AppliedTextDecorations().IsEmpty())
+      !style.AppliedTextDecorations().empty())
     return true;
 
   return false;
@@ -200,7 +200,7 @@ class ReusingTextShaper final {
     const Vector<const ShapeResult*> reusable_shape_results =
         CollectReusableShapeResults(start_offset, end_offset,
                                     start_item.Direction());
-    if (reusable_shape_results.IsEmpty())
+    if (reusable_shape_results.empty())
       return Reshape(start_item, font, start_offset, end_offset);
 
     const scoped_refptr<ShapeResult> shape_result =
@@ -634,7 +634,7 @@ class NGInlineNodeDataEditor final {
         block_flow_->GetDocument().NeedsLayoutTreeUpdate() ||
         !block_flow_->GetNGInlineNodeData() ||
         block_flow_->GetNGInlineNodeData()->text_content.IsNull() ||
-        block_flow_->GetNGInlineNodeData()->items.IsEmpty())
+        block_flow_->GetNGInlineNodeData()->items.empty())
       return nullptr;
 
     // For "text-combine-upright:all", we choose font to fit layout result in
@@ -748,7 +748,7 @@ class NGInlineNodeDataEditor final {
       break;
     }
 
-    if (items.IsEmpty()) {
+    if (items.empty()) {
       items.push_back(NGInlineItem(data_->items.front(), 0,
                                    new_data.text_content.length(), nullptr));
     } else if (items.back().end_offset_ < new_data.text_content.length()) {
@@ -931,7 +931,7 @@ class NGInlineNodeDataEditor final {
 
   void VerifyItems(const HeapVector<NGInlineItem>& items) const {
 #if DCHECK_IS_ON()
-    if (items.IsEmpty())
+    if (items.empty())
       return;
     unsigned last_offset = items.front().start_offset_;
     for (const NGInlineItem& item : items) {
@@ -1105,7 +1105,7 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
 void NGInlineNode::CollectInlines(NGInlineNodeData* data,
                                   NGInlineNodeData* previous_data) const {
   DCHECK(data->text_content.IsNull());
-  DCHECK(data->items.IsEmpty());
+  DCHECK(data->items.empty());
   LayoutBlockFlow* block = GetLayoutBlockFlow();
   block->WillCollectInlines();
 
@@ -1254,7 +1254,7 @@ void NGInlineNode::SegmentFontOrientation(NGInlineNodeData* data) const {
     return;
 
   HeapVector<NGInlineItem>& items = data->items;
-  if (items.IsEmpty())
+  if (items.empty())
     return;
   String& text_content = data->text_content;
   text_content.Ensure16Bit();
@@ -1736,7 +1736,7 @@ static LayoutUnit ComputeContentSize(
 
     LayoutUnit ComputeMaxSizeForLine(LayoutUnit line_inline_size,
                                      LayoutUnit max_inline_size) {
-      if (floating_objects_.IsEmpty())
+      if (floating_objects_.empty())
         return std::max(max_inline_size, line_inline_size);
 
       EFloat previous_float_type = EFloat::kNone;
@@ -1901,7 +1901,7 @@ static LayoutUnit ComputeContentSize(
   do {
     NGLineInfo line_info;
     line_breaker.NextLine(&line_info);
-    if (line_info.Results().IsEmpty())
+    if (line_info.Results().empty())
       break;
 
     LayoutUnit inline_size = line_info.Width();

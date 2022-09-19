@@ -379,7 +379,7 @@ TypeConverter<PublicKeyCredentialDescriptorPtr,
   mojo_descriptor->type = ConvertTo<PublicKeyCredentialType>(
       blink::IDLEnumAsString(descriptor.type()));
   mojo_descriptor->id = ConvertTo<Vector<uint8_t>>(descriptor.id());
-  if (descriptor.hasTransports() && !descriptor.transports().IsEmpty()) {
+  if (descriptor.hasTransports() && !descriptor.transports().empty()) {
     for (const auto& transport : descriptor.transports()) {
       auto maybe_transport(
           ConvertTo<absl::optional<AuthenticatorTransport>>(transport));
@@ -440,7 +440,7 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         parameters.push_back(std::move(normalized_parameter));
       }
     }
-    if (parameters.IsEmpty()) {
+    if (parameters.empty()) {
       return nullptr;
     }
   }
@@ -560,9 +560,8 @@ TypeConverter<CableAuthenticationPtr, blink::CableAuthenticationData>::Convert(
       entity->authenticator_eid =
           ConvertFixedSizeArray(data.authenticatorEid(), 16);
       entity->session_pre_key = ConvertFixedSizeArray(data.sessionPreKey(), 32);
-      if (entity->client_eid->IsEmpty() ||
-          entity->authenticator_eid->IsEmpty() ||
-          entity->session_pre_key->IsEmpty()) {
+      if (entity->client_eid->empty() || entity->authenticator_eid->empty() ||
+          entity->session_pre_key->empty()) {
         return nullptr;
       }
       break;
@@ -570,7 +569,7 @@ TypeConverter<CableAuthenticationPtr, blink::CableAuthenticationData>::Convert(
     case 2:
       entity->server_link_data =
           ConvertTo<Vector<uint8_t>>(data.sessionPreKey());
-      if (entity->server_link_data->IsEmpty()) {
+      if (entity->server_link_data->empty()) {
         return nullptr;
       }
       entity->experiments = ConvertTo<Vector<uint8_t>>(data.clientEid());
@@ -591,7 +590,7 @@ TypeConverter<CableRegistrationPtr, blink::CableRegistrationData>::Convert(
   entity->versions = data.versions();
   entity->relying_party_public_key =
       ConvertFixedSizeArray(data.rpPublicKey(), 65);
-  if (entity->relying_party_public_key.IsEmpty()) {
+  if (entity->relying_party_public_key.empty()) {
     return nullptr;
   }
   return entity;

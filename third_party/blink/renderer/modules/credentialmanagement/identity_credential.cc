@@ -119,7 +119,7 @@ ScriptPromise IdentityCredential::logoutRPs(
                           "FedCM flag in about:flags not enabled."));
   }
 
-  if (logout_endpoints.IsEmpty()) {
+  if (logout_endpoints.empty()) {
     return ScriptPromise();
   }
 

@@ -141,7 +141,7 @@ void LazyLoadFrameObserver::CancelPendingLazyLoad() {
 
 void LazyLoadFrameObserver::LoadIfHiddenOrNearViewport(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
   DCHECK_EQ(element_, entries.back()->target());
 
   if (entries.back()->isIntersecting()) {
@@ -219,7 +219,7 @@ void LazyLoadFrameObserver::StartTrackingVisibilityMetrics() {
 
 void LazyLoadFrameObserver::RecordMetricsOnVisibilityChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
   DCHECK_EQ(element_, entries.back()->target());
 
   LoadingAttributeValue loading_attr = GetLoadingAttributeValue(

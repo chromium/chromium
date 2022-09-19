@@ -230,12 +230,12 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
                       WebFeature::kWebAppManifestLaunchHandler);
   }
 
-  if (!manifest.url_handlers.IsEmpty()) {
+  if (!manifest.url_handlers.empty()) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kWebAppManifestUrlHandlers);
   }
 
-  if (!manifest.protocol_handlers.IsEmpty()) {
+  if (!manifest.protocol_handlers.empty()) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kWebAppManifestProtocolHandlers);
   }

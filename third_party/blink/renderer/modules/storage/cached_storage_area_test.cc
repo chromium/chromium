@@ -220,7 +220,7 @@ TEST_P(CachedStorageAreaTestWithParam, SetItem) {
   EXPECT_THAT(mock_storage_area_.observed_puts(),
               ElementsAre(ObservedPut(kKey, kValue, source_)));
 
-  EXPECT_TRUE(source_area_->events.IsEmpty());
+  EXPECT_TRUE(source_area_->events.empty());
   if (IsSessionStorage()) {
     ASSERT_EQ(1u, source_area2_->events.size());
     EXPECT_EQ(kKey, source_area2_->events[0].key);
@@ -228,7 +228,7 @@ TEST_P(CachedStorageAreaTestWithParam, SetItem) {
     EXPECT_EQ(kValue, source_area2_->events[0].new_value);
     EXPECT_EQ(kPageUrl, source_area2_->events[0].url);
   } else {
-    EXPECT_TRUE(source_area2_->events.IsEmpty());
+    EXPECT_TRUE(source_area2_->events.empty());
   }
 }
 
@@ -249,8 +249,8 @@ TEST_P(CachedStorageAreaTestWithParam, Clear_AlreadyEmpty) {
   }
 
   // Neither should have events since area was already empty.
-  EXPECT_TRUE(source_area_->events.IsEmpty());
-  EXPECT_TRUE(source_area2_->events.IsEmpty());
+  EXPECT_TRUE(source_area_->events.empty());
+  EXPECT_TRUE(source_area2_->events.empty());
 }
 
 TEST_P(CachedStorageAreaTestWithParam, Clear_WithData) {
@@ -267,7 +267,7 @@ TEST_P(CachedStorageAreaTestWithParam, Clear_WithData) {
     EXPECT_EQ(0, mock_storage_area_.observed_get_alls());
   }
 
-  EXPECT_TRUE(source_area_->events.IsEmpty());
+  EXPECT_TRUE(source_area_->events.empty());
   if (IsSessionStorage()) {
     ASSERT_EQ(1u, source_area2_->events.size());
     EXPECT_TRUE(source_area2_->events[0].key.IsNull());
@@ -275,7 +275,7 @@ TEST_P(CachedStorageAreaTestWithParam, Clear_WithData) {
     EXPECT_TRUE(source_area2_->events[0].new_value.IsNull());
     EXPECT_EQ(kPageUrl, source_area2_->events[0].url);
   } else {
-    EXPECT_TRUE(source_area2_->events.IsEmpty());
+    EXPECT_TRUE(source_area2_->events.empty());
   }
 }
 
@@ -286,11 +286,11 @@ TEST_P(CachedStorageAreaTestWithParam, RemoveItem_NothingToRemove) {
   mock_storage_area_.Flush();
   EXPECT_TRUE(IsCacheLoaded());
   EXPECT_EQ(1, mock_storage_area_.observed_get_alls());
-  EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
+  EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
 
   // Neither should have events since area was already empty.
-  EXPECT_TRUE(source_area_->events.IsEmpty());
-  EXPECT_TRUE(source_area2_->events.IsEmpty());
+  EXPECT_TRUE(source_area_->events.empty());
+  EXPECT_TRUE(source_area2_->events.empty());
 }
 
 TEST_P(CachedStorageAreaTestWithParam, RemoveItem) {
@@ -306,7 +306,7 @@ TEST_P(CachedStorageAreaTestWithParam, RemoveItem) {
   EXPECT_THAT(mock_storage_area_.observed_deletes(),
               ElementsAre(ObservedDelete(kKey, source_)));
 
-  EXPECT_TRUE(source_area_->events.IsEmpty());
+  EXPECT_TRUE(source_area_->events.empty());
   if (IsSessionStorage()) {
     ASSERT_EQ(1u, source_area2_->events.size());
     EXPECT_EQ(kKey, source_area2_->events[0].key);
@@ -314,7 +314,7 @@ TEST_P(CachedStorageAreaTestWithParam, RemoveItem) {
     EXPECT_TRUE(source_area2_->events[0].new_value.IsNull());
     EXPECT_EQ(kPageUrl, source_area2_->events[0].url);
   } else {
-    EXPECT_TRUE(source_area2_->events.IsEmpty());
+    EXPECT_TRUE(source_area2_->events.empty());
   }
 }
 
@@ -366,11 +366,11 @@ TEST_P(CachedStorageAreaTestWithParam, ResetConnectionWithNoDelta) {
 
   // There should be no observed operations on the backend.
   mock_storage_area_.Flush();
-  EXPECT_TRUE(mock_storage_area_.observed_puts().IsEmpty());
-  EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
+  EXPECT_TRUE(mock_storage_area_.observed_puts().empty());
+  EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
 
   // There should also be no generated storage events.
-  EXPECT_TRUE(source_area_->events.IsEmpty());
+  EXPECT_TRUE(source_area_->events.empty());
 }
 
 TEST_P(CachedStorageAreaTestWithParam, ResetConnectionWithKeyDiff) {
@@ -408,14 +408,14 @@ TEST_P(CachedStorageAreaTestWithParam, ResetConnectionWithKeyDiff) {
     EXPECT_EQ(kCachedValue2, cached_area_->GetItem(kKey2));
     EXPECT_THAT(mock_storage_area_.observed_puts(),
                 ElementsAre(ObservedPut(kKey2, kCachedValue2, "\n")));
-    EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
-    EXPECT_TRUE(source_area_->events.IsEmpty());
+    EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
+    EXPECT_TRUE(source_area_->events.empty());
   } else {
     // For Local Storage, we expect no mutations to the backend but instead a
     // storage event to be broadcast for the diff.
     EXPECT_EQ(kPersistedValue2, cached_area_->GetItem(kKey2));
-    EXPECT_TRUE(mock_storage_area_.observed_puts().IsEmpty());
-    EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
+    EXPECT_TRUE(mock_storage_area_.observed_puts().empty());
+    EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
     EXPECT_THAT(source_area_->events,
                 ElementsAre(Event(kKey2, kCachedValue2, kPersistedValue2)));
   }
@@ -454,15 +454,15 @@ TEST_P(CachedStorageAreaTestWithParam, ResetConnectionWithMissingBackendKey) {
     EXPECT_EQ(kValue2, cached_area_->GetItem(kKey2));
     EXPECT_THAT(mock_storage_area_.observed_puts(),
                 ElementsAre(ObservedPut(kKey2, kValue2, "\n")));
-    EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
-    EXPECT_TRUE(source_area_->events.IsEmpty());
+    EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
+    EXPECT_TRUE(source_area_->events.empty());
   } else {
     // For Local Storage, we expect no mutations to the backend but instead a
     // storage event to be broadcast for the diff.
     EXPECT_EQ(1u, cached_area_->GetLength());
     EXPECT_TRUE(cached_area_->GetItem(kKey2).IsNull());
-    EXPECT_TRUE(mock_storage_area_.observed_puts().IsEmpty());
-    EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
+    EXPECT_TRUE(mock_storage_area_.observed_puts().empty());
+    EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
     EXPECT_THAT(source_area_->events,
                 ElementsAre(Event(kKey2, kValue2, String())));
   }
@@ -499,15 +499,15 @@ TEST_P(CachedStorageAreaTestWithParam, ResetConnectionWithMissingLocalKey) {
     EXPECT_TRUE(cached_area_->GetItem(kKey2).IsNull());
     EXPECT_THAT(mock_storage_area_.observed_deletes(),
                 ElementsAre(ObservedDelete(kKey2, "\n")));
-    EXPECT_TRUE(mock_storage_area_.observed_puts().IsEmpty());
-    EXPECT_TRUE(source_area_->events.IsEmpty());
+    EXPECT_TRUE(mock_storage_area_.observed_puts().empty());
+    EXPECT_TRUE(source_area_->events.empty());
   } else {
     // For Local Storage, we expect no mutations to the backend but instead a
     // storage event to be broadcast for the diff.
     EXPECT_EQ(2u, cached_area_->GetLength());
     EXPECT_EQ(kValue2, cached_area_->GetItem(kKey2));
-    EXPECT_TRUE(mock_storage_area_.observed_puts().IsEmpty());
-    EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
+    EXPECT_TRUE(mock_storage_area_.observed_puts().empty());
+    EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
     EXPECT_THAT(source_area_->events,
                 ElementsAre(Event(kKey2, String(), kValue2)));
   }
@@ -560,15 +560,15 @@ TEST_P(CachedStorageAreaTestWithParam, ResetConnectionWithComplexDiff) {
                                      ObservedPut(kKey3, kValue3, "\n")));
     EXPECT_THAT(mock_storage_area_.observed_deletes(),
                 ElementsAre(ObservedDelete(kKey4, "\n")));
-    EXPECT_TRUE(source_area_->events.IsEmpty());
+    EXPECT_TRUE(source_area_->events.empty());
   } else {
     // For Local Storage, we expect no mutations to the backend but instead a
     // storage event to be broadcast for the diff.
     EXPECT_EQ(kAltValue2, cached_area_->GetItem(kKey2));
     EXPECT_TRUE(cached_area_->GetItem(kKey3).IsNull());
     EXPECT_EQ(kValue4, cached_area_->GetItem(kKey4));
-    EXPECT_TRUE(mock_storage_area_.observed_puts().IsEmpty());
-    EXPECT_TRUE(mock_storage_area_.observed_deletes().IsEmpty());
+    EXPECT_TRUE(mock_storage_area_.observed_puts().empty());
+    EXPECT_TRUE(mock_storage_area_.observed_deletes().empty());
     EXPECT_THAT(source_area_->events,
                 UnorderedElementsAre(Event(kKey2, kValue2, kAltValue2),
                                      Event(kKey3, kValue3, String()),

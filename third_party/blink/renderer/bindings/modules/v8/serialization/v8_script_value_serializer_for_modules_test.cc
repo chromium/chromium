@@ -73,7 +73,7 @@ v8::Local<v8::Value> RoundTripForModules(
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState& exception_state = scope.GetExceptionState();
   V8ScriptValueSerializer::Options serialize_options;
-  DCHECK(!transferables || transferables->message_ports.IsEmpty());
+  DCHECK(!transferables || transferables->message_ports.empty());
   serialize_options.transferables = transferables;
   scoped_refptr<SerializedScriptValue> serialized_script_value =
       V8ScriptValueSerializerForModules(script_state, serialize_options)

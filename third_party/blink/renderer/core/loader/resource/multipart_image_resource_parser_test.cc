@@ -16,7 +16,7 @@ namespace blink {
 namespace multipart_image_resource_parser_test {
 
 String ToString(const Vector<char>& data) {
-  if (data.IsEmpty())
+  if (data.empty())
     return String("");
   return String(data.data(), data.size());
 }

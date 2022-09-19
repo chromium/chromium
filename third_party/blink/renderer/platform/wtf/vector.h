@@ -1102,7 +1102,9 @@ class Vector
   wtf_size_t size() const { return size_; }
   wtf_size_t capacity() const { return Base::capacity(); }
   size_t CapacityInBytes() const { return Base::AllocationSize(capacity()); }
-  bool IsEmpty() const { return !size(); }
+  bool empty() const { return !size(); }
+  // TODO(wangxianzhu): Remove this after renaming all callsites.
+  bool IsEmpty() const { return empty(); }
 
   // at() and operator[]: Obtain the reference of the element that is located
   // at the given index. The reference may be invalidated on a reallocation.
@@ -1308,7 +1310,7 @@ class Vector
   // (2) only iterators pointing to the last element will be invalidated. Other
   // references will remain valid.
   void pop_back() {
-    DCHECK(!IsEmpty());
+    DCHECK(!empty());
     Shrink(size() - 1);
   }
 
@@ -2098,7 +2100,7 @@ bool operator==(const Vector<T, inlineCapacityA, Allocator>& a,
                 const Vector<T, inlineCapacityB, Allocator>& b) {
   if (a.size() != b.size())
     return false;
-  if (a.IsEmpty())
+  if (a.empty())
     return true;
   return VectorTypeOperations<T, Allocator>::Compare(a.data(), b.data(),
                                                      a.size());

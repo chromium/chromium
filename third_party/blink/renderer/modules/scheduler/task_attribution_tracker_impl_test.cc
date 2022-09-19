@@ -105,7 +105,7 @@ class TaskAttributionTrackerTest : public PageTestBase {
       }
     }
     // Complete all the tasks
-    while (!task_stack_.IsEmpty()) {
+    while (!task_stack_.empty()) {
       task_stack_.pop_back();
     }
   }

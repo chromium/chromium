@@ -24,7 +24,7 @@ void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
       paint_offset, style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow(),
       &outline_rects, &info);
 
-  if (outline_rects.IsEmpty())
+  if (outline_rects.empty())
     return;
 
   OutlinePainter::PaintOutlineRects(paint_info, GetDisplayItemClient(),

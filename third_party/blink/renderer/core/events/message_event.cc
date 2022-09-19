@@ -244,7 +244,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   origin_ = origin;
   last_event_id_ = last_event_id;
   source_ = source;
-  if (ports.IsEmpty()) {
+  if (ports.empty()) {
     ports_ = nullptr;
   } else {
     ports_ = MakeGarbageCollected<MessagePortArray>();

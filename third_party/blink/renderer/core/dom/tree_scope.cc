@@ -321,7 +321,7 @@ HeapVector<Member<Element>> TreeScope::ElementsFromHitTestResult(
     }
   }
   if (Element* document_element = GetDocument().documentElement()) {
-    if (elements.IsEmpty() || elements.back() != document_element)
+    if (elements.empty() || elements.back() != document_element)
       elements.push_back(document_element);
   }
   return elements;
@@ -633,7 +633,7 @@ const TreeScope* TreeScope::CommonAncestorTreeScope(
   // is found. If |this| and |other| belong to different documents, null will be
   // returned.
   const TreeScope* last_ancestor = nullptr;
-  while (!this_chain.IsEmpty() && !other_chain.IsEmpty() &&
+  while (!this_chain.empty() && !other_chain.empty() &&
          this_chain.back() == other_chain.back()) {
     last_ancestor = this_chain.back();
     this_chain.pop_back();

@@ -126,7 +126,7 @@ void ContentIndex::DidGetIconSizes(
     mojom::blink::ContentDescriptionPtr description,
     ScriptPromiseResolver* resolver,
     const Vector<gfx::Size>& icon_sizes) {
-  if (!icon_sizes.IsEmpty() && description->icons.IsEmpty()) {
+  if (!icon_sizes.empty() && description->icons.empty()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         resolver->GetScriptState()->GetIsolate(), "icons must be provided"));
     return;
@@ -140,7 +140,7 @@ void ContentIndex::DidGetIconSizes(
     return;
   }
 
-  if (icon_sizes.IsEmpty()) {
+  if (icon_sizes.empty()) {
     DidGetIcons(resolver, std::move(description), /* icons= */ {});
     return;
   }

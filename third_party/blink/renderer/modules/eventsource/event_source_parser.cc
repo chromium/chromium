@@ -65,7 +65,7 @@ void EventSourceParser::ParseLine() {
   if (line_.size() == 0) {
     last_event_id_ = id_;
     // We dispatch an event when seeing an empty line.
-    if (!data_.IsEmpty()) {
+    if (!data_.empty()) {
       DCHECK_EQ(data_[data_.size() - 1], '\n');
       String data = FromUTF8(data_.data(), data_.size() - 1);
       client_->OnMessageEvent(

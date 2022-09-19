@@ -103,7 +103,7 @@ void LayoutSVGPath::UpdateMarkers() {
   else
     builder.Build(GetPath());
 
-  if (marker_positions_.IsEmpty())
+  if (marker_positions_.empty())
     return;
 
   const float stroke_width = StrokeWidthForMarkerUnits();

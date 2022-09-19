@@ -1231,7 +1231,7 @@ static void ComputeGlyphOverflow(
             .insert(text, std::make_pair(Vector<const SimpleFontData*>(),
                                          GlyphOverflow()))
             .stored_value;
-    DCHECK(it->value.first.IsEmpty());
+    DCHECK(it->value.first.empty());
     CopyToVector(fallback_fonts, it->value.first);
   }
   if (!glyph_overflow.IsApproximatelyZero()) {

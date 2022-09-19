@@ -1538,7 +1538,7 @@ void StyleEngine::ScheduleTypeRuleSetInvalidations(
     rule_set->Features().CollectTypeRuleInvalidationSet(invalidation_lists,
                                                         node);
   }
-  DCHECK(invalidation_lists.siblings.IsEmpty());
+  DCHECK(invalidation_lists.siblings.empty());
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          node);
 
@@ -1944,17 +1944,17 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
   unsigned flags = 0;
   for (auto& rule_set : rule_sets) {
     rule_set->CompactRulesIfNeeded();
-    if (!rule_set->KeyframesRules().IsEmpty())
+    if (!rule_set->KeyframesRules().empty())
       flags |= kKeyframesRules;
-    if (!rule_set->FontFaceRules().IsEmpty())
+    if (!rule_set->FontFaceRules().empty())
       flags |= kFontFaceRules;
-    if (!rule_set->FontPaletteValuesRules().IsEmpty())
+    if (!rule_set->FontPaletteValuesRules().empty())
       flags |= kFontPaletteValuesRules;
     if (rule_set->NeedsFullRecalcForRuleSetInvalidation())
       flags |= kFullRecalcRules;
-    if (!rule_set->PropertyRules().IsEmpty())
+    if (!rule_set->PropertyRules().empty())
       flags |= kPropertyRules;
-    if (!rule_set->CounterStyleRules().IsEmpty())
+    if (!rule_set->CounterStyleRules().empty())
       flags |= kCounterStyleRules;
     if (rule_set->HasCascadeLayers())
       flags |= kLayerRules;
@@ -2126,7 +2126,7 @@ void StyleEngine::ApplyUserRuleSetChanges(
     for (auto* it = new_style_sheets.begin(); it != new_style_sheets.end();
          it++) {
       DCHECK(it->second);
-      if (!it->second->CounterStyleRules().IsEmpty())
+      if (!it->second->CounterStyleRules().empty())
         EnsureUserCounterStyleMap().AddCounterStyles(*it->second);
     }
 
@@ -2205,7 +2205,7 @@ void StyleEngine::ApplyRuleSetChanges(
     //   common prefix, and rebuild CascadeLayerMap only if layers are changed.
     // - For other diffs, reset author style and re-add all sheets for the
     //   TreeScope. If new sheets need a CascadeLayerMap, rebuild it.
-    if (new_style_sheets.IsEmpty()) {
+    if (new_style_sheets.empty()) {
       rebuild_cascade_layer_map = false;
       ResetAuthorStyle(tree_scope);
     } else if (change == kActiveSheetsAppended) {
@@ -2277,7 +2277,7 @@ void StyleEngine::ApplyRuleSetChanges(
   // TODO(crbug.com/1309178): Invalidate style & layout for @position-fallback
   // rule changes.
 
-  if (!new_style_sheets.IsEmpty()) {
+  if (!new_style_sheets.empty()) {
     tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
         append_start_index, new_style_sheets);
   }

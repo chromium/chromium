@@ -1087,7 +1087,7 @@ void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
         else
           quads.push_back(gfx::QuadF(gfx::RectF(rect)));
       });
-  if (quads.IsEmpty()) {
+  if (quads.empty()) {
     if (map_to_absolute)
       PushAbsoluteQuad(PhysicalRect());
     else
@@ -1615,7 +1615,7 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
       AddOutlineRects(rects, nullptr, PhysicalOffset(),
                       style.OutlineRectsShouldIncludeBlockVisualOverflow());
     }
-    if (!rects.IsEmpty()) {
+    if (!rects.empty()) {
       PhysicalRect outline_rect = UnionRect(rects);
       outline_rect.Inflate(outline_outset);
       overflow_rect.Unite(outline_rect);

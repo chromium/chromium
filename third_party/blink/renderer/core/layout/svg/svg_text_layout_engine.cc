@@ -52,7 +52,7 @@ SVGTextLayoutEngine::SVGTextLayoutEngine(
       text_path_displacement_(0),
       text_path_spacing_(0),
       text_path_scaling_(1) {
-  DCHECK(!descendant_text_nodes_.IsEmpty());
+  DCHECK(!descendant_text_nodes_.empty());
 }
 
 SVGTextLayoutEngine::~SVGTextLayoutEngine() = default;

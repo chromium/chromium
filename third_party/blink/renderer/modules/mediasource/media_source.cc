@@ -798,7 +798,7 @@ WebTimeRanges MediaSource::BufferedInternal(
 
   // 1. If activeSourceBuffers.length equals 0 then return an empty TimeRanges
   //    object and abort these steps.
-  if (ranges.IsEmpty())
+  if (ranges.empty())
     return intersection_ranges;
 
   // 2. Let active ranges be the ranges returned by buffered for each

@@ -246,7 +246,7 @@ void FontFaceSet::FireDoneEvent() {
     done_event = FontFaceSetLoadEvent::CreateForFontFaces(
         event_type_names::kLoadingdone, loaded_fonts_);
     loaded_fonts_.clear();
-    if (!failed_fonts_.IsEmpty()) {
+    if (!failed_fonts_.empty()) {
       error_event = FontFaceSetLoadEvent::CreateForFontFaces(
           event_type_names::kLoadingerror, failed_fonts_);
       failed_fonts_.clear();

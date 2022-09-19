@@ -99,7 +99,7 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
     }
   }
 
-  if (it->value.IsEmpty())
+  if (it->value.empty())
     label_stream_map_.erase(it);
 }
 
@@ -288,7 +288,7 @@ base::UnguessableToken MediaStreamDeviceObserver::GetAudioSessionId(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = label_stream_map_.find(label);
-  if (it == label_stream_map_.end() || it->value.IsEmpty() ||
+  if (it == label_stream_map_.end() || it->value.empty() ||
       it->value[0].audio_devices.empty())
     return base::UnguessableToken();
 
@@ -302,7 +302,7 @@ base::UnguessableToken MediaStreamDeviceObserver::GetVideoSessionId(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto it = label_stream_map_.find(label);
-  if (it == label_stream_map_.end() || it->value.IsEmpty() ||
+  if (it == label_stream_map_.end() || it->value.empty() ||
       it->value[0].video_devices.empty())
     return base::UnguessableToken();
 

@@ -71,7 +71,7 @@ ScriptPromise BackgroundFetchUpdateUIEvent::updateUI(
     return ScriptPromise();
   }
 
-  if (!ui_options->hasTitle() && ui_options->icons().IsEmpty()) {
+  if (!ui_options->hasTitle() && ui_options->icons().empty()) {
     // Nothing to update, just return a resolved promise.
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -79,7 +79,7 @@ ScriptPromise BackgroundFetchUpdateUIEvent::updateUI(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (ui_options->icons().IsEmpty()) {
+  if (ui_options->icons().empty()) {
     DidGetIcon(resolver, ui_options->title(), SkBitmap(),
                -1 /* ideal_to_chosen_icon_size */);
   } else {

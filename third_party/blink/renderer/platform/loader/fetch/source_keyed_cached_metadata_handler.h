@@ -67,7 +67,7 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
     }
 
     static bool IsEmptyValue(const Key& key) {
-      return !IsDeletedValue(key) && key.IsEmpty();
+      return !IsDeletedValue(key) && key.empty();
     }
 
     static bool IsDeletedValue(const Key& value) {

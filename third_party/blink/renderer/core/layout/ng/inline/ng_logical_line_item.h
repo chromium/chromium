@@ -271,7 +271,7 @@ class CORE_EXPORT NGLogicalLineItems
 
   wtf_size_t size() const { return children_.size(); }
   void clear() { children_.clear(); }
-  bool IsEmpty() const { return children_.IsEmpty(); }
+  bool IsEmpty() const { return children_.empty(); }
   void ReserveInitialCapacity(unsigned capacity) {
     children_.ReserveInitialCapacity(capacity);
   }

@@ -53,7 +53,7 @@ class CORE_EXPORT AgentRegistry {
   // modification.
   bool RequiresCopy() const { return iteration_counter_ != 0; }
 
-  bool IsEmpty() const { return agents_.IsEmpty(); }
+  bool IsEmpty() const { return agents_.empty(); }
 
   wtf_size_t size() const { return agents_.size(); }
 

@@ -801,7 +801,7 @@ bool ContentSecurityPolicy::AllowTrustedTypeAssignmentFailure(
 }
 
 bool ContentSecurityPolicy::IsActive() const {
-  return !policies_.IsEmpty();
+  return !policies_.empty();
 }
 
 bool ContentSecurityPolicy::IsActiveForConnections() const {

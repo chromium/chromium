@@ -118,7 +118,7 @@ MediaConstraintsPrivate::MediaConstraintsPrivate(
 bool MediaConstraintsPrivate::IsUnconstrained() const {
   // TODO(hta): When generating advanced constraints, make sure no empty
   // elements can be added to the m_advanced vector.
-  return basic_.IsUnconstrained() && advanced_.IsEmpty();
+  return basic_.IsUnconstrained() && advanced_.empty();
 }
 
 const MediaTrackConstraintSetPlatform& MediaConstraintsPrivate::Basic() const {
@@ -135,7 +135,7 @@ const String MediaConstraintsPrivate::ToString() const {
   if (!IsUnconstrained()) {
     builder.Append('{');
     builder.Append(Basic().ToString());
-    if (!Advanced().IsEmpty()) {
+    if (!Advanced().empty()) {
       if (builder.length() > 1)
         builder.Append(", ");
       builder.Append("advanced: [");
@@ -250,7 +250,7 @@ StringConstraint::StringConstraint(const char* name)
     : BaseConstraint(name), exact_(), ideal_() {}
 
 bool StringConstraint::Matches(String value) const {
-  if (exact_.IsEmpty()) {
+  if (exact_.empty()) {
     return true;
   }
   for (const auto& choice : exact_) {
@@ -262,7 +262,7 @@ bool StringConstraint::Matches(String value) const {
 }
 
 bool StringConstraint::IsUnconstrained() const {
-  return exact_.IsEmpty() && ideal_.IsEmpty();
+  return exact_.empty() && ideal_.empty();
 }
 
 const Vector<String>& StringConstraint::Exact() const {
@@ -276,7 +276,7 @@ const Vector<String>& StringConstraint::Ideal() const {
 String StringConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
-  if (!ideal_.IsEmpty()) {
+  if (!ideal_.empty()) {
     builder.Append("ideal: [");
     bool first = true;
     for (const auto& iter : ideal_) {
@@ -289,7 +289,7 @@ String StringConstraint::ToString() const {
     }
     builder.Append(']');
   }
-  if (!exact_.IsEmpty()) {
+  if (!exact_.empty()) {
     if (builder.length() > 1)
       builder.Append(", ");
     builder.Append("exact: [");

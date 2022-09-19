@@ -420,7 +420,7 @@ TEST_F(ServiceWorkerEventQueueTest, RunPendingTasksWithZeroIdleTimerDelay) {
   Vector<String> handled_tasks;
   event1.EnqueuePendingDispatchingEventTo(&event_queue, "1", &handled_tasks);
   event2.EnqueuePendingDispatchingEventTo(&event_queue, "2", &handled_tasks);
-  EXPECT_TRUE(handled_tasks.IsEmpty());
+  EXPECT_TRUE(handled_tasks.empty());
 
   // Start a new event. EnqueueEvent() should run the pending tasks.
   MockEvent event;

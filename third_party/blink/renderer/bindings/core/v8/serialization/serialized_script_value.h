@@ -289,8 +289,7 @@ class CORE_EXPORT SerializedScriptValue
   StreamArray& GetStreams() { return streams_; }
 
   bool IsLockedToAgentCluster() const {
-    return !wasm_modules_.IsEmpty() ||
-           !shared_array_buffers_contents_.IsEmpty() ||
+    return !wasm_modules_.empty() || !shared_array_buffers_contents_.empty() ||
            base::ranges::any_of(attachments_, [](const auto& entry) {
              return entry.value->IsLockedToAgentCluster();
            });

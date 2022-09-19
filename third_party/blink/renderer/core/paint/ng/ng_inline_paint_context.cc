@@ -12,7 +12,7 @@ namespace blink {
 void NGInlinePaintContext::ClearDecoratingBoxes(
     DecoratingBoxList* saved_decorating_boxes) {
   if (saved_decorating_boxes) {
-    DCHECK(saved_decorating_boxes->IsEmpty());
+    DCHECK(saved_decorating_boxes->empty());
     decorating_boxes_.swap(*saved_decorating_boxes);
   } else {
     decorating_boxes_.Shrink(0);
@@ -42,7 +42,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
     const NGFragmentItem& item,
     DecoratingBoxList* saved_decorating_boxes) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
-  DCHECK(!saved_decorating_boxes || saved_decorating_boxes->IsEmpty());
+  DCHECK(!saved_decorating_boxes || saved_decorating_boxes->empty());
 
   // Compare the instance addresses of |AppliedTextDecorations| because it is
   // shared across |ComputedStyle|s when it is propagated without changes.
@@ -126,7 +126,7 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
           // decorating boxes. In this case, this node has 0 or 1 decorations.
           if (decorations->size() <= 1) {
             inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
-            if (decorations->IsEmpty())
+            if (decorations->empty())
               return 0;
             DCHECK_NE(style->GetTextDecorationLine(),
                       TextDecorationLine::kNone);
@@ -222,7 +222,7 @@ void NGInlinePaintContext::PushDecoratingBoxAncestors(
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK(inline_box.Current());
   DCHECK(inline_box.Current().IsInlineBox());
-  DCHECK(decorating_boxes_.IsEmpty());
+  DCHECK(decorating_boxes_.empty());
 
   Vector<const NGFragmentItem*, 16> ancestor_items;
   for (NGInlineCursor cursor = inline_box;;) {
@@ -256,14 +256,14 @@ void NGInlinePaintContext::SetLineBox(const NGInlineCursor& line_cursor) {
   DCHECK(RuntimeEnabledFeatures::TextDecoratingBoxEnabled());
   DCHECK_EQ(line_cursor.Current()->Type(), NGFragmentItem::kLine);
   line_cursor_ = line_cursor;
-  DCHECK(decorating_boxes_.IsEmpty());
+  DCHECK(decorating_boxes_.empty());
 
   const NGFragmentItem& line_item = *line_cursor.Current();
   const ComputedStyle& style = line_item.Style();
   const Vector<AppliedTextDecoration>& applied_text_decorations =
       style.AppliedTextDecorations();
   line_decorations_ = last_decorations_ = &applied_text_decorations;
-  if (applied_text_decorations.IsEmpty())
+  if (applied_text_decorations.empty())
     return;
 
   // The decorating box of a block container is an anonymous inline box that

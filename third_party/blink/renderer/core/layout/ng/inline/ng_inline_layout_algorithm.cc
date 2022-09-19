@@ -915,7 +915,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   // Append a hyphen if the last word is hyphenated. The hyphen is in
   // |ShapeResult|, but not in text. |ShapeResultSpacing| needs the text that
   // matches to the |ShapeResult|.
-  DCHECK(!line_info->Results().IsEmpty());
+  DCHECK(!line_info->Results().empty());
   const NGInlineItemResult& last_item_result = line_info->Results().back();
   if (last_item_result.hyphen_string)
     line_text_builder.Append(last_item_result.hyphen_string);
@@ -1066,7 +1066,7 @@ LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(
 bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
     const NGLineInfo& line_info) {
   const NGInlineItemResults& line_items = line_info.Results();
-  if (line_items.IsEmpty())
+  if (line_items.empty())
     return true;
 
   // If the last item was a <br> we need to adjust the content_size to clear

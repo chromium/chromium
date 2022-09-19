@@ -99,7 +99,7 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
     return;
   HeapVector<Member<Element>>* attr_associated_elements =
       element->GetElementArrayAttribute(qualified_name);
-  if (!attr_associated_elements || attr_associated_elements->IsEmpty())
+  if (!attr_associated_elements || attr_associated_elements->empty())
     return;
   std::vector<int32_t> ax_ids;
 

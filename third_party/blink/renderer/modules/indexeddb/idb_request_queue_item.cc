@@ -85,7 +85,7 @@ class IDBDatabaseGetAllResultSinkImpl
     DCHECK(!key_only_);
     DCHECK_LE(values.size(),
               static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (values_.IsEmpty()) {
+    if (values_.empty()) {
       values_ = std::move(values);
       return;
     }
@@ -99,7 +99,7 @@ class IDBDatabaseGetAllResultSinkImpl
     DCHECK(key_only_);
     DCHECK_LE(keys.size(),
               static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (keys_.IsEmpty()) {
+    if (keys_.empty()) {
       keys_ = std::move(keys);
       return;
     }

@@ -792,7 +792,7 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
 
 void ElementRuleCollector::SortAndTransferMatchedRules(
     bool is_vtt_embedded_style) {
-  if (matched_rules_.IsEmpty())
+  if (matched_rules_.empty())
     return;
 
   SortMatchedRules();

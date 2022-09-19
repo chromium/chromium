@@ -50,7 +50,7 @@ Sensor::Sensor(ExecutionContext* execution_context,
       last_reported_timestamp_(0.0) {
   // [SecureContext] in idl.
   DCHECK(execution_context->IsSecureContext());
-  DCHECK(!features.IsEmpty());
+  DCHECK(!features.empty());
 
   if (!AreFeaturesEnabled(execution_context, features)) {
     exception_state.ThrowSecurityError(

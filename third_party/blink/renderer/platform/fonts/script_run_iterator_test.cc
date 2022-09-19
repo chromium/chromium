@@ -61,7 +61,7 @@ class MockScriptData : public ScriptData {
         break;
     }
     int list_bits = kTable[code & kCodeListIndexMask];
-    if (dst.IsEmpty() && list_bits == 0) {
+    if (dst.empty() && list_bits == 0) {
       dst.push_back(USCRIPT_UNKNOWN);
       return;
     }

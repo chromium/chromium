@@ -674,7 +674,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
       // the only child content of the parent since the last spanner is an OOF
       // that will get positioned outside the multicol.
       container_builder_.SetIsEmptySpannerParent(
-          container_builder_.Children().IsEmpty() && is_resuming_);
+          container_builder_.Children().empty() && is_resuming_);
       // After the spanner(s), we are going to resume inside this block. If
       // there's a subsequent sibling that's not a spanner, we're resume right
       // in front of that one. Otherwise we'll just resume after all the

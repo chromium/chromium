@@ -1264,7 +1264,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         : layout_results_(layout_results) {}
 
     wtf_size_t Size() const { return layout_results_.size(); }
-    bool IsEmpty() const { return layout_results_.IsEmpty(); }
+    bool IsEmpty() const { return layout_results_.empty(); }
 
     bool HasFragmentItems() const;
 

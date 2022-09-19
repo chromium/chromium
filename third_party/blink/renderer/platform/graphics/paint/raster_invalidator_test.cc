@@ -129,7 +129,7 @@ TEST_P(RasterInvalidatorTest, LayerBounds) {
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, DefaultPropertyTreeState());
   // No raster invalidations needed if layer origin doesn't change.
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
 
   auto new_layer_offset = kDefaultLayerOffset;
   new_layer_offset.Add(gfx::Vector2dF(66, 77));
@@ -459,7 +459,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   FinishCycle(chunks);
 
   // Change clip1 to smaller.
@@ -627,7 +627,7 @@ TEST_P(RasterInvalidatorTest, ClipLocalTransformSpaceChangeNoInvalidation) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   FinishCycle(chunks);
 }
 
@@ -656,7 +656,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyChange) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   FinishCycle(chunks);
 
   // Inserting another node between layer_transform and transform0 and letting
@@ -670,7 +670,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyChange) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   FinishCycle(chunks);
 
   // Removing transform nodes above the layer state should not cause raster
@@ -681,7 +681,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyChange) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   FinishCycle(chunks);
 
   // Change transform0 and transform1, while keeping the combined transform0
@@ -735,7 +735,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChange) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   FinishCycle(chunks);
 
   // Tiny differences should accumulate and cause invalidation when the
@@ -750,7 +750,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChange) {
                                               .Rotate(0.0000001)});
     invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                           kDefaultLayerBounds, layer_state);
-    invalidated = !TrackedRasterInvalidations().IsEmpty();
+    invalidated = !TrackedRasterInvalidations().empty();
     FinishCycle(chunks);
   }
   EXPECT_TRUE(invalidated);
@@ -782,7 +782,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChangeScale) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_FALSE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_FALSE(TrackedRasterInvalidations().empty());
   invalidator_.SetTracksRasterInvalidations(false);
   FinishCycle(chunks);
 
@@ -794,7 +794,7 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChangeScale) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   invalidator_.SetTracksRasterInvalidations(false);
   FinishCycle(chunks);
 }
@@ -860,7 +860,7 @@ TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChangeNoInvalidation) {
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
-  EXPECT_TRUE(TrackedRasterInvalidations().IsEmpty());
+  EXPECT_TRUE(TrackedRasterInvalidations().empty());
   FinishCycle(chunks);
 }
 

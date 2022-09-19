@@ -421,7 +421,7 @@ bool FacingModeSatisfiesConstraint(mojom::blink::FacingMode value,
                                    const StringConstraint& constraint) {
   WebString string_value = ToWebString(value);
   if (string_value.IsNull())
-    return constraint.Exact().IsEmpty();
+    return constraint.Exact().empty();
 
   return constraint.Matches(string_value);
 }

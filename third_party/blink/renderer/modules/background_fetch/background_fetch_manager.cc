@@ -381,7 +381,7 @@ BackgroundFetchManager::CreateFetchAPIRequestVector(
           requests->GetAsRequestOrUSVStringSequence();
 
       // Throw a TypeError when the developer has passed an empty sequence.
-      if (request_vector.IsEmpty()) {
+      if (request_vector.empty()) {
         exception_state.ThrowTypeError(kEmptyRequestSequenceErrorMessage);
         return {};
       }
@@ -522,7 +522,7 @@ void BackgroundFetchManager::DidGetDeveloperIds(
       resolver->Resolve(developer_ids);
       return;
     case mojom::blink::BackgroundFetchError::STORAGE_ERROR:
-      DCHECK(developer_ids.IsEmpty());
+      DCHECK(developer_ids.empty());
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kAbortError,
           "Failed to get registration IDs due to I/O error."));

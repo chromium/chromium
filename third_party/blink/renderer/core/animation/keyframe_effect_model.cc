@@ -248,7 +248,7 @@ Vector<double> KeyframeEffectModelBase::GetComputedOffsets(
     result.push_back(offset.value_or(std::numeric_limits<double>::quiet_NaN()));
   }
 
-  if (result.IsEmpty())
+  if (result.empty())
     return result;
 
   if (std::isnan(result.back()))
@@ -429,7 +429,7 @@ bool KeyframeEffectModelBase::IsReplaceOnly() const {
 
 void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::AppendKeyframe(
     Keyframe::PropertySpecificKeyframe* keyframe) {
-  DCHECK(keyframes_.IsEmpty() ||
+  DCHECK(keyframes_.empty() ||
          keyframes_.back()->Offset() <= keyframe->Offset());
   keyframes_.push_back(std::move(keyframe));
 }
@@ -457,7 +457,7 @@ void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
 bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
     AddSyntheticKeyframeIfRequired(
         scoped_refptr<TimingFunction> zero_offset_easing) {
-  DCHECK(!keyframes_.IsEmpty());
+  DCHECK(!keyframes_.empty());
 
   bool added_synthetic_keyframe = false;
 

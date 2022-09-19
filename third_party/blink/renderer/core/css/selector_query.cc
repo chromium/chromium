@@ -88,7 +88,7 @@ struct AllElementsSelectorQueryTrait {
   typedef HeapVector<Member<Element>> OutputType;
   static const bool kShouldOnlyMatchFirstElement = false;
   ALWAYS_INLINE static bool IsEmpty(const OutputType& output) {
-    return output.IsEmpty();
+    return output.empty();
   }
   ALWAYS_INLINE static void AppendElement(OutputType& output,
                                           Element& element) {
@@ -117,7 +117,7 @@ Element* SelectorQuery::Closest(Element& target_element) const {
   QUERY_STATS_RESET();
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &target_element.GetDocument());
-  if (selectors_.IsEmpty())
+  if (selectors_.empty())
     return nullptr;
 
   for (Element* current_element = &target_element; current_element;
@@ -370,7 +370,7 @@ template <typename SelectorQueryTrait>
 void SelectorQuery::Execute(
     ContainerNode& root_node,
     typename SelectorQueryTrait::OutputType& output) const {
-  if (selectors_.IsEmpty())
+  if (selectors_.empty())
     return;
 
   if (use_slow_scan_) {
@@ -484,7 +484,7 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
               WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
           nullptr, selectors, arena);
 
-  if (selector_vector.IsEmpty()) {
+  if (selector_vector.empty()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "'" + selectors + "' is not a valid selector.");

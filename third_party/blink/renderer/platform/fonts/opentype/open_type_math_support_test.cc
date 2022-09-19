@@ -263,7 +263,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithoutTable) {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
         math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
-    EXPECT_TRUE(parts.IsEmpty());
+    EXPECT_TRUE(parts.empty());
   }
 
   // // Vertical parts.
@@ -271,7 +271,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithoutTable) {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
         math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), glyph,
         OpenTypeMathStretchData::StretchAxis::Vertical);
-    EXPECT_TRUE(parts.IsEmpty());
+    EXPECT_TRUE(parts.empty());
   }
 }
 
@@ -353,7 +353,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
         math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), left_brace,
         OpenTypeMathStretchData::StretchAxis::Horizontal);
-    EXPECT_TRUE(parts.IsEmpty());
+    EXPECT_TRUE(parts.empty());
   }
 
   // Horizontal parts for horizontal operator.
@@ -381,7 +381,7 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
     auto parts = OpenTypeMathSupport::GetGlyphPartRecords(
         math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), over_brace,
         OpenTypeMathStretchData::StretchAxis::Vertical);
-    EXPECT_TRUE(parts.IsEmpty());
+    EXPECT_TRUE(parts.empty());
   }
 }
 
@@ -419,7 +419,7 @@ TEST_F(OpenTypeMathSupportTest, MathItalicCorrection) {
         OpenTypeMathSupport::GetGlyphPartRecords(
             math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), base_glyph,
             OpenTypeMathStretchData::StretchAxis::Vertical, &italic_correction);
-    EXPECT_TRUE(parts.IsEmpty());
+    EXPECT_TRUE(parts.empty());
     EXPECT_FLOAT_EQ(italic_correction, -1000);
   }
 

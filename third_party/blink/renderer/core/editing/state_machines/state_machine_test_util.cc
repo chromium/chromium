@@ -61,7 +61,7 @@ String ProcessSequence(StateMachine* machine,
         break;
     }
   }
-  if (preceding.IsEmpty() ||
+  if (preceding.empty() ||
       state == TextSegmentationMachineState::kNeedMoreCodeUnit) {
     state = machine->TellEndOfPrecedingText();
     out.Append(MachineStateToChar(state));

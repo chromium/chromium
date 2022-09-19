@@ -1428,7 +1428,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
     // let's fail it already:
     if (query->RequiredFeatures().Contains(
             device::mojom::XRSessionFeature::DEPTH) &&
-        (preferred_usage.IsEmpty() || preferred_format.IsEmpty())) {
+        (preferred_usage.empty() || preferred_format.empty())) {
       query->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
                                     kDepthSensingConfigurationNotSupported,
                                     &exception_state);

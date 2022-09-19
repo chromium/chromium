@@ -804,10 +804,10 @@ XMLDocumentParser::XMLDocumentParser(DocumentFragment* fragment,
   for (; parent_element; parent_element = parent_element->parentElement())
     elem_stack.push_back(parent_element);
 
-  if (elem_stack.IsEmpty())
+  if (elem_stack.empty())
     return;
 
-  for (; !elem_stack.IsEmpty(); elem_stack.pop_back()) {
+  for (; !elem_stack.empty(); elem_stack.pop_back()) {
     Element* element = elem_stack.back();
     // According to https://dom.spec.whatwg.org/#locate-a-namespace, a namespace
     // from the element name should have higher priority. So we check xmlns

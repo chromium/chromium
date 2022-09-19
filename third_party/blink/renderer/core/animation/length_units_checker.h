@@ -28,7 +28,7 @@ class LengthUnitsChecker : public CSSInterpolationType::CSSConversionChecker {
           UnitLength(static_cast<CSSPrimitiveValue::LengthUnitType>(i),
                      state.CssToLengthConversionData()));
     }
-    if (unit_lengths.IsEmpty())
+    if (unit_lengths.empty())
       return nullptr;
     return base::WrapUnique(new LengthUnitsChecker(std::move(unit_lengths)));
   }

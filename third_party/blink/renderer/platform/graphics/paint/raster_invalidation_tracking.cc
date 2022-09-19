@@ -82,7 +82,7 @@ static bool CompareRasterInvalidationInfo(const RasterInvalidationInfo& a,
 }
 
 void RasterInvalidationTracking::AsJSON(JSONObject* json, bool detailed) const {
-  if (!invalidations_.IsEmpty()) {
+  if (!invalidations_.empty()) {
     // Sort to make the output more readable and easier to see the differences
     // by a human.
     auto sorted = invalidations_;
@@ -108,7 +108,7 @@ void RasterInvalidationTracking::AsJSON(JSONObject* json, bool detailed) const {
     json->SetArray("invalidations", std::move(invalidations_json));
   }
 
-  if (!under_invalidations_.IsEmpty()) {
+  if (!under_invalidations_.empty()) {
     auto under_invalidations_json = std::make_unique<JSONArray>();
     for (auto& under_invalidation : under_invalidations_) {
       auto under_invalidation_json = std::make_unique<JSONObject>();

@@ -682,7 +682,7 @@ class UserMediaClientTest : public ::testing::Test {
     auto video_components = desc->VideoComponents();
 
     EXPECT_EQ(audio_components.size(), 1u);
-    EXPECT_TRUE(video_components.IsEmpty());
+    EXPECT_TRUE(video_components.empty());
 
     return audio_components[0];
   }

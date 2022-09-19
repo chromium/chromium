@@ -293,7 +293,7 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
   }
 
   if (started && !notification_registration_in_progress() &&
-      !deferred_value_change_data_.IsEmpty()) {
+      !deferred_value_change_data_.empty()) {
     // Ensure promises are resolved before dispatching events allows them
     // to add listeners.
     blink::Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());

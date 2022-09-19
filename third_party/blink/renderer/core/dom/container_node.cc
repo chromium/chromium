@@ -148,12 +148,12 @@ static inline bool CollectChildrenAndRemoveFromOldParent(
   if (auto* fragment = DynamicTo<DocumentFragment>(node)) {
     GetChildNodes(*fragment, nodes);
     fragment->RemoveChildren();
-    return !nodes.IsEmpty();
+    return !nodes.empty();
   }
   nodes.push_back(&node);
   if (ContainerNode* old_parent = node.parentNode())
     old_parent->RemoveChild(&node, exception_state);
-  return !exception_state.HadException() && !nodes.IsEmpty();
+  return !exception_state.HadException() && !nodes.empty();
 }
 
 void ContainerNode::ParserTakeAllChildrenFrom(ContainerNode& old_parent) {

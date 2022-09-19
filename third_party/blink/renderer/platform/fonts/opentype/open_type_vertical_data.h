@@ -53,8 +53,8 @@ class PLATFORM_EXPORT OpenTypeVerticalData
                                   float ascent,
                                   int height);
 
-  bool IsOpenType() const { return !advance_widths_.IsEmpty(); }
-  bool HasVerticalMetrics() const { return !advance_heights_.IsEmpty(); }
+  bool IsOpenType() const { return !advance_widths_.empty(); }
+  bool HasVerticalMetrics() const { return !advance_heights_.empty(); }
   float AdvanceHeight(Glyph) const;
 
   void GetVerticalTranslationsForGlyphs(const SkFont&,

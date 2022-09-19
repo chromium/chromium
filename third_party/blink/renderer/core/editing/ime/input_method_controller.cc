@@ -783,7 +783,7 @@ void InputMethodController::AddImeTextSpans(
                  .MarkersIntersectingRange(
                      ToEphemeralRangeInFlatTree(ephemeral_line_range),
                      DocumentMarker::MarkerTypes::Spelling())
-                 .IsEmpty()) {
+                 .empty()) {
           continue;
         }
 
@@ -1087,7 +1087,7 @@ void InputMethodController::SetComposition(
   if (!HasComposition())
     return;
 
-  if (ime_text_spans.IsEmpty()) {
+  if (ime_text_spans.empty()) {
     GetDocument().Markers().AddCompositionMarker(
         CompositionEphemeralRange(), Color::kTransparent,
         ui::mojom::ImeTextSpanThickness::kThin,

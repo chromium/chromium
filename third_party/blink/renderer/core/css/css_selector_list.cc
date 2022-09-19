@@ -100,7 +100,7 @@ void CSSSelectorList::AdoptSelectorVector(
 template <bool UseArena>
 CSSSelectorList CSSSelectorList::AdoptSelectorVector(
     CSSSelectorVector<UseArena>& selector_vector) {
-  if (selector_vector.IsEmpty()) {
+  if (selector_vector.empty()) {
     return {};
   }
 

@@ -68,7 +68,7 @@ class MediaStreamAudioDeliverer {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     base::AutoLock auto_lock(consumers_lock_);
     const bool had_consumers =
-        !consumers_.IsEmpty() || !pending_consumers_.IsEmpty();
+        !consumers_.empty() || !pending_consumers_.empty();
     auto it = std::find(consumers_.begin(), consumers_.end(), consumer);
     if (it != consumers_.end()) {
       consumers_.erase(it);
@@ -81,8 +81,7 @@ class MediaStreamAudioDeliverer {
     SendLogMessage(
         String::Format("%s => (number of consumers: active=%u, pending=%u)",
                        __func__, consumers_.size(), pending_consumers_.size()));
-    return had_consumers && consumers_.IsEmpty() &&
-           pending_consumers_.IsEmpty();
+    return had_consumers && consumers_.empty() && pending_consumers_.empty();
   }
 
   // Returns the current list of connected Consumers. This is normally used to
@@ -124,7 +123,7 @@ class MediaStreamAudioDeliverer {
 
     // Call OnSetFormat() for all pending consumers and move them to the
     // active-delivery list.
-    if (!pending_consumers_.IsEmpty()) {
+    if (!pending_consumers_.empty()) {
       const media::AudioParameters params = GetAudioParameters();
       DCHECK(params.IsValid());
       for (Consumer* consumer : pending_consumers_)

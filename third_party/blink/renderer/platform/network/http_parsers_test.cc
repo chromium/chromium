@@ -632,7 +632,7 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesmpty) {
       "", network::mojom::blink::ContentSecurityPolicyType::kEnforce,
       network::mojom::blink::ContentSecurityPolicySource::kHTTP,
       KURL("http://example.com"));
-  EXPECT_TRUE(csp.IsEmpty());
+  EXPECT_TRUE(csp.empty());
 }
 
 TEST(HTTPParsersTest, ParseContentSecurityPoliciesMultiple) {

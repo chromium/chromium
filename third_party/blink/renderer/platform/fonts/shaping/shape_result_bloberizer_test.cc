@@ -142,7 +142,7 @@ TEST_F(ShapeResultBloberizerTest, StartsEmpty) {
             0ul);
   EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
 
-  EXPECT_TRUE(bloberizer.Blobs().IsEmpty());
+  EXPECT_TRUE(bloberizer.Blobs().empty());
 }
 
 TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {

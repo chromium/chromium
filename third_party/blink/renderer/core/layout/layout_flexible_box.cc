@@ -480,13 +480,13 @@ void LayoutFlexibleBox::RepositionLogicalHeightDependentFlexItems(
     FlexLayoutAlgorithm& algorithm) {
   NOT_DESTROYED();
   Vector<FlexLine>& line_contexts = algorithm.FlexLines();
-  LayoutUnit cross_axis_start_edge = line_contexts.IsEmpty()
+  LayoutUnit cross_axis_start_edge = line_contexts.empty()
                                          ? LayoutUnit()
                                          : line_contexts[0].cross_axis_offset_;
   // If we have a single line flexbox, the line height is all the available
   // space. For flex-direction: row, this means we need to use the height, so
   // we do this after calling updateLogicalHeight.
-  if (!IsMultiline() && !line_contexts.IsEmpty()) {
+  if (!IsMultiline() && !line_contexts.empty()) {
     line_contexts[0].cross_axis_extent_ = CrossAxisContentExtent();
   }
 
@@ -1783,7 +1783,7 @@ void LayoutFlexibleBox::AlignFlexLines(FlexLayoutAlgorithm& algorithm) {
     return;
   }
 
-  if (IsMultiline() && !line_contexts.IsEmpty()) {
+  if (IsMultiline() && !line_contexts.empty()) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kFlexboxSingleLineAlignContent);
   }

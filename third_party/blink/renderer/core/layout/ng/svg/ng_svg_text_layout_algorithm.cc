@@ -546,7 +546,7 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
 void NGSvgTextLayoutAlgorithm::PositionOnPath(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   const auto& ranges = inline_node_.SvgTextPathRangeList();
-  if (ranges.IsEmpty())
+  if (ranges.empty())
     return;
 
   wtf_size_t range_index = 0;

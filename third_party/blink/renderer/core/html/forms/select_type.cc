@@ -768,7 +768,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
       }
     }
     // Mousedown didn't happen in this element.
-    if (last_on_change_selection_.IsEmpty())
+    if (last_on_change_selection_.empty())
       return false;
 
     if (HTMLOptionElement* option = EventTargetOption(*mouse_event)) {
@@ -1244,7 +1244,7 @@ void ListBoxSelectType::SaveListboxActiveSelection() {
 
 void ListBoxSelectType::HandleMouseRelease() {
   // We didn't start this click/drag on any options.
-  if (last_on_change_selection_.IsEmpty())
+  if (last_on_change_selection_.empty())
     return;
   ListBoxOnChange();
 }
@@ -1255,7 +1255,7 @@ void ListBoxSelectType::ListBoxOnChange() {
   // If the cached selection list is empty, or the size has changed, then fire
   // 'change' event, and return early.
   // FIXME: Why? This looks unreasonable.
-  if (last_on_change_selection_.IsEmpty() ||
+  if (last_on_change_selection_.empty() ||
       last_on_change_selection_.size() != items.size()) {
     select_->DispatchChangeEvent();
     return;

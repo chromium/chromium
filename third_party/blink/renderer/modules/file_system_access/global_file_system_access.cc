@@ -320,7 +320,7 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
   if (exception_state.HadException())
     return ScriptPromise();
 
-  if (accepts.IsEmpty() && options->excludeAcceptAllOption()) {
+  if (accepts.empty() && options->excludeAcceptAllOption()) {
     exception_state.ThrowTypeError("Need at least one accepted type");
     return ScriptPromise();
   }
@@ -384,7 +384,7 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   if (exception_state.HadException())
     return ScriptPromise();
 
-  if (accepts.IsEmpty() && options->excludeAcceptAllOption()) {
+  if (accepts.empty() && options->excludeAcceptAllOption()) {
     exception_state.ThrowTypeError("Need at least one accepted type");
     return ScriptPromise();
   }

@@ -86,7 +86,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   using KeyframeVector = HeapVector<Member<Keyframe>>;
   const KeyframeVector& GetFrames() const { return keyframes_; }
-  bool HasFrames() const { return !keyframes_.IsEmpty(); }
+  bool HasFrames() const { return !keyframes_.empty(); }
   template <class K>
   void SetFrames(HeapVector<K>& keyframes);
 

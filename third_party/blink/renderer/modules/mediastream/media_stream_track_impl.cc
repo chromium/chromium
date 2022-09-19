@@ -764,7 +764,7 @@ void MediaStreamTrackImpl::applyConstraintsImageCapture(
     ScriptPromiseResolver* resolver,
     const MediaTrackConstraints* constraints) {
   // |constraints| empty means "remove/clear all current constraints".
-  if (!constraints->hasAdvanced() || constraints->advanced().IsEmpty()) {
+  if (!constraints->hasAdvanced() || constraints->advanced().empty()) {
     image_capture_->ClearMediaTrackConstraints();
     resolver->Resolve();
   } else {

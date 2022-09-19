@@ -1033,7 +1033,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
       DCHECK(operands.size() == 1u || operands.size() == 2u);
       return operands[0] / operands[1];
     case CSSMathOperator::kMin: {
-      if (operands.IsEmpty())
+      if (operands.empty())
         return std::numeric_limits<double>::quiet_NaN();
       double minimum = operands[0];
       for (double operand : operands)
@@ -1041,7 +1041,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
       return minimum;
     }
     case CSSMathOperator::kMax: {
-      if (operands.IsEmpty())
+      if (operands.empty())
         return std::numeric_limits<double>::quiet_NaN();
       double maximum = operands[0];
       for (double operand : operands)

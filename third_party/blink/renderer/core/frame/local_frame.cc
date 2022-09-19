@@ -2741,7 +2741,7 @@ void LocalFrame::UpdateFaviconURL() {
       1 << static_cast<int>(
           mojom::blink::FaviconIconType::kTouchPrecomposedIcon);
   Vector<IconURL> icon_urls = GetDocument()->IconURLs(icon_types_mask);
-  if (icon_urls.IsEmpty())
+  if (icon_urls.empty())
     return;
 
   Vector<mojom::blink::FaviconURLPtr> urls;

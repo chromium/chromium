@@ -2747,7 +2747,7 @@ TEST_F(ViewportTest, viewportWarnings1) {
   Page* page = web_view_helper.GetWebView()->GetPage();
   PageScaleConstraints constraints = RunViewportTest(page, 320, 352);
 
-  EXPECT_TRUE(web_frame_client.messages.IsEmpty());
+  EXPECT_TRUE(web_frame_client.messages.empty());
 
   EXPECT_EQ(320, constraints.layout_size.width());
   EXPECT_EQ(352, constraints.layout_size.height());

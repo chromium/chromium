@@ -65,7 +65,7 @@ TEST_F(CustomElementRegistryTest,
   HeapVector<Member<Element>> elements;
   CollectCandidates(CustomElementDescriptor("a-a", "a-a"), &elements);
 
-  EXPECT_TRUE(elements.IsEmpty())
+  EXPECT_TRUE(elements.empty())
       << "no candidates should have been found, but we have "
       << elements.size();
   EXPECT_FALSE(elements.Contains(element))
@@ -85,7 +85,7 @@ TEST_F(CustomElementRegistryTest,
   HeapVector<Member<Element>> elements;
   CollectCandidates(CustomElementDescriptor("a-a", "a-a"), &elements);
 
-  EXPECT_TRUE(elements.IsEmpty())
+  EXPECT_TRUE(elements.empty())
       << "no candidates should have been found, but we have "
       << elements.size();
   EXPECT_FALSE(elements.Contains(element))

@@ -52,7 +52,7 @@ bool Serialize(ScriptState* script_state,
                const SharedStorageRunOperationMethodOptions* options,
                ExceptionState& exception_state,
                Vector<uint8_t>& output) {
-  DCHECK(output.IsEmpty());
+  DCHECK(output.empty());
 
   if (!options->hasData())
     return true;

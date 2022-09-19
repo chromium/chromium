@@ -216,7 +216,7 @@ CSSSelectorList CSSSelectorParser<UseArena>::ConsumeNestedSelectorList(
   if (inside_compound_pseudo_)
     return ConsumeCompoundSelectorList(range);
   CSSSelectorVector<UseArena> result = ConsumeComplexSelectorList(range);
-  if (result.IsEmpty())
+  if (result.empty())
     return {};
   return CSSSelectorList::AdoptSelectorVector<UseArena>(result);
 }
@@ -238,7 +238,7 @@ CSSSelectorParser<UseArena>::ConsumeForgivingComplexSelectorList(
       in_supports_parsing_) {
     CSSSelectorVector<UseArena> selector_list =
         ConsumeComplexSelectorList(range);
-    if (selector_list.IsEmpty())
+    if (selector_list.empty())
       return absl::nullopt;
     return CSSSelectorList::AdoptSelectorVector<UseArena>(selector_list);
   }
@@ -256,7 +256,7 @@ CSSSelectorParser<UseArena>::ConsumeForgivingComplexSelectorList(
     range.ConsumeIncludingWhitespace();
   }
 
-  if (selector_list.IsEmpty())
+  if (selector_list.empty())
     return CSSSelectorList();
 
   return CSSSelectorList::AdoptSelectorVector<UseArena>(selector_list);
@@ -288,7 +288,7 @@ CSSSelectorParser<UseArena>::ConsumeForgivingCompoundSelectorList(
     range.ConsumeIncludingWhitespace();
   }
 
-  if (selector_list.IsEmpty())
+  if (selector_list.empty())
     return CSSSelectorList();
 
   return CSSSelectorList::AdoptSelectorVector<UseArena>(selector_list);
@@ -324,7 +324,7 @@ CSSSelectorParser<UseArena>::ConsumeForgivingRelativeSelectorList(
   // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
-      selector_list.IsEmpty()) {
+      selector_list.empty()) {
     // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
     // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
     // Should return empty CSSSelectorList. (return CSSSelectorList())
@@ -358,7 +358,7 @@ CSSSelectorList CSSSelectorParser<UseArena>::ConsumeRelativeSelectorList(
   // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
-      selector_list.IsEmpty()) {
+      selector_list.empty()) {
     return CSSSelectorList();
   }
 

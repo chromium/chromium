@@ -163,7 +163,7 @@ class PLATFORM_EXPORT PNGImageReader final {
   // Returns false on a fatal error.
   bool CheckSequenceNumber(const png_byte* position);
   bool FirstFrameFullyReceived() const {
-    return !frame_info_.IsEmpty() &&
+    return !frame_info_.empty() &&
            frame_info_[0].byte_length != kFirstFrameIndicator;
   }
 };

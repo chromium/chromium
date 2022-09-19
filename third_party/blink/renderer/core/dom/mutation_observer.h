@@ -114,7 +114,7 @@ class CORE_EXPORT MutationObserver final
 
   HeapHashSet<Member<Node>> GetObservedNodes() const;
 
-  bool HasPendingActivity() const override { return !records_.IsEmpty(); }
+  bool HasPendingActivity() const override { return !records_.empty(); }
 
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) final;
   void ContextDestroyed() final {}

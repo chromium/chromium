@@ -48,7 +48,7 @@ inline bool HasSameAttributes(
 ShareableElementData*
 ElementDataCache::CachedShareableElementDataWithAttributes(
     const Vector<Attribute, kAttributePrealloc>& attributes) {
-  DCHECK(!attributes.IsEmpty());
+  DCHECK(!attributes.empty());
 
   ShareableElementDataCache::ValueType* it =
       shareable_element_data_cache_.insert(AttributeHash(attributes), nullptr)

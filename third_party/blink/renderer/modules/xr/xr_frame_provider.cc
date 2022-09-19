@@ -488,7 +488,7 @@ void XRFrameProvider::ProcessScheduledFrame(
       DCHECK(buffer_mailbox_holder_);
     }
 #endif
-    if (frame_data && !frame_data->views.IsEmpty()) {
+    if (frame_data && !frame_data->views.empty()) {
       immersive_session_->UpdateViews(frame_data->views);
     }
 

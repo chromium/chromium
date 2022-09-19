@@ -77,7 +77,7 @@ TEST_P(ValidationMessageOverlayDelegateTest,
   HeapVector<Member<Animation>> animations =
       internal_document->GetDocumentAnimations().getAnimations(
           *internal_document);
-  ASSERT_FALSE(animations.IsEmpty());
+  ASSERT_FALSE(animations.empty());
 
   for (const auto& animation : animations) {
     EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());

@@ -12,7 +12,7 @@ namespace blink {
 void SortedDocumentMarkerListEditor::AddMarkerWithoutMergingOverlapping(
     MarkerList* list,
     DocumentMarker* marker) {
-  if (list->IsEmpty() || list->back()->EndOffset() <= marker->StartOffset()) {
+  if (list->empty() || list->back()->EndOffset() <= marker->StartOffset()) {
     list->push_back(marker);
     return;
   }

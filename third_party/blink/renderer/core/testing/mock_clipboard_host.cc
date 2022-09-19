@@ -49,7 +49,7 @@ Vector<String> MockClipboardHost::ReadStandardFormatNames() {
     types.push_back("text/html");
   if (!svg_text_.IsEmpty())
     types.push_back("image/svg+xml");
-  if (!png_.IsEmpty())
+  if (!png_.empty())
     types.push_back("image/png");
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.key));

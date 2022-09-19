@@ -305,7 +305,7 @@ void InteractiveDetector::HandleForInputDelay(
   // last element exists and this is nullopt value, the first input has not come
   // yet after the last time when the page is restored from the cache.
   if (!page_event_times_.first_input_delays_after_back_forward_cache_restore
-           .IsEmpty() &&
+           .empty() &&
       !page_event_times_.first_input_delays_after_back_forward_cache_restore
            .back()
            .has_value()) {
@@ -473,7 +473,7 @@ void InteractiveDetector::AddCurrentlyActiveNetworkQuietInterval(
 }
 
 void InteractiveDetector::RemoveCurrentlyActiveNetworkQuietInterval() {
-  if (!network_quiet_windows_.IsEmpty() &&
+  if (!network_quiet_windows_.empty() &&
       network_quiet_windows_.back().Low() ==
           active_network_quiet_window_start_) {
     network_quiet_windows_.pop_back();

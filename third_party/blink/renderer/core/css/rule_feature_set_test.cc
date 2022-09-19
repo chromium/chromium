@@ -48,7 +48,7 @@ class RuleFeatureSetTest : public testing::Test {
       CSSSelectorVector</*UseArena=*/true>& selector_vector,
       const StyleScope* style_scope,
       RuleFeatureSet& set) {
-    if (selector_vector.IsEmpty()) {
+    if (selector_vector.empty()) {
       return RuleFeatureSet::SelectorPreMatch::kSelectorNeverMatches;
     }
 

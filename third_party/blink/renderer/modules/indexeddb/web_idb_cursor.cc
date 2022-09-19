@@ -101,7 +101,7 @@ void WebIDBCursor::CursorContinue(const IDBKey* key,
     // No key(s), so this would qualify for a prefetch.
     ++continue_count_;
 
-    if (!prefetch_keys_.IsEmpty()) {
+    if (!prefetch_keys_.empty()) {
       // We have a prefetch cache, so serve the result from that.
       CachedContinue(callbacks.get());
       return;
@@ -293,7 +293,7 @@ void WebIDBCursor::ResetPrefetchCache() {
   continue_count_ = 0;
   prefetch_amount_ = kMinPrefetchAmount;
 
-  if (prefetch_keys_.IsEmpty()) {
+  if (prefetch_keys_.empty()) {
     // No prefetch cache, so no need to reset the cursor in the back-end.
     return;
   }

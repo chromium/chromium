@@ -64,7 +64,7 @@ class CORE_EXPORT CascadeInterpolations {
     entries_.push_back(Entry{map, origin});
   }
 
-  bool IsEmpty() const { return GetEntries().IsEmpty(); }
+  bool IsEmpty() const { return GetEntries().empty(); }
 
   const Vector<Entry, 4>& GetEntries() const {
     using EntryVector = Vector<Entry, 4>;

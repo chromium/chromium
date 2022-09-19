@@ -99,7 +99,7 @@ class CORE_EXPORT SelectorFilter {
   void PopParent(Element& parent);
 
   bool ParentStackIsConsistent(const ContainerNode* parent_node) const {
-    return !parent_stack_.IsEmpty() &&
+    return !parent_stack_.empty() &&
            parent_stack_.back().element == parent_node;
   }
 

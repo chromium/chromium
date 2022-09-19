@@ -396,7 +396,7 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
       continue;
 
     // Close up the ancestors.
-    while (!ancestors_to_close.IsEmpty()) {
+    while (!ancestors_to_close.empty()) {
       ContainerNode* ancestor = ancestors_to_close.back();
       DCHECK(ancestor);
       if (next && next != past_end &&

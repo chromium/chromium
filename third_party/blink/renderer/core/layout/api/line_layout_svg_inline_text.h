@@ -66,7 +66,7 @@ class SVGInlineTextMetricsIterator {
     DCHECK(text_line_layout);
     if (!text_line_layout_ || text_line_layout_ != text_line_layout) {
       Reset(text_line_layout);
-      DCHECK(!MetricsList().IsEmpty());
+      DCHECK(!MetricsList().empty());
     }
 
     if (character_offset_ == start_character_offset)

@@ -1003,7 +1003,7 @@ MediaTrackConstraints* ConvertConstraints(const MediaConstraints& input) {
     ConvertConstraintSet(it, NakedValueDisposition::kTreatAsExact, element);
     advanced_vector.push_back(element);
   }
-  if (!advanced_vector.IsEmpty())
+  if (!advanced_vector.empty())
     output->setAdvanced(advanced_vector);
 
   return output;

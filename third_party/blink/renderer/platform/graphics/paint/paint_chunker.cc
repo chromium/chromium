@@ -17,7 +17,7 @@ void PaintChunker::ResetChunks(Vector<PaintChunk>* chunks) {
   }
   chunks_ = chunks;
 #if DCHECK_IS_ON()
-  DCHECK(!chunks || chunks->IsEmpty());
+  DCHECK(!chunks || chunks->empty());
   DCHECK(IsInInitialState());
 #endif
 }
@@ -29,7 +29,7 @@ bool PaintChunker::IsInInitialState() const {
   DCHECK(candidate_background_color_ == Color::kTransparent);
   DCHECK_EQ(candidate_background_area_, 0u);
   DCHECK(will_force_new_chunk_);
-  DCHECK(!chunks_ || chunks_->IsEmpty());
+  DCHECK(!chunks_ || chunks_->empty());
   return true;
 }
 #endif
@@ -78,7 +78,7 @@ void PaintChunker::AppendByMoving(PaintChunk&& chunk) {
   DCHECK(chunks_);
   FinalizeLastChunkProperties();
   wtf_size_t next_chunk_begin_index =
-      chunks_->IsEmpty() ? 0 : chunks_->back().end_index;
+      chunks_->empty() ? 0 : chunks_->back().end_index;
   chunks_->emplace_back(next_chunk_begin_index, std::move(chunk));
 }
 
@@ -99,7 +99,7 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
       next_chunk_id_.emplace(id, client);
     }
     FinalizeLastChunkProperties();
-    wtf_size_t begin = chunks_->IsEmpty() ? 0 : chunks_->back().end_index;
+    wtf_size_t begin = chunks_->empty() ? 0 : chunks_->back().end_index;
     MarkClientForValidation(next_chunk_id_->second);
     chunks_->emplace_back(begin, begin, next_chunk_id_->second,
                           next_chunk_id_->first, current_properties_,
@@ -210,7 +210,7 @@ void PaintChunker::AddSelectionToCurrentChunk(
     absl::optional<PaintedSelectionBound> end) {
   // We should have painted the selection when calling this method.
   DCHECK(chunks_);
-  DCHECK(!chunks_->IsEmpty());
+  DCHECK(!chunks_->empty());
 
   auto& chunk = chunks_->back();
 
@@ -240,7 +240,7 @@ void PaintChunker::AddSelectionToCurrentChunk(
 
 void PaintChunker::RecordAnySelectionWasPainted() {
   DCHECK(chunks_);
-  DCHECK(!chunks_->IsEmpty());
+  DCHECK(!chunks_->empty());
 
   auto& chunk = chunks_->back();
   LayerSelectionData& selection_data = chunk.EnsureLayerSelectionData();
@@ -308,7 +308,7 @@ void PaintChunker::ProcessBackgroundColorCandidate(
 
 void PaintChunker::FinalizeLastChunkProperties() {
   DCHECK(chunks_);
-  if (chunks_->IsEmpty() || chunks_->back().is_moved_from_cached_subsequence)
+  if (chunks_->empty() || chunks_->back().is_moved_from_cached_subsequence)
     return;
 
   auto& chunk = chunks_->back();

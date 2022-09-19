@@ -131,7 +131,7 @@ static bool AppendToVector(const TransformOrigin& transform_origin,
 bool LengthListPropertyFunctions::GetLengthList(const CSSProperty& property,
                                                 const ComputedStyle& style,
                                                 Vector<Length>& result) {
-  DCHECK(result.IsEmpty());
+  DCHECK(result.empty());
 
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeDasharray: {
@@ -207,7 +207,7 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeDasharray:
       style.SetStrokeDashArray(
-          length_list.IsEmpty()
+          length_list.empty()
               ? nullptr
               : base::MakeRefCounted<SVGDashArray>(std::move(length_list)));
       return;

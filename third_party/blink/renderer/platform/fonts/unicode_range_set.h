@@ -65,7 +65,7 @@ class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
 
   bool Contains(UChar32) const;
   bool IntersectsWith(const String&) const;
-  bool IsEntireRange() const { return ranges_.IsEmpty(); }
+  bool IsEntireRange() const { return ranges_.empty(); }
   wtf_size_t size() const { return ranges_.size(); }
   const UnicodeRange& RangeAt(wtf_size_t i) const { return ranges_[i]; }
   bool operator==(const UnicodeRangeSet& other) const;

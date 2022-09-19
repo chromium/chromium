@@ -96,7 +96,7 @@ void MarkerPathSegmentProcessor::EmitSegment(
   if (segment.command == kPathSegArcAbs) {
     // Decompose and then pass/emit a synthesized cubic with matching tangents.
     Vector<PathSegmentData> decomposed_arc_curves = DecomposeArc(segment);
-    if (decomposed_arc_curves.IsEmpty()) {
+    if (decomposed_arc_curves.empty()) {
       segment.command = kPathSegLineToAbs;
     } else {
       // Use the first control point from the first curve and the second and
@@ -252,7 +252,7 @@ void SVGMarkerDataBuilder::UpdateFromPathElement(const PathElement& element) {
 
   // Record the angle for the previous element.
   bool starts_new_subpath = element.type == kPathElementMoveToPoint;
-  if (!positions_.IsEmpty())
+  if (!positions_.empty())
     UpdateAngle(starts_new_subpath);
 
   // Update the incoming slope for this marker position.
@@ -275,12 +275,12 @@ void SVGMarkerDataBuilder::UpdateFromPathElement(const PathElement& element) {
   // Output a marker for this element. The angle will be computed at a later
   // stage. Similarly for 'end' markers the marker type will be updated at a
   // later stage.
-  SVGMarkerType marker_type = positions_.IsEmpty() ? kStartMarker : kMidMarker;
+  SVGMarkerType marker_type = positions_.empty() ? kStartMarker : kMidMarker;
   positions_.push_back(MarkerPosition(marker_type, origin_, 0));
 }
 
 void SVGMarkerDataBuilder::Flush() {
-  if (positions_.IsEmpty())
+  if (positions_.empty())
     return;
   const bool kEndsSubpath = true;
   UpdateAngle(kEndsSubpath);

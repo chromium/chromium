@@ -10213,7 +10213,7 @@ TEST_F(WebFrameTest, CrossDomainAccessErrorsUseCallingWindow) {
   popup_view->MainFrameImpl()->ExecuteScript(WebScriptSource(
       "try { opener.frames[1].location.href='data:text/html,foo'; } catch (e) "
       "{}"));
-  EXPECT_TRUE(web_frame_client.messages.IsEmpty());
+  EXPECT_TRUE(web_frame_client.messages.empty());
   ASSERT_EQ(1u, popup_web_frame_client.messages.size());
   EXPECT_TRUE(std::string::npos !=
               popup_web_frame_client.messages[0].text.Utf8().find(
@@ -10224,7 +10224,7 @@ TEST_F(WebFrameTest, CrossDomainAccessErrorsUseCallingWindow) {
   popup_view->MainFrameImpl()->ExecuteScript(
       WebScriptSource("opener.document.querySelectorAll('iframe')[1].src='"
                       "javascript:alert()'"));
-  EXPECT_TRUE(web_frame_client.messages.IsEmpty());
+  EXPECT_TRUE(web_frame_client.messages.empty());
   ASSERT_EQ(2u, popup_web_frame_client.messages.size());
   EXPECT_TRUE(
       std::string::npos !=
@@ -11076,7 +11076,7 @@ TEST_F(WebFrameTest, CopyImageDocument) {
       document->GetFrame()->GetSystemClipboard();
   ASSERT_TRUE(system_clipboard);
 
-  EXPECT_TRUE(system_clipboard->ReadAvailableTypes().IsEmpty());
+  EXPECT_TRUE(system_clipboard->ReadAvailableTypes().empty());
 
   bool result = web_frame->ExecuteCommand("Copy");
   test::RunPendingTasks();
@@ -11121,7 +11121,7 @@ TEST_F(WebFrameTest, CopyTextInImageDocument) {
       document->GetFrame()->GetSystemClipboard();
   ASSERT_TRUE(system_clipboard);
 
-  EXPECT_TRUE(system_clipboard->ReadAvailableTypes().IsEmpty());
+  EXPECT_TRUE(system_clipboard->ReadAvailableTypes().empty());
 
   bool result = web_frame->ExecuteCommand("Copy");
   test::RunPendingTasks();

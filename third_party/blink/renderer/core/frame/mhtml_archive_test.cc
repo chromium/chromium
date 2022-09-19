@@ -170,7 +170,7 @@ class MHTMLArchiveTest : public testing::Test {
       // Validate the generated MHTML.
       MHTMLParser parser(
           SharedBuffer::Create(mhtml_data_.data(), mhtml_data_.size()));
-      EXPECT_FALSE(parser.ParseArchive().IsEmpty())
+      EXPECT_FALSE(parser.ParseArchive().empty())
           << "Generated MHTML is malformed";
     }
   }

@@ -775,7 +775,7 @@ void RuleFeatureSet::UpdateRuleSetInvalidation(
     return;
   if (features.invalidation_flags.WholeSubtreeInvalid() ||
       (!features.invalidation_flags.InvalidateCustomPseudo() &&
-       features.tag_names.IsEmpty())) {
+       features.tag_names.empty())) {
     metadata_.needs_full_recalc_for_rule_set_invalidation = true;
     return;
   }
@@ -2048,14 +2048,14 @@ void RuleFeatureSet::InvalidationSetFeatures::NarrowToFeatures(
 }
 
 bool RuleFeatureSet::InvalidationSetFeatures::HasFeatures() const {
-  return !classes.IsEmpty() || !attributes.IsEmpty() || !ids.IsEmpty() ||
-         !tag_names.IsEmpty() || !emitted_tag_names.IsEmpty() ||
+  return !classes.empty() || !attributes.empty() || !ids.empty() ||
+         !tag_names.empty() || !emitted_tag_names.empty() ||
          invalidation_flags.InvalidateCustomPseudo() ||
          invalidation_flags.InvalidatesParts();
 }
 
 bool RuleFeatureSet::InvalidationSetFeatures::HasIdClassOrAttribute() const {
-  return !classes.IsEmpty() || !attributes.IsEmpty() || !ids.IsEmpty();
+  return !classes.empty() || !attributes.empty() || !ids.empty();
 }
 
 String RuleFeatureSet::ToString() const {

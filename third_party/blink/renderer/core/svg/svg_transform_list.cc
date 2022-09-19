@@ -78,7 +78,7 @@ SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
   const size_t optional = kOptionalValuesForType[static_cast<int>(type)];
   const size_t required_with_optional = required + optional;
   DCHECK_LE(required_with_optional, kMaxTransformArguments);
-  DCHECK(arguments.IsEmpty());
+  DCHECK(arguments.empty());
 
   bool trailing_delimiter = false;
 

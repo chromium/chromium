@@ -85,7 +85,7 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
     return;
   }
 
-  if (!has_more_entries_ || !entries_.IsEmpty()) {
+  if (!has_more_entries_ || !entries_.empty()) {
     EntryHeapVector* entries =
         MakeGarbageCollected<EntryHeapVector>(std::move(entries_));
     DOMFileSystem::ScheduleCallback(

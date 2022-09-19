@@ -56,11 +56,11 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
 
   Node* FirstAssignedNode() const {
     auto& nodes = AssignedNodes();
-    return nodes.IsEmpty() ? nullptr : nodes.front().Get();
+    return nodes.empty() ? nullptr : nodes.front().Get();
   }
   Node* LastAssignedNode() const {
     auto& nodes = AssignedNodes();
-    return nodes.IsEmpty() ? nullptr : nodes.back().Get();
+    return nodes.empty() ? nullptr : nodes.back().Get();
   }
 
   Node* AssignedNodeNextTo(const Node&) const;
@@ -95,7 +95,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   // Returns true if the slot has assigned nodes, without doing assignment
   // recalc. Used by FlatTreeParentForChildDirty() which needs to avoid doing
   // slot assignments while marking the tree style-dirty.
-  bool HasAssignedNodesNoRecalc() const { return !assigned_nodes_.IsEmpty(); }
+  bool HasAssignedNodesNoRecalc() const { return !assigned_nodes_.empty(); }
 
   bool SupportsAssignment() const { return IsInShadowTree(); }
 

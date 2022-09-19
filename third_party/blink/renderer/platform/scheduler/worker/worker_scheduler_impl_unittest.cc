@@ -161,7 +161,7 @@ TEST_F(WorkerSchedulerImplTest, TestPostTasks) {
   PostTestTask(&run_order, "T4", TaskType::kInternalTest);
   PostTestTask(&run_order, "T5", TaskType::kInternalTest);
   RunUntilIdle();
-  EXPECT_TRUE(run_order.IsEmpty());
+  EXPECT_TRUE(run_order.empty());
 
   worker_scheduler_.reset();
 }

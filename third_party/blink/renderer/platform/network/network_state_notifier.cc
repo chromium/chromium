@@ -323,7 +323,7 @@ void NetworkStateNotifier::NotifyObserversOnTaskRunner(
 
   observer_list->iterating = false;
 
-  if (!observer_list->zeroed_observers.IsEmpty())
+  if (!observer_list->zeroed_observers.empty())
     CollectZeroedObservers(*map, observer_list, std::move(task_runner));
 }
 
@@ -378,7 +378,7 @@ void NetworkStateNotifier::RemoveObserverFromMap(
     observer_list->zeroed_observers.push_back(index);
   }
 
-  if (!observer_list->iterating && !observer_list->zeroed_observers.IsEmpty())
+  if (!observer_list->iterating && !observer_list->zeroed_observers.empty())
     CollectZeroedObservers(map, observer_list, std::move(task_runner));
 }
 
@@ -411,7 +411,7 @@ void NetworkStateNotifier::CollectZeroedObservers(
 
   list->zeroed_observers.clear();
 
-  if (list->observers.IsEmpty()) {
+  if (list->observers.empty()) {
     base::AutoLock locker(lock_);
     map.erase(task_runner);  // deletes list
   }

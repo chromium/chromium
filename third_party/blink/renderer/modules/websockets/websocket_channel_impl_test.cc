@@ -434,7 +434,7 @@ TEST_F(WebSocketChannelImplTest, ConnectSuccess) {
                   .IsEquivalent(GetDocument().SiteForCookies()));
 
   ASSERT_TRUE(Channel()->Connect(KURL("ws://localhost/"), "x"));
-  EXPECT_TRUE(connector_.GetConnectArgs().IsEmpty());
+  EXPECT_TRUE(connector_.GetConnectArgs().empty());
 
   test::RunPendingTasks();
   auto connect_args = connector_.TakeConnectArgs();
@@ -484,7 +484,7 @@ TEST_F(WebSocketChannelImplTest, MojoConnectionErrorDuringHandshake) {
   }
 
   ASSERT_TRUE(Channel()->Connect(KURL("ws://localhost/"), "x"));
-  EXPECT_TRUE(connector_.GetConnectArgs().IsEmpty());
+  EXPECT_TRUE(connector_.GetConnectArgs().empty());
 
   test::RunPendingTasks();
   auto connect_args = connector_.TakeConnectArgs();

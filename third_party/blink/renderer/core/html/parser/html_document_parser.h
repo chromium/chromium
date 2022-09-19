@@ -221,7 +221,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   bool HasPendingPreloads() {
     base::AutoLock lock(pending_preload_lock_);
-    return !pending_preload_data_.IsEmpty();
+    return !pending_preload_data_.empty();
   }
 
   void CreateTokenProducer(

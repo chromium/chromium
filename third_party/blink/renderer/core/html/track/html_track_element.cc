@@ -285,7 +285,7 @@ void HTMLTrackElement::NewCuesAvailable(TextTrackLoader* loader) {
   HeapVector<Member<CSSStyleSheet>> new_sheets;
   loader_->GetNewStyleSheets(new_sheets);
 
-  if (!new_sheets.IsEmpty()) {
+  if (!new_sheets.empty()) {
     track_->SetCSSStyleSheets(std::move(new_sheets));
   }
 

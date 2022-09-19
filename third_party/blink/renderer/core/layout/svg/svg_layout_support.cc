@@ -471,7 +471,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
 
   // If a LayoutSVGText was found and there are no potentially closer sub-trees,
   // just return |closestText|.
-  if (closest_text.layout_object && candidates.IsEmpty())
+  if (closest_text.layout_object && candidates.empty())
     return closest_text;
 
   std::stable_sort(candidates.begin(), candidates.end(),

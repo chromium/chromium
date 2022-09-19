@@ -335,7 +335,7 @@ void V8PerIsolateData::RunEndOfScopeTasks() {
   tasks.swap(end_of_scope_tasks_);
   for (auto& task : tasks)
     std::move(task).Run();
-  DCHECK(end_of_scope_tasks_.IsEmpty());
+  DCHECK(end_of_scope_tasks_.empty());
 }
 
 void V8PerIsolateData::ClearEndOfScopeTasks() {

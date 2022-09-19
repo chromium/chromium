@@ -27,7 +27,7 @@ CSSNumericValueType NumericTypeFromUnitMap(
 }
 
 bool CanCreateNumericTypeFromSumValue(const CSSNumericSumValue& sum) {
-  DCHECK(!sum.terms.IsEmpty());
+  DCHECK(!sum.terms.empty());
 
   const auto first_type = NumericTypeFromUnitMap(sum.terms[0].units);
   return base::ranges::all_of(
@@ -51,7 +51,7 @@ bool operator==(const CSSNumericSumValue::Term& a, const UnitMapComparator& b) {
 
 CSSMathSum* CSSMathSum::Create(const HeapVector<Member<V8CSSNumberish>>& args,
                                ExceptionState& exception_state) {
-  if (args.IsEmpty()) {
+  if (args.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Arguments can't be empty");
     return nullptr;
@@ -117,7 +117,7 @@ void CSSMathSum::BuildCSSText(Nested nested,
     result.Append(nested == Nested::kYes ? "(" : "calc(");
 
   const auto& values = NumericValues();
-  DCHECK(!values.IsEmpty());
+  DCHECK(!values.empty());
   values[0]->BuildCSSText(Nested::kYes, ParenLess::kNo, result);
 
   for (wtf_size_t i = 1; i < values.size(); i++) {

@@ -1129,7 +1129,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
             static_cast<NGGridTrackRepeater::RepeatType>(
                 computed_grid_track_list.auto_repeat_type));
       }
-      DCHECK(auto_repeat_track_sizes.IsEmpty());
+      DCHECK(auto_repeat_track_sizes.empty());
       auto_repeat_track_sizes = std::move(repeated_track_sizes);
       computed_grid_track_list.auto_repeat_insertion_point =
           current_named_grid_line++;
@@ -1176,8 +1176,8 @@ void StyleBuilderConverter::ConvertGridTrackList(
   // Unless the axis is subgridded, the parser should have rejected any
   // <track-list> without any <track-size> as this is not conformant to
   // the syntax.
-  DCHECK(!track_sizes.LegacyTrackList().IsEmpty() ||
-         !auto_repeat_track_sizes.IsEmpty() ||
+  DCHECK(!track_sizes.LegacyTrackList().empty() ||
+         !auto_repeat_track_sizes.empty() ||
          (computed_grid_track_list.axis_type == GridAxisType::kSubgriddedAxis));
 }
 

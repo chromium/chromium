@@ -653,7 +653,7 @@ void TextFinder::ResetMatchCount() {
 }
 
 void TextFinder::ClearFindMatchesCache() {
-  if (!find_matches_cache_.IsEmpty())
+  if (!find_matches_cache_.empty())
     ++find_match_markers_version_;
 
   find_matches_cache_.clear();
@@ -663,7 +663,7 @@ void TextFinder::ClearFindMatchesCache() {
 void TextFinder::InvalidateFindMatchRects() {
   // Increase version number is required to trigger FindMatchRects update when
   // next find.
-  if (!find_matches_cache_.IsEmpty())
+  if (!find_matches_cache_.empty())
     ++find_match_markers_version_;
 
   // For subframes, we need to recalculate the FindMatchRects when the

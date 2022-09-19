@@ -56,8 +56,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
     }
   }
 
-  if (!requires_descendant_invalidation &&
-      invalidation_lists.siblings.IsEmpty())
+  if (!requires_descendant_invalidation && invalidation_lists.siblings.empty())
     return;
 
   // For SiblingInvalidationSets we can skip scheduling if there is no
@@ -95,9 +94,9 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
 void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
     const InvalidationLists& invalidation_lists,
     ContainerNode& scheduling_parent) {
-  DCHECK(invalidation_lists.descendants.IsEmpty());
+  DCHECK(invalidation_lists.descendants.empty());
 
-  if (invalidation_lists.siblings.IsEmpty())
+  if (invalidation_lists.siblings.empty())
     return;
 
   NodeInvalidationSets& pending_invalidations =
@@ -141,7 +140,7 @@ void PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants(
   auto pending_invalidations_iterator =
       pending_invalidation_map_.find(&element);
   if (pending_invalidations_iterator == pending_invalidation_map_.end() ||
-      pending_invalidations_iterator->value.Siblings().IsEmpty())
+      pending_invalidations_iterator->value.Siblings().empty())
     return;
   NodeInvalidationSets& pending_invalidations =
       pending_invalidations_iterator->value;

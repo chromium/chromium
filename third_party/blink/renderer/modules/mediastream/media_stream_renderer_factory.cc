@@ -67,7 +67,7 @@ MediaStreamRendererFactory::GetVideoRenderer(
 
   MediaStreamDescriptor& descriptor = *web_stream;
   auto video_components = descriptor.VideoComponents();
-  if (video_components.IsEmpty() ||
+  if (video_components.empty() ||
       !MediaStreamVideoTrack::GetTrack(
           WebMediaStreamTrack(video_components[0].Get()))) {
     return nullptr;
@@ -91,13 +91,13 @@ MediaStreamRendererFactory::GetAudioRenderer(
 
   MediaStreamDescriptor& descriptor = *web_stream;
   auto audio_components = descriptor.AudioComponents();
-  if (audio_components.IsEmpty()) {
+  if (audio_components.empty()) {
     // The stream contains no audio tracks. Log error message if the stream
     // contains no video tracks either. Without this extra check, video-only
     // streams would generate error messages at this stage and we want to
     // avoid that.
     auto video_tracks = descriptor.VideoComponents();
-    if (video_tracks.IsEmpty()) {
+    if (video_tracks.empty()) {
       SendLogMessage(String::Format(
           "%s => (ERROR: no audio tracks in media stream)", __func__));
     }

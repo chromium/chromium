@@ -75,11 +75,11 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     ColumnBalancingInfo() = default;
 
     bool HasOutOfFlowFragmentainerDescendants() const {
-      return !out_of_flow_fragmentainer_descendants.IsEmpty();
+      return !out_of_flow_fragmentainer_descendants.empty();
     }
     void SwapOutOfFlowFragmentainerDescendants(
         HeapVector<NGLogicalOOFNodeForFragmentation>* descendants) {
-      DCHECK(descendants->IsEmpty());
+      DCHECK(descendants->empty());
       std::swap(out_of_flow_fragmentainer_descendants, *descendants);
     }
 

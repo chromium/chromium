@@ -133,7 +133,7 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
 void AnchorElementMetricsSender::UpdateVisibleAnchors(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
-  DCHECK(!entries.IsEmpty());
+  DCHECK(!entries.empty());
   if (!AssociateInterface()) {
     return;
   }
@@ -222,10 +222,10 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
   // during the next layout will never be reported, unless they are re-inserted
   // into the DOM later or if they enter the viewport.
   anchor_elements_to_report_.clear();
-  if (!metrics.IsEmpty()) {
+  if (!metrics.empty()) {
     metrics_host_->ReportNewAnchorElements(std::move(metrics));
   }
-  if (!entered_viewport_messages_.IsEmpty()) {
+  if (!entered_viewport_messages_.empty()) {
     metrics_host_->ReportAnchorElementsEnteredViewport(
         std::move(entered_viewport_messages_));
     entered_viewport_messages_.clear();

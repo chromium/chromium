@@ -139,7 +139,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
     entry->setNetworkRequestId(message->RequestIdentifier());
   }
 
-  if (v8_session_ && message->Frame() && !message->Nodes().IsEmpty()) {
+  if (v8_session_ && message->Frame() && !message->Nodes().empty()) {
     ScriptForbiddenScope::AllowUserAgentScript allow_script;
     auto remote_objects = std::make_unique<
         protocol::Array<v8_inspector::protocol::Runtime::API::RemoteObject>>();

@@ -1101,7 +1101,7 @@ DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
       LayoutUnit item_end = is_horizontal ? item_rect.X() + item_rect.Width()
                                           : item_rect.Y() + item_rect.Height();
 
-      if (flex_lines.IsEmpty() ||
+      if (flex_lines.empty() ||
           (is_reverse ? item_end > progression : item_start < progression)) {
         flex_lines.emplace_back();
       }

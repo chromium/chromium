@@ -189,7 +189,7 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
 }
 
 void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
-  DCHECK(task_queue_.IsEmpty());
+  DCHECK(task_queue_.empty());
   if (task.operation == HTMLConstructionSiteTask::kInsert)
     return ExecuteInsertTask(task);
 
@@ -402,7 +402,7 @@ void HTMLConstructionSite::InitFragmentParsing(DocumentFragment* fragment,
 HTMLConstructionSite::~HTMLConstructionSite() {
   // Depending on why we're being destroyed it might be OK to forget queued
   // tasks, but currently we don't expect to.
-  DCHECK(task_queue_.IsEmpty());
+  DCHECK(task_queue_.empty());
   // Currently we assume that text will never be the last token in the document
   // and that we'll always queue some additional task to cause it to flush.
   DCHECK(pending_text_.IsEmpty());
@@ -454,7 +454,7 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
 void HTMLConstructionSite::MergeAttributesFromTokenIntoElement(
     AtomicHTMLToken* token,
     Element* element) {
-  if (token->Attributes().IsEmpty())
+  if (token->Attributes().empty())
     return;
 
   for (const auto& token_attribute : token->Attributes()) {
@@ -639,7 +639,7 @@ void HTMLConstructionSite::ProcessEndOfFile() {
 void HTMLConstructionSite::FinishedParsing() {
   // We shouldn't have any queued tasks but we might have pending text which we
   // need to promote to tasks and execute.
-  DCHECK(task_queue_.IsEmpty());
+  DCHECK(task_queue_.empty());
   Flush(kFlushAlways);
   document_->FinishedParsing();
 }

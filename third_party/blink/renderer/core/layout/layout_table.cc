@@ -1318,7 +1318,7 @@ LayoutTableCol* LayoutTable::FirstColumn() const {
 void LayoutTable::UpdateColumnCache() const {
   NOT_DESTROYED();
   DCHECK(has_col_elements_);
-  DCHECK(column_layout_objects_.IsEmpty());
+  DCHECK(column_layout_objects_.empty());
   DCHECK(!column_layout_objects_valid_);
 
   for (LayoutTableCol* column_layout_object = FirstColumn();
@@ -1715,7 +1715,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
   // top/bottom are supported.  When we actually support left/right and stop
   // mapping them to top/bottom, we might have to hack this code first
   // (depending on what order we do these bug fixes in).
-  if (!captions_.IsEmpty()) {
+  if (!captions_.empty()) {
     if (StyleRef().IsHorizontalWritingMode()) {
       rect.size.height = Size().Height();
       rect.offset.top = location.top;

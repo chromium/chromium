@@ -462,7 +462,7 @@ Response InspectorLayerTreeAgent::replaySnapshot(const String& snapshot_id,
     return response;
   auto png_data = snapshot->Replay(from_step.fromMaybe(0), to_step.fromMaybe(0),
                                    scale.fromMaybe(1.0));
-  if (png_data.IsEmpty())
+  if (png_data.empty())
     return Response::ServerError("Image encoding failed");
   *data_url = "data:image/png;base64," + Base64Encode(png_data);
   return Response::Success();

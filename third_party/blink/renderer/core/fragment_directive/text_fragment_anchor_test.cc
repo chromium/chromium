@@ -220,7 +220,7 @@ TEST_F(TextFragmentAnchorTest, EmptyText) {
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
-  EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
+  EXPECT_TRUE(GetDocument().Markers().Markers().empty());
 }
 
 // Make sure a non-matching string doesn't cause scroll and the fragment is
@@ -256,7 +256,7 @@ TEST_F(TextFragmentAnchorTest, NonMatchingString) {
   Compositor().BeginFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
-  EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
+  EXPECT_TRUE(GetDocument().Markers().Markers().empty());
 }
 
 // Ensure multiple matches will scroll the first into view.
@@ -483,7 +483,7 @@ TEST_F(TextFragmentAnchorTest, MultipleNonMatchingStrings) {
   Compositor().BeginFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
-  EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
+  EXPECT_TRUE(GetDocument().Markers().Markers().empty());
 }
 
 // Test matching a text range within the same element
@@ -1470,7 +1470,7 @@ TEST_F(TextFragmentAnchorTest, CheckForWordBoundary) {
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
-  EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
+  EXPECT_TRUE(GetDocument().Markers().Markers().empty());
 }
 
 // Test that we don't match partial words with context
@@ -1495,7 +1495,7 @@ TEST_F(TextFragmentAnchorTest, CheckForWordBoundaryWithContext) {
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
-  EXPECT_TRUE(GetDocument().Markers().Markers().IsEmpty());
+  EXPECT_TRUE(GetDocument().Markers().Markers().empty());
 }
 
 // Test that we correctly match a whole word when it appears as a partial word

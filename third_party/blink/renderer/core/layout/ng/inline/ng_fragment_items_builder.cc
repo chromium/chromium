@@ -232,7 +232,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
     first_line_text_content_ = items.FirstLineText();
   }
 
-  DCHECK(items_.IsEmpty());
+  DCHECK(items_.empty());
   const NGFragmentItems::Span source_items = items.Items();
   const wtf_size_t estimated_size =
       base::checked_cast<wtf_size_t>(source_items.size());

@@ -261,7 +261,7 @@ void VideoFrameSinkBundle::OnDisconnected() {
 }
 
 void VideoFrameSinkBundle::FlushMessages() {
-  if (submission_queue_.IsEmpty()) {
+  if (submission_queue_.empty()) {
     return;
   }
 

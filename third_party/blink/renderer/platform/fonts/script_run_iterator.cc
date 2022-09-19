@@ -83,7 +83,7 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
                                 ScriptRunIterator::UScriptCodeList* set) {
   // Replace the list only if it is the `COMMON` script. If `COMMON`, there
   // should be only one entry.
-  DCHECK(!set->IsEmpty());
+  DCHECK(!set->empty());
   if (set->size() > 1 || set->front() != USCRIPT_COMMON) {
     DCHECK(!set->Contains(USCRIPT_COMMON));
     return;
@@ -98,7 +98,7 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
     // U+300C in https://www.unicode.org/Public/UNIDATA/ScriptExtensions.txt.
     DEFINE_STATIC_LOCAL(ScriptRunIterator::UScriptCodeList, han_scripts,
                         (GetHanScriptExtensions()));
-    if (UNLIKELY(han_scripts.IsEmpty())) {
+    if (UNLIKELY(han_scripts.empty())) {
       // When |GetHanScriptExtensions| returns an empty list, replacing with it
       // will crash later, which makes the analysis complicated.
       NOTREACHED();
@@ -250,7 +250,7 @@ ScriptRunIterator::ScriptRunIterator(const UChar* text, wtf_size_t length)
     : ScriptRunIterator(text, length, ICUScriptData::Instance()) {}
 
 bool ScriptRunIterator::Consume(unsigned* limit, UScriptCode* script) {
-  if (current_set_.IsEmpty()) {
+  if (current_set_.empty()) {
     return false;
   }
 
@@ -348,7 +348,7 @@ void ScriptRunIterator::CloseBracket(UChar32 ch) {
 // common, and there is no common preferred script and next has a preferred
 // script, set the common preferred script to that of next.
 bool ScriptRunIterator::MergeSets() {
-  if (next_set_->IsEmpty() || current_set_.IsEmpty()) {
+  if (next_set_->empty() || current_set_.empty()) {
     return false;
   }
 
@@ -472,7 +472,7 @@ bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {
 
   U16_NEXT(text_, ahead_pos_, length_, ahead_character_);
   script_data_->GetScripts(ahead_character_, *ahead_set_);
-  if (ahead_set_->IsEmpty()) {
+  if (ahead_set_->empty()) {
     // No scripts for this character. This has already been logged, so
     // we just terminate processing this text.
     return false;

@@ -507,7 +507,7 @@ absl::optional<UChar> NGOffsetMapping::GetCharacterBefore(
 
 Position NGOffsetMapping::GetFirstPosition(unsigned offset) const {
   // Find the first unit where |unit.TextContentEnd() >= offset|
-  if (units_.IsEmpty() || units_.back().TextContentEnd() < offset)
+  if (units_.empty() || units_.back().TextContentEnd() < offset)
     return {};
   const NGOffsetMappingUnit* result =
       std::lower_bound(units_.begin(), units_.end(), offset,
@@ -530,7 +530,7 @@ Position NGOffsetMapping::GetFirstPosition(unsigned offset) const {
 const NGOffsetMappingUnit* NGOffsetMapping::GetFirstMappingUnit(
     unsigned offset) const {
   // Find the first unit where |unit.TextContentEnd() <= offset|
-  if (units_.IsEmpty() || units_.front().TextContentStart() > offset)
+  if (units_.empty() || units_.front().TextContentStart() > offset)
     return nullptr;
   const NGOffsetMappingUnit* result =
       std::lower_bound(units_.begin(), units_.end(), offset,
@@ -559,7 +559,7 @@ const NGOffsetMappingUnit* NGOffsetMapping::GetFirstMappingUnit(
 const NGOffsetMappingUnit* NGOffsetMapping::GetLastMappingUnit(
     unsigned offset) const {
   // Find the last unit where |unit.TextContentStart() <= offset|
-  if (units_.IsEmpty() || units_.front().TextContentStart() > offset)
+  if (units_.empty() || units_.front().TextContentStart() > offset)
     return nullptr;
   const NGOffsetMappingUnit* result =
       std::upper_bound(units_.begin(), units_.end(), offset,

@@ -771,7 +771,7 @@ void DateTimeEditElement::GetLayout(const LayoutParameters& layout_parameters,
 
   DateTimeEditBuilder builder(*this, layout_parameters, date_value);
   Node* last_child_to_be_removed = fields_wrapper->lastChild();
-  if (!builder.Build(layout_parameters.date_time_format) || fields_.IsEmpty()) {
+  if (!builder.Build(layout_parameters.date_time_format) || fields_.empty()) {
     last_child_to_be_removed = fields_wrapper->lastChild();
     builder.Build(layout_parameters.fallback_date_time_format);
   }

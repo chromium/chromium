@@ -884,7 +884,7 @@ void ImageCapture::GetMediaTrackSettings(MediaTrackSettings* settings) const {
     settings->setFocusMode(settings_->focusMode());
 
   if (settings_->hasPointsOfInterest() &&
-      !settings_->pointsOfInterest().IsEmpty()) {
+      !settings_->pointsOfInterest().empty()) {
     settings->setPointsOfInterest(settings_->pointsOfInterest());
   }
 
@@ -1027,7 +1027,7 @@ void ImageCapture::OnMojoGetPhotoState(
   for (const auto& mode : photo_state->fill_light_mode) {
     fill_light_mode.push_back(ToV8FillLightMode(mode));
   }
-  if (!fill_light_mode.IsEmpty())
+  if (!fill_light_mode.empty())
     photo_capabilities_->setFillLightMode(fill_light_mode);
 
   // Update the local track photo_state cache.
@@ -1079,7 +1079,7 @@ void ImageCapture::OnMojoTakePhoto(ScriptPromiseResolver* resolver,
                        TRACE_EVENT_SCOPE_PROCESS);
 
   // TODO(mcasas): Should be using a mojo::StructTraits.
-  if (blob->data.IsEmpty()) {
+  if (blob->data.empty()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, "platform error"));
   } else {
@@ -1102,7 +1102,7 @@ void ImageCapture::UpdateMediaTrackCapabilities(
       photo_state->supported_white_balance_modes.size());
   for (const auto& supported_mode : photo_state->supported_white_balance_modes)
     supported_white_balance_modes.push_back(ToString(supported_mode));
-  if (!supported_white_balance_modes.IsEmpty()) {
+  if (!supported_white_balance_modes.empty()) {
     capabilities_->setWhiteBalanceMode(
         std::move(supported_white_balance_modes));
     settings_->setWhiteBalanceMode(
@@ -1114,7 +1114,7 @@ void ImageCapture::UpdateMediaTrackCapabilities(
       photo_state->supported_exposure_modes.size());
   for (const auto& supported_mode : photo_state->supported_exposure_modes)
     supported_exposure_modes.push_back(ToString(supported_mode));
-  if (!supported_exposure_modes.IsEmpty()) {
+  if (!supported_exposure_modes.empty()) {
     capabilities_->setExposureMode(std::move(supported_exposure_modes));
     settings_->setExposureMode(ToString(photo_state->current_exposure_mode));
   }
@@ -1124,13 +1124,13 @@ void ImageCapture::UpdateMediaTrackCapabilities(
       photo_state->supported_focus_modes.size());
   for (const auto& supported_mode : photo_state->supported_focus_modes)
     supported_focus_modes.push_back(ToString(supported_mode));
-  if (!supported_focus_modes.IsEmpty()) {
+  if (!supported_focus_modes.empty()) {
     capabilities_->setFocusMode(std::move(supported_focus_modes));
     settings_->setFocusMode(ToString(photo_state->current_focus_mode));
   }
 
   HeapVector<Member<Point2D>> current_points_of_interest;
-  if (!photo_state->points_of_interest.IsEmpty()) {
+  if (!photo_state->points_of_interest.empty()) {
     for (const auto& point : photo_state->points_of_interest) {
       Point2D* web_point = Point2D::Create();
       web_point->setX(point->x);
@@ -1209,7 +1209,7 @@ void ImageCapture::UpdateMediaTrackCapabilities(
     settings_->setTorch(photo_state->torch);
 
   if (photo_state->supported_background_blur_modes &&
-      !photo_state->supported_background_blur_modes->IsEmpty()) {
+      !photo_state->supported_background_blur_modes->empty()) {
     Vector<bool> supported_background_blur_modes;
     for (auto mode : *photo_state->supported_background_blur_modes)
       supported_background_blur_modes.push_back(ToBooleanMode(mode));
@@ -1308,7 +1308,7 @@ ImageCapture* ImageCapture::Clone() const {
   if (settings_->hasFocusMode())
     clone->settings_->setFocusMode(settings_->focusMode());
   if (settings_->hasPointsOfInterest() &&
-      !settings_->pointsOfInterest().IsEmpty()) {
+      !settings_->pointsOfInterest().empty()) {
     clone->settings_->setPointsOfInterest(settings_->pointsOfInterest());
   }
   if (settings_->hasExposureCompensation()) {

@@ -27,7 +27,7 @@ class CORE_EXPORT CustomElementReactionQueue final
 
   void Add(CustomElementReaction&);
   void InvokeReactions(Element&);
-  bool IsEmpty() { return reactions_.IsEmpty(); }
+  bool IsEmpty() { return reactions_.empty(); }
   void Clear();
 
  private:

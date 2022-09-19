@@ -58,7 +58,7 @@ void SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
   sandwich_.erase(position);
   // Clear the animated value when there are active animation elements but the
   // sandwich is empty.
-  if (!active_.IsEmpty() && sandwich_.IsEmpty()) {
+  if (!active_.empty() && sandwich_.empty()) {
     animation->ClearAnimationValue();
     active_.Shrink(0);
   }
@@ -72,7 +72,7 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
               PriorityCompare(presentation_time));
   }
 
-  const bool was_active = !active_.IsEmpty();
+  const bool was_active = !active_.empty();
   active_.Shrink(0);
   active_.ReserveCapacity(sandwich_.size());
   // Build the contributing/active sandwich.
@@ -84,12 +84,12 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
   }
   // If the sandwich was previously active but no longer is, clear any animated
   // value.
-  if (was_active && active_.IsEmpty())
+  if (was_active && active_.empty())
     sandwich_.front()->ClearAnimationValue();
 }
 
 bool SMILAnimationSandwich::ApplyAnimationValues() {
-  if (active_.IsEmpty())
+  if (active_.empty())
     return false;
 
   // Animations have to be applied lowest to highest prio.

@@ -126,7 +126,7 @@ bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
   auto markers = marker_controller.MarkersAroundPosition(
       ToPositionInFlatTree(marker_position),
       DocumentMarker::MarkerTypes::TextFragment());
-  return !markers.IsEmpty();
+  return !markers.empty();
 }
 
 void TextFragmentHandler::ExtractTextFragmentsMatches(
@@ -147,7 +147,7 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
     ExtractFirstFragmentRectCallback callback) {
   gfx::Rect rect_in_viewport;
 
-  if (annotation_agents_.IsEmpty()) {
+  if (annotation_agents_.empty()) {
     std::move(callback).Run(gfx::Rect());
     return;
   }

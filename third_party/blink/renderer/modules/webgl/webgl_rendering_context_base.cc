@@ -3189,7 +3189,7 @@ WebGLContextAttributes* WebGLRenderingContextBase::getContextAttributes()
 }
 
 GLenum WebGLRenderingContextBase::getError() {
-  if (!lost_context_errors_.IsEmpty()) {
+  if (!lost_context_errors_.empty()) {
     GLenum error = lost_context_errors_.front();
     lost_context_errors_.EraseAt(0);
     return error;
@@ -3198,7 +3198,7 @@ GLenum WebGLRenderingContextBase::getError() {
   if (isContextLost())
     return GL_NO_ERROR;
 
-  if (!synthetic_errors_.IsEmpty()) {
+  if (!synthetic_errors_.empty()) {
     GLenum error = synthetic_errors_.front();
     synthetic_errors_.EraseAt(0);
     return error;

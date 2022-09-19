@@ -128,7 +128,7 @@ void VisualViewportPaintPropertyTreeBuilder::Update(
     LocalFrameView& main_frame_view,
     VisualViewport& visual_viewport,
     PaintPropertyTreeBuilderContext& full_context) {
-  if (full_context.fragments.IsEmpty())
+  if (full_context.fragments.empty())
     full_context.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
 
   PaintPropertyTreeBuilderFragmentContext& context = full_context.fragments[0];
@@ -176,7 +176,7 @@ void VisualViewportPaintPropertyTreeBuilder::Update(
 void PaintPropertyTreeBuilder::SetupContextForFrame(
     LocalFrameView& frame_view,
     PaintPropertyTreeBuilderContext& full_context) {
-  if (full_context.fragments.IsEmpty())
+  if (full_context.fragments.empty())
     full_context.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
 
   PaintPropertyTreeBuilderFragmentContext& context = full_context.fragments[0];
@@ -3243,7 +3243,7 @@ void PaintPropertyTreeBuilder::InitFragmentPaintPropertiesForLegacy(
 
 void PaintPropertyTreeBuilder::InitFragmentPaintPropertiesForNG(
     bool needs_paint_properties) {
-  if (context_.fragments.IsEmpty())
+  if (context_.fragments.empty())
     context_.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
   else
     context_.fragments.resize(1);
@@ -3258,7 +3258,7 @@ void PaintPropertyTreeBuilder::InitSingleFragmentFromParent(
   FragmentData& first_fragment =
       object_.GetMutableForPainting().FirstFragment();
   first_fragment.ClearNextFragment();
-  if (context_.fragments.IsEmpty()) {
+  if (context_.fragments.empty()) {
     context_.fragments.push_back(PaintPropertyTreeBuilderFragmentContext());
   } else {
     context_.fragments.resize(1);
@@ -3541,7 +3541,7 @@ PaintPropertyTreeBuilder::ContextForFragment(
     LayoutUnit logical_top_in_flow_thread) const {
   DCHECK(!IsInNGFragmentTraversal());
   const auto& parent_fragments = context_.fragments;
-  if (parent_fragments.IsEmpty())
+  if (parent_fragments.empty())
     return PaintPropertyTreeBuilderFragmentContext();
 
   // This will be used in the loop finding matching fragment from ancestor flow

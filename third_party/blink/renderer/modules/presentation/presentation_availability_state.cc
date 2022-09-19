@@ -153,8 +153,8 @@ void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
       continue;
 
     // URL is still observed by some availability object.
-    if (!listener->availability_callbacks.IsEmpty() ||
-        !listener->availability_observers.IsEmpty()) {
+    if (!listener->availability_callbacks.empty() ||
+        !listener->availability_observers.empty()) {
       return;
     }
   }
@@ -222,8 +222,8 @@ PresentationAvailabilityState::GetAvailabilityListener(
 void PresentationAvailabilityState::TryRemoveAvailabilityListener(
     AvailabilityListener* listener) {
   // URL is still observed by some availability object.
-  if (!listener->availability_callbacks.IsEmpty() ||
-      !listener->availability_observers.IsEmpty()) {
+  if (!listener->availability_callbacks.empty() ||
+      !listener->availability_observers.empty()) {
     return;
   }
 

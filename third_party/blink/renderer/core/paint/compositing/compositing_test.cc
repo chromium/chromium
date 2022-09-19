@@ -84,7 +84,7 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
 
   cc::Layer* CcLayerByDOMElementId(const char* id) {
     auto layers = CcLayersByDOMElementId(RootCcLayer(), id);
-    return layers.IsEmpty() ? nullptr : layers[0];
+    return layers.empty() ? nullptr : layers[0];
   }
 
   cc::LayerTreeHost* LayerTreeHost() {
@@ -582,7 +582,7 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
 
   const cc::Layer* CcLayerByDOMElementId(const char* id) {
     auto layers = CcLayersByDOMElementId(RootCcLayer(), id);
-    return layers.IsEmpty() ? nullptr : layers[0];
+    return layers.empty() ? nullptr : layers[0];
   }
 
   const cc::Layer* CcLayerByOwnerNodeId(Node* node) {

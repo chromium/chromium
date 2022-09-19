@@ -220,7 +220,7 @@ void NavigationApi::InitializeForNewWindow(
     NavigationApi* previous,
     const WebVector<WebHistoryItem>& back_entries,
     const WebVector<WebHistoryItem>& forward_entries) {
-  DCHECK(entries_.IsEmpty());
+  DCHECK(entries_.empty());
 
   // This can happen even when commit_reason is not kInitialization, e.g. when
   // navigating from about:blank#1 to about:blank#2 where both are initial
@@ -238,10 +238,10 @@ void NavigationApi::InitializeForNewWindow(
   if (commit_reason != CommitReason::kRegular ||
       (current.Url() == BlankURL() && !IsBackForwardLoadType(load_type)) ||
       (current.Url().IsAboutSrcdocURL() && !IsBackForwardLoadType(load_type))) {
-    if (previous && !previous->entries_.IsEmpty() &&
+    if (previous && !previous->entries_.empty() &&
         GetSupplementable()->GetSecurityOrigin()->IsSameOriginWith(
             previous->GetSupplementable()->GetSecurityOrigin())) {
-      DCHECK(entries_.IsEmpty());
+      DCHECK(entries_.empty());
       entries_.ReserveCapacity(previous->entries_.size());
       for (wtf_size_t i = 0; i < previous->entries_.size(); i++) {
         entries_.emplace_back(
@@ -855,10 +855,9 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // down the 1+ promises path.
     auto promise_list = navigate_event->GetNavigationActionPromisesList();
     const HeapVector<ScriptPromise>& tweaked_promise_list =
-        promise_list.IsEmpty()
-            ? HeapVector<ScriptPromise>(
-                  {ScriptPromise::CastUndefined(script_state)})
-            : promise_list;
+        promise_list.empty() ? HeapVector<ScriptPromise>(
+                                   {ScriptPromise::CastUndefined(script_state)})
+                             : promise_list;
 
     NavigateReaction::React(
         script_state, ScriptPromise::All(script_state, tweaked_promise_list),

@@ -137,7 +137,7 @@ FetchResponseData* FetchResponseData::CreateOpaqueRedirectFilteredResponse()
 const KURL* FetchResponseData::Url() const {
   // "A response has an associated url. It is a pointer to the last response URL
   // in response’s url list and null if response’s url list is the empty list."
-  if (url_list_.IsEmpty())
+  if (url_list_.empty())
     return nullptr;
   return &url_list_.back();
 }
@@ -325,7 +325,7 @@ void FetchResponseData::InitFromResourceResponse(
   // Corresponds to https://fetch.spec.whatwg.org/#main-fetch step:
   // "If |internalResponse|’s URL list is empty, then set it to a clone of
   // |request|’s URL list."
-  if (response.UrlListViaServiceWorker().IsEmpty()) {
+  if (response.UrlListViaServiceWorker().empty()) {
     // Note: |UrlListViaServiceWorker()| is empty, unless the response came from
     // a service worker, in which case it will only be empty if it was created
     // through new Response().

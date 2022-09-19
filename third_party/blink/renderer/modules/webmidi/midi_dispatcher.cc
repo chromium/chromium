@@ -137,7 +137,7 @@ void MIDIDispatcher::DataReceived(uint32_t port,
                                   base::TimeTicks timestamp) {
   DCHECK(client_);
   TRACE_EVENT0("midi", "MIDIDispatcher::DataReceived");
-  DCHECK(!data.IsEmpty());
+  DCHECK(!data.empty());
 
   if (initialized_)
     client_->DidReceiveMIDIData(port, &data[0], data.size(), timestamp);

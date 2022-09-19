@@ -432,7 +432,7 @@ static ImageCandidate PickBestImageCandidate(
   // Setting max density value based on https://github.com/whatwg/html/pull/5901
   const float kMaxDensity = 2.2;
   bool ignore_src = false;
-  if (image_candidates.IsEmpty())
+  if (image_candidates.empty())
     return ImageCandidate();
 
   if (RuntimeEnabledFeatures::SrcsetMaxDensityEnabled() &&

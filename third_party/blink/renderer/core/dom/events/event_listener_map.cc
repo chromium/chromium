@@ -182,7 +182,7 @@ bool EventListenerMap::Remove(const AtomicString& event_type,
       bool was_removed = RemoveListenerFromVector(
           entries_[i].second.Get(), listener, options,
           index_of_removed_listener, registered_listener);
-      if (entries_[i].second->IsEmpty())
+      if (entries_[i].second->empty())
         entries_.EraseAt(i);
       return was_removed;
     }

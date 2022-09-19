@@ -72,7 +72,7 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
   }
   void EnsureWindowEventContext();
 
-  bool IsEmpty() const { return node_event_contexts_.IsEmpty(); }
+  bool IsEmpty() const { return node_event_contexts_.empty(); }
   wtf_size_t size() const { return node_event_contexts_.size(); }
 
   void AdjustForRelatedTarget(Node&, EventTarget* related_target);

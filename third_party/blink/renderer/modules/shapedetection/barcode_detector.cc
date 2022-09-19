@@ -80,7 +80,7 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
         barcode_detector_options->formats.push_back(format);
     }
 
-    if (barcode_detector_options->formats.IsEmpty()) {
+    if (barcode_detector_options->formats.empty()) {
       exception_state.ThrowTypeError("Hint option provided, but is empty.");
       return;
     }

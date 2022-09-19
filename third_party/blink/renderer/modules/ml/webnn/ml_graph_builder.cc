@@ -76,7 +76,7 @@ size_t GetBytesPerElement(V8MLOperandType::Enum operand_type) {
 absl::optional<size_t> ValidateAndCalculateElementsNumber(
     const Vector<uint32_t>& dimensions,
     String& error_message) {
-  if (dimensions.IsEmpty()) {
+  if (dimensions.empty()) {
     error_message = "The dimensions is empty.";
     return absl::nullopt;
   }

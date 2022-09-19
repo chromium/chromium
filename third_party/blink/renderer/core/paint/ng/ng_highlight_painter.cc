@@ -528,7 +528,7 @@ NGHighlightPainter::NGHighlightPainter(
 }
 
 void NGHighlightPainter::Paint(Phase phase) {
-  if (markers_.IsEmpty())
+  if (markers_.empty())
     return;
 
   if (skip_backgrounds_ && phase == kBackground)
@@ -709,10 +709,10 @@ NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
 
   // This can yield false positives (weakening the optimisations below) if all
   // non-spelling/grammar/selection highlights are outside the text fragment.
-  if (!target_.IsEmpty() || !custom_.IsEmpty())
+  if (!target_.empty() || !custom_.empty())
     return kOverlay;
 
-  if (selection_ && spelling_.IsEmpty() && grammar_.IsEmpty()) {
+  if (selection_ && spelling_.empty() && grammar_.empty()) {
     scoped_refptr<const ComputedStyle> pseudo_style =
         HighlightPaintingUtils::HighlightPseudoStyle(node_, style_,
                                                      kPseudoIdSelection);
@@ -726,7 +726,7 @@ NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
                : kOverlay;
   }
 
-  if (!spelling_.IsEmpty() || !grammar_.IsEmpty()) {
+  if (!spelling_.empty() || !grammar_.empty()) {
     // If there is a selection too, we must use the overlay painting algorithm.
     if (selection_)
       return kOverlay;
@@ -734,18 +734,17 @@ NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
     // If there are only spelling and/or grammar highlights, and they use the
     // default style that only adds decorations without adding a background or
     // changing the text color, we don’t need the expense of overlay painting.
-    bool spelling_ok =
-        spelling_.IsEmpty() ||
-        !HasNonTrivialSpellingGrammarStyles(fragment_item_, node_, style_,
-                                            kPseudoIdSpellingError);
-    bool grammar_ok = grammar_.IsEmpty() ||
+    bool spelling_ok = spelling_.empty() || !HasNonTrivialSpellingGrammarStyles(
+                                                fragment_item_, node_, style_,
+                                                kPseudoIdSpellingError);
+    bool grammar_ok = grammar_.empty() ||
                       !HasNonTrivialSpellingGrammarStyles(
                           fragment_item_, node_, style_, kPseudoIdGrammarError);
     return spelling_ok && grammar_ok ? kFastSpellingGrammar : kOverlay;
   }
 
-  DCHECK(!selection_ && target_.IsEmpty() && spelling_.IsEmpty() &&
-         grammar_.IsEmpty() && custom_.IsEmpty());
+  DCHECK(!selection_ && target_.empty() && spelling_.empty() &&
+         grammar_.empty() && custom_.empty());
   return kNoHighlights;
 }
 

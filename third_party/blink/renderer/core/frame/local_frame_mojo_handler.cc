@@ -733,7 +733,7 @@ void LocalFrameMojoHandler::SaveImageAt(const gfx::Point& window_point) {
 
 void LocalFrameMojoHandler::ReportBlinkFeatureUsage(
     const Vector<mojom::blink::WebFeature>& features) {
-  DCHECK(!features.IsEmpty());
+  DCHECK(!features.empty());
 
   // Assimilate all features used/performed by the browser into UseCounter.
   auto* document = GetDocument();

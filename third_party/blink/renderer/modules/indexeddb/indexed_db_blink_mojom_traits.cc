@@ -218,7 +218,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   if (!data.ReadBits(&value_bits))
     return false;
 
-  if (value_bits.IsEmpty()) {
+  if (value_bits.empty()) {
     *out = std::make_unique<blink::IDBValue>(scoped_refptr<SharedBuffer>(),
                                              Vector<blink::WebBlobInfo>());
     return true;

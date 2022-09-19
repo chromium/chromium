@@ -243,7 +243,7 @@ MHTMLArchive* MHTMLArchive::CreateArchive(
 
   MHTMLParser parser(std::move(data));
   HeapVector<Member<ArchiveResource>> resources = parser.ParseArchive();
-  if (resources.IsEmpty()) {
+  if (resources.empty()) {
     archive->load_result_ = MHTMLLoadResult::kInvalidArchive;
     return archive;
   }

@@ -143,7 +143,7 @@ bool TextFragmentAnchor::GenerateNewTokenForSameDocument(
   FragmentDirective& fragment_directive =
       loader.GetFrame()->GetDocument()->fragmentDirective();
   if (!fragment_directive.LastNavigationHadFragmentDirective() ||
-      fragment_directive.GetDirectives<TextDirective>().IsEmpty()) {
+      fragment_directive.GetDirectives<TextDirective>().empty()) {
     return false;
   }
 
@@ -159,7 +159,7 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreate(const KURL& url,
 
   HeapVector<Member<TextDirective>> text_directives =
       frame.GetDocument()->fragmentDirective().GetDirectives<TextDirective>();
-  if (text_directives.IsEmpty()) {
+  if (text_directives.empty()) {
     if (frame.GetDocument()
             ->fragmentDirective()
             .LastNavigationHadFragmentDirective()) {
@@ -202,7 +202,7 @@ TextFragmentAnchor::TextFragmentAnchor(
       metrics_(MakeGarbageCollected<TextFragmentAnchorMetrics>(
           frame_->GetDocument())) {
   TRACE_EVENT("blink", "TextFragmentAnchor::TextFragmentAnchor");
-  DCHECK(!text_directives.IsEmpty());
+  DCHECK(!text_directives.empty());
   DCHECK(frame_->View());
 
   metrics_->DidCreateAnchor(text_directives.size());

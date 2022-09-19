@@ -368,14 +368,14 @@ void TextAutosizer::BeginLayout(LayoutBlock* block,
   if (block->IsRubyRun() || block->IsRubyBase() || block->IsRubyText())
     return;
 
-  DCHECK(!cluster_stack_.IsEmpty() || IsA<LayoutView>(block));
-  if (cluster_stack_.IsEmpty())
+  DCHECK(!cluster_stack_.empty() || IsA<LayoutView>(block));
+  if (cluster_stack_.empty())
     did_check_cross_site_use_count_ = false;
 
   if (Cluster* cluster = MaybeCreateCluster(block))
     cluster_stack_.push_back(cluster);
 
-  DCHECK(!cluster_stack_.IsEmpty());
+  DCHECK(!cluster_stack_.empty());
 
   // Cells in auto-layout tables are handled separately by inflateAutoTable.
   bool is_auto_table_cell =
@@ -384,7 +384,7 @@ void TextAutosizer::BeginLayout(LayoutBlock* block,
                                    ->ToLayoutObject()
                                    ->StyleRef()
                                    .IsFixedTableLayout();
-  if (!is_auto_table_cell && !cluster_stack_.IsEmpty())
+  if (!is_auto_table_cell && !cluster_stack_.empty())
     Inflate(block, layouter);
 }
 
@@ -433,7 +433,7 @@ void TextAutosizer::EndLayout(LayoutBlock* block) {
 #endif
     // Tables can create two layout scopes for the same block so the isEmpty
     // check below is needed to guard against endLayout being called twice.
-  } else if (!cluster_stack_.IsEmpty() && CurrentCluster()->root_ == block) {
+  } else if (!cluster_stack_.empty() && CurrentCluster()->root_ == block) {
     cluster_stack_.pop_back();
   }
 }
@@ -895,8 +895,7 @@ TextAutosizer::Cluster* TextAutosizer::MaybeCreateCluster(LayoutBlock* block) {
   if (!(flags & POTENTIAL_ROOT))
     return nullptr;
 
-  Cluster* parent_cluster =
-      cluster_stack_.IsEmpty() ? nullptr : CurrentCluster();
+  Cluster* parent_cluster = cluster_stack_.empty() ? nullptr : CurrentCluster();
   DCHECK(parent_cluster || IsA<LayoutView>(block));
 
   // If a non-independent block would not alter the SUPPRESSING flag, it doesn't
@@ -1317,7 +1316,7 @@ void TextAutosizer::Supercluster::Trace(Visitor* visitor) const {
 }
 
 TextAutosizer::Cluster* TextAutosizer::CurrentCluster() const {
-  SECURITY_DCHECK(!cluster_stack_.IsEmpty());
+  SECURITY_DCHECK(!cluster_stack_.empty());
   return cluster_stack_.back();
 }
 

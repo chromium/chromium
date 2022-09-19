@@ -447,7 +447,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
     }
   }
 
-  if (column_geometries_with_background.IsEmpty())
+  if (column_geometries_with_background.empty())
     return;
 
   // Paint <colgroup>/<col> backgrounds.

@@ -149,7 +149,7 @@ bool CSSLayoutDefinition::Instance::Layout(
 
   // Run the work queue until exhaustion.
   auto& queue = *custom_layout_scope->Queue();
-  while (!queue.IsEmpty()) {
+  while (!queue.empty()) {
     {
       v8::MicrotasksScope microtasks_scope(
           isolate, microtask_queue, v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -286,7 +286,7 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
 
   // Run the work queue until exhaustion.
   auto& queue = *custom_layout_scope->Queue();
-  while (!queue.IsEmpty()) {
+  while (!queue.empty()) {
     {
       v8::MicrotasksScope microtasks_scope(
           isolate, microtask_queue, v8::MicrotasksScope::kDoNotRunMicrotasks);

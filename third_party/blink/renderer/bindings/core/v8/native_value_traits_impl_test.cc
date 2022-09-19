@@ -55,7 +55,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     const auto& record =
         NativeValueTraits<IDLRecord<IDLString, IDLOctet>>::NativeValue(
             scope.GetIsolate(), v8_object, exception_state);
-    EXPECT_TRUE(record.IsEmpty());
+    EXPECT_TRUE(record.empty());
   }
   {
     v8::Local<v8::Object> v8_object =
@@ -166,7 +166,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     const auto& record =
         NativeValueTraits<IDLRecord<IDLString, IDLShort>>::NativeValue(
             scope.GetIsolate(), v8_object, exception_state);
-    EXPECT_TRUE(record.IsEmpty());
+    EXPECT_TRUE(record.empty());
     EXPECT_TRUE(exception_state.HadException());
     EXPECT_TRUE(exception_state.Message().IsEmpty());
   }
@@ -178,7 +178,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
     auto record =
         NativeValueTraits<IDLRecord<IDLString, IDLUnsignedLong>>::NativeValue(
             scope.GetIsolate(), v8_object, exception_state);
-    EXPECT_TRUE(record.IsEmpty());
+    EXPECT_TRUE(record.empty());
 
     v8_object =
         EvaluateScriptForObject(scope,
@@ -215,7 +215,7 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
     const auto& sequence =
         NativeValueTraits<IDLSequence<IDLOctet>>::NativeValue(
             scope.GetIsolate(), v8_array, exception_state);
-    EXPECT_TRUE(sequence.IsEmpty());
+    EXPECT_TRUE(sequence.empty());
   }
   {
     v8::Local<v8::Array> v8_array =

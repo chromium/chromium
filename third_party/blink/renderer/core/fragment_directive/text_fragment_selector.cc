@@ -64,7 +64,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
   Vector<String> terms;
   directive.Split(",", true, terms);
 
-  if (terms.IsEmpty() || terms.size() > 4)
+  if (terms.empty() || terms.size() > 4)
     return kInvalidSelector;
 
   if (IsPrefix(terms.front())) {
@@ -72,7 +72,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     prefix = prefix.Left(prefix.length() - 1);
     terms.erase(terms.begin());
 
-    if (!IsValidTerm(prefix) || terms.IsEmpty())
+    if (!IsValidTerm(prefix) || terms.empty())
       return kInvalidSelector;
   }
 
@@ -81,11 +81,11 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     suffix = suffix.Right(suffix.length() - 1);
     terms.pop_back();
 
-    if (!IsValidTerm(suffix) || terms.IsEmpty())
+    if (!IsValidTerm(suffix) || terms.empty())
       return kInvalidSelector;
   }
 
-  DCHECK(!terms.IsEmpty());
+  DCHECK(!terms.empty());
   if (terms.size() > 2)
     return kInvalidSelector;
 
@@ -95,7 +95,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     return kInvalidSelector;
   terms.erase(terms.begin());
 
-  if (!terms.IsEmpty()) {
+  if (!terms.empty()) {
     type = kRange;
     end = terms.front();
     if (!IsValidTerm(end))
@@ -104,7 +104,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
     terms.erase(terms.begin());
   }
 
-  DCHECK(terms.IsEmpty());
+  DCHECK(terms.empty());
 
   return TextFragmentSelector(
       type, DecodeURLEscapeSequences(start, DecodeURLMode::kUTF8),

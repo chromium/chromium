@@ -23,7 +23,7 @@ void CSSToggleMap::Trace(Visitor* visitor) const {
 
 void CSSToggleMap::CreateToggles(const ToggleRootList* toggle_roots) {
   const auto& roots = toggle_roots->Roots();
-  DCHECK(!roots.IsEmpty());
+  DCHECK(!roots.empty());
   DCHECK(OwnerElement());
 
   auto& toggles = Toggles();

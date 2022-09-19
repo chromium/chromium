@@ -16,7 +16,7 @@ StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<Vector<double>> keys,
     : StyleRuleBase(kKeyframe), properties_(properties), keys_(*keys) {}
 
 String StyleRuleKeyframe::KeyText() const {
-  DCHECK(!keys_.IsEmpty());
+  DCHECK(!keys_.empty());
 
   StringBuilder key_text;
   for (unsigned i = 0; i < keys_.size(); ++i) {
@@ -34,7 +34,7 @@ bool StyleRuleKeyframe::SetKeyText(const String& key_text) {
 
   std::unique_ptr<Vector<double>> keys =
       CSSParser::ParseKeyframeKeyList(key_text);
-  if (!keys || keys->IsEmpty())
+  if (!keys || keys->empty())
     return false;
 
   keys_ = *keys;

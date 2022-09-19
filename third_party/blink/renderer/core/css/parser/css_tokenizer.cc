@@ -142,7 +142,7 @@ CSSParserToken CSSTokenizer::BlockStart(CSSParserTokenType block_type,
 
 CSSParserToken CSSTokenizer::BlockEnd(CSSParserTokenType type,
                                       CSSParserTokenType start_type) {
-  if (!block_stack_.IsEmpty() && block_stack_.back() == start_type) {
+  if (!block_stack_.empty() && block_stack_.back() == start_type) {
     block_stack_.pop_back();
     return CSSParserToken(type, CSSParserToken::kBlockEnd);
   }

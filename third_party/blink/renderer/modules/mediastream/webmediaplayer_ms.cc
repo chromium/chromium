@@ -669,7 +669,7 @@ void WebMediaPlayerMS::ReloadVideo() {
   auto video_components = descriptor.VideoComponents();
 
   RendererReloadAction renderer_action = RendererReloadAction::KEEP_RENDERER;
-  if (video_components.IsEmpty()) {
+  if (video_components.empty()) {
     if (video_frame_provider_)
       renderer_action = RendererReloadAction::REMOVE_RENDERER;
     current_video_track_id_ = WebString();
@@ -730,7 +730,7 @@ void WebMediaPlayerMS::ReloadAudio() {
   auto audio_components = descriptor.AudioComponents();
 
   RendererReloadAction renderer_action = RendererReloadAction::KEEP_RENDERER;
-  if (audio_components.IsEmpty()) {
+  if (audio_components.empty()) {
     if (audio_renderer_)
       renderer_action = RendererReloadAction::REMOVE_RENDERER;
     current_audio_track_id_ = WebString();

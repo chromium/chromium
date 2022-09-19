@@ -1536,7 +1536,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetPopupHintShowing(Element* element) { popup_hint_showing_ = element; }
   HeapVector<Member<Element>>& PopupStack() { return popup_stack_; }
   const HeapVector<Member<Element>>& PopupStack() const { return popup_stack_; }
-  bool PopupAutoShowing() const { return !popup_stack_.IsEmpty(); }
+  bool PopupAutoShowing() const { return !popup_stack_.empty(); }
   Element* TopmostPopupAutoOrHint() const;
   HeapHashSet<Member<Element>>& PopupsWaitingToHide() {
     return popups_waiting_to_hide_;
@@ -1749,7 +1749,7 @@ class CORE_EXPORT Document : public ContainerNode,
   ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID ax_id);
 
   // Return true if any accessibility contexts have been enabled.
-  bool IsAccessibilityEnabled() const { return !ax_contexts_.IsEmpty(); }
+  bool IsAccessibilityEnabled() const { return !ax_contexts_.empty(); }
 
   void DispatchHandleLoadStart();
   void DispatchHandleLoadOrLayoutComplete();
@@ -1812,7 +1812,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsForMarkupSanitization() const { return is_for_markup_sanitization_; }
 
   bool HasPendingJavaScriptUrlsForTest() {
-    return !pending_javascript_urls_.IsEmpty();
+    return !pending_javascript_urls_.empty();
   }
 
   void ApplyScrollRestorationLogic();

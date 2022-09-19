@@ -807,7 +807,7 @@ TEST_P(PaintArtifactCompositorTest, NestedClipsWithAlias) {
 TEST_P(PaintArtifactCompositorTest, DeeplyNestedClips) {
   Vector<scoped_refptr<ClipPaintPropertyNode>> clips;
   for (unsigned i = 1; i <= 10; i++) {
-    clips.push_back(CreateClip(clips.IsEmpty() ? c0() : *clips.back(), t0(),
+    clips.push_back(CreateClip(clips.empty() ? c0() : *clips.back(), t0(),
                                FloatRoundedRect(5 * i, 0, 100, 200 - 10 * i)));
   }
 

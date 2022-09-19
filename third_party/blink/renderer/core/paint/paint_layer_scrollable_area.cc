@@ -2583,14 +2583,14 @@ PaintLayerScrollableArea::GetCompositorAnimationTimeline() const {
 }
 
 bool PaintLayerScrollableArea::HasTickmarks() const {
-  if (RareData() && !RareData()->tickmarks_override_.IsEmpty())
+  if (RareData() && !RareData()->tickmarks_override_.empty())
     return true;
   return layer_->IsRootLayer() &&
          To<LayoutView>(GetLayoutBox())->HasTickmarks();
 }
 
 Vector<gfx::Rect> PaintLayerScrollableArea::GetTickmarks() const {
-  if (RareData() && !RareData()->tickmarks_override_.IsEmpty())
+  if (RareData() && !RareData()->tickmarks_override_.empty())
     return RareData()->tickmarks_override_;
   if (layer_->IsRootLayer())
     return To<LayoutView>(GetLayoutBox())->GetTickmarks();
@@ -2706,7 +2706,7 @@ PaintLayerScrollableArea::PreventRelayoutScope::PreventRelayoutScope(
     SubtreeLayoutScope& layout_scope) {
   if (!count_) {
     DCHECK(!layout_scope_);
-    DCHECK(NeedsRelayoutList().IsEmpty());
+    DCHECK(NeedsRelayoutList().empty());
     layout_scope_ = &layout_scope;
   }
   count_++;
@@ -2760,7 +2760,7 @@ void PaintLayerScrollableArea::PreventRelayoutScope::SetBoxNeedsLayout(
 
 void PaintLayerScrollableArea::PreventRelayoutScope::ResetRelayoutNeeded() {
   DCHECK_EQ(count_, 0);
-  DCHECK(NeedsRelayoutList().IsEmpty());
+  DCHECK(NeedsRelayoutList().empty());
   relayout_needed_ = false;
 }
 
@@ -2798,7 +2798,7 @@ int PaintLayerScrollableArea::DelayScrollOffsetClampScope::count_ = 0;
 
 PaintLayerScrollableArea::DelayScrollOffsetClampScope::
     DelayScrollOffsetClampScope() {
-  DCHECK(count_ > 0 || NeedsClampList().IsEmpty());
+  DCHECK(count_ > 0 || NeedsClampList().empty());
   count_++;
 }
 

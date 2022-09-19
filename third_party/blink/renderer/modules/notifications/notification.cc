@@ -85,7 +85,7 @@ Notification* Notification::Create(ExecutionContext* context,
     return nullptr;
   }
 
-  if (!options->actions().IsEmpty()) {
+  if (!options->actions().empty()) {
     exception_state.ThrowTypeError(
         "Actions are only supported for persistent notifications shown using "
         "ServiceWorkerRegistration.showNotification().");

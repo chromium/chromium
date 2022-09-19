@@ -22,7 +22,7 @@ class SecureDisplayLinkTracker {
   void Add(T* link, bool is_link_secure);
   void Remove(T* link);
   void Update(T* link, bool is_link_secure);
-  bool is_capturing_secure() const { return insecure_links_.IsEmpty(); }
+  bool is_capturing_secure() const { return insecure_links_.empty(); }
 
  private:
   // Record every insecure links.

@@ -310,7 +310,7 @@ TEST_P(MainOrOffThreadPaintWorkletTest, AllGlobalScopesMustBeCreated) {
       MakeGarbageCollected<PaintWorklet>(*GetFrame().DomWindow());
   paint_worklet_to_test->ResetIsPaintOffThreadForTesting();
 
-  EXPECT_TRUE(paint_worklet_to_test->GetGlobalScopesForTesting().IsEmpty());
+  EXPECT_TRUE(paint_worklet_to_test->GetGlobalScopesForTesting().empty());
 
   std::unique_ptr<PaintWorkletPaintDispatcher> dispatcher =
       std::make_unique<PaintWorkletPaintDispatcher>();

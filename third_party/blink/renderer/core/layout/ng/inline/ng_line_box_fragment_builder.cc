@@ -75,7 +75,7 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
     }
   }
 
-  DCHECK(oof_positioned_descendants_.IsEmpty());
+  DCHECK(oof_positioned_descendants_.empty());
   MoveOutOfFlowDescendantCandidatesToDescendants();
 }
 

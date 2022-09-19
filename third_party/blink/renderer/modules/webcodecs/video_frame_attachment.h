@@ -20,7 +20,7 @@ class MODULES_EXPORT VideoFrameAttachment
   ~VideoFrameAttachment() override = default;
 
   bool IsLockedToAgentCluster() const override {
-    return !frame_handles_.IsEmpty();
+    return !frame_handles_.empty();
   }
 
   size_t size() const { return frame_handles_.size(); }

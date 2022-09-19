@@ -162,7 +162,7 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
     CSSSelectorVector</*UseArena=*/true> selector_vector =
         CSSParser::ParseSelector</*UseArena=*/true>(context, nullptr, selector,
                                                     arena);
-    if (selector_vector.IsEmpty())
+    if (selector_vector.empty())
       continue;
 
     StyleRule* style_rule = StyleRule::Create</*UseArena=*/true>(

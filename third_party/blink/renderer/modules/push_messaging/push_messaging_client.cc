@@ -123,7 +123,7 @@ void PushMessagingClient::DoSubscribe(
     std::unique_ptr<PushSubscriptionCallbacks> callbacks) {
   DCHECK(callbacks);
 
-  if (options->application_server_key.IsEmpty()) {
+  if (options->application_server_key.empty()) {
     DidSubscribe(service_worker_registration, std::move(callbacks),
                  mojom::blink::PushRegistrationStatus::NO_SENDER_ID,
                  nullptr /* subscription */);

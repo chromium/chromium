@@ -53,7 +53,7 @@ void ShapeResultBloberizer::SetText(const StringView& text,
     CommitPendingRun();
 
   // Any outstanding 'current' state should have been moved to 'pending'.
-  DCHECK(current_character_indexes_.IsEmpty());
+  DCHECK(current_character_indexes_.empty());
 
   DVLOG(4) << "   SetText from: " << from << " to: " << to;
 
@@ -77,7 +77,7 @@ void ShapeResultBloberizer::SetText(const StringView& text,
 }
 
 void ShapeResultBloberizer::CommitText() {
-  if (current_character_indexes_.IsEmpty())
+  if (current_character_indexes_.empty())
     return;
 
   unsigned from = current_character_indexes_[0];
@@ -154,7 +154,7 @@ void ShapeResultBloberizer::CommitText() {
 }
 
 void ShapeResultBloberizer::CommitPendingRun() {
-  if (pending_glyphs_.IsEmpty())
+  if (pending_glyphs_.empty())
     return;
 
   if (pending_canvas_rotation_ != builder_rotation_) {
@@ -164,7 +164,7 @@ void ShapeResultBloberizer::CommitPendingRun() {
     builder_rotation_ = pending_canvas_rotation_;
   }
 
-  if (UNLIKELY(!current_character_indexes_.IsEmpty()))
+  if (UNLIKELY(!current_character_indexes_.empty()))
     CommitText();
 
   SkFont run_font = pending_font_data_->PlatformData().CreateSkFont(
@@ -220,7 +220,7 @@ void ShapeResultBloberizer::CommitPendingBlob() {
 const ShapeResultBloberizer::BlobBuffer& ShapeResultBloberizer::Blobs() {
   CommitPendingRun();
   CommitPendingBlob();
-  DCHECK(pending_glyphs_.IsEmpty());
+  DCHECK(pending_glyphs_.empty());
   DCHECK_EQ(builder_run_count_, 0u);
 
   return blobs_;
@@ -402,7 +402,7 @@ class ClusterStarts {
                          const SimpleFontData*) {
     ClusterStarts* self = static_cast<ClusterStarts*>(context);
 
-    if (self->cluster_starts_.IsEmpty() ||
+    if (self->cluster_starts_.empty() ||
         self->last_seen_character_index_ != character_index) {
       self->cluster_starts_.push_back(character_index);
       self->last_seen_character_index_ = character_index;
@@ -415,7 +415,7 @@ class ClusterStarts {
         std::adjacent_find(cluster_starts_.begin(), cluster_starts_.end()),
         cluster_starts_.end());
     DVLOG(4) << "  Cluster starts: " << base::make_span(cluster_starts_);
-    if (!cluster_starts_.IsEmpty()) {
+    if (!cluster_starts_.empty()) {
       // 'from' may point inside a cluster; the least seen index may be larger.
       DCHECK_LE(from, *cluster_starts_.begin());
       DCHECK_LT(*(cluster_starts_.end() - 1), to);

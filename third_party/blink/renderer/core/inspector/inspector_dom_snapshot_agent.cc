@@ -152,7 +152,7 @@ class DOMTreeIterator {
                                    : FlatTreeTraversal::Parent(*current_);
       path_to_current_node_.pop_back();
     }
-    DCHECK(path_to_current_node_.IsEmpty());
+    DCHECK(path_to_current_node_.empty());
   }
 
   Node* CurrentNode() const { return current_; }
@@ -713,7 +713,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
 
   auto* layout_text = To<LayoutText>(layout_object);
   Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
-  if (text_boxes.IsEmpty())
+  if (text_boxes.empty())
     return layout_index;
 
   for (const auto& text_box : text_boxes) {

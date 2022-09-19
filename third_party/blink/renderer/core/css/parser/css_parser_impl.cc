@@ -133,7 +133,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
   CSSTokenizedValue tokenized_value = ConsumeValue(stream);
   parser.ConsumeDeclarationValue(tokenized_value, unresolved_property,
                                  important, rule_type);
-  if (parser.parsed_properties_.IsEmpty()) {
+  if (parser.parsed_properties_.empty()) {
     return MutableCSSPropertyValueSet::kParseError;
   }
   return declaration->AddParsedProperties(parser.parsed_properties_);
@@ -152,7 +152,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
   CSSTokenizedValue tokenized_value = ConsumeValue(stream);
   parser.ConsumeVariableValue(tokenized_value, property_name, important,
                               is_animation_tainted);
-  if (parser.parsed_properties_.IsEmpty()) {
+  if (parser.parsed_properties_.empty()) {
     return MutableCSSPropertyValueSet::kParseError;
   } else {
     return declaration->AddParsedProperties(parser.parsed_properties_);
@@ -245,7 +245,7 @@ bool CSSParserImpl::ParseDeclarationList(
   CSSTokenizer tokenizer(string);
   CSSParserTokenStream stream(tokenizer);
   parser.ConsumeDeclarationList(stream, rule_type);
-  if (parser.parsed_properties_.IsEmpty())
+  if (parser.parsed_properties_.empty())
     return false;
 
   std::bitset<kNumCSSProperties> seen_properties;
@@ -411,7 +411,7 @@ std::unique_ptr<Vector<double>> CSSParserImpl::ParseKeyframeKeyList(
 }
 
 bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
-  DCHECK(parsed_properties_.IsEmpty());
+  DCHECK(parsed_properties_.empty());
   // Even though we might use an observer here, this is just to test if we
   // successfully parse the range, so we can temporarily remove the observer.
   CSSParserObserver* observer_copy = observer_;
@@ -419,7 +419,7 @@ bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
   ConsumeDeclaration(stream, StyleRule::kStyle);
   observer_ = observer_copy;
 
-  bool result = !parsed_properties_.IsEmpty();
+  bool result = !parsed_properties_.empty();
   parsed_properties_.clear();
   return result;
 }
@@ -1373,7 +1373,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
       CSSSelectorParser<UseArena>::ConsumeSelector(
           stream, context_, style_sheet_, observer_, arena_);
 
-  if (selector_vector.IsEmpty()) {
+  if (selector_vector.empty()) {
     // Read the rest of the prelude if there was an error
     stream.EnsureLookAhead();
     while (!stream.UncheckedAtEnd() &&
@@ -1390,7 +1390,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
   DCHECK_EQ(stream.Peek().GetType(), kLeftBraceToken);
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  if (selector_vector.IsEmpty())
+  if (selector_vector.empty())
     return nullptr;  // Parse error, invalid selector list
 
   // TODO(csharrison): How should we lazily parse css that needs the observer?
@@ -1409,7 +1409,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
 
 void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
                                            StyleRule::RuleType rule_type) {
-  DCHECK(parsed_properties_.IsEmpty());
+  DCHECK(parsed_properties_.empty());
 
   bool is_observer_rule_type =
       rule_type == StyleRule::kStyle || rule_type == StyleRule::kProperty ||
