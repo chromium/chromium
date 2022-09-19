@@ -52,8 +52,8 @@ class AccessCodeCastSinkService : public KeyedService,
   // |access_code|: the access code that is sent to the discovery server.
   // |callback|: a callback sent that returns a discovery device and the status
   // of that device.
-  void DiscoverSink(const std::string& access_code,
-                    AddSinkResultCallback callback);
+  virtual void DiscoverSink(const std::string& access_code,
+                            AddSinkResultCallback callback);
 
   // Attempts to add a sink to the Media Router.
   // |sink|: the sink that is added to the router.

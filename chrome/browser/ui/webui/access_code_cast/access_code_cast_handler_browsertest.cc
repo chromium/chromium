@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
-                       ExpectGenericErrorWhenNoSync) {
+                       ExpectProfileSynErrorWhenNoSync) {
 #if BUILDFLAG(IS_WIN)
   // TODO(b/235896651): This test sometimes timesout on win10.
   if (base::win::GetVersion() >= base::win::Version::WIN10)
@@ -122,10 +122,10 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   PressSubmit(dialog_contents);
 
   // This error code corresponds to
-  // ErrorMessage.GENERIC::AddSinkResultCode.PROFILE_SYNC_ERROR. This error code
-  // 1 refers to the ErrorMessage described within
+  // ErrorMessage.PROFILE_SYNC_ERROR::AddSinkResultCode.PROFILE_SYNC_ERROR. This
+  // error code 6 refers to the ErrorMessage described within
   // chrome/browser/resources/access_code_cast/error_message/error_message.ts
-  EXPECT_EQ(1, WaitForAddSinkErrorCode(dialog_contents));
+  EXPECT_EQ(6, WaitForAddSinkErrorCode(dialog_contents));
   CloseDialog(dialog_contents);
 }
 

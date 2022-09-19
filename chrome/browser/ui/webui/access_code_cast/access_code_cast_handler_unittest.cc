@@ -33,6 +33,9 @@
 #include "components/media_router/common/route_request_result.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +73,8 @@ class MockPage : public access_code_cast::mojom::Page {
   mojo::Receiver<access_code_cast::mojom::Page> receiver_{this};
 };
 
+const char kEmail[] = "mock_email@gmail.com";
+
 }  // namespace
 
 class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -92,7 +97,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager()->CreateTestingProfile("foo_email");
+    profile_ = profile_manager()->CreateTestingProfile(kEmail);
 
     presentation_manager_ =
         std::make_unique<NiceMock<MockWebContentsPresentationManager>>();
@@ -176,6 +181,12 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     return access_code_cast_sink_service_.get();
   }
 
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
+
+  syncer::SyncService& sync_service() { return sync_service_; }
+
   void set_expected_cast_result(mojom::RouteRequestResultCode code) {
     result_code_ = code;
   }
@@ -246,6 +257,17 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
+  void SetProfileConsent(signin::ConsentLevel consent_level) {
+    identity_test_env_.SetPrimaryAccount(kEmail, consent_level);
+  }
+
+  void SetPausedSynServiceState() {
+    sync_service_.SetTransportState(
+        syncer::SyncService::TransportState::PAUSED);
+  }
+
+  void SetSyncConsent() { sync_service_.SetHasSyncConsent(true); }
+
   const MediaSinkInternal& cast_sink_1() { return cast_sink_1_; }
   const MediaSinkInternal& cast_sink_2() { return cast_sink_2_; }
 
@@ -300,6 +322,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
   raw_ptr<MockMediaRouter> router_;
   std::unique_ptr<LoggerImpl> logger_;
+  signin::IdentityTestEnvironment identity_test_env_;
 
   static std::vector<DiscoveryNetworkInfo> GetFakeNetworkInfo() {
     return {
@@ -331,6 +354,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
       mojom::RouteRequestResultCode::OK;
   MediaSinkInternal cast_sink_1_;
   MediaSinkInternal cast_sink_2_;
+  syncer::TestSyncService sync_service_;
 };
 
 TEST_F(AccessCodeCastHandlerTest, OnSinkAddedResult) {
@@ -496,6 +520,69 @@ TEST_F(AccessCodeCastHandlerTest, RouteAlreadyExists) {
 
   EXPECT_CALL(mock_callback, Run(RouteRequestResultCode::ROUTE_ALREADY_EXISTS));
   handler()->CastToSink(mock_callback.Get());
+}
+
+// Test that demonstrates profile sync error being called if sync is not enabled
+// for the profile.
+TEST_F(AccessCodeCastHandlerTest, ProfileSyncError) {
+  MockAddSinkCallback mock_callback_failure;
+  handler()->SetIdentityManagerForTesting(
+      identity_test_env().identity_manager());
+  handler()->SetSyncServiceForTesting(&sync_service());
+
+  SetProfileConsent(signin::ConsentLevel::kSignin);
+
+  EXPECT_CALL(mock_callback_failure,
+              Run(AddSinkResultCode::PROFILE_SYNC_ERROR));
+  handler()->AddSink(
+      "foo_code",
+      access_code_cast::mojom::CastDiscoveryMethod::INPUT_ACCESS_CODE,
+      mock_callback_failure.Get());
+}
+
+// Test that demonstrates profile sync error being called if sync is paused
+// for the profile.
+TEST_F(AccessCodeCastHandlerTest, ProfileSyncPaused) {
+  MockAddSinkCallback mock_callback_failure;
+  handler()->SetIdentityManagerForTesting(
+      identity_test_env().identity_manager());
+  handler()->SetSyncServiceForTesting(&sync_service());
+  SetProfileConsent(signin::ConsentLevel::kSync);
+  SetPausedSynServiceState();
+
+  EXPECT_CALL(mock_callback_failure,
+              Run(AddSinkResultCode::PROFILE_SYNC_ERROR));
+  handler()->AddSink(
+      "foo_code",
+      access_code_cast::mojom::CastDiscoveryMethod::INPUT_ACCESS_CODE,
+      mock_callback_failure.Get());
+}
+
+// Test that demonstrates profile sync error is not called if sync is enabled
+// for the profile.
+TEST_F(AccessCodeCastHandlerTest, ProfileSyncSuccess) {
+  MockAddSinkCallback mock_callback_success;
+  handler()->SetIdentityManagerForTesting(
+      identity_test_env().identity_manager());
+  handler()->SetSyncServiceForTesting(&sync_service());
+
+  SetProfileConsent(signin::ConsentLevel::kSync);
+  SetSyncConsent();
+
+  EXPECT_CALL(mock_callback_success, Run(AddSinkResultCode::UNKNOWN_ERROR))
+      .Times(1);
+  ON_CALL(*access_service(), DiscoverSink(_, _))
+      .WillByDefault(
+          [](const std::string& access_code,
+             AccessCodeCastSinkService::AddSinkResultCallback callback) {
+            std::move(callback).Run(AddSinkResultCode::UNKNOWN_ERROR,
+                                    absl::nullopt);
+          });
+  EXPECT_CALL(*access_service(), DiscoverSink(_, _)).Times(1);
+  handler()->AddSink(
+      "foo_code",
+      access_code_cast::mojom::CastDiscoveryMethod::INPUT_ACCESS_CODE,
+      mock_callback_success.Get());
 }
 
 }  // namespace media_router

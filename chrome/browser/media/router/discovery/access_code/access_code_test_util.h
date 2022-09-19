@@ -52,6 +52,11 @@ class MockAccessCodeCastSinkService : public AccessCodeCastSinkService {
               (const MediaSinkInternal& sink,
                AddSinkResultCallback add_sink_callback),
               (override));
+
+  MOCK_METHOD(void,
+              DiscoverSink,
+              (const std::string& access_code, AddSinkResultCallback callback),
+              (override));
 };
 
 MediaRoute CreateRouteForTesting(const MediaSink::Id& sink_id);

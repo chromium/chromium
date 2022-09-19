@@ -39,5 +39,10 @@
     >
       $i18n{errorTooManyRequests}
     </template>
+    <template is="dom-if"
+      if="[[isEqual(messageCode, errorMessageEnum.PROFILE_SYNC_ERROR)]]"
+    >
+      $i18n{errorProfileSync}
+    </template>
   </template>
 </div>

@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
 
   SetUpPrimaryAccountWithHostedDomain(
       signin::ConsentLevel::kSync,
-      ProfileHelper::Get()->GetProfileByUser(user_));
+      ProfileHelper::Get()->GetProfileByUser(user_), /*sign_in_account=*/false);
 
   content::WebContentsAddedObserver observer;
   TapOn(access_code_cast_button);
