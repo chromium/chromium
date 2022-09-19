@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_H_
 
-#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -22,12 +21,6 @@ class AppLauncherTabHelper
   AppLauncherTabHelper& operator=(const AppLauncherTabHelper&) = delete;
 
   ~AppLauncherTabHelper() override;
-
-  // Creates a tab helper for `web_state` that uses `abuse_detector` to make
-  // navigation policy decisions.
-  static void CreateForWebState(web::WebState* web_state,
-                                AppLauncherAbuseDetector* abuse_detector =
-                                    [[AppLauncherAbuseDetector alloc] init]);
 
   // Returns true, if the `url` has a scheme for an external application
   // (eg. twitter:// , calshow://).

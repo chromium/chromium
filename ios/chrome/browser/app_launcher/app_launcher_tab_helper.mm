@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/browser/url_blocklist_manager.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
@@ -64,18 +65,6 @@ enum class ExternalURLRequestStatus {
 };
 
 }  // namespace
-
-// static
-void AppLauncherTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    AppLauncherAbuseDetector* abuse_detector) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(
-      UserDataKey(),
-      base::WrapUnique(new AppLauncherTabHelper(web_state, abuse_detector)));
-}
 
 AppLauncherTabHelper::AppLauncherTabHelper(
     web::WebState* web_state,

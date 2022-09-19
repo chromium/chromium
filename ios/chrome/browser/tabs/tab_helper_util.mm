@@ -22,6 +22,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
@@ -132,7 +133,8 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   commerce::CommerceTabHelper::CreateForWebState(
       web_state, is_off_the_record,
       commerce::ShoppingServiceFactory::GetForBrowserState(browser_state));
-  AppLauncherTabHelper::CreateForWebState(web_state);
+  AppLauncherTabHelper::CreateForWebState(
+      web_state, [[AppLauncherAbuseDetector alloc] init]);
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       web_state);
   password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
