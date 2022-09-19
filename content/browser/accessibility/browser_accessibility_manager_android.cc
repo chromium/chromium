@@ -575,8 +575,17 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
   // Clear set of nodes cleared from the cache after atomic update.
   nodes_already_cleared_.clear();
 
+  // When the root changes, send the new root id and a navigate signal to Java.
   if (root_changed) {
-    wcax->HandleNavigate();
+    auto* root_manager =
+        static_cast<BrowserAccessibilityManagerAndroid*>(GetRootManager());
+    DCHECK(root_manager);
+
+    auto* root = static_cast<BrowserAccessibilityAndroid*>(
+        root_manager->GetBrowserAccessibilityRoot());
+    DCHECK(root);
+
+    wcax->HandleNavigate(root->unique_id());
   }
 
   // Update the maximum number of nodes in the cache after each atomic update.

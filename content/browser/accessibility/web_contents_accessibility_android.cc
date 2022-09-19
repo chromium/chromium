@@ -29,6 +29,7 @@
 #include "net/base/data_url.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_assistant_structure.h"
+#include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/events/android/motion_event_android.h"
 
 using base::android::AttachCurrentThread;
@@ -593,12 +594,12 @@ bool WebContentsAccessibilityAndroid::OnHoverEventNoRenderer(JNIEnv* env,
   return false;
 }
 
-void WebContentsAccessibilityAndroid::HandleNavigate() {
+void WebContentsAccessibilityAndroid::HandleNavigate(int32_t root_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
     return;
-  Java_WebContentsAccessibilityImpl_handleNavigate(env, obj);
+  Java_WebContentsAccessibilityImpl_handleNavigate(env, obj, root_id);
 }
 
 void WebContentsAccessibilityAndroid::UpdateMaxNodesInCache() {
@@ -648,7 +649,7 @@ jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
     if (root)
       return static_cast<jint>(root->unique_id());
   }
-  return -1;
+  return ui::kAXAndroidInvalidViewId;
 }
 
 jboolean WebContentsAccessibilityAndroid::IsNodeValid(JNIEnv* env,
@@ -750,8 +751,7 @@ void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
       node->GetUnclippedRootFrameBoundsRect(&offscreen_result), dip_scale,
       dip_scale);
   gfx::Rect parent_relative_rect = absolute_rect;
-  bool is_root = !node->PlatformGetParent();
-  if (!is_root) {
+  if (node->PlatformGetParent()) {
     gfx::Rect parent_rect = gfx::ScaleToEnclosingRect(
         node->PlatformGetParent()->GetUnclippedRootFrameBoundsRect(), dip_scale,
         dip_scale);
@@ -762,7 +762,7 @@ void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoLocation(
       env, obj, info, unique_id, absolute_rect.x(), absolute_rect.y(),
       parent_relative_rect.x(), parent_relative_rect.y(), absolute_rect.width(),
-      absolute_rect.height(), is_root, is_offscreen);
+      absolute_rect.height(), is_offscreen);
 }
 
 jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
@@ -814,13 +814,11 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   if (obj.is_null())
     return false;
 
-  bool is_root = !node->PlatformGetParent();
-  if (!is_root) {
-    auto* android_node =
-        static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
-    Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoParent(
-        env, obj, info, android_node->unique_id());
-  }
+  int parent_id = ui::kAXAndroidInvalidViewId;
+  auto* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
+  if (parent_node)
+    parent_id = parent_node->unique_id();
 
   // Build a vector of child ids
   std::vector<int> child_ids;
@@ -852,7 +850,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoBaseAttributes(
-      env, obj, info, is_root, GetCanonicalJNIString(env, node->GetClassName()),
+      env, obj, info, unique_id, parent_id,
+      GetCanonicalJNIString(env, node->GetClassName()),
       GetCanonicalJNIString(env, node->GetRoleString()),
       GetCanonicalJNIString(env, node->GetRoleDescription()),
       base::android::ConvertUTF16ToJavaString(env, node->GetHint()),

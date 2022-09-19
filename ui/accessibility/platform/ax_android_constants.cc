@@ -41,4 +41,7 @@ const char kAXViewGroupClassname[] = "android.view.ViewGroup";
 const char kAXWebViewClassname[] = "android.webkit.WebView";
 const char16_t kSecurePasswordBullet = 0x2022;
 
+// Value should match static constant View.NO_ID in android.view.View.
+const int kAXAndroidInvalidViewId = -1;
+
 }  // namespace ui

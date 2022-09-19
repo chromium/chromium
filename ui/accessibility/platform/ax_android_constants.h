@@ -44,6 +44,10 @@ AX_EXPORT extern const char kAXViewGroupClassname[];
 AX_EXPORT extern const char kAXWebViewClassname[];
 AX_EXPORT extern const char16_t kSecurePasswordBullet;
 
+// View constants.
+
+AX_EXPORT extern const int kAXAndroidInvalidViewId;
+
 }  // namespace ui
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_ANDROID_CONSTANTS_H_

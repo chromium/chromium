@@ -309,7 +309,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void SendDelayedWindowContentChangedEvent();
   bool OnHoverEvent(const ui::MotionEventAndroid& event);
   void HandleHover(int32_t unique_id);
-  void HandleNavigate();
+  void HandleNavigate(int32_t root_id);
   void UpdateMaxNodesInCache();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
   void HandleEndOfTestSignal();

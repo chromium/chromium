@@ -650,10 +650,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isAccessibilityEnabled()) {
             return null;
         }
-        int rootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
+        if (mCurrentRootId == View.NO_ID) {
+            mCurrentRootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
+        }
 
         if (virtualViewId == View.NO_ID) {
-            return createNodeForHost(rootId);
+            return createNodeForHost(mCurrentRootId);
         }
 
         if (!isFrameInfoInitialized()) {
@@ -700,7 +702,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             info.setPackageName(mContext.getPackageName());
             info.setSource(mView, virtualViewId);
 
-            if (virtualViewId == rootId) {
+            if (virtualViewId == mCurrentRootId) {
                 info.setParent(mView);
             }
 
@@ -1558,20 +1560,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void handleContentChanged(int id) {
-        int rootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
-        if (rootId != mCurrentRootId) {
-            mCurrentRootId = rootId;
-            sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-        } else {
-            sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-        }
+        sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
     }
 
     @CalledByNative
-    private void handleNavigate() {
+    private void handleNavigate(int newRootId) {
         mAccessibilityFocusId = View.NO_ID;
         mAccessibilityFocusRect = null;
         mUserHasTouchExplored = false;
+        mCurrentRootId = newRootId;
         // Invalidate the host, since its child is now gone.
         sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
     }
@@ -1629,11 +1626,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             event.setContentDescription(null);
             requestSendAccessibilityEvent(event);
         }
-    }
-
-    @CalledByNative
-    private void setAccessibilityNodeInfoParent(AccessibilityNodeInfoCompat node, int parentId) {
-        node.setParent(mView, parentId);
     }
 
     @CalledByNative
@@ -1790,8 +1782,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void setAccessibilityNodeInfoBaseAttributes(AccessibilityNodeInfoCompat node,
-            boolean isRoot, String className, String role, String roleDescription, String hint,
-            String targetUrl, boolean canOpenPopup, boolean multiLine, int inputType,
+            int virtualViewId, int parentId, String className, String role, String roleDescription,
+            String hint, String targetUrl, boolean canOpenPopup, boolean multiLine, int inputType,
             int liveRegion, String errorMessage, int clickableScore, String display) {
         node.setClassName(className);
 
@@ -1805,8 +1797,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!targetUrl.isEmpty()) {
             bundle.putCharSequence(EXTRAS_KEY_TARGET_URL, targetUrl);
         }
-        if (isRoot) {
+        if (virtualViewId == mCurrentRootId) {
             bundle.putCharSequence(EXTRAS_KEY_SUPPORTED_ELEMENTS, mSupportedHtmlElementTypes);
+        }
+
+        if (parentId != View.NO_ID) {
+            node.setParent(mView, parentId);
         }
 
         node.setCanOpenPopup(canOpenPopup);
@@ -1984,11 +1980,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     protected void setAccessibilityNodeInfoLocation(AccessibilityNodeInfoCompat node,
             final int virtualViewId, int absoluteLeft, int absoluteTop, int parentRelativeLeft,
-            int parentRelativeTop, int width, int height, boolean isRootNode, boolean isOffscreen) {
+            int parentRelativeTop, int width, int height, boolean isOffscreen) {
         // First set the bounds in parent.
         Rect boundsInParent = new Rect(parentRelativeLeft, parentRelativeTop,
                 parentRelativeLeft + width, parentRelativeTop + height);
-        if (isRootNode) {
+        if (virtualViewId == mCurrentRootId) {
             // Offset of the web content relative to the View.
             AccessibilityCoordinates ac = mDelegate.getAccessibilityCoordinates();
             boundsInParent.offset(0, (int) ac.getContentOffsetYPix());
