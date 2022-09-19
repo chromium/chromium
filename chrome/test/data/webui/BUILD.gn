@@ -389,6 +389,14 @@ generate_grd("build_chai_grdp") {
   input_files = [ "chai.js" ]
 }
 
+generate_grd("build_mocha_grdp") {
+  testonly = true
+  grd_prefix = "webui_generated_test"
+  out_grd = "$target_gen_dir/mocha_resources.grdp"
+  input_files_base_dir = rebase_path("//third_party/mocha", "//")
+  input_files = [ "mocha.js" ]
+}
+
 generate_grd("build_web_ui_test_mojo_grdp") {
   testonly = true
   grd_prefix = "webui_generated_test"
@@ -475,6 +483,7 @@ generate_grd("build_grd") {
   input_files = [
     "chai_assert.js",
     "fake_chrome_event.js",
+    "mocha_adapter.js",
     "mock_controller.js",
     "mock_timer.js",
     "mojo_webui_test_support.js",
@@ -485,6 +494,7 @@ generate_grd("build_grd") {
 
   deps = [
     ":build_chai_grdp",
+    ":build_mocha_grdp",
     ":build_ts",
     ":build_web_ui_test_mojo_grdp",
     "bookmarks:build_grdp",
@@ -520,6 +530,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/new_tab_page/resources.grdp",
     "$target_gen_dir/side_panel/resources.grdp",
     "$target_gen_dir/metrics_reporter/resources.grdp",
+    "$target_gen_dir/mocha_resources.grdp",
     "$target_gen_dir/settings/resources.grdp",
     "$target_gen_dir/tab_search/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
