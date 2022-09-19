@@ -47,8 +47,7 @@ HtmlAudioElementCapturerSource::~HtmlAudioElementCapturerSource() {
 bool HtmlAudioElementCapturerSource::EnsureSourceIsStarted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (audio_source_ && !is_started_) {
-    // TODO(crbug.com/964463): Use per-frame task runner.
-    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
+    GetTaskRunner()->PostTask(
         FROM_HERE,
         WTF::BindOnce(&HtmlAudioElementCapturerSource::SetAudioCallback,
                       weak_factory_.GetWeakPtr()));
