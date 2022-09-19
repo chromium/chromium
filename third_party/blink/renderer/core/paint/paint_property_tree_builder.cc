@@ -2923,6 +2923,8 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   // pending transform update, we need to go ahead and do a regular transform
   // update so that the context (e.g.,
   // |translation_2d_to_layout_shift_root_delta|) is updated properly.
+  // See: ../paint/README.md#Transform-update-optimization for more on
+  // optimized transform updates
   if (object_.GetFrameView()->RemovePendingTransformUpdate(object_))
     object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
 
