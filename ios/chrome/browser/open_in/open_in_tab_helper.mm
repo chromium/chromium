@@ -53,15 +53,6 @@ const char kMimeTypeMicrosoftExcel[] = "application/vnd.ms-excel";
 
 }  // namespace content_type
 
-// static
-void OpenInTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new OpenInTabHelper(web_state)));
-  }
-}
-
 void OpenInTabHelper::SetDelegate(id<OpenInTabHelperDelegate> delegate) {
   delegate_ = delegate;
 }
