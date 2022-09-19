@@ -12,6 +12,9 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
@@ -100,14 +103,23 @@
          bannered_provider_it == _banneredViewProviderPromos.end() ||
          alert_provider_it == _alertProviderPromos.end());
 
+  id<PromosManagerCommands> promosManagerCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PromosManagerCommands);
+
   if (handler_it != _displayHandlerPromos.end()) {
     id<StandardPromoDisplayHandler> handler = handler_it->second;
+
+    if ([handler respondsToSelector:@selector(setHandler:)])
+      handler.handler = promosManagerCommandsHandler;
 
     [handler handleDisplay];
 
     [self.mediator recordImpression:handler.identifier];
   } else if (provider_it != _viewProviderPromos.end()) {
     id<StandardPromoViewProvider> provider = provider_it->second;
+
+    if ([provider respondsToSelector:@selector(setHandler:)])
+      provider.handler = promosManagerCommandsHandler;
 
     ConfirmationAlertViewController* promoViewController =
         [provider viewController];
@@ -124,6 +136,9 @@
     id<BanneredPromoViewProvider> banneredProvider =
         bannered_provider_it->second;
 
+    if ([banneredProvider respondsToSelector:@selector(setHandler:)])
+      banneredProvider.handler = promosManagerCommandsHandler;
+
     PromoStyleViewController* promoViewController =
         [banneredProvider viewController];
 
@@ -138,6 +153,9 @@
     [self.mediator recordImpression:banneredProvider.identifier];
   } else if (alert_provider_it != _alertProviderPromos.end()) {
     id<StandardPromoAlertProvider> alertProvider = alert_provider_it->second;
+
+    if ([alertProvider respondsToSelector:@selector(setHandler:)])
+      alertProvider.handler = promosManagerCommandsHandler;
 
     DCHECK([alertProvider.title length] != 0);
     DCHECK([alertProvider.message length] != 0);

@@ -15,6 +15,7 @@ source_set("promos") {
   ]
   frameworks = [ "UIKit.framework" ]
   public_deps = [
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style:promo_style",
   ]
@@ -60,7 +61,9 @@ source_set("promos_manager") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/common/ui/confirmation_alert",
