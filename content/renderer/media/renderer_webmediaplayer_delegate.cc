@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -19,6 +20,8 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {
@@ -34,6 +37,7 @@ namespace media {
 RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
     content::RenderFrame* render_frame)
     : RenderFrameObserver(render_frame),
+      blink::WebViewObserver(render_frame->GetWebView()),
       allow_idle_cleanup_(
           content::GetContentClient()->renderer()->IsIdleMediaSuspendEnabled()),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
@@ -51,7 +55,17 @@ bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
   if (is_frame_hidden_for_testing_)
     return true;
 
-  return (render_frame() && render_frame()->IsHidden());
+  // There is always a render frame except perhaps during teardown (though
+  // |this| should be deleted before that would be observable).
+  if (!render_frame())
+    return true;
+
+  // If the view is gone it means we are tearing down.
+  if (!render_frame()->GetWebView())
+    return true;
+
+  return render_frame()->GetWebView()->GetVisibilityState() !=
+         blink::mojom::PageVisibilityState::kVisible;
 }
 
 int RendererWebMediaPlayerDelegate::AddObserver(Observer* observer) {
@@ -167,24 +181,25 @@ bool RendererWebMediaPlayerDelegate::IsStale(int player_id) {
   return stale_players_.count(player_id);
 }
 
-void RendererWebMediaPlayerDelegate::WasHidden() {
-  RecordAction(base::UserMetricsAction("Media.Hidden"));
+void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
+    blink::mojom::PageVisibilityState visibility_state) {
+  if (visibility_state == blink::mojom::PageVisibilityState::kVisible) {
+    RecordAction(base::UserMetricsAction("Media.Shown"));
 
-  for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-       it.Advance())
-    it.GetCurrentValue()->OnFrameHidden();
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance())
+      it.GetCurrentValue()->OnFrameShown();
 
-  ScheduleUpdateTask();
-}
+    ScheduleUpdateTask();
+  } else {
+    RecordAction(base::UserMetricsAction("Media.Hidden"));
 
-void RendererWebMediaPlayerDelegate::WasShown() {
-  RecordAction(base::UserMetricsAction("Media.Shown"));
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance())
+      it.GetCurrentValue()->OnFrameHidden();
 
-  for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-       it.Advance())
-    it.GetCurrentValue()->OnFrameShown();
-
-  ScheduleUpdateTask();
+    ScheduleUpdateTask();
+  }
 }
 
 void RendererWebMediaPlayerDelegate::SetIdleCleanupParamsForTesting(

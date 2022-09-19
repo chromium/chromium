@@ -3811,14 +3811,14 @@ void WebViewImpl::SetVisibilityState(
     mojom::blink::PageVisibilityState visibility_state,
     bool is_initial_state) {
   DCHECK(GetPage());
-  if (!is_initial_state) {
-    // Preserve the side effects of visibility change.
-    for (auto& observer : observers_)
-      observer.OnPageVisibilityChanged(visibility_state);
-  }
   GetPage()->SetVisibilityState(visibility_state, is_initial_state);
   GetPage()->GetPageScheduler()->SetPageVisible(
       visibility_state == mojom::blink::PageVisibilityState::kVisible);
+  // Notify observers of the change.
+  if (!is_initial_state) {
+    for (auto& observer : observers_)
+      observer.OnPageVisibilityChanged(visibility_state);
+  }
 }
 
 mojom::blink::PageVisibilityState WebViewImpl::GetVisibilityState() {
