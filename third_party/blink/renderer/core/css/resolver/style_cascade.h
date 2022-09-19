@@ -269,7 +269,6 @@ class CORE_EXPORT StyleCascade {
     bool AppendTokens(base::span<const CSSParserToken>, wtf_size_t);
 
     Vector<CSSParserToken> tokens_;
-    Vector<scoped_refptr<const CSSVariableData>> variable_data_;
     // https://drafts.csswg.org/css-variables/#animation-tainted
     bool is_animation_tainted_ = false;
     // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles

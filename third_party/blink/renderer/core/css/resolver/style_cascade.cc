@@ -736,9 +736,7 @@ StyleCascade::TokenSequence::TokenSequence(const CSSVariableData* data)
       has_font_units_(data->HasFontUnits()),
       has_root_font_units_(data->HasRootFontUnits()),
       base_url_(data->BaseURL()),
-      charset_(data->Charset()) {
-  variable_data_.push_back(base::WrapRefCounted(data));
-}
+      charset_(data->Charset()) {}
 
 bool StyleCascade::TokenSequence::AppendTokens(
     base::span<const CSSParserToken> tokens,
@@ -754,7 +752,6 @@ bool StyleCascade::TokenSequence::Append(const TokenSequence& sequence,
                                          wtf_size_t limit) {
   if (!AppendTokens(base::span<const CSSParserToken>{sequence.tokens_}, limit))
     return false;
-  variable_data_.AppendVector(sequence.variable_data_);
   is_animation_tainted_ |= sequence.is_animation_tainted_;
   has_font_units_ |= sequence.has_font_units_;
   has_root_font_units_ |= sequence.has_root_font_units_;
@@ -765,7 +762,6 @@ bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
                                          wtf_size_t limit) {
   if (!AppendTokens(data->Tokens(), limit))
     return false;
-  variable_data_.push_back(base::WrapRefCounted(data));
   is_animation_tainted_ |= data->IsAnimationTainted();
   has_font_units_ |= data->HasFontUnits();
   has_root_font_units_ |= data->HasRootFontUnits();
@@ -778,13 +774,12 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token) {
 
 scoped_refptr<CSSVariableData>
 StyleCascade::TokenSequence::BuildVariableData() {
-  Vector<String> backing_strings;
-  for (scoped_refptr<const CSSVariableData>& data : variable_data_)
-    data->AppendBackingStrings(backing_strings);
-  variable_data_.clear();
-  return CSSVariableData::CreateResolved(
-      std::move(tokens_), std::move(backing_strings), is_animation_tainted_,
-      has_font_units_, has_root_font_units_, base_url_, charset_);
+  // TODO(crbug.com/661854): We have no original_text_ in this case,
+  // even though we should.
+  return CSSVariableData::Create(
+      CSSTokenizedValue{CSSParserTokenRange{tokens_}, StringView{}},
+      is_animation_tainted_, /*needs_variable_resolution=*/false,
+      KURL{base_url_}, charset_);
 }
 
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,

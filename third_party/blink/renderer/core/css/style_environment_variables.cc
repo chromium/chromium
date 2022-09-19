@@ -168,14 +168,10 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
   Vector<CSSParserToken> tokens;
   tokens.AppendVector(tokenizer.TokenizeToEOF());
 
-  Vector<String> backing_strings;
-  backing_strings.push_back(value);
-
-  scoped_refptr<CSSVariableData> variable_data =
-      CSSVariableData::CreateResolved(
-          std::move(tokens), std::move(backing_strings),
-          false /* is_animation_tainted */, false /* has_font_units */,
-          false /* has_root_font_units*/, g_null_atom, WTF::TextEncoding());
+  scoped_refptr<CSSVariableData> variable_data = CSSVariableData::Create(
+      CSSTokenizedValue{CSSParserTokenRange{tokens}, StringView{value}},
+      false /* is_animation_tainted */, false /* needs_variable_resolution */,
+      KURL{g_null_atom}, WTF::TextEncoding());
   data_.Set(name, std::move(variable_data));
   InvalidateVariable(name);
 }
@@ -198,14 +194,10 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
   Vector<CSSParserToken> tokens;
   tokens.AppendVector(tokenizer.TokenizeToEOF());
 
-  Vector<String> backing_strings;
-  backing_strings.push_back(value);
-
-  scoped_refptr<CSSVariableData> variable_data =
-      CSSVariableData::CreateResolved(
-          std::move(tokens), std::move(backing_strings),
-          false /* is_animation_tainted */, false /* has_font_units */,
-          false /* has_root_font_units*/, g_null_atom, WTF::TextEncoding());
+  scoped_refptr<CSSVariableData> variable_data = CSSVariableData::Create(
+      CSSTokenizedValue{CSSParserTokenRange{tokens}, StringView{value}},
+      false /* is_animation_tainted */, false /* needs_variable_resolution */,
+      KURL{g_null_atom}, WTF::TextEncoding());
 
   TwoDimensionVariableValues* values_to_set = nullptr;
   auto it = two_dimension_data_.find(name);

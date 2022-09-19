@@ -2167,19 +2167,11 @@ StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
   Vector<CSSParserToken> tokens;
   tokens.AppendVector(tokenizer.TokenizeToEOF());
 
-  Vector<String> backing_strings;
-  backing_strings.push_back(text);
-  // CSSTokenizer may allocate new strings for some tokens (e.g. for escapes)
-  // and produce tokens that point to those strings. We need to retain those
-  // strings (if any) as well.
-  backing_strings.AppendVector(tokenizer.StringPool());
-
-  const bool has_font_units = false;
-  const bool has_root_font_units = false;
-
-  return CSSVariableData::CreateResolved(
-      std::move(tokens), std::move(backing_strings), is_animation_tainted,
-      has_font_units, has_root_font_units, g_null_atom, WTF::TextEncoding());
+  return CSSVariableData::Create(
+      CSSTokenizedValue{CSSParserTokenRange{tokens}, StringView{text}},
+      is_animation_tainted,
+      /*needs_variable_resolution=*/false, KURL{g_null_atom},
+      WTF::TextEncoding());
 }
 
 namespace {
