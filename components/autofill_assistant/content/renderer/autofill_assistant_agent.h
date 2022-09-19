@@ -66,7 +66,7 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
       base::OnceCallback<
           void(mojom::ModelStatus, base::File, const std::string&)> callback);
 
-  mojom::AutofillAssistantDriver& GetDriver();
+  mojo::AssociatedRemote<mojom::AutofillAssistantDriver>& GetDriver();
 
   void OnGetModelFile(base::Time start_time,
                       blink::WebLocalFrame* frame,

@@ -100,6 +100,7 @@ void AutofillAssistantAgent::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::AutofillAssistantAgent>
         pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
+  receiver_.reset_on_disconnect();
 }
 
 void AutofillAssistantAgent::OnDestruct() {
@@ -135,14 +136,23 @@ void AutofillAssistantAgent::GetAnnotateDomModel(
     base::TimeDelta model_timeout,
     base::OnceCallback<void(mojom::ModelStatus, base::File, const std::string&)>
         callback) {
-  GetDriver().GetAnnotateDomModel(model_timeout, std::move(callback));
+  mojo::AssociatedRemote<mojom::AutofillAssistantDriver>& driver = GetDriver();
+
+  if (!driver || !driver.is_connected()) {
+    std::move(callback).Run(mojom::ModelStatus::kUnexpectedError, base::File(),
+                            /*overrides_policy=*/"");
+    return;
+  }
+  driver->GetAnnotateDomModel(model_timeout, std::move(callback));
 }
 
-mojom::AutofillAssistantDriver& AutofillAssistantAgent::GetDriver() {
+mojo::AssociatedRemote<mojom::AutofillAssistantDriver>&
+AutofillAssistantAgent::GetDriver() {
   if (!driver_) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&driver_);
+    driver_.reset_on_disconnect();
   }
-  return *driver_;
+  return driver_;
 }
 
 void AutofillAssistantAgent::OnGetModelFile(
