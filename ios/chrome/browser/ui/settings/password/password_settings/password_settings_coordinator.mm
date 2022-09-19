@@ -8,6 +8,7 @@
 
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -135,7 +136,9 @@
   self.mediator = [[PasswordSettingsMediator alloc]
       initWithReauthenticationModule:self.reauthModule
              savedPasswordsPresenter:_savedPasswordsPresenter.get()
-                       exportHandler:self];
+                       exportHandler:self
+                         prefService:self.browser->GetBrowserState()
+                                         ->GetPrefs()];
 
   self.dispatcher = static_cast<id<ApplicationCommands>>(
       self.browser->GetCommandDispatcher());
@@ -151,6 +154,7 @@
                         delegate:self];
 
   self.mediator.consumer = self.passwordSettingsViewController;
+  self.passwordSettingsViewController.delegate = self.mediator;
 
   [self.baseViewController
       presentViewController:self.settingsNavigationController

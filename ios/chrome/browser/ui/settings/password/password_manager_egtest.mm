@@ -361,6 +361,12 @@ void OpenPasswordManager() {
   [PasswordSettingsAppInterface passwordStoreResultsCount];
 }
 
+// Taps on the "Settings" option to show the submenu.
+void OpenSettingsSubmenu() {
+  [[EarlGrey selectElementWithMatcher:ToolbarSettingsSubmenuButton()]
+      performAction:grey_tap()];
+}
+
 // Tap Edit in any settings view.
 void TapEdit() {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
@@ -1058,6 +1064,88 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Check that stored entries are shown no matter what the preference for saving
+// passwords is.
+- (void)testStoredEntriesAlwaysShown {
+  SaveExamplePasswordForm();
+
+  OpenPasswordManager();
+
+  // Toggle the "Save Passwords" control off and back on and check that stored
+  // items are still present.
+  BOOL isSwitchEnabled =
+      [PasswordSettingsAppInterface isCredentialsServiceEnabled];
+  BOOL kExpectedState[] = {isSwitchEnabled, !isSwitchEnabled};
+  for (BOOL expected_state : kExpectedState) {
+    OpenSettingsSubmenu();
+
+    // Toggle the switch. It is located near the top, so if not interactable,
+    // try scrolling up.
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(chrome_test_util::TableViewSwitchCell(
+                           kPasswordSettingsSavePasswordSwitchTableViewId,
+                           expected_state),
+                       grey_sufficientlyVisible(), nil)]
+        performAction:TurnTableViewSwitchOn(!expected_state)];
+
+    // Check that the switch has been modified.
+    [EarlGrey selectElementWithMatcher:
+                  grey_allOf(chrome_test_util::TableViewSwitchCell(
+                                 kPasswordSettingsSavePasswordSwitchTableViewId,
+                                 !expected_state),
+                             grey_sufficientlyVisible(), nil)];
+
+    // Close settings submenu.
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(SettingsDoneButton(),
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+
+    // Check the stored items. Scroll down if needed.
+    [GetInteractionForPasswordEntry(@"example.com, concrete username")
+        assertWithMatcher:grey_notNil()];
+  }
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Check that toggling the switch for the "save passwords" preference changes
+// the settings.
+- (void)testPrefToggle {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+  // Toggle the "Save Passwords" control off and back on and check the
+  // preferences.
+  constexpr BOOL kExpectedState[] = {YES, NO};
+  for (BOOL expected_initial_state : kExpectedState) {
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::TableViewSwitchCell(
+                       kPasswordSettingsSavePasswordSwitchTableViewId,
+                       expected_initial_state)]
+        performAction:TurnTableViewSwitchOn(!expected_initial_state)];
+    const bool expected_final_state = !expected_initial_state;
+    GREYAssertEqual(expected_final_state,
+                    [PasswordSettingsAppInterface isCredentialsServiceEnabled],
+                    @"State of the UI toggle differs from real preferences.");
+  }
+
+  // "Done" to close settings submenu.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SettingsDoneButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // "Back" to go to root settings menu.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  // "Done" to close out.
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
@@ -2163,9 +2251,7 @@ id<GREYMatcher> EditDoneButton() {
 
 - (void)testOpenPasswordSettingsSubmenu {
   OpenPasswordManager();
-
-  [[EarlGrey selectElementWithMatcher:ToolbarSettingsSubmenuButton()]
-      performAction:grey_tap()];
+  OpenSettingsSubmenu();
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordsSettingsTableViewId)]

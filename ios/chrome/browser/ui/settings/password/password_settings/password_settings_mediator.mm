@@ -7,15 +7,22 @@
 #import "base/containers/cxx20_erase_vector.h"
 #import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
+#import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
+#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface PasswordSettingsMediator () <PasswordExporterDelegate,
+using password_manager::prefs::kCredentialsEnableService;
+
+@interface PasswordSettingsMediator () <BooleanObserver,
+                                        PasswordExporterDelegate,
                                         SavedPasswordsPresenterObserver> {
   // A helper object for passing data about saved passwords from a finished
   // password store request to the PasswordManagerViewController.
@@ -24,6 +31,13 @@
 
   // Service which gives us a view on users' saved passwords.
   raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
+
+  // Allows reading and writing user preferences.
+  raw_ptr<PrefService> _prefService;
+
+  // The observable boolean that binds to the password manager setting state.
+  // Saved passwords are only on if the password manager is enabled.
+  PrefBackedBoolean* _passwordManagerEnabled;
 }
 
 // Helper object which maintains state about the "Export Passwords..." flow, and
@@ -48,7 +62,8 @@
            savedPasswordsPresenter:
                (raw_ptr<password_manager::SavedPasswordsPresenter>)
                    passwordPresenter
-                     exportHandler:(id<PasswordExportHandler>)exportHandler {
+                     exportHandler:(id<PasswordExportHandler>)exportHandler
+                       prefService:(raw_ptr<PrefService>)prefService {
   self = [super init];
   if (self) {
     _passwordExporter =
@@ -60,6 +75,11 @@
             self, _savedPasswordsPresenter);
     _savedPasswordsPresenter->Init();
     _exportHandler = exportHandler;
+    _prefService = prefService;
+    _passwordManagerEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:_prefService
+                   prefName:kCredentialsEnableService];
+    _passwordManagerEnabled.observer = self;
   }
   return self;
 }
@@ -72,10 +92,13 @@
   self.exporterIsReady = self.passwordExporter.exportState == ExportState::IDLE;
   [self savedPasswordsDidChanged:_savedPasswordsPresenter->GetSavedPasswords()];
 
-  // TODO(crbug.com/1335156): Replace placeholder data with actual data piped
-  // from observing pref and enterprise policy.
-  [self.consumer setSavePasswordsEnabled:YES];
-  [self.consumer setManagedByPolicy:NO];
+  [self.consumer setSavePasswordsEnabled:_passwordManagerEnabled.value];
+
+  // TODO(crbug.com/1082827): In addition to setting this value here, we should
+  // observe for changes (i.e., if policy changes while the screen is open) and
+  // push that to the consumer.
+  [self.consumer setManagedByPolicy:_prefService->IsManagedPreference(
+                                        kCredentialsEnableService)];
 }
 
 - (void)userDidStartExportFlow {
@@ -128,10 +151,25 @@
   [self pushExportStateToConsumerAndUpdate];
 }
 
+#pragma mark - PasswordSettingsDelegate
+
+- (void)savedPasswordSwitchDidChange:(BOOL)enabled {
+  _passwordManagerEnabled.value = enabled;
+}
+
+#pragma mark - SavedPasswordsPresenterObserver
+
 - (void)savedPasswordsDidChanged:
     (password_manager::SavedPasswordsPresenter::SavedPasswordsView)passwords {
   self.hasSavedPasswords = !passwords.empty();
   [self pushExportStateToConsumerAndUpdate];
+}
+
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  DCHECK(observableBoolean == _passwordManagerEnabled);
+  [self.consumer setSavePasswordsEnabled:observableBoolean.value];
 }
 
 #pragma mark - Private

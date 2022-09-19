@@ -10,7 +10,7 @@
 @protocol PasswordSettingsDelegate
 
 // Indicates whether or not "Offer to Save Passwords" is set to enabled.
-- (void)savedPasswordSwitchDidChange:(BOOL)isEnabled;
+- (void)savedPasswordSwitchDidChange:(BOOL)enabled;
 
 @end
 

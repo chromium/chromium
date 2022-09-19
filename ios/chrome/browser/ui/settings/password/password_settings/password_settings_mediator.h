@@ -10,11 +10,12 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_delegate.h"
 
 @protocol ReauthenticationProtocol;
 
 // Mediator for the Password Settings screen.
-@interface PasswordSettingsMediator : NSObject
+@interface PasswordSettingsMediator : NSObject <PasswordSettingsDelegate>
 
 @property(nonatomic, weak) id<PasswordSettingsConsumer> consumer;
 
@@ -30,6 +31,7 @@
                (raw_ptr<password_manager::SavedPasswordsPresenter>)
                    passwordPresenter
                      exportHandler:(id<PasswordExportHandler>)exportHandler
+                       prefService:(raw_ptr<PrefService>)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
