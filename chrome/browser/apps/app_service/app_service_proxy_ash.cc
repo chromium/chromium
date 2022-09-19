@@ -208,8 +208,8 @@ void AppServiceProxyAsh::OnApps(std::vector<apps::mojom::AppPtr> deltas,
 
 void AppServiceProxyAsh::PauseApps(
     const std::map<std::string, PauseData>& pause_data) {
-  if (!app_service_.is_connected() &&
-      !base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+  if (!base::FeatureList::IsEnabled(kAppServiceWithoutMojom) &&
+      !app_service_.is_connected()) {
     return;
   }
 
@@ -252,8 +252,8 @@ void AppServiceProxyAsh::PauseApps(
 }
 
 void AppServiceProxyAsh::UnpauseApps(const std::set<std::string>& app_ids) {
-  if (!app_service_.is_connected() &&
-      !base::FeatureList::IsEnabled(kAppServiceWithoutMojom)) {
+  if (!base::FeatureList::IsEnabled(kAppServiceWithoutMojom) &&
+      !app_service_.is_connected()) {
     return;
   }
 
@@ -339,7 +339,7 @@ void AppServiceProxyAsh::FlushMojoCallsForTesting() {
 }
 
 void AppServiceProxyAsh::ReInitializeCrostiniForTesting() {
-  if (app_service_.is_connected() && publisher_host_) {
+  if (publisher_host_) {
     publisher_host_->ReInitializeCrostiniForTesting(this);  // IN-TEST
   }
 }
@@ -385,13 +385,6 @@ void AppServiceProxyAsh::UninstallImpl(const std::string& app_id,
                                        UninstallSource uninstall_source,
                                        gfx::NativeWindow parent_window,
                                        OnUninstallForTestingCallback callback) {
-  if (!app_service_.is_connected()) {
-    if (!callback.is_null()) {
-      std::move(callback).Run(false);
-    }
-    return;
-  }
-
   // If the dialog exists for the app id, we bring the dialog to the front
   auto it = uninstall_dialogs_.find(app_id);
   if (it != uninstall_dialogs_.end()) {
@@ -439,7 +432,7 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
       DCHECK(publisher);
       publisher->Uninstall(app_id, uninstall_source,
                            /*clear_site_data=*/false, /*report_abuse=*/false);
-    } else {
+    } else if (app_service_.is_connected()) {
       app_service_->Uninstall(
           ConvertAppTypeToMojomAppType(app_type), app_id,
           ConvertUninstallSourceToMojomUninstallSource(uninstall_source),
@@ -623,7 +616,7 @@ void AppServiceProxyAsh::OnPauseDialogClosed(apps::AppType app_type,
       if (publisher) {
         publisher->PauseApp(app_id);
       }
-    } else {
+    } else if (app_service_.is_connected()) {
       app_service_->PauseApp(ConvertAppTypeToMojomAppType(app_type), app_id);
     }
   }

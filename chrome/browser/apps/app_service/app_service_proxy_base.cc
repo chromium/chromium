@@ -706,65 +706,62 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     return intent_launch_info;
   }
 
-  if (app_service_.is_bound()) {
-    app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
-                                    &exclude_browsers,
-                                    &exclude_browser_tab_apps](
-                                       const apps::AppUpdate& update) {
-      if (update.Readiness() != apps::Readiness::kReady &&
-          update.Readiness() != apps::Readiness::kDisabledByPolicy) {
-        // We consider apps disabled by policy to be ready as they cause URL
-        // loads to be blocked.
-        return;
+  app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
+                                  &exclude_browsers, &exclude_browser_tab_apps](
+                                     const apps::AppUpdate& update) {
+    if (update.Readiness() != apps::Readiness::kReady &&
+        update.Readiness() != apps::Readiness::kDisabledByPolicy) {
+      // We consider apps disabled by policy to be ready as they cause URL
+      // loads to be blocked.
+      return;
+    }
+    if (!update.HandlesIntents().value_or(false)) {
+      return;
+    }
+    if (exclude_browser_tab_apps &&
+        update.WindowMode() == WindowMode::kBrowser) {
+      return;
+    }
+    // |activity_label| -> {index, is_generic}
+    std::map<std::string, IndexAndGeneric> best_handler_map;
+    bool is_file_handling_intent = !intent->files.empty();
+    size_t index = 0;
+    for (const auto& filter : update.IntentFilters()) {
+      DCHECK(filter);
+      if (exclude_browsers && filter->IsBrowserFilter()) {
+        continue;
       }
-      if (!update.HandlesIntents().value_or(false)) {
-        return;
-      }
-      if (exclude_browser_tab_apps &&
-          update.WindowMode() == WindowMode::kBrowser) {
-        return;
-      }
-      // |activity_label| -> {index, is_generic}
-      std::map<std::string, IndexAndGeneric> best_handler_map;
-      bool is_file_handling_intent = !intent->files.empty();
-      size_t index = 0;
-      for (const auto& filter : update.IntentFilters()) {
-        DCHECK(filter);
-        if (exclude_browsers && filter->IsBrowserFilter()) {
-          continue;
+      if (intent->MatchFilter(filter)) {
+        // Return the first non-generic match if it exists, otherwise the
+        // first generic match.
+        bool generic = false;
+        if (is_file_handling_intent) {
+          generic = apps_util::IsGenericFileHandler(intent, filter);
         }
-        if (intent->MatchFilter(filter)) {
-          // Return the first non-generic match if it exists, otherwise the
-          // first generic match.
-          bool generic = false;
-          if (is_file_handling_intent) {
-            generic = apps_util::IsGenericFileHandler(intent, filter);
-          }
-          std::string activity_label = GetActivityLabel(filter, update);
-          // Replace the best handler if it is generic and we have a non-generic
-          // one.
-          auto it = best_handler_map.find(activity_label);
-          if (it == best_handler_map.end() ||
-              (it->second.is_generic && !generic)) {
-            best_handler_map[activity_label] = IndexAndGeneric{index, generic};
-          }
+        std::string activity_label = GetActivityLabel(filter, update);
+        // Replace the best handler if it is generic and we have a non-generic
+        // one.
+        auto it = best_handler_map.find(activity_label);
+        if (it == best_handler_map.end() ||
+            (it->second.is_generic && !generic)) {
+          best_handler_map[activity_label] = IndexAndGeneric{index, generic};
         }
-        index++;
       }
-      const auto& filters = update.IntentFilters();
-      for (const auto& handler_entry : best_handler_map) {
-        const IntentFilterPtr& filter = filters[handler_entry.second.index];
-        IntentLaunchInfo entry;
-        entry.app_id = update.AppId();
-        entry.activity_label = GetActivityLabel(filter, update);
-        entry.activity_name = filter->activity_name.value_or("");
-        entry.is_generic_file_handler =
-            apps_util::IsGenericFileHandler(intent, filter);
-        entry.is_file_extension_match = filter->IsFileExtensionsFilter();
-        intent_launch_info.push_back(entry);
-      }
-    });
-  }
+      index++;
+    }
+    const auto& filters = update.IntentFilters();
+    for (const auto& handler_entry : best_handler_map) {
+      const IntentFilterPtr& filter = filters[handler_entry.second.index];
+      IntentLaunchInfo entry;
+      entry.app_id = update.AppId();
+      entry.activity_label = GetActivityLabel(filter, update);
+      entry.activity_name = filter->activity_name.value_or("");
+      entry.is_generic_file_handler =
+          apps_util::IsGenericFileHandler(intent, filter);
+      entry.is_file_extension_match = filter->IsFileExtensionsFilter();
+      intent_launch_info.push_back(entry);
+    }
+  });
   return intent_launch_info;
 }
 
@@ -958,6 +955,10 @@ void AppServiceProxyBase::OnApps(std::vector<AppPtr> deltas,
 void AppServiceProxyBase::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                  apps::mojom::AppType app_type,
                                  bool should_notify_initialized) {
+  if (base::FeatureList::IsEnabled(kStopMojomAppService)) {
+    return;
+  }
+
   if (app_service_.is_connected()) {
     for (const auto& delta : deltas) {
       if (delta->readiness != apps::mojom::Readiness::kUnknown &&
