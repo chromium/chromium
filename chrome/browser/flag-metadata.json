@@ -2706,14 +2706,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-payment-request-basic-card",
-    "owners": [ "web-payments-team@google.com" ],
-    // This flag is used by developers to disable the "basic-card" method, to
-    // make sure their web pages do not break after Chrome deprecates
-    // "basic-card" in M100.
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-pci-guard-ui",
     "owners": [ "jimmyxgong", "cros-peripherals@google.com" ],
     "expiry_milestone": 112
