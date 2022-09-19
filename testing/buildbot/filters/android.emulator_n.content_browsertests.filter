@@ -21,3 +21,6 @@
 
 # TODO(crbug.com/1344391)
 -All/SitePerProcessBrowserTest.KeyboardScrollBubblingFromOOPIF/1
+
+# TODO(crbug.com/1365601)
+-All/DumpAccessibilityTreeTest.AccessibilityNoSourceVideo/android
