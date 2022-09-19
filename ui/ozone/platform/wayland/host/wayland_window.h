@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_target.h"
@@ -28,6 +29,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -133,12 +135,12 @@ class WaylandWindow : public PlatformWindow,
   float window_scale() const { return window_scale_; }
   float ui_scale() const { return ui_scale_; }
 
-  // A preferred output is the one with the largest scale. This is needed to
-  // properly render contents as it seems like an expectation of Wayland.
-  // However, if all the outputs the window is located at have the same scale
-  // factor, the very first entered output is chosen as there is no way to
-  // figure out what output the window occupies the most.
-  uint32_t GetPreferredEnteredOutputId();
+  // Returns the preferred entered output id, if any. The preferred output is
+  // the one with the largest scale. This is needed to properly render contents
+  // as it seems like an expectation of Wayland. However, if all the entered
+  // outputs have the same scale factor, the very first entered output is chosen
+  // as there is no way to figure out what output the window occupies the most.
+  absl::optional<WaylandOutput::Id> GetPreferredEnteredOutputId();
 
   // Returns current type of the window.
   PlatformWindowType type() const { return type_; }
