@@ -679,7 +679,7 @@
     {
       name: "CSSGridTemplatePropertyInterpolation",
       depends_on: ["LayoutNGGridFragmentation"],
-      status: "stable",
+      status: "experimental",
     },
     {
       // This needs to be kept as a runtime flag as long as we need to forcibly
