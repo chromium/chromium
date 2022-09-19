@@ -24,10 +24,12 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
  public:
   static const char Type[];
 
+  ~AppViewGuest() override;
   AppViewGuest(const AppViewGuest&) = delete;
   AppViewGuest& operator=(const AppViewGuest&) = delete;
 
-  static GuestViewBase* Create(content::WebContents* owner_web_contents);
+  static std::unique_ptr<GuestViewBase> Create(
+      content::WebContents* owner_web_contents);
 
   // Completes the creation of a WebContents associated with the provided
   // |guest_extension_id| and |guest_instance_id| for the given
@@ -53,10 +55,9 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
  private:
   explicit AppViewGuest(content::WebContents* owner_web_contents);
 
-  ~AppViewGuest() override;
-
   // GuestViewBase implementation.
-  void CreateWebContents(const base::Value::Dict& create_params,
+  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
+                         const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
   const char* GetAPINamespace() const final;
@@ -75,9 +76,11 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
 
   void CompleteCreateWebContents(const GURL& url,
                                  const Extension* guest_extension,
+                                 std::unique_ptr<GuestViewBase> owned_this,
                                  WebContentsCreatedCallback callback);
 
   void LaunchAppAndFireEvent(
+      std::unique_ptr<GuestViewBase> owned_this,
       base::Value::Dict data,
       WebContentsCreatedCallback callback,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info);

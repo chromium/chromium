@@ -20,18 +20,19 @@ class ExtensionOptionsGuest
  public:
   static const char Type[];
 
+  ~ExtensionOptionsGuest() override;
   ExtensionOptionsGuest(const ExtensionOptionsGuest&) = delete;
   ExtensionOptionsGuest& operator=(const ExtensionOptionsGuest&) = delete;
 
-  static guest_view::GuestViewBase* Create(
+  static std::unique_ptr<GuestViewBase> Create(
       content::WebContents* owner_web_contents);
 
  private:
   explicit ExtensionOptionsGuest(content::WebContents* owner_web_contents);
-  ~ExtensionOptionsGuest() override;
 
   // GuestViewBase implementation.
-  void CreateWebContents(const base::Value::Dict& create_params,
+  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
+                         const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void GuestViewDidStopLoading() final;

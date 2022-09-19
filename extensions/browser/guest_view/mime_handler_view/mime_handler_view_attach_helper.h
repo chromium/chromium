@@ -69,11 +69,12 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
 
   // Starts the attaching process for the |guest_view|'s WebContents to its
   // outer WebContents (embedder WebContents) on the UI thread.
-  void AttachToOuterWebContents(MimeHandlerViewGuest* guest_view,
-                                int32_t embedder_render_process_id,
-                                content::RenderFrameHost* outer_contents_frame,
-                                int32_t element_instance_id,
-                                bool is_full_page_plugin);
+  void AttachToOuterWebContents(
+      std::unique_ptr<MimeHandlerViewGuest> guest_view,
+      int32_t embedder_render_process_id,
+      content::RenderFrameHost* outer_contents_frame,
+      int32_t element_instance_id,
+      bool is_full_page_plugin);
 
   // When set, the next asynchronous guestview attachment operation will call
   // `callback` when it reaches ResumeAttachOrDestroy() rather than continuing.
@@ -91,7 +92,8 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // the embedder WebContents. If |plugin_rfh| is nullptr then attaching is not
   // possible and the guest should be destroyed; otherwise it is safe to proceed
   // to attaching the WebContentses.
-  void ResumeAttachOrDestroy(int32_t element_instance_id,
+  void ResumeAttachOrDestroy(std::unique_ptr<MimeHandlerViewGuest> guest_view,
+                             int32_t element_instance_id,
                              bool is_full_page_plugin,
                              content::RenderFrameHost* plugin_rfh);
 
@@ -107,14 +109,6 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
 
   explicit MimeHandlerViewAttachHelper(
       content::RenderProcessHost* render_process_host);
-
-  // From the time the MimeHandlerViewGuest starts the attach process
-  // (AttachToOuterWebContents) to when the inner WebContents of GuestView
-  // attaches to the outer WebContents, there is a gap where the embedder
-  // RenderFrameHost (parent frame to the outer contents frame) can go away.
-  // Therefore, we keep a weak pointer to the GuestViews here (see
-  // https://crbug.com/959572).
-  base::flat_map<int32_t, base::WeakPtr<MimeHandlerViewGuest>> pending_guests_;
 
   const raw_ptr<content::RenderProcessHost> render_process_host_;
 

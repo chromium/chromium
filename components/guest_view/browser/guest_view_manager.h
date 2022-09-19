@@ -75,8 +75,9 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   int GetNextInstanceID();
 
-  using GuestViewCreateFunction = base::RepeatingCallback<GuestViewBase*(
-      content::WebContents* owner_web_contents)>;
+  using GuestViewCreateFunction =
+      base::RepeatingCallback<std::unique_ptr<GuestViewBase>(
+          content::WebContents* owner_web_contents)>;
   using GuestViewCleanUpFunction =
       base::RepeatingCallback<void(content::BrowserContext*,
                                    int embedder_process_id,
@@ -92,12 +93,24 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                                        int view_instance_id,
                                        base::OnceClosure callback);
 
-  using WebContentsCreatedCallback =
-      base::OnceCallback<void(content::WebContents*)>;
+  using UnownedGuestCreatedCallback = base::OnceCallback<void(GuestViewBase*)>;
+  using OwnedGuestCreatedCallback =
+      base::OnceCallback<void(std::unique_ptr<GuestViewBase>)>;
+  // Creates a guest and has the GuestViewManager assume ownership.
   void CreateGuest(const std::string& view_type,
                    content::WebContents* owner_web_contents,
                    const base::Value::Dict& create_params,
-                   WebContentsCreatedCallback callback);
+                   UnownedGuestCreatedCallback callback);
+  // Creates a guest which the caller will own.
+  void CreateGuestAndTransferOwnership(const std::string& view_type,
+                                       content::WebContents* owner_web_contents,
+                                       const base::Value::Dict& create_params,
+                                       OwnedGuestCreatedCallback callback);
+
+  // Transfers ownership of `guest` to the caller.
+  std::unique_ptr<GuestViewBase> TransferOwnership(GuestViewBase* guest);
+  // Have `this` manage ownership of `guest`.
+  void ManageOwnership(std::unique_ptr<GuestViewBase> guest);
 
   std::unique_ptr<content::WebContents> CreateGuestWithWebContentsParams(
       const std::string& view_type,
@@ -154,11 +167,15 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   void CallViewDestructionCallbacks(int embedder_process_id);
 
   // Creates a guest of the provided |view_type|.
-  GuestViewBase* CreateGuestInternal(content::WebContents* owner_web_contents,
-                                     const std::string& view_type);
+  std::unique_ptr<GuestViewBase> CreateGuestInternal(
+      content::WebContents* owner_web_contents,
+      const std::string& view_type);
 
   // Adds GuestView types to the GuestView registry.
   void RegisterGuestViewTypes();
+
+  // Starts observing an embedder process's lifetime.
+  void ObserveEmbedderLifetime(content::RenderProcessHost* embedder_process);
 
   // Indicates whether the provided |guest| can be used in the context it has
   // been created.
@@ -240,6 +257,13 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   // This tracks which GuestView embedders are currently being observed.
   std::set<int> embedders_observed_;
+
+  // Maps embedder process ids to unattached guests whose lifetimes are being
+  // managed by this GuestViewManager. An unattached guest's lifetime is scoped
+  // to the process that created it by this manager. Ownership is taken from
+  // this manager via `TransferOwnership` upon guest attachment, or for cases
+  // where an unattached guest needs to be destroyed earlier.
+  std::multimap<int, std::unique_ptr<GuestViewBase>> owned_guests_;
 
   // |view_destruction_callback_map_| maps from embedder process ID to view ID
   // to a vector of callback functions to be called when that view is destroyed.

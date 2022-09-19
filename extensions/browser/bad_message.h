@@ -28,7 +28,7 @@ enum BadMessageReason {
   EH_BAD_EVENT_ID = 3,
   AVG_BAD_INST_ID = 4,
   AVG_BAD_EXT_ID = 5,
-  AVG_NULL_AVG = 6,
+  OBSOLETE_AVG_NULL_AVG = 6,
   // Invalid decrement of an Extensions SW ref count.
   ESWMF_INVALID_DECREMENT_ACTIVITY = 7,
   EFD_BAD_MESSAGE = 8,

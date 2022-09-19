@@ -7,6 +7,10 @@
 
 #include "extensions/browser/extension_function.h"
 
+namespace guest_view {
+class GuestViewBase;
+}  //  namespace guest_view
+
 namespace extensions {
 
 class GuestViewInternalCreateGuestFunction : public ExtensionFunction {
@@ -27,7 +31,7 @@ class GuestViewInternalCreateGuestFunction : public ExtensionFunction {
   ResponseAction Run() final;
 
  private:
-  void CreateGuestCallback(content::WebContents* guest_web_contents);
+  void CreateGuestCallback(guest_view::GuestViewBase* guest);
 };
 
 class GuestViewInternalSetSizeFunction : public ExtensionFunction {

@@ -36,10 +36,12 @@ class WebViewInternalFindFunction;
 // a particular <webview>.
 class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
  public:
+  ~WebViewGuest() override;
   WebViewGuest(const WebViewGuest&) = delete;
   WebViewGuest& operator=(const WebViewGuest&) = delete;
 
-  static GuestViewBase* Create(content::WebContents* owner_web_contents);
+  static std::unique_ptr<GuestViewBase> Create(
+      content::WebContents* owner_web_contents);
   // Cleans up state when this GuestView is being destroyed.
   // Note that this cannot be done in the destructor since a GuestView could
   // potentially be created and destroyed in JavaScript before getting a
@@ -146,8 +148,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
  private:
   explicit WebViewGuest(content::WebContents* owner_web_contents);
 
-  ~WebViewGuest() override;
-
   void ClearCodeCache(base::Time remove_since,
                       uint32_t removal_mask,
                       base::OnceClosure callback);
@@ -169,7 +169,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                                     base::OnceCallback<void(bool)> callback);
 
   // GuestViewBase implementation.
-  void CreateWebContents(const base::Value::Dict& create_params,
+  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
+                         const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) final;
   void DidAttachToEmbedder() final;
   void DidInitialize(const base::Value::Dict& create_params) final;
@@ -183,7 +184,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool ZoomPropagatesFromEmbedderToGuest() const final;
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
-  void GuestDestroyed() final;
   void GuestReady() final;
   void GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                      const gfx::Size& new_size) final;
@@ -192,7 +192,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsAutoSizeSupported() const final;
   void SignalWhenReady(base::OnceClosure callback) final;
   void WillAttachToEmbedder() final;
-  void WillDestroy() final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
@@ -269,6 +268,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) final;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) final;
+  void WebContentsDestroyed() final;
 
   // Informs the embedder of a frame name change.
   void ReportFrameNameChange(const std::string& name);
@@ -283,10 +283,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       ui::PageTransition transition_type,
       bool force_navigation);
 
-  void RequestNewWindowPermission(
-      WindowOpenDisposition disposition,
-      const gfx::Rect& initial_bounds,
-      content::WebContents* new_contents);
+  void RequestNewWindowPermission(WindowOpenDisposition disposition,
+                                  const gfx::Rect& initial_bounds,
+                                  std::unique_ptr<WebViewGuest> new_guest);
 
   // Requests resolution of a potentially relative URL.
   GURL ResolveURL(const std::string& src);
@@ -299,7 +298,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void CreateNewGuestWebViewWindow(const content::OpenURLParams& params);
 
   void NewGuestWebViewCallback(const content::OpenURLParams& params,
-                               content::WebContents* guest_web_contents);
+                               std::unique_ptr<GuestViewBase> guest);
 
   bool HandleKeyboardShortcuts(const content::NativeWebKeyboardEvent& event);
 

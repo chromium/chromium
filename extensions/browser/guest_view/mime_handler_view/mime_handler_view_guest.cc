@@ -77,8 +77,9 @@ StreamContainer::TakeTransferrableURLLoader() {
 const char MimeHandlerViewGuest::Type[] = "mimehandler";
 
 // static
-GuestViewBase* MimeHandlerViewGuest::Create(WebContents* owner_web_contents) {
-  return new MimeHandlerViewGuest(owner_web_contents);
+std::unique_ptr<GuestViewBase> MimeHandlerViewGuest::Create(
+    WebContents* owner_web_contents) {
+  return base::WrapUnique(new MimeHandlerViewGuest(owner_web_contents));
 }
 
 MimeHandlerViewGuest::MimeHandlerViewGuest(WebContents* owner_web_contents)
@@ -163,18 +164,19 @@ int MimeHandlerViewGuest::GetTaskPrefix() const {
 }
 
 void MimeHandlerViewGuest::CreateWebContents(
+    std::unique_ptr<GuestViewBase> owned_this,
     const base::Value::Dict& create_params,
     WebContentsCreatedCallback callback) {
   const std::string* stream_id =
       create_params.FindString(mime_handler_view::kStreamId);
   if (!stream_id || stream_id->empty()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
   stream_ = MimeHandlerStreamManager::Get(browser_context())
                 ->ReleaseStream(*stream_id);
   if (!stream_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
   mime_type_ = stream_->mime_type();
@@ -187,7 +189,7 @@ void MimeHandlerViewGuest::CreateWebContents(
   if (!mime_handler_extension) {
     LOG(ERROR) << "Extension for mime_type not found, mime_type = "
                << stream_->mime_type();
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
 
@@ -225,13 +227,11 @@ void MimeHandlerViewGuest::CreateWebContents(
   WebContents::CreateParams params(browser_context(),
                                    guest_site_instance.get());
   params.guest_delegate = this;
-  // TODO(erikchen): Fix ownership semantics for guest views.
-  // https://crbug.com/832879.
-  std::move(callback).Run(
-      WebContents::CreateWithSessionStorage(
-          params,
-          owner_web_contents()->GetController().GetSessionStorageNamespaceMap())
-          .release());
+  std::move(callback).Run(std::move(owned_this),
+                          WebContents::CreateWithSessionStorage(
+                              params, owner_web_contents()
+                                          ->GetController()
+                                          .GetSessionStorageNamespaceMap()));
 }
 
 void MimeHandlerViewGuest::DidAttachToEmbedder() {
@@ -362,14 +362,6 @@ bool MimeHandlerViewGuest::SaveFrame(const GURL& url,
 
   embedder_web_contents()->SaveFrame(stream_->original_url(), referrer, rfh);
   return true;
-}
-
-void MimeHandlerViewGuest::OnRenderFrameHostDeleted(int process_id,
-                                                    int routing_id) {
-  if (process_id == embedder_frame_id_.child_id &&
-      routing_id == embedder_frame_id_.frame_routing_id) {
-    Destroy(/*also_delete=*/true);
-  }
 }
 
 void MimeHandlerViewGuest::EnterFullscreenModeForTab(

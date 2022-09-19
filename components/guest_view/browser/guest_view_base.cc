@@ -36,20 +36,24 @@ using WebContentsGuestViewMap = std::map<const WebContents*, GuestViewBase*>;
 base::LazyInstance<WebContentsGuestViewMap>::Leaky g_webcontents_guestview_map =
     LAZY_INSTANCE_INITIALIZER;
 
+void DestroyGuestIfUnattached(GuestViewBase* guest) {
+  std::unique_ptr<GuestViewBase> owned_guest =
+      guest->GetGuestViewManager()->TransferOwnership(guest);
+  owned_guest.reset();
+}
+
 }  // namespace
 
 SetSizeParams::SetSizeParams() = default;
 SetSizeParams::~SetSizeParams() = default;
 
-// TODO(832879): It would be better to have proper ownership semantics than
-// manually destroying guests and their WebContents.
-//
-// This observer ensures that the GuestViewBase destroys itself when its
-// embedder goes away. It also tracks when the embedder's fullscreen is
-// toggled so the guest can change itself accordingly.
+// This observer ensures that unattached guests don't outlive their owner
+// WebContents. It also tracks when the embedder's fullscreen is toggled so the
+// guest can change itself accordingly.
 class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
  public:
-  OwnerContentsObserver(GuestViewBase* guest, WebContents* owner_web_contents)
+  explicit OwnerContentsObserver(base::SafeRef<GuestViewBase> guest,
+                                 WebContents* owner_web_contents)
       : WebContentsObserver(owner_web_contents), guest_(guest) {}
 
   OwnerContentsObserver(const OwnerContentsObserver&) = delete;
@@ -58,37 +62,16 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   ~OwnerContentsObserver() override = default;
 
   // WebContentsObserver implementation.
-  void WebContentsDestroyed() override {
-    // If the embedder is destroyed then destroy the guest.
-    Destroy();
-  }
-
-  void PrimaryPageChanged(content::Page& page) override {
-    // TODO(1206312, 1205920): It is incorrect to assume that a navigation will
-    // destroy the embedder.
-    // If the embedder navigates to a different page then destroy the guest.
-    Destroy();
-  }
-
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override {
-    if (destroyed_)
-      return;
-    // If the embedder process is destroyed, then destroy the guest.
-    Destroy();
-  }
+  void WebContentsDestroyed() override { DestroyGuestIfUnattached(&*guest_); }
 
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override {
-    if (destroyed_)
-      return;
-
     is_fullscreen_ = entered_fullscreen;
     guest_->EmbedderFullscreenToggled(is_fullscreen_);
   }
 
   void PrimaryMainFrameWasResized(bool width_changed) override {
-    if (destroyed_ || !web_contents()->GetDelegate())
+    if (!web_contents()->GetDelegate())
       return;
 
     bool current_fullscreen =
@@ -101,36 +84,18 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   }
 
   void DidUpdateAudioMutingState(bool muted) override {
-    if (destroyed_)
-      return;
-
     guest_->web_contents()->SetAudioMuted(muted);
-  }
-
-  void RenderFrameDeleted(content::RenderFrameHost* rfh) override {
-    guest_->OnRenderFrameHostDeleted(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
   }
 
  private:
   bool is_fullscreen_ = false;
-  bool destroyed_ = false;
-  raw_ptr<GuestViewBase> guest_;
-
-  void Destroy() {
-    if (destroyed_)
-      return;
-    destroyed_ = true;
-
-    // The outer WebContents have ownership of attached OOPIF-based guests, so
-    // we are not responsible for their deletion.
-    bool also_delete = !guest_->web_contents()->GetOuterWebContents();
-    guest_->Destroy(also_delete);
-  }
+  const base::SafeRef<GuestViewBase> guest_;
 };
 
-// This observer ensures that the GuestViewBase destroys itself if its opener
+// This observer ensures that a GuestViewBase is destroyed if if its opener
 // WebContents goes away before the GuestViewBase is attached.
+// TODO(mcnee): This behaviour is WebViewGuest specific and could be moved there
+// instead.
 class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
  public:
   explicit OpenerLifetimeObserver(GuestViewBase* guest)
@@ -144,11 +109,10 @@ class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
 
   // WebContentsObserver implementation.
   void WebContentsDestroyed() override {
-    if (guest_->attached())
-      return;
-
-    // If the opener is destroyed then destroy the guest.
-    guest_->Destroy(true);
+    // If the opener is destroyed and the guest has not been attached, then
+    // destroy the guest.
+    // Destroys `this`.
+    DestroyGuestIfUnattached(guest_);
   }
 
  private:
@@ -163,22 +127,34 @@ GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
 }
 
 GuestViewBase::~GuestViewBase() {
+  DCHECK(!is_being_destroyed_);
+  is_being_destroyed_ = true;
+
+  // It is important to clear owner_web_contents_ after the call to
+  // StopTrackingEmbedderZoomLevel(), but before the rest of
+  // the statements in this function.
+  StopTrackingEmbedderZoomLevel();
+  owner_web_contents_ = nullptr;
+
   // This is not necessarily redundant with the removal when the guest contents
   // is destroyed, since we may never have initialized a guest WebContents.
   GetGuestViewManager()->RemoveGuest(guest_instance_id_);
+
+  pending_events_.clear();
 }
 
-void GuestViewBase::Init(const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) {
+void GuestViewBase::Init(std::unique_ptr<GuestViewBase> owned_this,
+                         const base::Value::Dict& create_params,
+                         GuestCreatedCallback callback) {
   if (!GetGuestViewManager()->IsGuestAvailableToContext(this)) {
     // The derived class did not create a WebContents so this class serves no
     // purpose. Let's self-destruct.
-    delete this;
+    owned_this.reset();
     std::move(callback).Run(nullptr);
     return;
   }
 
-  CreateWebContents(create_params,
+  CreateWebContents(std::move(owned_this), create_params,
                     base::BindOnce(&GuestViewBase::CompleteInit,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    create_params.Clone(), std::move(callback)));
@@ -200,10 +176,9 @@ void GuestViewBase::InitWithWebContents(const base::Value::Dict& create_params,
   zoom::ZoomController::CreateForWebContents(guest_web_contents);
 
   // At this point, we have just created the guest WebContents, we need to add
-  // an observer to the owner WebContents. This observer will be responsible
-  // for destroying the guest WebContents if the owner goes away.
-  owner_contents_observer_ =
-      std::make_unique<OwnerContentsObserver>(this, owner_web_contents_);
+  // an observer to the owner WebContents.
+  owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
+      weak_ptr_factory_.GetSafeRef(), owner_web_contents_);
 
   WebContentsObserver::Observe(guest_web_contents);
   guest_web_contents->SetDelegate(this);
@@ -381,8 +356,6 @@ std::unique_ptr<WebContents> GuestViewBase::CreateNewGuestWindow(
       GetViewType(), owner_web_contents(), create_params);
 }
 
-void GuestViewBase::OnRenderFrameHostDeleted(int process_id, int routing_id) {}
-
 void GuestViewBase::DidAttach() {
   DCHECK(attach_in_progress_);
   // Clear this flag here, as functions called below may check attached().
@@ -412,36 +385,6 @@ const GURL& GuestViewBase::GetOwnerSiteURL() const {
       ->GetSiteURL();
 }
 
-void GuestViewBase::Destroy(bool also_delete) {
-  if (is_being_destroyed_)
-    return;
-
-  is_being_destroyed_ = true;
-
-  // It is important to clear owner_web_contents_ after the call to
-  // StopTrackingEmbedderZoomLevel(), but before the rest of
-  // the statements in this function.
-  StopTrackingEmbedderZoomLevel();
-  owner_web_contents_ = nullptr;
-
-  DCHECK(web_contents());
-
-  // Give the derived class an opportunity to perform some cleanup.
-  WillDestroy();
-
-  // Invalidate weak pointers now so that bound callbacks cannot be called late
-  // into destruction. We must call this after WillDestroy because derived types
-  // may wish to access their openers.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  g_webcontents_guestview_map.Get().erase(web_contents());
-  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
-  pending_events_.clear();
-
-  if (also_delete)
-    delete web_contents();
-}
-
 void GuestViewBase::SetAttachParams(const base::Value::Dict& params) {
   attach_params_ = params.Clone();
   view_instance_id_ =
@@ -457,6 +400,7 @@ void GuestViewBase::SetOpener(GuestViewBase* guest) {
 }
 
 void GuestViewBase::WillAttach(
+    std::unique_ptr<GuestViewBase> owned_this,
     WebContents* embedder_web_contents,
     content::RenderFrameHost* outer_contents_frame,
     int element_instance_id,
@@ -471,8 +415,8 @@ void GuestViewBase::WillAttach(
   if (owner_web_contents_ != embedder_web_contents) {
     DCHECK_EQ(owner_contents_observer_->web_contents(), owner_web_contents_);
     owner_web_contents_ = embedder_web_contents;
-    owner_contents_observer_ =
-        std::make_unique<OwnerContentsObserver>(this, embedder_web_contents);
+    owner_contents_observer_ = std::make_unique<OwnerContentsObserver>(
+        weak_ptr_factory_.GetSafeRef(), embedder_web_contents);
     SetOwnerHost();
   }
 
@@ -486,15 +430,24 @@ void GuestViewBase::WillAttach(
 
   web_contents()->ResumeLoadingCreatedWebContents();
 
+  // From this point on, `this` is scoped to the guest contents' lifetime. We
+  // self-destruct in WebContentsDestroyed.
+  owned_this.release();
+  self_owned_ = true;
+  std::unique_ptr<WebContents> owned_guest_contents =
+      std::move(owned_guest_contents_);
+  DCHECK_EQ(owned_guest_contents.get(), web_contents());
+
   // Since this inner WebContents is created from the browser side we do
   // not have RemoteFrame mojo channels so we pass in
   // NullAssociatedRemote/Receivers. New channels will be bound when the
   // `CreateView` IPC is sent.
   owner_web_contents_->AttachInnerWebContents(
-      base::WrapUnique<WebContents>(web_contents()), outer_contents_frame,
+      std::move(owned_guest_contents), outer_contents_frame,
       /*remote_frame=*/mojo::NullAssociatedRemote(),
       /*remote_frame_host_receiver=*/mojo::NullAssociatedReceiver(),
       is_full_page_plugin);
+
   // We don't ACK until after AttachToOuterWebContentsFrame, so that
   // |outer_contents_frame| gets swapped before the AttachToEmbedderFrame
   // callback is run. We also need to send the ACK before queued events are sent
@@ -539,17 +492,14 @@ void GuestViewBase::RenderViewReady() {
 }
 
 void GuestViewBase::WebContentsDestroyed() {
-  Destroy(false);
-
-  // Let the derived class know that its WebContents is in the process of
-  // being destroyed. web_contents() is still valid at this point.
-  // TODO(fsamuel): This allows for reentrant code into WebContents during
-  // destruction. This could potentially lead to bugs. Perhaps we should get rid
-  // of this?
-  GuestDestroyed();
+  g_webcontents_guestview_map.Get().erase(web_contents());
+  GetGuestViewManager()->RemoveGuest(guest_instance_id_);
 
   // Self-destruct.
-  delete this;
+  if (self_owned_) {
+    DCHECK(!is_being_destroyed_);
+    delete this;
+  }
 }
 
 void GuestViewBase::DidFinishNavigation(
@@ -699,6 +649,7 @@ content::SiteInstance* GuestViewBase::GetOwnerSiteInstance() {
 }
 
 void GuestViewBase::AttachToOuterWebContentsFrame(
+    std::unique_ptr<GuestViewBase> owned_this,
     content::RenderFrameHost* embedder_frame,
     int32_t element_instance_id,
     bool is_full_page_plugin,
@@ -706,7 +657,8 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
         attachment_callback) {
   auto completion_callback =
       base::BindOnce(&GuestViewBase::DidAttach, weak_ptr_factory_.GetWeakPtr());
-  WillAttach(WebContents::FromRenderFrameHost(embedder_frame), embedder_frame,
+  WillAttach(std::move(owned_this),
+             WebContents::FromRenderFrameHost(embedder_frame), embedder_frame,
              element_instance_id, is_full_page_plugin,
              std::move(completion_callback), std::move(attachment_callback));
 }
@@ -757,18 +709,31 @@ void GuestViewBase::SendQueuedEvents() {
   }
 }
 
-void GuestViewBase::CompleteInit(base::Value::Dict create_params,
-                                 WebContentsCreatedCallback callback,
-                                 WebContents* guest_web_contents) {
+void GuestViewBase::CompleteInit(
+    base::Value::Dict create_params,
+    GuestCreatedCallback callback,
+    std::unique_ptr<GuestViewBase> owned_this,
+    std::unique_ptr<content::WebContents> guest_web_contents) {
   if (!guest_web_contents) {
     // The derived class did not create a WebContents so this class serves no
     // purpose. Let's self-destruct.
-    delete this;
+    owned_this.reset();
     std::move(callback).Run(nullptr);
     return;
   }
-  InitWithWebContents(create_params, guest_web_contents);
-  std::move(callback).Run(guest_web_contents);
+  InitWithWebContents(create_params, guest_web_contents.get());
+  TakeGuestContentsOwnership(std::move(guest_web_contents));
+  std::move(callback).Run(std::move(owned_this));
+}
+
+void GuestViewBase::TakeGuestContentsOwnership(
+    std::unique_ptr<WebContents> guest_web_contents) {
+  DCHECK(!owned_guest_contents_);
+  owned_guest_contents_ = std::move(guest_web_contents);
+}
+
+void GuestViewBase::ClearOwnedGuestContents() {
+  owned_guest_contents_.reset();
 }
 
 double GuestViewBase::GetEmbedderZoomFactor() const {

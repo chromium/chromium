@@ -16,7 +16,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/webplugininfo.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
@@ -119,16 +118,16 @@ void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(
 }
 
 void MimeHandlerViewAttachHelper::AttachToOuterWebContents(
-    MimeHandlerViewGuest* guest_view,
+    std::unique_ptr<MimeHandlerViewGuest> guest_view,
     int32_t embedder_render_process_id,
     content::RenderFrameHost* outer_contents_frame,
     int32_t element_instance_id,
     bool is_full_page_plugin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  pending_guests_[element_instance_id] = guest_view->GetWeakPtr();
-  outer_contents_frame->PrepareForInnerWebContentsAttach(base::BindOnce(
-      &MimeHandlerViewAttachHelper::ResumeAttachOrDestroy,
-      weak_factory_.GetWeakPtr(), element_instance_id, is_full_page_plugin));
+  outer_contents_frame->PrepareForInnerWebContentsAttach(
+      base::BindOnce(&MimeHandlerViewAttachHelper::ResumeAttachOrDestroy,
+                     weak_factory_.GetWeakPtr(), std::move(guest_view),
+                     element_instance_id, is_full_page_plugin));
 }
 
 // static
@@ -147,37 +146,41 @@ MimeHandlerViewAttachHelper::MimeHandlerViewAttachHelper(
   render_process_host->AddObserver(this);
 }
 
-MimeHandlerViewAttachHelper::~MimeHandlerViewAttachHelper() {}
+MimeHandlerViewAttachHelper::~MimeHandlerViewAttachHelper() = default;
 
 void MimeHandlerViewAttachHelper::ResumeAttachOrDestroy(
+    std::unique_ptr<MimeHandlerViewGuest> guest_view,
     int32_t element_instance_id,
     bool is_full_page_plugin,
     content::RenderFrameHost* plugin_rfh) {
   if (resume_attach_callback_for_testing_) {
     std::move(resume_attach_callback_for_testing_)
         .Run(base::BindOnce(&MimeHandlerViewAttachHelper::ResumeAttachOrDestroy,
-                            weak_factory_.GetWeakPtr(), element_instance_id,
-                            is_full_page_plugin, plugin_rfh));
+                            weak_factory_.GetWeakPtr(), std::move(guest_view),
+                            element_instance_id, is_full_page_plugin,
+                            plugin_rfh));
     return;
   }
 
   DCHECK(!plugin_rfh || (plugin_rfh->GetProcess() == render_process_host_));
-  auto guest_view = pending_guests_[element_instance_id];
-  pending_guests_.erase(element_instance_id);
   if (!guest_view)
     return;
   if (!plugin_rfh) {
-    mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
-        container_manager;
-    guest_view->GetEmbedderFrame()
-        ->GetRemoteAssociatedInterfaces()
-        ->GetInterface(&container_manager);
-    container_manager->DestroyFrameContainer(element_instance_id);
-    guest_view->Destroy(true);
+    auto* embedder_frame = guest_view->GetEmbedderFrame();
+    if (embedder_frame && embedder_frame->IsRenderFrameLive()) {
+      mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
+          container_manager;
+      embedder_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+          &container_manager);
+      container_manager->DestroyFrameContainer(element_instance_id);
+    }
+    guest_view.reset();
     return;
   }
-  guest_view->AttachToOuterWebContentsFrame(plugin_rfh, element_instance_id,
-                                            is_full_page_plugin,
-                                            base::NullCallback());
+
+  auto* raw_guest_view = guest_view.get();
+  raw_guest_view->AttachToOuterWebContentsFrame(
+      std::move(guest_view), plugin_rfh, element_instance_id,
+      is_full_page_plugin, base::NullCallback());
 }
 }  // namespace extensions

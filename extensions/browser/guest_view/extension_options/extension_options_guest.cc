@@ -48,11 +48,13 @@ ExtensionOptionsGuest::ExtensionOptionsGuest(WebContents* owner_web_contents)
 ExtensionOptionsGuest::~ExtensionOptionsGuest() = default;
 
 // static
-GuestViewBase* ExtensionOptionsGuest::Create(WebContents* owner_web_contents) {
-  return new ExtensionOptionsGuest(owner_web_contents);
+std::unique_ptr<GuestViewBase> ExtensionOptionsGuest::Create(
+    WebContents* owner_web_contents) {
+  return base::WrapUnique(new ExtensionOptionsGuest(owner_web_contents));
 }
 
 void ExtensionOptionsGuest::CreateWebContents(
+    std::unique_ptr<GuestViewBase> owned_this,
     const base::Value::Dict& create_params,
     WebContentsCreatedCallback callback) {
   // Get the extension's base URL.
@@ -60,14 +62,14 @@ void ExtensionOptionsGuest::CreateWebContents(
       create_params.FindString(extensionoptions::kExtensionId);
 
   if (!extension_id || !crx_file::id_util::IdIsValid(*extension_id)) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
 
   GURL extension_url =
       extensions::Extension::GetBaseURLFromExtensionId(*extension_id);
   if (!extension_url.is_valid()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
 
@@ -79,13 +81,13 @@ void ExtensionOptionsGuest::CreateWebContents(
   if (!extension) {
     // The ID was valid but the extension didn't exist. Typically this will
     // happen when an extension is disabled.
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
 
   options_page_ = extensions::OptionsPageInfo::GetOptionsPage(extension);
   if (!options_page_.is_valid()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::move(owned_this), nullptr);
     return;
   }
 
@@ -96,9 +98,7 @@ void ExtensionOptionsGuest::CreateWebContents(
       browser_context(),
       content::SiteInstance::CreateForURL(browser_context(), extension_url));
   params.guest_delegate = this;
-  // TODO(erikchen): Fix ownership semantics for guest views.
-  // https://crbug.com/832879.
-  std::move(callback).Run(WebContents::Create(params).release());
+  std::move(callback).Run(std::move(owned_this), WebContents::Create(params));
 }
 
 void ExtensionOptionsGuest::DidInitialize(

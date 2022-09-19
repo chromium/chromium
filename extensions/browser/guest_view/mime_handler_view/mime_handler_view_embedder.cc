@@ -189,7 +189,7 @@ void MimeHandlerViewEmbedder::CreateMimeHandlerViewGuest(
   }
   base::Value::Dict create_params;
   create_params.Set(mime_handler_view::kStreamId, stream_id_);
-  manager->CreateGuest(
+  manager->CreateGuestAndTransferOwnership(
       MimeHandlerViewGuest::Type, web_contents(), create_params,
       base::BindOnce(&MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest,
                      weak_factory_.GetWeakPtr(),
@@ -199,8 +199,11 @@ void MimeHandlerViewEmbedder::CreateMimeHandlerViewGuest(
 void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
     mojo::PendingRemote<mime_handler::BeforeUnloadControl>
         before_unload_control_remote,
-    content::WebContents* guest_web_contents) {
-  auto* guest_view = MimeHandlerViewGuest::FromWebContents(guest_web_contents);
+    std::unique_ptr<guest_view::GuestViewBase> guest) {
+  auto* raw_guest_view = static_cast<MimeHandlerViewGuest*>(guest.release());
+  std::unique_ptr<MimeHandlerViewGuest> guest_view =
+      base::WrapUnique(raw_guest_view);
+
   if (!guest_view)
     return;
   guest_view->SetBeforeUnloadController(
@@ -232,9 +235,9 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
       !guest_view->maybe_has_frame_container() &&
       !guest_view->GetEmbedderFrame()->GetParentOrOuterDocument();
   MimeHandlerViewAttachHelper::Get(embedder_frame_process_id)
-      ->AttachToOuterWebContents(guest_view, embedder_frame_process_id,
-                                 outer_contents_rfh_, element_instance_id,
-                                 is_full_page /* is_full_page_plugin */);
+      ->AttachToOuterWebContents(
+          std::move(guest_view), embedder_frame_process_id, outer_contents_rfh_,
+          element_instance_id, is_full_page /* is_full_page_plugin */);
   // MHVE is no longer required.
   DestroySelf();
 }

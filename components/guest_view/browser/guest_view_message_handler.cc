@@ -102,6 +102,10 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
     return;
   }
 
+  std::unique_ptr<GuestViewBase> owned_guest =
+      manager->TransferOwnership(guest);
+  DCHECK_EQ(owned_guest.get(), guest);
+
   content::WebContents* owner_web_contents = guest->owner_web_contents();
   DCHECK(owner_web_contents);
   auto* embedder_frame = RenderFrameHost::FromID(
@@ -120,9 +124,9 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
       "Extensions.GuestView.ChangeOwnerWebContentsOnAttach",
       changed_owner_web_contents);
 
-  guest->AttachToOuterWebContentsFrame(embedder_frame, element_instance_id,
-                                       false /* is_full_page_plugin */,
-                                       std::move(callback));
+  guest->AttachToOuterWebContentsFrame(
+      std::move(owned_guest), embedder_frame, element_instance_id,
+      false /* is_full_page_plugin */, std::move(callback));
 }
 
 }  // namespace guest_view

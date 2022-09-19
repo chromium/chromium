@@ -52,7 +52,7 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
   if (!sender_web_contents)
     return RespondNow(Error("Guest views can only be embedded in web content"));
 
-  GuestViewManager::WebContentsCreatedCallback callback = base::BindOnce(
+  auto callback = base::BindOnce(
       &GuestViewInternalCreateGuestFunction::CreateGuestCallback, this);
 
   // Add flag to |create_params| to indicate that the element size is specified
@@ -65,12 +65,8 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
 }
 
 void GuestViewInternalCreateGuestFunction::CreateGuestCallback(
-    content::WebContents* guest_web_contents) {
-  int guest_instance_id = 0;
-  if (guest_web_contents) {
-    GuestViewBase* guest = GuestViewBase::FromWebContents(guest_web_contents);
-    guest_instance_id = guest->guest_instance_id();
-  }
+    guest_view::GuestViewBase* guest) {
+  int guest_instance_id = guest ? guest->guest_instance_id() : 0;
 
   base::Value::Dict return_params;
   return_params.Set(guest_view::kID, guest_instance_id);
