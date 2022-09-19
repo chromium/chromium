@@ -18,7 +18,6 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -145,10 +144,6 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
           },
           this)),
       controller_(controller) {
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks. This crashes if fetching a11y node
-  // data during paint because message_view_ is null.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
                                                    kMediaControlsCornerRadius));
@@ -222,6 +217,15 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
       IDS_ASH_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK));
 
   button_row_ = AddChildView(std::move(button_row));
+
+  // Focusable views must have an accessible name when shown/painted so that
+  // the screen reader knows what to present to the user. SetTitle sets the
+  // accessible name using a string which includes the title of the song being
+  // played. That seems like the wrong string to use upon creation if nothing
+  // is playing. Therefore setting the name to a string which lacks the "now
+  // playing" information.
+  SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION));
 }
 
 void UnifiedMediaControlsView::SetIsPlaying(bool playing) {
