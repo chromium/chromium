@@ -230,7 +230,7 @@ void RemoveElementFromDocumentMap(HTMLMediaElement* element,
   DCHECK(it != map.end());
   WeakMediaElementSet* set = it->value;
   set->erase(element);
-  if (set->IsEmpty())
+  if (set->empty())
     map.erase(it);
 }
 

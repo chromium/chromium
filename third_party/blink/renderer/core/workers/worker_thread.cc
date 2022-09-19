@@ -161,7 +161,7 @@ WorkerThread::~WorkerThread() {
   InitializingWorkerThreads().erase(this);
   WorkerThreads().erase(this);
 
-  DCHECK(child_threads_.IsEmpty());
+  DCHECK(child_threads_.empty());
   DCHECK_NE(ExitCode::kNotTerminated, exit_code_);
   base::UmaHistogramEnumeration("WorkerThread.ExitCode", exit_code_);
 }
@@ -449,7 +449,7 @@ void WorkerThread::ChildThreadStartedOnWorkerThread(WorkerThread* child) {
 void WorkerThread::ChildThreadTerminatedOnWorkerThread(WorkerThread* child) {
   DCHECK(IsCurrentThread());
   child_threads_.erase(child);
-  if (child_threads_.IsEmpty() && CheckRequestedToTerminate())
+  if (child_threads_.empty() && CheckRequestedToTerminate())
     PerformShutdownOnWorkerThread();
 }
 
@@ -777,7 +777,7 @@ void WorkerThread::PerformShutdownOnWorkerThread() {
   // down this thread. ChildThreadTerminatedOnWorkerThread() is responsible
   // for completing shutdown on the worker thread after the last child shuts
   // down.
-  if (!child_threads_.IsEmpty())
+  if (!child_threads_.empty())
     return;
 
   inspector_task_runner_->Dispose();

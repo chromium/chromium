@@ -414,7 +414,7 @@ size_t ResourceLoadScheduler::GetOutstandingLimit(
 }
 
 void ResourceLoadScheduler::ShowConsoleMessageIfNeeded() {
-  if (is_console_info_shown_ || pending_request_map_.IsEmpty())
+  if (is_console_info_shown_ || pending_request_map_.empty())
     return;
 
   const base::Time limit = clock_->Now() - base::Seconds(60);

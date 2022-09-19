@@ -963,7 +963,7 @@ void Element::SetElementArrayAttribute(
     // and therefore the content attribute string should reflect the empty
     // string. This means we can stop trying to compute the content attribute
     // string.
-    if (value.IsNull() && !stored_elements->IsEmpty()) {
+    if (value.IsNull() && !stored_elements->empty()) {
       stored_elements->insert(element);
       continue;
     }
@@ -2639,7 +2639,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
     auto popups_to_hide = document.PopupsWaitingToHide();
     for (auto popup : popups_to_hide)
       popup->PopupHideFinishIfNeeded();
-    DCHECK(document.PopupsWaitingToHide().IsEmpty());
+    DCHECK(document.PopupsWaitingToHide().empty());
   }
 
   if (endpoint && endpoint->PopupType() == PopupValueType::kHint) {
@@ -2795,7 +2795,7 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
     animations.insert(animation);
   }
   animations.RemoveAll(previous_animations);
-  if (animations.IsEmpty()) {
+  if (animations.empty()) {
     // No animations to wait for: just finish immediately.
     PopupHideFinishIfNeeded();
   } else {

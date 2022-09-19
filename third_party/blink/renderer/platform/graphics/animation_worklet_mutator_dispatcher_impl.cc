@@ -117,16 +117,16 @@ AnimationWorkletMutatorDispatcherImpl::CreateMainThreadClient(
 void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
     std::unique_ptr<AnimationWorkletDispatcherInput> mutator_input) {
   TRACE_EVENT0("cc", "AnimationWorkletMutatorDispatcherImpl::mutate");
-  if (mutator_map_.IsEmpty() || !mutator_input)
+  if (mutator_map_.empty() || !mutator_input)
     return;
   base::ElapsedTimer timer;
   DCHECK(client_);
   DCHECK(host_queue_->BelongsToCurrentThread());
-  DCHECK(mutator_input_map_.IsEmpty());
+  DCHECK(mutator_input_map_.empty());
   DCHECK(outputs_->get().empty());
 
   mutator_input_map_ = CreateInputMap(*mutator_input);
-  if (mutator_input_map_.IsEmpty())
+  if (mutator_input_map_.empty())
     return;
 
   base::WaitableEvent event;
@@ -153,11 +153,11 @@ bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
     AsyncMutationCompleteCallback done_callback) {
   DCHECK(client_);
   DCHECK(host_queue_->BelongsToCurrentThread());
-  if (mutator_map_.IsEmpty() || !mutator_input)
+  if (mutator_map_.empty() || !mutator_input)
     return false;
 
   base::TimeTicks request_time = NowTicks();
-  if (!mutator_input_map_.IsEmpty()) {
+  if (!mutator_input_map_.empty()) {
     // Still running mutations from a previous frame.
     switch (queuing_strategy) {
       case MutateQueuingStrategy::kDrop:
@@ -185,7 +185,7 @@ bool AnimationWorkletMutatorDispatcherImpl::MutateAsynchronously(
   }
 
   mutator_input_map_ = CreateInputMap(*mutator_input);
-  if (mutator_input_map_.IsEmpty())
+  if (mutator_input_map_.empty())
     return false;
 
   MutateAsynchronouslyInternal(request_time, std::move(done_callback));
@@ -283,7 +283,7 @@ void AnimationWorkletMutatorDispatcherImpl::SynchronizeAnimatorName(
 }
 
 bool AnimationWorkletMutatorDispatcherImpl::HasMutators() {
-  return !mutator_map_.IsEmpty();
+  return !mutator_map_.empty();
 }
 
 AnimationWorkletMutatorDispatcherImpl::InputMap

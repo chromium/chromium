@@ -24,7 +24,7 @@ EventLoop::EventLoop(v8::Isolate* isolate,
 }
 
 EventLoop::~EventLoop() {
-  DCHECK(schedulers_.IsEmpty());
+  DCHECK(schedulers_.empty());
 }
 
 void EventLoop::EnqueueMicrotask(base::OnceClosure task) {

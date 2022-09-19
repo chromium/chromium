@@ -64,7 +64,7 @@ void WorkletAnimationController::UpdateAnimationStates() {
     if (animation->IsActiveAnimation())
       animations_.insert(GetId(*animation), animation);
   }
-  if (!animations_.IsEmpty() && document_->View())
+  if (!animations_.empty() && document_->View())
     document_->View()->ScheduleAnimation();
 }
 

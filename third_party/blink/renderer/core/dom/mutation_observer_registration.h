@@ -60,7 +60,7 @@ class CORE_EXPORT MutationObserverRegistration final
   void ClearTransientRegistrations();
   bool HasTransientRegistrations() const {
     return transient_registration_nodes_ &&
-           !transient_registration_nodes_->IsEmpty();
+           !transient_registration_nodes_->empty();
   }
   void Unregister();
 

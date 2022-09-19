@@ -43,7 +43,7 @@ CloseWatcher::WatcherStack::WatcherStack(LocalDOMWindow* window)
     : receiver_(this, window), window_(window) {}
 
 void CloseWatcher::WatcherStack::Add(CloseWatcher* watcher) {
-  if (watchers_.IsEmpty()) {
+  if (watchers_.empty()) {
     auto& host = window_->GetFrame()->GetLocalFrameHostRemote();
     host.SetCloseListener(receiver_.BindNewPipeAndPassRemote(
         window_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -53,7 +53,7 @@ void CloseWatcher::WatcherStack::Add(CloseWatcher* watcher) {
 
 void CloseWatcher::WatcherStack::Remove(CloseWatcher* watcher) {
   watchers_.erase(watcher);
-  if (watchers_.IsEmpty()) {
+  if (watchers_.empty()) {
     receiver_.reset();
   }
 }
@@ -65,14 +65,14 @@ void CloseWatcher::WatcherStack::Trace(Visitor* visitor) const {
 }
 
 void CloseWatcher::WatcherStack::EscapeKeyHandler(KeyboardEvent* event) {
-  if (!watchers_.IsEmpty() && !event->DefaultHandled() && event->isTrusted() &&
+  if (!watchers_.empty() && !event->DefaultHandled() && event->isTrusted() &&
       event->keyCode() == VKEY_ESCAPE) {
     Signal();
   }
 }
 
 void CloseWatcher::WatcherStack::Signal() {
-  while (!watchers_.IsEmpty()) {
+  while (!watchers_.empty()) {
     CloseWatcher* watcher = watchers_.back();
     watcher->close();
     if (!watcher->IsGroupedWithPrevious()) {

@@ -55,7 +55,7 @@ ExecutionContext* NavigatorManagedData::GetExecutionContext() const {
 bool NavigatorManagedData::HasPendingActivity() const {
   // Prevents garbage collecting of this object when not hold by another
   // object but still has listeners registered.
-  return !pending_promises_.IsEmpty() || HasEventListeners();
+  return !pending_promises_.empty() || HasEventListeners();
 }
 
 void NavigatorManagedData::Trace(Visitor* visitor) const {

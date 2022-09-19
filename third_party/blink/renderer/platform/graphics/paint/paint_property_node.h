@@ -298,7 +298,7 @@ class PropertyTreePrinter {
   }
 
   String NodesAsTreeString() {
-    if (nodes_.IsEmpty())
+    if (nodes_.empty())
       return "";
     StringBuilder string_builder;
     BuildTreeString(string_builder, RootNode(), 0);

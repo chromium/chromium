@@ -243,7 +243,7 @@ void CSSSegmentedFontFace::Trace(Visitor* visitor) const {
 }
 
 bool FontFaceList::IsEmpty() const {
-  return css_connected_face_.IsEmpty() && non_css_connected_face_.IsEmpty();
+  return css_connected_face_.empty() && non_css_connected_face_.empty();
 }
 
 namespace {

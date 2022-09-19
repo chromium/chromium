@@ -217,7 +217,7 @@ class SavedFormState {
   static std::unique_ptr<SavedFormState> Deserialize(const Vector<String>&,
                                                      wtf_size_t& index);
   void SerializeTo(Vector<String>&) const;
-  bool IsEmpty() const { return state_for_new_controls_.IsEmpty(); }
+  bool IsEmpty() const { return state_for_new_controls_.empty(); }
   void AppendControlState(const AtomicString& name,
                           const AtomicString& type,
                           const FormControlState&);
@@ -297,7 +297,7 @@ void SavedFormState::AppendControlState(const AtomicString& name,
 
 FormControlState SavedFormState::TakeControlState(const AtomicString& name,
                                                   const AtomicString& type) {
-  if (state_for_new_controls_.IsEmpty())
+  if (state_for_new_controls_.empty())
     return FormControlState();
   ControlStateMap::iterator it =
       state_for_new_controls_.find(ControlKey(name.Impl(), type.Impl()));
@@ -514,12 +514,12 @@ void FormController::SetStateForNewControls(
 }
 
 bool FormController::HasControlStates() const {
-  return !saved_form_state_map_.IsEmpty();
+  return !saved_form_state_map_.empty();
 }
 
 FormControlState FormController::TakeStateForControl(
     const ListedElement& control) {
-  if (saved_form_state_map_.IsEmpty())
+  if (saved_form_state_map_.empty())
     return FormControlState();
   if (!form_key_generator_)
     form_key_generator_ = MakeGarbageCollected<FormKeyGenerator>();

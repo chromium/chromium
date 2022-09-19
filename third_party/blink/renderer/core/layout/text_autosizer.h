@@ -272,7 +272,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     Fingerprint Get(const LayoutObject*);
     BlockSet* GetTentativeClusterRoots(Fingerprint);
     Supercluster* CreateSuperclusterIfNeeded(LayoutBlock*, bool& is_new_entry);
-    bool HasFingerprints() const { return !fingerprints_.IsEmpty(); }
+    bool HasFingerprints() const { return !fingerprints_.empty(); }
     HeapHashSet<Member<Supercluster>>&
     GetPotentiallyInconsistentSuperclusters() {
       return potentially_inconsistent_superclusters_;

@@ -32,7 +32,7 @@ class V8GlobalValueMapTraits {
   typedef HashMap<KeyType, v8::PersistentContainerValue> Impl;
   typedef typename Impl::iterator Iterator;
   static size_t Size(const Impl* impl) { return impl->size(); }
-  static bool Empty(Impl* impl) { return impl->IsEmpty(); }
+  static bool Empty(Impl* impl) { return impl->empty(); }
   static void Swap(Impl& impl, Impl& other) { impl.swap(other); }
   static Iterator Begin(Impl* impl) { return impl->begin(); }
   static Iterator End(Impl* impl) { return impl->end(); }

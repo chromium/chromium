@@ -67,7 +67,7 @@ void VideoFrameMonitor::OnCloseFrameLocked(const std::string& source_id,
   DCHECK_GT(it_frame->value, 0);
   if (--it_frame->value == 0) {
     frame_map.erase(it_frame);
-    if (frame_map.IsEmpty())
+    if (frame_map.empty())
       map_.erase(it_source);
   }
 }

@@ -63,7 +63,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
   // here, instead of in the resource fetcher. https://crbug.com/500701.
   if ((!cached_style_sheet->ErrorOccurred() &&
        !owner_->FastGetAttribute(html_names::kIntegrityAttr).IsEmpty() &&
-       !cached_style_sheet->IntegrityMetadata().IsEmpty()) ||
+       !cached_style_sheet->IntegrityMetadata().empty()) ||
       resource->IsLinkPreload()) {
     ResourceIntegrityDisposition disposition =
         cached_style_sheet->IntegrityDisposition();

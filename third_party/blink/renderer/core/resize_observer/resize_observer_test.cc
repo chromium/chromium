@@ -262,7 +262,7 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
       ->RunScript(&Window());
   ThreadState::Current()->CollectAllGarbageForTesting();
   WebHeap::CollectAllGarbageForTesting();
-  ASSERT_EQ(observers.IsEmpty(), true);
+  ASSERT_EQ(observers.empty(), true);
 
   //
   // Test whether ResizeObserver is kept alive by an Element
@@ -281,7 +281,7 @@ TEST_F(ResizeObserverUnitTest, TestMemoryLeaks) {
       ->RunScript(&Window());
   ThreadState::Current()->CollectAllGarbageForTesting();
   WebHeap::CollectAllGarbageForTesting();
-  ASSERT_EQ(observers.IsEmpty(), true);
+  ASSERT_EQ(observers.empty(), true);
 }
 
 }  // namespace blink

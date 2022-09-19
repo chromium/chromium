@@ -155,7 +155,7 @@ static void SortBlock(unsigned from,
     }
   }
 
-  DCHECK(parent_nodes.IsEmpty());
+  DCHECK(parent_nodes.empty());
 }
 
 void NodeSet::Sort() const {

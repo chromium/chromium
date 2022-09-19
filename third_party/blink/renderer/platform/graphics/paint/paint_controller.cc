@@ -737,7 +737,7 @@ size_t PaintController::ApproximateUnsharedMemoryUsage() const {
   memory_usage += current_subsequences_.map.Capacity() *
                   sizeof(decltype(current_subsequences_.map)::value_type);
   memory_usage += current_subsequences_.tree.CapacityInBytes();
-  DCHECK(new_subsequences_.map.IsEmpty());
+  DCHECK(new_subsequences_.map.empty());
   memory_usage += new_subsequences_.map.Capacity() *
                   sizeof(decltype(new_subsequences_.map)::value_type);
   memory_usage += new_subsequences_.tree.CapacityInBytes();

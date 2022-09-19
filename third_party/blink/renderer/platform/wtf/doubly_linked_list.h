@@ -82,7 +82,7 @@ class DoublyLinkedList {
   DoublyLinkedList(const DoublyLinkedList&) = delete;
   DoublyLinkedList& operator=(const DoublyLinkedList&) = delete;
 
-  bool IsEmpty() const;
+  bool empty() const;
   wtf_size_t size() const;  // This is O(n).
   void Clear();
 
@@ -137,7 +137,7 @@ inline DoublyLinkedList<T, PointerType>::DoublyLinkedList()
 }
 
 template <typename T, typename PointerType>
-inline bool DoublyLinkedList<T, PointerType>::IsEmpty() const {
+inline bool DoublyLinkedList<T, PointerType>::empty() const {
   return !head_;
 }
 

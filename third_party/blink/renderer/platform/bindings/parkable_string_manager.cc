@@ -375,9 +375,8 @@ void ParkableStringManager::AgeStringsAndPark() {
   // we need to age and park strings after the renderer becomes idle, meaning
   // that this has to run when the idle tasks are not. As a consequence, it
   // is important to make sure that this will not reschedule tasks forever.
-  bool reschedule =
-      (!unparked_strings_.IsEmpty() || !parked_strings_.IsEmpty()) &&
-      can_make_progress;
+  bool reschedule = (!unparked_strings_.empty() || !parked_strings_.empty()) &&
+                    can_make_progress;
   if (reschedule)
     ScheduleAgingTaskIfNeeded();
 }

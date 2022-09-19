@@ -66,7 +66,7 @@ class PLATFORM_EXPORT OpenTypeVerticalData
   explicit OpenTypeVerticalData(sk_sp<SkTypeface>);
 
   void LoadMetrics(sk_sp<SkTypeface>);
-  bool HasVORG() const { return !vert_origin_y_.IsEmpty(); }
+  bool HasVORG() const { return !vert_origin_y_.empty(); }
 
   HashMap<Glyph, Glyph> vertical_glyph_map_;
   Vector<uint16_t> advance_widths_;

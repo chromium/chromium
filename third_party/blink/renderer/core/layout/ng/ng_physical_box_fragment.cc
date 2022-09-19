@@ -525,7 +525,7 @@ NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
   DCHECK(has_fragmented_out_of_flow_data_);
   DCHECK_EQ(has_fragmented_out_of_flow_data_,
             !builder->oof_positioned_fragmentainer_descendants_.empty() ||
-                !builder->multicols_with_pending_oofs_.IsEmpty());
+                !builder->multicols_with_pending_oofs_.empty());
   NGFragmentedOutOfFlowData* fragmented_data =
       MakeGarbageCollected<NGFragmentedOutOfFlowData>();
   fragmented_data->oof_positioned_fragmentainer_descendants.ReserveCapacity(

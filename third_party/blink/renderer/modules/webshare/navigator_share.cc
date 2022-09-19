@@ -234,7 +234,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 // the platform-specific bug, it is explicitly skipping section §2.1.2 step 2 of
 // the Web Share spec. https://www.w3.org/TR/web-share/#share-method
 #if !BUILDFLAG(IS_ANDROID)
-  if (!clients_.IsEmpty()) {
+  if (!clients_.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A earlier share had not yet completed.");
     return ScriptPromise();

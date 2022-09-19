@@ -1434,7 +1434,7 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
     if (floating_objects_) {
       floating_objects_->Clear();
     }
-    if (!old_intruding_float_set.IsEmpty())
+    if (!old_intruding_float_set.empty())
       MarkAllDescendantsWithFloatsForLayout();
     return;
   }
@@ -1569,7 +1569,7 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
     }
 
     MarkLinesDirtyInBlockRange(change_logical_top, change_logical_bottom);
-  } else if (!old_intruding_float_set.IsEmpty()) {
+  } else if (!old_intruding_float_set.empty()) {
     // If there are previously intruding floats that no longer intrude, then
     // children with floats should also get layout because they might need their
     // floating object lists cleared.
@@ -1579,9 +1579,9 @@ void LayoutBlockFlow::RebuildFloatsFromIntruding() {
       const FloatingObjectSet& floating_object_set = floating_objects_->Set();
       FloatingObjectSetIterator end = floating_object_set.end();
       for (FloatingObjectSetIterator it = floating_object_set.begin();
-           it != end && !old_intruding_float_set.IsEmpty(); ++it)
+           it != end && !old_intruding_float_set.empty(); ++it)
         old_intruding_float_set.erase((*it)->GetLayoutObject());
-      if (!old_intruding_float_set.IsEmpty())
+      if (!old_intruding_float_set.empty())
         MarkAllDescendantsWithFloatsForLayout();
     }
   }
@@ -3591,7 +3591,7 @@ void LayoutBlockFlow::RemoveFloatingObjectsBelow(FloatingObject* last_float,
   while (curr != last_float &&
          (!curr->IsPlaced() || LogicalTopForFloat(*curr) >= logical_offset)) {
     floating_objects_->Remove(curr);
-    if (floating_object_set.IsEmpty())
+    if (floating_object_set.empty())
       break;
     curr = floating_object_set.back().Get();
   }
@@ -3625,7 +3625,7 @@ bool LayoutBlockFlow::PlaceNewFloats(LayoutUnit logical_top_margin_edge,
     return false;
 
   const FloatingObjectSet& floating_object_set = floating_objects_->Set();
-  if (floating_object_set.IsEmpty())
+  if (floating_object_set.empty())
     return false;
 
   // If all floats have already been positioned, then we have no work to do.

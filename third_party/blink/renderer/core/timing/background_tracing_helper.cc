@@ -130,7 +130,7 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   // are permitted to be included in background traces. See crbug.com/1181774.
 
   // If there's no allow-list, then bail early.
-  if (GetSiteMarkHashMap().IsEmpty())
+  if (GetSiteMarkHashMap().empty())
     return;
 
   // Only support http and https origins to actual remote servers.

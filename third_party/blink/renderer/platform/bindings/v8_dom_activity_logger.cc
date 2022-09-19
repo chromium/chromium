@@ -128,7 +128,7 @@ V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld() {
 V8DOMActivityLogger*
 V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorldForMainThread() {
   DCHECK(IsMainThread());
-  if (DomActivityLoggersForIsolatedWorld().IsEmpty())
+  if (DomActivityLoggersForIsolatedWorld().empty())
     return nullptr;
   return CurrentActivityLoggerIfIsolatedWorld(
       V8PerIsolateData::MainThreadIsolate());

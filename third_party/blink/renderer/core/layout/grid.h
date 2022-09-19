@@ -64,7 +64,7 @@ class CORE_EXPORT Grid : public GarbageCollected<Grid> {
   }
 
   // Note that out of flow children are not grid items.
-  bool HasGridItems() const { return !grid_item_area_.IsEmpty(); }
+  bool HasGridItems() const { return !grid_item_area_.empty(); }
 
   GridArea GridItemArea(const LayoutBox&) const;
   void SetGridItemArea(const LayoutBox&, GridArea);

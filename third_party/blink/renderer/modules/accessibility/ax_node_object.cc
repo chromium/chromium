@@ -790,7 +790,7 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
 // page's banner/contentInfo.
 static HashSet<QualifiedName>& GetLandmarkRolesNotAllowed() {
   DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, landmark_roles_not_allowed, ());
-  if (landmark_roles_not_allowed.IsEmpty()) {
+  if (landmark_roles_not_allowed.empty()) {
     landmark_roles_not_allowed.insert(html_names::kArticleTag);
     landmark_roles_not_allowed.insert(html_names::kAsideTag);
     landmark_roles_not_allowed.insert(html_names::kNavTag);

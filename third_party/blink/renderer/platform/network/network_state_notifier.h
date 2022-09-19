@@ -127,8 +127,8 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   NetworkStateNotifier& operator=(const NetworkStateNotifier&) = delete;
 
   ~NetworkStateNotifier() {
-    DCHECK(connection_observers_.IsEmpty());
-    DCHECK(on_line_state_observers_.IsEmpty());
+    DCHECK(connection_observers_.empty());
+    DCHECK(on_line_state_observers_.empty());
   }
 
   // Can be called on any thread.

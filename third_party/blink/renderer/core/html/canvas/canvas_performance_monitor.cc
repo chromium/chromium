@@ -182,7 +182,7 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
   size_t blink_gc_alloc_kb =
       ProcessHeap::TotalAllocatedObjectSize() / kKiloByte;
 
-  while (!rendering_context_descriptions_.IsEmpty()) {
+  while (!rendering_context_descriptions_.empty()) {
     RenderingContextDescriptionCodec desc(
         rendering_context_descriptions_.TakeAny());
 
@@ -290,7 +290,6 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
                                  static_cast<int>(blink_gc_alloc_kb));
     }
   }
-
 }
 
 void CanvasPerformanceMonitor::DidProcessTask(TimeTicks start_time,

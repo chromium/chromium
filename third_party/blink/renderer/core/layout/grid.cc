@@ -56,7 +56,7 @@ void Grid::SetGridItemPaintOrder(const LayoutBox& item, wtf_size_t order) {
 
 #if DCHECK_IS_ON()
 bool Grid::HasAnyGridItemPaintOrder() const {
-  return !grid_items_indexes_map_.IsEmpty();
+  return !grid_items_indexes_map_.empty();
 }
 #endif
 

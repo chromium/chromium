@@ -1406,7 +1406,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
   HashSet<PropertyHandle> suppressed_transitions;
 
-  if (!pending_update_.NewTransitions().IsEmpty()) {
+  if (!pending_update_.NewTransitions().empty()) {
     element->GetDocument()
         .GetDocumentAnimations()
         .IncrementTrasitionGeneration();
@@ -1462,7 +1462,7 @@ CSSAnimations::CreateCancelledTransitionsSet(
     ElementAnimations* element_animations,
     CSSAnimationUpdate& update) {
   HeapHashSet<Member<const Animation>> cancelled_transitions;
-  if (!update.CancelledTransitions().IsEmpty()) {
+  if (!update.CancelledTransitions().empty()) {
     DCHECK(element_animations);
     const TransitionMap& transition_map =
         element_animations->CssAnimations().transitions_;
@@ -1969,8 +1969,7 @@ void CSSAnimations::CalculateAnimationActiveInterpolations(
   EffectStack* effect_stack =
       element_animations ? &element_animations->GetEffectStack() : nullptr;
 
-  if (update.NewAnimations().empty() &&
-      update.SuppressedAnimations().IsEmpty()) {
+  if (update.NewAnimations().empty() && update.SuppressedAnimations().empty()) {
     AdoptActiveAnimationInterpolations(effect_stack, update, nullptr, nullptr);
     return;
   }
@@ -1996,8 +1995,8 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
       element_animations ? &element_animations->GetEffectStack() : nullptr;
 
   ActiveInterpolationsMap active_interpolations_for_transitions;
-  if (update.NewTransitions().IsEmpty() &&
-      update.CancelledTransitions().IsEmpty()) {
+  if (update.NewTransitions().empty() &&
+      update.CancelledTransitions().empty()) {
     active_interpolations_for_transitions = EffectStack::ActiveInterpolations(
         effect_stack, nullptr, nullptr, KeyframeEffect::kTransitionPriority,
         IsCSSPropertyHandle);
@@ -2018,8 +2017,7 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
       update.ActiveInterpolationsForAnimations();
   // Properties being animated by animations don't get values from transitions
   // applied.
-  if (!animations.IsEmpty() &&
-      !active_interpolations_for_transitions.IsEmpty()) {
+  if (!animations.empty() && !active_interpolations_for_transitions.empty()) {
     for (const auto& entry : animations)
       active_interpolations_for_transitions.erase(entry.key);
   }

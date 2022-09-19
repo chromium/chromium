@@ -82,8 +82,8 @@ HID::HID(NavigatorBase& navigator)
 }
 
 HID::~HID() {
-  DCHECK(get_devices_promises_.IsEmpty());
-  DCHECK(request_device_promises_.IsEmpty());
+  DCHECK(get_devices_promises_.empty());
+  DCHECK(request_device_promises_.empty());
 }
 
 ExecutionContext* HID::GetExecutionContext() const {

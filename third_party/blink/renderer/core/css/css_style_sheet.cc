@@ -228,7 +228,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
   Document* document = OwnerDocument();
   if (!document || !document->IsActive())
     return;
-  if (!custom_element_tag_names_.IsEmpty()) {
+  if (!custom_element_tag_names_.empty()) {
     document->GetStyleEngine().ScheduleCustomElementInvalidations(
         custom_element_tag_names_);
   }
@@ -237,7 +237,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
     document->GetStyleEngine().SetNeedsActiveStyleUpdate(
         ownerNode()->GetTreeScope());
     invalidate_matched_properties_cache = true;
-  } else if (!adopted_tree_scopes_.IsEmpty()) {
+  } else if (!adopted_tree_scopes_.empty()) {
     for (auto tree_scope : adopted_tree_scopes_) {
       // It is currently required that adopted sheets can not be moved between
       // documents.

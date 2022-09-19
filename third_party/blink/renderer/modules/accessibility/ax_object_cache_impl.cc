@@ -2509,8 +2509,8 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
 #if DCHECK_IS_ON()
     DCHECK_LE(++loop_counter, 100) << "Probable infinite loop detected.";
 #endif
-  } while (!nodes_with_pending_children_changed_.IsEmpty() ||
-           !GetInvalidatedIds(document).IsEmpty());
+  } while (!nodes_with_pending_children_changed_.empty() ||
+           !GetInvalidatedIds(document).empty());
 
   // Send events to RenderAccessibilityImpl, which serializes them and then
   // sends the serialized events and dirty objects to the browser process.
@@ -2524,8 +2524,8 @@ bool AXObjectCacheImpl::IsDirty() const {
          !tree_update_callback_queue_popup_.empty() ||
          !notifications_to_post_main_.empty() ||
          !notifications_to_post_popup_.empty() ||
-         !invalidated_ids_main_.IsEmpty() ||
-         !invalidated_ids_popup_.IsEmpty() || relation_cache_->IsDirty();
+         !invalidated_ids_main_.empty() || !invalidated_ids_popup_.empty() ||
+         relation_cache_->IsDirty();
 }
 
 void AXObjectCacheImpl::EmbeddingTokenChanged(HTMLFrameOwnerElement* element) {
@@ -3839,7 +3839,7 @@ AXObject* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
 }
 
 void AXObjectCacheImpl::SerializeLocationChanges() {
-  if (changed_bounds_ids_.IsEmpty())
+  if (changed_bounds_ids_.empty())
     return;
   Vector<mojom::blink::LocationChangesPtr> changes;
   changes.ReserveCapacity(changed_bounds_ids_.size());

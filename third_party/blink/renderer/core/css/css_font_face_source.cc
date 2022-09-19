@@ -100,7 +100,7 @@ void CSSFontFaceSource::PruneOldestIfNeeded() {
 
 void CSSFontFaceSource::PruneTable() {
   AutoLockForParallelTextShaping guard(lock_);
-  if (font_data_table_.IsEmpty())
+  if (font_data_table_.empty())
     return;
 
   for (const auto& item : font_data_table_) {

@@ -240,7 +240,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool ContainsFloats() const {
     NOT_DESTROYED();
-    return floating_objects_ && !floating_objects_->Set().IsEmpty();
+    return floating_objects_ && !floating_objects_->Set().empty();
   }
   bool ContainsFloat(LayoutBox*) const;
 

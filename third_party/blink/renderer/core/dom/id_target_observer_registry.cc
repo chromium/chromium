@@ -49,20 +49,20 @@ void IdTargetObserverRegistry::AddObserver(const AtomicString& id,
 
 void IdTargetObserverRegistry::RemoveObserver(const AtomicString& id,
                                               IdTargetObserver* observer) {
-  if (id.IsEmpty() || registry_.IsEmpty())
+  if (id.IsEmpty() || registry_.empty())
     return;
 
   IdToObserverSetMap::iterator iter = registry_.find(id.Impl());
 
   ObserverSet* set = iter->value.Get();
   set->erase(observer);
-  if (set->IsEmpty() && set != notifying_observers_in_set_)
+  if (set->empty() && set != notifying_observers_in_set_)
     registry_.erase(iter);
 }
 
 void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
   DCHECK(!id.IsEmpty());
-  DCHECK(!registry_.IsEmpty());
+  DCHECK(!registry_.empty());
 
   auto it_reg = registry_.find(id.Impl());
   if (it_reg != registry_.end())
@@ -77,17 +77,17 @@ void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
       observer->IdTargetChanged();
   }
 
-  if (notifying_observers_in_set_->IsEmpty())
+  if (notifying_observers_in_set_->empty())
     registry_.erase(id.Impl());
 
   notifying_observers_in_set_ = nullptr;
 }
 
 bool IdTargetObserverRegistry::HasObservers(const AtomicString& id) const {
-  if (id.IsEmpty() || registry_.IsEmpty())
+  if (id.IsEmpty() || registry_.empty())
     return false;
   auto it = registry_.find(id.Impl());
-  return it != registry_.end() ? !it->value->IsEmpty() : false;
+  return it != registry_.end() ? !it->value->empty() : false;
 }
 
 }  // namespace blink

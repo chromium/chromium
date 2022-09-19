@@ -222,7 +222,7 @@ ProfilerGroup::~ProfilerGroup() {
 }
 
 void ProfilerGroup::WillBeDestroyed() {
-  while (!profilers_.IsEmpty()) {
+  while (!profilers_.empty()) {
     Profiler* profiler = profilers_.begin()->Get();
     DCHECK(profiler);
     CancelProfiler(profiler);

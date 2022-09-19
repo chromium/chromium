@@ -75,7 +75,7 @@ void MojomSpeechSynthesisMock::SpeakNext() {
   current_utterance_.reset();
   current_client_.reset();
 
-  if (queued_requests_.IsEmpty())
+  if (queued_requests_.empty())
     return;
 
   SpeechRequest next_request = queued_requests_.TakeFirst();

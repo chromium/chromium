@@ -597,7 +597,7 @@ static inline void SetLogicalWidthForTextRun(
         glyph_bounds.Union(word_glyph_bounds);
         measured_width += word_measurement.width;
       }
-      if (!word_measurement.fallback_fonts.IsEmpty()) {
+      if (!word_measurement.fallback_fonts.empty()) {
         HashSet<const SimpleFontData*>::const_iterator end =
             word_measurement.fallback_fonts.end();
         for (HashSet<const SimpleFontData*>::const_iterator it =
@@ -631,7 +631,7 @@ static inline void SetLogicalWidthForTextRun(
   glyph_overflow.SetFromBounds(glyph_bounds, font, measured_width);
 
   run->box_->SetLogicalWidth(LayoutUnit(measured_width) + hyphen_width);
-  if (!fallback_fonts.IsEmpty()) {
+  if (!fallback_fonts.empty()) {
     DCHECK(run->box_->IsText());
     GlyphOverflowAndFallbackFontsMap::ValueType* it =
         text_box_data_map
@@ -1076,7 +1076,7 @@ void LayoutBlockFlow::AppendFloatsToLastLine(
     }
     layout_state.SetFloatIndex(layout_state.FloatIndex() + 1);
   }
-  layout_state.SetLastFloat(!floating_object_set.IsEmpty()
+  layout_state.SetLastFloat(!floating_object_set.empty()
                                 ? floating_object_set.back().Get()
                                 : nullptr);
 }

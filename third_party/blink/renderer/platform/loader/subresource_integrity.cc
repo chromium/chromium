@@ -179,8 +179,8 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
                 "of the integrity algorithms.");
 
   // metadata_set is non-empty, so we are guaranteed to always have a result.
-  // This is effectively an implemenation of std::max_element (C++17).
-  DCHECK(!metadata_set.IsEmpty());
+  // This is effectively an implementation of std::max_element (C++17).
+  DCHECK(!metadata_set.empty());
   auto iter = metadata_set.begin();
   IntegrityAlgorithm max_algorithm = iter->second;
   ++iter;
@@ -298,7 +298,7 @@ SubresourceIntegrity::ParseIntegrityAttribute(
     ReportInfo* report_info) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
   // once.
-  DCHECK(metadata_set.IsEmpty());
+  DCHECK(metadata_set.empty());
 
   Vector<UChar> characters;
   attribute.StripWhiteSpace().AppendTo(characters);

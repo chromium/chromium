@@ -306,7 +306,7 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
       }
     }
   }
-  if (!custom_data.IsEmpty()) {
+  if (!custom_data.empty()) {
     clipboard_->WriteCustomData(std::move(custom_data));
   }
 }

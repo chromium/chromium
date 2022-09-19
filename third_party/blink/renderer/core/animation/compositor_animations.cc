@@ -868,7 +868,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
                                  compositor_timing, animation_playback_rate);
 
   PropertyHandleSet properties = effect.Properties();
-  DCHECK(!properties.IsEmpty());
+  DCHECK(!properties.empty());
   for (const auto& property : properties) {
     // If the animation duration is infinite, it doesn't make sense to scale
     // the keyframe offset, so use a scale of 1.0. This is connected to
@@ -1038,7 +1038,7 @@ CompositorAnimations::CheckCanStartSVGElementOnCompositor(
   FailureReasons reasons = kNoFailure;
   if (svg_element.HasNonCSSPropertyAnimations())
     reasons |= kTargetHasIncompatibleAnimations;
-  if (!svg_element.InstancesForElement().IsEmpty()) {
+  if (!svg_element.InstancesForElement().empty()) {
     // TODO(crbug.com/785246): Currently when an SVGElement has svg:use
     // instances, each instance gets style from the original element, using
     // the original element's animation (thus the animation affects

@@ -47,7 +47,7 @@ WebVector<int64_t> TaskSession::DocumentSession::MoveDetachedNodes() {
 }
 
 ContentHolder* TaskSession::DocumentSession::GetNextUnsentNode() {
-  while (!captured_content_.IsEmpty()) {
+  while (!captured_content_.empty()) {
     auto node = captured_content_.begin()->key;
     const gfx::Rect rect = captured_content_.Take(node);
     if (node && node->GetLayoutObject() && !sent_nodes_.Contains(node)) {
@@ -60,7 +60,7 @@ ContentHolder* TaskSession::DocumentSession::GetNextUnsentNode() {
 }
 
 ContentHolder* TaskSession::DocumentSession::GetNextChangedNode() {
-  while (!changed_content_.IsEmpty()) {
+  while (!changed_content_.empty()) {
     auto node = changed_content_.begin()->key;
     const gfx::Rect rect = changed_content_.Take(node);
     if (node.Get() && node->GetLayoutObject()) {

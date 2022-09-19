@@ -109,7 +109,7 @@ Node* ScrollManager::GetScrollEventTarget() {
   // Send the overscroll event to the node that scrolling is latched to which
   // is either previously scrolled node or the last node in the scroll chain.
   Node* scroll_target = previous_gesture_scrolled_node_;
-  if (!scroll_target && !current_scroll_chain_.IsEmpty())
+  if (!scroll_target && !current_scroll_chain_.empty())
     scroll_target = DOMNodeIds::NodeForId(current_scroll_chain_.front());
   return scroll_target;
 }
@@ -179,7 +179,7 @@ void ScrollManager::RecomputeScrollChain(const Node& start_node,
                                          const ScrollState& scroll_state,
                                          Deque<DOMNodeId>& scroll_chain,
                                          bool is_autoscroll) {
-  DCHECK(scroll_chain.IsEmpty());
+  DCHECK(scroll_chain.empty());
   scroll_chain.clear();
 
   DCHECK(start_node.GetLayoutObject());
@@ -346,7 +346,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
   RecomputeScrollChain(*node, *scroll_state, scroll_chain,
                        /* is_autoscroll */ false);
 
-  while (!scroll_chain.IsEmpty()) {
+  while (!scroll_chain.empty()) {
     Node* scroll_chain_node = DOMNodeIds::NodeForId(scroll_chain.TakeLast());
     DCHECK(scroll_chain_node);
 
@@ -440,7 +440,7 @@ void ScrollManager::CustomizedScroll(ScrollState& scroll_state) {
     frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
   }
 
-  DCHECK(!current_scroll_chain_.IsEmpty());
+  DCHECK(!current_scroll_chain_.empty());
 
   scroll_state.SetScrollChain(current_scroll_chain_);
 
@@ -551,7 +551,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollBegin(
                        TRACE_EVENT_SCOPE_THREAD, "length",
                        current_scroll_chain_.size());
 
-  if (current_scroll_chain_.IsEmpty()) {
+  if (current_scroll_chain_.empty()) {
     // If a child has a non-empty scroll chain, we need to consider that instead
     // of simply returning WebInputEventResult::kNotHandled.
     return child_result;
@@ -622,7 +622,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
     return result;
   }
 
-  if (current_scroll_chain_.IsEmpty()) {
+  if (current_scroll_chain_.empty()) {
     TRACE_EVENT_INSTANT0("input", "Empty Scroll Chain",
                          TRACE_EVENT_SCOPE_THREAD);
     return WebInputEventResult::kNotHandled;
@@ -784,7 +784,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollEnd(
     }
 
     PassScrollGestureEvent(gesture_event, node->GetLayoutObject());
-    if (current_scroll_chain_.IsEmpty()) {
+    if (current_scroll_chain_.empty()) {
       ClearGestureScrollState();
       return WebInputEventResult::kNotHandled;
     }
@@ -942,7 +942,7 @@ void ScrollManager::ScrollEndForSnapFling(bool did_finish) {
           scroll_end_target);
     }
   }
-  if (current_scroll_chain_.IsEmpty()) {
+  if (current_scroll_chain_.empty()) {
     NotifyScrollPhaseEndForCustomizedScroll();
     ClearGestureScrollState();
     return;

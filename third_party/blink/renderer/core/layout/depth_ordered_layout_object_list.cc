@@ -46,7 +46,7 @@ int DepthOrderedLayoutObjectList::size() const {
 }
 
 bool DepthOrderedLayoutObjectList::IsEmpty() const {
-  return data_->objects().IsEmpty();
+  return data_->objects().empty();
 }
 
 namespace {
@@ -102,7 +102,7 @@ DepthOrderedLayoutObjectList::Unordered() const {
 
 const HeapVector<LayoutObjectWithDepth>&
 DepthOrderedLayoutObjectList::Ordered() {
-  if (data_->objects_.IsEmpty() || !data_->ordered_objects_.empty())
+  if (data_->objects_.empty() || !data_->ordered_objects_.empty())
     return data_->ordered_objects_;
 
   CopyToVector(data_->objects_, data_->ordered_objects_);

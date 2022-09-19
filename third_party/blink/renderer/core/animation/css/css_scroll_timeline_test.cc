@@ -190,7 +190,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   )HTML");
 
   ASSERT_TRUE(
-      GetDocumentAnimations().GetUnvalidatedTimelinesForTesting().IsEmpty());
+      GetDocumentAnimations().GetUnvalidatedTimelinesForTesting().empty());
 
   Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   element->setAttribute(blink::html_names::kIdAttr, "element");

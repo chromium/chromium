@@ -87,7 +87,7 @@ class HashSet {
 
   unsigned size() const;
   unsigned Capacity() const;
-  bool IsEmpty() const;
+  bool empty() const;
 
   void ReserveCapacityForSize(unsigned size) {
     impl_.ReserveCapacityForSize(size);
@@ -235,8 +235,8 @@ inline unsigned HashSet<T, U, V, W>::Capacity() const {
 }
 
 template <typename T, typename U, typename V, typename W>
-inline bool HashSet<T, U, V, W>::IsEmpty() const {
-  return impl_.IsEmpty();
+inline bool HashSet<T, U, V, W>::empty() const {
+  return impl_.empty();
 }
 
 template <typename T, typename U, typename V, typename W>

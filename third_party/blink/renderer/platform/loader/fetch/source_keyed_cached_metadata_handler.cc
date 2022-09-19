@@ -119,7 +119,7 @@ String SourceKeyedCachedMetadataHandler::Encoding() const {
 void SourceKeyedCachedMetadataHandler::OnMemoryDump(
     WebProcessMemoryDump* pmd,
     const String& dump_prefix) const {
-  if (cached_metadata_map_.IsEmpty())
+  if (cached_metadata_map_.empty())
     return;
 
   const String dump_name = dump_prefix + "/inline";
@@ -243,7 +243,7 @@ void SourceKeyedCachedMetadataHandler::SendToPlatform(
   if (!sender_)
     return;
 
-  if (cached_metadata_map_.IsEmpty()) {
+  if (cached_metadata_map_.empty()) {
     sender_->Send(code_cache_host, nullptr, 0);
   } else {
     Vector<uint8_t> serialized_data;

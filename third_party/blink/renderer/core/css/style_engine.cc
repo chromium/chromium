@@ -416,7 +416,7 @@ bool StyleEngine::ShouldUpdateDocumentStyleSheetCollection() const {
 }
 
 bool StyleEngine::ShouldUpdateShadowTreeStyleSheetCollection() const {
-  return !dirty_tree_scopes_.IsEmpty();
+  return !dirty_tree_scopes_.empty();
 }
 
 void StyleEngine::MediaQueryAffectingValueChanged(
@@ -447,7 +447,7 @@ Element* StyleEngine::EnsureVTTOriginatingElement() {
 void StyleEngine::MediaQueryAffectingValueChanged(
     HeapHashSet<Member<TextTrack>>& text_tracks,
     MediaValueChange change) {
-  if (text_tracks.IsEmpty())
+  if (text_tracks.empty())
     return;
 
   for (auto text_track : text_tracks) {
@@ -576,7 +576,7 @@ const ActiveStyleSheetVector StyleEngine::ActiveStyleSheetsForInspector() {
   if (GetDocument().IsActive())
     UpdateActiveStyle();
 
-  if (active_tree_scopes_.IsEmpty())
+  if (active_tree_scopes_.empty())
     return GetDocumentStyleSheetCollection().ActiveStyleSheets();
 
   ActiveStyleSheetVector active_style_sheets;
@@ -1973,7 +1973,7 @@ void StyleEngine::InvalidateForRuleSetChanges(
     return;
   if (!tree_scope.GetDocument().documentElement())
     return;
-  if (changed_rule_sets.IsEmpty())
+  if (changed_rule_sets.empty())
     return;
 
   Element& invalidation_root =
@@ -2531,7 +2531,7 @@ void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
 
 StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
-  if (keyframes_rule_map_.IsEmpty())
+  if (keyframes_rule_map_.empty())
     return nullptr;
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(animation_name);
@@ -2544,7 +2544,7 @@ StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
 StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(
     AtomicString palette_name,
     AtomicString family_name) {
-  if (font_palette_values_rule_map_.IsEmpty() || palette_name.IsEmpty()) {
+  if (font_palette_values_rule_map_.empty() || palette_name.IsEmpty()) {
     return nullptr;
   }
 

@@ -189,7 +189,7 @@ Vector<device::mojom::blink::EntityTypeForHitTest> GetEntityTypesForHitTest(
   }
 
   DVLOG(2) << __func__ << ": result_set.size()=" << result_set.size();
-  DCHECK(!result_set.IsEmpty());
+  DCHECK(!result_set.empty());
 
   Vector<device::mojom::blink::EntityTypeForHitTest> result;
   CopyToVector(result_set, result);
@@ -1111,7 +1111,7 @@ void XRSession::ProcessAnchorsData(
 
   anchor_ids_to_anchors_.swap(updated_anchors);
 
-  DCHECK(anchor_ids_to_pending_anchor_promises_.IsEmpty())
+  DCHECK(anchor_ids_to_pending_anchor_promises_.empty())
       << "All anchors should be updated in the frame in which they were "
          "created, got "
       << anchor_ids_to_pending_anchor_promises_.size()

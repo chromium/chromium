@@ -51,8 +51,8 @@ void AudioNodeOutput::Dispose() {
 
   GetDeferredTaskHandler().RemoveMarkedAudioNodeOutput(this);
   DisconnectAll();
-  DCHECK(inputs_.IsEmpty());
-  DCHECK(params_.IsEmpty());
+  DCHECK(inputs_.empty());
+  DCHECK(params_.empty());
 }
 
 void AudioNodeOutput::SetNumberOfChannels(unsigned number_of_channels) {
@@ -163,7 +163,7 @@ void AudioNodeOutput::DisconnectAllInputs() {
   for (AudioNodeInput* input : inputs) {
     AudioNodeWiring::Disconnect(*this, *input);
   }
-  DCHECK(inputs_.IsEmpty());
+  DCHECK(inputs_.empty());
 }
 
 void AudioNodeOutput::DisconnectAllParams() {
@@ -175,7 +175,7 @@ void AudioNodeOutput::DisconnectAllParams() {
   for (AudioParamHandler* param : params) {
     AudioNodeWiring::Disconnect(*this, *param);
   }
-  DCHECK(params_.IsEmpty());
+  DCHECK(params_.empty());
 }
 
 void AudioNodeOutput::DisconnectAll() {

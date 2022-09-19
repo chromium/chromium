@@ -2670,7 +2670,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
 }
 
 bool MainThreadSchedulerImpl::AllPagesFrozen() const {
-  if (main_thread_only().page_schedulers.IsEmpty())
+  if (main_thread_only().page_schedulers.empty())
     return false;
   for (const auto* scheduler : main_thread_only().page_schedulers) {
     if (!scheduler->IsFrozen())

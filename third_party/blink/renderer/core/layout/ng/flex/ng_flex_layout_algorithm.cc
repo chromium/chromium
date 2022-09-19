@@ -1724,7 +1724,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         // to reflect the expansion.
         if (item_expansion > LayoutUnit()) {
           // Maps don't allow keys of 0, so adjust the index by 1.
-          if (row_cross_size_updates_.IsEmpty() ||
+          if (row_cross_size_updates_.empty() ||
               !row_cross_size_updates_.Contains(flex_line_idx + 1)) {
             row_cross_size_updates_.insert(flex_line_idx + 1, item_expansion);
             AdjustOffsetForNextLine(flex_line_outputs, flex_line_idx,
@@ -1789,7 +1789,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       status == NGLayoutResult::kNeedsEarlierBreak)
     return NGLayoutResult::kNeedsEarlierBreak;
 
-  if (!row_cross_size_updates_.IsEmpty()) {
+  if (!row_cross_size_updates_.empty()) {
     DCHECK(!is_column_);
     return NGLayoutResult::kNeedsRelayoutWithRowCrossSizeChanges;
   }
@@ -2543,7 +2543,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
   DCHECK(!cross_size_adjustments_);
 
   // There should be no more than two row expansions per fragmentainer.
-  DCHECK(!row_cross_size_updates_.IsEmpty());
+  DCHECK(!row_cross_size_updates_.empty());
   DCHECK_LE(row_cross_size_updates_.size(), 2u);
 
   NGLayoutAlgorithmParams params(

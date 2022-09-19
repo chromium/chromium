@@ -499,7 +499,7 @@ void MediaKeys::TimerFired(TimerBase*) {
   HeapDeque<Member<PendingAction>> pending_actions;
   pending_actions.Swap(pending_actions_);
 
-  while (!pending_actions.IsEmpty()) {
+  while (!pending_actions.empty()) {
     PendingAction* action = pending_actions.TakeFirst();
 
     switch (action->GetType()) {
@@ -542,10 +542,10 @@ bool MediaKeys::HasPendingActivity() const {
   // Remain around if there are pending events.
   DVLOG(MEDIA_KEYS_LOG_LEVEL)
       << __func__ << "(" << this << ")"
-      << (!pending_actions_.IsEmpty() ? " !pending_actions_.isEmpty()" : "")
+      << (!pending_actions_.empty() ? " !pending_actions_.isEmpty()" : "")
       << (reserved_for_media_element_ ? " reserved_for_media_element_" : "");
 
-  return !pending_actions_.IsEmpty() || reserved_for_media_element_;
+  return !pending_actions_.empty() || reserved_for_media_element_;
 }
 
 }  // namespace blink

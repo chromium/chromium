@@ -210,7 +210,7 @@ void CustomElementDefinition::Upgrade(Element& element) {
   // a custom element callback reaction with element, callback name
   // "attributeChangedCallback", and an argument list containing attribute's
   // local name, null, attribute's value, and attribute's namespace.
-  if (!observed_attributes_.IsEmpty())
+  if (!observed_attributes_.empty())
     EnqueueAttributeChangedCallbackForAllAttributes(element);
 
   // 4.13.5.5: If element is connected, then enqueue a custom element callback

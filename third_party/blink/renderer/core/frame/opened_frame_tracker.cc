@@ -19,7 +19,7 @@ void OpenedFrameTracker::Trace(Visitor* visitor) const {
 }
 
 bool OpenedFrameTracker::IsEmpty() const {
-  return opened_frames_.IsEmpty();
+  return opened_frames_.empty();
 }
 
 void OpenedFrameTracker::Add(Frame* frame) {

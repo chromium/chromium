@@ -352,7 +352,7 @@ bool AdTracker::IsKnownAdScriptForCheckedContext(
   if (it == known_ad_scripts_.end())
     return false;
 
-  if (it->value.IsEmpty())
+  if (it->value.empty())
     return false;
 
   // Delay calling ScriptAtTopOfStack() as much as possible due to its cost.

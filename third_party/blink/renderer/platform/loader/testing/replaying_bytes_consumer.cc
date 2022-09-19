@@ -20,7 +20,7 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
                                                         size_t* available) {
   DCHECK(!is_in_two_phase_read_);
   ++notification_token_;
-  if (commands_.IsEmpty()) {
+  if (commands_.empty()) {
     switch (state_) {
       case BytesConsumer::InternalState::kReadable:
       case BytesConsumer::InternalState::kWaiting:
@@ -64,7 +64,7 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
 
 BytesConsumer::Result ReplayingBytesConsumer::EndRead(size_t read) {
   DCHECK(is_in_two_phase_read_);
-  DCHECK(!commands_.IsEmpty());
+  DCHECK(!commands_.empty());
 
   is_in_two_phase_read_ = false;
   const Command& command = commands_[0];

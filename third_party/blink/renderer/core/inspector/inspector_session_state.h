@@ -183,7 +183,7 @@ class CORE_EXPORT InspectorAgentState {
     }
 
     // O(1) shortcut for Keys().empty().
-    bool IsEmpty() const { return map_.IsEmpty(); }
+    bool IsEmpty() const { return map_.empty(); }
 
     // Returns the value for a given |key|, or the default value if
     // the key wasn't set.

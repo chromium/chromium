@@ -54,18 +54,18 @@ NamedLineCollection::NamedLineCollection(
       is_for_columns ? grid_container_style.ImplicitNamedGridColumnLines()
                      : grid_container_style.ImplicitNamedGridRowLines();
 
-  if (!grid_line_names.IsEmpty() && are_named_lines_valid) {
+  if (!grid_line_names.empty() && are_named_lines_valid) {
     auto it = grid_line_names.find(named_line);
     named_lines_indexes_ = it == grid_line_names.end() ? nullptr : &it->value;
   }
 
-  if (!auto_repeat_grid_line_names.IsEmpty() && are_named_lines_valid) {
+  if (!auto_repeat_grid_line_names.empty() && are_named_lines_valid) {
     auto it = auto_repeat_grid_line_names.find(named_line);
     auto_repeat_named_lines_indexes_ =
         it == auto_repeat_grid_line_names.end() ? nullptr : &it->value;
   }
 
-  if (!implicit_grid_line_names.IsEmpty()) {
+  if (!implicit_grid_line_names.empty()) {
     auto it = implicit_grid_line_names.find(named_line);
     implicit_named_lines_indexes_ =
         it == implicit_grid_line_names.end() ? nullptr : &it->value;

@@ -546,7 +546,7 @@ class ThreadedWeaknessTester : public ThreadedTesterBase {
         }
 
         TestSupportingGC::PreciselyCollectGarbage();
-        EXPECT_TRUE(weak_map->IsEmpty());
+        EXPECT_TRUE(weak_map->empty());
       }
       test::YieldCurrentThread();
     }

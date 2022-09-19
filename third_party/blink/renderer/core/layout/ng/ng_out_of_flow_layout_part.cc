@@ -809,9 +809,9 @@ void NGOutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
 
   NGContainerFragmentBuilder::MulticolCollection multicols_with_pending_oofs;
   container_builder->SwapMulticolsWithPendingOOFs(&multicols_with_pending_oofs);
-  DCHECK(!multicols_with_pending_oofs.IsEmpty());
+  DCHECK(!multicols_with_pending_oofs.empty());
 
-  while (!multicols_with_pending_oofs.IsEmpty()) {
+  while (!multicols_with_pending_oofs.empty()) {
     for (auto& multicol : multicols_with_pending_oofs)
       LayoutOOFsInMulticol(NGBlockNode(multicol.key), multicol.value);
     multicols_with_pending_oofs.clear();

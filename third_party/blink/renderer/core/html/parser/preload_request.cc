@@ -40,7 +40,7 @@ PreloadRequest::ExclusionInfo::~ExclusionInfo() = default;
 bool PreloadRequest::ExclusionInfo::ShouldExclude(
     const KURL& base_url,
     const String& resource_url) const {
-  if (resources_.IsEmpty() && scopes_.IsEmpty())
+  if (resources_.empty() && scopes_.empty())
     return false;
   KURL url = KURL(base_url.IsEmpty() ? document_url_ : base_url, resource_url);
   if (resources_.Contains(url))

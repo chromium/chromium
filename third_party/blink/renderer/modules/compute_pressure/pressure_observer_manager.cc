@@ -90,8 +90,8 @@ void PressureObserverManager::RemoveObserver(
 
   // Disconnected from the browser process only when PressureObserverManager is
   // active and there is no other observers.
-  if (receiver_.is_bound() && registered_observers_[source_index].IsEmpty() &&
-      registering_observers_[source_index].IsEmpty()) {
+  if (receiver_.is_bound() && registered_observers_[source_index].empty() &&
+      registering_observers_[source_index].empty()) {
     // TODO(crbug.com/1342184): Consider other sources.
     // For now, "cpu" is the only source, so disconnect directly.
     receiver_.reset();

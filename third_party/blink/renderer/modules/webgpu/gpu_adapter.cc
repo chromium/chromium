@@ -29,7 +29,7 @@ namespace {
 GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
                                          WGPUAdapter adapter) {
   GPUSupportedFeatures* features = MakeGarbageCollected<GPUSupportedFeatures>();
-  DCHECK(features->FeatureNameSet().IsEmpty());
+  DCHECK(features->FeatureNameSet().empty());
 
   size_t feature_count = procs.adapterEnumerateFeatures(adapter, nullptr);
   DCHECK(feature_count <= std::numeric_limits<wtf_size_t>::max());

@@ -182,7 +182,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   bool HasPositionedObjects() const {
     NOT_DESTROYED();
     DCHECK(has_positioned_objects_ ? (PositionedObjectsInternal() &&
-                                      !PositionedObjectsInternal()->IsEmpty())
+                                      !PositionedObjectsInternal()->empty())
                                    : !PositionedObjectsInternal());
     return has_positioned_objects_;
   }
@@ -204,7 +204,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     NOT_DESTROYED();
     DCHECK(has_percent_height_descendants_
                ? (PercentHeightDescendantsInternal() &&
-                  !PercentHeightDescendantsInternal()->IsEmpty())
+                  !PercentHeightDescendantsInternal()->empty())
                : !PercentHeightDescendantsInternal());
     return has_percent_height_descendants_;
   }

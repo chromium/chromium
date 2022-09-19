@@ -236,7 +236,7 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
       break;
 
     case ScriptSchedulingType::kInOrder:
-      while (!pending_in_order_scripts_.IsEmpty() &&
+      while (!pending_in_order_scripts_.empty() &&
              pending_in_order_scripts_.front()->IsReady()) {
         PendingScript* pending_in_order = pending_in_order_scripts_.TakeFirst();
         task_runner_->PostTask(
@@ -247,7 +247,7 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
       break;
 
     case ScriptSchedulingType::kForceInOrder:
-      while (!pending_force_in_order_scripts_.IsEmpty() &&
+      while (!pending_force_in_order_scripts_.empty() &&
              pending_force_in_order_scripts_.front()->IsReady()) {
         PendingScript* pending_in_order =
             pending_force_in_order_scripts_.TakeFirst();
@@ -257,7 +257,7 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
                           WrapWeakPersistent(this),
                           WrapPersistent(pending_in_order)));
       }
-      if (pending_force_in_order_scripts_.IsEmpty()) {
+      if (pending_force_in_order_scripts_.empty()) {
         task_runner_->PostTask(
             FROM_HERE,
             WTF::BindOnce(&ScriptRunner::

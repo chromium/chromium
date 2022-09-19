@@ -828,7 +828,7 @@ void InspectorCSSAgent::SetActiveStyleSheets(
     }
   }
 
-  if (document_css_style_sheets->IsEmpty())
+  if (document_css_style_sheets->empty())
     document_to_css_style_sheets_.erase(document);
 }
 
@@ -840,7 +840,7 @@ void InspectorCSSAgent::DocumentDetached(Document* document) {
 void InspectorCSSAgent::ForcePseudoState(Element* element,
                                          CSSSelector::PseudoType pseudo_type,
                                          bool* result) {
-  if (node_id_to_forced_pseudo_state_.IsEmpty())
+  if (node_id_to_forced_pseudo_state_.empty())
     return;
 
   int node_id = dom_agent_->BoundNodeId(element);
@@ -2928,7 +2928,7 @@ Response InspectorCSSAgent::trackComputedStyleUpdates(
 
 void InspectorCSSAgent::takeComputedStyleUpdates(
     std::unique_ptr<TakeComputedStyleUpdatesCallback> callback) {
-  if (tracked_computed_styles_.IsEmpty()) {
+  if (tracked_computed_styles_.empty()) {
     callback->sendFailure(Response::ServerError(
         "No computed styles are being tracked right now."));
     return;
@@ -2952,7 +2952,7 @@ void InspectorCSSAgent::takeComputedStyleUpdates(
 void InspectorCSSAgent::DidUpdateComputedStyle(Element* element,
                                                const ComputedStyle* old_style,
                                                const ComputedStyle* new_style) {
-  if (tracked_computed_styles_.IsEmpty())
+  if (tracked_computed_styles_.empty())
     return;
 
   if (!old_style && !new_style)

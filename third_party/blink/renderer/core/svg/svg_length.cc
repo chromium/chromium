@@ -258,7 +258,7 @@ SVGLengthMode SVGLength::LengthModeForAnimatedLengthAttribute(
   typedef HashMap<QualifiedName, SVGLengthMode> LengthModeForLengthAttributeMap;
   DEFINE_STATIC_LOCAL(LengthModeForLengthAttributeMap, length_mode_map, ());
 
-  if (length_mode_map.IsEmpty()) {
+  if (length_mode_map.empty()) {
     length_mode_map.Set(svg_names::kXAttr, SVGLengthMode::kWidth);
     length_mode_map.Set(svg_names::kYAttr, SVGLengthMode::kHeight);
     length_mode_map.Set(svg_names::kCxAttr, SVGLengthMode::kWidth);

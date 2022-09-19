@@ -55,8 +55,8 @@ IDBTransaction* IDBTransaction::CreateNonVersionChange(
     mojom::IDBTransactionDurability durability,
     IDBDatabase* db) {
   DCHECK_NE(mode, mojom::IDBTransactionMode::VersionChange);
-  DCHECK(!scope.IsEmpty()) << "Non-version transactions should operate on a "
-                              "well-defined set of stores";
+  DCHECK(!scope.empty()) << "Non-version transactions should operate on a "
+                            "well-defined set of stores";
   return MakeGarbageCollected<IDBTransaction>(script_state,
                                               std::move(transaction_backend),
                                               id, scope, mode, durability, db);
@@ -99,8 +99,8 @@ IDBTransaction::IDBTransaction(
                   SchedulingPolicy::Feature::kOutstandingIndexedDBTransaction,
                   {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(database_);
-  DCHECK(!scope_.IsEmpty()) << "Non-versionchange transactions must operate "
-                               "on a well-defined set of stores";
+  DCHECK(!scope_.empty()) << "Non-versionchange transactions must operate "
+                             "on a well-defined set of stores";
   DCHECK(mode_ == mojom::IDBTransactionMode::ReadOnly ||
          mode_ == mojom::IDBTransactionMode::ReadWrite)
       << "Invalid transaction mode";
@@ -134,7 +134,7 @@ IDBTransaction::IDBTransaction(
                                            TaskType::kDatabaseAccess)) {
   DCHECK(database_);
   DCHECK(open_db_request_);
-  DCHECK(scope_.IsEmpty());
+  DCHECK(scope_.empty());
 
   database_->TransactionCreated(this);
 }
@@ -144,7 +144,7 @@ IDBTransaction::~IDBTransaction() {
   // ContextClient) only in order to be able call upon GetExecutionContext()
   // during this destructor.
   DCHECK(state_ == kFinished || !GetExecutionContext());
-  DCHECK(request_list_.IsEmpty() || !GetExecutionContext());
+  DCHECK(request_list_.empty() || !GetExecutionContext());
 }
 
 void IDBTransaction::Trace(Visitor* visitor) const {
@@ -328,7 +328,7 @@ void IDBTransaction::SetActive(bool new_is_active) {
   DCHECK_NE(new_is_active, (state_ == kActive));
   state_ = new_is_active ? kActive : kInactive;
 
-  if (!new_is_active && request_list_.IsEmpty() && transaction_backend())
+  if (!new_is_active && request_list_.empty() && transaction_backend())
     transaction_backend()->Commit(num_errors_handled_);
 }
 

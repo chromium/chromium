@@ -186,7 +186,7 @@ class CORE_EXPORT ImageResourceContent final
   scoped_refptr<const SharedBuffer> ResourceBuffer() const;
   bool ShouldUpdateImageImmediately() const;
   bool HasObservers() const {
-    return !observers_.IsEmpty() || !finished_observers_.IsEmpty();
+    return !observers_.empty() || !finished_observers_.empty();
   }
   bool IsRefetchableDataFromDiskCache() const {
     return is_refetchable_data_from_disk_cache_;

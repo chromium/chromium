@@ -264,13 +264,12 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
   bool HasUpdates() const {
     return !new_animations_.empty() || !cancelled_animation_indices_.empty() ||
-           !suppressed_animations_.IsEmpty() ||
+           !suppressed_animations_.empty() ||
            !animation_indices_with_pause_toggled_.empty() ||
-           !animations_with_updates_.empty() || !new_transitions_.IsEmpty() ||
-           !cancelled_transitions_.IsEmpty() ||
-           !finished_transitions_.IsEmpty() ||
+           !animations_with_updates_.empty() || !new_transitions_.empty() ||
+           !cancelled_transitions_.empty() || !finished_transitions_.empty() ||
            !updated_compositor_keyframes_.empty() || scroll_timeline_changed_ ||
-           !changed_view_timelines_.IsEmpty();
+           !changed_view_timelines_.empty();
   }
 
   void Trace(Visitor* visitor) const {
@@ -287,8 +286,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
  private:
   bool HasActiveInterpolations() const {
-    return !active_interpolations_for_animations_.IsEmpty() ||
-           !active_interpolations_for_transitions_.IsEmpty();
+    return !active_interpolations_for_animations_.empty() ||
+           !active_interpolations_for_transitions_.empty();
   }
 
   // Order is significant since it defines the order in which new animations

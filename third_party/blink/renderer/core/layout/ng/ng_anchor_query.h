@@ -45,7 +45,7 @@ class CORE_EXPORT NGPhysicalAnchorQuery {
   DISALLOW_NEW();
 
  public:
-  bool IsEmpty() const { return anchor_references_.IsEmpty(); }
+  bool IsEmpty() const { return anchor_references_.empty(); }
 
   const NGPhysicalAnchorReference* AnchorReference(
       const AtomicString& name) const;
@@ -94,7 +94,7 @@ struct CORE_EXPORT NGLogicalAnchorReference
 class CORE_EXPORT NGLogicalAnchorQuery
     : public GarbageCollected<NGLogicalAnchorQuery> {
  public:
-  bool IsEmpty() const { return anchor_references_.IsEmpty(); }
+  bool IsEmpty() const { return anchor_references_.empty(); }
 
   const NGLogicalAnchorReference* AnchorReference(
       const AtomicString& name) const;
@@ -144,7 +144,7 @@ class CORE_EXPORT NGLogicalAnchorQueryForFragmentation {
  public:
   bool HasAnchorsOnOutOfFlowObjects() const { return has_anchors_on_oofs_; }
   bool ShouldLayoutByContainingBlock() const {
-    return !queries_.IsEmpty() || has_anchors_on_oofs_;
+    return !queries_.empty() || has_anchors_on_oofs_;
   }
 
   // Get |NGLogicalAnchorQuery| in the stitched coordinate system for the given

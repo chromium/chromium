@@ -153,7 +153,7 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
 
   // Receivers whose cache to update.
   Vector<RTCRtpReceiverPlatform*> receivers;
-  if (cached_sources_by_receiver->IsEmpty()) {
+  if (cached_sources_by_receiver->empty()) {
     // If the cache is empty then we only update the cache for this one
     // receiver. This avoids updating the cache for all receivers in cases where
     // the app is only interested in a single receiver per kind.

@@ -503,7 +503,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
     }
   } else {
     DCHECK(!column_sets_invalidated_);
-    if (multi_column_set_list_.IsEmpty())
+    if (multi_column_set_list_.empty())
       return nullptr;
     if (offset < LayoutUnit()) {
       column_set = multi_column_set_list_.front();
@@ -513,7 +513,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(
           .AllOverlapsWithAdapter<MultiColumnSetSearchAdapter>(adapter);
 
       // If no set was found, the offset is in the flow thread overflow.
-      if (!adapter.Result() && !multi_column_set_list_.IsEmpty())
+      if (!adapter.Result() && !multi_column_set_list_.empty())
         column_set = multi_column_set_list_.back();
       else
         column_set = adapter.Result();

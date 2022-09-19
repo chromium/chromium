@@ -101,7 +101,7 @@ using AttributeNameMap = HashMap<QualifiedName, const QualifiedName*>;
 
 const AttributeNameMap& GetSupportedAttributes() {
   DEFINE_STATIC_LOCAL(AttributeNameMap, supported_attributes, ());
-  if (supported_attributes.IsEmpty()) {
+  if (supported_attributes.empty()) {
     // Fill the set for the first use.
     // Animatable attributes from http://www.w3.org/TR/SVG/attindex.html
     const QualifiedName* attributes[] = {

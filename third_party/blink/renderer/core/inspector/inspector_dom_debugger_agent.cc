@@ -812,7 +812,7 @@ void InspectorDOMDebuggerAgent::DidAddBreakpoint() {
 }
 
 void InspectorDOMDebuggerAgent::DidRemoveBreakpoint() {
-  if (!dom_breakpoints_.IsEmpty())
+  if (!dom_breakpoints_.empty())
     return;
   if (!csp_violation_breakpoints_.IsEmpty())
     return;

@@ -140,20 +140,20 @@ class CORE_EXPORT RuleFeatureSet {
       CSSSelector::PseudoType pseudo_type) const;
 
   inline bool NeedsHasInvalidationForClassChange() const {
-    return !classes_in_has_argument_.IsEmpty();
+    return !classes_in_has_argument_.empty();
   }
   inline bool NeedsHasInvalidationForAttributeChange() const {
-    return !attributes_in_has_argument_.IsEmpty();
+    return !attributes_in_has_argument_.empty();
   }
   inline bool NeedsHasInvalidationForIdChange() const {
-    return !ids_in_has_argument_.IsEmpty();
+    return !ids_in_has_argument_.empty();
   }
   inline bool NeedsHasInvalidationForPseudoStateChange() const {
-    return !pseudos_in_has_argument_.IsEmpty();
+    return !pseudos_in_has_argument_.empty();
   }
   inline bool NeedsHasInvalidationForInsertionOrRemoval() const {
     return not_pseudo_in_has_argument_ || universal_in_has_argument_ ||
-           !tag_names_in_has_argument_.IsEmpty() ||
+           !tag_names_in_has_argument_.empty() ||
            NeedsHasInvalidationForClassChange() ||
            NeedsHasInvalidationForAttributeChange() ||
            NeedsHasInvalidationForIdChange() ||

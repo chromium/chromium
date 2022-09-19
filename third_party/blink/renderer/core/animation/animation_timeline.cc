@@ -97,10 +97,10 @@ bool AnimationTimeline::NeedsAnimationTimingUpdate() {
   // We allow |last_current_phase_and_time_| to advance here when there
   // are no animations to allow animations spawned during style
   // recalc to not invalidate this flag.
-  if (animations_needing_update_.IsEmpty())
+  if (animations_needing_update_.empty())
     last_current_phase_and_time_ = current_phase_and_time;
 
-  return !animations_needing_update_.IsEmpty();
+  return !animations_needing_update_.empty();
 }
 
 void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {

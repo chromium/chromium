@@ -2800,7 +2800,7 @@ void DocumentLoader::RecordUseCountersForCommit() {
 
   if (RuntimeEnabledFeatures::EarlyHintsPreloadForNavigationOptInEnabled(
           frame_->DomWindow()) &&
-      !early_hints_preloaded_resources_.IsEmpty()) {
+      !early_hints_preloaded_resources_.empty()) {
     CountUse(WebFeature::kEarlyHintsPreload);
   }
 }

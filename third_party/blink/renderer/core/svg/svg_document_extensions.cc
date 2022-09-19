@@ -81,7 +81,7 @@ void SVGDocumentExtensions::ServiceWebAnimations() {
   for (auto& svg_element : web_animations_pending_svg_elements)
     svg_element->ApplyActiveWebAnimations();
 
-  DCHECK(web_animations_pending_svg_elements_.IsEmpty());
+  DCHECK(web_animations_pending_svg_elements_.empty());
 }
 
 void SVGDocumentExtensions::StartAnimations() {

@@ -207,7 +207,7 @@ void HTMLSelectElement::SelectMultipleOptionsByPopup(
 
   select_type_->UpdateTextStyleAndContent();
   SetNeedsValidityCheck();
-  if (has_new_selection || !old_selection.IsEmpty()) {
+  if (has_new_selection || !old_selection.empty()) {
     DispatchInputEvent();
     DispatchChangeEvent();
   }

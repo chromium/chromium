@@ -171,7 +171,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   }
   bool HasValidColumnSetInfo() const {
     NOT_DESTROYED();
-    return !column_sets_invalidated_ && !multi_column_set_list_.IsEmpty();
+    return !column_sets_invalidated_ && !multi_column_set_list_.empty();
   }
 
   bool MapToVisualRectInAncestorSpaceInternal(

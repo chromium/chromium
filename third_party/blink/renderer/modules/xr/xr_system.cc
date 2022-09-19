@@ -1753,7 +1753,7 @@ void XRSystem::Dispose(DisposeType dispose_type) {
   for (const auto& query : support_queries) {
     OnSupportsSessionReturned(query, false);
   }
-  DCHECK(outstanding_support_queries_.IsEmpty());
+  DCHECK(outstanding_support_queries_.empty());
 
   HeapHashSet<Member<PendingRequestSessionQuery>> request_queries =
       outstanding_request_queries_;
@@ -1762,7 +1762,7 @@ void XRSystem::Dispose(DisposeType dispose_type) {
         query, device::mojom::blink::RequestSessionResult::NewFailureReason(
                    device::mojom::RequestSessionError::INVALID_CLIENT));
   }
-  DCHECK(outstanding_support_queries_.IsEmpty());
+  DCHECK(outstanding_support_queries_.empty());
 }
 
 void XRSystem::OnEnvironmentProviderDisconnect() {

@@ -1596,8 +1596,7 @@ TEST_F(NGGridLayoutAlgorithmTest, SubgridLineNameList) {
   EXPECT_EQ(computed_grid_row_track_list.axis_type,
             GridAxisType::kSubgriddedAxis);
 
-  EXPECT_TRUE(
-      computed_grid_column_track_list.ordered_named_grid_lines.IsEmpty());
+  EXPECT_TRUE(computed_grid_column_track_list.ordered_named_grid_lines.empty());
 
   const OrderedNamedGridLines& ordered_named_grid_row_lines =
       computed_grid_row_track_list.ordered_named_grid_lines;

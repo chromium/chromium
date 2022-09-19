@@ -801,7 +801,7 @@ void WebSocketChannelImpl::ProcessSendQueue() {
   // TODO(yhirano): This should be DCHECK_EQ(GetState(), State::kOpen).
   DCHECK(GetState() == State::kOpen || GetState() == State::kConnecting);
   DCHECK(!execution_context_->IsContextDestroyed());
-  while (!messages_.IsEmpty() && !blob_loader_ && !wait_for_writable_) {
+  while (!messages_.empty() && !blob_loader_ && !wait_for_writable_) {
     Message& message = messages_.front();
     network::mojom::blink::WebSocketMessageType message_type =
         network::mojom::blink::WebSocketMessageType::BINARY;

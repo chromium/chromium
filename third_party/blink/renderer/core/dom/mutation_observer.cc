@@ -205,7 +205,7 @@ void MutationObserver::disconnect() {
     if (registrations_.Contains(registration))
       registration->Unregister();
   }
-  DCHECK(registrations_.IsEmpty());
+  DCHECK(registrations_.empty());
 }
 
 void MutationObserver::ObservationStarted(
@@ -235,7 +235,7 @@ static SlotChangeList& ActiveSlotChangeList() {
   return *slot_change_list;
 }
 static void EnsureEnqueueMicrotask() {
-  if (ActiveMutationObservers().IsEmpty() && ActiveSlotChangeList().empty()) {
+  if (ActiveMutationObservers().empty() && ActiveSlotChangeList().empty()) {
     Microtask::EnqueueMicrotask(
         WTF::BindOnce(&MutationObserver::DeliverMutations));
   }

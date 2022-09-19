@@ -1177,7 +1177,7 @@ TEST_P(AnimationAnimationTestNoCompositing, AttachedAnimations) {
       1U, element->GetElementAnimations()->Animations().find(animation)->value);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_TRUE(element->GetElementAnimations()->Animations().IsEmpty());
+  EXPECT_TRUE(element->GetElementAnimations()->Animations().empty());
 }
 
 TEST_P(AnimationAnimationTestNoCompositing, HasLowerCompositeOrdering) {

@@ -2162,7 +2162,7 @@ void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
   ReadableStreamGenericReader* reader = stream->reader_;
   ReadableStreamBYOBReader* byob_reader = To<ReadableStreamBYOBReader>(reader);
   // 3. Assert: reader.[[readIntoRequests]] is not empty.
-  DCHECK(!byob_reader->read_into_requests_.IsEmpty());
+  DCHECK(!byob_reader->read_into_requests_.empty());
   // 4. Let readIntoRequest be reader.[[readIntoRequests]][0].
   ReadableStreamBYOBReader::ReadIntoRequest* read_into_request =
       byob_reader->read_into_requests_[0];

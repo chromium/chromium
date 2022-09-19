@@ -138,10 +138,10 @@ void DatabaseTracker::RemoveOpenDatabase(Database* database) {
       return;
 
     database_set->erase(found);
-    if (database_set->IsEmpty()) {
+    if (database_set->empty()) {
       name_map->erase(name);
       delete database_set;
-      if (name_map->IsEmpty()) {
+      if (name_map->empty()) {
         open_database_map_->erase(origin_string);
         delete name_map;
       }

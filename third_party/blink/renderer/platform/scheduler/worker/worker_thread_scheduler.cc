@@ -132,7 +132,7 @@ WorkerThreadScheduler::~WorkerThreadScheduler() {
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("worker.scheduler"), "WorkerScheduler", this);
 
-  DCHECK(worker_schedulers_.IsEmpty());
+  DCHECK(worker_schedulers_.empty());
 }
 
 scoped_refptr<SingleThreadIdleTaskRunner>

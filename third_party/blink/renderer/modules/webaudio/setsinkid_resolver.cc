@@ -93,7 +93,7 @@ void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
 
   resolvers.pop_front();
 
-  if (!resolvers.IsEmpty()) {
+  if (!resolvers.empty()) {
     resolvers.front()->Start();
   }
 }

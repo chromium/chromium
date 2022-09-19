@@ -84,7 +84,7 @@ static void InvalidateStyleForAllLinksRecursively(
 
 void VisitedLinkState::InvalidateStyleForAllLinks(
     bool invalidate_visited_link_hashes) {
-  if (!links_checked_for_visited_state_.IsEmpty() && GetDocument().firstChild())
+  if (!links_checked_for_visited_state_.empty() && GetDocument().firstChild())
     InvalidateStyleForAllLinksRecursively(*GetDocument().firstChild(),
                                           invalidate_visited_link_hashes);
 }

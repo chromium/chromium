@@ -522,7 +522,7 @@ void PresentationConnection::HandleMessageQueue() {
   if (!target_connection_.is_bound())
     return;
 
-  while (!messages_.IsEmpty() && !blob_loader_) {
+  while (!messages_.empty() && !blob_loader_) {
     Message* message = messages_.front().Get();
     switch (message->type) {
       case kMessageTypeText:
@@ -637,7 +637,7 @@ void PresentationConnection::DidClose(
 }
 
 void PresentationConnection::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
-  DCHECK(!messages_.IsEmpty());
+  DCHECK(!messages_.empty());
   DCHECK_EQ(messages_.front()->type, kMessageTypeBlob);
   DCHECK(buffer);
   if (!base::CheckedNumeric<wtf_size_t>(buffer->ByteLength()).IsValid()) {
@@ -658,7 +658,7 @@ void PresentationConnection::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
 }
 
 void PresentationConnection::DidFailLoadingBlob(FileErrorCode error_code) {
-  DCHECK(!messages_.IsEmpty());
+  DCHECK(!messages_.empty());
   DCHECK_EQ(messages_.front()->type, kMessageTypeBlob);
   // TODO(crbug.com/1036565): generate error message?
   // Ignore the current failed blob item and continue with next items.

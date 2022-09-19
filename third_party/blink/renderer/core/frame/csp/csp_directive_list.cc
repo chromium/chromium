@@ -321,7 +321,7 @@ bool IsMatchingNoncePresent(
 bool AreAllMatchingHashesPresent(
     const network::mojom::blink::CSPSourceList* directive,
     const IntegrityMetadataSet& hashes) {
-  if (!directive || hashes.IsEmpty())
+  if (!directive || hashes.empty())
     return false;
   for (const std::pair<String, IntegrityAlgorithm>& hash : hashes) {
     // Convert the hash from integrity metadata format to CSP format.

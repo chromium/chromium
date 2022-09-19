@@ -131,11 +131,11 @@ bool FontFaceCache::CapabilitiesSet::RemoveFontFace(FontFace* font_face) {
   if (!segmented_font_face->IsEmpty())
     return false;
   map_.erase(it);
-  return map_.IsEmpty();
+  return map_.empty();
 }
 
 bool FontFaceCache::ClearCSSConnected() {
-  if (style_rule_to_font_face_.IsEmpty())
+  if (style_rule_to_font_face_.empty())
     return false;
   for (const auto& item : style_rule_to_font_face_)
     RemoveFontFace(item.value.Get(), true);

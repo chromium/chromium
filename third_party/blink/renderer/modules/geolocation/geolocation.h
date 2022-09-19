@@ -150,7 +150,7 @@ class MODULES_EXPORT Geolocation final
     }
 
     auto Contains(GeoNotifier* value) const { return set_.Contains(value); }
-    auto IsEmpty() const { return set_.IsEmpty(); }
+    auto IsEmpty() const { return set_.empty(); }
 
     auto InsertWithoutTimerCheck(GeoNotifier* value) {
       return set_.insert(value);

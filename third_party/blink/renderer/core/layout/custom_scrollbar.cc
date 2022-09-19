@@ -49,7 +49,7 @@ CustomScrollbar::CustomScrollbar(ScrollableArea* scrollable_area,
 
 CustomScrollbar::~CustomScrollbar() {
   DCHECK(!scrollable_area_);
-  DCHECK(parts_.IsEmpty());
+  DCHECK(parts_.empty());
 }
 
 int CustomScrollbar::HypotheticalScrollbarThickness(

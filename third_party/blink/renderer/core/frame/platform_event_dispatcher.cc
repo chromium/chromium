@@ -34,14 +34,14 @@ void PlatformEventDispatcher::RemoveController(
   DCHECK(controllers_.Contains(controller));
 
   controllers_.erase(controller);
-  if (!is_dispatching_ && controllers_.IsEmpty()) {
+  if (!is_dispatching_ && controllers_.empty()) {
     StopListening();
     is_listening_ = false;
   }
 }
 
 void PlatformEventDispatcher::NotifyControllers() {
-  if (controllers_.IsEmpty())
+  if (controllers_.empty())
     return;
 
   {
@@ -56,7 +56,7 @@ void PlatformEventDispatcher::NotifyControllers() {
     }
   }
 
-  if (controllers_.IsEmpty()) {
+  if (controllers_.empty()) {
     StopListening();
     is_listening_ = false;
   }

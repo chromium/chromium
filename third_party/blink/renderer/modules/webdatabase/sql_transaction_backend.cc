@@ -714,7 +714,7 @@ void SQLTransactionBackend::GetNextStatement() {
   current_statement_backend_ = nullptr;
 
   base::AutoLock locker(statement_lock_);
-  if (!statement_queue_.IsEmpty())
+  if (!statement_queue_.empty())
     current_statement_backend_ = statement_queue_.TakeFirst();
 }
 

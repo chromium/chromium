@@ -344,7 +344,7 @@ void Database::Close() {
     // Transaction phase 1 cleanup. See comment on "What happens if a
     // transaction is interrupted?" at the top of SQLTransactionBackend.cpp.
     SQLTransactionBackend* transaction = nullptr;
-    while (!transaction_queue_.IsEmpty()) {
+    while (!transaction_queue_.empty()) {
       transaction = transaction_queue_.TakeFirst();
       transaction->NotifyDatabaseThreadIsShuttingDown();
     }
@@ -388,7 +388,7 @@ void Database::InProgressTransactionCompleted() {
 void Database::ScheduleTransaction() {
   SQLTransactionBackend* transaction = nullptr;
 
-  if (is_transaction_queue_enabled_ && !transaction_queue_.IsEmpty())
+  if (is_transaction_queue_enabled_ && !transaction_queue_.empty())
     transaction = transaction_queue_.TakeFirst();
 
   if (transaction && GetDatabaseContext()->DatabaseThreadAvailable()) {

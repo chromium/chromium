@@ -190,8 +190,8 @@ FontPlatformDataCache::SizedFontPlatformDataSet::GetOrCreateFontPlatformData(
   // Take a different size instance of the same font before adding an entry to
   // `size_to_data_map`.
   FontPlatformData* const another_size =
-      size_to_data_map_.IsEmpty() ? nullptr
-                                  : size_to_data_map_.begin()->value.get();
+      size_to_data_map_.empty() ? nullptr
+                                : size_to_data_map_.begin()->value.get();
   const auto add_result = size_to_data_map_.insert(rounded_size, nullptr);
   std::unique_ptr<FontPlatformData>* found = &add_result.stored_value->value;
   if (!add_result.is_new_entry)
@@ -218,7 +218,7 @@ bool FontPlatformDataCache::SizedFontPlatformDataSet::Purge(
       sizes_to_remove.push_back(entry.key);
   }
   size_to_data_map_.RemoveAll(sizes_to_remove);
-  return size_to_data_map_.IsEmpty();
+  return size_to_data_map_.empty();
 }
 
 void FontPlatformDataCache::SizedFontPlatformDataSet::Set(

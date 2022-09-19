@@ -170,7 +170,7 @@ void FontUniqueNameLookupWin::ReceiveReadOnlySharedMemoryRegion(
   DCHECK(lookup_mode_ == blink::mojom::UniqueFontLookupMode::kRetrieveTable);
   font_table_matcher_ =
       std::make_unique<FontTableMatcher>(shared_memory_region.Map());
-  while (!pending_callbacks_.IsEmpty()) {
+  while (!pending_callbacks_.empty()) {
     NotifyFontUniqueNameLookupReady callback = pending_callbacks_.TakeFirst();
     std::move(callback).Run();
   }

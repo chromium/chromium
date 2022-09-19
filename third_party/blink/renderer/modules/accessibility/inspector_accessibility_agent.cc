@@ -1145,7 +1145,7 @@ void InspectorAccessibilityAgent::AXReadyCallback(Document& document) {
 }
 
 void InspectorAccessibilityAgent::RefreshFrontendNodes(TimerBase*) {
-  if (dirty_nodes_.IsEmpty())
+  if (dirty_nodes_.empty())
     return;
   auto nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
@@ -1252,7 +1252,7 @@ protocol::Response InspectorAccessibilityAgent::disable() {
   DCHECK(EnabledAgents().Contains(frame));
   auto it = EnabledAgents().find(frame);
   it->value->erase(this);
-  if (it->value->IsEmpty())
+  if (it->value->empty())
     EnabledAgents().erase(frame);
   for (auto& context : document_to_context_map_.Values()) {
     auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());

@@ -119,7 +119,7 @@ void WebURLLoaderMockFactoryImpl::UnregisterAllURLsAndClearMemoryCache() {
 void WebURLLoaderMockFactoryImpl::ServeAsynchronousRequests() {
   // Serving a request might trigger more requests, so we cannot iterate on
   // pending_loaders_ as it might get modified.
-  while (!pending_loaders_.IsEmpty()) {
+  while (!pending_loaders_.empty()) {
     LoaderToRequestMap::iterator iter = pending_loaders_.begin();
     base::WeakPtr<WebURLLoaderMock> loader(iter->key->GetWeakPtr());
     std::unique_ptr<network::ResourceRequest> request = std::move(iter->value);

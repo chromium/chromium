@@ -465,7 +465,7 @@ bool StyleSheetContents::LoadCompleted() const {
     return parent_sheet->LoadCompleted();
 
   StyleSheetContents* root = RootStyleSheet();
-  return root->loading_clients_.IsEmpty();
+  return root->loading_clients_.empty();
 }
 
 void StyleSheetContents::CheckLoaded() {
@@ -479,7 +479,7 @@ void StyleSheetContents::CheckLoaded() {
   }
 
   DCHECK_EQ(this, RootStyleSheet());
-  if (loading_clients_.IsEmpty())
+  if (loading_clients_.empty())
     return;
 
   // Avoid |CSSSStyleSheet| and |OwnerNode| being deleted by scripts that run
@@ -652,8 +652,8 @@ void StyleSheetContents::UnregisterClient(CSSStyleSheet* sheet) {
   loading_clients_.erase(sheet);
   completed_clients_.erase(sheet);
 
-  if (!sheet->OwnerDocument() || !loading_clients_.IsEmpty() ||
-      !completed_clients_.IsEmpty())
+  if (!sheet->OwnerDocument() || !loading_clients_.empty() ||
+      !completed_clients_.empty())
     return;
 
   has_single_owner_document_ = true;

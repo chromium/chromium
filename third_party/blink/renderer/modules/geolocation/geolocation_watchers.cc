@@ -64,7 +64,7 @@ void GeolocationWatchers::Clear() {
 }
 
 bool GeolocationWatchers::IsEmpty() const {
-  return id_to_notifier_map_.IsEmpty();
+  return id_to_notifier_map_.empty();
 }
 
 void GeolocationWatchers::Swap(GeolocationWatchers& other) {

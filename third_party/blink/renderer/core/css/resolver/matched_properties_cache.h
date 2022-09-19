@@ -71,7 +71,7 @@ class CORE_EXPORT MatchedPropertiesCache {
   MatchedPropertiesCache();
   MatchedPropertiesCache(const MatchedPropertiesCache&) = delete;
   MatchedPropertiesCache& operator=(const MatchedPropertiesCache&) = delete;
-  ~MatchedPropertiesCache() { DCHECK(cache_.IsEmpty()); }
+  ~MatchedPropertiesCache() { DCHECK(cache_.empty()); }
 
   class CORE_EXPORT Key {
     STACK_ALLOCATED();

@@ -2026,7 +2026,7 @@ Response InspectorNetworkAgent::setAcceptedEncodings(
   }
   // If invoked with an empty list, it means none of the encodings should be
   // accepted. See InspectorNetworkAgent::PrepareRequest.
-  if (accepted_encodings.IsEmpty())
+  if (accepted_encodings.empty())
     accepted_encodings.insert("none");
 
   // Set the inspector state.

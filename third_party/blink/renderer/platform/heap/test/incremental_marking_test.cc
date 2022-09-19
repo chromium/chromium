@@ -1435,7 +1435,7 @@ TEST_F(IncrementalMarkingTest, LinkedHashSetMovingCallback) {
   // Destroy the link between original HeapLinkedHashSet object and its backing
   // store.
   wrapper->Swap();
-  DCHECK(wrapper->hash_set_.IsEmpty());
+  DCHECK(wrapper->hash_set_.empty());
 
   PreciselyCollectGarbage();
 

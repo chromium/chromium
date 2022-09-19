@@ -52,7 +52,7 @@ class TransitionPseudoElementData final
 inline bool TransitionPseudoElementData::HasPseudoElements() const {
   return transition_ || transition_outgoing_image_ ||
          transition_incoming_image_ || transition_image_wrapper_ ||
-         !transition_containers_.IsEmpty();
+         !transition_containers_.empty();
 }
 
 inline void TransitionPseudoElementData::ClearPseudoElements() {

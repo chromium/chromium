@@ -169,8 +169,8 @@ TEST_P(DocumentLoaderTest, MultiChunkWithReentrancy) {
       }
 
       // Serve the remaining bytes to complete the load.
-      EXPECT_FALSE(data_.IsEmpty());
-      while (!data_.IsEmpty())
+      EXPECT_FALSE(data_.empty());
+      while (!data_.empty())
         DispatchOneByte();
 
       body_loader_->Finish();

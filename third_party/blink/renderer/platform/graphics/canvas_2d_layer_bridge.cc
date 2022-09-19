@@ -465,7 +465,7 @@ void Canvas2DLayerBridge::ClearPendingRasterTimers() {
   }
 
   if (raster_interface) {
-    while (!pending_raster_timers_.IsEmpty()) {
+    while (!pending_raster_timers_.empty()) {
       RasterTimer rt = pending_raster_timers_.TakeFirst();
       raster_interface->DeleteQueriesEXT(1, &rt.gl_query_id);
     }
@@ -483,7 +483,7 @@ void Canvas2DLayerBridge::FinishRasterTimers(
   }
 
   // Finish up any pending queries that are complete
-  while (!pending_raster_timers_.IsEmpty()) {
+  while (!pending_raster_timers_.empty()) {
     auto it = pending_raster_timers_.begin();
     GLuint complete = 1;
     raster_interface->GetQueryObjectuivEXT(

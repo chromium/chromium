@@ -67,14 +67,14 @@ void WakeLockManager::UnregisterSentinel(WakeLockSentinel* sentinel) {
   // 3.1. Ask the underlying operating system to release the wake lock of type
   //      type and let success be true if the operation succeeded, or else
   //      false.
-  if (wake_lock_sentinels_.IsEmpty() && wake_lock_.is_bound()) {
+  if (wake_lock_sentinels_.empty() && wake_lock_.is_bound()) {
     wake_lock_->CancelWakeLock();
     wake_lock_.reset();
   }
 }
 
 void WakeLockManager::ClearWakeLocks() {
-  while (!wake_lock_sentinels_.IsEmpty())
+  while (!wake_lock_sentinels_.empty())
     (*wake_lock_sentinels_.begin())->DoRelease();
 }
 

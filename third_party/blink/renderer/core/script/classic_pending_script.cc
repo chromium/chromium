@@ -321,7 +321,7 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   // checks were destined for this request, so we cannot skip the integrity
   // check.
   bool integrity_failure = false;
-  if (!options_.GetIntegrityMetadata().IsEmpty() || resource->IsLinkPreload()) {
+  if (!options_.GetIntegrityMetadata().empty() || resource->IsLinkPreload()) {
     integrity_failure = resource->IntegrityDisposition() !=
                         ResourceIntegrityDisposition::kPassed;
   }

@@ -57,7 +57,7 @@ bool InspectorTaskRunner::AppendTaskDontInterrupt(Task task) {
 InspectorTaskRunner::Task InspectorTaskRunner::TakeNextInterruptingTask() {
   base::AutoLock locker(lock_);
 
-  if (disposed_ || interrupting_task_queue_.IsEmpty())
+  if (disposed_ || interrupting_task_queue_.empty())
     return Task();
 
   return interrupting_task_queue_.TakeFirst();

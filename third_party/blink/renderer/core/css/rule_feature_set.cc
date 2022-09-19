@@ -2000,7 +2000,7 @@ bool RuleFeatureSet::NeedsHasInvalidationForInsertedOrRemovedElement(
     }
   }
 
-  return !attributes_in_has_argument_.IsEmpty() ||
+  return !attributes_in_has_argument_.empty() ||
          NeedsHasInvalidationForTagName(element.LocalNameForSelectorMatching());
 }
 

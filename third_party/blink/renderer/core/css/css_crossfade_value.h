@@ -48,7 +48,7 @@ class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
   CSSValue& To() const { return *to_value_; }
   CSSPrimitiveValue& Percentage() const { return *percentage_value_; }
 
-  bool HasClients() const { return !Clients().IsEmpty(); }
+  bool HasClients() const { return !Clients().empty(); }
   ImageResourceObserver* GetObserverProxy();
 
   String CustomCSSText() const;

@@ -116,7 +116,7 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
 
 AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap() {
   DEFINE_STATIC_LOCAL(AXSparseAttributeSetterMap, ax_sparse_setter_map, ());
-  if (ax_sparse_setter_map.IsEmpty()) {
+  if (ax_sparse_setter_map.empty()) {
     ax_sparse_setter_map.Set(
         html_names::kAriaActivedescendantAttr,
         WTF::BindRepeating(&SetObjectAttribute,

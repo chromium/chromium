@@ -136,7 +136,7 @@ class HashMap {
     impl_.ReserveCapacityForSize(size);
   }
 
-  bool IsEmpty() const;
+  bool empty() const;
 
   // iterators iterate over pairs of keys and values
   iterator begin();
@@ -409,8 +409,8 @@ template <typename T,
           typename W,
           typename X,
           typename Y>
-inline bool HashMap<T, U, V, W, X, Y>::IsEmpty() const {
-  return impl_.IsEmpty();
+inline bool HashMap<T, U, V, W, X, Y>::empty() const {
+  return impl_.empty();
 }
 
 template <typename T,

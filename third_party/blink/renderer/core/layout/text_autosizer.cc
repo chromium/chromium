@@ -1394,7 +1394,7 @@ bool TextAutosizer::FingerprintMapper::Remove(LayoutObject* layout_object) {
 
   BlockSet& blocks = *blocks_iter->value;
   blocks.erase(To<LayoutBlock>(layout_object));
-  if (blocks.IsEmpty()) {
+  if (blocks.empty()) {
     blocks_for_fingerprint_.erase(blocks_iter);
 
     SuperclusterMap::iterator supercluster_iter =
@@ -1540,7 +1540,7 @@ float TextAutosizer::ComputeAutosizedFontSize(float computed_size,
 void TextAutosizer::CheckSuperclusterConsistency() {
   HeapHashSet<Member<Supercluster>>& potentially_inconsistent_superclusters =
       fingerprint_mapper_.GetPotentiallyInconsistentSuperclusters();
-  if (potentially_inconsistent_superclusters.IsEmpty())
+  if (potentially_inconsistent_superclusters.empty())
     return;
 
   for (Supercluster* supercluster : potentially_inconsistent_superclusters) {

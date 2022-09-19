@@ -46,7 +46,7 @@ void DeferredShapingController::RegisterDeferred(Element& element) {
 }
 
 bool DeferredShapingController::IsRegisteredDeferred(Element& element) const {
-  return !deferred_elements_.IsEmpty() && deferred_elements_.Contains(&element);
+  return !deferred_elements_.empty() && deferred_elements_.Contains(&element);
 }
 
 void DeferredShapingController::UnregisterDeferred(Element& element) {
@@ -72,7 +72,7 @@ void DeferredShapingController::OnFirstContentfulPaint() {
     return;
   if (!document_->HasFinishedParsing())
     return;
-  if (!default_allow_deferred_shaping_ && deferred_elements_.IsEmpty())
+  if (!default_allow_deferred_shaping_ && deferred_elements_.empty())
     return;
   default_allow_deferred_shaping_ = false;
   // Cancels the last resort task.
@@ -84,7 +84,7 @@ void DeferredShapingController::OnFirstContentfulPaint() {
 }
 
 size_t DeferredShapingController::ReshapeAllDeferredInternal() {
-  if (deferred_elements_.IsEmpty())
+  if (deferred_elements_.empty())
     return 0;
   size_t count = 0;
   for (auto& element : deferred_elements_) {

@@ -50,7 +50,7 @@ DatabaseThread::DatabaseThread()
 }
 
 DatabaseThread::~DatabaseThread() {
-  DCHECK(open_database_set_.IsEmpty());
+  DCHECK(open_database_set_.empty());
   DCHECK(!thread_);
 }
 

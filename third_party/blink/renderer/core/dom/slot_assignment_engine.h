@@ -25,7 +25,7 @@ class CORE_EXPORT SlotAssignmentEngine final
   void Disconnected(ShadowRoot&);
 
   bool HasPendingSlotAssignmentRecalc() const {
-    return !shadow_roots_needing_recalc_.IsEmpty();
+    return !shadow_roots_needing_recalc_.empty();
   }
 
   void RecalcSlotAssignments();

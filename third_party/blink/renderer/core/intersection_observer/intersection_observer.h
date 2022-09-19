@@ -154,10 +154,10 @@ class CORE_EXPORT IntersectionObserver final
   // root just because root_ is null.  Hence root_is_implicit_.
   bool RootIsImplicit() const { return root_is_implicit_; }
 
-  bool HasObservations() const { return !observations_.IsEmpty(); }
+  bool HasObservations() const { return !observations_.empty(); }
   bool AlwaysReportRootBounds() const { return always_report_root_bounds_; }
   bool NeedsOcclusionTracking() const {
-    return trackVisibility() && !observations_.IsEmpty();
+    return trackVisibility() && !observations_.empty();
   }
 
   DOMHighResTimeStamp GetTimeStamp(base::TimeTicks monotonic_time) const;
@@ -202,7 +202,7 @@ class CORE_EXPORT IntersectionObserver final
   }
 
  private:
-  bool NeedsDelivery() const { return !active_observations_.IsEmpty(); }
+  bool NeedsDelivery() const { return !active_observations_.empty(); }
   void ProcessCustomWeakness(const LivenessBroker&);
 
   const Member<IntersectionObserverDelegate> delegate_;

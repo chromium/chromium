@@ -58,7 +58,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
 
   // Front source is the first successfully loaded source.
   const CSSFontFaceSource* FrontSource() const {
-    return sources_.IsEmpty() ? nullptr : sources_.front();
+    return sources_.empty() ? nullptr : sources_.front();
   }
   FontFace* GetFontFace() const { return font_face_; }
 
@@ -67,7 +67,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   void AddSegmentedFontFace(CSSSegmentedFontFace*);
   void RemoveSegmentedFontFace(CSSSegmentedFontFace*);
 
-  bool IsValid() const { return !sources_.IsEmpty(); }
+  bool IsValid() const { return !sources_.empty(); }
   size_t ApproximateBlankCharacterCount() const;
 
   void AddSource(CSSFontFaceSource*);

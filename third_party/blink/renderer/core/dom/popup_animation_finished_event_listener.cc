@@ -18,7 +18,7 @@ PopupAnimationFinishedEventListener::PopupAnimationFinishedEventListener(
     HeapHashSet<Member<EventTarget>>&& animations)
     : popup_element_(popup_element), animations_(std::move(animations)) {
   DCHECK(popup_element->HasPopupAttribute());
-  DCHECK(!animations_.IsEmpty());
+  DCHECK(!animations_.empty());
   for (auto animation : animations_) {
     animation->addEventListener(event_type_names::kFinish, this,
                                 /*use_capture*/ false);
@@ -51,7 +51,7 @@ void PopupAnimationFinishedEventListener::RemoveEventListeners(
 
 void PopupAnimationFinishedEventListener::Invoke(ExecutionContext*,
                                                  Event* event) {
-  DCHECK(!animations_.IsEmpty());
+  DCHECK(!animations_.empty());
   DCHECK(event->type() == event_type_names::kFinish ||
          event->type() == event_type_names::kCancel);
   auto* animation = event->target();
@@ -59,13 +59,13 @@ void PopupAnimationFinishedEventListener::Invoke(ExecutionContext*,
   animations_.erase(animation);
 
   // Finish hiding the popup once all animations complete.
-  if (animations_.IsEmpty()) {
+  if (animations_.empty()) {
     popup_element_->PopupHideFinishIfNeeded();
   }
 }
 
 bool PopupAnimationFinishedEventListener::IsFinished() const {
-  return animations_.IsEmpty();
+  return animations_.empty();
 }
 
 void PopupAnimationFinishedEventListener::Trace(Visitor* visitor) const {

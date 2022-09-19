@@ -25,7 +25,7 @@ class ElementSMILAnimations : public GarbageCollected<ElementSMILAnimations> {
 
   void AddAnimation(const QualifiedName& attribute, SVGAnimationElement*);
   void RemoveAnimation(const QualifiedName& attribute, SVGAnimationElement*);
-  bool HasAnimations() const { return !sandwiches_.IsEmpty(); }
+  bool HasAnimations() const { return !sandwiches_.empty(); }
 
   bool Apply(SMILTime elapsed);
 

@@ -584,7 +584,7 @@ void PrePaintTreeWalk::WalkMissedChildren(
     const LayoutObject& ancestor,
     const NGPhysicalBoxFragment& fragment,
     const PrePaintTreeWalkContext& context) {
-  if (pending_missables_.IsEmpty())
+  if (pending_missables_.empty())
     return;
 
   for (const NGLink& child : fragment.Children()) {

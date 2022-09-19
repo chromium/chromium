@@ -1219,7 +1219,7 @@ void LocalFrameView::RemoveBackgroundAttachmentFixedObject(
 
 bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
     const {
-  if (background_attachment_fixed_objects_.IsEmpty())
+  if (background_attachment_fixed_objects_.empty())
     return false;
   if (background_attachment_fixed_objects_.size() > 1)
     return true;
@@ -1761,7 +1761,7 @@ bool LocalFrameView::UpdatePlugins() {
   // isEmpty:
   // FIXME: This assert has been temporarily removed due to
   // https://crbug.com/430344
-  if (part_update_set_.IsEmpty())
+  if (part_update_set_.empty())
     return true;
 
   // Need to swap because script will run inside the below loop and invalidate
@@ -1797,7 +1797,7 @@ bool LocalFrameView::UpdatePlugins() {
     part_update_set_.erase(&object);
   }
 
-  return part_update_set_.IsEmpty();
+  return part_update_set_.empty();
 }
 
 void LocalFrameView::UpdatePluginsTimerFired(TimerBase*) {
@@ -1818,7 +1818,7 @@ void LocalFrameView::FlushAnyPendingPostLayoutTasks() {
 
 void LocalFrameView::ScheduleUpdatePluginsIfNecessary() {
   DCHECK(!IsInPerformLayout());
-  if (update_plugins_timer_.IsActive() || part_update_set_.IsEmpty())
+  if (update_plugins_timer_.IsActive() || part_update_set_.empty())
     return;
   update_plugins_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
@@ -4781,7 +4781,7 @@ void LocalFrameView::NotifyVideoIsDominantVisibleStatus(
 }
 
 bool LocalFrameView::HasDominantVideoElement() const {
-  return !fullscreen_video_elements_.IsEmpty();
+  return !fullscreen_video_elements_.empty();
 }
 
 #if DCHECK_IS_ON()

@@ -362,7 +362,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       use_last_baseline_for_inline_baseline_(false),
       has_fragmented_out_of_flow_data_(
           !builder->oof_positioned_fragmentainer_descendants_.empty() ||
-          !builder->multicols_with_pending_oofs_.IsEmpty()),
+          !builder->multicols_with_pending_oofs_.empty()),
       has_out_of_flow_fragment_child_(builder->HasOutOfFlowFragmentChild()),
       has_out_of_flow_in_fragmentainer_subtree_(
           builder->HasOutOfFlowInFragmentainerSubtree()),
@@ -503,14 +503,14 @@ NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
     return nullptr;
   auto* oof_data =
       reinterpret_cast<NGFragmentedOutOfFlowData*>(oof_data_.Get());
-  DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
+  DCHECK(!oof_data->multicols_with_pending_oofs.empty() ||
          !oof_data->oof_positioned_fragmentainer_descendants.empty());
   return oof_data;
 }
 
 bool NGPhysicalFragment::HasNestedMulticolsWithOOFs() const {
   const NGFragmentedOutOfFlowData* oof_data = FragmentedOutOfFlowData();
-  return oof_data && !oof_data->multicols_with_pending_oofs.IsEmpty();
+  return oof_data && !oof_data->multicols_with_pending_oofs.empty();
 }
 
 bool NGPhysicalFragment::NeedsOOFPositionedInfoPropagation() const {

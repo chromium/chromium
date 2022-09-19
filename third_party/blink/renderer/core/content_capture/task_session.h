@@ -66,10 +66,8 @@ class TaskSession final : public GarbageCollected<TaskSession> {
       return HasUnsentCapturedContent() || HasUnsentChangedContent() ||
              HasUnsentDetachedNodes();
     }
-    bool HasUnsentCapturedContent() const {
-      return !captured_content_.IsEmpty();
-    }
-    bool HasUnsentChangedContent() const { return !changed_content_.IsEmpty(); }
+    bool HasUnsentCapturedContent() const { return !captured_content_.empty(); }
+    bool HasUnsentChangedContent() const { return !changed_content_.empty(); }
     bool HasUnsentDetachedNodes() const { return !detached_nodes_.empty(); }
     WebVector<int64_t> MoveDetachedNodes();
     const Document* GetDocument() const { return document_; }

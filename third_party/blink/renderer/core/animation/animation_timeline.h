@@ -86,7 +86,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   Animation* Play(AnimationEffect*, ExceptionState& = ASSERT_NO_EXCEPTION);
 
   virtual bool NeedsAnimationTimingUpdate();
-  virtual bool HasAnimations() const { return !animations_.IsEmpty(); }
+  virtual bool HasAnimations() const { return !animations_.empty(); }
   virtual bool HasOutdatedAnimation() const {
     return outdated_animation_count_ > 0;
   }

@@ -404,7 +404,7 @@ void NetworkResourcesData::AddPendingEncodedDataLength(
 }
 
 void NetworkResourcesData::Clear(const String& preserved_loader_id) {
-  if (request_id_to_resource_data_map_.IsEmpty())
+  if (request_id_to_resource_data_map_.empty())
     return;
   request_ids_deque_.clear();
   content_size_ = 0;

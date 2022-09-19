@@ -90,7 +90,7 @@ void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
 
 bool SoftNavigationHeuristics::IsCurrentTaskDescendantOfClickEventHandler(
     ScriptState* script_state) {
-  if (potential_soft_navigation_task_ids_.IsEmpty()) {
+  if (potential_soft_navigation_task_ids_.empty()) {
     return false;
   }
   ThreadScheduler* scheduler = ThreadScheduler::Current();

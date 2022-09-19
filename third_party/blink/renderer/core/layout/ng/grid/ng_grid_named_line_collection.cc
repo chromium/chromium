@@ -37,18 +37,18 @@ NGGridNamedLineCollection::NGGridNamedLineCollection(
   const NamedGridLinesMap& auto_repeat_grid_line_names =
       computed_grid_track_list.auto_repeat_named_grid_lines;
 
-  if (!grid_line_names.IsEmpty() && are_named_lines_valid) {
+  if (!grid_line_names.empty() && are_named_lines_valid) {
     auto it = grid_line_names.find(named_line);
     named_lines_indexes_ = it == grid_line_names.end() ? nullptr : &it->value;
   }
 
-  if (!auto_repeat_grid_line_names.IsEmpty() && are_named_lines_valid) {
+  if (!auto_repeat_grid_line_names.empty() && are_named_lines_valid) {
     auto it = auto_repeat_grid_line_names.find(named_line);
     auto_repeat_named_lines_indexes_ =
         it == auto_repeat_grid_line_names.end() ? nullptr : &it->value;
   }
 
-  if (!implicit_grid_line_names.IsEmpty()) {
+  if (!implicit_grid_line_names.empty()) {
     auto it = implicit_grid_line_names.find(named_line);
     implicit_named_lines_indexes_ =
         it == implicit_grid_line_names.end() ? nullptr : &it->value;

@@ -418,7 +418,7 @@ inline StringImpl* FindStringIfStatic(const CharType* characters,
   // computeHashAndMaskTop8Bits is the function StringImpl::hash() uses.
   unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(characters, length);
   const WTF::StaticStringsTable& table = StringImpl::AllStaticStrings();
-  DCHECK(!table.IsEmpty());
+  DCHECK(!table.empty());
 
   WTF::StaticStringsTable::const_iterator it = table.find(hash);
   if (it == table.end())

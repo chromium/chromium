@@ -98,7 +98,7 @@ class CORE_EXPORT ElementAnimations final
 
   bool IsEmpty() const {
     return effect_stack_.IsEmpty() && css_animations_.IsEmpty() &&
-           animations_.IsEmpty() && worklet_animations_.IsEmpty();
+           animations_.empty() && worklet_animations_.empty();
   }
 
   void RestartAnimationOnCompositor();

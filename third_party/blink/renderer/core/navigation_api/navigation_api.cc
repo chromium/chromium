@@ -208,7 +208,7 @@ void NavigationApi::setOnnavigate(EventListener* listener) {
 }
 
 void NavigationApi::PopulateKeySet() {
-  DCHECK(keys_to_indices_.IsEmpty());
+  DCHECK(keys_to_indices_.empty());
   for (wtf_size_t i = 0; i < entries_.size(); i++)
     keys_to_indices_.insert(entries_[i]->key(), i);
 }
@@ -895,7 +895,7 @@ void NavigationApi::InformAboutCanceledNavigation(
   // This function may be called when a v8 context hasn't been initialized.
   // upcoming_traversals_ being non-empty requires a v8 context, so check that
   // so that we don't unnecessarily try to initialize one below.
-  if (!upcoming_traversals_.IsEmpty() && GetSupplementable()->GetFrame() &&
+  if (!upcoming_traversals_.empty() && GetSupplementable()->GetFrame() &&
       !GetSupplementable()->GetFrame()->IsAttached()) {
     auto* script_state =
         ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
@@ -905,7 +905,7 @@ void NavigationApi::InformAboutCanceledNavigation(
     CopyValuesToVector(upcoming_traversals_, traversals);
     for (auto& traversal : traversals)
       FinalizeWithAbortedNavigationError(script_state, traversal);
-    DCHECK(upcoming_traversals_.IsEmpty());
+    DCHECK(upcoming_traversals_.empty());
   }
 }
 

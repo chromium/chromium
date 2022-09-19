@@ -389,7 +389,7 @@ void WebDevToolsAgentImpl::InspectElement(
   if (!node && web_local_frame_impl_->GetFrame()->GetDocument())
     node = web_local_frame_impl_->GetFrame()->GetDocument()->documentElement();
 
-  if (!overlay_agents_.IsEmpty()) {
+  if (!overlay_agents_.empty()) {
     for (auto& it : overlay_agents_)
       it.value->Inspect(node);
   } else {
@@ -499,14 +499,14 @@ void WebDevToolsAgentImpl::FlushProtocolNotifications() {
 void WebDevToolsAgentImpl::WillProcessTask(
     const base::PendingTask& pending_task,
     bool was_blocked_or_low_priority) {
-  if (network_agents_.IsEmpty())
+  if (network_agents_.empty())
     return;
   ThreadDebugger::IdleFinished(V8PerIsolateData::MainThreadIsolate());
 }
 
 void WebDevToolsAgentImpl::DidProcessTask(
     const base::PendingTask& pending_task) {
-  if (network_agents_.IsEmpty())
+  if (network_agents_.empty())
     return;
   ThreadDebugger::IdleStarted(V8PerIsolateData::MainThreadIsolate());
   FlushProtocolNotifications();

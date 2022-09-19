@@ -120,7 +120,7 @@ void PendingBeaconDispatcher::PageVisibilityChanged() {
 }
 
 void PendingBeaconDispatcher::ScheduleDispatchBeacons() {
-  if (pending_beacons_.IsEmpty()) {
+  if (pending_beacons_.empty()) {
     return;
   }
 

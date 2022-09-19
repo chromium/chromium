@@ -636,7 +636,7 @@ void NGGridPlacement::AutoPlacementCursor::InsertPlacedItemAtCurrentPosition(
 }
 
 void NGGridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {
-  DCHECK(ordered_list.IsEmpty());
+  DCHECK(ordered_list.empty());
 
   auto ComparePlacedGridItemPointers =
       [](const std::unique_ptr<PlacedGridItem>& lhs,

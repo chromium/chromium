@@ -245,7 +245,7 @@ class RuleMap {
  public:
   void Add(const AtomicString& key, const RuleData& rule_data);
   base::span<const RuleData> Find(const AtomicString& key) const {
-    DCHECK(buckets.IsEmpty() || compacted);
+    DCHECK(buckets.empty() || compacted);
     auto it = buckets.find(key);
     if (it == buckets.end()) {
       return {};

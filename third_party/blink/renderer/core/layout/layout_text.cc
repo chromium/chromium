@@ -1722,9 +1722,9 @@ void LayoutText::ComputePreferredLogicalWidths(
   glyph_overflow.SetFromBounds(glyph_bounds, f, max_width_);
   // We shouldn't change our mind once we "know".
   DCHECK(!known_to_have_no_overflow_and_no_fallback_fonts_ ||
-         (fallback_fonts.IsEmpty() && glyph_overflow.IsApproximatelyZero()));
+         (fallback_fonts.empty() && glyph_overflow.IsApproximatelyZero()));
   known_to_have_no_overflow_and_no_fallback_fonts_ =
-      fallback_fonts.IsEmpty() && glyph_overflow.IsApproximatelyZero();
+      fallback_fonts.empty() && glyph_overflow.IsApproximatelyZero();
 
   ClearIntrinsicLogicalWidthsDirty();
 }

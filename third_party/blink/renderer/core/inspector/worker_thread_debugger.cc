@@ -69,7 +69,7 @@ WorkerThreadDebugger::WorkerThreadDebugger(v8::Isolate* isolate)
       paused_context_group_id_(kInvalidContextGroupId) {}
 
 WorkerThreadDebugger::~WorkerThreadDebugger() {
-  DCHECK(worker_threads_.IsEmpty());
+  DCHECK(worker_threads_.empty());
 }
 
 void WorkerThreadDebugger::ReportConsoleMessage(

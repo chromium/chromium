@@ -77,7 +77,7 @@ AtomicString FontFaceSetDocument::status() const {
 void FontFaceSetDocument::DidLayout() {
   if (!GetExecutionContext())
     return;
-  if (GetDocument()->IsInOutermostMainFrame() && loading_fonts_.IsEmpty())
+  if (GetDocument()->IsInOutermostMainFrame() && loading_fonts_.empty())
     font_load_histogram_.Record();
   if (!ShouldSignalReady())
     return;

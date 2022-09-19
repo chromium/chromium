@@ -174,8 +174,8 @@ WebTextCheckClient* SpellCheckRequester::GetTextCheckerClient() const {
 }
 
 void SpellCheckRequester::TimerFiredToProcessQueuedRequest() {
-  DCHECK(!request_queue_.IsEmpty());
-  if (request_queue_.IsEmpty())
+  DCHECK(!request_queue_.empty());
+  if (request_queue_.empty())
     return;
 
   InvokeRequest(request_queue_.TakeFirst());
@@ -245,7 +245,7 @@ void SpellCheckRequester::ClearProcessingRequest() {
 void SpellCheckRequester::EnqueueRequest(SpellCheckRequest* request) {
   DCHECK(request);
   bool continuation = false;
-  if (!request_queue_.IsEmpty()) {
+  if (!request_queue_.empty()) {
     SpellCheckRequest* last_request = request_queue_.back();
     // It's a continuation if the number of the last request got incremented in
     // the new one and both apply to the same editable.
@@ -284,7 +284,7 @@ void SpellCheckRequester::DidCheck(int sequence) {
   last_processed_sequence_ = sequence;
 
   ClearProcessingRequest();
-  if (!request_queue_.IsEmpty()) {
+  if (!request_queue_.empty()) {
     timer_to_process_queued_request_ = PostCancellableTask(
         *window_->GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
         WTF::BindOnce(&SpellCheckRequester::TimerFiredToProcessQueuedRequest,

@@ -56,7 +56,7 @@ class CORE_EXPORT AutoplayUmaHelper : public NativeEventListener,
 
   bool IsVisible() const { return is_visible_; }
 
-  bool HasSource() const { return !sources_.IsEmpty(); }
+  bool HasSource() const { return !sources_.empty(); }
 
   void Invoke(ExecutionContext*, Event*) override;
 

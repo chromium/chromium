@@ -343,7 +343,7 @@ class PLATFORM_EXPORT SegmentedString {
     return result;
   }
 
-  bool IsComposite() const { return !substrings_.IsEmpty(); }
+  bool IsComposite() const { return !substrings_.empty(); }
 
   SegmentedSubstring current_string_;
   int number_of_characters_consumed_prior_to_current_string_;

@@ -964,7 +964,7 @@ bool Performance::HasObserverFor(
 }
 
 void Performance::ActivateObserver(PerformanceObserver& observer) {
-  if (active_observers_.IsEmpty())
+  if (active_observers_.empty())
     deliver_observations_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 
   if (suspended_observers_.Contains(&observer))

@@ -237,7 +237,7 @@ void DisplayLockDocumentState::ElementRemovedFromTopLayer(Element*) {
 
 bool DisplayLockDocumentState::MarkAncestorContextsHaveTopLayerElement(
     Element* element) {
-  if (display_lock_contexts_.IsEmpty())
+  if (display_lock_contexts_.empty())
     return false;
 
   bool had_locked_ancestor = false;

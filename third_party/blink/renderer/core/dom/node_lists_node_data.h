@@ -141,8 +141,8 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   void InvalidateCaches(const QualifiedName* attr_name = nullptr);
 
   bool IsEmpty() const {
-    return !child_node_list_ && atomic_name_caches_.IsEmpty() &&
-           tag_collection_ns_caches_.IsEmpty();
+    return !child_node_list_ && atomic_name_caches_.empty() &&
+           tag_collection_ns_caches_.empty();
   }
 
   void AdoptTreeScope() { InvalidateCaches(); }

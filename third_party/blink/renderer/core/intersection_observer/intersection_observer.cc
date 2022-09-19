@@ -392,7 +392,7 @@ void IntersectionObserver::unobserve(Element* target,
   observation->Disconnect();
   observations_.erase(observation);
   active_observations_.erase(observation);
-  if (root() && root()->isConnected() && observations_.IsEmpty()) {
+  if (root() && root()->isConnected() && observations_.empty()) {
     root()
         ->GetDocument()
         .EnsureIntersectionObserverController()
@@ -463,7 +463,7 @@ int64_t IntersectionObserver::ComputeIntersections(
     unsigned flags,
     absl::optional<base::TimeTicks>& monotonic_time) {
   DCHECK(!RootIsImplicit());
-  if (!RootIsValid() || !GetExecutionContext() || observations_.IsEmpty())
+  if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
     return 0;
 
   // If we're processing post-layout deliveries only and we're not a post-layout
@@ -508,7 +508,7 @@ LocalFrameUkmAggregator::MetricId IntersectionObserver::GetUkmMetricId() const {
 
 void IntersectionObserver::ReportUpdates(IntersectionObservation& observation) {
   DCHECK_EQ(observation.Observer(), this);
-  bool needs_scheduling = active_observations_.IsEmpty();
+  bool needs_scheduling = active_observations_.empty();
   active_observations_.insert(&observation);
 
   if (needs_scheduling) {

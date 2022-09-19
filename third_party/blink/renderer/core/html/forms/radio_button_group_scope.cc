@@ -31,7 +31,7 @@ class RadioButtonGroup : public GarbageCollected<RadioButtonGroup> {
  public:
   RadioButtonGroup();
 
-  bool IsEmpty() const { return members_.IsEmpty(); }
+  bool IsEmpty() const { return members_.empty(); }
   bool IsRequired() const { return required_count_; }
   HTMLInputElement* CheckedButton() const { return checked_button_; }
   void Add(HTMLInputElement*);
@@ -152,7 +152,7 @@ void RadioButtonGroup::Remove(HTMLInputElement* button) {
   if (checked_button_ == button)
     checked_button_ = nullptr;
 
-  if (members_.IsEmpty()) {
+  if (members_.empty()) {
     DCHECK(!required_count_);
     DCHECK(!checked_button_);
   } else if (was_valid != IsValid()) {

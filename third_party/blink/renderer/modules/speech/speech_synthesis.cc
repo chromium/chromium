@@ -298,7 +298,7 @@ void SpeechSynthesis::HandleSpeakingCompleted(
   }
 
   // Start the next utterance if we just finished one and one was pending.
-  if (should_start_speaking && !utterance_queue_.IsEmpty())
+  if (should_start_speaking && !utterance_queue_.empty())
     StartSpeakingImmediately();
 }
 
@@ -337,7 +337,7 @@ void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
 }
 
 SpeechSynthesisUtterance* SpeechSynthesis::CurrentSpeechUtterance() const {
-  if (utterance_queue_.IsEmpty())
+  if (utterance_queue_.empty())
     return nullptr;
 
   return utterance_queue_.front();

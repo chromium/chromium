@@ -1296,7 +1296,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(), animation1,
                                             *effect1, &unsupported_properties1),
             CompositorAnimations::kNoFailure);
-  EXPECT_TRUE(unsupported_properties1.IsEmpty());
+  EXPECT_TRUE(unsupported_properties1.empty());
 
   StringKeyframeEffectModel* effect2 = CreateKeyframeEffectModel(
       CreateReplaceOpKeyframe(CSSPropertyID::kHeight, "100px", 0),
@@ -2027,7 +2027,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   // ElementAnimations on the element.
   SimulateFrame(1.);
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_TRUE(element_->GetElementAnimations()->Animations().IsEmpty());
+  EXPECT_TRUE(element_->GetElementAnimations()->Animations().empty());
 }
 
 namespace {

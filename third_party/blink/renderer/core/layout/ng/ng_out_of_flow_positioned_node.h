@@ -353,7 +353,7 @@ struct NGFragmentedOutOfFlowData final : NGPhysicalFragment::OutOfFlowData {
 
   bool NeedsOOFPositionedInfoPropagation() const {
     return !oof_positioned_fragmentainer_descendants.empty() ||
-           !multicols_with_pending_oofs.IsEmpty();
+           !multicols_with_pending_oofs.empty();
   }
 
   static base::span<NGPhysicalOOFNodeForFragmentation>

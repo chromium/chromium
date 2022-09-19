@@ -32,7 +32,7 @@ const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}"
 // this scenario).
 const FeatureNameMap& GetDefaultFeatureNameMap() {
   DEFINE_STATIC_LOCAL(FeatureNameMap, default_feature_name_map, ());
-  if (default_feature_name_map.IsEmpty()) {
+  if (default_feature_name_map.empty()) {
     {% for feature in permissions_policy_features %}
     {% if not feature.depends_on or feature.name in pp_origin_trial_dependency_map %}
     default_feature_name_map.Set(k{{feature.name}}PolicyName,
@@ -65,7 +65,7 @@ void ResetAvailableDocumentPolicyFeaturesForTest() {
 
 const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
   DocumentPolicyFeatureSet& features = GetAvailableDocumentPolicyFeaturesInternal();
-  if (features.IsEmpty()) {
+  if (features.empty()) {
     {% for feature in document_policy_features %}
     {% if not feature.depends_on or feature.name in dp_origin_trial_dependency_map %}
     features.insert(mojom::DocumentPolicyFeature::k{{feature.name}});

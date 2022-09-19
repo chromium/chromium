@@ -121,7 +121,7 @@ AlternateSignedExchangeResourceInfo::CreateIfValid(
       alternative_resources_it->value.emplace_back(std::move(alt_resource));
     }
   }
-  if (alternative_resources.IsEmpty())
+  if (alternative_resources.empty())
     return nullptr;
   return std::make_unique<AlternateSignedExchangeResourceInfo>(
       std::move(alternative_resources));

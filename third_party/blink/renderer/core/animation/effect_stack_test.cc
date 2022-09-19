@@ -300,7 +300,7 @@ TEST_F(AnimationEffectStackTest, AffectedPropertiesDefaultPriority) {
 
   EXPECT_TRUE(
       effect_stack.AffectedProperties(KeyframeEffect::kTransitionPriority)
-          .IsEmpty());
+          .empty());
 
   auto set = effect_stack.AffectedProperties(KeyframeEffect::kDefaultPriority);
   ASSERT_EQ(3u, set.size());
@@ -323,7 +323,7 @@ TEST_F(AnimationEffectStackTest, AffectedPropertiesTransitionPriority) {
       body->GetElementAnimations()->GetEffectStack();
 
   EXPECT_TRUE(effect_stack.AffectedProperties(KeyframeEffect::kDefaultPriority)
-                  .IsEmpty());
+                  .empty());
 
   auto set =
       effect_stack.AffectedProperties(KeyframeEffect::kTransitionPriority);

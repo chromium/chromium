@@ -132,7 +132,7 @@ class FileReader::ThrottlingController final
 
  private:
   void PushReader(FileReader* reader) {
-    if (pending_readers_.IsEmpty() &&
+    if (pending_readers_.empty() &&
         running_readers_.size() < max_running_readers_) {
       reader->ExecutePendingRead();
       DCHECK(!running_readers_.Contains(reader));
@@ -171,7 +171,7 @@ class FileReader::ThrottlingController final
     if (GetSupplementable()->IsContextDestroyed())
       return;
     while (running_readers_.size() < max_running_readers_) {
-      if (pending_readers_.IsEmpty())
+      if (pending_readers_.empty())
         return;
       FileReader* reader = pending_readers_.TakeFirst();
       reader->ExecutePendingRead();

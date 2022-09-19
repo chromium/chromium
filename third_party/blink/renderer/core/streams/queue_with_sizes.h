@@ -42,7 +42,7 @@ class CORE_EXPORT QueueWithSizes final
   double TotalSize() { return queue_total_size_; }
 
   // Not part of the standard.
-  bool IsEmpty() { return queue_.IsEmpty(); }
+  bool IsEmpty() { return queue_.empty(); }
 
   // https://streams.spec.whatwg.org/#reset-queue
   void ResetQueue();

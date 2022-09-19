@@ -122,10 +122,10 @@ class CORE_EXPORT CSSAnimations final {
   void ClearPendingUpdate() { pending_update_.Clear(); }
   void MaybeApplyPendingUpdate(Element*);
   bool HasPreviousActiveInterpolationsForAnimations() const {
-    return !previous_active_interpolations_for_animations_.IsEmpty();
+    return !previous_active_interpolations_for_animations_.empty();
   }
   bool IsEmpty() const {
-    return running_animations_.empty() && transitions_.IsEmpty() &&
+    return running_animations_.empty() && transitions_.empty() &&
            pending_update_.IsEmpty();
   }
   bool HasTimelines() const { return !timeline_data_.IsEmpty(); }
@@ -199,7 +199,7 @@ class CORE_EXPORT CSSAnimations final {
     }
 
     bool IsEmpty() const {
-      return !scroll_timeline_ && view_timelines_.IsEmpty();
+      return !scroll_timeline_ && view_timelines_.empty();
     }
     void Clear() {
       scroll_timeline_ = nullptr;

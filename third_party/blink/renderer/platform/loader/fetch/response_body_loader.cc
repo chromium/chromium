@@ -298,7 +298,7 @@ class ResponseBodyLoader::Buffer final
  public:
   explicit Buffer(ResponseBodyLoader* owner) : owner_(owner) {}
 
-  bool IsEmpty() const { return buffered_data_.IsEmpty(); }
+  bool IsEmpty() const { return buffered_data_.empty(); }
 
   // Add |buffer| to |buffered_data_|.
   void AddChunk(const char* buffer, size_t available) {

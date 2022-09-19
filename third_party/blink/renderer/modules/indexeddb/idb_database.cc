@@ -165,7 +165,7 @@ void IDBDatabase::TransactionFinished(const IDBTransaction* transaction) {
     version_change_transaction_ = nullptr;
   }
 
-  if (close_pending_ && transactions_.IsEmpty())
+  if (close_pending_ && transactions_.empty())
     CloseConnection();
 }
 
@@ -368,7 +368,7 @@ IDBTransaction* IDBDatabase::transaction(
     return nullptr;
   }
 
-  if (scope.IsEmpty()) {
+  if (scope.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The storeNames parameter was empty.");
     return nullptr;
@@ -429,13 +429,13 @@ void IDBDatabase::close() {
   close_pending_ = true;
   feature_handle_for_scheduler_.reset();
 
-  if (transactions_.IsEmpty())
+  if (transactions_.empty())
     CloseConnection();
 }
 
 void IDBDatabase::CloseConnection() {
   DCHECK(close_pending_);
-  DCHECK(transactions_.IsEmpty());
+  DCHECK(transactions_.empty());
 
   if (backend_) {
     backend_->Close();

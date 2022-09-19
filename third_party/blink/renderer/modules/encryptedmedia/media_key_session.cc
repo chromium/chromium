@@ -896,7 +896,7 @@ void MediaKeySession::ActionTimerFired(TimerBase*) {
   HeapDeque<Member<PendingAction>> pending_actions;
   pending_actions.Swap(pending_actions_);
 
-  while (!pending_actions.IsEmpty()) {
+  while (!pending_actions.empty()) {
     PendingAction* action = pending_actions.TakeFirst();
     switch (action->GetType()) {
       case PendingAction::Type::kGenerateRequest:
@@ -999,7 +999,7 @@ void MediaKeySession::OnSessionClosed(media::CdmSessionClosedReason reason) {
 
   // Fail any pending events, except if it's a close request.
   action_timer_.Stop();
-  while (!pending_actions_.IsEmpty()) {
+  while (!pending_actions_.empty()) {
     PendingAction* action = pending_actions_.TakeFirst();
     if (action->GetType() == PendingAction::Type::kClose) {
       action->Result()->Complete();
@@ -1097,14 +1097,14 @@ bool MediaKeySession::HasPendingActivity() const {
   // and we're not closed.
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL)
       << __func__ << "(" << this << ")"
-      << (!pending_actions_.IsEmpty() ? " !pending_actions_.IsEmpty()" : "")
+      << (!pending_actions_.empty() ? " !pending_actions_.IsEmpty()" : "")
       << (async_event_queue_->HasPendingEvents()
               ? " async_event_queue_->HasPendingEvents()"
               : "")
       << ((media_keys_ && !is_closed_) ? " media_keys_ && !is_closed_" : "");
 
-  return !pending_actions_.IsEmpty() ||
-         async_event_queue_->HasPendingEvents() || (media_keys_ && !is_closed_);
+  return !pending_actions_.empty() || async_event_queue_->HasPendingEvents() ||
+         (media_keys_ && !is_closed_);
 }
 
 void MediaKeySession::ContextDestroyed() {

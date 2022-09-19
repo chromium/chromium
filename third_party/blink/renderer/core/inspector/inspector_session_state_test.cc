@@ -215,7 +215,7 @@ TEST(InspectorSessionStateTest, MapFields) {
 
   // The cookie should be empty since everything is cleared.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
-  EXPECT_TRUE(cookie->entries.IsEmpty());
+  EXPECT_TRUE(cookie->entries.empty());
 }
 
 TEST(InspectorSessionStateTest, MultipleAgents) {
@@ -267,6 +267,6 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
 
     dev_tools_session.ApplyUpdates(session_state.TakeUpdates());
   }
-  EXPECT_TRUE(dev_tools_session.CloneCookie()->entries.IsEmpty());
+  EXPECT_TRUE(dev_tools_session.CloneCookie()->entries.empty());
 }
 }  // namespace blink

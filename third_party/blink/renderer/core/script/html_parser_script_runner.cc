@@ -149,7 +149,7 @@ void HTMLParserScriptRunner::Detach() {
     parser_blocking_script_->Dispose();
   parser_blocking_script_ = nullptr;
 
-  while (!force_deferred_scripts_.IsEmpty()) {
+  while (!force_deferred_scripts_.empty()) {
     DCHECK(
         base::FeatureList::IsEnabled(features::kForceDeferScriptIntervention));
     PendingScript* pending_script = force_deferred_scripts_.TakeFirst();
@@ -157,7 +157,7 @@ void HTMLParserScriptRunner::Detach() {
   }
   delayer_for_force_defer_->Deactivate();
 
-  while (!scripts_to_execute_after_parsing_.IsEmpty()) {
+  while (!scripts_to_execute_after_parsing_.empty()) {
     PendingScript* pending_script =
         scripts_to_execute_after_parsing_.TakeFirst();
     pending_script->Dispose();
@@ -401,7 +401,7 @@ void HTMLParserScriptRunner::ExecuteScriptsWaitingForResources() {
 // <specdef href="https://html.spec.whatwg.org/C/#stop-parsing">
 PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
     HeapDeque<Member<PendingScript>>* waiting_scripts) {
-  DCHECK(!waiting_scripts->IsEmpty());
+  DCHECK(!waiting_scripts->empty());
 
   // <spec step="5.1">Spin the event loop until the first script in the list of
   // scripts that will execute when the document has finished parsing has its
@@ -437,11 +437,11 @@ bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
 
   // <spec step="5">While the list of scripts that will execute when the
   // document has finished parsing is not empty:</spec>
-  while (!force_deferred_scripts_.IsEmpty() ||
-         !scripts_to_execute_after_parsing_.IsEmpty()) {
+  while (!force_deferred_scripts_.empty() ||
+         !scripts_to_execute_after_parsing_.empty()) {
     DCHECK(!IsExecutingScript());
     DCHECK(!HasParserBlockingScript());
-    DCHECK(scripts_to_execute_after_parsing_.IsEmpty() ||
+    DCHECK(scripts_to_execute_after_parsing_.empty() ||
            scripts_to_execute_after_parsing_.front()->IsExternalOrModule());
 
     // <spec step="5.3">Remove the first script element from the list of scripts
@@ -452,7 +452,7 @@ bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
     // First execute the scripts that were forced-deferred. If no such scripts
     // are present, then try executing scripts that were deferred by the web
     // developer.
-    if (!force_deferred_scripts_.IsEmpty()) {
+    if (!force_deferred_scripts_.empty()) {
       DCHECK(base::FeatureList::IsEnabled(
           features::kForceDeferScriptIntervention));
       first = TryTakeReadyScriptWaitingForParsing(&force_deferred_scripts_);
@@ -488,7 +488,7 @@ bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
   // All scripts waiting for parsing have now executed (end of spec step 3),
   // including any force deferred syncrhonous scripts. Now resume async
   // script execution if it was suspended by force deferral.
-  DCHECK(force_deferred_scripts_.IsEmpty());
+  DCHECK(force_deferred_scripts_.empty());
   delayer_for_force_defer_->Deactivate();
   return true;
 }

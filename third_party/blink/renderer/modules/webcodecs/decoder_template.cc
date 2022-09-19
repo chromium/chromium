@@ -253,7 +253,7 @@ void DecoderTemplate<Traits>::ProcessRequests() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsClosed());
-  while (!pending_request_ && !requests_.IsEmpty()) {
+  while (!pending_request_ && !requests_.empty()) {
     Request* request = requests_.front();
 
     // Skip processing for requests that are canceled by a recent reset().
@@ -835,7 +835,7 @@ void DecoderTemplate<Traits>::OnCodecReclaimed(DOMException* exception) {
 template <typename Traits>
 bool DecoderTemplate<Traits>::HasPendingActivity() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pending_request_ || !requests_.IsEmpty();
+  return pending_request_ || !requests_.empty();
 }
 
 template <typename Traits>

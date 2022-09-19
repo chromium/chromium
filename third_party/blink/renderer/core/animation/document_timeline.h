@@ -72,9 +72,7 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
 
   bool IsActive() const override;
   absl::optional<base::TimeDelta> InitialStartTimeForAnimations() override;
-  bool HasPendingUpdates() const {
-    return !animations_needing_update_.IsEmpty();
-  }
+  bool HasPendingUpdates() const { return !animations_needing_update_.empty(); }
 
   // The zero time of DocumentTimeline is computed by adding a separate
   // |origin_time_| from DocumentTimelineOptions.

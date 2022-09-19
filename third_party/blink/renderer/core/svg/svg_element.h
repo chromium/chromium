@@ -69,7 +69,7 @@ class CORE_EXPORT SVGElement : public Element {
 
   String title() const override;
   bool HasRelativeLengths() const {
-    return !elements_with_relative_lengths_.IsEmpty();
+    return !elements_with_relative_lengths_.empty();
   }
   static bool IsAnimatableCSSProperty(const QualifiedName&);
 

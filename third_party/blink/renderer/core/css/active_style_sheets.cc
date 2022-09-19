@@ -49,7 +49,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
     // The old stylesheet vector is a prefix of the new vector in terms of
     // StyleSheets. If none of the RuleSets changed, we only need to add the new
     // sheets to the ScopedStyleResolver (ActiveSheetsAppended).
-    bool rule_sets_changed_in_common_prefix = !changed_rule_sets.IsEmpty();
+    bool rule_sets_changed_in_common_prefix = !changed_rule_sets.empty();
     for (; index < new_style_sheet_count; index++) {
       if (new_style_sheets[index].second)
         changed_rule_sets.insert(new_style_sheets[index].second);
@@ -58,7 +58,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
     }
     if (rule_sets_changed_in_common_prefix)
       return kActiveSheetsChanged;
-    if (changed_rule_sets.IsEmpty() && !adds_non_matching_mq)
+    if (changed_rule_sets.empty() && !adds_non_matching_mq)
       return kNoActiveSheetsChanged;
     return kActiveSheetsAppended;
   }
@@ -71,7 +71,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
       else if (old_style_sheets[index].first->HasMediaQueryResults())
         adds_non_matching_mq = true;
     }
-    return changed_rule_sets.IsEmpty() && !adds_non_matching_mq
+    return changed_rule_sets.empty() && !adds_non_matching_mq
                ? kNoActiveSheetsChanged
                : kActiveSheetsChanged;
   }
@@ -119,7 +119,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
     if (sheet2.second)
       changed_rule_sets.insert(sheet2.second);
   }
-  return changed_rule_sets.IsEmpty() && !adds_non_matching_mq
+  return changed_rule_sets.empty() && !adds_non_matching_mq
              ? kNoActiveSheetsChanged
              : kActiveSheetsChanged;
 }

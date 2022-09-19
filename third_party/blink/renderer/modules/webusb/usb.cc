@@ -112,8 +112,8 @@ USB::USB(NavigatorBase& navigator)
 USB::~USB() {
   // |service_| may still be valid but there should be no more outstanding
   // requests to them because each holds a persistent handle to this object.
-  DCHECK(get_devices_requests_.IsEmpty());
-  DCHECK(get_permission_requests_.IsEmpty());
+  DCHECK(get_devices_requests_.empty());
+  DCHECK(get_permission_requests_.empty());
 }
 
 ScriptPromise USB::getDevices(ScriptState* script_state,

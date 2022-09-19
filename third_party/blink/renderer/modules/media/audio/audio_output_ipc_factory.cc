@@ -32,7 +32,7 @@ class AudioOutputIPCFactory::Impl {
   Impl(const Impl&) = delete;
   Impl& operator=(const Impl&) = delete;
 
-  ~Impl() { DCHECK(factory_remotes_.IsEmpty()); }
+  ~Impl() { DCHECK(factory_remotes_.empty()); }
 
   mojom::blink::RendererAudioOutputStreamFactory* GetRemoteFactory(
       const blink::LocalFrameToken& frame_token) const;

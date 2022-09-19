@@ -175,7 +175,7 @@ void BidiTestRunner::RunTest(const std::basic_string<UChar>& input,
                              bidi_test::ParagraphDirection paragraph_direction,
                              const std::string& line,
                              size_t line_number) {
-  if (!skipped_code_points_.IsEmpty()) {
+  if (!skipped_code_points_.empty()) {
     for (size_t i = 0; i < input.size(); i++) {
       if (skipped_code_points_.Contains(input[i])) {
         tests_skipped_++;

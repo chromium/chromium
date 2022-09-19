@@ -768,10 +768,10 @@ class HashTable final
   // for begin.  This is more efficient because we don't have to skip all the
   // empty and deleted buckets, and iterating an empty table is a common case
   // that's worth optimizing.
-  iterator begin() { return IsEmpty() ? end() : MakeIterator(table_); }
+  iterator begin() { return empty() ? end() : MakeIterator(table_); }
   iterator end() { return MakeKnownGoodIterator(table_ + table_size_); }
   const_iterator begin() const {
-    return IsEmpty() ? end() : MakeConstIterator(table_);
+    return empty() ? end() : MakeConstIterator(table_);
   }
   const_iterator end() const {
     return MakeKnownGoodConstIterator(table_ + table_size_);
@@ -785,7 +785,7 @@ class HashTable final
     DCHECK(!AccessForbidden());
     return table_size_;
   }
-  bool IsEmpty() const {
+  bool empty() const {
     DCHECK(!AccessForbidden());
     return !key_count_;
   }
@@ -2370,7 +2370,7 @@ inline bool operator!=(const HashTableIteratorAdapter<T, U>& a,
 template <typename Collection1, typename Collection2>
 inline void RemoveAll(Collection1& collection,
                       const Collection2& to_be_removed) {
-  if (collection.IsEmpty() || to_be_removed.IsEmpty())
+  if (collection.empty() || to_be_removed.empty())
     return;
   typedef typename Collection2::const_iterator CollectionIterator;
   CollectionIterator end(to_be_removed.end());

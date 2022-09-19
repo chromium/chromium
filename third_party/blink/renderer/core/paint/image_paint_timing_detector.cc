@@ -245,7 +245,7 @@ void ImagePaintTimingDetector::ReportPresentationTime(
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     const base::TimeTicks& timestamp,
     unsigned last_queued_frame_index) {
-  while (!images_queued_for_paint_time_.IsEmpty()) {
+  while (!images_queued_for_paint_time_.empty()) {
     const base::WeakPtr<ImageRecord>& record =
         images_queued_for_paint_time_.front().first;
     if (!record) {

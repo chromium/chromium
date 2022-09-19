@@ -631,7 +631,7 @@ void HTMLSelectMenuElement::QueueCheckForMissingParts() {
 
 void HTMLSelectMenuElement::ResetOptionParts() {
   // Remove part status from all current option parts
-  while (!option_parts_.IsEmpty()) {
+  while (!option_parts_.empty()) {
     OptionPartRemoved(option_parts_.back());
   }
 

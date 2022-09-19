@@ -333,7 +333,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
 
   // There would be no reason to composite an effect that has no keyframes; it
   // has no visual result.
-  if (model_->Properties().IsEmpty())
+  if (model_->Properties().empty())
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
 
   // There would be no reason to composite an effect that has no target; it has

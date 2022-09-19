@@ -290,7 +290,7 @@ void SVGElement::ClearAnimatedMotionTransform() {
 }
 
 bool SVGElement::HasNonCSSPropertyAnimations() const {
-  if (HasSVGRareData() && !SvgRareData()->WebAnimatedAttributes().IsEmpty())
+  if (HasSVGRareData() && !SvgRareData()->WebAnimatedAttributes().empty())
     return true;
   if (GetSMILAnimations() && GetSMILAnimations()->HasAnimations())
     return true;
@@ -687,7 +687,7 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
     const QualifiedName& attribute_name) {
   DEFINE_STATIC_LOCAL(AttributeToPropertyTypeMap, css_property_map, ());
 
-  if (css_property_map.IsEmpty()) {
+  if (css_property_map.empty()) {
     // Fill the map for the first use.
     struct AttrToTypeEntry {
       const QualifiedName& attr;
@@ -954,7 +954,7 @@ void SVGElement::UpdateWebAnimatedAttributeOnBaseValChange(
   if (!HasSVGRareData())
     return;
   const auto& animated_attributes = SvgRareData()->WebAnimatedAttributes();
-  if (animated_attributes.IsEmpty() || !animated_attributes.Contains(attribute))
+  if (animated_attributes.empty() || !animated_attributes.Contains(attribute))
     return;
   // TODO(alancutter): Only mark attributes as dirty if their animation depends
   // on the underlying value.
@@ -1080,7 +1080,7 @@ void SVGElement::InvalidateInstances() {
     return;
 
   const HeapHashSet<WeakMember<SVGElement>>& set = InstancesForElement();
-  if (set.IsEmpty())
+  if (set.empty())
     return;
 
   // Mark all use elements referencing 'element' for rebuilding
@@ -1100,7 +1100,7 @@ void SVGElement::SetNeedsStyleRecalcForInstances(
     StyleChangeType change_type,
     const StyleChangeReasonForTracing& reason) {
   const HeapHashSet<WeakMember<SVGElement>>& set = InstancesForElement();
-  if (set.IsEmpty())
+  if (set.empty())
     return;
 
   for (SVGElement* instance : set)

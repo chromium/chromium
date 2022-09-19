@@ -138,7 +138,7 @@ USBDevice::USBDevice(USB* parent,
 USBDevice::~USBDevice() {
   // |m_device| may still be valid but there should be no more outstanding
   // requests because each holds a persistent handle to this object.
-  DCHECK(device_requests_.IsEmpty());
+  DCHECK(device_requests_.empty());
 }
 
 bool USBDevice::IsInterfaceClaimed(wtf_size_t configuration_index,

@@ -81,7 +81,7 @@ DOMWebSocket::EventQueue::~EventQueue() = default;
 void DOMWebSocket::EventQueue::Dispatch(Event* event) {
   switch (state_) {
     case kActive:
-      DCHECK(events_.IsEmpty());
+      DCHECK(events_.empty());
       target_->DispatchEvent(*event);
       break;
     case kPaused:
@@ -89,14 +89,14 @@ void DOMWebSocket::EventQueue::Dispatch(Event* event) {
       events_.push_back(event);
       break;
     case kStopped:
-      DCHECK(events_.IsEmpty());
+      DCHECK(events_.empty());
       // Do nothing.
       break;
   }
 }
 
 bool DOMWebSocket::EventQueue::IsEmpty() const {
-  return events_.IsEmpty();
+  return events_.empty();
 }
 
 void DOMWebSocket::EventQueue::Pause() {
@@ -135,7 +135,7 @@ void DOMWebSocket::EventQueue::DispatchQueuedEvents() {
 
   HeapDeque<Member<Event>> events;
   events.Swap(events_);
-  while (!events.IsEmpty()) {
+  while (!events.empty()) {
     if (state_ == kStopped || state_ == kPaused || state_ == kUnpausePosted)
       break;
     DCHECK_EQ(state_, kActive);
@@ -143,7 +143,7 @@ void DOMWebSocket::EventQueue::DispatchQueuedEvents() {
     // |this| can be stopped here.
   }
   if (state_ == kPaused || state_ == kUnpausePosted) {
-    while (!events_.IsEmpty())
+    while (!events_.empty())
       events.push_back(events_.TakeFirst());
     events.Swap(events_);
   }

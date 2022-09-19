@@ -80,7 +80,7 @@ class Deque
   wtf_size_t size() const {
     return start_ <= end_ ? end_ - start_ : end_ + buffer_.capacity() - start_;
   }
-  bool IsEmpty() const { return start_ == end_; }
+  bool empty() const { return start_ == end_; }
 
   iterator begin() { return iterator(this, start_); }
   iterator end() { return iterator(this, end_); }
@@ -141,7 +141,6 @@ class Deque
   void push_back(U&&);
   void pop_back();
   void pop_front();
-  bool empty() const { return IsEmpty(); }
   template <typename... Args>
   void emplace_back(Args&&...);
   template <typename... Args>
@@ -417,7 +416,7 @@ inline void Deque<T, inlineCapacity, Allocator>::Finalize() {
                 "be finalized.");
   if ((!INLINE_CAPACITY && !buffer_.Buffer()))
     return;
-  if (!IsEmpty() &&
+  if (!empty() &&
       !(Allocator::kIsGarbageCollected && buffer_.HasOutOfLineBuffer()))
     DestroyAll();
 
@@ -600,7 +599,7 @@ inline void Deque<T, inlineCapacity, Allocator>::emplace_front(Args&&... args) {
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline void Deque<T, inlineCapacity, Allocator>::pop_front() {
-  DCHECK(!IsEmpty());
+  DCHECK(!empty());
   TypeOperations::Destruct(&buffer_.Buffer()[start_],
                            &buffer_.Buffer()[start_ + 1]);
   buffer_.ClearUnusedSlots(&buffer_.Buffer()[start_],
@@ -613,7 +612,7 @@ inline void Deque<T, inlineCapacity, Allocator>::pop_front() {
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline void Deque<T, inlineCapacity, Allocator>::pop_back() {
-  DCHECK(!IsEmpty());
+  DCHECK(!empty());
   if (!end_)
     end_ = buffer_.capacity() - 1;
   else

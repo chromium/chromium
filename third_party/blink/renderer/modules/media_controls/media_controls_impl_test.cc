@@ -307,7 +307,7 @@ class MediaControlsImplTest : public PageTestBase,
   void GestureDoubleTapAt(gfx::PointF pos);
 
   bool HasAvailabilityCallbacks(RemotePlayback& remote_playback) {
-    return !remote_playback.availability_callbacks_.IsEmpty();
+    return !remote_playback.availability_callbacks_.empty();
   }
 
   const String GetDisplayedTime(MediaControlTimeDisplayElement* display) {

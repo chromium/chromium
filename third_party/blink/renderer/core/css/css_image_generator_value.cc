@@ -75,7 +75,7 @@ CSSImageGeneratorValue::~CSSImageGeneratorValue() = default;
 
 void CSSImageGeneratorValue::AddClient(const ImageResourceObserver* client) {
   DCHECK(client);
-  if (clients_.IsEmpty()) {
+  if (clients_.empty()) {
     DCHECK(!keep_alive_);
     keep_alive_ = this;
   }
@@ -99,7 +99,7 @@ void CSSImageGeneratorValue::RemoveClient(const ImageResourceObserver* client) {
   if (!--size_count.count)
     clients_.erase(client);
 
-  if (clients_.IsEmpty()) {
+  if (clients_.empty()) {
     DCHECK(keep_alive_);
     keep_alive_.Clear();
   }

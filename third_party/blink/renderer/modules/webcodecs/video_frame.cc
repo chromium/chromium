@@ -229,7 +229,7 @@ class CanvasResourceProviderCache
   CanvasResourceProviderCache(const CanvasResourceProviderCache&) = delete;
 
   CanvasResourceProvider* CreateProvider(const SkImageInfo& info) {
-    if (info_to_provider_.IsEmpty())
+    if (info_to_provider_.empty())
       PostMonitoringTask();
 
     last_access_time_ = base::TimeTicks::Now();

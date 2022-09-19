@@ -221,7 +221,7 @@ Touch* TouchEventManager::CreateDomTouch(
 }
 
 WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
-  DCHECK(!touch_attribute_map_.IsEmpty());
+  DCHECK(!touch_attribute_map_.empty());
 
   auto event = std::make_unique<WebTouchEvent>();
 
@@ -584,7 +584,7 @@ void TouchEventManager::HandleTouchPoint(
   DCHECK_LE(event.GetType(), WebInputEvent::Type::kPointerTypeLast);
   DCHECK_NE(event.GetType(), WebInputEvent::Type::kPointerCausedUaAction);
 
-  if (touch_attribute_map_.IsEmpty()) {
+  if (touch_attribute_map_.empty()) {
     // Ideally we'd DCHECK(!m_touchSequenceDocument) here since we should
     // have cleared the active document when we saw the last release. But we
     // have some tests that violate this, ClusterFuzz could trigger it, and
@@ -651,7 +651,7 @@ WebInputEventResult TouchEventManager::FlushEvents() {
   }
   touch_attribute_map_.RemoveAll(released_canceled_points);
 
-  if (touch_attribute_map_.IsEmpty()) {
+  if (touch_attribute_map_.empty()) {
     AllTouchesReleasedCleanup();
   }
 
@@ -673,11 +673,11 @@ void TouchEventManager::AllTouchesReleasedCleanup() {
 }
 
 bool TouchEventManager::IsAnyTouchActive() const {
-  return !touch_attribute_map_.IsEmpty();
+  return !touch_attribute_map_.empty();
 }
 
 Element* TouchEventManager::CurrentTouchDownElement() {
-  if (touch_attribute_map_.IsEmpty() || touch_attribute_map_.size() > 1)
+  if (touch_attribute_map_.empty() || touch_attribute_map_.size() > 1)
     return nullptr;
   Node* touch_node = touch_attribute_map_.begin()->value->target_;
   return touch_node ? DynamicTo<Element>(*touch_node) : nullptr;

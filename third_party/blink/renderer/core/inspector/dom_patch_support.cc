@@ -526,7 +526,7 @@ bool DOMPatchSupport::RemoveChildAndMoveToNew(Digest* old_digest,
 void DOMPatchSupport::MarkNodeAsUsed(Digest* digest) {
   HeapDeque<Member<Digest>> queue;
   queue.push_back(digest);
-  while (!queue.IsEmpty()) {
+  while (!queue.empty()) {
     Digest* first = queue.TakeFirst();
     unused_nodes_map_.erase(first->sha1_);
     for (wtf_size_t i = 0; i < first->children_.size(); ++i)

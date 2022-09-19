@@ -168,7 +168,7 @@ ImageCapture::~ImageCapture() {
   DCHECK(!HasEventListeners());
   // There should be no more outstanding |m_serviceRequests| at this point
   // since each of them holds a persistent handle to this object.
-  DCHECK(service_requests_.IsEmpty());
+  DCHECK(service_requests_.empty());
 }
 
 const AtomicString& ImageCapture::InterfaceName() const {

@@ -159,7 +159,7 @@ const HeapVector<Member<Element>> HTMLSlotElement::AssignedElementsForBinding(
 void HTMLSlotElement::assign(HeapVector<Member<V8UnionElementOrText>>& js_nodes,
                              ExceptionState&) {
   UseCounter::Count(GetDocument(), WebFeature::kSlotAssignNode);
-  if (js_nodes.empty() && manually_assigned_nodes_.IsEmpty())
+  if (js_nodes.empty() && manually_assigned_nodes_.empty())
     return;
 
   HeapVector<Member<Node>> nodes;
@@ -179,7 +179,7 @@ void HTMLSlotElement::assign(HeapVector<Member<V8UnionElementOrText>>& js_nodes,
 }
 
 void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
-  if (nodes.empty() && manually_assigned_nodes_.IsEmpty())
+  if (nodes.empty() && manually_assigned_nodes_.empty())
     return;
 
   bool updated = false;
@@ -213,7 +213,7 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
       }
     }
   }
-  DCHECK(updated || removed_nodes.IsEmpty());
+  DCHECK(updated || removed_nodes.empty());
 
   if (updated) {
     for (auto removed_node : removed_nodes)

@@ -81,7 +81,7 @@ void CustomElementUpgradeSorter::Sorted(HeapVector<Member<Element>>* result,
   if (children->size() == 1)
     Visit(result, *children, children->begin());
 
-  DCHECK(children->IsEmpty());
+  DCHECK(children->empty());
 }
 
 }  // namespace blink

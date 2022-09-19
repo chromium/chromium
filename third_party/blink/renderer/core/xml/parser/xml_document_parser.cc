@@ -1638,7 +1638,7 @@ void XMLDocumentParser::ResumeParsing() {
   parser_paused_ = false;
 
   // First, execute any pending callbacks
-  while (!pending_callbacks_.IsEmpty()) {
+  while (!pending_callbacks_.empty()) {
     callback_ = pending_callbacks_.TakeFirst();
     callback_->Call(this);
 
@@ -1663,7 +1663,7 @@ void XMLDocumentParser::ResumeParsing() {
 
   // Finally, if finish() has been called and write() didn't result
   // in any further callbacks being queued, call end()
-  if (finish_called_ && pending_callbacks_.IsEmpty())
+  if (finish_called_ && pending_callbacks_.empty())
     end();
 }
 

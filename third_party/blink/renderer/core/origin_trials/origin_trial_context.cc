@@ -244,7 +244,7 @@ std::unique_ptr<Vector<String>> OriginTrialContext::GetTokens(
   DCHECK(execution_context);
   const OriginTrialContext* context =
       execution_context->GetOriginTrialContext();
-  if (!context || context->trial_results_.IsEmpty())
+  if (!context || context->trial_results_.empty())
     return nullptr;
 
   auto tokens = std::make_unique<Vector<String>>();
@@ -280,7 +280,7 @@ OriginTrialContext::GetEnabledNavigationFeatures(
 
 std::unique_ptr<Vector<OriginTrialFeature>>
 OriginTrialContext::GetInheritedTrialFeatures() const {
-  if (enabled_features_.IsEmpty()) {
+  if (enabled_features_.empty()) {
     return nullptr;
   }
   std::unique_ptr<Vector<OriginTrialFeature>> result =
@@ -295,7 +295,7 @@ OriginTrialContext::GetInheritedTrialFeatures() const {
 
 std::unique_ptr<Vector<OriginTrialFeature>>
 OriginTrialContext::GetEnabledNavigationFeatures() const {
-  if (enabled_features_.IsEmpty())
+  if (enabled_features_.empty())
     return nullptr;
   std::unique_ptr<Vector<OriginTrialFeature>> result =
       std::make_unique<Vector<OriginTrialFeature>>();

@@ -36,7 +36,7 @@ ScriptPromise FileSystemDirectoryIterator::next(ScriptState* script_state) {
     return result;
   }
 
-  if (!entries_.IsEmpty()) {
+  if (!entries_.empty()) {
     FileSystemHandle* handle = entries_.TakeFirst();
     ScriptValue result;
     switch (mode_) {

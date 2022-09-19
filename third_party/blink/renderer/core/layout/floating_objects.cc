@@ -489,7 +489,7 @@ void FloatingObjects::MarkLowestFloatLogicalBottomCacheAsDirty() {
 }
 
 void FloatingObjects::MoveAllToFloatInfoMap(LayoutBoxToFloatInfoMap& map) {
-  while (!set_.IsEmpty()) {
+  while (!set_.empty()) {
     FloatingObject* floating_object = set_.front();
     set_.RemoveFirst();
     LayoutBox* layout_object = floating_object->GetLayoutObject();
@@ -580,7 +580,7 @@ void FloatingObjects::Remove(FloatingObject* to_be_removed) {
 
 void FloatingObjects::ComputePlacedFloatsTree() {
   DCHECK(!placed_floats_tree_.IsInitialized());
-  if (set_.IsEmpty())
+  if (set_.empty())
     return;
   placed_floats_tree_.InitIfNeeded(layout_object_->View()->GetIntervalArena());
   FloatingObjectSetIterator it = set_.begin();

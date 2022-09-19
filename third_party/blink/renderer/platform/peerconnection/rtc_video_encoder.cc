@@ -1058,7 +1058,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   absl::optional<std::vector<gfx::Size>> expected_resolutions;
   if (!failed_timestamp_match_) {
     // Pop timestamps until we have a match.
-    while (!pending_frames_.IsEmpty()) {
+    while (!pending_frames_.empty()) {
       auto& front_frame = pending_frames_.front();
       const bool end_of_picture = !metadata.vp9 || metadata.vp9->end_of_picture;
       if (front_frame.media_timestamp_ == metadata.timestamp) {

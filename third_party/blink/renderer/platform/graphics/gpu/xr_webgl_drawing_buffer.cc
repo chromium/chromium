@@ -480,7 +480,7 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
 
 scoped_refptr<XRWebGLDrawingBuffer::ColorBuffer>
 XRWebGLDrawingBuffer::CreateOrRecycleColorBuffer() {
-  if (!recycled_color_buffer_queue_.IsEmpty()) {
+  if (!recycled_color_buffer_queue_.empty()) {
     scoped_refptr<ColorBuffer> recycled =
         recycled_color_buffer_queue_.TakeLast();
     if (recycled->receive_sync_token.HasData()) {

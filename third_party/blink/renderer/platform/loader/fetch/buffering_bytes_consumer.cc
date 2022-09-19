@@ -70,7 +70,7 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
   // drain the underlying |bytes_consumer_| anyway.
   MaybeStartBuffering();
 
-  if (buffer_.IsEmpty()) {
+  if (buffer_.empty()) {
     if (buffering_state_ != BufferingState::kStarted)
       return bytes_consumer_->BeginRead(buffer, available);
 
@@ -87,7 +87,7 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
     if (has_seen_error_)
       return Result::kError;
 
-    if (buffer_.IsEmpty())
+    if (buffer_.empty())
       return has_seen_end_of_data_ ? Result::kDone : Result::kShouldWait;
   }
 
@@ -98,7 +98,7 @@ BytesConsumer::Result BufferingBytesConsumer::BeginRead(const char** buffer,
 }
 
 BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
-  if (buffer_.IsEmpty()) {
+  if (buffer_.empty()) {
     if (buffering_state_ != BufferingState::kStarted)
       return bytes_consumer_->EndRead(read_size);
 
@@ -118,7 +118,7 @@ BytesConsumer::Result BufferingBytesConsumer::EndRead(size_t read_size) {
     buffer_.pop_front();
   }
 
-  if (buffer_.IsEmpty() && has_seen_end_of_data_) {
+  if (buffer_.empty() && has_seen_end_of_data_) {
     ClearClient();
     return Result::kDone;
   }
@@ -157,7 +157,7 @@ void BufferingBytesConsumer::Cancel() {
 }
 
 BytesConsumer::PublicState BufferingBytesConsumer::GetPublicState() const {
-  if (buffer_.IsEmpty())
+  if (buffer_.empty())
     return bytes_consumer_->GetPublicState();
   return PublicState::kReadableOrWaiting;
 }

@@ -1139,7 +1139,7 @@ ManifestParser::ParseFileHandler(const JSONObject* file_handler) {
   }
 
   entry->accept = ParseFileHandlerAccept(file_handler->GetJSONObject("accept"));
-  if (entry->accept.IsEmpty()) {
+  if (entry->accept.empty()) {
     AddErrorInfo("FileHandler ignored. Property 'accept' is invalid.");
     return absl::nullopt;
   }

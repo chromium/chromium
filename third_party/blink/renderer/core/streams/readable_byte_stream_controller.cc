@@ -79,7 +79,7 @@ ReadableStreamBYOBRequest* ReadableByteStreamController::byobRequest() {
   // https://streams.spec.whatwg.org/#rbs-controller-byob-request
   // 1. If this.[[byobRequest]] is null and this.[[pendingPullIntos]] is not
   // empty,
-  if (!byob_request_ && !pending_pull_intos_.IsEmpty()) {
+  if (!byob_request_ && !pending_pull_intos_.empty()) {
     //   a. Let firstDescriptor be this.[[pendingPullIntos]][0].
     const PullIntoDescriptor* first_descriptor = pending_pull_intos_[0];
     //   b. Let view be ! Construct(%Uint8Array%, « firstDescriptor’s buffer,
@@ -219,7 +219,7 @@ void ReadableByteStreamController::Close(
   }
 
   // 4. If controller.[[pendingPullIntos]] is not empty,
-  if (!controller->pending_pull_intos_.IsEmpty()) {
+  if (!controller->pending_pull_intos_.empty()) {
     //   a. Let firstPendingPullInto be controller.[[pendingPullIntos]][0].
     const PullIntoDescriptor* first_pending_pull_into =
         controller->pending_pull_intos_[0];
@@ -307,7 +307,7 @@ void ReadableByteStreamController::Enqueue(
   }
 
   // 8. If controller.[[pendingPullIntos]] is not empty,
-  if (!controller->pending_pull_intos_.IsEmpty()) {
+  if (!controller->pending_pull_intos_.empty()) {
     //     a. Let firstPendingPullInto be controller.[[pendingPullIntos]][0].
     PullIntoDescriptor* first_pending_pull_into =
         controller->pending_pull_intos_[0];
@@ -340,7 +340,7 @@ void ReadableByteStreamController::Enqueue(
     //   b. If ! ReadableStreamGetNumReadRequests(stream) is 0,
     if (ReadableStream::GetNumReadRequests(stream) == 0) {
       //     i. Assert: controller.[[pendingPullIntos]] is empty.
-      DCHECK(controller->pending_pull_intos_.IsEmpty());
+      DCHECK(controller->pending_pull_intos_.empty());
 
       //     ii. Perform !
       //     ReadableByteStreamControllerEnqueueChunkToQueue(controller,
@@ -350,10 +350,10 @@ void ReadableByteStreamController::Enqueue(
     } else {
       // c. Otherwise,
       //     i. Assert: controller.[[queue]] is empty.
-      DCHECK(controller->queue_.IsEmpty());
+      DCHECK(controller->queue_.empty());
 
       //     ii. If controller.[[pendingPullIntos]] is not empty,
-      if (!controller->pending_pull_intos_.IsEmpty()) {
+      if (!controller->pending_pull_intos_.empty()) {
         //        1. Assert: controller.[[pendingPullIntos]][0]'s reader type is
         //        "default".
         DCHECK_EQ(controller->pending_pull_intos_[0]->reader_type,
@@ -473,7 +473,7 @@ void ReadableByteStreamController::ProcessPullIntoDescriptorsUsingQueue(
   // 1. Assert: controller.[[closeRequested]] is false.
   DCHECK(!controller->close_requested_);
   // 2. While controller.[[pendingPullIntos]] is not empty,
-  while (!controller->pending_pull_intos_.IsEmpty()) {
+  while (!controller->pending_pull_intos_.empty()) {
     //   a. If controller.[[queueTotalSize]] is 0, return.
     if (controller->queue_total_size_ == 0) {
       return;
@@ -509,7 +509,7 @@ void ReadableByteStreamController::ProcessReadRequestsUsingQueue(
   ReadableStreamDefaultReader* default_reader =
       To<ReadableStreamDefaultReader>(reader);
   // 3. While reader.[[readRequests]] is not empty,
-  while (!default_reader->read_requests_.IsEmpty()) {
+  while (!default_reader->read_requests_.empty()) {
     //   a. If controller.[[queueTotalSize]] is 0, return.
     if (controller->queue_total_size_ == 0) {
       return;
@@ -808,7 +808,7 @@ void ReadableByteStreamController::SetUp(
   // 11. Set controller.[[autoAllocateChunkSize]] to autoAllocateChunkSize.
   controller->auto_allocate_chunk_size_ = auto_allocate_chunk_size;
   // 12. Set controller.[[pendingPullIntos]] to a new empty list.
-  DCHECK(controller->pending_pull_intos_.IsEmpty());
+  DCHECK(controller->pending_pull_intos_.empty());
   // 13. Set stream.[[controller]] to controller.
   stream->readable_stream_controller_ = controller;
   // 14. Let startResult be the result of performing startAlgorithm.
@@ -970,7 +970,7 @@ void ReadableByteStreamController::FillHeadPullIntoDescriptor(
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-fill-head-pull-into-descriptor
   // 1. Assert: either controller.[[pendingPullIntos]] is empty, or
   // controller.[[pendingPullIntos]][0] is pullIntoDescriptor.
-  DCHECK(controller->pending_pull_intos_.IsEmpty() ||
+  DCHECK(controller->pending_pull_intos_.empty() ||
          controller->pending_pull_intos_[0] == pull_into_descriptor);
   // 2. Assert: controller.[[byobRequest]] is null.
   DCHECK(!controller->byob_request_);
@@ -1215,7 +1215,7 @@ void ReadableByteStreamController::PullInto(
           buffer, buffer->ByteLength(), byte_offset, byte_length, 0,
           element_size, ctor, ReaderType::kBYOB);
   // 11. If controller.[[pendingPullIntos]] is not empty,
-  if (!controller->pending_pull_intos_.IsEmpty()) {
+  if (!controller->pending_pull_intos_.empty()) {
     //   a. Append pullIntoDescriptor to controller.[[pendingPullIntos]].
     controller->pending_pull_intos_.push_back(pull_into_descriptor);
     //   b. Perform ! ReadableStreamAddReadIntoRequest(stream, readIntoRequest).
@@ -1313,7 +1313,7 @@ void ReadableByteStreamController::Respond(
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-respond
   // 1. Assert: controller.[[pendingPullIntos]] is not empty.
-  DCHECK(!controller->pending_pull_intos_.IsEmpty());
+  DCHECK(!controller->pending_pull_intos_.empty());
   // 2. Let firstDescriptor be controller.[[pendingPullIntos]][0].
   PullIntoDescriptor* first_descriptor = controller->pending_pull_intos_[0];
   // 3. Let state be controller.[[stream]].[[state]].
@@ -1506,7 +1506,7 @@ void ReadableByteStreamController::RespondWithNewView(
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-respond-with-new-view
   // 1. Assert: controller.[[pendingPullIntos]] is not empty.
-  DCHECK(!controller->pending_pull_intos_.IsEmpty());
+  DCHECK(!controller->pending_pull_intos_.empty());
   // 2. Assert: ! IsDetachedBuffer(view.[[ViewedArrayBuffer]]) is false.
   DCHECK(!view->buffer()->IsDetached());
   // 3. Let firstDescriptor be controller.[[pendingPullIntos]][0].
@@ -1696,7 +1696,7 @@ StreamPromiseResolver* ReadableByteStreamController::PullSteps(
 void ReadableByteStreamController::ReleaseSteps() {
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontroller-releasesteps
   // 1. If this.[[pendingPullIntos]] is not empty,
-  if (!pending_pull_intos_.IsEmpty()) {
+  if (!pending_pull_intos_.empty()) {
     //   a. Let firstPendingPullInto be this.[[pendingPullIntos]][0].
     PullIntoDescriptor* first_pending_pull_into = pending_pull_intos_[0];
     //   b. Set firstPendingPullInto’s reader type to "none".

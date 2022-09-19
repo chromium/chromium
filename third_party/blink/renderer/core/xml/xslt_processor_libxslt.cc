@@ -240,7 +240,7 @@ static char* AllocateParameterArray(const char* data) {
 
 static const char** XsltParamArrayFromParameterMap(
     XSLTProcessor::ParameterMap& parameters) {
-  if (parameters.IsEmpty())
+  if (parameters.empty())
     return nullptr;
 
   base::CheckedNumeric<size_t> size = parameters.size();

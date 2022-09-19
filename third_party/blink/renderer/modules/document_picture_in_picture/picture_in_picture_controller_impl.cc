@@ -354,7 +354,7 @@ void PictureInPictureControllerImpl::RemoveFromAutoPictureInPictureElementsList(
 
 HTMLVideoElement* PictureInPictureControllerImpl::AutoPictureInPictureElement()
     const {
-  return auto_picture_in_picture_elements_.IsEmpty()
+  return auto_picture_in_picture_elements_.empty()
              ? nullptr
              : auto_picture_in_picture_elements_.back();
 }

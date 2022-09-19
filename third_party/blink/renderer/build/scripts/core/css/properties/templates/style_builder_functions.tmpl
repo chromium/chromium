@@ -324,7 +324,7 @@ To<Longhand>(resolved_property).{{apply_call}};
     return;
 
   CounterDirectiveMap& map = state.Style()->AccessCounterDirectives();
-  DCHECK(!parent_map->IsEmpty());
+  DCHECK(!parent_map->empty());
 
   typedef CounterDirectiveMap::const_iterator Iterator;
   Iterator end = parent_map->end();
@@ -359,7 +359,7 @@ To<Longhand>(resolved_property).{{apply_call}};
     directives.SetSetValue(counter_value);
         {% endif %}
   }
-  DCHECK(!map.IsEmpty());
+  DCHECK(!map.empty());
     {% endcall %}
   {% elif property.style_builder_template == 'grid' %}
     {% set type = property.style_builder_template_args['type'] %}

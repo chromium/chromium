@@ -204,7 +204,7 @@ void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
 
   const auto& visually_overflowing_cells =
       layout_table_section_.VisuallyOverflowingCells();
-  if (visually_overflowing_cells.IsEmpty()) {
+  if (visually_overflowing_cells.empty()) {
     // This path is for 2 cases:
     // 1. Normal partial paint, without overflowing cells;
     // 2. Full paint, for small sections or big sections with many overflowing

@@ -69,7 +69,7 @@ class HashCountedSet {
 
   unsigned size() const { return impl_.size(); }
   unsigned Capacity() const { return impl_.capacity(); }
-  bool IsEmpty() const { return impl_.IsEmpty(); }
+  bool empty() const { return impl_.empty(); }
 
   // Iterators iterate over pairs of values (called key) and counts (called
   // value).

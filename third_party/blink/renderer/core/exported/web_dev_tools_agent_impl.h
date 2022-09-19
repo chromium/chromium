@@ -73,7 +73,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void WillBeDestroyed();
   void FlushProtocolNotifications();
 
-  bool HasOverlays() const { return !overlay_agents_.IsEmpty(); }
+  bool HasOverlays() const { return !overlay_agents_.empty(); }
   void UpdateOverlaysPrePaint();
   void PaintOverlays(GraphicsContext&);
 

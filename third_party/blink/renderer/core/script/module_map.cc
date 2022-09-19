@@ -69,7 +69,7 @@ void ModuleMap::Entry::DispatchFinishedNotificationAsync(
 void ModuleMap::Entry::AddClient(SingleModuleClient* new_client) {
   DCHECK(!clients_.Contains(new_client));
   if (!is_fetching_) {
-    DCHECK(clients_.IsEmpty());
+    DCHECK(clients_.empty());
     DispatchFinishedNotificationAsync(new_client);
     return;
   }

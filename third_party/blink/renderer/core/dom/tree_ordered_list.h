@@ -48,7 +48,7 @@ class CORE_EXPORT TreeOrderedList final {
 
   void Add(Node*);
   void Remove(const Node*);
-  bool IsEmpty() const { return nodes_.IsEmpty(); }
+  bool IsEmpty() const { return nodes_.empty(); }
   void Clear() { nodes_.clear(); }
   wtf_size_t size() const { return nodes_.size(); }
 

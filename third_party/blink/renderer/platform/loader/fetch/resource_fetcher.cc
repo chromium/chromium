@@ -1821,7 +1821,7 @@ void ResourceFetcher::ClearContext() {
   // first choice font failed to load).
   StopFetching();
 
-  if (!loaders_.IsEmpty() || !non_blocking_loaders_.IsEmpty()) {
+  if (!loaders_.empty() || !non_blocking_loaders_.empty()) {
     // There are some keepalive requests.
     // The use of WrapPersistent creates a reference cycle intentionally,
     // to keep the ResourceFetcher and ResourceLoaders alive until the requests
@@ -1880,7 +1880,7 @@ void ResourceFetcher::ScheduleWarnUnusedPreloads() {
   // If preloads_ is not empty here, it's full of link
   // preloads, as speculative preloads should have already been cleared when
   // parsing finished.
-  if (preloads_.IsEmpty() && early_hints_preloaded_resources_.IsEmpty())
+  if (preloads_.empty() && early_hints_preloaded_resources_.empty())
     return;
   unused_preloads_timer_ = PostDelayedCancellableTask(
       *freezable_task_runner_, FROM_HERE,
@@ -2146,7 +2146,7 @@ void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
   else
     NOTREACHED();
 
-  if (loaders_.IsEmpty() && non_blocking_loaders_.IsEmpty())
+  if (loaders_.empty() && non_blocking_loaders_.empty())
     keepalive_loaders_task_handle_.Cancel();
 }
 

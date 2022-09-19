@@ -151,7 +151,7 @@ void LayoutBlock::RemoveFromGlobalMaps() {
   if (HasPositionedObjects()) {
     TrackedLayoutBoxLinkedHashSet* descendants =
         GetPositionedDescendantsMap().Take(this);
-    DCHECK(!descendants->IsEmpty());
+    DCHECK(!descendants->empty());
     for (LayoutBox* descendant : *descendants) {
       DCHECK_EQ(GetPositionedContainerMap().at(descendant), this);
       GetPositionedContainerMap().erase(descendant);
@@ -160,7 +160,7 @@ void LayoutBlock::RemoveFromGlobalMaps() {
   if (HasPercentHeightDescendants()) {
     TrackedLayoutBoxLinkedHashSet* descendants =
         GetPercentHeightDescendantsMap().Take(this);
-    DCHECK(!descendants->IsEmpty());
+    DCHECK(!descendants->empty());
     for (LayoutBox* descendant : *descendants) {
       DCHECK_EQ(descendant->PercentHeightContainer(), this);
       descendant->SetPercentHeightContainer(nullptr);
@@ -1059,7 +1059,7 @@ void LayoutBlock::RemovePositionedObject(LayoutBox* o) {
   DCHECK(positioned_descendants);
   DCHECK(positioned_descendants->Contains(o));
   positioned_descendants->erase(o);
-  if (positioned_descendants->IsEmpty()) {
+  if (positioned_descendants->empty()) {
     GetPositionedDescendantsMap().erase(container);
     container->has_positioned_objects_ = false;
   }
@@ -1163,7 +1163,7 @@ void LayoutBlock::RemovePositionedObjects(
     positioned_descendants->erase(object);
     GetPositionedContainerMap().erase(object);
   }
-  if (positioned_descendants->IsEmpty()) {
+  if (positioned_descendants->empty()) {
     GetPositionedDescendantsMap().erase(this);
     has_positioned_objects_ = false;
   }
@@ -1216,7 +1216,7 @@ void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
   if (TrackedLayoutBoxLinkedHashSet* descendants = PercentHeightDescendants()) {
     descendants->erase(descendant);
     descendant->SetPercentHeightContainer(nullptr);
-    if (descendants->IsEmpty()) {
+    if (descendants->empty()) {
       GetPercentHeightDescendantsMap().erase(this);
       has_percent_height_descendants_ = false;
     }
@@ -1244,7 +1244,7 @@ void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
     return;
   TrackedLayoutBoxLinkedHashSet* descendants = &*it->value;
   descendants->erase(&svg_text);
-  if (descendants->IsEmpty()) {
+  if (descendants->empty()) {
     map.erase(this);
     has_svg_text_descendants_ = false;
   }

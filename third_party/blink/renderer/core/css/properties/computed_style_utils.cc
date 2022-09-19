@@ -1168,8 +1168,8 @@ class OrderedNamedLinesCollector {
   virtual ~OrderedNamedLinesCollector() = default;
 
   bool IsEmpty() const {
-    return ordered_named_grid_lines_.IsEmpty() &&
-           ordered_named_auto_repeat_grid_lines_.IsEmpty();
+    return ordered_named_grid_lines_.empty() &&
+           ordered_named_auto_repeat_grid_lines_.empty();
   }
   virtual void CollectLineNamesForIndex(
       cssvalue::CSSBracketedValueList&,

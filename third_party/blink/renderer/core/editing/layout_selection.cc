@@ -212,7 +212,7 @@ struct NewPaintRangeAndSelectedNodes {
       DCHECK(selected_objects.Contains(paint_range->end_node)) << this;
       return;
     }
-    DCHECK(selected_objects.IsEmpty()) << this;
+    DCHECK(selected_objects.empty()) << this;
 #endif
   }
 

@@ -828,7 +828,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     // Because this page is detached, it can't get default font settings
     // from the embedder. Copy over font settings so we have sensible
     // defaults. These settings are fixed and will not update if changed.
-    if (!Page::OrdinaryPages().IsEmpty()) {
+    if (!Page::OrdinaryPages().empty()) {
       Settings& default_settings =
           (*Page::OrdinaryPages().begin())->GetSettings();
       page->GetSettings().GetGenericFontFamilySettings() =

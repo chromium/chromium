@@ -90,7 +90,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     wtf_size_t size() const { return map_.size(); }
 
     void AddFontFace(FontFace* font_face, bool css_connected);
-    bool IsEmpty() const { return map_.IsEmpty(); }
+    bool IsEmpty() const { return map_.empty(); }
 
     // Returns true if associated |CSSSegmentedFontFace| is empty.
     bool RemoveFontFace(FontFace* font_face);
@@ -148,7 +148,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     void AddFontFace(FontFace* font_face, bool css_connected);
     void Clear() { map_.clear(); }
     CapabilitiesSet* Find(const AtomicString& family) const;
-    bool IsEmpty() const { return map_.IsEmpty(); }
+    bool IsEmpty() const { return map_.empty(); }
     // Returns true if |font_face| is removed from |map_|.
     bool RemoveFontFace(FontFace* font_face);
 

@@ -270,7 +270,7 @@ NoAllocDirectCallHost* WebGLRenderingContextBase::AsNoAllocDirectCallHost() {
 }
 
 WebGLRenderingContextBase* WebGLRenderingContextBase::OldestContext() {
-  if (ActiveContexts().IsEmpty())
+  if (ActiveContexts().empty())
     return nullptr;
 
   WebGLRenderingContextBase* candidate = *(ActiveContexts().begin());
@@ -287,7 +287,7 @@ WebGLRenderingContextBase* WebGLRenderingContextBase::OldestContext() {
 }
 
 WebGLRenderingContextBase* WebGLRenderingContextBase::OldestEvictedContext() {
-  if (ForciblyEvictedContexts().IsEmpty())
+  if (ForciblyEvictedContexts().empty())
     return nullptr;
 
   WebGLRenderingContextBase* candidate = nullptr;

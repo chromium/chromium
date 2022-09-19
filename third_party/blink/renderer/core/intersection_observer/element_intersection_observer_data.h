@@ -35,9 +35,7 @@ class CORE_EXPORT ElementIntersectionObserverData final
   void AddObserver(IntersectionObserver&);
   void RemoveObservation(IntersectionObservation&);
   void RemoveObserver(IntersectionObserver&);
-  bool IsEmpty() const {
-    return observations_.IsEmpty() && observers_.IsEmpty();
-  }
+  bool IsEmpty() const { return observations_.empty() && observers_.empty(); }
   void TrackWithController(IntersectionObserverController&);
   void StopTrackingWithController(IntersectionObserverController&);
 

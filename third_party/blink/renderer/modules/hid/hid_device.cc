@@ -207,7 +207,7 @@ HIDDevice::HIDDevice(ServiceInterface* parent,
 }
 
 HIDDevice::~HIDDevice() {
-  DCHECK(device_requests_.IsEmpty());
+  DCHECK(device_requests_.empty());
 }
 
 ExecutionContext* HIDDevice::GetExecutionContext() const {

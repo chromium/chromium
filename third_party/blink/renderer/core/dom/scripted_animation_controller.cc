@@ -55,7 +55,7 @@ void ScriptedAnimationController::EraseFromPerFrameEventsMap(
   if (it != per_frame_events_.end()) {
     HashSet<const StringImpl*>& set = it->value;
     set.erase(event->type().Impl());
-    if (set.IsEmpty())
+    if (set.empty())
       per_frame_events_.erase(target);
   }
 }

@@ -110,7 +110,7 @@ void GatherInlineContainerFragmentsFromItems(
 void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
     InlineContainingBlockMap* inline_containing_block_map,
     NGBoxFragmentBuilder* container_builder) {
-  if (inline_containing_block_map->IsEmpty())
+  if (inline_containing_block_map->empty())
     return;
 
   // This function requires that we have the final size of the fragment set
@@ -171,7 +171,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
     const LayoutBox* box,
     PhysicalSize accumulated_containing_block_size,
     InlineContainingBlockMap* inline_containing_block_map) {
-  if (inline_containing_block_map->IsEmpty())
+  if (inline_containing_block_map->empty())
     return;
 #if DCHECK_IS_ON()
   // Make sure all entries are a continuation root.

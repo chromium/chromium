@@ -59,7 +59,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
 
     void Add(CloseWatcher*);
     void Remove(CloseWatcher*);
-    bool HasActiveWatcher() const { return !watchers_.IsEmpty(); }
+    bool HasActiveWatcher() const { return !watchers_.empty(); }
     bool HasConsumedFreeWatcher() const;
 
     void Trace(Visitor*) const;

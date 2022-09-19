@@ -216,7 +216,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   }
 
   bool HasMulticolsWithPendingOOFs() const {
-    return !multicols_with_pending_oofs_.IsEmpty();
+    return !multicols_with_pending_oofs_.empty();
   }
 
   HeapVector<NGLogicalOutOfFlowPositionedNode>*

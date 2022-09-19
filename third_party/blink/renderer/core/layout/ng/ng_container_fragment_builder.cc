@@ -277,7 +277,7 @@ void NGContainerFragmentBuilder::AddMulticolWithPendingOOFs(
 
 void NGContainerFragmentBuilder::SwapMulticolsWithPendingOOFs(
     MulticolCollection* multicols_with_pending_oofs) {
-  DCHECK(multicols_with_pending_oofs->IsEmpty());
+  DCHECK(multicols_with_pending_oofs->empty());
   std::swap(multicols_with_pending_oofs_, *multicols_with_pending_oofs);
 }
 
@@ -433,13 +433,13 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
   NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();
   if (!oof_data)
     return;
-  DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
+  DCHECK(!oof_data->multicols_with_pending_oofs.empty() ||
          !oof_data->oof_positioned_fragmentainer_descendants.empty());
   const NGPhysicalBoxFragment* box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&fragment);
   bool is_column_spanner = box_fragment && box_fragment->IsColumnSpanAll();
 
-  if (!oof_data->multicols_with_pending_oofs.IsEmpty()) {
+  if (!oof_data->multicols_with_pending_oofs.empty()) {
     const auto& multicols_with_pending_oofs =
         oof_data->multicols_with_pending_oofs;
     for (auto& multicol : multicols_with_pending_oofs) {

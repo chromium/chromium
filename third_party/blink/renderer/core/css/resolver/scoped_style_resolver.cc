@@ -145,7 +145,7 @@ void ScopedStyleResolver::ResetStyle() {
 
 StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
-  if (keyframes_rule_map_.IsEmpty())
+  if (keyframes_rule_map_.empty())
     return nullptr;
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(animation_name);
