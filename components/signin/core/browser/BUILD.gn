@@ -24,8 +24,6 @@ static_library("browser") {
     "account_reconcilor_throttler.h",
     "chrome_connected_header_helper.cc",
     "chrome_connected_header_helper.h",
-    "cookie_reminter.cc",
-    "cookie_reminter.h",
     "cookie_settings_util.cc",
     "cookie_settings_util.h",
     "dice_account_reconcilor_delegate.cc",

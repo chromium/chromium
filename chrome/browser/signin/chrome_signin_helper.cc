@@ -10,40 +10,21 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
-#include "chrome/browser/signin/chrome_signin_client.h"
-#include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/cookie_reminter_factory.h"
-#include "chrome/browser/signin/dice_response_handler.h"
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_features.h"
-#include "chrome/browser/signin/signin_manager.h"
-#include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/common/url_constants.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/core/browser/account_reconcilor.h"
-#include "components/signin/core/browser/cookie_reminter.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -55,16 +36,16 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/signin/signin_bridge.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/android/view_android.h"
 #else
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -73,7 +54,15 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/signin/signin_manager_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_response_handler.h"
+#include "chrome/browser/signin/process_dice_header_delegate_impl.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
@@ -221,7 +210,7 @@ void ProcessMirrorHeader(
   should_ignore_guest_webview =
       HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
           web_contents);
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   // Do not do anything if the navigation happened in the "background".
@@ -261,7 +250,6 @@ void ProcessMirrorHeader(
 
   // 2. Displaying a reauthentication window
   if (!manage_accounts_params.email.empty()) {
-    // TODO(https://crbug.com/1226055): enable this for lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Do not display the re-authentication dialog if this event was triggered
     // by supervision being enabled for an account.  In this situation, a
@@ -285,24 +273,6 @@ void ProcessMirrorHeader(
       identity_manager->GetAccountsCookieMutator()->LogOutAllAccounts(
           gaia::GaiaSource::kChromeOS, base::DoNothing());
       return;
-    }
-
-    // The account's cookie is invalid but the cookie has not been removed by
-    // |AccountReconcilor|. Ideally, this should not happen. At this point,
-    // |AccountReconcilor| cannot detect this state because its source of truth
-    // (/ListAccounts) is giving us false positives (claiming an invalid account
-    // to be valid). We need to store that this account's cookie is actually
-    // invalid, so that if/when this account is re-authenticated, we can force a
-    // reconciliation for this account instead of treating it as a no-op.
-    // See https://crbug.com/1012649 for details.
-    AccountInfo maybe_account_info =
-        identity_manager->FindExtendedAccountInfoByEmailAddress(
-            manage_accounts_params.email);
-    if (!maybe_account_info.IsEmpty()) {
-      CookieReminter* const cookie_reminter =
-          CookieReminterFactory::GetForProfile(profile);
-      cookie_reminter->ForceCookieRemintingOnNextTokenUpdate(
-          maybe_account_info);
     }
 
     // Display a re-authentication dialog.
@@ -329,12 +299,6 @@ void ProcessMirrorHeader(
       return;
     }
 
-    // As per https://crbug.com/1286822 and internal b/215509741, the session
-    // may sometimes become invalid on the server without notice. When this
-    // happens, the user may try to fix it by signing-in again.
-    // Trigger a cookie jar update now to fix the session if needed.
-    identity_manager->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
-
     AccountProfileMapper* mapper =
         g_browser_process->profile_manager()->GetAccountProfileMapper();
     SigninManagerFactory::GetForProfile(profile)->StartLacrosSigninFlow(
@@ -346,7 +310,7 @@ void ProcessMirrorHeader(
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
                                    AccountAdditionSource::kOgbAddAccount);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     return;
   }
 
