@@ -970,6 +970,28 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   LOG_ASSERT(current_sequence_header_)
       << "Sequence header missing for decoding.";
 
+  if (current_frame_header.show_existing_frame) {
+    last_decoded_frame_visible_ = true;
+  } else {
+    last_decoded_frame_visible_ = current_frame_header.show_frame;
+  }
+  VLOG_IF(2, !last_decoded_frame_visible_) << "not displayed frame";
+
+  for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
+    if (state_->reference_frame[i] != nullptr && ref_frames_[i] == nullptr) {
+      LOG_ASSERT(false) << "The state of the reference frames are different "
+                           "between |ref_frames_| and |state_|";
+    }
+    if (state_->reference_frame[i] == nullptr && ref_frames_[i] != nullptr)
+      ref_frames_[i].reset();
+  }
+
+  if (current_frame_header.show_existing_frame) {
+    // TODO(stevecho): Verify and update the algorithm for
+    // refreshing reference frames pool if needed.
+    return VideoDecoder::kOk;
+  }
+
   CopyFrameData(current_frame_header, OUTPUT_queue_);
 
   LOG_ASSERT(OUTPUT_queue_->num_buffers() == 1)
