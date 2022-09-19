@@ -13851,7 +13851,7 @@
       'id': 1017,
       'caption': '''Enable capability to send files to the Trash (on supported filesystems) in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app''',
       'tags': [],
-      'desc': '''Setting the policy to enabled allows users of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app to see a Trash bin and files under My files and Downloads (including their user created descendants) will be sent their on a delete.
+      'desc': '''Setting the policy to True allows users of <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app to see a Trash bin and files under My files and Downloads (including their user created descendants) will be sent there on deletion.
 
       If the policy is set to False the files that previously resided in trash will still be available by showing hidden files and finding the .Trash directory under My files or Downloads.''',
     },
