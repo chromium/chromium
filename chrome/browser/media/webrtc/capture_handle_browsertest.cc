@@ -416,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1287616, crbug.com/1362946): Flaky on Chrome OS and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
   DISABLED_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
 #else
