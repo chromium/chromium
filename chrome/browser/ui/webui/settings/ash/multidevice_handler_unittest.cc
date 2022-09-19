@@ -142,54 +142,54 @@ void VerifyPageContentDict(
     bool expected_is_camera_roll_file_permission_granted_,
     bool expected_is_camera_roll_access_status_granted_,
     bool expected_is_feature_setup_request_supported_) {
-  const base::DictionaryValue* page_content_dict;
-  EXPECT_TRUE(value->GetAsDictionary(&page_content_dict));
+  ASSERT_TRUE(value->is_dict());
+  const base::Value::Dict& page_content_dict = value->GetDict();
 
-  absl::optional<int> mode = page_content_dict->FindIntKey("mode");
+  absl::optional<int> mode = page_content_dict.FindInt("mode");
   ASSERT_TRUE(mode);
   EXPECT_EQ(static_cast<int>(expected_host_status), *mode);
 
   absl::optional<int> better_together_state =
-      page_content_dict->FindIntKey("betterTogetherState");
+      page_content_dict.FindInt("betterTogetherState");
   ASSERT_TRUE(better_together_state);
   auto it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kBetterTogetherSuite);
   EXPECT_EQ(static_cast<int>(it->second), *better_together_state);
 
   absl::optional<int> instant_tethering_state =
-      page_content_dict->FindIntKey("instantTetheringState");
+      page_content_dict.FindInt("instantTetheringState");
   ASSERT_TRUE(instant_tethering_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kInstantTethering);
   EXPECT_EQ(static_cast<int>(it->second), *instant_tethering_state);
 
   absl::optional<int> messages_state =
-      page_content_dict->FindIntKey("messagesState");
+      page_content_dict.FindInt("messagesState");
   ASSERT_TRUE(messages_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kMessages);
   EXPECT_EQ(static_cast<int>(it->second), *messages_state);
 
   absl::optional<int> smart_lock_state =
-      page_content_dict->FindIntKey("smartLockState");
+      page_content_dict.FindInt("smartLockState");
   ASSERT_TRUE(smart_lock_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kSmartLock);
   EXPECT_EQ(static_cast<int>(it->second), *smart_lock_state);
 
   absl::optional<int> phone_hub_state =
-      page_content_dict->FindIntKey("phoneHubState");
+      page_content_dict.FindInt("phoneHubState");
   ASSERT_TRUE(phone_hub_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kPhoneHub);
   EXPECT_EQ(static_cast<int>(it->second), *phone_hub_state);
 
   absl::optional<int> phone_hub_notifications_state =
-      page_content_dict->FindIntKey("phoneHubNotificationsState");
+      page_content_dict.FindInt("phoneHubNotificationsState");
   ASSERT_TRUE(phone_hub_notifications_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubNotifications);
   EXPECT_EQ(static_cast<int>(it->second), *phone_hub_notifications_state);
 
   absl::optional<int> phone_hub_camera_roll_state =
-      page_content_dict->FindIntKey("phoneHubCameraRollState");
+      page_content_dict.FindInt("phoneHubCameraRollState");
   ASSERT_TRUE(phone_hub_camera_roll_state);
   if (base::FeatureList::IsEnabled(chromeos::features::kPhoneHubCameraRoll)) {
     it = feature_states_map.find(
@@ -203,14 +203,14 @@ void VerifyPageContentDict(
   }
 
   absl::optional<int> phone_hub_task_continuation_state =
-      page_content_dict->FindIntKey("phoneHubTaskContinuationState");
+      page_content_dict.FindInt("phoneHubTaskContinuationState");
   ASSERT_TRUE(phone_hub_task_continuation_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation);
   EXPECT_EQ(static_cast<int>(it->second), *phone_hub_task_continuation_state);
 
   absl::optional<int> phone_hub_apps_state =
-      page_content_dict->FindIntKey("phoneHubAppsState");
+      page_content_dict.FindInt("phoneHubAppsState");
   ASSERT_TRUE(phone_hub_apps_state);
   if (base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
     it = feature_states_map.find(multidevice_setup::mojom::Feature::kEche);
@@ -223,13 +223,13 @@ void VerifyPageContentDict(
   }
 
   absl::optional<int> wifi_sync_state =
-      page_content_dict->FindIntKey("wifiSyncState");
+      page_content_dict.FindInt("wifiSyncState");
   ASSERT_TRUE(wifi_sync_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kWifiSync);
   EXPECT_EQ(static_cast<int>(it->second), *wifi_sync_state);
 
   const std::string* host_device_name =
-      page_content_dict->FindStringKey("hostDeviceName");
+      page_content_dict.FindString("hostDeviceName");
   if (expected_host_device) {
     ASSERT_TRUE(host_device_name);
     EXPECT_EQ(expected_host_device->name(), *host_device_name);
@@ -237,26 +237,25 @@ void VerifyPageContentDict(
     EXPECT_FALSE(host_device_name);
   }
 
-  EXPECT_THAT(page_content_dict->FindBoolKey("isNearbyShareDisallowedByPolicy"),
+  EXPECT_THAT(page_content_dict.FindBool("isNearbyShareDisallowedByPolicy"),
               Optional(expected_is_nearby_share_disallowed_by_policy_));
 
-  EXPECT_THAT(page_content_dict->FindIntKey("appsAccessStatus"),
+  EXPECT_THAT(page_content_dict.FindInt("appsAccessStatus"),
               Optional(expected_is_phone_hub_apps_access_granted_ ? 2 : 1));
 
-  EXPECT_THAT(
-      page_content_dict->FindBoolKey("isCameraRollFilePermissionGranted"),
-      Optional(expected_is_camera_roll_file_permission_granted_));
+  EXPECT_THAT(page_content_dict.FindBool("isCameraRollFilePermissionGranted"),
+              Optional(expected_is_camera_roll_file_permission_granted_));
 
   EXPECT_THAT(
-      page_content_dict->FindBoolKey("isPhoneHubPermissionsDialogSupported"),
+      page_content_dict.FindBool("isPhoneHubPermissionsDialogSupported"),
       Optional(features::IsEcheSWAEnabled() ||
                features::IsPhoneHubCameraRollEnabled()));
 
-  EXPECT_THAT(page_content_dict->FindIntKey("cameraRollAccessStatus"),
+  EXPECT_THAT(page_content_dict.FindInt("cameraRollAccessStatus"),
               Optional(expected_is_camera_roll_access_status_granted_ ? 2 : 1));
 
   EXPECT_THAT(
-      page_content_dict->FindBoolKey("isPhoneHubFeatureCombinedSetupSupported"),
+      page_content_dict.FindBool("isPhoneHubFeatureCombinedSetupSupported"),
       Optional(expected_is_feature_setup_request_supported_));
 }
 
