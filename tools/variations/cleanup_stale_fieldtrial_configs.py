@@ -9,7 +9,7 @@ Methodology:
   The script ignores WebRTC entries as those often lead to false positives.
 
 Usage:
-  vpython tools/variations/cleanup_stale_fieldtrial_configs.py
+  vpython3 tools/variations/cleanup_stale_fieldtrial_configs.py
 
 Run with --help to get a complete list of options this script runs with.
 
@@ -146,10 +146,10 @@ def main():
   print('Wrote cleaned config to', output_path)
 
   # Run presubmit script to format config file.
-  retcode = subprocess.call(['vpython', PRESUBMIT_SCRIPT, output_path])
+  retcode = subprocess.call(['vpython3', PRESUBMIT_SCRIPT, output_path])
   if retcode != 0:
     print('Failed to format output, manually run:')
-    print('vpython', PRESUBMIT_SCRIPT, output_path)
+    print('vpython3', PRESUBMIT_SCRIPT, output_path)
 
 
 if __name__ == '__main__':
