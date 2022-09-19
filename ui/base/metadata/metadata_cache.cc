@@ -4,9 +4,8 @@
 
 #include "ui/base/metadata/metadata_cache.h"
 
-#include <algorithm>
-
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "ui/base/metadata/metadata_types.h"
 
@@ -24,16 +23,8 @@ MetaDataCache* MetaDataCache::GetInstance() {
 
 void MetaDataCache::AddClassMetaData(
     std::unique_ptr<ClassMetaData> class_data) {
-#if DCHECK_IS_ON()
-  const std::vector<ClassMetaData*>::const_reverse_iterator existing_data =
-      std::find_if(class_data_cache_.rbegin(), class_data_cache_.rend(),
-                   [&class_data](ClassMetaData* comp_data) {
-                     return comp_data->type_name() == class_data->type_name();
-                   });
-
-  DCHECK(existing_data == class_data_cache_.rend());
-#endif
-
+  DCHECK(!base::Contains(class_data_cache_, class_data->type_name(),
+                         &ClassMetaData::type_name));
   class_data_cache_.push_back(class_data.release());
 }
 

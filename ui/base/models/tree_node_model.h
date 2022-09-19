@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -16,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/models/tree_model.h"
 
 namespace ui {
@@ -136,10 +136,8 @@ class TreeNode : public TreeModelNode {
   // Returns the index of |node|, or nullopt if |node| is not a child of this.
   absl::optional<size_t> GetIndexOf(const NodeType* node) const {
     DCHECK(node);
-    auto i = std::find_if(children_.begin(), children_.end(),
-                          [node](const std::unique_ptr<NodeType>& ptr) {
-                            return ptr.get() == node;
-                          });
+    const auto i =
+        base::ranges::find(children_, node, &std::unique_ptr<NodeType>::get);
     return i != children_.end()
                ? absl::make_optional(static_cast<size_t>(i - children_.begin()))
                : absl::nullopt;

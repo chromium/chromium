@@ -11,6 +11,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/x/x11_util.h"
@@ -76,10 +77,10 @@ void ClipWorkArea(std::vector<display::Display>* displays,
   // If the work area is entirely contained within exactly one display, assume
   // it's meant for that display and intersect the work area with only that
   // display.
-  auto found = std::find_if(displays->begin(), displays->end(),
-                            [&](const display::Display& display) {
-                              return display.bounds().Contains(work_area);
-                            });
+  const auto found =
+      base::ranges::find_if(*displays, [&](const display::Display& display) {
+        return display.bounds().Contains(work_area);
+      });
 
   // If the work area spans multiple displays, intersect the work area with the
   // primary display, like GTK does.

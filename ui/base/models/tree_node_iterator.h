@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/containers/stack.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 
 namespace ui {
 
@@ -35,10 +36,9 @@ class TreeNodeIterator {
     // Position at the top of the _positions list must point to a node the
     // iterator will be returning.
     const auto i =
-        std::find_if(node->children().cbegin(), node->children().cend(),
-                     [prune](const auto& child) {
-                       return prune.is_null() || !prune.Run(child.get());
-                     });
+        base::ranges::find_if(node->children(), [prune](const auto& child) {
+          return prune.is_null() || !prune.Run(child.get());
+        });
     if (i != node->children().cend())
       positions_.emplace(node, i - node->children().cbegin());
   }
