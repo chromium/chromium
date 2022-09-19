@@ -210,12 +210,17 @@ pub struct ThirdPartyCrate {
 }
 
 impl ThirdPartyCrate {
+    /// The normalized name we use in our vendoring structure.
+    pub fn normalized_name(&self) -> NormalizedName {
+        NormalizedName::from_crate_name(&self.name)
+    }
+
     /// The location of this crate's directory, including its source subdir and
     /// build files, relative to the third-party Rust crate directory. Crates
     /// are laid out according to their name and epoch.
     pub fn build_path(&self) -> PathBuf {
         let mut path = PathBuf::new();
-        path.push(NormalizedName::from_crate_name(&self.name).0);
+        path.push(&self.normalized_name().0);
         path.push(self.epoch.to_string());
         path
     }

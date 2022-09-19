@@ -5,7 +5,6 @@
 use gnrt_lib::*;
 
 use crates::ThirdPartyCrate;
-use deps::ThirdPartyDep;
 use manifest::*;
 
 use std::collections::{HashMap, HashSet};
@@ -111,7 +110,7 @@ fn main() -> ExitCode {
     // Run `cargo metadata` and process the output to get a list of crates we
     // depend on.
     let mut command = cargo_metadata::MetadataCommand::new();
-    command.current_dir(paths.third_party.clone());
+    command.current_dir(&paths.third_party);
     let dependencies = deps::collect_dependencies(&command.exec().unwrap());
 
     // Compare cargo's dependency resolution with the crates we have on disk. We
@@ -122,13 +121,22 @@ fn main() -> ExitCode {
     //   crates).
     let mut has_error = false;
     let present_crates: HashSet<&ThirdPartyCrate> = crates.iter().map(|(c, _)| c).collect();
-    let req_crates: HashSet<ThirdPartyCrate> =
-        dependencies.iter().map(ThirdPartyDep::crate_id).collect();
+
+    // Construct the set of requested third-party crates, ensuring we don't have
+    // duplicate epochs. For example, if we resolved two versions of a
+    // dependency with the same major version, we cannot continue.
+    let mut req_crates = HashSet::<ThirdPartyCrate>::new();
+    for package in &dependencies {
+        if !req_crates.insert(package.third_party_crate_id()) {
+            panic!("found another requested package with the same name and epoch: {:?}", package);
+        }
+    }
+    let req_crates = req_crates;
 
     for dep in dependencies.iter() {
-        if !present_crates.contains(&dep.crate_id()) {
+        if !present_crates.contains(&dep.third_party_crate_id()) {
             has_error = true;
-            println!("Missing dependency: {} {}", dep.package_name, dep.epoch);
+            println!("Missing dependency: {} {}", dep.package_name, dep.version);
             for edge in dep.dependency_path.iter() {
                 println!("    {edge}");
             }
@@ -152,9 +160,9 @@ fn main() -> ExitCode {
         has_error = true;
         println!(
             "Resolved {} {} to an upstream source. The requested version \
-                 likely has the same epoch as the discovered crate but \
-                 something has a more stringent version requirement.",
-            nonlocal_dep.package_name, nonlocal_dep.epoch
+             likely has the same epoch as the discovered crate but \
+             something has a more stringent version requirement.",
+            nonlocal_dep.package_name, nonlocal_dep.version
         );
         println!("    Resolved version: {}", nonlocal_dep.version);
     }
@@ -216,7 +224,7 @@ fn main() -> ExitCode {
         let status = process::Command::new("git")
             .arg("apply")
             .arg(build_patch)
-            .current_dir(paths.root)
+            .current_dir(&paths.root)
             .status()
             .unwrap();
         check_exit_status(status, "applying build patch").unwrap();

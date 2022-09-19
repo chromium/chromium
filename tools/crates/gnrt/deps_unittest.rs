@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+use rust_gtest_interop::prelude::*;
+
 use gnrt_lib::deps::*;
 
 use std::str::FromStr;
 
 use cargo_platform::Platform;
-use rust_gtest_interop::prelude::*;
+use semver::Version;
 
 #[gtest(DepsTest, CollectDependenciesOnSampleOutput)]
 fn test() {
-    use gnrt_lib::crates::{Epoch, NormalizedName};
-
     let metadata: cargo_metadata::Metadata = serde_json::from_str(SAMPLE_CARGO_METADATA).unwrap();
     let mut dependencies = collect_dependencies(&metadata);
     dependencies.sort_by(|left, right| {
-        left.package_name.cmp(&right.package_name).then(left.epoch.cmp(&right.epoch))
+        left.package_name.cmp(&right.package_name).then(left.version.cmp(&right.version))
     });
 
     let empty_str_slice: &'static [&'static str] = &[];
@@ -26,7 +26,7 @@ fn test() {
     let mut i = 0;
 
     expect_eq!(dependencies[i].package_name, "autocfg");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 1, 0));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Build).unwrap().features,
         empty_str_slice
@@ -35,7 +35,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "cc");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 0, 73));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Build).unwrap().features,
         empty_str_slice
@@ -44,7 +44,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "more-asserts");
-    expect_eq!(dependencies[i].epoch, Epoch::Minor(3));
+    expect_eq!(dependencies[i].version, Version::new(0, 3, 0));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Development).unwrap().features,
         empty_str_slice
@@ -53,7 +53,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "num-traits");
-    expect_eq!(dependencies[i].epoch, Epoch::Minor(2));
+    expect_eq!(dependencies[i].version, Version::new(0, 2, 15));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &["std"]
@@ -62,8 +62,8 @@ fn test() {
     expect_eq!(
         dependencies[i].build_dependencies[0],
         DepOfDep {
-            normalized_name: NormalizedName::new("autocfg").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "autocfg".to_string(),
+            version: Version::new(1, 1, 0),
             platform: None,
         }
     );
@@ -71,7 +71,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "once_cell");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 13, 0));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &["alloc", "race", "std"]
@@ -80,7 +80,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "proc-macro2");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 0, 40));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &["proc-macro"]
@@ -89,7 +89,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "quote");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 0, 20));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &["proc-macro"]
@@ -98,7 +98,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "serde");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 0, 139));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &["derive", "serde_derive", "std"]
@@ -109,8 +109,8 @@ fn test() {
     expect_eq!(
         dependencies[i].dependencies[0],
         DepOfDep {
-            normalized_name: NormalizedName::new("serde_derive").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "serde_derive".to_string(),
+            version: Version::new(1, 0, 139),
             platform: None,
         }
     );
@@ -118,7 +118,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "serde_derive");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 0, 139));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         empty_str_slice
@@ -129,24 +129,24 @@ fn test() {
     expect_eq!(
         dependencies[i].dependencies[0],
         DepOfDep {
-            normalized_name: NormalizedName::new("proc_macro2").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "proc-macro2".to_string(),
+            version: Version::new(1, 0, 40),
             platform: None,
         }
     );
     expect_eq!(
         dependencies[i].dependencies[1],
         DepOfDep {
-            normalized_name: NormalizedName::new("quote").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "quote".to_string(),
+            version: Version::new(1, 0, 20),
             platform: None,
         }
     );
     expect_eq!(
         dependencies[i].dependencies[2],
         DepOfDep {
-            normalized_name: NormalizedName::new("syn").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "syn".to_string(),
+            version: Version::new(1, 0, 98),
             platform: None,
         }
     );
@@ -154,7 +154,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "syn");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 0, 98));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &["clone-impls", "derive", "parsing", "printing", "proc-macro", "quote"]
@@ -165,24 +165,24 @@ fn test() {
     expect_eq!(
         dependencies[i].dependencies[0],
         DepOfDep {
-            normalized_name: NormalizedName::new("proc_macro2").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "proc-macro2".to_string(),
+            version: Version::new(1, 0, 40),
             platform: None,
         }
     );
     expect_eq!(
         dependencies[i].dependencies[1],
         DepOfDep {
-            normalized_name: NormalizedName::new("quote").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "quote".to_string(),
+            version: Version::new(1, 0, 20),
             platform: None,
         }
     );
     expect_eq!(
         dependencies[i].dependencies[2],
         DepOfDep {
-            normalized_name: NormalizedName::new("unicode_ident").unwrap(),
-            epoch: Epoch::Major(1),
+            package_name: "unicode-ident".to_string(),
+            version: Version::new(1, 0, 1),
             platform: None,
         }
     );
@@ -190,7 +190,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "termcolor");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 1, 3));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         empty_str_slice
@@ -201,8 +201,8 @@ fn test() {
     expect_eq!(
         dependencies[i].dependencies[0],
         DepOfDep {
-            normalized_name: NormalizedName::new("winapi_util").unwrap(),
-            epoch: Epoch::Minor(1),
+            package_name: "winapi-util".to_string(),
+            version: Version::new(0, 1, 5),
             platform: Some(Platform::from_str("cfg(windows)").unwrap()),
         }
     );
@@ -210,7 +210,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "unicode-ident");
-    expect_eq!(dependencies[i].epoch, Epoch::Major(1));
+    expect_eq!(dependencies[i].version, Version::new(1, 0, 1));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         empty_str_slice
@@ -219,7 +219,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "winapi");
-    expect_eq!(dependencies[i].epoch, Epoch::Minor(3));
+    expect_eq!(dependencies[i].version, Version::new(0, 3, 9));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         &[
@@ -242,7 +242,7 @@ fn test() {
     i += 1;
 
     expect_eq!(dependencies[i].package_name, "winapi-util");
-    expect_eq!(dependencies[i].epoch, Epoch::Minor(1));
+    expect_eq!(dependencies[i].version, Version::new(0, 1, 5));
     expect_eq!(
         dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
         empty_str_slice
@@ -253,8 +253,8 @@ fn test() {
     expect_eq!(
         dependencies[i].dependencies[0],
         DepOfDep {
-            normalized_name: NormalizedName::new("winapi").unwrap(),
-            epoch: Epoch::Minor(3),
+            package_name: "winapi".to_string(),
+            version: Version::new(0, 3, 9),
             platform: Some(Platform::from_str("cfg(windows)").unwrap()),
         }
     );

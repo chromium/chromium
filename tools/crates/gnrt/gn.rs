@@ -88,7 +88,7 @@ impl RuleDep {
 ///   script for each package.
 /// * `pub_deps` is the list of packages that should be available outside of
 ///   third-party code.
-pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::ThirdPartyDep>>(
+pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::Package>>(
     deps: Iter,
     paths: &'b paths::ChromiumPaths,
     metadata: &HashMap<ThirdPartyCrate, CargoPackage>,
@@ -105,14 +105,14 @@ pub fn build_files_from_deps<'a, 'b, Iter: IntoIterator<Item = &'a deps::ThirdPa
 /// Generate the `BuildFile` for `dep`, or return `None` if no rules would be
 /// present.
 fn make_build_file_for_dep(
-    dep: &deps::ThirdPartyDep,
+    dep: &deps::Package,
     paths: &paths::ChromiumPaths,
     metadata: &HashMap<ThirdPartyCrate, CargoPackage>,
     build_script_outputs: &HashMap<ThirdPartyCrate, Vec<String>>,
     pub_deps: &HashSet<ThirdPartyCrate>,
 ) -> Option<(ThirdPartyCrate, BuildFile)> {
     let third_party_path_str = paths.third_party.to_str().unwrap();
-    let crate_id = ThirdPartyCrate { name: dep.package_name.clone(), epoch: dep.epoch };
+    let crate_id = dep.third_party_crate_id();
     let crate_abs_path = paths.root.join(paths.third_party.join(crate_id.build_path()));
 
     let to_gn_path = |abs_path: &Path| {
@@ -161,10 +161,10 @@ fn make_build_file_for_dep(
                 Some(p) => Condition::If(platform_to_condition(p)),
             };
 
-            let rule = format!(
-                "//{third_party_path_str}/{}/{}:{target_name}",
-                dep_of_dep.normalized_name, dep_of_dep.epoch
-            );
+            let crate_id = dep_of_dep.third_party_crate_id();
+            let normalized_name = crate_id.normalized_name();
+            let epoch = crate_id.epoch;
+            let rule = format!("//{third_party_path_str}/{normalized_name}/{epoch}:{target_name}");
 
             gn_deps.push(RuleDep { cond, rule });
         }
@@ -216,8 +216,8 @@ fn make_build_file_for_dep(
             .to_string();
 
             let mut lib_rule = rule_template.clone();
-            lib_rule.crate_name = Some(dep.normalized_name.to_string());
-            lib_rule.epoch = Some(dep.epoch);
+            lib_rule.crate_name = Some(crate_id.normalized_name().to_string());
+            lib_rule.epoch = Some(crate_id.epoch);
             lib_rule.crate_type = lib_target.lib_type.to_string();
             lib_rule.testonly = dep_kind == deps::DependencyKind::Development;
             lib_rule.crate_root = to_gn_path(lib_target.root.as_path());

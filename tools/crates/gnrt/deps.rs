@@ -4,7 +4,7 @@
 
 //! Utilities to process `cargo metadata` dependency graph.
 
-use crate::crates::{self, Epoch, NormalizedName};
+use crate::crates::{self, Epoch};
 use crate::platforms::{self, Platform, PlatformSet};
 
 use std::collections::{hash_map::Entry, HashMap, HashSet};
@@ -12,23 +12,18 @@ use std::iter;
 use std::path::PathBuf;
 
 pub use cargo_metadata::DependencyKind;
-pub use cargo_metadata::Version;
+pub use semver::Version;
 
-/// A single transitive third-party dependency. Includes information needed for
-/// generating build files later.
+/// A single transitive dependency of a root crate. Includes information needed
+/// for generating build files later.
 #[derive(Clone, Debug)]
-pub struct ThirdPartyDep {
+pub struct Package {
     /// The package name as used by cargo.
     pub package_name: String,
-    /// The normalized name we use in vendored crate paths.
-    pub normalized_name: NormalizedName,
     /// The package version as used by cargo.
     pub version: Version,
-    /// The epoch derived from the dependency version. Used for our vendored
-    /// third-party crates.
-    pub epoch: Epoch,
     /// This package's dependencies. Each element cross-references another
-    /// `ThirdPartyDep` by name and epoch.
+    /// `Package` by name and version.
     pub dependencies: Vec<DepOfDep>,
     /// Same as the above, but for build script deps.
     pub build_dependencies: Vec<DepOfDep>,
@@ -55,23 +50,35 @@ pub struct ThirdPartyDep {
     pub is_local: bool,
 }
 
-impl ThirdPartyDep {
-    pub fn crate_id(&self) -> crates::ThirdPartyCrate {
-        crates::ThirdPartyCrate { name: self.package_name.clone(), epoch: self.epoch }
+impl Package {
+    pub fn third_party_crate_id(&self) -> crates::ThirdPartyCrate {
+        crates::ThirdPartyCrate {
+            name: self.package_name.clone(),
+            epoch: Epoch::from_version(&self.version),
+        }
     }
 }
 
-/// A dependency of a `ThirdPartyDep`. Cross-references another `ThirdPartyDep`
-/// entry in the resolved list.
+/// A dependency of a `Package`. Cross-references another `Package` entry in the
+/// resolved list.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DepOfDep {
-    /// The normalized name of this dependency.
-    pub normalized_name: NormalizedName,
-    /// The requested epoch of this dependency.
-    pub epoch: Epoch,
+    /// This dependency's package name as used by cargo.
+    pub package_name: String,
+    /// The resolved version of this dependency.
+    pub version: Version,
     /// A platform constraint for this dependency, or `None` if it's used on all
     /// platforms.
     pub platform: Option<Platform>,
+}
+
+impl DepOfDep {
+    pub fn third_party_crate_id(&self) -> crates::ThirdPartyCrate {
+        crates::ThirdPartyCrate {
+            name: self.package_name.clone(),
+            epoch: Epoch::from_version(&self.version),
+        }
+    }
 }
 
 /// Information specific to the dependency kind: for normal, build script, or
@@ -126,7 +133,7 @@ impl std::fmt::Display for LibType {
 /// package may have multiple crates, each of which corresponds to a single
 /// rustc invocation: e.g. a package may have a lib crate as well as multiple
 /// binary crates.
-pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPartyDep> {
+pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<Package> {
     // The metadata is split into two parts:
     // 1. A list of packages and associated info: targets (e.g. lib, bin,
     //    tests), source path, etc. This includes all workspace members and all
@@ -179,15 +186,12 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPar
     // out for processing.
     let mut dependencies = traversal_state.dependencies;
 
-    // Fill in the per-package data for each dependency. Check that there are no
-    // duplicate (package, epoch) pairs while we do so.
-    let mut version_set = HashSet::<(&NormalizedName, Epoch)>::new();
+    // Fill in the per-package data for each dependency.
     for (id, dep) in dependencies.iter_mut() {
         let node: &cargo_metadata::Node = traversal_state.dep_graph.nodes.get(id).unwrap();
         let package: &cargo_metadata::Package = traversal_state.dep_graph.packages.get(id).unwrap();
 
         dep.package_name = package.name.clone();
-        dep.normalized_name = NormalizedName::from_crate_name(&package.name);
 
         // TODO(crbug.com/1291994): Resolve features independently per kind
         // and platform. This may require using the unstable unit-graph feature:
@@ -240,7 +244,6 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPar
         }
 
         dep.version = package.version.clone();
-        dep.epoch = Epoch::from_version(&package.version);
 
         // Collect this package's list of resolved dependencies which will be
         // needed for build file generation later.
@@ -252,8 +255,8 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPar
                 platform = platforms::filter_unsupported_platform_terms(p);
             }
             let dep_of_dep = DepOfDep {
-                normalized_name: NormalizedName::from_crate_name(&dep_pkg.name),
-                epoch: Epoch::from_version(&dep_pkg.version),
+                package_name: dep_pkg.name.clone(),
+                version: dep_pkg.version.clone(),
                 platform,
             };
 
@@ -268,10 +271,6 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPar
         // Make sure the package comes from our vendored source. If not, report the
         // error for later.
         dep.is_local = package.source == None;
-
-        if !version_set.insert((&dep.normalized_name, dep.epoch)) {
-            panic!("found another package version with the same name and epoch: {:?}", dep);
-        }
     }
 
     // Return a flat list of dependencies.
@@ -289,7 +288,7 @@ struct TraversalState<'a> {
     /// The path of package IDs to the current node. For human consumption.
     path: Vec<String>,
     /// The final set of dependencies.
-    dependencies: HashMap<&'a cargo_metadata::PackageId, ThirdPartyDep>,
+    dependencies: HashMap<&'a cargo_metadata::PackageId, Package>,
 }
 
 /// Recursively explore a particular node in the dependency graph. Fills data in
@@ -302,11 +301,9 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
 
     // Helper to insert a placeholder `Dependency` into a map. We fill in the
     // fields later.
-    let init_dep = |path| ThirdPartyDep {
+    let init_dep = |path| Package {
         package_name: String::new(),
-        normalized_name: NormalizedName::from_crate_name(""),
         version: Version::new(0, 0, 0),
-        epoch: Epoch::Minor(1),
         dependencies: Vec::new(),
         build_dependencies: Vec::new(),
         dev_dependencies: Vec::new(),
@@ -330,7 +327,7 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
         explore_node(state, target_node);
 
         // Merge this with the existing entry for the dep.
-        let dep: &mut ThirdPartyDep =
+        let dep: &mut Package =
             state.dependencies.entry(dep_edge.pkg).or_insert_with(|| init_dep(state.path.clone()));
         let info: &mut PerKindInfo = dep
             .dependency_kinds
