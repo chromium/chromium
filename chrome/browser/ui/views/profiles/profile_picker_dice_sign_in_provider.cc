@@ -63,9 +63,13 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
     if (IsInitialized()) {
       contents()->SetDelegate(nullptr);
 
-      // Schedule the profile for deletion, it's not needed any more.
-      g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
-          profile_->GetPath());
+      // Schedule the profile for deletion if it wasn't deleted yet, since it's
+      // not needed any more.
+      if (!ProfileManager::IsProfileDirectoryMarkedForDeletion(
+              profile_->GetPath())) {
+        g_browser_process->profile_manager()
+            ->ScheduleEphemeralProfileForDeletion(profile_->GetPath());
+      }
     }
 
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
