@@ -42,8 +42,8 @@ omnibox::GroupId GroupIdForNumber(int value);
 struct SuggestionGroup {
   SuggestionGroup() = default;
   ~SuggestionGroup() = default;
-  SuggestionGroup(const SuggestionGroup&) = delete;
-  SuggestionGroup& operator=(const SuggestionGroup&) = delete;
+  SuggestionGroup(const SuggestionGroup&) = default;
+  SuggestionGroup& operator=(const SuggestionGroup&) = default;
 
   // Merges the fields from |from|, if specified in |from|.
   void MergeFrom(const SuggestionGroup& other);
