@@ -1007,13 +1007,14 @@ void RootWindowController::InitLayoutManagers() {
   aura::Window* modal_container =
       GetContainer(kShellWindowId_SystemModalContainer);
   modal_container->SetLayoutManager(
-      new SystemModalContainerLayoutManager(modal_container));
+      std::make_unique<SystemModalContainerLayoutManager>(modal_container));
 
   aura::Window* lock_modal_container =
       GetContainer(kShellWindowId_LockSystemModalContainer);
   DCHECK(lock_modal_container);
   lock_modal_container->SetLayoutManager(
-      new SystemModalContainerLayoutManager(lock_modal_container));
+      std::make_unique<SystemModalContainerLayoutManager>(
+          lock_modal_container));
 
   aura::Window* lock_action_handler_container =
       GetContainer(kShellWindowId_LockActionHandlerContainer);
@@ -1021,7 +1022,7 @@ void RootWindowController::InitLayoutManagers() {
   lock_screen_action_background_controller_->SetParentWindow(
       lock_action_handler_container);
   lock_action_handler_container->SetLayoutManager(
-      new LockActionHandlerLayoutManager(
+      std::make_unique<LockActionHandlerLayoutManager>(
           lock_action_handler_container, shelf_.get(),
           lock_screen_action_background_controller_.get()));
 
@@ -1029,7 +1030,7 @@ void RootWindowController::InitLayoutManagers() {
       GetContainer(kShellWindowId_LockScreenContainer);
   DCHECK(lock_container);
   lock_container->SetLayoutManager(
-      new LockLayoutManager(lock_container, shelf_.get()));
+      std::make_unique<LockLayoutManager>(lock_container, shelf_.get()));
 
   aura::Window* always_on_top_container =
       GetContainer(kShellWindowId_AlwaysOnTopContainer);
@@ -1085,7 +1086,7 @@ void RootWindowController::CreateContainers() {
                       magnified_container);
   ::wm::SetChildWindowVisibilityChangesAnimated(wallpaper_container);
   wallpaper_container->SetLayoutManager(
-      new FillLayoutManager(wallpaper_container));
+      std::make_unique<FillLayoutManager>(wallpaper_container));
 
   if (features::AreGlanceablesEnabled()) {
     aura::Window* glanceables_container =
@@ -1093,7 +1094,7 @@ void RootWindowController::CreateContainers() {
                         "GlanceablesContainer", magnified_container);
     glanceables_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
     glanceables_container->SetLayoutManager(
-        new FillLayoutManager(glanceables_container));  // Takes ownership.
+        std::make_unique<FillLayoutManager>(glanceables_container));
   }
 
   aura::Window* non_lock_screen_containers =
@@ -1108,7 +1109,7 @@ void RootWindowController::CreateContainers() {
                       "LockScreenWallpaperContainer", magnified_container);
   ::wm::SetChildWindowVisibilityChangesAnimated(lock_wallpaper_container);
   lock_wallpaper_container->SetLayoutManager(
-      new FillLayoutManager(lock_wallpaper_container));
+      std::make_unique<FillLayoutManager>(lock_wallpaper_container));
 
   aura::Window* lock_screen_containers =
       CreateContainer(kShellWindowId_LockScreenContainersContainer,
@@ -1167,7 +1168,8 @@ void RootWindowController::CreateContainers() {
       non_lock_screen_containers);
   arc_ime_parent_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
   arc_ime_parent_container->SetLayoutManager(
-      new ArcVirtualKeyboardContainerLayoutManager(arc_ime_parent_container));
+      std::make_unique<ArcVirtualKeyboardContainerLayoutManager>(
+          arc_ime_parent_container));
   aura::Window* arc_vk_container =
       CreateContainer(kShellWindowId_ArcVirtualKeyboardContainer,
                       "ArcVirtualKeyboardContainer", arc_ime_parent_container);
@@ -1229,7 +1231,7 @@ void RootWindowController::CreateContainers() {
   virtual_keyboard_parent_container->SetProperty(
       ::wm::kUsesScreenCoordinatesKey, true);
   virtual_keyboard_parent_container->SetLayoutManager(
-      new VirtualKeyboardContainerLayoutManager(
+      std::make_unique<VirtualKeyboardContainerLayoutManager>(
           virtual_keyboard_parent_container));
   aura::Window* virtual_keyboard_container = CreateContainer(
       kShellWindowId_VirtualKeyboardContainer, "VirtualKeyboardContainer",
@@ -1237,7 +1239,7 @@ void RootWindowController::CreateContainers() {
   virtual_keyboard_container->SetProperty(::wm::kUsesScreenCoordinatesKey,
                                           true);
   virtual_keyboard_container->SetLayoutManager(
-      new keyboard::KeyboardLayoutManager(
+      std::make_unique<keyboard::KeyboardLayoutManager>(
           keyboard::KeyboardUIController::Get()));
 
   aura::Window* accessibility_panel_container = CreateContainer(
@@ -1248,7 +1250,7 @@ void RootWindowController::CreateContainers() {
                                              true);
   accessibility_panel_container->SetProperty(kLockedToRootKey, true);
   accessibility_panel_container->SetLayoutManager(
-      new AccessibilityPanelLayoutManager());
+      std::make_unique<AccessibilityPanelLayoutManager>());
 
   aura::Window* menu_container =
       CreateContainer(kShellWindowId_MenuContainer, "MenuContainer",
@@ -1273,7 +1275,7 @@ void RootWindowController::CreateContainers() {
                       lock_screen_related_containers);
   overlay_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
   overlay_container->SetLayoutManager(
-      new OverlayLayoutManager(overlay_container));  // Takes ownership.
+      std::make_unique<OverlayLayoutManager>(overlay_container));
 
   if (chromeos::features::IsAmbientModeEnabled()) {
     aura::Window* ambient_container =
@@ -1282,7 +1284,7 @@ void RootWindowController::CreateContainers() {
     ::wm::SetChildWindowVisibilityChangesAnimated(ambient_container);
     ambient_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
     ambient_container->SetLayoutManager(
-        new FillLayoutManager(ambient_container));  // Takes ownership.
+        std::make_unique<FillLayoutManager>(ambient_container));
   }
 
   aura::Window* mouse_cursor_container =
@@ -1294,7 +1296,7 @@ void RootWindowController::CreateContainers() {
       CreateContainer(kShellWindowId_AlwaysOnTopWallpaperContainer,
                       "AlwaysOnTopWallpaperContainer", magnified_container);
   always_on_top_wallpaper_container->SetLayoutManager(
-      new FillLayoutManager(always_on_top_wallpaper_container));
+      std::make_unique<FillLayoutManager>(always_on_top_wallpaper_container));
 
   CreateContainer(kShellWindowId_PowerButtonAnimationContainer,
                   "PowerButtonAnimationContainer", magnified_container);

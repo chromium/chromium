@@ -278,7 +278,8 @@ class KeyboardUIControllerTest : public aura::test::AuraTestBase,
 // TODO(https://crbug.com/849995): This is testing KeyboardLayoutManager /
 // ContainerFullWidthBehavior. Put this test there.
 TEST_F(KeyboardUIControllerTest, KeyboardSize) {
-  root_window()->SetLayoutManager(new KeyboardLayoutManager(&controller()));
+  root_window()->SetLayoutManager(
+      std::make_unique<KeyboardLayoutManager>(&controller()));
 
   // The keyboard window should not be visible.
   aura::Window* keyboard_window = controller().GetKeyboardWindow();

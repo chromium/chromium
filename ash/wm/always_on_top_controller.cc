@@ -25,8 +25,9 @@ AlwaysOnTopController::AlwaysOnTopController(
   DCHECK(!desks_util::IsDeskContainer(always_on_top_container_));
   DCHECK(!desks_util::IsDeskContainer(pip_container_));
   always_on_top_container_->SetLayoutManager(
-      new WorkspaceLayoutManager(always_on_top_container_));
-  pip_container_->SetLayoutManager(new WorkspaceLayoutManager(pip_container_));
+      std::make_unique<WorkspaceLayoutManager>(always_on_top_container_));
+  pip_container_->SetLayoutManager(
+      std::make_unique<WorkspaceLayoutManager>(pip_container_));
   // Container should be empty.
   DCHECK(always_on_top_container_->children().empty());
   DCHECK(pip_container_->children().empty());
@@ -83,7 +84,7 @@ void AlwaysOnTopController::ClearLayoutManagers() {
 
 void AlwaysOnTopController::SetLayoutManagerForTest(
     std::unique_ptr<WorkspaceLayoutManager> layout_manager) {
-  always_on_top_container_->SetLayoutManager(layout_manager.release());
+  always_on_top_container_->SetLayoutManager(std::move(layout_manager));
 }
 
 void AlwaysOnTopController::AddWindow(aura::Window* window) {
