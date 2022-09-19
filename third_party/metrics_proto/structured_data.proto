@@ -12,7 +12,7 @@ package metrics;
 // One structured metrics event, containing several hashed and unhashed metrics
 // related to a single event type, tied to a single pseudonymous user.
 //
-// Next tag: 5
+// Next tag: 6
 message StructuredEventProto {
   // A per-client, per-profile, per-project ID that is used only for structured
   // metrics. For projects recorded from Chrome OS's platform2 repository, this
@@ -69,6 +69,10 @@ message StructuredEventProto {
     RAW_STRING = 2;
   }
   optional EventType event_type = 4;
+
+  // The project name hash is the first 8 bytes of the MD5 hash of the project
+  // name that is defined in src/tools/metrics/structured/structured.xml.
+  optional fixed64 project_name_hash = 5;
 }
 
 // The top-level proto for structured metrics. One StructuredDataProto is
