@@ -14,7 +14,7 @@ const mouseMoveToCenter = (element, iframe = undefined) => {
     centerY += clientRect.top;
   }
   return new test_driver.Actions()
-  .pointerMove(centerX, centerY)
+  .pointerMove(Math.ceil(centerX), Math.ceil(centerY))
   .send();
 };
 
