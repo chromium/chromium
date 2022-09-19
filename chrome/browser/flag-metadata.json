@@ -5389,7 +5389,7 @@
   {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 116
   },
   {
     "name": "prefer-constant-frame-rate",
