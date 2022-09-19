@@ -433,7 +433,7 @@ TEST_F(PublicSetsTest, ComputeConfig_Replacements_NoIntersection_NoRemoval) {
                                           absl::nullopt)},
                   },
               },
-              /*normalized_additions=*/{});
+              /*addition_sets=*/{});
   EXPECT_THAT(
       config.customizations(),
       UnorderedElementsAre(
@@ -473,7 +473,7 @@ TEST_F(
                                           absl::nullopt)},
                   },
               },
-              /*normalized_additions=*/{});
+              /*addition_sets=*/{});
   EXPECT_THAT(
       config.customizations(),
       UnorderedElementsAre(
@@ -513,7 +513,7 @@ TEST_F(
                                           absl::nullopt)},
                   },
               },
-              /*normalized_additions=*/{});
+              /*addition_sets=*/{});
   EXPECT_THAT(
       config.customizations(),
       UnorderedElementsAre(
@@ -553,7 +553,7 @@ TEST_F(
                                           absl::nullopt)},
                   },
               },
-              /*normalized_additions=*/{});
+              /*addition_sets=*/{});
   EXPECT_THAT(
       config.customizations(),
       UnorderedElementsAre(
@@ -581,7 +581,7 @@ TEST_F(PublicSetsTest,
           /*aliases=*/{})
           .ComputeConfig(
               /*replacement_sets=*/{},
-              /*normalized_additions=*/{
+              /*addition_sets=*/{
                   {
                       {kPrimary2,
                        FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
@@ -619,7 +619,7 @@ TEST_F(
           /*aliases=*/{})
           .ComputeConfig(
               /*replacement_sets=*/{},
-              /*normalized_additions=*/{
+              /*addition_sets=*/{
                   {
                       {kAssociated1,
                        FirstPartySetEntry(kAssociated1, SiteType::kPrimary,
@@ -669,7 +669,7 @@ TEST_F(
           /*aliases=*/{})
           .ComputeConfig(
               /*replacement_sets=*/{},
-              /*normalized_additions=*/{{
+              /*addition_sets=*/{{
                   {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
                                                 absl::nullopt)},
                   {kAssociated2,
@@ -720,7 +720,7 @@ TEST_F(
                                           absl::nullopt)},
                   },
               },
-              /*normalized_additions=*/{
+              /*addition_sets=*/{
                   {
                       {kPrimary,
                        FirstPartySetEntry(kPrimary, SiteType::kPrimary,
@@ -746,6 +746,150 @@ TEST_F(
                              kPrimary, SiteType::kPrimary, absl::nullopt))),
           Pair(kPrimary2, Optional(FirstPartySetEntry(
                               kPrimary2, SiteType::kPrimary, absl::nullopt)))));
+}
+
+TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonPrimaries) {
+  SchemefulSite primary0(GURL("https://primary0.test"));
+  SchemefulSite associated_site0(GURL("https://associatedsite0.test"));
+  SchemefulSite primary1(GURL("https://primary1.test"));
+  SchemefulSite associated_site1(GURL("https://associatedsite1.test"));
+  SchemefulSite primary2(GURL("https://primary2.test"));
+  SchemefulSite associated_site2(GURL("https://associatedsite2.test"));
+  SchemefulSite primary42(GURL("https://primary42.test"));
+  SchemefulSite associated_site42(GURL("https://associatedsite42.test"));
+  // {primary1, {associated_site1}} and {primary2, {associated_site2}}
+  // transitively overlap with the existing set. primary1 takes primaryship of
+  // the normalized addition set since it was provided first. The other addition
+  // sets are unaffected.
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {primary1,
+               FirstPartySetEntry(primary1, SiteType::kPrimary, absl::nullopt)},
+              {primary2,
+               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/{},
+              /*addition_sets=*/{
+                  {{primary0, FirstPartySetEntry(primary0, SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {associated_site0,
+                    FirstPartySetEntry(primary0, SiteType::kAssociated,
+                                       absl::nullopt)}},
+                  {{primary1, FirstPartySetEntry(primary1, SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {associated_site1,
+                    FirstPartySetEntry(primary1, SiteType::kAssociated,
+                                       absl::nullopt)}},
+                  {{primary2, FirstPartySetEntry(primary2, SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {associated_site2,
+                    FirstPartySetEntry(primary2, SiteType::kAssociated,
+                                       absl::nullopt)}},
+                  {{primary42, FirstPartySetEntry(primary42, SiteType::kPrimary,
+                                                  absl::nullopt)},
+                   {associated_site42,
+                    FirstPartySetEntry(primary42, SiteType::kAssociated,
+                                       absl::nullopt)}},
+              });
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(associated_site0,
+               absl::make_optional(FirstPartySetEntry(
+                   primary0, SiteType::kAssociated, absl::nullopt))),
+          Pair(associated_site1,
+               absl::make_optional(FirstPartySetEntry(
+                   primary1, SiteType::kAssociated, absl::nullopt))),
+          Pair(associated_site2,
+               absl::make_optional(FirstPartySetEntry(
+                   primary1, SiteType::kAssociated, absl::nullopt))),
+          Pair(associated_site42,
+               absl::make_optional(FirstPartySetEntry(
+                   primary42, SiteType::kAssociated, absl::nullopt))),
+          Pair(primary0, absl::make_optional(FirstPartySetEntry(
+                             primary0, SiteType::kPrimary, absl::nullopt))),
+          Pair(primary1, absl::make_optional(FirstPartySetEntry(
+                             primary1, SiteType::kPrimary, absl::nullopt))),
+          Pair(primary2, absl::make_optional(FirstPartySetEntry(
+                             primary1, SiteType::kAssociated, absl::nullopt))),
+          Pair(primary42, absl::make_optional(FirstPartySetEntry(
+                              primary42, SiteType::kPrimary, absl::nullopt)))));
+}
+
+TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
+  SchemefulSite primary0(GURL("https://primary0.test"));
+  SchemefulSite associated_site0(GURL("https://associatedsite0.test"));
+  SchemefulSite primary1(GURL("https://primary1.test"));
+  SchemefulSite associated_site1(GURL("https://associatedsite1.test"));
+  SchemefulSite primary2(GURL("https://primary2.test"));
+  SchemefulSite associated_site2(GURL("https://associatedsite2.test"));
+  SchemefulSite primary42(GURL("https://primary42.test"));
+  SchemefulSite associated_site42(GURL("https://associatedsite42.test"));
+  // {primary1, {associated_site1}} and {primary2, {associated_site2}}
+  // transitively overlap with the existing set. primary2 takes primaryship of
+  // the normalized addition set since it was provided first. The other addition
+  // sets are unaffected.
+  FirstPartySetsContextConfig config =
+      PublicSets(
+          /*entries=*/
+          {
+              {primary2,
+               FirstPartySetEntry(primary2, SiteType::kPrimary, absl::nullopt)},
+              {primary1,
+               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+          },
+          /*aliases=*/{})
+          .ComputeConfig(
+              /*replacement_sets=*/{},
+              /*addition_sets=*/{
+                  {{primary0, FirstPartySetEntry(primary0, SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {associated_site0,
+                    FirstPartySetEntry(primary0, SiteType::kAssociated,
+                                       absl::nullopt)}},
+                  {{primary2, FirstPartySetEntry(primary2, SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {associated_site2,
+                    FirstPartySetEntry(primary2, SiteType::kAssociated,
+                                       absl::nullopt)}},
+                  {{primary1, FirstPartySetEntry(primary1, SiteType::kPrimary,
+                                                 absl::nullopt)},
+                   {associated_site1,
+                    FirstPartySetEntry(primary1, SiteType::kAssociated,
+                                       absl::nullopt)}},
+                  {{primary42, FirstPartySetEntry(primary42, SiteType::kPrimary,
+                                                  absl::nullopt)},
+                   {associated_site42,
+                    FirstPartySetEntry(primary42, SiteType::kAssociated,
+                                       absl::nullopt)}},
+              });
+  EXPECT_THAT(
+      config.customizations(),
+      UnorderedElementsAre(
+          Pair(associated_site0,
+               absl::make_optional(FirstPartySetEntry(
+                   primary0, SiteType::kAssociated, absl::nullopt))),
+          Pair(associated_site1,
+               absl::make_optional(FirstPartySetEntry(
+                   primary2, SiteType::kAssociated, absl::nullopt))),
+          Pair(associated_site2,
+               absl::make_optional(FirstPartySetEntry(
+                   primary2, SiteType::kAssociated, absl::nullopt))),
+          Pair(associated_site42,
+               absl::make_optional(FirstPartySetEntry(
+                   primary42, SiteType::kAssociated, absl::nullopt))),
+          Pair(primary0, absl::make_optional(FirstPartySetEntry(
+                             primary0, SiteType::kPrimary, absl::nullopt))),
+          Pair(primary1, absl::make_optional(FirstPartySetEntry(
+                             primary2, SiteType::kAssociated, absl::nullopt))),
+          Pair(primary2, absl::make_optional(FirstPartySetEntry(
+                             primary2, SiteType::kPrimary, absl::nullopt))),
+          Pair(primary42, absl::make_optional(FirstPartySetEntry(
+                              primary42, SiteType::kPrimary, absl::nullopt)))));
 }
 
 }  // namespace net

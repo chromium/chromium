@@ -51,17 +51,15 @@ class NET_EXPORT PublicSets {
 
   // Returns a FirstPartySetsContextConfig suitable for passing into
   // FindEntries, in order to respect the overrides given by `replacement_sets`
-  // and `normalized_additions`.
+  // and `addition_sets`.
   //
   // Preconditions: sets defined by `replacement_sets` and
-  // `normalized_additions` must be disjoint. `normalized_additions` must be
-  // preprocessed such that no two addition sets intersect with the same public
-  // set (i.e. they must be pre-unioned using a disjoint-set data structure).
+  // `addition_sets` must be disjoint.
   FirstPartySetsContextConfig ComputeConfig(
       const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
           replacement_sets,
       const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
-          normalized_additions) const;
+          addition_sets) const;
 
   // Returns the entry corresponding to the given `site`, if one exists.
   // Respects any customization/overlay specified by `config`. This is
@@ -85,6 +83,16 @@ class NET_EXPORT PublicSets {
       const base::flat_map<SchemefulSite, SchemefulSite>& manual_aliases);
 
  private:
+  // Preprocesses a collection of "addition" sets, such that any sets that
+  // transitively overlap (when taking the current `entries_` of this map, plus
+  // the manual config, into account) are unioned together. I.e., this ensures
+  // that at most one addition set intersects with any given public/manual set.
+  std::vector<base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
+  NormalizeAdditionSets(
+      const std::vector<
+          base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>&
+          addition_sets) const;
+
   // Represents the mapping of site -> entry, where keys are sites within
   // sets, and values are entries of the sets.
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;

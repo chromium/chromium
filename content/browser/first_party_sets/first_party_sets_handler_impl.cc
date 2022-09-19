@@ -36,60 +36,6 @@ using SingleSet = FirstPartySetParser::SingleSet;
 constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
     FILE_PATH_LITERAL("first_party_sets.db");
 
-std::vector<SingleSet> NormalizeAdditionSets(
-    const net::PublicSets& public_sets,
-    const std::vector<SingleSet>& addition_sets) {
-  // Create a mapping from an owner site in `existing_sets` to all policy sets
-  // that intersect with the set that it owns.
-  base::flat_map<net::SchemefulSite, base::flat_set<size_t>>
-      policy_set_overlaps;
-  for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
-    for (const auto& site_and_entry : addition_sets[set_idx]) {
-      if (auto entry =
-              public_sets.FindEntry(site_and_entry.first, /*config=*/nullptr);
-          entry.has_value()) {
-        policy_set_overlaps[entry->primary()].insert(set_idx);
-      }
-    }
-  }
-
-  net::AdditionOverlapsUnionFind union_finder(addition_sets.size());
-  for (auto& [public_site, policy_set_indices] : policy_set_overlaps) {
-    // Union together all overlapping policy sets to determine which one will
-    // take ownership.
-    for (size_t representative : policy_set_indices) {
-      union_finder.Union(*policy_set_indices.begin(), representative);
-    }
-  }
-
-  // The union-find data structure now knows which policy set should be given
-  // the role of representative for each entry in policy_set_overlaps.
-  // AdditionOverlapsUnionFind::SetsMapping returns a map from representative
-  // index to list of its children.
-  std::vector<SingleSet> normalized_additions;
-  for (auto& [rep, children] : union_finder.SetsMapping()) {
-    SingleSet normalized = addition_sets[rep];
-    const net::SchemefulSite& rep_primary =
-        addition_sets[rep].begin()->second.primary();
-    for (size_t child_set_idx : children) {
-      // Update normalized to absorb the child_set_idx-th addition set. Rewrite
-      // the entry's primary as needed.
-      for (const auto& child_site_and_entry : addition_sets[child_set_idx]) {
-        bool inserted =
-            normalized
-                .emplace(
-                    child_site_and_entry.first,
-                    net::FirstPartySetEntry(
-                        rep_primary, net::SiteType::kAssociated, absl::nullopt))
-                .second;
-        DCHECK(inserted);
-      }
-    }
-    normalized_additions.push_back(normalized);
-  }
-  return normalized_additions;
-}
-
 }  // namespace
 
 // static
@@ -143,8 +89,8 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
     const FirstPartySetParser::ParsedPolicySetLists& policy) {
   return public_sets.ComputeConfig(
       /*replacement_sets=*/policy.replacements,
-      /*normalized_additions=*/NormalizeAdditionSets(public_sets,
-                                                     policy.additions));
+      /*addition_sets=*/
+      policy.additions);
 }
 
 FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(

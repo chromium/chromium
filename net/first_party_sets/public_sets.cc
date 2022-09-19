@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
+#include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -143,16 +144,19 @@ void PublicSets::ApplyManuallySpecifiedSet(
   // We handle the manually-specified set the same way as we handle
   // replacement enterprise policy sets.
   manual_config_ = ComputeConfig(
-      /*replacement_sets=*/{manual_entries}, /*normalized_additions=*/{});
+      /*replacement_sets=*/{manual_entries}, /*addition_sets=*/{});
   manual_config_.IngestAliases(std::move(manual_aliases));
 }
 
 FirstPartySetsContextConfig PublicSets::ComputeConfig(
     const std::vector<SingleSet>& replacement_sets,
-    const std::vector<SingleSet>& normalized_additions) const {
+    const std::vector<SingleSet>& addition_sets) const {
   // Maps a site to its new entry if it has one.
   base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>
       site_to_entry;
+
+  std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+      normalized_additions = NormalizeAdditionSets(addition_sets);
 
   // Create flattened versions of the sets for easier lookup.
   FlattenedSets flattened_replacements =
@@ -160,7 +164,7 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
   FlattenedSets flattened_additions =
       SetListToFlattenedSets(normalized_additions);
 
-  // All of the policy sets are automatically inserted into site_to_owner.
+  // All of the custom sets are automatically inserted into site_to_owner.
   UpdateCustomizationMap(replacement_sets, site_to_entry);
   UpdateCustomizationMap(normalized_additions, site_to_entry);
 
@@ -191,8 +195,8 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
   }
 
   // Find the existing owners that have left their existing sets, and whose
-  // existing members should be removed from their set (excl any policy sets
-  // that those members are involved in).
+  // existing members should be removed from their set (excluding any custom
+  // sets that those members are involved in).
   base::flat_set<SchemefulSite> replaced_existing_owners;
   for (const auto& [site, unused_owner] : flattened_replacements) {
     if (const auto entry = FindEntry(site, /*config=*/nullptr);
@@ -252,6 +256,51 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
   }
 
   return FirstPartySetsContextConfig(std::move(site_to_entry));
+}
+
+std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+PublicSets::NormalizeAdditionSets(
+    const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
+        addition_sets) const {
+  // Find all the addition sets that intersect with any given public set.
+  base::flat_map<SchemefulSite, base::flat_set<size_t>> addition_set_overlaps;
+  for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
+    for (const auto& site_and_entry : addition_sets[set_idx]) {
+      if (auto entry = FindEntry(site_and_entry.first, /*config=*/nullptr);
+          entry.has_value()) {
+        addition_set_overlaps[entry->primary()].insert(set_idx);
+      }
+    }
+  }
+
+  // Union together all transitively-overlapping addition sets.
+  AdditionOverlapsUnionFind union_finder(addition_sets.size());
+  for (auto& [public_site, addition_set_indices] : addition_set_overlaps) {
+    for (size_t representative : addition_set_indices) {
+      union_finder.Union(*addition_set_indices.begin(), representative);
+    }
+  }
+
+  // Now build the new addition sets, with all transitive overlaps eliminated.
+  std::vector<SingleSet> normalized_additions;
+  for (auto& [rep, children] : union_finder.SetsMapping()) {
+    SingleSet normalized = addition_sets[rep];
+    const SchemefulSite& rep_primary =
+        addition_sets[rep].begin()->second.primary();
+    for (size_t child_set_idx : children) {
+      for (const auto& child_site_and_entry : addition_sets[child_set_idx]) {
+        bool inserted =
+            normalized
+                .emplace(child_site_and_entry.first,
+                         FirstPartySetEntry(rep_primary, SiteType::kAssociated,
+                                            absl::nullopt))
+                .second;
+        DCHECK(inserted);
+      }
+    }
+    normalized_additions.push_back(normalized);
+  }
+  return normalized_additions;
 }
 
 std::ostream& operator<<(std::ostream& os, const PublicSets& ps) {
