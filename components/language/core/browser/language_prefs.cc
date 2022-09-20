@@ -147,13 +147,12 @@ std::vector<std::string> LanguagePrefs::GetULPLanguages() {
 }
 
 void LanguagePrefs::SetULPLanguages(std::vector<std::string> ulp_languages) {
-  ListPrefUpdate update(prefs_, language::prefs::kULPLanguages);
-  base::Value::List& ulp_pref_list = update->GetList();
-  ulp_pref_list.clear();
+  base::Value::List ulp_pref_list;
   ulp_pref_list.reserve(ulp_languages.size());
   for (const auto& language : ulp_languages) {
     ulp_pref_list.Append(language);
   }
+  prefs_->SetList(language::prefs::kULPLanguages, std::move(ulp_pref_list));
 }
 #endif
 
