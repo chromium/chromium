@@ -41,7 +41,7 @@ namespace partition_alloc::internal {
 // is odd in |ReleaseFromAllocator()|, and if not we have a double-free.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
  public:
-  // This class holds an atomic bit field: `count_`. It holds up to 4 values:
+  // This class holds an atomic bit field: `count_`. It holds up to 5 values:
   //
   // bits   name                   description
   // -----  ---------------------  ----------------------------------------
@@ -55,8 +55,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   //                               - Decreased in Release()
   //
   // 32     dangling_detected      A dangling raw_ptr<> has been detected.
+  // 33     needs_mac11_malloc_    Whether malloc_size() return value needs to
+  //          size_hack            be adjusted for this allocation.
   //
-  // 33-63  unprotected_ptr_count  Number of
+  // 34-63  unprotected_ptr_count  Number of
   //                               raw_ptr<T, DisableDanglingPtrDetection>
   //                               - Increased in AcquireFromUnprotectedPtr().
   //                               - Decreased in ReleaseFromUnprotectedPtr().
@@ -75,22 +77,26 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   using CountType = uint64_t;
   static constexpr CountType kMemoryHeldByAllocatorBit = 0x0000'0000'0000'0001;
   static constexpr CountType kPtrCountMask = 0x0000'0000'FFFF'FFFE;
-  static constexpr CountType kUnprotectedPtrCountMask = 0xFFFF'FFFE'0000'0000;
+  static constexpr CountType kUnprotectedPtrCountMask = 0xFFFF'FFFC'0000'0000;
   static constexpr CountType kDanglingRawPtrDetectedBit = 0x0000'0001'0000'0000;
+  static constexpr CountType kNeedsMac11MallocSizeHackBit =
+      0x0000'0002'0000'0000;
 
   static constexpr CountType kPtrInc = 0x0000'0000'0000'0002;
-  static constexpr CountType kUnprotectedPtrInc = 0x0000'0002'0000'0000;
+  static constexpr CountType kUnprotectedPtrInc = 0x0000'0004'0000'0000;
 #else
   using CountType = uint32_t;
   static constexpr CountType kMemoryHeldByAllocatorBit = 0x0000'0001;
-  static constexpr CountType kPtrCountMask = 0xFFFF'FFFE;
+
+  static constexpr CountType kPtrCountMask = 0x7FFF'FFFE;
   static constexpr CountType kUnprotectedPtrCountMask = 0x0000'0000;
   static constexpr CountType kDanglingRawPtrDetectedBit = 0x0000'0000;
+  static constexpr CountType kNeedsMac11MallocSizeHackBit = 0x8000'0000;
 
   static constexpr CountType kPtrInc = 0x0000'0002;
 #endif
 
-  PartitionRefCount();
+  explicit PartitionRefCount(bool needs_mac11_malloc_size_hack);
 
   // Incrementing the counter doesn't imply any visibility about modified
   // memory, hence relaxed atomics. For decrement, visibility is required before
@@ -175,7 +181,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
     if (PA_UNLIKELY(!(old_count & kMemoryHeldByAllocatorBit)))
       DoubleFreeOrCorruptionDetected(old_count);
 
-    if (PA_LIKELY(old_count == kMemoryHeldByAllocatorBit)) {
+    if (PA_LIKELY((old_count & ~kNeedsMac11MallocSizeHackBit) ==
+                  kMemoryHeldByAllocatorBit)) {
       std::atomic_thread_fence(std::memory_order_acquire);
       // The allocation is about to get freed, so clear the cookie.
       ClearCookieIfSupported();
@@ -200,8 +207,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // safely freed.
   PA_ALWAYS_INLINE bool IsAliveWithNoKnownRefs() {
     CheckCookieIfSupported();
-
-    return count_.load(std::memory_order_acquire) == kMemoryHeldByAllocatorBit;
+    return (count_.load(std::memory_order_acquire) &
+            ~kNeedsMac11MallocSizeHackBit) == kMemoryHeldByAllocatorBit;
   }
 
   PA_ALWAYS_INLINE bool IsAlive() {
@@ -225,8 +232,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   }
 
   PA_ALWAYS_INLINE bool CanBeReusedByGwpAsan() {
-    return count_.load(std::memory_order_acquire) ==
+    return (count_.load(std::memory_order_acquire) &
+            ~kNeedsMac11MallocSizeHackBit) ==
            (kPtrInc | kMemoryHeldByAllocatorBit);
+  }
+
+  bool NeedsMac11MallocSizeHack() {
+    return count_.load(std::memory_order_relaxed) &
+           kNeedsMac11MallocSizeHackBit;
   }
 
 #if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
@@ -299,7 +312,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // architectures, count_ happens stay even, which works well with the
   // double-free-detection in ReleaseFromAllocator(). Don't change the layout of
   // this class, to preserve this functionality.
-  std::atomic<CountType> count_{kMemoryHeldByAllocatorBit};
+  std::atomic<CountType> count_;
 
 #if defined(PA_REF_COUNT_CHECK_COOKIE)
   static constexpr uint32_t kCookieSalt = 0xc01dbeef;
@@ -311,9 +324,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
 #endif
 };
 
-PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount()
+PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount(bool use_mac11_hack)
+    : count_(kMemoryHeldByAllocatorBit |
+             (use_mac11_hack ? kNeedsMac11MallocSizeHackBit : 0))
 #if defined(PA_REF_COUNT_CHECK_COOKIE)
-    : brp_cookie_(CalculateCookie())
+      ,
+      brp_cookie_(CalculateCookie())
 #endif
 {
 }

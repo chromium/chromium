@@ -28,6 +28,10 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+
 #if BUILDFLAG(STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif  // BUILDFLAG(STARSCAN)
@@ -715,6 +719,13 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
   }
 }
 
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+template <bool thread_safe>
+void PartitionRoot<thread_safe>::EnableMac11MallocSizeHackForTesting() {
+  flags.mac11_malloc_size_hack_enabled_ = true;
+}
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   {
@@ -756,9 +767,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
         opts.backup_ref_ptr_zapping ==
         PartitionOptions::BackupRefPtrZapping::kEnabled;
     PA_CHECK(!flags.brp_zapping_enabled_ || flags.brp_enabled_);
-#else
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+    flags.mac11_malloc_size_hack_enabled_ = internal::base::mac::IsOS11();
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
-#endif
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     flags.use_configurable_pool =
         (opts.use_configurable_pool ==
          PartitionOptions::UseConfigurablePool::kIfAvailable) &&

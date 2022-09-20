@@ -3464,12 +3464,31 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
     void* ptr = allocator.root()->Alloc(size, "");
     EXPECT_TRUE(ptr);
     size_t usable_size = PartitionRoot<ThreadSafe>::GetUsableSize(ptr);
+    size_t usable_size_with_hack =
+        PartitionRoot<ThreadSafe>::GetUsableSizeWithMac11MallocSizeHack(ptr);
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+    if (size != 32)
+#endif
+      EXPECT_EQ(usable_size_with_hack, usable_size);
     EXPECT_LE(size, usable_size);
     memset(ptr, 0xDE, usable_size);
     // Should not crash when free the ptr.
     allocator.root()->Free(ptr);
   }
 }
+
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
+  allocator.root()->EnableMac11MallocSizeHackForTesting();
+  size_t size = internal::kMac11MallocSizeHackRequestedSize;
+  void* ptr = allocator.root()->Alloc(size, "");
+  size_t usable_size = PartitionRoot<ThreadSafe>::GetUsableSize(ptr);
+  size_t usable_size_with_hack =
+      PartitionRoot<ThreadSafe>::GetUsableSizeWithMac11MallocSizeHack(ptr);
+  EXPECT_EQ(usable_size, internal::kMac11MallocSizeHackUsableSize);
+  EXPECT_EQ(usable_size_with_hack, size);
+}
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
 
 TEST_P(PartitionAllocTest, Bookkeeping) {
   auto& root = *allocator.root();

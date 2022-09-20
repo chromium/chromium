@@ -476,8 +476,8 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 #endif  // BUILDFLAG(IS_APPLE)
 
   // TODO(lizeb): Returns incorrect values for aligned allocations.
-  const size_t size =
-      partition_alloc::ThreadSafePartitionRoot::GetUsableSize(address);
+  const size_t size = partition_alloc::ThreadSafePartitionRoot::
+      GetUsableSizeWithMac11MallocSizeHack(address);
 #if BUILDFLAG(IS_APPLE)
   // The object pointed to by `address` is allocated by the PartitionAlloc.
   // So, this function must not return zero so that the malloc zone dispatcher
