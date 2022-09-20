@@ -668,8 +668,9 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
   // Try to create the encoder with priority according to merit value.
   HRESULT hr = E_FAIL;
   for (UINT32 i = 0; i < encoder_count; i++) {
+    auto vendor = GetDriverVendor(pp_activate[i]);
     // Skip flawky Intel hybrid AV1 encoder.
-    if (codec_ == VideoCodec::kAV1) {
+    if (codec_ == VideoCodec::kAV1 && vendor == DriverVendor::kIntel) {
       // Get the CLSID GUID of the HMFT.
       GUID mft_guid = {0};
       pp_activate[i]->GetGUID(MFT_TRANSFORM_CLSID_Attribute, &mft_guid);
@@ -678,52 +679,41 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
         continue;
       }
     }
-    if (FAILED(hr)) {
-      DCHECK(!encoder_);
-      DCHECK(!activate_);
-      hr = pp_activate[i]->ActivateObject(IID_PPV_ARGS(&encoder_));
-      if (encoder_.Get() != nullptr) {
-        DCHECK(SUCCEEDED(hr));
-        auto vendor = GetDriverVendor(pp_activate[i]);
 
-        // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
-        // baseline profile H.264 encoding, and go to the next instance
-        // according to merit value.
-        if (codec_ == VideoCodec::kH264 && is_constrained_h264) {
-          // Get the vendor id.
-          base::win::ScopedCoMem<WCHAR> vendor_id;
-          UINT32 id_length;
-          pp_activate[i]->GetAllocatedString(
-              MFT_ENUM_HARDWARE_VENDOR_ID_Attribute, &vendor_id, &id_length);
-          if (!_wcsnicmp(vendor_id, L"VEN_10DE", id_length)) {
-            DLOG(WARNING)
-                << "Skipped NVIDIA GPU due to https://crbug.com/1088650";
-            pp_activate[i]->ShutdownObject();
-            encoder_.Reset();
-            hr = E_FAIL;
-            continue;
-          }
-        }
+    // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
+    // baseline profile H.264 encoding, and go to the next instance according
+    // to merit value.
+    if (codec_ == VideoCodec::kH264 && is_constrained_h264 &&
+        vendor == DriverVendor::kNvidia) {
+      DLOG(WARNING) << "Skipped NVIDIA GPU due to https://crbug.com/1088650";
+      continue;
+    }
 
-        activate_ = pp_activate[i];
-        vendor_ = vendor;
-        pp_activate[i] = nullptr;
+    DCHECK(!encoder_);
+    DCHECK(!activate_);
+    hr = pp_activate[i]->ActivateObject(IID_PPV_ARGS(&encoder_));
+    if (encoder_.Get() != nullptr) {
+      DCHECK(SUCCEEDED(hr));
+      activate_ = pp_activate[i];
+      vendor_ = vendor;
+      pp_activate[i] = nullptr;
 
-        // Print the friendly name.
-        base::win::ScopedCoMem<WCHAR> friendly_name;
-        UINT32 name_length;
-        activate_->GetAllocatedString(MFT_FRIENDLY_NAME_Attribute,
-                                      &friendly_name, &name_length);
-        DVLOG(3) << "Selected asynchronous hardware encoder's friendly name: "
-                 << friendly_name;
-      } else {
-        DCHECK(FAILED(hr));
+      // Print the friendly name.
+      base::win::ScopedCoMem<WCHAR> friendly_name;
+      UINT32 name_length;
+      activate_->GetAllocatedString(MFT_FRIENDLY_NAME_Attribute, &friendly_name,
+                                    &name_length);
+      DVLOG(3) << "Selected asynchronous hardware encoder's friendly name: "
+               << friendly_name;
+      // Encoder is successfully activated.
+      break;
+    } else {
+      DCHECK(FAILED(hr));
 
-        // The component that calls ActivateObject is
-        // responsible for calling ShutdownObject,
-        // https://docs.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfactivate-shutdownobject.
-        pp_activate[i]->ShutdownObject();
-      }
+      // The component that calls ActivateObject is
+      // responsible for calling ShutdownObject,
+      // https://docs.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfactivate-shutdownobject.
+      pp_activate[i]->ShutdownObject();
     }
   }
 
