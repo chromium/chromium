@@ -181,6 +181,12 @@ void FeaturePodsContainerView::EnsurePageWithButton(views::View* button) {
   }
 }
 
+void FeaturePodsContainerView::SelectedPageChanged(int old_selected,
+                                                   int new_selected) {
+  InvalidateLayout();
+  PaginationModelObserver::SelectedPageChanged(old_selected, new_selected);
+}
+
 gfx::Point FeaturePodsContainerView::GetButtonPosition(
     int visible_index) const {
   int row = visible_index / kUnifiedFeaturePodItemsInRow;

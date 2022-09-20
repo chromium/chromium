@@ -57,6 +57,9 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
   // Make sure button is visible by switching page if needed.
   void EnsurePageWithButton(views::View* button);
 
+  // PaginationModelObserver
+  void SelectedPageChanged(int old_selected, int new_selected) override;
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void ChildVisibilityChanged(View* child) override;

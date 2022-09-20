@@ -31,6 +31,13 @@ class BoxLayoutTest : public testing::Test {
  public:
   void SetUp() override { host_ = std::make_unique<View>(); }
 
+  // If changes are made to the LayoutManager on |host_|, we need to invalidate
+  // the host view and run the scheduled layout.
+  void HandleHostLayoutManagerChanges() {
+    host_->InvalidateLayout();
+    views::test::RunScheduledLayout(host_.get());
+  }
+
   std::unique_ptr<View> host_;
 };
 
@@ -123,17 +130,17 @@ TEST_F(BoxLayoutTest, Overflow) {
   // Clipping of children should occur at the opposite end(s) to the main axis
   // alignment position.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kStart);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(0, 0, 15, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), v2->bounds());
 
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(0, 0, 13, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(13, 0, 2, 10), v2->bounds());
 
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kEnd);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(0, 0, 5, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(5, 0, 10, 10), v2->bounds());
 }
@@ -269,20 +276,20 @@ TEST_F(BoxLayoutTest, MainAxisAlignmentHorizontal) {
 
   // Ensure same results for MainAxisAlignment::kStart.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kStart);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(40, 10, 10, 20).ToString(), v2->bounds().ToString());
 
   // Aligns children to the center horizontally.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(30, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(60, 10, 10, 20).ToString(), v2->bounds().ToString());
 
   // Aligns children to the end of the host horizontally, accounting for the
   // inside border spacing.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kEnd);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(50, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(80, 10, 10, 20).ToString(), v2->bounds().ToString());
 }
@@ -305,20 +312,20 @@ TEST_F(BoxLayoutTest, MainAxisAlignmentVertical) {
 
   // Ensure same results for MainAxisAlignment::kStart.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kStart);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(10, 40, 20, 10).ToString(), v2->bounds().ToString());
 
   // Aligns children to the center vertically.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 30, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(10, 60, 20, 10).ToString(), v2->bounds().ToString());
 
   // Aligns children to the end of the host vertically, accounting for the
   // inside border spacing.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kEnd);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 50, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(10, 80, 20, 10).ToString(), v2->bounds().ToString());
 }
@@ -341,26 +348,26 @@ TEST_F(BoxLayoutTest, CrossAxisAlignmentHorizontal) {
 
   // Ensure same results for kStretch.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 10, 20, 40).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(40, 10, 10, 40).ToString(), v2->bounds().ToString());
 
   // Aligns children to the start vertically.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStart);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(40, 10, 10, 10).ToString(), v2->bounds().ToString());
 
   // Aligns children to the center vertically.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 20, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(40, 25, 10, 10).ToString(), v2->bounds().ToString());
 
   // Aligns children to the end of the host vertically, accounting for the
   // inside border spacing.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kEnd);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 30, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(40, 40, 10, 10).ToString(), v2->bounds().ToString());
 }
@@ -383,26 +390,26 @@ TEST_F(BoxLayoutTest, CrossAxisAlignmentVertical) {
 
   // Ensure same results for kStretch.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 10, 40, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(10, 40, 40, 10).ToString(), v2->bounds().ToString());
 
   // Aligns children to the start horizontally.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStart);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(10, 40, 10, 10).ToString(), v2->bounds().ToString());
 
   // Aligns children to the center horizontally.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(20, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(25, 40, 10, 10).ToString(), v2->bounds().ToString());
 
   // Aligns children to the end of the host horizontally, accounting for the
   // inside border spacing.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kEnd);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(30, 10, 20, 20).ToString(), v1->bounds().ToString());
   EXPECT_EQ(gfx::Rect(40, 40, 10, 10).ToString(), v2->bounds().ToString());
 }
@@ -430,17 +437,17 @@ TEST_F(BoxLayoutTest, CrossAxisAlignmentVerticalChildPreferredWidth) {
 
   // Child aligned to start should use preferred area
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStart);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(10, 10, preferred_width, preferred_width), v1->bounds());
 
   // Child aligned to center should use preferred area
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(15, 10, preferred_width, preferred_width), v1->bounds());
 
   // Child aligned to end should use preferred area
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kEnd);
-  test::RunScheduledLayout(host_.get());
+  HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(20, 10, preferred_width, preferred_width), v1->bounds());
 }
 
@@ -525,7 +532,7 @@ TEST_F(BoxLayoutTest, FlexGrowVertical) {
     layout->SetFlexForView(v1, 1);
     layout->ClearFlexForView(v2);
     layout->ClearFlexForView(v3);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 30, 50).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(10, 70, 30, 10).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(10, 90, 30, 30).ToString(), v3->bounds().ToString());
@@ -534,7 +541,7 @@ TEST_F(BoxLayoutTest, FlexGrowVertical) {
     // view
     // with 1/3.
     layout->SetFlexForView(v3, 2);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 30, 30).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(10, 50, 30, 10).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(10, 70, 30, 50).ToString(), v3->bounds().ToString());
@@ -544,7 +551,7 @@ TEST_F(BoxLayoutTest, FlexGrowVertical) {
     layout->ClearFlexForView(v1);
     layout->SetFlexForView(v2, 1);
     layout->ClearFlexForView(v3);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 30, 20).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(10, 40, 30, 40).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(10, 90, 30, 30).ToString(), v3->bounds().ToString());
@@ -624,7 +631,7 @@ TEST_F(BoxLayoutTest, FlexShrinkHorizontal) {
     layout->SetFlexForView(v1, 1);
     layout->ClearFlexForView(v2);
     layout->ClearFlexForView(v3);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 5, 30).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(25, 10, 10, 30).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(45, 10, 30, 30).ToString(), v3->bounds().ToString());
@@ -632,7 +639,7 @@ TEST_F(BoxLayoutTest, FlexShrinkHorizontal) {
     // Set the third view to shrink 2/3s of the free space and leave the first
     // view with 1/3.
     layout->SetFlexForView(v3, 2);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 15, 30).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(35, 10, 10, 30).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(55, 10, 20, 30).ToString(), v3->bounds().ToString());
@@ -644,7 +651,7 @@ TEST_F(BoxLayoutTest, FlexShrinkHorizontal) {
     layout->ClearFlexForView(v1);
     layout->SetFlexForView(v2, 2);
     layout->ClearFlexForView(v3);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 20, 30).ToString(), v1->bounds().ToString());
     // Conceptually this view is at 10, 40, 0, 0.
     EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(), v2->bounds().ToString());
@@ -671,7 +678,7 @@ TEST_F(BoxLayoutTest, FlexShrinkVerticalWithRemainder) {
     layout->SetFlexForView(v1, 1);
     layout->SetFlexForView(v2, 2);
     layout->ClearFlexForView(v3);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(0, 0, 20, 3).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(0, 3, 20, 7).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(0, 10, 20, 10).ToString(), v3->bounds().ToString());
@@ -681,7 +688,7 @@ TEST_F(BoxLayoutTest, FlexShrinkVerticalWithRemainder) {
     layout->ClearFlexForView(v1);
     layout->SetFlexForView(v2, 2);
     layout->SetFlexForView(v3, 1);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(0, 0, 20, 10).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(0, 10, 20, 7).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(0, 17, 20, 3).ToString(), v3->bounds().ToString());
@@ -690,7 +697,7 @@ TEST_F(BoxLayoutTest, FlexShrinkVerticalWithRemainder) {
     layout->SetFlexForView(v1, 1);
     layout->SetFlexForView(v2, 1);
     layout->SetFlexForView(v3, 1);
-    test::RunScheduledLayout(host_.get());
+    HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(0, 0, 20, 3).ToString(), v1->bounds().ToString());
     EXPECT_EQ(gfx::Rect(0, 3, 20, 14).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(0, 17, 20, 3).ToString(), v3->bounds().ToString());

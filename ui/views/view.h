@@ -758,6 +758,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // specific to the current Layout Manager)
   virtual void Layout();
 
+  bool needs_layout() const { return needs_layout_; }
+
   // Mark this view and all parents to require a relayout. This ensures the
   // next call to Layout() will propagate to this view, even if the bounds of
   // parent views do not change.
@@ -1510,8 +1512,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // have changed. The visible bounds are the region of the View not clipped by
   // its ancestors. This is used for clipping NativeViewHost.
   virtual void OnVisibleBoundsChanged();
-
-  bool needs_layout() const { return needs_layout_; }
 
   // Tree operations -----------------------------------------------------------
 

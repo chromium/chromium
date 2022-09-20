@@ -24,7 +24,8 @@ void RunScheduledLayout(View* view) {
   View* parent_view = view;
   while (parent_view->parent())
     parent_view = parent_view->parent();
-  parent_view->Layout();
+  if (parent_view->needs_layout())
+    parent_view->Layout();
 }
 
 }  // namespace views::test

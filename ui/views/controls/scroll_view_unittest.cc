@@ -281,7 +281,22 @@ class ScrollViewTest : public ViewsTestBase {
     const gfx::Rect default_outer_bounds(0, 0, 100, 100);
     auto* view = scroll_view_->SetContents(std::make_unique<View>());
     scroll_view_->SetBoundsRect(default_outer_bounds);
+    // Setting the contents will invalidate the layout. Call RunScheduledLayout
+    // to immediately run the scheduled layout.
+    views::test::RunScheduledLayout(scroll_view_.get());
     return view;
+  }
+
+  // For the purposes of these tests, we directly call SetBounds on the
+  // contents of the ScrollView to see how the ScrollView reacts to it. Calling
+  // SetBounds will not invalidate parent layouts. Thus, we need to manually
+  // invalidate the layout of the scroll view. Production code should not need
+  // to manually invalidate the layout of the ScrollView as the ScrollView's
+  // layout should be invalidated through the call paths that change the size of
+  // the ScrollView's contents. (For example, via AddChildView).
+  void InvalidateAndRunScheduledLayoutOnScrollView() {
+    scroll_view_->InvalidateLayout();
+    views::test::RunScheduledLayout(scroll_view_.get());
   }
 
  protected:
@@ -489,7 +504,6 @@ std::string UiConfigToString(const testing::TestParamInfo<UiConfig>& info) {
 // Verifies the viewport is sized to fit the available space.
 TEST_F(ScrollViewTest, ViewportSizedToFit) {
   View* contents = InstallContents();
-  views::test::RunScheduledLayout(scroll_view_.get());
   EXPECT_EQ("0,0 100x100", contents->parent()->bounds().ToString());
 }
 
@@ -572,7 +586,7 @@ TEST_F(ScrollViewTest, ScrollBars) {
 
   // Size the contents such that vertical scrollbar is needed.
   contents->SetBounds(0, 0, 50, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth(),
             contents->parent()->width());
   EXPECT_EQ(100, contents->parent()->height());
@@ -585,7 +599,7 @@ TEST_F(ScrollViewTest, ScrollBars) {
 
   // Size the contents such that horizontal scrollbar is needed.
   contents->SetBounds(0, 0, 400, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100, contents->parent()->width());
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutHeight(),
             contents->parent()->height());
@@ -594,7 +608,7 @@ TEST_F(ScrollViewTest, ScrollBars) {
 
   // Both horizontal and vertical.
   contents->SetBounds(0, 0, 300, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth(),
             contents->parent()->width());
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutHeight(),
@@ -610,7 +624,7 @@ TEST_F(ScrollViewTest, ScrollBars) {
   scroll_view_->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
       kTopPadding, kLeftPadding, kBottomPadding, kRightPadding)));
   contents->SetBounds(0, 0, 50, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth() - kLeftPadding -
                 kRightPadding,
             contents->parent()->width());
@@ -627,7 +641,7 @@ TEST_F(ScrollViewTest, ScrollBars) {
 
   // Horizontal with border.
   contents->SetBounds(0, 0, 400, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100 - kLeftPadding - kRightPadding, contents->parent()->width());
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutHeight() - kTopPadding -
                 kBottomPadding,
@@ -644,7 +658,7 @@ TEST_F(ScrollViewTest, ScrollBars) {
 
   // Both horizontal and vertical with border.
   contents->SetBounds(0, 0, 300, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth() - kLeftPadding -
                 kRightPadding,
             contents->parent()->width());
@@ -679,7 +693,7 @@ TEST_F(WidgetScrollViewTest, Header) {
   auto* header = scroll_view->SetHeader(std::make_unique<CustomView>());
   View* header_parent = header->parent();
 
-  widget()->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(widget());
   // |header|s preferred size is empty, which should result in all space going
   // to contents.
   EXPECT_EQ("0,0 100x0", header->parent()->bounds().ToString());
@@ -698,7 +712,7 @@ TEST_F(WidgetScrollViewTest, Header) {
   // Get the header a height of 20.
   header->SetPreferredSize(gfx::Size(10, 20));
   EXPECT_TRUE(ViewTestApi(scroll_view).needs_layout());
-  widget()->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(widget());
   EXPECT_EQ("0,0 100x20", header->parent()->bounds().ToString());
   EXPECT_EQ("0,20 100x80", contents->parent()->bounds().ToString());
   if (contents->layer()) {
@@ -711,7 +725,7 @@ TEST_F(WidgetScrollViewTest, Header) {
   scroll_view->SetHeader(nullptr);
   // SetHeader(nullptr) deletes header.
   header = nullptr;
-  widget()->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(widget());
   EXPECT_EQ("0,0 100x0", header_parent->bounds().ToString());
   EXPECT_EQ("0,0 100x100", contents->parent()->bounds().ToString());
 }
@@ -725,7 +739,7 @@ TEST_F(ScrollViewTest, ScrollBarsWithHeader) {
 
   // Size the contents such that vertical scrollbar is needed.
   contents->SetBounds(0, 0, 50, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(0, contents->parent()->x());
   EXPECT_EQ(20, contents->parent()->y());
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth(),
@@ -751,7 +765,7 @@ TEST_F(ScrollViewTest, ScrollBarsWithHeader) {
 
   // Size the contents such that horizontal scrollbar is needed.
   contents->SetBounds(0, 0, 400, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(0, contents->parent()->x());
   EXPECT_EQ(20, contents->parent()->y());
   EXPECT_EQ(100, contents->parent()->width());
@@ -768,7 +782,7 @@ TEST_F(ScrollViewTest, ScrollBarsWithHeader) {
 
   // Both horizontal and vertical.
   contents->SetBounds(0, 0, 300, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(0, contents->parent()->x());
   EXPECT_EQ(20, contents->parent()->y());
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth(),
@@ -822,7 +836,7 @@ TEST_F(ScrollViewTest, ScrollToPositionUpdatesScrollBar) {
   // Scroll the horizontal scrollbar, after which, the scroll bar thumb position
   // should be updated (i.e. it should be non-zero).
   contents->SetBounds(0, 0, 400, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   auto* scroll_bar = test_api.GetScrollBar(HORIZONTAL);
   ASSERT_TRUE(scroll_bar);
   EXPECT_TRUE(scroll_bar->GetVisible());
@@ -832,7 +846,7 @@ TEST_F(ScrollViewTest, ScrollToPositionUpdatesScrollBar) {
 
   // Scroll the vertical scrollbar.
   contents->SetBounds(0, 0, 50, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   scroll_bar = test_api.GetScrollBar(VERTICAL);
   ASSERT_TRUE(scroll_bar);
   EXPECT_TRUE(scroll_bar->GetVisible());
@@ -850,7 +864,7 @@ TEST_F(ScrollViewTest, ScrollToPositionUpdatesWithHiddenHorizontalScrollBar) {
   View* contents = InstallContents();
 
   contents->SetBounds(0, 0, 400, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   auto* scroll_bar = test_api.GetScrollBar(HORIZONTAL);
   ASSERT_TRUE(scroll_bar);
   EXPECT_FALSE(scroll_bar->GetVisible());
@@ -870,7 +884,7 @@ TEST_F(ScrollViewTest, ScrollToPositionUpdatesWithHiddenVerticalScrollBar) {
   View* contents = InstallContents();
 
   contents->SetBounds(0, 0, 50, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   auto* scroll_bar = test_api.GetScrollBar(VERTICAL);
   ASSERT_TRUE(scroll_bar);
   EXPECT_FALSE(scroll_bar->GetVisible());
@@ -1158,7 +1172,7 @@ TEST_F(ScrollViewTest, CornerViewVisibility) {
   View* corner_view = ScrollViewTestApi(scroll_view_.get()).corner_view();
 
   contents->SetBounds(0, 0, 200, 200);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
 
   // Corner view should not exist if using overlay scrollbars.
   if (scroll_view_->vertical_scroll_bar()->OverlapsContent()) {
@@ -1178,22 +1192,22 @@ TEST_F(ScrollViewTest, CornerViewVisibility) {
 
   // Corner view should be removed when only the vertical scrollbar is visible.
   contents->SetBounds(0, 0, 50, 200);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_FALSE(corner_view->parent());
 
   // ... or when only the horizontal scrollbar is visible.
   contents->SetBounds(0, 0, 200, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_FALSE(corner_view->parent());
 
   // ... or when no scrollbar is visible.
   contents->SetBounds(0, 0, 50, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_FALSE(corner_view->parent());
 
   // Corner view should reappear when both scrollbars reappear.
   contents->SetBounds(0, 0, 200, 200);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(scroll_view_.get(), corner_view->parent());
   EXPECT_TRUE(corner_view->GetVisible());
 }
@@ -1395,7 +1409,7 @@ TEST_F(ScrollViewTest, CocoaOverlayScrollBars) {
   // Size the contents such that vertical scrollbar is needed.
   // Since it is overlaid, the ViewPort size should match the ScrollView.
   contents->SetBounds(0, 0, 50, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100, contents->parent()->width());
   EXPECT_EQ(100, contents->parent()->height());
   EXPECT_EQ(0, scroll_view_->GetScrollBarLayoutWidth());
@@ -1404,7 +1418,7 @@ TEST_F(ScrollViewTest, CocoaOverlayScrollBars) {
 
   // Size the contents such that horizontal scrollbar is needed.
   contents->SetBounds(0, 0, 400, 50);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100, contents->parent()->width());
   EXPECT_EQ(100, contents->parent()->height());
   EXPECT_EQ(0, scroll_view_->GetScrollBarLayoutHeight());
@@ -1413,7 +1427,7 @@ TEST_F(ScrollViewTest, CocoaOverlayScrollBars) {
 
   // Both horizontal and vertical scrollbars.
   contents->SetBounds(0, 0, 300, 400);
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(100, contents->parent()->width());
   EXPECT_EQ(100, contents->parent()->height());
   EXPECT_EQ(0, scroll_view_->GetScrollBarLayoutWidth());
@@ -1560,7 +1574,7 @@ TEST_F(ScrollViewTest, ConstrainScrollToBounds) {
 
   View* contents = InstallContents();
   contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
 
   EXPECT_EQ(gfx::PointF(), test_api.CurrentOffset());
 
@@ -1571,14 +1585,14 @@ TEST_F(ScrollViewTest, ConstrainScrollToBounds) {
 
   // Making the viewport 55 pixels taller should scroll up the same amount.
   scroll_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 155));
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(fully_scrolled.y() - 55, test_api.CurrentOffset().y());
   EXPECT_EQ(fully_scrolled.x(), test_api.CurrentOffset().x());
 
   // And 77 pixels wider should scroll left. Also make it short again: the y-
   // offset from the last change should remain.
   scroll_view_->SetBoundsRect(gfx::Rect(0, 0, 177, 100));
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
   EXPECT_EQ(fully_scrolled.y() - 55, test_api.CurrentOffset().y());
   EXPECT_EQ(fully_scrolled.x() - 77, test_api.CurrentOffset().x());
 }
@@ -1605,7 +1619,6 @@ TEST_F(ScrollViewTest, ContentScrollNotResetOnLayout) {
   // Change contents of |contents|, call Layout; still no change to scroll
   // position.
   contents->SetPreferredSize(gfx::Size(300, 500));
-  contents->InvalidateLayout();
   views::test::RunScheduledLayout(scroll_view_.get());
   EXPECT_EQ(25, test_api.CurrentOffset().y());
 
@@ -2061,7 +2074,7 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithDisabledHorizontalScroll) {
 
   View* contents = InstallContents();
   contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
 
   gfx::Size expected_size = scroll_view_->size();
   expected_size.Enlarge(-kThickness, 0);
@@ -2087,7 +2100,7 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenHorizontalScroll) {
 
   View* contents = InstallContents();
   contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
 
   gfx::Size expected_size = scroll_view_->size();
   expected_size.Enlarge(-kThickness, 0);
@@ -2112,7 +2125,7 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithDisabledVerticalScroll) {
 
   View* contents = InstallContents();
   contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
 
   gfx::Size expected_size = scroll_view_->size();
   expected_size.Enlarge(0, -kThickness);
@@ -2138,7 +2151,7 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenVerticalScroll) {
 
   View* contents = InstallContents();
   contents->SetBoundsRect(gfx::Rect(0, 0, 300, 300));
-  views::test::RunScheduledLayout(scroll_view_.get());
+  InvalidateAndRunScheduledLayoutOnScrollView();
 
   gfx::Size expected_size = scroll_view_->size();
   expected_size.Enlarge(0, -kThickness);
@@ -2150,7 +2163,6 @@ TEST_F(ScrollViewTest, TestSettingContentsToNull) {
   test::ObserveViewDeletion view_deletion{contents};
 
   // Make sure the content is installed and working.
-  views::test::RunScheduledLayout(scroll_view_.get());
   EXPECT_EQ("0,0 100x100", contents->parent()->bounds().ToString());
 
   // This should be legal and not DCHECK.

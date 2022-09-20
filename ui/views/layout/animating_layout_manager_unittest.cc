@@ -3064,6 +3064,10 @@ class ImmediateLayoutManager : public LayoutManagerBase {
 
   void OnLayoutChanged() override {
     LayoutManagerBase::OnLayoutChanged();
+    // Host needs to be invalidated in order for a layout to be scheduled. Pass
+    // in false for mark_layouts_changed since we don't want OnLayoutChanged()
+    // to be called again.
+    InvalidateHost(false);
     test::RunScheduledLayout(host_view());
   }
 
@@ -3103,7 +3107,7 @@ class ImmediateLayoutManager : public LayoutManagerBase {
 
   void SetSizeBounds(const SizeBounds& size_bounds) {
     size_bounds_ = size_bounds;
-    LayoutManagerBase::OnLayoutChanged();
+    OnLayoutChanged();
     GetProposedLayout(host_view()->size());
   }
 
@@ -3411,8 +3415,8 @@ TEST_F(AnimatingLayoutManagerAvailableSizeTest, AvailableSize_StopsAnimation) {
   // Set the root view bounds smaller than the expected size halfway through the
   // animation (35 px wide).
   AnimationEventLogger logger(layout());
-  root_layout()->SetSizeBounds({25, 25});
   animation_api()->IncrementTime(base::Milliseconds(500));
+  root_layout()->SetSizeBounds({25, 25});
 
   // This should stop the animation.
   EXPECT_FALSE(layout()->is_animating());
@@ -3709,8 +3713,8 @@ TEST_F(AnimatingLayoutManagerAvailableSizeTest,
   // Set the root view bounds smaller than the expected size halfway through the
   // animation (35 px wide).
   AnimationEventLogger logger(layout());
-  root_layout()->SetSizeBounds({25, 25});
   animation_api()->IncrementTime(base::Milliseconds(500));
+  root_layout()->SetSizeBounds({25, 25});
 
   // This should stop the animation.
   EXPECT_FALSE(layout()->is_animating());

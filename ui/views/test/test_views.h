@@ -25,10 +25,12 @@ class StaticSizedView : public View {
 
   void set_minimum_size(const gfx::Size& minimum_size) {
     minimum_size_ = minimum_size;
+    InvalidateLayout();
   }
 
   void set_maximum_size(const gfx::Size& maximum_size) {
     maximum_size_ = maximum_size;
+    InvalidateLayout();
   }
 
   // View overrides:

@@ -330,16 +330,19 @@ TEST_F(TriViewTest, ChildViewsPreferredSizeChanged) {
   tri_view_->SetContainerLayout(TriView::Container::START,
                                 CreatePreferredSizeLayoutManager());
   tri_view_->SetFlexForContainer(TriView::Container::CENTER, 1.f);
-  views::test::RunScheduledLayout(tri_view_.get());
 
   views::ProportionallySizedView* child_view =
       new views::ProportionallySizedView(1);
   tri_view_->AddView(TriView::Container::START, child_view);
+  // Adding a child view invalidates the layout. Run scheduled layouts.
+  views::test::RunScheduledLayout(tri_view_.get());
 
   child_view->SetPreferredWidth(1);
+  views::test::RunScheduledLayout(child_view);
   EXPECT_EQ(child_view->GetPreferredSize(), child_view->size());
 
   child_view->SetPreferredWidth(2);
+  views::test::RunScheduledLayout(child_view);
   EXPECT_EQ(child_view->GetPreferredSize(), child_view->size());
 }
 
