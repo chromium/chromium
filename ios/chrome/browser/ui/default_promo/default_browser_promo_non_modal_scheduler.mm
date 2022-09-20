@@ -369,9 +369,13 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 }
 
 - (void)cancelShowPromoTimer {
+  // Only reset the reason and web state to listen to if there is no promo
+  // showing.
+  if (!self.promoIsShowing) {
+    self.currentPromoReason = PromoReasonNone;
+    self.webStateToListenTo = nullptr;
+  }
   _showPromoTimer = nullptr;
-  self.currentPromoReason = PromoReasonNone;
-  self.webStateToListenTo = nullptr;
 }
 
 - (void)showPromoTimerFinished {
