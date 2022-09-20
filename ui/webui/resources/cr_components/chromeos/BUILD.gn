@@ -12,7 +12,6 @@ group("closure_compile") {
     "cellular_setup:closure_compile_module",
     "network:closure_compile_module",
     "network_health:closure_compile_module",
-    "quick_unlock:closure_compile_module",
   ]
 }
 
@@ -22,6 +21,5 @@ group("web_components") {
     "cellular_setup:web_components",
     "network:web_components",
     "network_health:web_components",
-    "quick_unlock:web_components",
   ]
 }

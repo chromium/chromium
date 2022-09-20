@@ -512,8 +512,8 @@ js_library("pin_setup") {
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:setup_pin_keyboard",
+    "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
+    "//ash/webui/common/resources/quick_unlock:setup_pin_keyboard",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":web_components" ]

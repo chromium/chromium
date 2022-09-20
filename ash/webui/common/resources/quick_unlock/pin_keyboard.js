@@ -29,11 +29,13 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './pin_keyboard_icon.js';
+import './pin_keyboard_icons.html.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+
+import {getTemplate} from './pin_keyboard.html.js';
 
 /**
  * Once auto backspace starts, the time between individual backspaces.
@@ -87,7 +89,7 @@ function receivedEventFromKeyboard(event) {
 }
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'pin-keyboard',
 
   behaviors: [

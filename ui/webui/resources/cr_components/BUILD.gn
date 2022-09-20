@@ -106,7 +106,6 @@ if (is_chromeos_ash) {
       "chromeos/network/onc_mojo.js",
       "chromeos/network_health/mojo_interface_provider.js",
       "chromeos/network_health/network_diagnostics_types.js",
-      "chromeos/quick_unlock/lock_screen_constants.js",
     ]
   }
 
@@ -171,9 +170,6 @@ if (is_chromeos_ash) {
       "chromeos/network/network_shared_css.js",
       "chromeos/network/network_siminfo.js",
       "chromeos/network/sim_lock_dialogs.js",
-      "chromeos/quick_unlock/pin_keyboard_icon.js",
-      "chromeos/quick_unlock/pin_keyboard.js",
-      "chromeos/quick_unlock/setup_pin_keyboard.js",
     ]
   }
 }

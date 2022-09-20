@@ -11,7 +11,7 @@
  * </settings-setup-pin-dialog>
  */
 
-import 'chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.js';
+import 'chrome://resources/ash/common/quick_unlock/setup_pin_keyboard.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';

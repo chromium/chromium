@@ -215,8 +215,6 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/network/network_siminfo.d.ts",
     "cr_components/chromeos/network/onc_mojo.d.ts",
     "cr_components/chromeos/network/sim_lock_dialogs.d.ts",
-    "cr_components/chromeos/quick_unlock/pin_keyboard.d.ts",
-    "cr_components/chromeos/quick_unlock/setup_pin_keyboard.d.ts",
     "cr_elements/cr_container_shadow_behavior.d.ts",
     "js/list_property_update_behavior.d.ts",
     "js/cr/ui/focus_row_behavior.d.ts",
@@ -262,8 +260,6 @@ if (include_polymer && is_chromeos_ash) {
     "cr_components/chromeos/bluetooth/bluetooth_types.js",
     "cr_components/chromeos/bluetooth/bluetooth_utils.js",
     "cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
-    "cr_components/chromeos/quick_unlock/lock_screen_constants.js",
-    "cr_components/chromeos/quick_unlock/pin_keyboard_icon.js",
   ]
 }
 

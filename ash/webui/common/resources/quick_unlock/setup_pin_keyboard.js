@@ -13,11 +13,12 @@
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './pin_keyboard.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockScreenProgress} from './lock_screen_constants.js';
+import {getTemplate} from './setup_pin_keyboard.html.js';
 
 /**
  * Keep in sync with the string keys provided by settings.
@@ -38,7 +39,7 @@ export const ProblemType = {
 };
 
 Polymer({
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
   is: 'setup-pin-keyboard',
 
   behaviors: [I18nBehavior],

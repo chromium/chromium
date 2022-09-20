@@ -14,7 +14,7 @@ namespace smb_client {
 // These values are written to logs. New enum values may be added, but existing
 // enums must never be renumbered or values reused. Must be kept in sync
 // with the SmbMountResult enum in
-// ui/webui/resources/ash/common/smb_shares/smb_browser_proxy.js
+// ash/webui/common/resources/smb_shares/smb_browser_proxy.js
 // and the NativeSmbFileShare_MountResult enum in enums.xml.
 enum class SmbMountResult {
   kSuccess = 0,                 // Mount succeeded.
