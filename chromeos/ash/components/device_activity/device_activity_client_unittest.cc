@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
+#include "chromeos/ash/components/device_activity/first_active_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "chromeos/ash/components/device_activity/monthly_use_case_impl.h"
@@ -189,6 +190,21 @@ class FakeMonthlyUseCaseImpl : public MonthlyUseCaseImpl {
   ~FakeMonthlyUseCaseImpl() override = default;
 };
 
+class FakeFirstActiveUseCaseImpl : public FirstActiveUseCaseImpl {
+ public:
+  FakeFirstActiveUseCaseImpl(
+      const std::string& psm_device_active_secret,
+      const ChromeDeviceMetadataParameters& chrome_passed_device_params,
+      PrefService* local_state)
+      : FirstActiveUseCaseImpl(psm_device_active_secret,
+                               chrome_passed_device_params,
+                               local_state) {}
+  FakeFirstActiveUseCaseImpl(const FakeFirstActiveUseCaseImpl&) = delete;
+  FakeFirstActiveUseCaseImpl& operator=(const FakeFirstActiveUseCaseImpl&) =
+      delete;
+  ~FakeFirstActiveUseCaseImpl() override = default;
+};
+
 // TODO(crbug/1317652): Refactor checking if current use case local pref is
 // unset. We may also want to abstract the psm network responses for the unit
 // tests.
@@ -275,10 +291,11 @@ class DeviceActivityClientTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDeviceActiveClientMonthlyCheckIn,
-                              features::kDeviceActiveClientDailyCheckMembership,
-                              features::
-                                  kDeviceActiveClientMonthlyCheckMembership},
+        /*enabled_features=*/
+        {features::kDeviceActiveClientMonthlyCheckIn,
+         features::kDeviceActiveClientDailyCheckMembership,
+         features::kDeviceActiveClientMonthlyCheckMembership,
+         features::kDeviceActiveClientFirstActiveCheckMembership},
         /*disabled_features*/ {});
 
     // Initialize pointer to our fake |PsmTestData| object.
@@ -308,6 +325,8 @@ class DeviceActivityClientTest : public testing::Test {
     use_cases.push_back(std::make_unique<FakeDailyUseCaseImpl>(
         kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
     use_cases.push_back(std::make_unique<FakeMonthlyUseCaseImpl>(
+        kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
+    use_cases.push_back(std::make_unique<FakeFirstActiveUseCaseImpl>(
         kFakePsmDeviceActiveSecret, kFakeChromeParameters, &local_state_));
 
     device_activity_client_ = std::make_unique<DeviceActivityClient>(
@@ -340,6 +359,8 @@ class DeviceActivityClientTest : public testing::Test {
         prefs::kDeviceActiveLastKnownDailyPingTimestamp);
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnownMonthlyPingTimestamp);
+    local_state_.RemoveUserPref(
+        prefs::kDeviceActiveLastKnownFirstActivePingTimestamp);
   }
 
   void SimulateOprfResponse(const std::string& serialized_response_body,
@@ -704,6 +725,15 @@ TEST_F(DeviceActivityClientTest, CheckInOnLocalStateSetAndPingRequired) {
                  << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
 
     EXPECT_TRUE(use_case->IsLastKnownPingTimestampSet());
+
+    // First active use case only updates the last ping timestamp once. Since
+    // the timestamp is already set, the client does not attempt to report first
+    // active use case again.
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
+      continue;
+    }
+
     EXPECT_EQ(device_activity_client_->GetState(),
               DeviceActivityClient::State::kCheckingIn);
 
@@ -771,7 +801,7 @@ TEST_F(DeviceActivityClientTest, TransitionClientToIdleOnInvalidQueryResponse) {
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest, DailyCheckInFailsButMonthlyCheckInSucceeds) {
+TEST_F(DeviceActivityClientTest, DailyCheckInFailsButRemainingUseCasesSucceed) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
@@ -803,7 +833,9 @@ TEST_F(DeviceActivityClientTest, DailyCheckInFailsButMonthlyCheckInSucceeds) {
       // Failed to update the local state since the OPRF response was invalid.
       EXPECT_FALSE(use_case->IsLastKnownPingTimestampSet());
     } else if (use_case->GetPsmUseCase() ==
-               psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY) {
+                   psm_rlwe::RlweUseCase::CROS_FRESNEL_MONTHLY ||
+               use_case->GetPsmUseCase() ==
+                   psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
       // Monthly use case will return valid psm network request responses.
       SimulateOprfResponse(GetFresnelOprfResponse(nonmember_test_case),
                            net::HTTP_OK);
@@ -817,7 +849,7 @@ TEST_F(DeviceActivityClientTest, DailyCheckInFailsButMonthlyCheckInSucceeds) {
       // current mocked time for this test.
       EXPECT_EQ(use_case->GetLastKnownPingTimestamp(), base::Time::Now());
     } else {
-      // Currently we only support daily, and monthly use cases.
+      // Currently we only support daily, monthly, and first active use cases.
       NOTREACHED() << "Invalid Use Case.";
     }
   }
@@ -827,7 +859,8 @@ TEST_F(DeviceActivityClientTest, DailyCheckInFailsButMonthlyCheckInSucceeds) {
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest, MonthlyCheckInFailsButDailyCheckInSucceeds) {
+TEST_F(DeviceActivityClientTest,
+       MonthlyCheckInFailsButRemainingUseCasesSucceeds) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
@@ -849,7 +882,9 @@ TEST_F(DeviceActivityClientTest, MonthlyCheckInFailsButDailyCheckInSucceeds) {
               DeviceActivityClient::State::kCheckingMembershipOprf);
 
     if (use_case->GetPsmUseCase() ==
-        psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY) {
+            psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY ||
+        use_case->GetPsmUseCase() ==
+            psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE) {
       // Daily use case will return valid psm network request responses.
       SimulateOprfResponse(GetFresnelOprfResponse(nonmember_test_case),
                            net::HTTP_OK);
@@ -873,7 +908,7 @@ TEST_F(DeviceActivityClientTest, MonthlyCheckInFailsButDailyCheckInSucceeds) {
       // Failed to update the local state since the OPRF response was invalid.
       EXPECT_FALSE(use_case->IsLastKnownPingTimestampSet());
     } else {
-      // Currently we only support daily, and monthly use cases.
+      // Currently we only support daily, monthly, and first active use cases.
       NOTREACHED() << "Invalid Use Case.";
     }
   }
@@ -1040,7 +1075,7 @@ TEST_F(DeviceActivityClientTest,
       "Ash.DeviceActivity.MethodCalled",
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityClientOnCheckInDone,
-      2);
+      device_activity_client_->GetUseCases().size());
 
   // Verify the last known ping timestamp is set for each use case.
   for (auto* use_case : device_activity_client_->GetUseCases()) {

@@ -412,7 +412,7 @@ void DeviceActivityClient::TransitionOutOfIdle(
   // Begin phase one of checking membership if the device has not pinged yet
   // within the given use case window.
   // TODO(https://crbug.com/1262187): Remove hardcoded use case when adding
-  // support for additional use cases (i.e MONTHLY, ALL_TIME, etc.).
+  // support for additional use cases (i.e MONTHLY, FIRST_ACTIVE, etc.).
   if (current_use_case->IsDevicePingRequired(
           last_transition_out_of_idle_time_)) {
     current_use_case->SetWindowIdentifier(
@@ -473,6 +473,17 @@ void DeviceActivityClient::TransitionOutOfIdle(
           return;
         }
 
+        break;
+      case psm_rlwe::RlweUseCase::CROS_FRESNEL_FIRST_ACTIVE:
+        // Check membership continues when the cached local state pref
+        // is not set. The local state pref may not be set if the device is
+        // new, powerwashed, recovered, RMA, or the local state was corrupted.
+        if (base::FeatureList::IsEnabled(
+                features::kDeviceActiveClientFirstActiveCheckMembership) &&
+            !current_use_case->IsLastKnownPingTimestampSet()) {
+          TransitionToCheckMembershipOprf(current_use_case);
+          return;
+        }
         break;
       default:
         VLOG(1) << "Use case is not supported yet. "

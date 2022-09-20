@@ -49,6 +49,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   virtual ~DeviceActiveUseCase();
 
   // Generate the window identifier for the use case.
+  // Granularity of formatted date will be based on the use case.
+  //
+  // Method is called to generate |window_id_| every time the machine
+  // transitions out of the idle state. When reporting the use case is
+  // completed for a use case, the |window_id_| is reset to absl::nullopt.
   virtual std::string GenerateUTCWindowIdentifier(base::Time ts) const = 0;
 
   // Generate Fresnel PSM import request body.

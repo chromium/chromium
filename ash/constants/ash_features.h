@@ -218,6 +218,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDeviceActiveClient;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDeviceActiveClientDailyCheckMembership;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kDeviceActiveClientFirstActiveCheckMembership;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDeviceActiveClientMonthlyCheckIn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDeviceActiveClientMonthlyCheckMembership;
