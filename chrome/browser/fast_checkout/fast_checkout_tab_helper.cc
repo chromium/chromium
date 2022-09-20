@@ -22,7 +22,8 @@ FastCheckoutTabHelper::~FastCheckoutTabHelper() = default;
 
 void FastCheckoutTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle)
+  // We only care about top-level navigations.
+  if (!navigation_handle || !navigation_handle->IsInPrimaryMainFrame())
     return;
 
   // Shopping sites should be http or https - save heuristics if this URL
