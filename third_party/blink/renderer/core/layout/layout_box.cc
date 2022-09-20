@@ -860,6 +860,10 @@ void LayoutBox::UpdateFromStyle() {
 }
 
 void LayoutBox::LayoutSubtreeRoot() {
+  // https://linear.app/replay/issue/RUN-546
+  recordreplay::Assert("LayoutBox::LayoutSubtreeRoot Start %d",
+                       recordreplay::PointerId(this));
+
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
       !NGBlockNode::CanUseNewLayout(*this) && GetCachedLayoutResult()) {
