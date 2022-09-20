@@ -323,8 +323,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
 }
 
+// TODO(crbug.com/1365631): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
-                       UserAborted_CancelButton) {
+                       DISABLED_UserAborted_CancelButton) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
   InstallPaymentApp("a.com", "payment_request_success_responder.js",
@@ -382,8 +383,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
 }
 
+// TODO(crbug.com/1365631): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
-                       UserAborted_TabClosed) {
+                       DISABLED_UserAborted_TabClosed) {
   // Installs two apps so that the Payment Request UI will be shown.
   std::string a_method_name;
   InstallPaymentApp("a.com", "payment_request_success_responder.js",
