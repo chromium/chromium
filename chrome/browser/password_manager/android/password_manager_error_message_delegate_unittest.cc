@@ -6,14 +6,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/password_manager/android/mock_password_manager_sign_in_helper_bridge.h"
+#include "chrome/browser/password_manager/android/mock_password_manager_error_message_helper_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using testing::_;
+using testing::Return;
 
 namespace {
 constexpr char kErrorMessageDismissalReasonHistogramName[] =
@@ -33,25 +33,32 @@ class PasswordManagerErrorMessageDelegateTest
 
   void DismissMessageAndExpectDismissed(messages::DismissReason dismiss_reason);
 
-  raw_ptr<MockPasswordManagerSignInHelperBridge> signin_helper_bridge() {
-    return sign_in_helper_bridge_;
+  MockPasswordManagerErrorMessageHelperBridge* helper_bridge() {
+    return helper_bridge_;
   }
+
+  PasswordManagerErrorMessageDelegate* delegate() { return delegate_.get(); }
+
+  const messages::MockMessageDispatcherBridge& message_dispatcher_bridge() {
+    return message_dispatcher_bridge_;
+  }
+
   messages::MessageWrapper* GetMessageWrapper();
 
  private:
   std::unique_ptr<PasswordManagerErrorMessageDelegate> delegate_;
-  // The `sign_in_helper_bridge_` is owned by the `delegate_`.
-  raw_ptr<MockPasswordManagerSignInHelperBridge> sign_in_helper_bridge_;
+  // The `helper_bridge_` is owned by the `delegate_`.
+  raw_ptr<MockPasswordManagerErrorMessageHelperBridge> helper_bridge_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
 };
 
 PasswordManagerErrorMessageDelegateTest::
     PasswordManagerErrorMessageDelegateTest() {
-  auto mock_sign_in_bridge =
-      std::make_unique<MockPasswordManagerSignInHelperBridge>();
-  sign_in_helper_bridge_ = mock_sign_in_bridge.get();
+  auto mock_helper_bridge =
+      std::make_unique<MockPasswordManagerErrorMessageHelperBridge>();
+  helper_bridge_ = mock_helper_bridge.get();
   delegate_ = std::make_unique<PasswordManagerErrorMessageDelegate>(
-      std::move(mock_sign_in_bridge));
+      std::move(mock_helper_bridge));
 }
 
 void PasswordManagerErrorMessageDelegateTest::SetUp() {
@@ -67,8 +74,9 @@ void PasswordManagerErrorMessageDelegateTest::TearDown() {
 
 void PasswordManagerErrorMessageDelegateTest::DisplayMessageAndExpectEnqueued(
     bool save_password) {
+  EXPECT_CALL(*helper_bridge_, ShouldShowErrorUI()).WillOnce(Return(true));
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-  delegate_->DisplayPasswordManagerErrorMessage(web_contents(), save_password);
+  delegate_->MaybeDisplayErrorMessage(web_contents(), save_password);
 }
 
 void PasswordManagerErrorMessageDelegateTest::DismissMessageAndExpectDismissed(
@@ -128,8 +136,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
   DisplayMessageAndExpectEnqueued(/*save_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*signin_helper_bridge(),
-              startUpdateAccountCredentialsFlow(_, web_contents()));
+  EXPECT_CALL(*helper_bridge(),
+              StartUpdateAccountCredentialsFlow(web_contents()));
   // Trigger the click action on the "Sign in" button and dismiss the message.
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
@@ -151,4 +159,16 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {
 
   histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
                                       messages::DismissReason::TIMER, 1);
+}
+
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       NotDisplayedWhenCondiditonNotMet) {
+  EXPECT_CALL(*helper_bridge(), ShouldShowErrorUI()).WillOnce(Return(false));
+  EXPECT_CALL(message_dispatcher_bridge(), EnqueueMessage).Times(0);
+  delegate()->MaybeDisplayErrorMessage(web_contents(), /*save_password=*/true);
+}
+
+TEST_F(PasswordManagerErrorMessageDelegateTest, DisplayeSavesTimestamp) {
+  EXPECT_CALL(*helper_bridge(), SaveErrorUIShownTimestamp());
+  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
 }
