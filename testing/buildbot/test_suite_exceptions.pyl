@@ -2563,6 +2563,13 @@
       },
     },
   },
+  'lacros_all_tast_tests jacuzzi': {
+    'modifications': {
+      'lacros-arm-generic-chrome': {
+        'experiment_percentage': 100,
+      },
+    },
+  },
   'maps_pixel_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {

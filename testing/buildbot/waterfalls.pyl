@@ -223,6 +223,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
+          'gtest_tests': 'lacros_device_arm_tests',
           'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
