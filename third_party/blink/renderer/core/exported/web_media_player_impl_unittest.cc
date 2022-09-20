@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -2198,21 +2199,16 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
         auto* player_dump = it->second.get();
         const auto& entries = player_dump->entries();
 
-        auto instance_counter_it =
-            std::find_if(entries.begin(), entries.end(), [](const auto& e) {
-              auto* name =
-                  base::trace_event::MemoryAllocatorDump::kNameObjectCount;
-              return e.name == name && e.value_uint64 == 1;
-            });
-        ASSERT_NE(entries.end(), instance_counter_it);
+        ASSERT_TRUE(base::ranges::any_of(entries, [](const auto& e) {
+          auto* name = base::trace_event::MemoryAllocatorDump::kNameObjectCount;
+          return e.name == name && e.value_uint64 == 1;
+        }));
 
         if (args.level_of_detail ==
             base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
-          auto player_state_it =
-              std::find_if(entries.begin(), entries.end(), [](const auto& e) {
-                return e.name == "player_state" && !e.value_string.empty();
-              });
-          ASSERT_NE(entries.end(), player_state_it);
+          ASSERT_TRUE(base::ranges::any_of(entries, [](const auto& e) {
+            return e.name == "player_state" && !e.value_string.empty();
+          }));
         }
         dump_count++;
       });

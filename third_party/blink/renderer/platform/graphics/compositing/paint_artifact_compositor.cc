@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "cc/base/features.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/paint/display_item_list.h"
@@ -574,11 +575,10 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
     bool needs_layer,
     CompositorElementId& mask_isolation_id,
     CompositorElementId& mask_effect_id) {
-  auto* entry =
-      std::find_if(synthesized_clip_cache_.begin(),
-                   synthesized_clip_cache_.end(), [&clip](const auto& entry) {
-                     return entry.key == &clip && !entry.in_use;
-                   });
+  auto* entry = base::ranges::find_if(
+      synthesized_clip_cache_, [&clip](const auto& entry) {
+        return entry.key == &clip && !entry.in_use;
+      });
   if (entry == synthesized_clip_cache_.end()) {
     synthesized_clip_cache_.push_back(SynthesizedClipEntry{
         &clip, std::make_unique<SynthesizedClip>(), false});

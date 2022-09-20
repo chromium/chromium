@@ -758,10 +758,8 @@ void EditContext::AttachElement(Element* element_to_attach) {
 }
 
 void EditContext::DetachElement(Element* element_to_detach) {
-  auto* it = std::find_if(attached_elements_.begin(), attached_elements_.end(),
-                          [element_to_detach](const auto& element) {
-                            return element.Get() == element_to_detach;
-                          });
+  auto* it = base::ranges::find(attached_elements_, element_to_detach,
+                                &Member<Element>::Get);
 
   if (it != attached_elements_.end())
     attached_elements_.erase(it);

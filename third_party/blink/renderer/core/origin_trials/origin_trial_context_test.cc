@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -274,9 +275,8 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   EXPECT_TRUE(validation_params[0].origin.is_secure);
 
   EXPECT_EQ(2ul, validation_params[0].third_party_origin_info.size());
-  TrialTokenValidator::OriginInfo* unrelated_info = std::find_if(
-      validation_params[0].third_party_origin_info.begin(),
-      validation_params[0].third_party_origin_info.end(),
+  TrialTokenValidator::OriginInfo* unrelated_info = base::ranges::find_if(
+      validation_params[0].third_party_origin_info,
       [](const TrialTokenValidator::OriginInfo& item) {
         return item.origin.IsSameOriginWith(GURL(kUnrelatedSecureOrigin));
       });
@@ -284,12 +284,11 @@ TEST_F(OriginTrialContextTest, ValidatorGetsCorrectSecurityInfoThirdParty) {
   EXPECT_TRUE(unrelated_info->is_secure);
 
   TrialTokenValidator::OriginInfo* insecure_origin_info =
-      std::find_if(validation_params[0].third_party_origin_info.begin(),
-                   validation_params[0].third_party_origin_info.end(),
-                   [](const TrialTokenValidator::OriginInfo& item) {
-                     return item.origin.IsSameOriginWith(
-                         GURL(kFrobulateEnabledOriginInsecure));
-                   });
+      base::ranges::find_if(validation_params[0].third_party_origin_info,
+                            [](const TrialTokenValidator::OriginInfo& item) {
+                              return item.origin.IsSameOriginWith(
+                                  GURL(kFrobulateEnabledOriginInsecure));
+                            });
   ASSERT_NE(validation_params[0].third_party_origin_info.end(),
             insecure_origin_info);
   EXPECT_FALSE(insecure_origin_info->is_secure);

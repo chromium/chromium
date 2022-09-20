@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -562,8 +561,7 @@ void UserMediaProcessor::RequestInfo::OnTrackStarted(
     MediaStreamRequestResult result,
     const blink::WebString& result_name) {
   SendLogMessage(GetOnTrackStartedLogString(source, result));
-  auto** it = std::find(sources_waiting_for_callback_.begin(),
-                        sources_waiting_for_callback_.end(), source);
+  auto** it = base::ranges::find(sources_waiting_for_callback_, source);
   DCHECK(it != sources_waiting_for_callback_.end());
   sources_waiting_for_callback_.erase(it);
   // All tracks must be started successfully. Otherwise the request is a
@@ -699,17 +697,15 @@ void UserMediaProcessor::SelectAudioDeviceSettings(
     // such source will contain the same non-reconfigurable settings that limit
     // the associated capabilities.
     blink::MediaStreamAudioSource* audio_source = nullptr;
-    auto* it = std::find_if(local_sources_.begin(), local_sources_.end(),
-                            [&device](MediaStreamSource* source) {
-                              DCHECK(source);
-                              MediaStreamAudioSource* platform_source =
-                                  MediaStreamAudioSource::From(source);
-                              ProcessedLocalAudioSource* processed_source =
-                                  ProcessedLocalAudioSource::From(
-                                      platform_source);
-                              return processed_source &&
-                                     source->Id() == device->device_id;
-                            });
+    auto* it = base::ranges::find_if(
+        local_sources_, [&device](MediaStreamSource* source) {
+          DCHECK(source);
+          MediaStreamAudioSource* platform_source =
+              MediaStreamAudioSource::From(source);
+          ProcessedLocalAudioSource* processed_source =
+              ProcessedLocalAudioSource::From(platform_source);
+          return processed_source && source->Id() == device->device_id;
+        });
     if (it != local_sources_.end()) {
       WebPlatformMediaStreamSource* const source = (*it)->GetPlatformSource();
       if (source->device().type == MediaStreamType::DEVICE_AUDIO_CAPTURE)

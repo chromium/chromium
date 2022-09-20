@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -1141,10 +1142,8 @@ class FeaturePolicyMutationTest : public testing::Test {
   bool IsFeatureAllowedEverywhere(
       mojom::blink::PermissionsPolicyFeature feature,
       const ParsedPermissionsPolicy& policy) {
-    const auto& result = std::find_if(policy.begin(), policy.end(),
-                                      [feature](const auto& declaration) {
-                                        return declaration.feature == feature;
-                                      });
+    const auto& result = base::ranges::find(
+        policy, feature, &ParsedPermissionsPolicyDeclaration::feature);
     if (result == policy.end())
       return false;
 
@@ -1157,10 +1156,8 @@ class FeaturePolicyMutationTest : public testing::Test {
   bool IsFeatureDisallowedEverywhere(
       mojom::blink::PermissionsPolicyFeature feature,
       const ParsedPermissionsPolicy& policy) {
-    const auto& result = std::find_if(policy.begin(), policy.end(),
-                                      [feature](const auto& declaration) {
-                                        return declaration.feature == feature;
-                                      });
+    const auto& result = base::ranges::find(
+        policy, feature, &ParsedPermissionsPolicyDeclaration::feature);
     if (result == policy.end())
       return false;
 

@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -29,9 +29,12 @@ class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data>,
   using PendingTask = FakeTaskRunner::PendingTask;
   Deque<PendingTask>::iterator FindRunnableTask() {
     // TODO(tkent): This should return an item which has the minimum |second|.
-    return std::find_if(
-        task_queue_.begin(), task_queue_.end(),
-        [&](const PendingTask& item) { return item.second <= time_; });
+    // TODO(pkasting): If this is ordered by increasing time, the call below can
+    // be changed to `lower_bound()`, which achieves tkent's TODO above and is
+    // more efficient to boot.
+    return base::ranges::find_if(task_queue_, [&](const PendingTask& item) {
+      return item.second <= time_;
+    });
   }
 
   // base::TickClock:

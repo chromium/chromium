@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,6 +11,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_description.h"
@@ -253,10 +253,8 @@ void AudioRendererSinkCache::DeleteSink(
     base::AutoLock auto_lock(cache_lock_);
 
     // Looking up the sink by its pointer.
-    auto cache_iter = std::find_if(cache_.begin(), cache_.end(),
-                                   [sink_ptr](const CacheEntry& val) {
-                                     return val.sink.get() == sink_ptr;
-                                   });
+    auto cache_iter = base::ranges::find(
+        cache_, sink_ptr, [](const CacheEntry& val) { return val.sink.get(); });
 
     if (cache_iter == cache_.end())
       return;
@@ -289,8 +287,8 @@ AudioRendererSinkCache::FindCacheEntry_Locked(
     const LocalFrameToken& source_frame_token,
     const std::string& device_id,
     bool unused_only) {
-  return std::find_if(
-      cache_.begin(), cache_.end(),
+  return base::ranges::find_if(
+      cache_,
       [source_frame_token, &device_id, unused_only](const CacheEntry& val) {
         if (val.used && unused_only)
           return false;

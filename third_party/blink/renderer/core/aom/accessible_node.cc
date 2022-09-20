@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/aom/accessible_node_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1028,10 +1029,8 @@ void AccessibleNode::removeChild(AccessibleNode* old_child,
         "Node to remove is not a child of this node.");
     return;
   }
-  auto* ix = std::find_if(children_.begin(), children_.end(),
-                          [old_child](const Member<AccessibleNode> child) {
-                            return child.Get() == old_child;
-                          });
+  auto* ix =
+      base::ranges::find(children_, old_child, &Member<AccessibleNode>::Get);
   if (ix == children_.end()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 
+#include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -414,8 +416,8 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
       return 0;
     }
     const NGTextOffset offset = TextOffset();
-    auto* const item = std::find_if(
-        items->begin(), items->end(), [offset](const NGInlineItem& item) {
+    auto* const item =
+        base::ranges::find_if(*items, [offset](const NGInlineItem& item) {
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
@@ -429,11 +431,8 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
         *GetLayoutObject()->FragmentItemsContainer();
     const auto& items =
         block_flow.GetNGInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
-    const LayoutObject* const layout_object = GetLayoutObject();
-    const auto* const item = std::find_if(
-        items.begin(), items.end(), [layout_object](const NGInlineItem& item) {
-          return item.GetLayoutObject() == layout_object;
-        });
+    const auto* const item = base::ranges::find(items, GetLayoutObject(),
+                                                &NGInlineItem::GetLayoutObject);
     DCHECK(item != items.end()) << this;
     return item->BidiLevel();
   }
@@ -1013,9 +1012,8 @@ void NGInlineCursor::MoveToFirstChild() {
 
 void NGInlineCursor::MoveToFirstLine() {
   if (HasRoot()) {
-    auto iter = std::find_if(
-        items_.begin(), items_.end(),
-        [](const auto& item) { return item.Type() == NGFragmentItem::kLine; });
+    auto iter = base::ranges::find(items_, NGFragmentItem::kLine,
+                                   &NGFragmentItem::Type);
     if (iter != items_.end()) {
       MoveToItem(iter);
       return;
@@ -1088,9 +1086,8 @@ void NGInlineCursor::MoveToLastChild() {
 
 void NGInlineCursor::MoveToLastLine() {
   DCHECK(HasRoot());
-  auto iter = std::find_if(
-      items_.rbegin(), items_.rend(),
-      [](const auto& item) { return item.Type() == NGFragmentItem::kLine; });
+  auto iter = base::ranges::find(base::Reversed(items_), NGFragmentItem::kLine,
+                                 &NGFragmentItem::Type);
   if (iter != items_.rend())
     MoveToItem(std::next(iter).base());
   else

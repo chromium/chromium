@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/modules/mediastream/webmediaplayer_ms_compositor.h"
 
 #include <stdint.h>
+
 #include <string>
 #include <utility>
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -647,11 +649,8 @@ bool WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks(
          io_task_runner_->BelongsToCurrentThread());
 #endif
   for (const base::TimeDelta& timestamp : timestamps) {
-    auto* it =
-        std::find_if(pending_frames_info_.begin(), pending_frames_info_.end(),
-                     [&timestamp](PendingFrameInfo& info) {
-                       return info.timestamp == timestamp;
-                     });
+    auto* it = base::ranges::find(pending_frames_info_, timestamp,
+                                  &PendingFrameInfo::timestamp);
     DCHECK(it != pending_frames_info_.end());
     wall_clock_times->push_back(it->reference_time);
   }

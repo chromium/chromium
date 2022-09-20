@@ -6,8 +6,10 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -39,8 +41,7 @@ inline bool IsHanScript(UScriptCode script) {
 
 inline UScriptCode FirstHanScript(
     const ScriptRunIterator::UScriptCodeList& list) {
-  const auto* const result =
-      std::find_if(list.begin(), list.end(), IsHanScript);
+  const auto* const result = base::ranges::find_if(list, IsHanScript);
   if (result != list.end())
     return *result;
   return USCRIPT_INVALID_CODE;
@@ -376,16 +377,15 @@ bool ScriptRunIterator::MergeSets() {
 
   // Neither is common or inherited. If current is a singleton,
   // just see if it exists in the next set. This is the common case.
-  auto* next_it = next_set_->begin();
-  auto* next_end = next_set_->end();
+  bool have_priority = base::Contains(*next_set_, priority_script);
   if (current_set_it == current_end) {
-    return std::find(next_it, next_end, priority_script) != next_end;
+    return have_priority;
   }
 
   // Establish the priority script, if we have one.
   // First try current priority script.
-  bool have_priority =
-      std::find(next_it, next_end, priority_script) != next_end;
+  auto* next_it = next_set_->begin();
+  auto* next_end = next_set_->end();
   if (!have_priority) {
     // So try next priority script.
     // Skip the first current script, we already know it's not there.

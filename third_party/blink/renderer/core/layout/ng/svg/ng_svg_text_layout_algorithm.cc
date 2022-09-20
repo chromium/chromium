@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/resolved_text_layout_attributes_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
@@ -463,10 +466,9 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
 
     const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
     const auto* text_path_iter =
-        std::find_if(text_path_ranges.begin(), text_path_ranges.end(),
-                     [i](const auto& range) {
-                       return range.start_index <= i && i <= range.end_index;
-                     });
+        base::ranges::find_if(text_path_ranges, [i](const auto& range) {
+          return range.start_index <= i && i <= range.end_index;
+        });
     if (text_path_iter != text_path_ranges.end()) {
       // Anchoring should be scoped within the <textPath>.
       // Non-anchored text following <textPath> will be handled in
@@ -800,10 +802,8 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
         PhysicalRect(gfx::ToEnclosingRect(unscaled_visual_rect)));
   }
   // |items| should not have kLine items other than the first one.
-  DCHECK_EQ(std::find_if(items.begin() + 1, items.end(),
-                         [](const auto& item) {
-                           return item->Type() == NGFragmentItem::kLine;
-                         }),
+  DCHECK_EQ(base::ranges::find(items.begin() + 1, items.end(),
+                               NGFragmentItem::kLine, &NGFragmentItem::Type),
             items.end());
 }
 
@@ -820,11 +820,8 @@ bool NGSvgTextLayoutAlgorithm::IsFirstCharacterInTextPath(
   // This implementation is O(N) where N is the number of <textPath>s in
   // a <text>. If this function is a performance bottleneck, we should add
   // |first_in_text_path| flag to NGSvgCharacterData.
-  const auto& text_path_ranges = inline_node_.SvgTextPathRangeList();
-  return std::find_if(text_path_ranges.begin(), text_path_ranges.end(),
-                      [index](const auto& range) {
-                        return range.start_index == index;
-                      }) != text_path_ranges.end();
+  return base::Contains(inline_node_.SvgTextPathRangeList(), index,
+                        &SvgTextContentRange::start_index);
 }
 
 }  // namespace blink

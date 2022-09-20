@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
@@ -171,14 +172,15 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
       const String& suggestion = marker_suggestions[suggestion_index];
       if (suggestion_infos.size() == max_number_of_suggestions)
         break;
-      if (std::find_if(suggestion_infos.begin(), suggestion_infos.end(),
-                       [marker, &suggestion](const TextSuggestionInfo& info) {
-                         return info.span_start ==
-                                    (int32_t)marker->StartOffset() &&
-                                info.span_end == (int32_t)marker->EndOffset() &&
-                                info.suggestion == suggestion;
-                       }) != suggestion_infos.end())
+      if (base::ranges::any_of(
+              suggestion_infos,
+              [marker, &suggestion](const TextSuggestionInfo& info) {
+                return info.span_start == (int32_t)marker->StartOffset() &&
+                       info.span_end == (int32_t)marker->EndOffset() &&
+                       info.suggestion == suggestion;
+              })) {
         continue;
+      }
 
       TextSuggestionInfo suggestion_info;
       suggestion_info.marker_tag = marker->Tag();

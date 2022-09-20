@@ -33,6 +33,7 @@
 
 #include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -3658,9 +3659,9 @@ bool AXObject::IsSubWidget() const {
 
       // Otherwise it's only a subwidget if it's in a grid or treegrid,
       // not in a table.
-      AncestorsIterator ancestor = std::find_if(
+      AncestorsIterator ancestor = base::ranges::find_if(
           UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-          [](const AXObject& ancestor) { return ancestor.IsTableLikeRole(); });
+          &AXObject::IsTableLikeRole);
       return ancestor.current_ &&
              (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
               ancestor.current_->RoleValue() ==
@@ -3678,9 +3679,9 @@ bool AXObject::IsSubWidget() const {
 
 bool AXObject::SupportsARIASetSizeAndPosInSet() const {
   if (RoleValue() == ax::mojom::blink::Role::kRow) {
-    AncestorsIterator ancestor = std::find_if(
+    AncestorsIterator ancestor = base::ranges::find_if(
         UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-        [](const AXObject& ancestor) { return ancestor.IsTableLikeRole(); });
+        &AXObject::IsTableLikeRole);
     return ancestor.current_ &&
            ancestor.current_->RoleValue() == ax::mojom::blink::Role::kTreeGrid;
   }
@@ -6581,9 +6582,9 @@ bool AXObject::SupportsARIAReadOnly() const {
 
   if (ui::IsCellOrTableHeader(RoleValue())) {
     // For cells and row/column headers, readonly is supported within a grid.
-    AncestorsIterator ancestor = std::find_if(
+    AncestorsIterator ancestor = base::ranges::find_if(
         UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
-        [](const AXObject& ancestor) { return ancestor.IsTableLikeRole(); });
+        &AXObject::IsTableLikeRole);
     return ancestor.current_ &&
            (ancestor.current_->RoleValue() == ax::mojom::blink::Role::kGrid ||
             ancestor.current_->RoleValue() ==

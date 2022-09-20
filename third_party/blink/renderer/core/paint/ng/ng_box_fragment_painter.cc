@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -2020,9 +2021,7 @@ bool NGBoxFragmentPainter::UpdateHitTestResultForView(
   if (!element)
     return false;
   const auto children = PhysicalFragment().Children();
-  auto it = std::find_if(
-      children.begin(), children.end(),
-      [element](const NGLink& link) { return link->GetNode() == element; });
+  auto it = base::ranges::find(children, element, &NGPhysicalFragment::GetNode);
   if (it == children.end())
     return false;
   return hit_test.AddNodeToResultWithContentOffset(

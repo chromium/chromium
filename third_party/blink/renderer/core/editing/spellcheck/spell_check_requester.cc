@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
@@ -257,12 +258,9 @@ void SpellCheckRequester::EnqueueRequest(SpellCheckRequest* request) {
   // Spellcheck requests for chunks of text in the same element should not
   // overwrite each other.
   if (!continuation) {
-    RequestQueue::const_iterator same_element_request = std::find_if(
-        request_queue_.begin(), request_queue_.end(),
-        [request](const SpellCheckRequest* queued_request) -> bool {
-          return request->RootEditableElement() ==
-                 queued_request->RootEditableElement();
-        });
+    RequestQueue::const_iterator same_element_request =
+        base::ranges::find(request_queue_, request->RootEditableElement(),
+                           &SpellCheckRequest::RootEditableElement);
     if (same_element_request != request_queue_.end())
       request_queue_.erase(same_element_request);
   }

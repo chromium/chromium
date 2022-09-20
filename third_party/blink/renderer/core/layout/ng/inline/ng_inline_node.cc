@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -774,8 +774,8 @@ class NGInlineNodeDataEditor final {
   static unsigned ConvertDOMOffsetToTextContent(
       base::span<const NGOffsetMappingUnit> units,
       unsigned offset) {
-    auto it = std::find_if(
-        units.begin(), units.end(), [offset](const NGOffsetMappingUnit& unit) {
+    auto it =
+        base::ranges::find_if(units, [offset](const NGOffsetMappingUnit& unit) {
           return unit.DOMStart() <= offset && offset <= unit.DOMEnd();
         });
     DCHECK(it != units.end());

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/unsorted_document_marker_list_editor.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker_list_impl.h"
 
 namespace blink {
@@ -93,12 +94,11 @@ DocumentMarker* UnsortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
     unsigned end_offset) {
   DCHECK_LE(start_offset, end_offset);
 
-  auto* const it =
-      std::find_if(list.begin(), list.end(),
-                   [start_offset, end_offset](const DocumentMarker* marker) {
-                     return marker->StartOffset() < end_offset &&
-                            marker->EndOffset() > start_offset;
-                   });
+  auto* const it = base::ranges::find_if(
+      list, [start_offset, end_offset](const DocumentMarker* marker) {
+        return marker->StartOffset() < end_offset &&
+               marker->EndOffset() > start_offset;
+      });
 
   if (it == list.end())
     return nullptr;

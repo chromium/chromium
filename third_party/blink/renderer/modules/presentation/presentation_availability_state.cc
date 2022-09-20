@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 
@@ -213,9 +214,8 @@ PresentationAvailabilityState::GetScreenAvailability(
 PresentationAvailabilityState::AvailabilityListener*
 PresentationAvailabilityState::GetAvailabilityListener(
     const Vector<KURL>& urls) {
-  auto* listener_it = std::find_if(
-      availability_listeners_.begin(), availability_listeners_.end(),
-      [&urls](const auto& listener) { return listener->urls == urls; });
+  auto* listener_it = base::ranges::find(availability_listeners_, urls,
+                                         &AvailabilityListener::urls);
   return listener_it == availability_listeners_.end() ? nullptr : *listener_it;
 }
 
@@ -235,12 +235,8 @@ void PresentationAvailabilityState::TryRemoveAvailabilityListener(
 
 PresentationAvailabilityState::ListeningStatus*
 PresentationAvailabilityState::GetListeningStatus(const KURL& url) const {
-  auto* status_it =
-      std::find_if(availability_listening_status_.begin(),
-                   availability_listening_status_.end(),
-                   [&url](const std::unique_ptr<ListeningStatus>& status) {
-                     return status->url == url;
-                   });
+  auto* status_it = base::ranges::find(availability_listening_status_, url,
+                                       &ListeningStatus::url);
   return status_it == availability_listening_status_.end() ? nullptr
                                                            : status_it->get();
 }

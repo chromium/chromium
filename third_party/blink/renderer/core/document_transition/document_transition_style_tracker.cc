@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -210,12 +211,8 @@ void DocumentTransitionStyleTracker::AddSharedElement(Element* element,
   auto& value = pending_shared_element_tags_
                     .insert(element, HashSet<std::pair<AtomicString, int>>())
                     .stored_value->value;
-  // Find the existing tag if one is there.
-  auto it = std::find_if(
-      value.begin(), value.end(),
-      [&tag](const std::pair<AtomicString, int>& p) { return p.first == tag; });
-  // If it is there, do nothing.
-  if (it != value.end())
+  // Find the existing tag if one is there. If it is there, do nothing.
+  if (base::Contains(value, tag, &std::pair<AtomicString, int>::first))
     return;
   // Otherwise, insert a new sequence id with this tag. We'll use the sequence
   // to sort later.

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -178,21 +179,22 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
     "pcm"
   };
   static const char* const kAudioCodecs[] = {"opus", "pcm"};
-  const char* const* codecs = video ? &kVideoCodecs[0] : &kAudioCodecs[0];
-  const int codecs_count =
-      video ? std::size(kVideoCodecs) : std::size(kAudioCodecs);
 
+  auto* const* relevant_codecs_begin =
+      video ? std::begin(kVideoCodecs) : std::begin(kAudioCodecs);
+  auto* const* relevant_codecs_end =
+      video ? std::end(kVideoCodecs) : std::end(kAudioCodecs);
   std::vector<std::string> codecs_list;
   media::SplitCodecs(web_codecs.Utf8(), &codecs_list);
   media::StripCodecs(&codecs_list);
   for (const auto& codec : codecs_list) {
     String codec_string = String::FromUTF8(codec);
-    auto* const* found = std::find_if(
-        &codecs[0], &codecs[codecs_count], [&codec_string](const char* name) {
-          return EqualIgnoringASCIICase(codec_string, name);
-        });
-    if (found == &codecs[codecs_count])
+    if (std::none_of(relevant_codecs_begin, relevant_codecs_end,
+                     [&codec_string](const char* name) {
+                       return EqualIgnoringASCIICase(codec_string, name);
+                     })) {
       return false;
+    }
   }
   return true;
 }

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 
-#include <algorithm>
 #include <limits>
 #include <string>
 #include <utility>
@@ -15,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_renderer_mixer.h"
@@ -198,10 +198,10 @@ media::AudioRendererMixer* AudioRendererMixerManager::GetMixer(
 
 void AudioRendererMixerManager::ReturnMixer(media::AudioRendererMixer* mixer) {
   base::AutoLock auto_lock(mixers_lock_);
-  auto it = std::find_if(
-      mixers_.begin(), mixers_.end(),
-      [mixer](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
-        return val.second.mixer == mixer;
+  auto it = base::ranges::find(
+      mixers_, mixer,
+      [](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
+        return val.second.mixer;
       });
   DCHECK(it != mixers_.end());
 

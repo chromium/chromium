@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <vector>
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -1443,10 +1443,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     }
   }
   if (!failed_timestamp_match_) {
-    DCHECK(std::find_if(pending_frames_.begin(), pending_frames_.end(),
-                        [timestamp](const PendingFrame& entry) {
-                          return entry.media_timestamp_ == timestamp;
-                        }) == pending_frames_.end());
+    DCHECK(!base::Contains(pending_frames_, timestamp,
+                           &PendingFrame::media_timestamp_));
     pending_frames_.emplace_back(timestamp, next_frame->timestamp(),
                                  next_frame->render_time_ms(),
                                  ActiveSpatialResolutions());
@@ -1504,10 +1502,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
   }
 
   if (!failed_timestamp_match_) {
-    DCHECK(std::find_if(pending_frames_.begin(), pending_frames_.end(),
-                        [&frame](const PendingFrame& entry) {
-                          return entry.media_timestamp_ == frame->timestamp();
-                        }) == pending_frames_.end());
+    DCHECK(!base::Contains(pending_frames_, frame->timestamp(),
+                           &PendingFrame::media_timestamp_));
     pending_frames_.emplace_back(frame->timestamp(), next_frame->timestamp(),
                                  next_frame->render_time_ms(),
                                  ActiveSpatialResolutions());

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 #include <algorithm>
+
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -377,11 +379,8 @@ base::span<const NGOffsetMappingUnit> NGOffsetMapping::GetMappingUnitsForNode(
 base::span<const NGOffsetMappingUnit>
 NGOffsetMapping::GetMappingUnitsForLayoutObject(
     const LayoutObject& layout_object) const {
-  const auto* begin =
-      std::find_if(units_.begin(), units_.end(),
-                   [&layout_object](const NGOffsetMappingUnit& unit) {
-                     return unit.GetLayoutObject() == layout_object;
-                   });
+  const auto* begin = base::ranges::find(units_, layout_object,
+                                         &NGOffsetMappingUnit::GetLayoutObject);
   CHECK_NE(begin, units_.end());
   const auto* end =
       std::find_if(std::next(begin), units_.end(),
