@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/ui/captive_portal_view.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -96,7 +96,11 @@ void CaptivePortalWindowProxy::ShowIfRedirected() {
 void CaptivePortalWindowProxy::Show() {
   if (InternetDetailDialog::IsShown()) {
     // InternetDetailDialog is being shown, don't cover it.
-    Close();
+    // Close window asynchronously to prevent `CaptivePortalView` reset in the
+    // middle of the `NavigationControllerImpl::NotifyNavigationEntryCommitted`
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&CaptivePortalWindowProxy::Close,
+                                  weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -126,7 +130,6 @@ void CaptivePortalWindowProxy::Close() {
   if (GetState() == STATE_DISPLAYED)
     widget_->Close();
   captive_portal_view_.reset();
-  captive_portal_view_for_testing_ = nullptr;
 }
 
 void CaptivePortalWindowProxy::OnRedirected() {
@@ -165,7 +168,6 @@ void CaptivePortalWindowProxy::InitCaptivePortalView() {
          GetState() == STATE_WAITING_FOR_REDIRECTION);
   if (!captive_portal_view_.get()) {
     captive_portal_view_ = std::make_unique<CaptivePortalView>(profile_, this);
-    captive_portal_view_for_testing_ = captive_portal_view_.get();
   }
 
   captive_portal_view_->StartLoad();
