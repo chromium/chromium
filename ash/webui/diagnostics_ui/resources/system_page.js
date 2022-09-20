@@ -8,20 +8,21 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './battery_status_card.js';
 import './cpu_card.js';
-import './diagnostics_shared_css.js';
-import './icons.js';
+import './diagnostics_shared.css.js';
+import './icons.html.js';
 import './memory_card.js';
 import './overview_card.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
 import {SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
+import {getTemplate} from './system_page.html.js';
 
 /**
  * @fileoverview
@@ -43,7 +44,7 @@ export class SystemPageElement extends SystemPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -6,7 +6,7 @@ import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './diagnostics_sticky_banner.js';
-import './diagnostics_shared_css.js';
+import './diagnostics_shared.css.js';
 import './input_list.js';
 import './network_list.js';
 import './strings.m.js';
@@ -14,8 +14,9 @@ import './system_page.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './diagnostics_app.html.js';
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {getDiagnosticsIcon, getNavigationIcon} from './diagnostics_utils.js';
 import {ConnectedDevicesObserverInterface, ConnectedDevicesObserverReceiver, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
@@ -43,7 +44,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

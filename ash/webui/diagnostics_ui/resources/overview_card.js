@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './diagnostics_shared_css.js';
+import './diagnostics_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
+import {getTemplate} from './overview_card.html.js';
 
 /**
  * @fileoverview
@@ -23,7 +24,7 @@ export class OverviewCardElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

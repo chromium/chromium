@@ -6,8 +6,8 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './diagnostics_card.js';
-import './diagnostics_shared_css.js';
-import './icons.js';
+import './diagnostics_shared.css.js';
+import './icons.html.js';
 import './routine_result_list.js';
 import './text_badge.js';
 import './strings.m.js';
@@ -16,7 +16,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_element
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSystemRoutineController} from './mojo_interface_provider.js';
 import {RoutineGroup} from './routine_group.js';
@@ -24,6 +24,7 @@ import {ExecutionProgress, ResultStatusItem, RoutineListExecutor, TestSuiteStatu
 import {getRoutineType, getSimpleResult} from './routine_result_entry.js';
 import {RoutineResultListElement} from './routine_result_list.js';
 import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './system_routine_controller.mojom-webui.js';
+import {getTemplate} from './routine_section.html.js';
 import {BadgeType} from './text_badge.js';
 /**
  * @fileoverview
@@ -47,7 +48,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

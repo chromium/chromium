@@ -4,10 +4,12 @@
 
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import './diagnostics_shared_css.js';
-import './icons.js';
+import './diagnostics_shared.css.js';
+import './icons.html.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './data_point.html.js';
 
 /**
  * @fileoverview
@@ -23,7 +25,7 @@ export class DataPointElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

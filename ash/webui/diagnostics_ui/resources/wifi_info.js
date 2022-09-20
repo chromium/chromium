@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 import './data_point.js';
-import './diagnostics_shared_css.js';
+import './diagnostics_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSignalStrength, getSubnetMaskFromRoutingPrefix} from './diagnostics_utils.js';
 import {convertFrequencyToChannel} from './frequency_channel_utils.js';
 import {Network, SecurityType} from './network_health_provider.mojom-webui.js';
+import {getTemplate} from './wifi_info.html.js';
+
 
 /**
  * @fileoverview
@@ -34,7 +36,7 @@ export class WifiInfoElement extends WifiInfoElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

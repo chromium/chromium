@@ -5,13 +5,15 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './diagnostics_card_frame.js';
-import './icons.js';
+import './icons.html.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ConnectionType, KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {getTemplate} from './input_card.html.js';
+
 
 /**
  * @fileoverview
@@ -43,7 +45,7 @@ export class InputCardElement extends InputCardElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

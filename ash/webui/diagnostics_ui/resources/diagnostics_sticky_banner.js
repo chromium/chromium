@@ -4,10 +4,12 @@
 
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './diagnostics_shared_css.js';
+import './diagnostics_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './diagnostics_sticky_banner.html.js';
 
 export class DiagnosticsStickyBannerElement extends PolymerElement {
   static get is() {
@@ -15,7 +17,7 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

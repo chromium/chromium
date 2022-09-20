@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 import './d3/d3.min.js';
-import './diagnostics_shared_css.js';
+import './diagnostics_shared.css.js';
 import './strings.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNavEnabled} from './diagnostics_utils.js';
+import {getTemplate} from './realtime_cpu_chart.html.js';
 
 /**
  * @constructor
@@ -34,7 +35,7 @@ export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

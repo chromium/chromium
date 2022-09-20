@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 import './diagnostics_card.js';
-import './diagnostics_shared_css.js';
+import './diagnostics_shared.css.js';
 import './routine_result_entry.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineGroup} from './routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 import {RoutineType} from './system_routine_controller.mojom-webui.js';
+import {getTemplate} from './routine_result_list.html.js';
 
 /**
  * @fileoverview
@@ -25,7 +26,7 @@ export class RoutineResultListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -11,14 +11,15 @@
 
 import 'chrome://resources/cr_components/chromeos/network/network_icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import './diagnostics_shared_css.js';
+import './diagnostics_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {NetworkStateProperties, SecurityType as MojomSecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType as MojomConnectionStateType, NetworkType as MojomNetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './diagnostics_network_icon.html.js';
 import {getNetworkType} from './diagnostics_utils.js';
 import {Network, NetworkState, NetworkType, SecurityType} from './network_health_provider.mojom-webui.js';
 
@@ -253,7 +254,7 @@ export class DiagnosticsNetworkIconElement extends DiagnosticsNetworkIconBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

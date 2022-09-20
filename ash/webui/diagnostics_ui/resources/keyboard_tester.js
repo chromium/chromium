@@ -10,9 +10,10 @@ import {MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPh
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input_data_provider.mojom-webui.js';
+import {getTemplate} from './keyboard_tester.html.js';
 
 /**
  * @fileoverview
@@ -104,7 +105,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
