@@ -4,10 +4,11 @@
 
 #include "ui/events/devices/device_data_manager.h"
 
+#include <algorithm>
+
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -107,10 +108,17 @@ void DeviceDataManager::UpdateTouchMap() {
   auto last_iter = std::remove_if(
       touch_map_.begin(), touch_map_.end(),
       [this](const std::pair<int, TouchDeviceTransform>& map_entry) {
+        // Check if the given |map_entry| is present in the current list of
+        // connected devices.
+        auto iter = std::find_if(
+            touchscreen_devices_.begin(), touchscreen_devices_.end(),
+            [&map_entry](const TouchscreenDevice& touch_device) {
+              return touch_device.id == map_entry.second.device_id;
+            });
+
         // Remove the device identified by |map_entry| from |touch_map_| if it
         // is not present in the list of currently connected devices.
-        return !base::Contains(touchscreen_devices_, map_entry.second.device_id,
-                               &TouchscreenDevice::id);
+        return iter != touchscreen_devices_.end();
       });
   touch_map_.erase(last_iter, touch_map_.end());
 }
