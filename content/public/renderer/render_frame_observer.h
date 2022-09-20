@@ -41,7 +41,6 @@ class WebSecurityOrigin;
 class WebString;
 class WebURLRequest;
 class WebWorkerFetchContext;
-struct MobileFriendliness;
 }  // namespace blink
 
 namespace gfx {
@@ -333,9 +332,6 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual bool OnAssociatedInterfaceRequestForFrame(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle);
-
-  // Called when a page's mobile friendliness changed.
-  virtual void OnMobileFriendlinessChanged(const blink::MobileFriendliness&) {}
 
   // The smoothness metrics is shared over shared-memory. The interested
   // observer should invalidate |shared_memory| (by std::move()'ing it), and

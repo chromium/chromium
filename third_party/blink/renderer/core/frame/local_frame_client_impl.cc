@@ -1127,8 +1127,7 @@ void LocalFrameClientImpl::UpdateSubresourceFactory(
 
 void LocalFrameClientImpl::DidChangeMobileFriendliness(
     const MobileFriendliness& mf) {
-  DCHECK(web_frame_->Client());
-  web_frame_->Client()->DidChangeMobileFriendliness(mf);
+  web_frame_->DidChangeMobileFriendliness(mf);
 }
 
 }  // namespace blink

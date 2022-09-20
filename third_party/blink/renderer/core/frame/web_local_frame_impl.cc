@@ -3108,4 +3108,10 @@ void WebLocalFrameImpl::WillSendSubmitEvent(const WebFormElement& form) {
     observer.WillSendSubmitEvent(form);
 }
 
+void WebLocalFrameImpl::DidChangeMobileFriendliness(
+    const MobileFriendliness& mf) {
+  for (auto& observer : observers_)
+    observer.DidChangeMobileFriendliness(mf);
+}
+
 }  // namespace blink

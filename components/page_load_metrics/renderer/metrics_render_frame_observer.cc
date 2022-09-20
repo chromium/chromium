@@ -91,7 +91,9 @@ class MojoPageTimingSender : public PageTimingSender {
 
 MetricsRenderFrameObserver::MetricsRenderFrameObserver(
     content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame) {}
+    : content::RenderFrameObserver(render_frame),
+      blink::WebLocalFrameObserver(render_frame ? render_frame->GetWebFrame()
+                                                : nullptr) {}
 
 MetricsRenderFrameObserver::~MetricsRenderFrameObserver() {
   if (page_timing_metrics_sender_)
@@ -388,7 +390,11 @@ void MetricsRenderFrameObserver::OnMainFrameViewportRectangleChanged(
   }
 }
 
-void MetricsRenderFrameObserver::OnMobileFriendlinessChanged(
+void MetricsRenderFrameObserver::OnFrameDetached() {
+  WillDetach();
+}
+
+void MetricsRenderFrameObserver::DidChangeMobileFriendliness(
     const blink::MobileFriendliness& mf) {
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->DidObserveMobileFriendlinessChanged(mf);

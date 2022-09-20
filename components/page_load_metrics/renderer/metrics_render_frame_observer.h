@@ -17,7 +17,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 
 class GURL;
 
@@ -37,6 +37,7 @@ class PageTimingSender;
 // updates for main frames, but only metadata updates for child frames.
 class MetricsRenderFrameObserver
     : public content::RenderFrameObserver,
+      public blink::WebLocalFrameObserver,
       public subresource_filter::AdResourceTracker::Observer {
  public:
   explicit MetricsRenderFrameObserver(content::RenderFrame* render_frame);
@@ -107,7 +108,10 @@ class MetricsRenderFrameObserver
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
-  void OnMobileFriendlinessChanged(const blink::MobileFriendliness&) override;
+
+  // blink::WebLocalFrameObserver implementation
+  void OnFrameDetached() override;
+  void DidChangeMobileFriendliness(const blink::MobileFriendliness&) override;
 
   bool SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion& shared_memory) override;

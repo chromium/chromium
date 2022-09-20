@@ -19,8 +19,13 @@ namespace blink {
 
 namespace {
 
-class MFTestWebFrameClient : public frame_test_helpers::TestWebFrameClient {
+class MobileFriendlinessObserver : public WebLocalFrameObserver {
  public:
+  explicit MobileFriendlinessObserver(WebLocalFrame* frame)
+      : WebLocalFrameObserver(frame) {}
+
+  void OnFrameDetached() override {}
+
   void DidChangeMobileFriendliness(const MobileFriendliness& mf) override {
     mobile_friendliness_ = mf;
   }
@@ -86,10 +91,9 @@ class MobileFriendlinessCheckerTest : public testing::Test {
   }
 
   static std::unique_ptr<frame_test_helpers::WebViewHelper>
-  CreateMobileMetricsWebViewHelper(MFTestWebFrameClient& web_frame_client,
-                                   float device_scale) {
+  CreateMobileMetricsWebViewHelper(float device_scale) {
     auto helper = std::make_unique<frame_test_helpers::WebViewHelper>();
-    helper->Initialize(&web_frame_client, nullptr, ConfigureAndroidSettings);
+    helper->Initialize(nullptr, nullptr, ConfigureAndroidSettings);
     helper->GetWebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(
         device_scale);
     helper->Resize(gfx::Size(kDeviceWidth, kDeviceHeight));
@@ -116,35 +120,33 @@ class MobileFriendlinessCheckerTest : public testing::Test {
   MobileFriendliness CalculateMetricsForHTMLString(const std::string& html,
                                                    float device_scale = 1.0,
                                                    bool fixed_clock = true) {
-    MFTestWebFrameClient web_frame_client;
-    {
-      std::unique_ptr<frame_test_helpers::WebViewHelper> helper(
-          CreateMobileMetricsWebViewHelper(web_frame_client, device_scale));
-      frame_test_helpers::LoadHTMLString(
-          helper->GetWebView()->MainFrameImpl(), html,
-          url_test_helpers::ToKURL("about:blank"));
-      EvalMobileFriendliness(
-          helper->GetWebView()->MainFrameImpl()->GetFrameView(), fixed_clock);
-    }
-    return web_frame_client.GetMobileFriendliness();
+    std::unique_ptr<frame_test_helpers::WebViewHelper> helper(
+        CreateMobileMetricsWebViewHelper(device_scale));
+    frame_test_helpers::LoadHTMLString(helper->GetWebView()->MainFrameImpl(),
+                                       html,
+                                       url_test_helpers::ToKURL("about:blank"));
+    MobileFriendlinessObserver mobile_friendliess_observer(
+        helper->GetWebView()->MainFrameImpl());
+    EvalMobileFriendliness(
+        helper->GetWebView()->MainFrameImpl()->GetFrameView(), fixed_clock);
+    return mobile_friendliess_observer.GetMobileFriendliness();
   }
 
   MobileFriendliness CalculateMetricsForFile(const std::string& path,
                                              float device_scale = 1.0,
                                              bool fixed_clock = true) {
-    MFTestWebFrameClient web_frame_client;
-    {
-      std::unique_ptr<frame_test_helpers::WebViewHelper> helper(
-          CreateMobileMetricsWebViewHelper(web_frame_client, device_scale));
-      url_test_helpers::RegisterMockedURLLoadFromBase(
-          WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
-          WebString::FromUTF8(path));
-      frame_test_helpers::LoadFrame(helper->GetWebView()->MainFrameImpl(),
-                                    kBaseUrl + path);
-      EvalMobileFriendliness(
-          helper->GetWebView()->MainFrameImpl()->GetFrameView(), fixed_clock);
-    }
-    return web_frame_client.GetMobileFriendliness();
+    std::unique_ptr<frame_test_helpers::WebViewHelper> helper(
+        CreateMobileMetricsWebViewHelper(device_scale));
+    url_test_helpers::RegisterMockedURLLoadFromBase(
+        WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
+        WebString::FromUTF8(path));
+    frame_test_helpers::LoadFrame(helper->GetWebView()->MainFrameImpl(),
+                                  kBaseUrl + path);
+    MobileFriendlinessObserver mobile_friendliess_observer(
+        helper->GetWebView()->MainFrameImpl());
+    EvalMobileFriendliness(
+        helper->GetWebView()->MainFrameImpl()->GetFrameView(), fixed_clock);
+    return mobile_friendliess_observer.GetMobileFriendliness();
   }
 };
 
