@@ -764,6 +764,12 @@ void PagedAppsGridView::EnsureViewVisible(const GridIndex& index) {
 
   if (IsValidIndex(index))
     pagination_model_.SelectPage(index.page, false);
+
+  // The selected page will not get shown when ignoring layouts, which can
+  // happen when ending drag and then exiting cardified state. Recenter the
+  // items container to show the selected page in this case.
+  if (ignore_layout_)
+    RecenterItemsContainer();
 }
 
 absl::optional<PagedAppsGridView::VisibleItemIndexRange>
