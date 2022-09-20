@@ -987,31 +987,6 @@
       "use_remoteexec": true
     }
   },
-  "ios-simulator-cronet (reclient shadow)": {
-    "gn_args": {
-      "disable_brotli_filter": false,
-      "disable_file_support": true,
-      "enable_remoting": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "enable_websockets": false,
-      "include_transport_security_state_preload_list": false,
-      "ios_deployment_target": "11.0",
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "ios_stack_profiler_enabled": false,
-      "is_component_build": false,
-      "is_cronet_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_allocator_shim": false,
-      "use_crash_key_stubs": true,
-      "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true,
-      "use_remoteexec": true
-    }
-  },
   "ios-simulator-multi-window": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,

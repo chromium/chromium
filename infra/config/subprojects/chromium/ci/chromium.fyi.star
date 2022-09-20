@@ -2042,23 +2042,6 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios-simulator-cronet (reclient shadow)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builder_spec = builder_config.copy_from(
-        "ci/ios-simulator-cronet",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "cronet",
-        short_name = "rec",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    builderless = True,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = 40,
-)
-
-fyi_ios_builder(
     name = "ios-m1-simulator-cronet",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
