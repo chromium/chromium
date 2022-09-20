@@ -58,7 +58,7 @@ class ConditionalCacheDeletionHelper {
   base::OnceClosure completion_callback_;
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
-  raw_ptr<disk_cache::Entry, DanglingUntriaged> previous_entry_ = nullptr;
+  raw_ptr<disk_cache::Entry> previous_entry_ = nullptr;
 
   base::WeakPtrFactory<ConditionalCacheDeletionHelper> weak_factory_{this};
 };
