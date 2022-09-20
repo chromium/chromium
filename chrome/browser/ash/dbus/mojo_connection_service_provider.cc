@@ -11,8 +11,8 @@
 #include "base/files/scoped_file.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
+#include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
-#include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -118,7 +118,7 @@ void MojoConnectionServiceProvider::
 
   rollback_network_config::BindToInProcessInstance(
       mojo::PendingReceiver<
-          chromeos::rollback_network_config::mojom::RollbackNetworkConfig>(
+          rollback_network_config::mojom::RollbackNetworkConfig>(
           std::move(pipe)));
 
   SendResponse(std::move(platform_channel), method_call,

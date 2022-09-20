@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_ROLLBACK_NETWORK_CONFIG_ROLLBACK_NETWORK_CONFIG_SERVICE_H_
 
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config.h"
-#include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
+#include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {
@@ -19,9 +19,7 @@ void Shutdown();
 // Binds a receiver to the in-process instance of `RollbackNetworkConfig`. Will
 // create the in-process instance if it has not been created yet.
 void BindToInProcessInstance(
-    mojo::PendingReceiver<
-        chromeos::rollback_network_config::mojom::RollbackNetworkConfig>
-        receiver);
+    mojo::PendingReceiver<mojom::RollbackNetworkConfig> receiver);
 
 void OverrideInProcessInstanceForTesting(
     std::unique_ptr<RollbackNetworkConfig> instance);

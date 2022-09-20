@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
-#include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
+#include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash {
@@ -29,12 +29,12 @@ namespace ash {
 // If implot or export are called multiple times, all but the latest request
 // will be cancelled.
 class RollbackNetworkConfig
-    : public chromeos::rollback_network_config::mojom::RollbackNetworkConfig {
+    : public rollback_network_config::mojom::RollbackNetworkConfig {
  public:
-  using ExportCallback = chromeos::rollback_network_config::mojom::
-      RollbackNetworkConfig::RollbackConfigExportCallback;
-  using ImportCallback = chromeos::rollback_network_config::mojom::
-      RollbackNetworkConfig::RollbackConfigImportCallback;
+  using ExportCallback = rollback_network_config::mojom::RollbackNetworkConfig::
+      RollbackConfigExportCallback;
+  using ImportCallback = rollback_network_config::mojom::RollbackNetworkConfig::
+      RollbackConfigImportCallback;
 
   RollbackNetworkConfig();
   RollbackNetworkConfig(const RollbackNetworkConfig&) = delete;
@@ -43,8 +43,7 @@ class RollbackNetworkConfig
 
   void BindReceiver(
       mojo::PendingReceiver<
-          chromeos::rollback_network_config::mojom::RollbackNetworkConfig>
-          receiver);
+          rollback_network_config::mojom::RollbackNetworkConfig> receiver);
 
   void RollbackConfigImport(const std::string& config,
                             ImportCallback callback) override;
@@ -58,8 +57,7 @@ class RollbackNetworkConfig
   std::unique_ptr<Importer> importer_;
   std::unique_ptr<Exporter> exporter_;
 
-  mojo::ReceiverSet<
-      chromeos::rollback_network_config::mojom::RollbackNetworkConfig>
+  mojo::ReceiverSet<rollback_network_config::mojom::RollbackNetworkConfig>
       receivers_;
 };
 

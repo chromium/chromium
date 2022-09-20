@@ -200,7 +200,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
+#include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/metrics/structured/neutrino_logging.h"
@@ -2151,8 +2151,8 @@ void WizardController::UpdateOobeConfiguration() {
   auto* network_config =
       wizard_context_->configuration.FindString(configuration::kNetworkConfig);
   if (network_config) {
-    auto rollback_network_config = std::make_unique<mojo::Remote<
-        chromeos::rollback_network_config::mojom::RollbackNetworkConfig>>();
+    auto rollback_network_config = std::make_unique<
+        mojo::Remote<rollback_network_config::mojom::RollbackNetworkConfig>>();
     rollback_network_config::BindToInProcessInstance(
         rollback_network_config->BindNewPipeAndPassReceiver());
     rollback_network_config->get()->RollbackConfigImport(*network_config,

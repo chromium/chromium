@@ -468,8 +468,7 @@ RollbackNetworkConfig::RollbackNetworkConfig() = default;
 RollbackNetworkConfig::~RollbackNetworkConfig() = default;
 
 void RollbackNetworkConfig::BindReceiver(
-    mojo::PendingReceiver<
-        chromeos::rollback_network_config::mojom::RollbackNetworkConfig>
+    mojo::PendingReceiver<rollback_network_config::mojom::RollbackNetworkConfig>
         receiver) {
   receivers_.Add(this, std::move(receiver));
 }
