@@ -197,6 +197,11 @@ void RecordCycleForwardMru(const ui::Accelerator& accelerator) {
     base::RecordAction(base::UserMetricsAction("Accel_NextWindow_Tab"));
 }
 
+void RecordToggleAppList(const ui::Accelerator& accelerator) {
+  if (accelerator.key_code() == ui::VKEY_LWIN)
+    base::RecordAction(UserMetricsAction("Accel_Search_LWin"));
+}
+
 void RecordToggleFullscreen(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_ZOOM)
     base::RecordAction(UserMetricsAction("Accel_Fullscreen_F4"));
@@ -354,17 +359,6 @@ bool CanHandleToggleAppList(
       return false;
   }
   return true;
-}
-
-void HandleToggleAppList(const ui::Accelerator& accelerator,
-                         AppListShowSource show_source) {
-  if (accelerator.key_code() == ui::VKEY_LWIN)
-    base::RecordAction(UserMetricsAction("Accel_Search_LWin"));
-
-  aura::Window* const root_window = Shell::GetRootWindowForNewWindows();
-  Shell::Get()->app_list_controller()->ToggleAppList(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window).id(),
-      show_source, accelerator.time_stamp());
 }
 
 bool CanHandleWindowSnap() {
@@ -1231,7 +1225,9 @@ void AcceleratorControllerImpl::PerformAction(
       Shell::Get()->display_manager()->AddRemoveDisplay();
       break;
     case DEV_TOGGLE_APP_LIST:
-      HandleToggleAppList(accelerator, AppListShowSource::kSearchKey);
+      RecordToggleAppList(accelerator);
+      accelerators::ToggleAppList(AppListShowSource::kSearchKey,
+                                  base::TimeTicks());
       break;
     case DEV_TOGGLE_UNIFIED_DESKTOP:
       accelerators::ToggleUnifiedDesktop();
@@ -1513,7 +1509,9 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::MaybeTakeWindowScreenshot();
       break;
     case TOGGLE_APP_LIST: {
-      HandleToggleAppList(accelerator, AppListShowSource::kSearchKey);
+      RecordToggleAppList(accelerator);
+      accelerators::ToggleAppList(AppListShowSource::kSearchKey,
+                                  base::TimeTicks());
       break;
     }
     case TOGGLE_CALENDAR:

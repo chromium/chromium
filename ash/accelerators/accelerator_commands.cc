@@ -10,6 +10,7 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -774,6 +775,14 @@ void ShowTaskManager() {
 
 void Suspend() {
   chromeos::PowerManagerClient::Get()->RequestSuspend();
+}
+
+void ToggleAppList(AppListShowSource show_source,
+                   base::TimeTicks event_time_stamp) {
+  aura::Window* const root_window = Shell::GetRootWindowForNewWindows();
+  Shell::Get()->app_list_controller()->ToggleAppList(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window).id(),
+      show_source, event_time_stamp);
 }
 
 void ToggleAmbientMode() {

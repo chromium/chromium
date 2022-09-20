@@ -5,6 +5,7 @@
 #ifndef ASH_ACCELERATORS_ACCELERATOR_COMMANDS_H_
 #define ASH_ACCELERATORS_ACCELERATOR_COMMANDS_H_
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/ash_export.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/accelerators.h"
@@ -176,6 +177,10 @@ ASH_EXPORT void Suspend();
 
 // Turn the ambient mode on or off.
 ASH_EXPORT void ToggleAmbientMode();
+
+// Toggles app list.
+ASH_EXPORT void ToggleAppList(AppListShowSource show_source,
+                              base::TimeTicks event_time_stamp);
 
 // Assign active window to all desks.
 ASH_EXPORT void ToggleAssignToAllDesk();
