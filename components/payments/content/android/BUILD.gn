@@ -368,6 +368,7 @@ robolectric_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
     "//url:origin_java",
+    "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
   ]
 }

@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "components/payments/content/web_app_manifest.h"
-#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/installed_payment_apps_finder.h"
@@ -34,6 +33,7 @@ class Origin;
 
 namespace payments {
 
+class CSPChecker;
 class PaymentManifestDownloader;
 class PaymentManifestWebDataService;
 
@@ -75,6 +75,7 @@ class ServiceWorkerPaymentAppFinder
       const url::Origin& merchant_origin,
       scoped_refptr<PaymentManifestWebDataService> cache,
       std::vector<mojom::PaymentMethodDataPtr> requested_method_data,
+      base::WeakPtr<CSPChecker> csp_checker,
       GetAllPaymentAppsCallback callback,
       base::OnceClosure finished_writing_cache_callback_for_testing);
 
@@ -111,9 +112,6 @@ class ServiceWorkerPaymentAppFinder
 
   std::set<std::string> ignored_methods_;
   std::unique_ptr<PaymentManifestDownloader> test_downloader_;
-
-  // TODO(https://crbug.com/1349091): Check the CSP in the renderer instead.
-  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 };
 
 }  // namespace payments

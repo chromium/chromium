@@ -147,6 +147,11 @@ class MODULES_EXPORT PaymentRequest final
   void OnHasEnrolledInstrument(
       payments::mojom::blink::HasEnrolledInstrumentQueryResult) override;
   void WarnNoFavicon() override;
+  void AllowConnectToSource(
+      const KURL& url,
+      const KURL& url_before_redirects,
+      bool did_follow_redirect,
+      AllowConnectToSourceCallback response_callback) override;
 
   void OnCompleteTimeout(TimerBase*);
   void OnUpdatePaymentDetailsTimeout(TimerBase*);

@@ -363,4 +363,8 @@ void PaymentAppServiceBridge::SetCanMakePaymentEvenWithoutApps() {
   set_can_make_payment_even_without_apps_callback_.Run();
 }
 
+base::WeakPtr<CSPChecker> PaymentAppServiceBridge::GetCSPChecker() {
+  return const_csp_checker_.GetWeakPtr();
+}
+
 }  // namespace payments

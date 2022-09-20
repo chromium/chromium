@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -92,6 +93,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
+  base::WeakPtr<CSPChecker> GetCSPChecker() override;
 
  private:
   // Prevents direct instantiation. Callers should use Create() instead. The
@@ -127,6 +129,9 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   PaymentAppCreationErrorCallback payment_app_creation_error_callback_;
   base::OnceClosure done_creating_payment_apps_callback_;
   base::RepeatingClosure set_can_make_payment_even_without_apps_callback_;
+
+  // TODO(https://crbug.com/1349091): Check the CSP in the renderer instead.
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 
   base::WeakPtrFactory<PaymentAppServiceBridge> weak_ptr_factory_{this};
 };

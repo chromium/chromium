@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/test_payment_manifest_downloader.h"
 #include "components/permissions/permission_request_manager.h"
@@ -205,7 +206,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
         webdata_services::WebDataServiceWrapperFactory::
             GetPaymentManifestWebDataServiceForBrowserContext(
                 context, ServiceAccessType::EXPLICIT_ACCESS),
-        std::move(method_data),
+        std::move(method_data), const_csp_checker.GetWeakPtr(),
         base::BindOnce(
             &ServiceWorkerPaymentAppFinderBrowserTest::OnGotAllPaymentApps,
             base::Unretained(this)),

@@ -45,6 +45,7 @@ enum class AppCreationFailureReason {
 };
 
 class ContentPaymentRequestDelegate;
+class CSPChecker;
 class PaymentManifestWebDataService;
 class PaymentRequestSpec;
 
@@ -125,6 +126,10 @@ class PaymentAppFactory {
     // profile or the authenticator device, as long as a user-verifying platform
     // authenticator device is available.
     virtual void SetCanMakePaymentEvenWithoutApps() = 0;
+
+    // Return a Content Security Policy checker that should be used before
+    // downloading payment manifests and following their redirects.
+    virtual base::WeakPtr<CSPChecker> GetCSPChecker() = 0;
   };
 
   explicit PaymentAppFactory(PaymentApp::Type type);

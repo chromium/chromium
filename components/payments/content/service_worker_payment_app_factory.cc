@@ -190,7 +190,7 @@ void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
       ->GetAllPaymentApps(
           delegate->GetFrameSecurityOrigin(),
           delegate->GetPaymentManifestWebDataService(),
-          mojo::Clone(delegate->GetMethodData()),
+          mojo::Clone(delegate->GetMethodData()), delegate->GetCSPChecker(),
           base::BindOnce(&ServiceWorkerPaymentAppCreator::CreatePaymentApps,
                          creator_raw_pointer->GetWeakPtr()),
           base::BindOnce([]() {

@@ -32,6 +32,7 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
+import org.chromium.url.mojom.Url;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -192,6 +193,12 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Override
     public void warnNoFavicon() {
         mWarnNoFaviconCalled = true;
+    }
+
+    @Override
+    public void allowConnectToSource(Url url, Url urlBeforeRedirects, boolean didFollowRedirect,
+            AllowConnectToSource_Response callback) {
+        callback.call(/*allow=*/true);
     }
 
     @Override

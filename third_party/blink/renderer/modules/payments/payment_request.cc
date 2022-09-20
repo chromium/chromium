@@ -638,12 +638,17 @@ void ValidateAndConvertPaymentDetailsUpdate(const PaymentDetailsUpdate* input,
 //
 // If CSP is not being enforced, then a CSP violation will be counted, but not
 // reported to the web developer.
-bool CSPAllowsConnectToSource(const KURL& url, ExecutionContext& context) {
+bool CSPAllowsConnectToSource(const KURL& url,
+                              const KURL& url_before_redirects,
+                              bool did_follow_redirect,
+                              ExecutionContext& context) {
   const bool enforce_csp =
       RuntimeEnabledFeatures::WebPaymentAPICSPEnabled(&context);
 
   if (context.GetContentSecurityPolicy()->AllowConnectToSource(
-          url, /*url_before_redirects=*/url, RedirectStatus::kNoRedirect,
+          url, url_before_redirects,
+          did_follow_redirect ? RedirectStatus::kFollowedRedirect
+                              : RedirectStatus::kNoRedirect,
           enforce_csp ? ReportingDisposition::kReport
                       : ReportingDisposition::kSuppressReporting)) {
     return true;  // Allow request.
@@ -710,7 +715,10 @@ void ValidateAndConvertPaymentMethodData(
     }
 
     KURL url(payment_method_data->supportedMethod());
-    if (url.IsValid() && !CSPAllowsConnectToSource(url, execution_context)) {
+    if (url.IsValid() &&
+        !CSPAllowsConnectToSource(url, /*url_before_redirects=*/url,
+                                  /*did_follow_redirect=*/false,
+                                  execution_context)) {
       exception_state.ThrowRangeError(
           payment_method_data->supportedMethod() +
           " payment method identifier violates Content Security Policy.");
@@ -1659,6 +1667,17 @@ void PaymentRequest::WarnNoFavicon() {
       mojom::ConsoleMessageLevel::kWarning,
       "Favicon not found for PaymentRequest UI. User "
       "may not recognize the website."));
+}
+
+void PaymentRequest::AllowConnectToSource(
+    const KURL& url,
+    const KURL& url_before_redirects,
+    bool did_follow_redirect,
+    AllowConnectToSourceCallback response_callback) {
+  std::move(response_callback)
+      .Run(CSPAllowsConnectToSource(url, url_before_redirects,
+                                    did_follow_redirect,
+                                    *GetExecutionContext()));
 }
 
 void PaymentRequest::OnCompleteTimeout(TimerBase*) {

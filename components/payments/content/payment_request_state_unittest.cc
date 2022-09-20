@@ -21,6 +21,7 @@
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/test_content_payment_request_delegate.h"
 #include "components/payments/content/test_payment_app.h"
+#include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/journey_logger.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -110,7 +111,7 @@ class PaymentRequestStateTest : public testing::Test,
         url::Origin::Create(GURL("https://example.com")), spec_->AsWeakPtr(),
         weak_ptr_factory_.GetWeakPtr(), "en-US", &test_personal_data_manager_,
         test_payment_request_delegate_.GetContentWeakPtr(),
-        journey_logger_.GetWeakPtr());
+        journey_logger_.GetWeakPtr(), const_csp_checker_.GetWeakPtr());
     state_->AddObserver(this);
   }
 
@@ -192,6 +193,7 @@ class PaymentRequestStateTest : public testing::Test,
   autofill::TestPersonalDataManager test_personal_data_manager_;
   TestContentPaymentRequestDelegate test_payment_request_delegate_;
   JourneyLogger journey_logger_;
+  ConstCSPChecker const_csp_checker_{/*allow=*/true};
 
   // Test data.
   autofill::AutofillProfile address_;

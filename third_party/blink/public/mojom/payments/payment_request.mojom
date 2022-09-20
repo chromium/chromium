@@ -9,6 +9,7 @@ import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/payments/payment_credential.mojom";
 import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
 
 struct PaymentResponse {
@@ -98,6 +99,15 @@ interface PaymentRequestClient {
   OnCanMakePayment(CanMakePaymentQueryResult result);
   OnHasEnrolledInstrument(HasEnrolledInstrumentQueryResult result);
   WarnNoFavicon();
+
+  // Check whether the frame that instantiated this PaymentRequest object has a
+  // Content Security Policy (CSP) connect-src directive that allows connecting
+  // to the given URL. Called before the browser process downloads a payment
+  // manifest or follows its redirect.
+  AllowConnectToSource(
+      url.mojom.Url url,
+      url.mojom.Url url_before_redirects,
+      bool did_follow_redirect) => (bool allow);
 };
 
 struct PaymentItem {

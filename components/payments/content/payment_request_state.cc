@@ -69,7 +69,8 @@ PaymentRequestState::PaymentRequestState(
     const std::string& app_locale,
     autofill::PersonalDataManager* personal_data_manager,
     base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
-    base::WeakPtr<JourneyLogger> journey_logger)
+    base::WeakPtr<JourneyLogger> journey_logger,
+    base::WeakPtr<CSPChecker> csp_checker)
     : frame_routing_id_(initiator_render_frame_host->GetGlobalId()),
       top_origin_(top_level_origin),
       frame_origin_(frame_origin),
@@ -78,6 +79,7 @@ PaymentRequestState::PaymentRequestState(
       spec_(spec),
       delegate_(delegate),
       journey_logger_(journey_logger),
+      csp_checker_(csp_checker),
       personal_data_manager_(personal_data_manager),
       payment_request_delegate_(payment_request_delegate),
       profile_comparator_(app_locale, *spec) {
@@ -242,6 +244,10 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
 
 void PaymentRequestState::SetCanMakePaymentEvenWithoutApps() {
   can_make_payment_even_without_apps_ = true;
+}
+
+base::WeakPtr<CSPChecker> PaymentRequestState::GetCSPChecker() {
+  return csp_checker_;
 }
 
 void PaymentRequestState::OnPaymentResponseReady(

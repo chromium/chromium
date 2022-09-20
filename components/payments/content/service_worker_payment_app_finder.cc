@@ -373,6 +373,7 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     const url::Origin& merchant_origin,
     scoped_refptr<PaymentManifestWebDataService> cache,
     std::vector<mojom::PaymentMethodDataPtr> requested_method_data,
+    base::WeakPtr<CSPChecker> csp_checker,
     GetAllPaymentAppsCallback callback,
     base::OnceClosure finished_writing_cache_callback_for_testing) {
   DCHECK(!requested_method_data.empty());
@@ -402,12 +403,12 @@ void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
 
   std::unique_ptr<PaymentManifestDownloader> downloader;
   if (test_downloader_ != nullptr) {
+    test_downloader_->SetCSPCheckerForTesting(csp_checker);  // IN-TEST
     downloader = std::move(test_downloader_);
     self_delete_factory->IgnorePortInOriginComparisonForTesting();
   } else {
     downloader = std::make_unique<payments::PaymentManifestDownloader>(
-        std::make_unique<DeveloperConsoleLogger>(web_contents),
-        const_csp_checker_.GetWeakPtr(),
+        std::make_unique<DeveloperConsoleLogger>(web_contents), csp_checker,
         render_frame_host()
             .GetBrowserContext()
             ->GetDefaultStoragePartition()

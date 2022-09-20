@@ -41,6 +41,7 @@ class RenderFrameHost;
 namespace payments {
 
 class ContentPaymentRequestDelegate;
+class CSPChecker;
 class PaymentApp;
 
 // Keeps track of the information currently selected by the user and whether the
@@ -109,7 +110,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const std::string& app_locale,
       autofill::PersonalDataManager* personal_data_manager,
       base::WeakPtr<ContentPaymentRequestDelegate> payment_request_delegate,
-      base::WeakPtr<JourneyLogger> journey_logger);
+      base::WeakPtr<JourneyLogger> journey_logger,
+      base::WeakPtr<CSPChecker> csp_checker);
 
   PaymentRequestState(const PaymentRequestState&) = delete;
   PaymentRequestState& operator=(const PaymentRequestState&) = delete;
@@ -146,6 +148,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
+  base::WeakPtr<CSPChecker> GetCSPChecker() override;
 
   // PaymentResponseHelper::Delegate
   void OnPaymentResponseReady(
@@ -373,6 +376,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   base::WeakPtr<PaymentRequestSpec> spec_;
   base::WeakPtr<Delegate> delegate_;
   base::WeakPtr<JourneyLogger> journey_logger_;
+  base::WeakPtr<CSPChecker> csp_checker_;
 
   // Not owned. Never null. Will outlive this object.
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;

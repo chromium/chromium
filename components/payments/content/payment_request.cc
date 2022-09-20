@@ -200,7 +200,8 @@ void PaymentRequest::Init(
       frame_security_origin_, spec(),
       /*delegate=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale(), delegate_->GetPersonalDataManager(),
-      delegate_->GetContentWeakPtr(), journey_logger_.GetWeakPtr());
+      delegate_->GetContentWeakPtr(), journey_logger_.GetWeakPtr(),
+      /*csp_checker=*/weak_ptr_factory_.GetWeakPtr());
 
   journey_logger_.SetRequestedInformation(
       spec_->request_shipping(), spec_->request_payer_email(),
@@ -672,6 +673,25 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
 
 base::WeakPtr<PaymentRequest> PaymentRequest::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PaymentRequest::AllowConnectToSource(
+    const GURL& url,
+    const GURL& url_before_redirects,
+    bool did_follow_redirect,
+    base::OnceCallback<void(bool)> result_callback) {
+  if (!client_) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(::features::kWebPaymentAPICSP)) {
+    std::move(result_callback).Run(true);
+    return;
+  }
+
+  client_->AllowConnectToSource(url, url_before_redirects, did_follow_redirect,
+                                std::move(result_callback));
 }
 
 void PaymentRequest::OnInitialized(InitializationTask* initialization_task) {
