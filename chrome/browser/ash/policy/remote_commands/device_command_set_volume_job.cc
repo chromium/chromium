@@ -36,13 +36,10 @@ enterprise_management::RemoteCommand_Type DeviceCommandSetVolumeJob::GetType()
 bool DeviceCommandSetVolumeJob::ParseCommandPayload(
     const std::string& command_payload) {
   absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root)
-    return false;
-  base::DictionaryValue* payload = nullptr;
-  if (!root->GetAsDictionary(&payload))
+  if (!root || !root->is_dict())
     return false;
   absl::optional<int> maybe_volume;
-  maybe_volume = payload->FindIntKey(kVolumeFieldName);
+  maybe_volume = root->GetDict().FindInt(kVolumeFieldName);
   if (!maybe_volume)
     return false;
   volume_ = *maybe_volume;
