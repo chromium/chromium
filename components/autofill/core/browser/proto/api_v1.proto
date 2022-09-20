@@ -68,13 +68,37 @@ message AutofillQueryResponse {
     // Next ID: 7
     message FieldSuggestion {
       // Prediction made on a field.
+      // Next ID: 4
       message FieldPrediction {
+        // This lists all the different ways predictions can be provided,
+        // including some experiments.
+        enum Source {
+          // No source for this prediction. This is only valid for
+          // NO_SERVER_DATA predictions.
+          SOURCE_UNSPECIFIED = 0;
+          // The autofill prediction, with no experiments enabled.
+          SOURCE_AUTOFILL_DEFAULT = 1;
+          // The password manager prediction, with no experiments enabled.
+          SOURCE_PASSWORDS_DEFAULT = 2;
+          // The prediction came from an override list.
+          SOURCE_OVERRIDE = 3;
+          // The autofill prediction came from the experiment which combines all
+          // approved experiments.
+          SOURCE_ALL_APPROVED_EXPERIMENTS = 4;
+          // The autofill prediction came from the experiment which considers
+          // fields ranks.
+          SOURCE_FIELD_RANKS = 5;
+        }
+
         // The predicted field type.
         // See components/autofill/core/browser/field_types.h for defined types.
         // It is not guaranteed that the value of |type| is known to the enum.
         optional int32 type = 1;
         // Indicates if the prediction is an override.
         optional bool override = 2 [default = false];
+        // The source of the prediction. E.g. which pipeline, which experiment,
+        // etc.
+        optional Source source = 3;
       }
       // Signature identifying the field that is the same as in the request.
       optional fixed32 field_signature = 1;
