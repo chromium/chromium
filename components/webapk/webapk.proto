@@ -87,7 +87,7 @@ message WebApk {
   // Whether this builds supports app identity updates via dialog.
   optional bool app_identity_update_supported = 13;
 
-  // The key used for identifiing a WebAPK.
+  // The key used for identifying a WebAPK.
   optional string app_key = 14;
 
   reserved 4, 10;
