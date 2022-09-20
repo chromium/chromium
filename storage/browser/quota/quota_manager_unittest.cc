@@ -112,11 +112,10 @@ int64_t GetAvailableDiskSpaceForTest() {
   return kAvailableSpaceForApp + kMustRemainAvailableForSystem;
 }
 
-std::tuple<int64_t, int64_t> GetVolumeInfoForTests(
-    const base::FilePath& unused) {
+QuotaAvailability GetVolumeInfoForTests(const base::FilePath& unused) {
   int64_t available = static_cast<uint64_t>(GetAvailableDiskSpaceForTest());
   int64_t total = available * 2;
-  return std::make_tuple(total, available);
+  return QuotaAvailability(total, available);
 }
 
 StorageKey ToStorageKey(const std::string& url) {
@@ -338,8 +337,7 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->SetQuotaSettings(settings);
   }
 
-  using GetVolumeInfoFn =
-      std::tuple<int64_t, int64_t> (*)(const base::FilePath&);
+  using GetVolumeInfoFn = QuotaAvailability (*)(const base::FilePath&);
 
   void SetGetVolumeInfoFn(GetVolumeInfoFn fn) {
     quota_manager_impl_->SetGetVolumeInfoFnForTesting(fn);
@@ -3475,18 +3473,18 @@ TEST_F(QuotaManagerImplTest, QuotaChangeEvent_LargePartitionPressure) {
 
   SetQuotaChangeCallback(
       base::BindLambdaForTesting([&] { quota_change_dispatched = true; }));
-  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
     int64_t total = kGigabytes * 100;
     int64_t available = kGigabytes * 2;
-    return std::make_tuple(total, available);
+    return QuotaAvailability(total, available);
   });
   GetStorageCapacity();
   EXPECT_FALSE(quota_change_dispatched);
 
-  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
     int64_t total = kGigabytes * 100;
     int64_t available = QuotaManagerImpl::kMBytes * 512;
-    return std::make_tuple(total, available);
+    return QuotaAvailability(total, available);
   });
   GetStorageCapacity();
   EXPECT_TRUE(quota_change_dispatched);
@@ -3498,21 +3496,21 @@ TEST_F(QuotaManagerImplTest, QuotaChangeEvent_SmallPartitionPressure) {
 
   SetQuotaChangeCallback(
       base::BindLambdaForTesting([&] { quota_change_dispatched = true; }));
-  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
     int64_t total = kGigabytes * 10;
     int64_t available = total * 2;
-    return std::make_tuple(total, available);
+    return QuotaAvailability(total, available);
   });
   GetStorageCapacity();
   EXPECT_FALSE(quota_change_dispatched);
 
-  SetGetVolumeInfoFn([](const base::FilePath&) -> std::tuple<int64_t, int64_t> {
+  SetGetVolumeInfoFn([](const base::FilePath&) -> QuotaAvailability {
     // DetermineStoragePressure flow will trigger the storage pressure flow
     // when available disk space is below 5% (+/- 0.25%) of total disk space.
     // Available is 2% here to guarantee that it falls below the threshold.
     int64_t total = kGigabytes * 10;
     int64_t available = total * 0.02;
-    return std::make_tuple(total, available);
+    return QuotaAvailability(total, available);
   });
   GetStorageCapacity();
   EXPECT_TRUE(quota_change_dispatched);

@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/quota/quota_availability.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
@@ -149,9 +150,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Function pointer type used to store the function which returns
   // information about the volume containing the given FilePath.
-  // The value returned is std::tuple<total_space, available_space>.
-  using GetVolumeInfoFn =
-      std::tuple<int64_t, int64_t> (*)(const base::FilePath&);
+  // The value returned is the QuotaAvailability struct.
+  using GetVolumeInfoFn = QuotaAvailability (*)(const base::FilePath&);
 
   static constexpr int64_t kGBytes = 1024 * 1024 * 1024;
   static constexpr int64_t kNoLimit = INT64_MAX;
@@ -682,8 +682,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DidGetSettings(absl::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
   void ContinueIncognitoGetStorageCapacity(const QuotaSettings& settings);
-  void DidGetStorageCapacity(
-      const std::tuple<int64_t, int64_t>& total_and_available);
+  void DidGetStorageCapacity(const QuotaAvailability& total_and_available);
 
   void DidDatabaseWork(bool success, bool is_bootstrap_work = false);
   void DidRazeForReBootstrap(QuotaError raze_and_reopen_result);
@@ -746,10 +745,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       const base::Location& from_here = base::Location::Current(),
       bool is_bootstrap_task = false);
 
-  static std::tuple<int64_t, int64_t> CallGetVolumeInfo(
-      GetVolumeInfoFn get_volume_info_fn,
-      const base::FilePath& path);
-  static std::tuple<int64_t, int64_t> GetVolumeInfo(const base::FilePath& path);
+  static QuotaAvailability CallGetVolumeInfo(GetVolumeInfoFn get_volume_info_fn,
+                                             const base::FilePath& path);
+  static QuotaAvailability GetVolumeInfo(const base::FilePath& path);
 
   const bool is_incognito_;
   const base::FilePath profile_path_;

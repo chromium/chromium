@@ -50,6 +50,7 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/client_usage_tracker.h"
+#include "storage/browser/quota/quota_availability.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_features.h"
@@ -2732,17 +2733,17 @@ void QuotaManagerImpl::ContinueIncognitoGetStorageCapacity(
   int64_t current_usage = temporary_usage + persistent_usage;
   int64_t available_space =
       std::max(int64_t{0}, settings.pool_size - current_usage);
-  DidGetStorageCapacity(std::make_tuple(settings.pool_size, available_space));
+  DidGetStorageCapacity(QuotaAvailability(settings.pool_size, available_space));
 }
 
 void QuotaManagerImpl::DidGetStorageCapacity(
-    const std::tuple<int64_t, int64_t>& total_and_available) {
+    const QuotaAvailability& quota_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  int64_t total_space = std::get<0>(total_and_available);
+  int64_t total_space = quota_usage.total;
   DCHECK_GE(total_space, 0);
 
-  int64_t available_space = std::get<1>(total_and_available);
+  int64_t available_space = quota_usage.available;
   DCHECK_GE(available_space, 0);
 
   cached_disk_stats_for_storage_pressure_ =
@@ -3041,18 +3042,21 @@ void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
 }
 
 // static
-std::tuple<int64_t, int64_t> QuotaManagerImpl::CallGetVolumeInfo(
+QuotaAvailability QuotaManagerImpl::CallGetVolumeInfo(
     GetVolumeInfoFn get_volume_info_fn,
     const base::FilePath& path) {
   if (!base::CreateDirectory(path)) {
     LOG(WARNING) << "Create directory failed for path" << path.value();
-    return std::make_tuple<int64_t, int64_t>(0, 0);
+    return QuotaAvailability(0, 0);
   }
 
-  const auto [total, available] = get_volume_info_fn(path);
+  const QuotaAvailability quotaAvailability = get_volume_info_fn(path);
+  const auto total = quotaAvailability.total;
+  const auto available = quotaAvailability.available;
+
   if (total < 0 || available < 0) {
     LOG(WARNING) << "Unable to get volume info: " << path.value();
-    return std::make_tuple<int64_t, int64_t>(0, 0);
+    return QuotaAvailability(0, 0);
   }
   DCHECK_GE(total, 0);
   DCHECK_GE(available, 0);
@@ -3064,14 +3068,13 @@ std::tuple<int64_t, int64_t> QuotaManagerImpl::CallGetVolumeInfo(
         "Quota.PercentDiskAvailable",
         std::min(100, static_cast<int>((available * 100) / total)));
   }
-  return std::make_tuple(total, available);
+  return QuotaAvailability(total, available);
 }
 
 // static
-std::tuple<int64_t, int64_t> QuotaManagerImpl::GetVolumeInfo(
-    const base::FilePath& path) {
-  return std::make_tuple(base::SysInfo::AmountOfTotalDiskSpace(path),
-                         base::SysInfo::AmountOfFreeDiskSpace(path));
+QuotaAvailability QuotaManagerImpl::GetVolumeInfo(const base::FilePath& path) {
+  return QuotaAvailability(base::SysInfo::AmountOfTotalDiskSpace(path),
+                           base::SysInfo::AmountOfFreeDiskSpace(path));
 }
 
 }  // namespace storage

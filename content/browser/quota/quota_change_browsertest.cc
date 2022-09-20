@@ -25,21 +25,22 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "storage/browser/quota/quota_availability.h"
 #include "storage/browser/quota/quota_device_info_helper.h"
 #include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
+using storage::QuotaAvailability;
 using storage::QuotaManager;
 
 namespace {
 
 constexpr int64_t kMBytes = 1024 * 1024;
 
-std::tuple<int64_t, int64_t> GetVolumeInfoForStoragePressure(
-    const base::FilePath& path) {
-  return std::make_tuple<int64_t, int64_t>(100 * kMBytes, 2 * kMBytes);
+QuotaAvailability GetVolumeInfoForStoragePressure(const base::FilePath& path) {
+  return QuotaAvailability((int64_t)(100 * kMBytes), (int64_t)(2 * kMBytes));
 }
 
 }  // namespace
