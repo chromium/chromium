@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -54,6 +56,10 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     sub_app_info->scope = sub_start_url;
     sub_app_info->user_display_mode = UserDisplayMode::kStandalone;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));
+
+    AppReadinessWaiter(profile(), cross_site_app_id_).Await();
+    AppReadinessWaiter(profile(), main_app_id_).Await();
+    AppReadinessWaiter(profile(), sub_app_id_).Await();
 
     content::WebContents* web_contents = OpenApplication(main_app_id_);
     // There should be exactly 4 frames:
@@ -113,6 +119,18 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     delegate_ = owned_delegate.get();
 
     badge_manager->SetDelegate(std::move(owned_delegate));
+  }
+
+  // WebAppControllerBrowserTest:
+  void TearDownOnMainThread() override {
+    WebAppRegistrar& registrar = provider().registrar();
+    for (const auto& app_id : registrar.GetAppIds()) {
+      web_app::test::UninstallWebApp(profile(), app_id);
+      AppReadinessWaiter(profile(), app_id, apps::Readiness::kUninstalledByUser)
+          .Await();
+    }
+
+    WebAppControllerBrowserTest::TearDownOnMainThread();
   }
 
   void OnBadgeChanged() {

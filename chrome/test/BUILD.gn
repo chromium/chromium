@@ -4849,6 +4849,7 @@ if (is_chromeos_lacros) {
       "data/media/",
       "data/policy/test_certs/",
       "data/webapps_integration/",
+      "data/web_app_badging/",
       "data/web_app_shortcuts/",
       "data/web_apps/",
       "data/web_share_target/",

@@ -36,7 +36,6 @@ source_set("browser_tests") {
     "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",
     "sub_apps_service_impl_browsertest.cc",
-    "web_app_badging_browsertest.cc",
     "web_app_browsertest.cc",
     "web_app_dark_mode_browsertest.cc",
     "web_app_engagement_browsertest.cc",
@@ -89,12 +88,14 @@ source_set("browser_tests") {
   }
 }
 
-# On Lacros, these browser tests require Ash to be running.
+# On Lacros, these browser tests require Ash to be running, as they rely on
+# web apps being registered with the App Service.
 source_set("app_service_browser_tests") {
   testonly = true
 
   sources = [
     "launch_web_app_browsertest.cc",
+    "web_app_badging_browsertest.cc",
     "web_app_link_capturing_browsertest.cc",
     "web_app_protocol_handling_browsertest.cc",
     "web_app_url_handling_browsertest.cc",
@@ -116,6 +117,7 @@ source_set("app_service_browser_tests") {
 
   deps = [
     "//chrome/app:command_ids",
+    "//chrome/browser/browsing_data:constants",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
