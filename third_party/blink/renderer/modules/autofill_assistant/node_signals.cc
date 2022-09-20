@@ -294,7 +294,9 @@ WebString GetLabelFromGeometry(const Element& element) {
     }
 
     WebString text(DynamicTo<Text>(node)->wholeText());
-    if (!text.IsNull() && !text.IsEmpty()) {
+    // Skip source formatting text nodes like "\n    " and empty strings.
+    if (!text.IsNull() && !text.IsEmpty() &&
+        !String(text).ContainsOnlyWhitespaceOrEmpty()) {
       distance_and_text.push_back({distance, text});
       if (distance < closest_distance) {
         closest_distance = distance;
