@@ -1158,6 +1158,7 @@
 <translation id="7633755430369750696">Прикажи поставки за „Споделување во близина“.</translation>
 <translation id="7634648064048557203">Камерата е поставена во долниот десен агол</translation>
 <translation id="7641938616688887143">Снимајте</translation>
+<translation id="7642106959537987271">режим за инверзија на боите</translation>
 <translation id="7642647758716480637">Отвори ги поставките за <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (сопственик)</translation>
 <translation id="7647488630410863958">Отклучете го уредот за приказ на известувањата</translation>
@@ -1263,6 +1264,7 @@
 <translation id="8209010265547628927">Ресетирај</translation>
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
+<translation id="8230305195727960608">Режим за инверзија на боите</translation>
 <translation id="8236042855478648955">Време за пауза</translation>
 <translation id="8246282815785366524">Добре дојдовте назад, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
@@ -1389,6 +1391,7 @@
 <translation id="8982906748181120328">Видливост во близина</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Се користи <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Овозможен е режимот за инверзија на боите. Притиснете Ctrl+Search+H повторно за да го вклучите/исклучите.</translation>
 <translation id="899350903320462459">Отклучете го уредот како <ph name="LOGIN_ID" /> за да се изврши дејството од известувањето</translation>
 <translation id="9000771174482730261">УПРАВУВАЈТЕ СО КАПАЦИТЕТОТ</translation>
 <translation id="9017320285115481645">Внесете го кодот за пристап на родители на Family Link.</translation>
@@ -1437,6 +1440,7 @@
 <translation id="921989828232331238">Вашиот родител го заклучи уредот за денес</translation>
 <translation id="9220525904950070496">Отстрани сметка</translation>
 <translation id="923686485342484400">Притиснете Control Shift Q двапати за да се одјавите.</translation>
+<translation id="92580429198593979">Притиснавте кратенка од тастатурата за инверзија на боите. Дали сакате да ја вклучите?</translation>
 <translation id="925832987464884575">Сокриј ги прегледите</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Што има во мојот календар?</translation>

@@ -5953,6 +5953,15 @@
 <translation id="7200364929485466022">应于何时（以设备的本地时区表示）检查是否有更新。</translation>
 <translation id="7202925763179776247">允许下载限制</translation>
 <translation id="7207095846245296855">强制启用 Google 安全搜索功能</translation>
+<translation id="7208483746373960784">此设置用于确定在 <ph name="LACROS_NAME" /> 停用后保留多少用户数据。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_NONE" />，系统不会执行反向数据迁移操作。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />，系统会移除所有用户数据。这是最安全的选项。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />，系统会移除大部分用户数据，只会保留与浏览器无关的文件（例如下载内容）。
+
+      如果此政策设为 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />，系统会保留所有用户数据。此选项存在很高的失败风险，并且失败后需要执行 Powerwash 操作才能恢复。</translation>
 <translation id="7211368186050418507">一律不自动检测时区</translation>
 <translation id="7216442368414164495">允许用户启用安全浏览扩展报告功能</translation>
 <translation id="721970071627370558">停用设备电源状态报告功能</translation>

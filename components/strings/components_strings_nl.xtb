@@ -174,6 +174,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1380591466760231819">Wikkelvouw</translation>
 <translation id="138218114945450791">Lichtblauw</translation>
 <translation id="1382194467192730611">USB-apparaat toegestaan door je beheerder</translation>
+<translation id="1382378825779654399">Je krijgt e-mailmeldingen bij een prijsdaling op een site. Deze pagina wordt opgeslagen in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Zijn je gegevens niet actueel? Neem contact op met je bank om ze te updaten.</translation>
 <translation id="1384725838384960382">Blad voor beveiligde verificatie van betalingsgegevens</translation>
 <translation id="1386623374109090026">Annotaties</translation>
@@ -421,6 +422,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2034971124472263449">Toch opslaan</translation>
 <translation id="2035400064145347639">Reisgidsen en reisverslagen</translation>
 <translation id="2036983605131262583">Alternatieve rol</translation>
+<translation id="2040463897538655645">Verwijderbare opslag</translation>
 <translation id="2040894699575719559">Locatie geblokkeerd</translation>
 <translation id="2042213636306070719">Lade 7</translation>
 <translation id="204357726431741734">Inloggen om wachtwoorden te gebruiken die zijn opgeslagen in je Google-account</translation>
@@ -1514,6 +1516,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5018422839182700155">Kan deze pagina niet openen</translation>
 <translation id="5019198164206649151">Backend-opslag in slechte staat</translation>
 <translation id="5020776957610079374">Wereldmuziek</translation>
+<translation id="5021557570875267742">Prijzen volgen met Chrome</translation>
 <translation id="5023310440958281426">Neem het beleid van je beheerder door</translation>
 <translation id="5029568752722684782">Kopie wissen</translation>
 <translation id="5030338702439866405">Verleend door</translation>
@@ -2234,6 +2237,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6993898126790112050">6x9 (envelop)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> altijd vertalen</translation>
 <translation id="6999969238895751684">Entertainmentindustrie</translation>
+<translation id="7003335073762455340">Je volgt dit product. Deze pagina is opgeslagen in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Gebruik Windows Hello om kaarten sneller te bevestigen</translation>
 <translation id="7006930604109697472">Toch sturen</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2457,6 +2461,7 @@ Aanvullende informatie:
 <translation id="7564049878696755256">Je kunt de toegang tot je account van <ph name="ORG_NAME" /> kwijtraken of slachtoffer worden van identiteitsdiefstal. Chrome raadt je aan je wachtwoord nu te wijzigen.</translation>
 <translation id="7564680668369175887">Stationcars</translation>
 <translation id="7567204685887185387">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk frauduleus verstrekt. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
+<translation id="7568616151991626879">Google Chrome probeert je wachtwoord in te vullen in <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">De knop Zoekmachines beheren, druk op Enter om je standaard zoekmachine en Site Search te beheren</translation>
 <translation id="7569952961197462199">Creditcard verwijderen uit Chrome?</translation>
@@ -3028,6 +3033,7 @@ Aanvullende informatie:
 <translation id="9174623988242579721">Custom en bijzondere voertuigen</translation>
 <translation id="9174917557437862841">Schakelknop voor tabbladen, druk op Enter om naar dit tabblad te schakelen</translation>
 <translation id="9179703756951298733">Je betalingen en creditcardgegevens beheren in de Chrome-instellingen</translation>
+<translation id="9179907736442194268">Krijg e-mailmeldingen bij een prijsdaling op een site</translation>
 <translation id="9183302530794969518">Google Documenten</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> gebruikt een niet-ondersteund protocol.</translation>
 <translation id="9187461866967718678">Extreme sporten</translation>

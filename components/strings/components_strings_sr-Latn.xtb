@@ -2463,6 +2463,7 @@ Dodatni detalji:
 <translation id="7564049878696755256">Možete da izgubite pristup nalogu za <ph name="ORG_NAME" /> ili bi moglo da dođe do krađe identiteta. Chrome vam preporučuje da odmah promenite lozinku.</translation>
 <translation id="7564680668369175887">Karavan vozila</translation>
 <translation id="7567204685887185387">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je možda lažno izdat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
+<translation id="7568616151991626879">Google Chrome pokušava da unese lozinku na <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569761772822664555">Dugme Upravljaj pretraživačima, pritisnite Enter da biste upravljali podrazumevanim pretraživačem i pretragom sajta</translation>
 <translation id="7569952961197462199">Želite li da uklonite kreditnu karticu iz Chrome-a?</translation>

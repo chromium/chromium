@@ -63,6 +63,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2583187216237139145">Všetky údaje prehliadača Chromium vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="2661879430930417727">Ak zdieľate zariadenie s rodinou a priateľmi, môžu v prehliadači Chromium prehliadať samostatne a tiež si ho nastaviť podľa vlastných požiadaviek</translation>
+<translation id="2669853942967761236">Chromium tento súbor archívu zablokoval, pretože môže skrývať malvér</translation>
 <translation id="268602741124540128">Vitajte v prehliadači Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Karta Chromium</translation>
 <translation id="2718390899429598676">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Chromium šifrované.</translation>
@@ -304,6 +305,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7682601070171973634">Chromium skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho počtu dát</translation>
 <translation id="7686590090926151193">Chromium nie je váš predvolený prehliadač</translation>
 <translation id="7689606757190482937">Synchronizujte a prispôsobte si Chromium v rôznych zariadeniach</translation>
+<translation id="7714577916146996629">Keď je táto funkcia zapnutá, Chromium bude uvoľňovať pamäť z kariet, ktoré aktívne nepoužívate. Týmto sa uvoľnia zdroje počítača pre ďalšie úlohy a Chromium bude fungovať rýchlejšie. Neaktívne karty sa budú zobrazovať prázdne a po kliknutí sa automaticky znova načítajú. Môžete si prečítať <ph name="BEGIN_LINK" />ďalšie informácie<ph name="END_LINK" /> alebo <ph name="BEGIN_LINK_2" />odoslať spätnú väzbu<ph name="END_LINK_2" />.</translation>
 <translation id="7745317241717453663">Táto akcia odstráni zo zariadenia údaje prehliadania. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do prehliadača Chromium ako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Inštalátor nemohol vytvoriť dočasný priečinok. Skontrolujte úroveň zaplnenia disku a povolenie na inštaláciu softvéru.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>

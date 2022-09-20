@@ -174,6 +174,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1380591466760231819">Gấp dạng phong thư</translation>
 <translation id="138218114945450791">Xanh lam nhạt</translation>
 <translation id="1382194467192730611">Thiết bị USB được quản trị viên của bạn cho phép</translation>
+<translation id="1382378825779654399">Bạn sẽ nhận được email thông báo nếu có chương trình giảm giá trên một trang web bất kỳ. Trang này sẽ được lưu vào <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Bạn không thấy thông tin hiện tại của mình? Xin vui lòng liên hệ với ngân hàng của bạn để cập nhật thông tin.</translation>
 <translation id="1384725838384960382">Bảng xác thực thông tin thanh toán an toàn</translation>
 <translation id="1386623374109090026">Chú thích</translation>
@@ -1520,6 +1521,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5018422839182700155">Không thể mở trang này</translation>
 <translation id="5019198164206649151">Không thể lưu trữ do chương trình phụ trợ ở trạng thái xấu</translation>
 <translation id="5020776957610079374">Âm nhạc thế giới</translation>
+<translation id="5021557570875267742">Theo dõi giá bằng Chrome</translation>
 <translation id="5023310440958281426">Kiểm tra chính sách của quản trị viên của bạn</translation>
 <translation id="5029568752722684782">Xóa bản sao</translation>
 <translation id="5030338702439866405">Cấp bởi</translation>
@@ -2241,6 +2243,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6993898126790112050">6x9 (Phong bì)</translation>
 <translation id="6996312675313362352">Luôn dịch <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Ngành giải trí</translation>
+<translation id="7003335073762455340">Bạn đang theo dõi sản phẩm này. Trang này được lưu trong <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Dùng Windows Hello để xác nhận các thẻ nhanh hơn</translation>
 <translation id="7006930604109697472">Vẫn gửi</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3036,6 +3039,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9174623988242579721">Xe độ và xe có hiệu suất cao</translation>
 <translation id="9174917557437862841">Nút chuyển đổi thẻ, nhấn phím Enter để chuyển sang thẻ này</translation>
 <translation id="9179703756951298733">Quản lý thông tin thanh toán và thẻ tín dụng của bạn trong phần cài đặt của Chrome</translation>
+<translation id="9179907736442194268">Nhận email thông báo nếu có chương trình giảm giá trên một trang web bất kỳ</translation>
 <translation id="9183302530794969518">Google Tài liệu</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> sử dụng giao thức không được hỗ trợ.</translation>
 <translation id="9187461866967718678">Thể thao mạo hiểm</translation>

@@ -60,6 +60,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2094648590148273905">Conditions d'utilisation de ChromeOS Flex</translation>
 <translation id="2094919256425865063">Quitter Chrome quand même ?</translation>
 <translation id="2106831557840787829">ChromeOS Flex dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" /> et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
+<translation id="2112742052114331084">Lorsque ce mode est activé, Chrome récupère la mémoire des onglets que vous n'utilisez pas activement. Cela libère des ressources de votre ordinateur pour d'autres tâches, tout en maintenant la rapidité de Chrome. Les onglets inactifs apparaissent vides et s'actualisent automatiquement quand vous cliquez dessus. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envoyer des commentaires<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Cette action aura pour effet de supprimer <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relancer et mettre à jour &amp;Chrome</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Chrome en nous signalant vos <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
@@ -278,6 +279,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6735387454586646204">Système ChromeOS Flex</translation>
 <translation id="6739177684496155661">Continuer avec un nouveau profil Chrome ?</translation>
 <translation id="6750954913813541382">Pour corriger les fautes d'orthographe, Chrome envoie à Google le texte que vous saisissez dans le navigateur</translation>
+<translation id="6756581345161130259">Au besoin, Chrome récupère la mémoire des onglets que vous n'utilisez pas activement. Vous pouvez modifier cette option à tout moment dans les paramètres.</translation>
 <translation id="677276454032249905">Quitter Chrome quand même ?</translation>
 <translation id="6785872064505734160">L'Assistant Google dans Chrome peut effectuer des actions sur les sites Web à votre place</translation>
 <translation id="683440813066116847">Règle de trafic entrant pour Google Chrome Canary autorisant le trafic mDNS</translation>

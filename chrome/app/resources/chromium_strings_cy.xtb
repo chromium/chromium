@@ -304,6 +304,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7682601070171973634">Mae Chromium yn archwilio nodweddion newydd sy'n caniatáu i wefannau ddarparu'r un profiad pori drwy ddefnyddio llai o'ch data</translation>
 <translation id="7686590090926151193">Nid Chromium yw eich porwr diofyn</translation>
 <translation id="7689606757190482937">Cysoni â phersonoleiddio Chromium ar draws eich dyfeisiau</translation>
+<translation id="7714577916146996629">Pan fydd ymlaen, mae Chromium yn adfer cof o dabiau nad ydych yn eu defnyddio'n weithredol. Mae hyn yn rhyddhau adnoddau eich cyfrifiadur ar gyfer tasgau eraill ac yn cadw Chromium yn gyflym. Mae tabiau anweithredol yn ymddangos yn wag ac yn ail-lwytho'n awtomatig pan fyddwch yn clicio arnynt. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> neu <ph name="BEGIN_LINK_2" />anfon adborth<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Bydd hyn yn dileu eich data pori o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Ni allai'r gosodwr greu cyfeiriadur dros dro. Gwnewch yn siŵr bod gennych ddigon o le storio ar gael a bod gennych y caniatâd i osod meddalwedd.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -333,6 +334,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8453117565092476964">Mae'r archif gosodwr wedi'i lygru neu'n annilys. Lawrlwythwch Chromium eto.</translation>
 <translation id="8463672209299734063">Dewisol: Helpu i wella nodweddion a pherfformiad ChromiumOS drwy anfon data diagnostig a defnydd at Google yn awtomatig.</translation>
 <translation id="8493179195440786826">Mae Chromium yn Hen</translation>
+<translation id="8522220489792889625">Yn ôl yr angen, mae Chromium yn adfer cof o dabiau nad ydych yn eu defnyddio'n weithredol. Gallwch newid hyn unrhyw bryd yn y gosodiadau.</translation>
 <translation id="8550334526674375523">Mae'r proffil gwaith hwn yn hollol ar wahân i'ch proffil personol.</translation>
 <translation id="8558383651099478961">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chromium. Ni chaniateir ychwanegu'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>
 <translation id="8561285221328166383">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 10.13 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 10.12.</translation>

@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">Teljes képernyő rögzítése</translation>
 <translation id="2135456203358955318">Dokkolt nagyító</translation>
 <translation id="2148716181193084225">Ma</translation>
+<translation id="2161132820593978283">Próbálja ki a keretezést, hogy videohívás közben a képernyő közepére kerüljön. Ezt a funkciót a Gyorsbeállításokban kapcsolhatja be.</translation>
 <translation id="2170530631236737939">Ha szeretne kilépni az Áttekintés nézetből, csúsztasson lefelé három ujjával</translation>
 <translation id="219905428774326614">Indító, minden alkalmazás</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. fénykép a legutóbbi <ph name="TOTAL_COUNT" /> fénykép közül.</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">Nincs kapcsolat</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="2412593942846481727">Rendelkezésre áll frissítés</translation>
+<translation id="2426051945783024481">Keret automatikusan középre igazítva</translation>
 <translation id="2427507373259914951">Kattintás bal egérgombbal</translation>
 <translation id="2429753432712299108">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Mielőtt elfogadná, ellenőrizze, hogy ez a biztonsági kód látható-e azon az eszközön is: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
@@ -1041,6 +1043,7 @@ Frissen telepítve</translation>
 <translation id="6960565108681981554">Nincs aktiválva. Forduljon a szolgáltatójához.</translation>
 <translation id="6961121602502368900">A Telefon némítása funkció nem használható munkaprofillal</translation>
 <translation id="6961840794482373852">Az Alt + Felfelé nyíl billentyűparancs módosult. A Felfelé nyíl billentyű használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + Felfelé nyíl.</translation>
+<translation id="696267987219125751">A keretezés ki van kapcsolva.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Első lépések</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1131,6 +1134,7 @@ Frissen telepítve</translation>
 <translation id="7513922695575567867">Naptár, <ph name="DATE" />-i hét, jelenleg kijelölt dátum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">A keretezés be van kapcsolva.</translation>
 <translation id="7526573455193969409">Elképzelhető, hogy figyelik a hálózatot</translation>
 <translation id="7536035074519304529">IP-cím: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
@@ -1149,6 +1153,7 @@ Frissen telepítve</translation>
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7609951632080598826">Naptárnézet, <ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Helyreállt a kapcsolat a kamerával.</translation>
+<translation id="761736749114493194">A keretezés be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">A Közeli megosztás funkció beállításainak megjelenítése.</translation>
 <translation id="7634648064048557203">Kamera a jobb alsó sarokhoz igazítva</translation>
@@ -1309,6 +1314,7 @@ Frissen telepítve</translation>
 <translation id="851458219935658693">A jelenlegi asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>
 <translation id="8517041960877371778">Előfordulhat, hogy a(z) <ph name="DEVICE_TYPE" /> nem töltődik, amíg be van kapcsolva.</translation>
 <translation id="8535393432370007982">Szín szerinti rendezés visszavonása</translation>
+<translation id="8541078764854166027">Keretezés</translation>
 <translation id="8542053257095774575">Nincsenek mentett asztalok vagy sablonok</translation>
 <translation id="8546059259582788728">Rendezés visszavonása sikeres</translation>
 <translation id="8551588720239073785">Dátum- és időbeállítások</translation>

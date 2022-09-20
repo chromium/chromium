@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">પૂર્ણ સ્ક્રીન રેકોર્ડ કરો</translation>
 <translation id="2135456203358955318">ડૉક કરેલ મૅગ્નિફાયર</translation>
 <translation id="2148716181193084225">આજે</translation>
+<translation id="2161132820593978283">કૅમેરા ફ્રેમિંગ અજમાવી જુઓ, જેથી તમે વીડિયો કૉલમાં સ્ક્રીનની મધ્યમાં રહેશો. ઝડપી સેટિંગમાં જઈને તેને ચાલુ કરો.</translation>
 <translation id="2170530631236737939">ઓવરવ્યૂમાંથી બહાર નીકળવા માટે, ત્રણ આંગળી વડે નીચેની તરફ સ્વાઇપ કરો</translation>
 <translation id="219905428774326614">લૉન્ચર, બધી ઍપ</translation>
 <translation id="2201071101391734388">તાજેતરના <ph name="TOTAL_COUNT" /> ફોટામાંથી <ph name="INDEX" /> નંબરનો ફોટો.</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">કનેક્ટ કરેલું નથી</translation>
 <translation id="2408955596600435184">તમારો PIN દાખલ કરો</translation>
 <translation id="2412593942846481727">અપડેટ ઉપલબ્ધ છે</translation>
+<translation id="2426051945783024481">કૅમેરાની ફ્રેમને ઑટોમૅટિક રીતે મધ્યમાં ગોઠવવામાં આવે છે</translation>
 <translation id="2427507373259914951">લેફ્ટ ક્લિક કરો</translation>
 <translation id="2429753432712299108">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. સ્વીકારતાં પહેલાં, કૃપા કરીને તે ડિવાઇસ પર બતાવેલ આ પાસકીની પુષ્ટિ કરો: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
@@ -1040,6 +1042,7 @@
 <translation id="6960565108681981554">સક્રિય કરેલું નથી. તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="6961121602502368900">ઑફિસની પ્રોફાઇલમાં ફોન સાઇલન્ટ રાખવાની સુવિધા ઉપલબ્ધ નથી</translation>
 <translation id="6961840794482373852">Alt કી + ઉપરની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Page Up કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ઉપરની ઍરો કી દબાવો.</translation>
+<translation id="696267987219125751">કૅમેરા ફ્રેમિંગ બંધ છે.</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6972754398087986839">પ્રારંભ કરો</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1133,7 @@
 <translation id="7513922695575567867">કૅલેન્ડર, <ph name="DATE" />ની તારીખવાળું અઠવાડિયું, હાલમાં <ph name="SELECTED_DATE" /> પસંદ કરેલી છે.</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">કૅમેરા ફ્રેમિંગ ચાલુ છે.</translation>
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
@@ -1148,6 +1152,7 @@
 <translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7609951632080598826">કૅલેન્ડરનો વ્યૂ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">કૅમેરા ફરી કનેક્ટ કર્યો.</translation>
+<translation id="761736749114493194">કૅમેરા ફ્રેમિંગને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">નજીકના શેર સેટિંગ બતાવો.</translation>
 <translation id="7634648064048557203">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="8517041960877371778">તમારું <ph name="DEVICE_TYPE" /> ચાલુ હોય ત્યારે તે ચાર્જ ન થાય તેવું બની શકે.</translation>
 <translation id="8535393432370007982">રંગ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
+<translation id="8541078764854166027">કૅમેરા ફ્રેમ</translation>
 <translation id="8542053257095774575">કોઈ ડેસ્ક કે નમૂનો સાચવેલો નથી</translation>
 <translation id="8546059259582788728">સૉર્ટ કરવાનો છેલ્લો ફેરફાર રદ કરવાનું સફળ થયું</translation>
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>

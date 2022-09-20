@@ -174,6 +174,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1380591466760231819">Dobra carteira</translation>
 <translation id="138218114945450791">Azul-claro</translation>
 <translation id="1382194467192730611">Dispositivo USB permitido pelo administrador</translation>
+<translation id="1382378825779654399">Você vai receber alertas por e-mail se houver uma redução no preço em algum site. Esta página vai ser salva em <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Suas informações estão desatualizadas? Entre em contato com seu banco para atualizá-las.</translation>
 <translation id="1384725838384960382">Página de autenticação de credenciais para pagamento seguro</translation>
 <translation id="1386623374109090026">Anotações</translation>
@@ -1520,6 +1521,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5018422839182700155">Não é possível abrir essa página</translation>
 <translation id="5019198164206649151">Armazenamento de backup em estado inválido</translation>
 <translation id="5020776957610079374">Música mundial</translation>
+<translation id="5021557570875267742">Monitore preços com o Chrome</translation>
 <translation id="5023310440958281426">Verifique as políticas do administrador</translation>
 <translation id="5029568752722684782">Limpar cópia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
@@ -2241,6 +2243,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
 <translation id="6996312675313362352">Sempre traduzir <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Indústria do entretenimento</translation>
+<translation id="7003335073762455340">Você está monitorando esse produto. Esta página foi salva em <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Use o Windows Hello para confirmar o uso de cartões mais rapidamente</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3037,6 +3040,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9174623988242579721">Veículos personalizados e de desempenho</translation>
 <translation id="9174917557437862841">Botão de alternância de guia. Pressione Enter para alternar para esta guia</translation>
 <translation id="9179703756951298733">Gerencie seus pagamentos e suas informações de cartão de crédito nas configurações do Chrome</translation>
+<translation id="9179907736442194268">Receba alertas por e-mail se houver uma redução no preço em algum site</translation>
 <translation id="9183302530794969518">Documentos Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> usa um protocolo incompatível.</translation>
 <translation id="9187461866967718678">Esportes radicais</translation>

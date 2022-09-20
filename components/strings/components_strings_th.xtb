@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">พับแบบจดหมาย</translation>
 <translation id="138218114945450791">ฟ้าอ่อน</translation>
 <translation id="1382194467192730611">อุปกรณ์ USB ที่ผู้ดูแลระบบอนุญาต</translation>
+<translation id="1382378825779654399">คุณจะได้รับการแจ้งเตือนทางอีเมลหากราคาลดลงในเว็บไซต์ใดก็ตาม ระบบจะบันทึกหน้านี้ไว้ใน<ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="1382912999714108023">หากไม่เห็นข้อมูลปัจจุบันของคุณ โปรดติดต่อธนาคารเพื่ออัปเดต</translation>
 <translation id="1384725838384960382">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="1386623374109090026">คำอธิบายประกอบ</translation>
@@ -421,6 +422,7 @@
 <translation id="2034971124472263449">บันทึกเลย</translation>
 <translation id="2035400064145347639">คู่มือและสารคดีการท่องเที่ยว</translation>
 <translation id="2036983605131262583">ม้วนกระดาษอื่น</translation>
+<translation id="2040463897538655645">พื้นที่เก็บข้อมูลแบบถอดได้</translation>
 <translation id="2040894699575719559">ตำแหน่งถูกบล็อก</translation>
 <translation id="2042213636306070719">ถาด 7</translation>
 <translation id="204357726431741734">ลงชื่อเข้าใช้เพื่อใช้รหัสผ่านที่บันทึกไว้ในบัญชี Google</translation>
@@ -1518,6 +1520,7 @@
 <translation id="5018422839182700155">ไม่สามารถเปิดหน้านี้</translation>
 <translation id="5019198164206649151">ไม่สามารถจัดเก็บเนื่องจากระบบแบ็คเอนด์อยู่ในสถานะไม่ดี</translation>
 <translation id="5020776957610079374">เวิลด์มิวสิก</translation>
+<translation id="5021557570875267742">ติดตามราคาด้วย Chrome</translation>
 <translation id="5023310440958281426">ตรวจสอบนโยบายของผู้ดูแลระบบของคุณ</translation>
 <translation id="5029568752722684782">ล้างสำเนา</translation>
 <translation id="5030338702439866405">ออกโดย</translation>
@@ -2239,6 +2242,7 @@
 <translation id="6993898126790112050">6x9 (ซองจดหมาย)</translation>
 <translation id="6996312675313362352">แปลภาษา<ph name="ORIGINAL_LANGUAGE" />เสมอ</translation>
 <translation id="6999969238895751684">อุตสาหกรรมบันเทิง</translation>
+<translation id="7003335073762455340">คุณกำลังติดตามผลิตภัณฑ์นี้ บันทึกหน้านี้ใน<ph name="LAST_BOOKMARKS_FOLDER" />แล้ว</translation>
 <translation id="7004583254764674281">ใช้ Windows Hello เพื่อยืนยันบัตรได้เร็วขึ้น</translation>
 <translation id="7006930604109697472">ส่งเลย</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2462,6 +2466,7 @@
 <translation id="7564049878696755256">คุณอาจเข้าถึงบัญชี <ph name="ORG_NAME" /> ไม่ได้หรือถูกโจรกรรมข้อมูลประจำตัว Chrome ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="7564680668369175887">รถโดยสาร</translation>
 <translation id="7567204685887185387">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการออกใบรับรองความปลอดภัยปลอม โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
+<translation id="7568616151991626879">Google Chrome กำลังพยายามป้อนรหัสผ่านของคุณใน "<ph name="APP_NAME" />"</translation>
 <translation id="7569490014721427265">กอล์ฟ</translation>
 <translation id="7569761772822664555">ปุ่มจัดการเครื่องมือค้นหา กด Enter เพื่อจัดการเครื่องมือค้นหาและการค้นหาเว็บไซต์เริ่มต้น</translation>
 <translation id="7569952961197462199">นำบัตรเครดิตออกจาก Chrome ไหม</translation>
@@ -3034,6 +3039,7 @@
 <translation id="9174623988242579721">ยานพาหนะสั่งผลิตและสมรรถนะสูง</translation>
 <translation id="9174917557437862841">ปุ่มเปลี่ยนแท็บ โปรดกด Enter เพื่อเปลี่ยนไปยังแท็บนี้</translation>
 <translation id="9179703756951298733">จัดการการชำระเงินและข้อมูลบัตรเครดิตในการตั้งค่า Chrome</translation>
+<translation id="9179907736442194268">รับการแจ้งเตือนทางอีเมลหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="9183302530794969518">Google เอกสาร</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ใช้โปรโตคอลที่ไม่รองรับ</translation>
 <translation id="9187461866967718678">กีฬาผาดโผน</translation>

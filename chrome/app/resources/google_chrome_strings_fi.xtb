@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">ChromeOS Flexin ehdot</translation>
 <translation id="2094919256425865063">Suljetaanko Chrome silti?</translation>
 <translation id="2106831557840787829">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Kun asetus on päällä, Chrome vapauttaa muistia välilehdiltä, joita et käytä aktiivisesti. Näin tietokoneesi resurssit vapautuvat muihin tehtäviin ja Chrome pysyy nopeana. Ei-aktiiviset välilehdet näyttävät tyhjiltä ja latautuvat automaattisesti uudelleen, kun klikkaat niitä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /> tai <ph name="BEGIN_LINK_2" />lähetä palautetta<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> kohdetta poistetaan pysyvästi tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="2123055963409958220">Auta parantamaan Chromea ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
@@ -271,6 +272,7 @@
 <translation id="6735387454586646204">ChromeOS Flexin järjestelmä</translation>
 <translation id="6739177684496155661">Jatketaanko uudessa Chrome-profiilissa?</translation>
 <translation id="6750954913813541382">Chrome lähettää selaimeen kirjoittamasi tekstin Googlelle kirjoitusvirheiden korjaamiseksi</translation>
+<translation id="6756581345161130259">Chrome vapauttaa tarvittaessa muistia välilehdiltä, joita et käytä aktiivisesti. Voit muuttaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="677276454032249905">Suljetaanko Chrome silti?</translation>
 <translation id="6785872064505734160">Chromen Google Assistant voi tehdä puolestasi verkkotoimia eri sivustoilla</translation>
 <translation id="683440813066116847">Google Chrome Canaryn saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>

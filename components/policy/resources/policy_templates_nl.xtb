@@ -2401,6 +2401,7 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
 <translation id="3360490004791301756">Gebruikers toestaan aanbiedingen in te wisselen via <ph name="PRODUCT_OS_NAME" />-registratie</translation>
 <translation id="3363360928811201045">Beperkingen op beheerde accounts beheren</translation>
+<translation id="3364400740222114778">Accountherstel</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="3374587000313305002">Hiermee wordt de directory geconfigureerd die <ph name="PRODUCT_NAME" /> gebruikt voor het opslaan van gebruikersgegevens.
 
@@ -3322,6 +3323,7 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="4389073105055031853">Gebruikers toestaan alle certificaten te beheren</translation>
 <translation id="4389091865841123886">De externe bevestiging configureren met een TPM-mechanisme.</translation>
+<translation id="4397045637922200204">Accountherstel deactiveren</translation>
 <translation id="4397464099112037398">Standaardinstelling voor het recht voor vensterplaatsing</translation>
 <translation id="4401496838830169080">Hiermee kun je bepalen of je de Safe Browsing-functie van <ph name="PRODUCT_NAME" /> wilt aanzetten en in welke modus de functie actief moet zijn.
 
@@ -5954,6 +5956,15 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7200364929485466022">Tijd wanneer de updatecheck moet plaatsvinden, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="7202925763179776247">Downloadbeperkingen toestaan</translation>
 <translation id="7207095846245296855">Google SafeSearch afdwingen</translation>
+<translation id="7208483746373960784">Deze instelling bepaalt hoeveel gebruikersgegevens worden bewaard nadat <ph name="LACROS_NAME" /> is uitgezet.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, wordt er geen achterwaartse gegevensmigratie uitgevoerd.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, worden alle gebruikersgegevens verwijderd. Dit is de veiligste optie.
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, worden de meeste gebruikersgegevens verwijderd. Alleen bestanden die niet afhankelijk zijn van de browser worden bewaard (zoals downloads).
+
+      Als je het beleid instelt op <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, worden alle gebruikersgegevens bewaard. Deze optie heeft een hoog risico op fouten en vereist een Powerwash om te herstellen.</translation>
 <translation id="7211368186050418507">Tijdzone nooit automatisch detecteren</translation>
 <translation id="7216442368414164495">Hiermee kunnen gebruikers zich aanmelden voor uitgebreide rapportage van Safe Browsing</translation>
 <translation id="721970071627370558">Rapportage van aan/uit-status van apparaat uitzetten</translation>
@@ -6211,6 +6222,15 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="7482768039644066614">Ophalen aanzetten van metadata voor het laden van pagina's en machinelearning-modellen die de browsefunctionaliteit verbeteren</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
 <translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>
+<translation id="7489661071474025727">Hiermee bepaal je of de service voor accountherstel is geactiveerd voor je gebruikers op <ph name="PRODUCT_OS_NAME" />-apparaten.
+
+      Als je het beleid toepast, wordt herstel van gebruikersgegevens geactiveerd. Als je het beleid niet toepast of niet instelt, wordt herstel van gebruikersgegevens niet geactiveerd.
+      Stel je het beleid in op aanbevolen, dan kunnen gebruikers de activering van accountherstel wijzigen via de instellingenpagina. Als je het beleid instelt op verplicht, kunnen gebruikers de activering van accountherstel niet wijzigen.
+
+      Bij wijziging van de beleidswaarde wordt het updateproces afgerond wanneer er weer wordt ingelogd bij <ph name="PRODUCT_OS_NAME" />, nadat de nieuwe beleidswaarde is opgehaald.
+
+      Opmerking: Deze instelling geldt alleen voor nieuwe accounts die worden toegevoegd op <ph name="PRODUCT_OS_NAME" />-apparaten.
+      </translation>
 <translation id="7491720878670299691">Snelheid waarmee netwerkgegevens worden opgevraagd en gecheckt op gebeurtenissen. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 1 minuut van toepassing.</translation>
@@ -7217,6 +7237,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8543108307976719751">Verbindingen voor externe toegang tot deze machine voorkomen</translation>
 <translation id="8544375438507658205">Standaard HTML-renderer voor <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
+<translation id="8549906780629620346">Accountherstel activeren</translation>
 <translation id="8553955290407912156">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om toegang tot een HID-apparaat.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.

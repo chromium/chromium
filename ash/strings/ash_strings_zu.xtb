@@ -1157,6 +1157,7 @@ Ukufaka okusha</translation>
 <translation id="7633755430369750696">Bonisa Amasethingi Okuthumela Eduze.</translation>
 <translation id="7634648064048557203">Ikhamera iqondaniswe ekhoneni elingezansi ngakwesokudla</translation>
 <translation id="7641938616688887143">Rekhoda</translation>
+<translation id="7642106959537987271">imodi yokuguqulwa kombala</translation>
 <translation id="7642647758716480637">Vula izilungiselelo ze-<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (umnikazi)</translation>
 <translation id="7647488630410863958">Vula idivayisi ukuze ubuke izaziso zakho</translation>
@@ -1262,6 +1263,7 @@ Ukufaka okusha</translation>
 <translation id="8209010265547628927">Setha kabusha</translation>
 <translation id="8214996719228530800">Isiteshi se-Canary</translation>
 <translation id="8219451629189078428">I-Chromebook kudingeka ihlale ivuliwe futhi ixhunywe emandleni phakathi nalesi sikhathi. Qiniseka ukuthi amakhebuli weshaja noma we-adaptha axhunywe ngokuphelele, kokubili ku-Chromebook yakho nalapho kuphuma khona amandla. Ungayivali i-Chromebook yakho.</translation>
+<translation id="8230305195727960608">Imodi Yokuguqulwa Kombala</translation>
 <translation id="8236042855478648955">Isikhathi sekhefu</translation>
 <translation id="8246282815785366524">Siyakwamukela futhi, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781">I-<ph name="CONNECTION_STATUS" />, Amandla esignali angu-<ph name="SIGNAL_STRENGTH" />, iphethwe umlawuli wakho <ph name="BATTERY_STATUS" /></translation>
@@ -1388,6 +1390,7 @@ Ukufaka okusha</translation>
 <translation id="8982906748181120328">Ukubonakala Eduze</translation>
 <translation id="8983038754672563810">I-HSPA</translation>
 <translation id="8990809378771970590">Usebenzisa i-<ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Imodi Yokuguqulwa Kombala inikwe amandla. Cindezela okuthi Ctrl+Search+H futhi ukuze uyivale.</translation>
 <translation id="899350903320462459">Vula amadivayisi njenge-<ph name="LOGIN_ID" /> ukuze wenze isenzo sesaziso</translation>
 <translation id="9000771174482730261">LAWULA ISITOREJI</translation>
 <translation id="9017320285115481645">Faka ikhodi yokufinyelela yomzali ye-Family Link.</translation>
@@ -1436,6 +1439,7 @@ Ukufaka okusha</translation>
 <translation id="921989828232331238">Umzali wakho ukhiyele idivayisi yakho usuku</translation>
 <translation id="9220525904950070496">Susa i-akhawunti</translation>
 <translation id="923686485342484400">Cindezela u-Control Shift Q kabili ukuze uphume ngemvume.</translation>
+<translation id="92580429198593979">Ucindezele isinqamuleli sekhibhodi sokuguqulwa kombala. Ingabe ufuna ukuyivula?</translation>
 <translation id="925832987464884575">Fihla ukubuka kuqala</translation>
 <translation id="937214777182567951">I-<ph name="MANAGER" /> idinga ukuba ubuyekeze i-<ph name="DEVICE_TYPE" /> yakho ngokushesha</translation>
 <translation id="938963181863597773">Yini okukukhalenda yami?</translation>

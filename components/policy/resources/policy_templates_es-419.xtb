@@ -6064,6 +6064,15 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7200364929485466022">La hora a la que deberían verificarse las actualizaciones (se interpreta según la zona horaria local del dispositivo).</translation>
 <translation id="7202925763179776247">Permitir las restricciones de descarga</translation>
 <translation id="7207095846245296855">Forzar Google SafeSearch</translation>
+<translation id="7208483746373960784">Esta configuración determina cuántos datos del usuario se conservan después de inhabilitar <ph name="LACROS_NAME" />.
+
+      Si estableces la política como <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, no se llevará a cabo la migración de datos inversa.
+
+      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, se quitarán todos los datos del usuario. Esta es la opción más segura.
+
+      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, se quitarán la mayoría de los datos del usuario. Solo se conservan los archivos independientes del navegador (como las descargas).
+
+      Si la estableces como <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, se conservarán todos los datos del usuario. Esta opción tiene un alto riesgo de falla, por lo tanto requiere usar Powerwash para recuperar los datos.</translation>
 <translation id="7211368186050418507">Nunca detectar de forma automática la zona horaria</translation>
 <translation id="7216442368414164495">Permitir que los usuarios acepten informes extendidos de navegación segura</translation>
 <translation id="721970071627370558">Inhabilitar los informes de estado de energía del dispositivo</translation>

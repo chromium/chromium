@@ -215,6 +215,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
 <translation id="2148716181193084225">Oggi</translation>
+<translation id="2161132820593978283">Prova Zoom automatico per essere al centro dello schermo durante le videochiamate. Attiva la funzionalità nelle Impostazioni rapide.</translation>
 <translation id="2170530631236737939">Scorri con tre dita verso il basso per uscire dalla modalità Panoramica</translation>
 <translation id="219905428774326614">Avvio applicazioni, tutte le app</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2405664212338326887">Non connessa</translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
+<translation id="2426051945783024481">Fotocamera centrata automaticamente da Zoom automatico</translation>
 <translation id="2427507373259914951">Clic con il pulsante sinistro</translation>
 <translation id="2429753432712299108">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Prima di accettare, conferma che questa passkey viene visualizzata sul dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostra password</translation>
@@ -1041,6 +1043,7 @@ Nuova installazione</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
 <translation id="6961840794482373852">La scorciatoia da tastiera Alt + Freccia su è cambiata. Per usare il tasto Pagina su, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia su.</translation>
+<translation id="696267987219125751">Zoom automatico disattivato.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Inizia</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1131,6 +1134,7 @@ Nuova installazione</translation>
 <translation id="7513922695575567867">Calendario, settimana del <ph name="DATE" />, è attualmente selezionata la data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Zoom automatico attivato.</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate. Le altre app verranno salvate.</translation>
@@ -1149,6 +1153,7 @@ Nuova installazione</translation>
 <translation id="7607002721634913082">In pausa</translation>
 <translation id="7609951632080598826">Visualizzazione Calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Fotocamera riconnessa.</translation>
+<translation id="761736749114493194">Attiva/disattiva Zoom automatico. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostra impostazioni di Condivisione nelle vicinanze.</translation>
 <translation id="7634648064048557203">Fotocamera allineata all'angolo in basso a destra</translation>
@@ -1309,6 +1314,7 @@ Nuova installazione</translation>
 <translation id="851458219935658693">Mostra finestre della scrivania corrente, pulsante di opzione selezionato</translation>
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
+<translation id="8541078764854166027">Zoom automat.</translation>
 <translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>
 <translation id="8546059259582788728">Annullamento dell'ordinamento completato</translation>
 <translation id="8551588720239073785">Impostazioni di data e ora</translation>

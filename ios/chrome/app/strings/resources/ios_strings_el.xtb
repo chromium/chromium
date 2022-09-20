@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Αποδοχή και συνέχεια</translation>
 <translation id="110724200315609752">Εναλλαγή σε ανοικτό παράθυρο</translation>
 <translation id="1112015203684611006">Η εκτύπωση απέτυχε.</translation>
+<translation id="1118569444314402022">Καλώς ορίσατε και πάλι, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Δημιουργία νέας καρτέλας.</translation>
 <translation id="1126809382673880764">Δεν σας προστατεύει από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Θα εξακολουθείτε να λαμβάνετε προστασία από την Ασφαλή περιήγηση, όπου είναι διαθέσιμη, σε άλλες Υπηρεσίες Google, όπως το Gmail και η Αναζήτηση.</translation>
 <translation id="1135212215217513471">Λήψη Chrome για iOS</translation>
@@ -63,6 +64,7 @@
 <translation id="1377255359165588604">Ο συγχρονισμός σταμάτησε να λειτουργεί.</translation>
 <translation id="1377321085342047638">Αρ.κάρτας</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
+<translation id="138618066238211776">Συνέχεια ως <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Τελευταίες 4 εβδομάδες</translation>
 <translation id="1404330357948037222">Είστε αποσυνδεδεμένοι</translation>
 <translation id="1407135791313364759">Άνοιγμα όλων</translation>
@@ -176,6 +178,7 @@
 <translation id="2421044535038393232">Συνέχιση επεξεργασίας</translation>
 <translation id="2434405374328098816">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον χρήστη "<ph name="USERNAME" />" στον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
+<translation id="2461070143328828326">Ρυθμίσεις κωδικού πρόσβασης</translation>
 <translation id="2469960372084740698">Να απενεργοποιηθεί η Ασφαλής περιήγηση;</translation>
 <translation id="2473876017985765807">Έχετε ήδη αποθηκεύσει έναν κωδικό πρόσβασης για τον ιστότοπο <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Δεν έχει επιλεγεί</translation>
@@ -330,6 +333,7 @@
 <translation id="3709582977625132201">Επισήμανση ως μη αναγνωσμένη</translation>
 <translation id="371230970611282515">Προβλέπει και σας προειδοποιεί για επικίνδυνα συμβάντα προτού αυτά συμβούν.</translation>
 <translation id="37207012422556617">Ανερχόμενες αναζητήσεις</translation>
+<translation id="3726360487031500941">Συνδεθείτε ξανά στον λογαριασμό σας <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Ανοίγει τα URL που εισάγονται στο Google Chrome σε ανώνυμη περιήγηση.</translation>
 <translation id="3762232513783804601">Δημιουργήθηκε για το iPad</translation>
 <translation id="3771033907050503522">Καρτ.αν.περιήγ.</translation>

@@ -59,6 +59,7 @@
 <translation id="2094648590148273905">Общи условия на ChromeOS Flex</translation>
 <translation id="2094919256425865063">Искате ли да затворите Chrome въпреки това?</translation>
 <translation id="2106831557840787829">ChromeOS Flex съществува благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Когато настройката е включена, Chrome освобождава паметта от разделите, които не използвате активно. Така ресурсите на компютъра ви са свободни за други задачи и Chrome не се забавя. Неактивните раздели са празни и се презареждат автоматично, когато кликнете върху тях. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> или <ph name="BEGIN_LINK_2" />изпратете отзиви<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> елемента ще се изтрият от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Повторно стартиране за актуализиране на &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете за подобряването на Chrome, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>
@@ -273,6 +274,7 @@
 <translation id="6735387454586646204">Система ChromeOS Flex</translation>
 <translation id="6739177684496155661">Искате ли да продължите с нов потребителски профил в Chrome?</translation>
 <translation id="6750954913813541382">С цел поправка на правописни грешки Chrome изпраща до Google текста, който въвеждате в браузъра</translation>
+<translation id="6756581345161130259">Ако е необходимо, Chrome освобождава паметта от разделите, които не използвате активно. Можете да промените това по всяко време от настройките.</translation>
 <translation id="677276454032249905">Искате ли да излезете от Chrome въпреки това?</translation>
 <translation id="6785872064505734160">Google Асистент в Chrome може да извършва действия вместо вас във всички уебсайтове</translation>
 <translation id="683440813066116847">Правило за Google Chrome Canary за допускане на входящия трафик за mDNS.</translation>

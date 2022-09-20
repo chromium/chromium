@@ -69,6 +69,7 @@
 <translation id="1061904396131502319">વિરામનો સમય થવા જ આવ્યો છે</translation>
 <translation id="1062628064301375934">વેબને વધુ ખાનગી બનાવવામાં અમારી સહાય કરો</translation>
 <translation id="1067048845568873861">બનાવ્યું</translation>
+<translation id="1067661089446014701">વધારાની સલામતી માટે, તમારા Google એકાઉન્ટમાં સાચવવામાં આવે એ પહેલાં તમે તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરી શકો છો</translation>
 <translation id="1067922213147265141">અન્ય Google સેવાઓ</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> નામની ઇ-સિમ પ્રોફાઇલ કાઢી નાખો</translation>
 <translation id="1070377999570795893">તમારા કોમ્પ્યુટર પરના અન્ય પ્રોગ્રામે કોઇ એક્સ્ટેન્શન ઉમેર્યું છે જેનાથી Chromeની કાર્યપદ્ધતિમાં ફેરફાર થઇ શકે છે.
@@ -250,6 +251,7 @@
 <translation id="1223853788495130632">તમારા એડમિનિસ્ટ્રેટર આ સેટિંગ માટે વિશિષ્ટ મૂલ્યની ભલામણ કરે છે.</translation>
 <translation id="1225177025209879837">વિનંતી પર પ્રક્રિયા થઈ રહી છે...</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />" થી કનેક્ટ કરવાનો પ્રયાસ કરતી વખતે પ્રમાણીકરણ નિષ્ફળ થયું.</translation>
+<translation id="1227993798763400520">કાસ્ટ કરવામાં નિષ્ફળ થયાં. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="1230417814058465809">માનક સુરક્ષા ચાલુ છે. વધુ સઘન સુરક્ષા માટે, વધારેલા સંરક્ષણનો ઉપયોગ કરો.</translation>
 <translation id="1231733316453485619">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="1232569758102978740">શીર્ષક વિનાનું</translation>
@@ -689,6 +691,7 @@
 <translation id="1640283014264083726">RSA એન્ક્રિપ્શનવાળું PKCS #1 MD4</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
 <translation id="1641496881756082050"><ph name="NETWORK_NAME" /> સંબંધિત વધુ ક્રિયાઓ</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{અન્ય 1 પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો કારણ કે તેને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યો હતો}one{અન્ય {NUM_PASSWORDS} પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો કારણ કે તેને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યો હતો}other{અન્ય {NUM_PASSWORDS} પાસવર્ડ આયાત કરવામાં આવ્યા ન હતા કારણ કે તેમને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યા હતા}}</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> અને અન્ય <ph name="NUMBER_OF_DEVICES" /> બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટેડ છે</translation>
 <translation id="1642494467033190216">અન્ય ડિબગિંગ સુવિધાઓ સક્ષમ કરતાં પહેલાં rootfs રક્ષણ દૂર કરી અને પુનઃપ્રારંભ કરવું જરૂરી છે.</translation>
 <translation id="1643072738649235303">SHA-1 સાથે X9.62 ECDSA સહી</translation>
@@ -1109,6 +1112,7 @@
 <translation id="2031914984822377766">તમારી પસંદગીની <ph name="LINK_BEGIN" />વેબસાઇટની ભાષાઓ<ph name="LINK_END" /> ઉમેરો. આ સૂચિમાંની સૌથી ઉપરની ભાષાનો ઉપયોગ અનુવાદ માટે કરવામાં આવશે.</translation>
 <translation id="2033758234986231162">તમારા ફોન સાથે કોઈ કનેક્શન જાળવી શકાતું નથી. ખાતરી કરો કે તમારો ફોન નજીકમાં, અનલૉક કરેલો હોય તેમજ તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સેવા ચાલુ કરવામાં આવી હોય.</translation>
 <translation id="2034346955588403444">અન્ય WiFi નેટવર્ક ઉમેરો</translation>
+<translation id="2035211704574173780">ગ્રેસ્કેલ</translation>
 <translation id="203574396658008164">લૉક સ્ક્રીનમાંથી નોંધ લેવાનું ચાલુ કરો</translation>
 <translation id="2037445849770872822">આ Google એકાઉન્ટ માટે નિરીક્ષણ સેટ કરવામાં આવ્યું છે. વધુ પેરેંટલ કન્ટ્રોલ સેટ અપ કરવા માટે, ચાલુ રાખો પસંદ કરો.
 
@@ -1827,6 +1831,7 @@
 <translation id="2673135533890720193">તમારો બ્રાઉઝિંગ ઇતિહાસ વાંચો</translation>
 <translation id="2674764818721168631">બંધ</translation>
 <translation id="2678063897982469759">ફરી ચાલુ કરો</translation>
+<translation id="2678100101831051676">કાસ્ટ કરી શકતા નથી.</translation>
 <translation id="268053382412112343">Hi&amp;story</translation>
 <translation id="2681124317993121768">અતિથિની પ્રોફાઇલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="2682498795777673382">તમારા માતાપિતા પાસે અપડેટ કરાવો</translation>
@@ -2167,6 +2172,7 @@
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2981113813906970160">મોટું માઉસ કર્સર બતાવો</translation>
+<translation id="2981293774053328982">આ ફાઇલ એવું માલવેર ધરાવે છે જે તમારા વ્યક્તિગત કે સોશિયલ નેટવર્ક એકાઉન્ટ સાથે ચેડાં કરી શકે છે</translation>
 <translation id="2983373101216420412">કેસમાં બૅટરીનું લેવલ <ph name="PERCENTAGE" />% છે.</translation>
 <translation id="2985348301114641460">તમારા વ્યવસ્થાપકને "<ph name="EXTENSION_NAME" />" ઇન્સ્ટૉલ કરવાની વિનંતી મોકલીએ?</translation>
 <translation id="2987620471460279764">બીજા ડિવાઇસ પરથી શેર થયેલી ટેક્સ્ટ</translation>
@@ -2536,6 +2542,7 @@
 <translation id="3363202073972776113">આ નવી પ્રોફાઇલ તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">તમારા વ્યવસ્થાપક તરફથી: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl અથવા Altનો ઉપયોગ કરો</translation>
+<translation id="3368586359109138591">બીજે કયાંક ઉપયોગ કરવા માટે, એક કૉપિ ડાઉનલોડ કરો</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369067987974711168">આ પોર્ટ માટે વધુ ક્રિયાઓ બતાવો</translation>
 <translation id="3369624026883419694">હોસ્ટને રીસોલ્વ કરી રહ્યું છે...</translation>
@@ -2724,6 +2731,7 @@
 <translation id="3532273508346491126">સિંક મેનેજમેન્ટ</translation>
 <translation id="3532521178906420528">નેટવર્ક કનેક્શન સ્થાપિત કરી રહ્યાં છીએ…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ઑડિઓ મ્યૂટ કર્યો</translation>
+<translation id="3536492240554502321">રંગની છટાનું રોટેશન</translation>
 <translation id="3537881477201137177">સેટિંગમાં જઈને આમાં ફેરફાર કરી શકાશે</translation>
 <translation id="3538066758857505094">Linuxને અનઇન્સ્ટૉલ કરતી વખતે ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="354060433403403521">AC એડેપ્ટર</translation>
@@ -3049,6 +3057,7 @@
 <translation id="383669374481694771">આ ડિવાઇસ અને તે કેવી રીતે ઉપયોગમાં લેવાય છે તે (જેમ કે બૅટરીનું લેવલ, સિસ્ટમ અને ઍપ પ્રવૃત્તિ તેમજ ભૂલો) વિશેની આ સામાન્ય માહિતી છે. આ ડેટાનો ઉપયોગ Androidને બહેતર બનાવવા માટે કરવામાં આવશે અને અમુક એકીકૃત માહિતી, Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ તેઓની ઍપ અને પ્રોડક્ટને બહેતર બનાવવામાં સહાયરૂપ થશે.</translation>
 <translation id="3838085852053358637">એક્સ્ટેન્શન લોડ કરવામાં નિષ્ફળ થયાં</translation>
 <translation id="3838486795898716504">વધુ <ph name="PAGE_TITLE" /></translation>
+<translation id="3838487810283346084">Google Password Managerમાં સાચવેલા પાસવર્ડ ઉમેરો</translation>
 <translation id="383891835335927981">કોઈ સાઇટનું ઝૂમ વધારેલું કે ઘટાડેલું નથી</translation>
 <translation id="3839509547554145593">માઉસ સ્ક્રોલ ઍક્સલરેશન સુવિધા ચાલુ કરો</translation>
 <translation id="3839516600093027468"><ph name="HOST" />ને હંમેશા ક્લિપબોર્ડ જોવાથી બ્લૉક કરો</translation>
@@ -3860,6 +3869,7 @@
 <translation id="4617019240346358451">"<ph name="EXTENSION_NAME" />"નો ઉપયોગ કરવા માટે પેજ ફરીથી લોડ કરો</translation>
 <translation id="4617270414136722281">એક્સ્ટેન્શન વિકલ્પો</translation>
 <translation id="4617880081511131945">કનેક્શન મેળવી શકાતું નથી</translation>
+<translation id="4618195822946934889">URLમાં માત્ર ASCII અક્ષરોનો સમાવેશ થઈ શકે છે</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4619615317237390068">અન્ય ઉપકરણોમાંથી ટૅબ્સ</translation>
 <translation id="4620809267248568679">આ સેટિંગ એક એક્સ્ટેંશન દ્વારા લાગુ કરાઈ છે.</translation>
@@ -4121,6 +4131,7 @@
 <translation id="4871568871368204250">સિંક બંધ કરો</translation>
 <translation id="4871719318659334896">ગ્રૂપ બંધ કરો</translation>
 <translation id="4872192066608821120">પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો</translation>
+<translation id="4872212987539553601">ડિવાઇસ પર એન્ક્રિપ્શનનું સેટઅપ કરો</translation>
 <translation id="4873312501243535625">મીડિયા ફાઇલ તપાસનાર</translation>
 <translation id="4876273079589074638">આ ક્રૅશની તપાસ કરવામાં અને એને ઠીક કરવામાં અમારાં એન્જિનિયરોની મદદ કરો. જો તમે કરી શકો તેમ હોય તો ચોક્કસ પગલાંની સૂચિ બનાવો. કોઈ પણ વિગત નાની નથી હોતી!</translation>
 <translation id="4876895919560854374">સ્ક્રીન લૉક કરો અને અનલૉક કરો</translation>
@@ -5059,6 +5070,7 @@
 <translation id="5800351251499368110">બાજુની પૅનલમાંથી શોધની સેવા બંધ કરો. બાજુની પૅનલમાં શોધની સેવા ચાલુ છે.</translation>
 <translation id="5801568494490449797">પસંદગીઓ</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
+<translation id="5805268472388605531">ઉચ્ચાર માટેના ચિહ્નો અને વિશેષ અક્ષરો જોવા માટે, કીબોર્ડની કીને દબાવી રાખો</translation>
 <translation id="5805697420284793859">વિન્ડો મેનેજર</translation>
 <translation id="5806447147478173900">પ્રદર્શિત થયેલી સાઇટ દ્વારા કરવામાં આવેલો સ્ટોરેજનો કુલ વપરાશ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ડિફૉલ્ટ)</translation>
@@ -5701,6 +5713,7 @@ USB ડિવાઇસ</translation>
 <translation id="642469772702851743">આ ઉપકરણ (SN: <ph name="SERIAL_NUMBER" />)ને માલિક દ્વારા લૉક કરવામાં આવ્યું હતું.</translation>
 <translation id="6425556984042222041">ટેક્સ્ટ ટૂ સ્પીચની ઝડપ</translation>
 <translation id="642729974267661262">સાઉન્ડ ચલાવવાની મંજૂરી નથી</translation>
+<translation id="6427608534767366138">"<ph name="NETWORK_ID" />" માટે પ્રૉક્સીના પ્રમાણીકરણની જરૂર છે</translation>
 <translation id="6429384232893414837">અપડેટમાં ભૂલ</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, એકલ પ્રમાણપત્ર</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> આ કમ્પ્યૂટરના બધા વપરાશકર્તા માટે સ્વચાલિત અપડેટ્સ સેટ કરશે.</translation>
@@ -6421,6 +6434,7 @@ USB ડિવાઇસ</translation>
 <translation id="7093220653036489319">ઝડપી જવાબો</translation>
 <translation id="7093416310351037609">ડેટાની સલામતી અને સુરક્ષિતતા માટે, તમારી સંસ્થા મુજબ યોગ્યતા ધરાવતા બધા ડાઉનલોડ તમારી સંસ્થાના <ph name="WEB_DRIVE" /> એકાઉન્ટમાં સાચવવા જરૂરી છે.</translation>
 <translation id="7093866338626856921">આ નામના ઉપકરણ સાથે ડેટા વિનિમય કરો: <ph name="HOSTNAMES" /></translation>
+<translation id="7094680343477712655">તમારા <ph name="DEVICE_NAME" /> પર કાસ્ટની વિનંતી સ્વીકારો.</translation>
 <translation id="7098389117866926363">USB-C ડિવાઇસ (પાછળની બાજુએ ડાબું પોર્ટ)</translation>
 <translation id="7098447629416471489">અન્ય સાચવેલા શોધ એન્જિન અહીં દેખાશે</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ઍપ કાઢી નાખો}one{ઍપ કાઢી નાખો}other{ઍપ કાઢી નાખો}}</translation>
@@ -6521,6 +6535,7 @@ USB ડિવાઇસ</translation>
 <translation id="7212097698621322584">પિન બદલવા માટે તમારો વર્તમાન પિન દાખલ કરો. જો તમને તમારો પિન યાદ ન હોય, તો તમારે સુરક્ષા કોડ રીસેટ કરવો પડશે, અને પછી નવો પિન બનાવવો પડશે.</translation>
 <translation id="7213903639823314449">ઍડ્રેસ બારમાં ઉપયોગમાં લેવાયેલું શોધ એન્જિન</translation>
 <translation id="721490496276866468">પાસવર્ડ આયાત કરો</translation>
+<translation id="7218514093816577632">તમારા <ph name="DEVICE_NAME" />માં નોટિફિકેશન ચાલુ કરવામાં આવ્યા હોવાની ખાતરી કરો.</translation>
 <translation id="7219473482981809164">અમને ડાઉનલોડ કરવા માટે, એકથી વધુ ઉપલબ્ધ પ્રોફાઇલ મળી છે. આગળ વધતા પહેલાં, તમે જે ડાઉનલોડ કરવા ઇચ્છતા હો, તે પ્રોફાઇલ પસંદ કરો.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{એકેય નબળો પાસવર્ડ નથી}=1{1 નબળો પાસવર્ડ}one{{NUM_WEAK} નબળો પાસવર્ડ}other{{NUM_WEAK} નબળા પાસવર્ડ}}</translation>
 <translation id="7220019174139618249">પાસવર્ડને "<ph name="FOLDER" />"માં મોકલી શકાતો નથી</translation>
@@ -6990,6 +7005,7 @@ USB ડિવાઇસ</translation>
 <translation id="7664620655576155379">સપોર્ટ ન કરતું Bluetooth ડિવાઇસ: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="7665082356120621510">કદ આરક્ષિત કરો</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
+<translation id="766635563210446220">પાસવર્ડ આયાત કરી શકાતા નથી. <ph name="FILENAME" /> ચેક કરો અને તે યોગ્ય રીતે ફૉર્મેટ કરેલું હોવાની ખાતરી કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયામાં પરત કરો}one{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયાંમાં પરત કરો}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયાંમાં પરત કરો}}</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> માટે Google પાસવર્ડ મેનેજરમાં</translation>
 <translation id="7668648754769651616">ઍક્સેસિબિલિટી સુવિધાઓ તમારા ડિવાઇસનો ઉપયોગ કરવાનું વધુ સરળ બનાવે છે. ઝડપી સેટિંગ ઍક્સેસ કરવા માટે, તમારી સ્ક્રીનની સૌથી નીચે સમય પસંદ કરો.</translation>
@@ -7515,6 +7531,7 @@ USB ડિવાઇસ</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{એક વીડિયો}one{# વીડિયો}other{# વીડિયો}}</translation>
 <translation id="8143442547342702591">અમાન્ય ઍપ્લિકેશન</translation>
 <translation id="8143609395536282994">તમે તમારો ડેટા કેવી રીતે મેનેજ કરી શકો છો:</translation>
+<translation id="8145170459658034418">મેમરી સેવર</translation>
 <translation id="8146177459103116374">જો તમે આ ઉપકરણ પર પહેલાથી નોંધણી કરાવી છે, તો તમે <ph name="LINK2_START" />અસ્તિત્વમાં છે તે વપરાશકર્તા તરીકે સાઇન ઇન<ph name="LINK2_END" /> કરી શકો છો.</translation>
 <translation id="8146287226035613638">તમારી પસંદગીની ભાષાઓ ઉમેરો અને તેમને રેંકિંગ આપો. જ્યારે શક્ય હશે, ત્યારે વેબસાઇટ તમારી પસંદગીની ભાષાઓમાં બતાવશે. આ પસંદગીઓને તમારા બ્રાઉઝર સેટિંગ સાથે સિંક કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">સાઇન-ઇન નિષ્ફળ થયું. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>
@@ -7574,6 +7591,7 @@ USB ડિવાઇસ</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8199300056570174101">નેટવર્ક (સેવા) અને ઉપકરણના ગુણધર્મો</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
+<translation id="8200789660596905522">તમારા <ph name="DEVICE_NAME" /> પર કાસ્ટની વિનંતી સ્વીકારવાની ખાતરી કરો.</translation>
 <translation id="8202160505685531999">તમારી <ph name="DEVICE_TYPE" /> પ્રોફાઇલને અપડેટ કરવા માટે કૃપા કરીને તમારો પાસવર્ડ ફરીથી દાખલ કરો.</translation>
 <translation id="8203152941016626022">'નજીકના શેર' ડિવાઇસનું નામ</translation>
 <translation id="8203732864715032075">તમને નોટિફિકેશન મોકલે અને મેસેજ માટે ડિફૉલ્ટ તરીકે આ કમ્પ્યુટરને યાદ રાખે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -7823,6 +7841,7 @@ USB ડિવાઇસ</translation>
 <translation id="844063558976952706">હંમેશા આ સાઇટ પર</translation>
 <translation id="8441313165929432954">ઇન્ટરનેટ શેર કરવાની સુવિધા ચાલુ કરો/બંધ કરો</translation>
 <translation id="8443795068008423036">ખાતરી કરો કે તમારું ડિવાઇસ અપ ટૂ ડેટ છે અને ફરી પ્રયાસ કરો</translation>
+<translation id="8443986842926457191">URLમાં 2048થી વધુ અક્ષર છે</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8447409163267621480">કાં તો Ctrl અથવા Alt શામેલ કરો</translation>
 <translation id="844850004779619592">કોઈ આદેશ મળ્યો નથી</translation>
@@ -7888,6 +7907,7 @@ USB ડિવાઇસ</translation>
 <translation id="851263357009351303"><ph name="HOST" />ને હંમેશાં છબી બતાવવાની મંજૂરી આપો</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
 <translation id="8514746246728959655">અલગ સુરક્ષા કોડ અજમાવી જુઓ</translation>
+<translation id="8519895319663397036">પાસવર્ડ આયાત કરી શકતા નથી. ફાઇલનું કદ 150 KB કરતાં ઓછું હોવું જોઈએ.</translation>
 <translation id="8523493869875972733">ફેરફારો રાખો</translation>
 <translation id="8523849605371521713">પૉલિસી દ્વારા ઉમેરાયેલું</translation>
 <translation id="8524783101666974011">તમારા Google એકાઉન્ટમાં કાર્ડ સાચવો</translation>

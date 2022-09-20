@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="110724200315609752">ખુલ્લી વિંડો પર સ્વિચ કરો</translation>
 <translation id="1112015203684611006">છાપવાનું નિષ્ફળ થયું.</translation>
+<translation id="1118569444314402022">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">નવું ટૅબ બનાવો.</translation>
 <translation id="1126809382673880764">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરતું નથી. Gmail અને Search જેવી Googleની અન્ય સેવાઓમાં, જ્યાં ઉપલબ્ધ હોય, ત્યાં તમને હજી પણ Safe Browsing સંરક્ષણ મળશે.</translation>
 <translation id="1135212215217513471">iOS માટે Chrome મેળવો</translation>
@@ -55,6 +56,7 @@
 <translation id="1322735045095424339">તમારી સંસ્થાને છૂપા મોડની જરૂર છે</translation>
 <translation id="1323735185997015385">ડિલીટ કરો</translation>
 <translation id="132683371494960526">મૂળ ફોલ્ડર બદલવા માટે બે વાર ટૅપ કરો.</translation>
+<translation id="1335348992705722518">સેટિંગને મેનેજ કરો...</translation>
 <translation id="1340643665687018190">મેનૂ બંધ કરો</translation>
 <translation id="1358214951266274152">તમે કૉપિ કરેલી લિંકની મુલાકાત લો</translation>
 <translation id="1360432990279830238">સાઇન આઉટ કરી સિંકનો વિકલ્પ બંધ કરવો છે?</translation>
@@ -62,6 +64,7 @@
 <translation id="1377255359165588604">સમન્વયન એ કામ કરવાનું બંધ કરી દીધું છે.</translation>
 <translation id="1377321085342047638">કાર્ડ નંબર</translation>
 <translation id="1383876407941801731">શોધો</translation>
+<translation id="138618066238211776"><ph name="USER_NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="1400642268715879018">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="1404330357948037222">તમે સાઇન આઉટ થઈ ગયા છો</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
@@ -175,6 +178,7 @@
 <translation id="2421044535038393232">ફેરફાર કરતા રહો</translation>
 <translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
+<translation id="2461070143328828326">પાસવર્ડ સેટિંગ</translation>
 <translation id="2469960372084740698">Safe Browsing બંધ કરીએ?</translation>
 <translation id="2473876017985765807">તમે <ph name="WEBSITE" /> માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2476359652512522418">પસંદ કરેલું નથી</translation>
@@ -329,6 +333,7 @@
 <translation id="3709582977625132201">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="371230970611282515">જોખમકારક ઇવેન્ટ થાય તે પહેલાં તેનું અનુમાન લગાવીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
 <translation id="37207012422556617">વલણમાં છે એવી શોધો</translation>
+<translation id="3726360487031500941">તમારા એકાઉન્ટ <ph name="USER_NAME" />માં ફરી સાઇન ઇન કરો</translation>
 <translation id="3740397331642243698">ઇનપુટ કરેલા URLsને Google Chrome છૂપા મોડમાં ખોલે છે.</translation>
 <translation id="3762232513783804601">તમારા iPad માટે બનાવાયેલું</translation>
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
@@ -383,6 +388,7 @@
 <translation id="4187450337729239226">પેસ્ટ કરો અને શોધો</translation>
 <translation id="4223967053752765281">તમારી સંસ્થાએ સાઇન ઇન કરવાનું બંધ કર્યું છે. તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તે તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
 <translation id="4233831822770018312">ફેરફાર કરવાની પરવાનગીઓ</translation>
+<translation id="4236584471598725073">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ડિફૉલ્ટ બ્રાઉઝર ઍપ<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
 <translation id="424315890655130736">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="4249955472157341256">નવીનતમ મુજબ સૉર્ટ કરો</translation>

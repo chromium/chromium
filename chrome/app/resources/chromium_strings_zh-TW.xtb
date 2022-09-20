@@ -301,6 +301,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7682601070171973634">Chromium 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="7686590090926151193">Chromium 不是你的預設瀏覽器</translation>
 <translation id="7689606757190482937">進行同步處理即可在你的所有裝置上享有個人化的 Chromium 體驗</translation>
+<translation id="7714577916146996629">啟用這項設定後，Chromium 會針對目前未使用的分頁回收記憶體。這樣做可以釋出電腦的資源來處理其他工作，並維持 Chromium 的運作速度。已停用的分頁標籤會顯示空白，並會在你點選分頁標籤後自動重新載入內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />提供意見<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">登出後，系統會將你的瀏覽資料從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary 版</translation>
@@ -331,6 +332,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已毀損或無效，請重新下載 Chromium。</translation>
 <translation id="8463672209299734063">選用：自動將診斷資訊和使用資料傳送給 Google，協助改善 Chromium OS 的功能與效能。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
+<translation id="8522220489792889625">如有需要，Chromium 會針對目前未使用的分頁回收記憶體。你隨時可以在「設定」中進行變更。</translation>
 <translation id="8550334526674375523">這個工作資料夾與個人資料夾各自獨立。</translation>
 <translation id="8558383651099478961">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定，因此你無法新增這個<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8561285221328166383">如要取得日後的 Chromium 更新，必須使用 macOS 10.13 以上版本。這部電腦目前版本為 OS X 10.12。</translation>

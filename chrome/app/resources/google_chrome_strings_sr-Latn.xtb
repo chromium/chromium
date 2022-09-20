@@ -32,6 +32,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1587223624401073077">Google Chrome koristi kameru.</translation>
 <translation id="1587325591171447154">Datoteka <ph name="FILE_NAME" /> je opasna, pa ju je Chrome blokirao.</translation>
 <translation id="1597911401261118146">Da biste proverili da li su lozinke bezbedne od upada u podatke i drugih bezbednosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chrome<ph name="END_LINK" />.</translation>
+<translation id="1599904803480101533">Chrome je blokirao ovaj fajl arhive jer možda krije malver</translation>
 <translation id="1619887657840448962">Da bismo učinili Chrome bezbednijim, onemogućili smo sledeći dodatak koji <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ne navodi i koji je možda dodat bez vašeg znanja.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chrome uzima u obzir.</translation>
 <translation id="1628000112320670027">Pronađite pomoć za Chrome</translation>

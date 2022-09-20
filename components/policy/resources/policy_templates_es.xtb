@@ -2457,6 +2457,7 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
           El mensaje de advertencia solo se muestra si el modo de inactividad cierra la sesión o apaga el equipo.</translation>
 <translation id="3360490004791301756">Permitir que los usuarios canjeen ofertas a través del registro de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3363360928811201045">Añadir restricciones a las cuentas gestionadas</translation>
+<translation id="3364400740222114778">Recuperación de cuenta</translation>
 <translation id="3373381043600809954">Habilitar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Configura el directorio que <ph name="PRODUCT_NAME" /> utilizará para almacenar los datos de usuario.
 
@@ -3395,6 +3396,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4389073105055031853">Permitir que los usuarios gestionen todos los certificados</translation>
 <translation id="4389091865841123886">Permite configurar la confirmación remota con el mecanismo de TPM.</translation>
+<translation id="4397045637922200204">Desactivar recuperación de cuenta</translation>
 <translation id="4397464099112037398">Configuración predeterminada del permiso de colocación de ventanas</translation>
 <translation id="4401496838830169080">Te permite controlar si la función Navegación segura de <ph name="PRODUCT_NAME" /> está habilitada y el modo en el que funciona.
 
@@ -6065,6 +6067,15 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7200364929485466022">Hora en la que se debe comprobar si hay actualizaciones, interpretada en la zona horaria local del dispositivo.</translation>
 <translation id="7202925763179776247">Permitir restricciones de descarga</translation>
 <translation id="7207095846245296855">Forzar Google Búsqueda Segura</translation>
+<translation id="7208483746373960784">Esta opción determina cuántos datos de usuario se conservarán después de inhabilitar <ph name="LACROS_NAME" />.
+
+      Si se asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> a esta política, no se realizará la retromigración de datos.
+
+      Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, se eliminarán todos los datos de usuario. Esta es la opción más segura.
+
+      Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, se eliminarán la mayoría de los datos de usuario. Solo se conservarán los archivos que sean independientes del navegador (como las descargas).
+
+      Si se le asigna el valor <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, se conservarán todos los datos de usuario. Esta opción tiene un alto riesgo de fallo. Si se produce un error, será necesario hacer un Powerwash para recuperar el dispositivo.</translation>
 <translation id="7211368186050418507">No detectar nunca la zona horaria automáticamente</translation>
 <translation id="7216442368414164495">Permitir a los usuarios habilitar los informes ampliados de la función de Navegación segura</translation>
 <translation id="721970071627370558">Inhabilitar los informes sobre el estado de la energía del dispositivo</translation>
@@ -6322,6 +6333,15 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7482768039644066614">Habilitar la obtención de metadatos de carga de páginas y modelos de aprendizaje automático para mejorar la experiencia de navegación</translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Preguntar cuando coincidan varios certificados en la pantalla de inicio de sesión</translation>
+<translation id="7489661071474025727">Especifica si los usuarios de los dispositivos <ph name="PRODUCT_OS_NAME" /> tienen activado el servicio de recuperación de cuenta.
+
+      Si la política está habilitada, se activará la recuperación de datos de usuario. Si se inhabilita esta política o no se establece, no se activará la recuperación de datos de usuario.
+      Si se asigna el nivel de política recomendado, los usuarios podrán cambiar la activación de la recuperación de cuenta en la página de configuración. Si defines el nivel de la política como obligatorio, los usuarios no podrán cambiar la activación de la recuperación de cuenta.
+
+      Cuando se cambie el valor de la política, el proceso de actualización se completará en el siguiente inicio de sesión en el dispositivo <ph name="PRODUCT_OS_NAME" />, una vez se haya obtenido el nuevo valor de la política.
+
+      Nota: Este ajuste solo se aplica a las cuentas nuevas que se añaden en dispositivos <ph name="PRODUCT_OS_NAME" />.
+      </translation>
 <translation id="7491720878670299691">Intervalo en el que se consultan los datos de red y se comprueba si hay eventos. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 1 minuto.</translation>
@@ -7341,6 +7361,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8543108307976719751">Impedir conexiones de acceso remoto a este equipo</translation>
 <translation id="8544375438507658205">Procesador de HTML predeterminado de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite que los SMS del teléfono se sincronicen con Chromebook.</translation>
+<translation id="8549906780629620346">Activar recuperación de cuenta</translation>
 <translation id="8553955290407912156">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les permitan acceder a un dispositivo HID.
 
       Si no se establece la política, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios (si se ha definido). De lo contrario, se aplicará la configuración personal del usuario.

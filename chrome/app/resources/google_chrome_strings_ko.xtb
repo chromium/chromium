@@ -61,6 +61,7 @@
 <translation id="2094648590148273905">ChromeOS Flex 약관</translation>
 <translation id="2094919256425865063">Chrome을 종료하시겠습니까?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
+<translation id="2112742052114331084">사용 설정하면 Chrome에서 사용자가 현재 사용하지 않는 탭의 메모리를 회수합니다. 이렇게 하면 다른 작업을 위해 컴퓨터 리소스를 확보하고 Chrome의 속도를 유지할 수 있습니다. 비활성 탭은 비어 있을 때 표시되며 클릭하면 자동으로 새로고침됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /> 또는 <ph name="BEGIN_LINK_2" />의견 보내기<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="2121284319307530122">다시 실행하여 Chrome 업데이트</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chrome 개선에 참여</translation>
@@ -279,6 +280,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6735387454586646204">ChromeOS Flex 시스템</translation>
 <translation id="6739177684496155661">새 Chrome 프로필에서 계속하시겠습니까?</translation>
 <translation id="6750954913813541382">맞춤법 오류를 바로잡기 위해 Chrome에서 브라우저에 입력된 텍스트를 Google로 전송합니다.</translation>
+<translation id="6756581345161130259">필요한 경우 Chrome에서는 사용자가 현재 사용하지 않는 탭에서 메모리를 회수합니다. 언제든지 설정에서 변경할 수 있습니다.</translation>
 <translation id="677276454032249905">Chrome을 종료하시겠습니까?</translation>
 <translation id="6785872064505734160">Chrome의 Google 어시스턴트가 사용자를 위해 여러 웹사이트에서 작업을 완료할 수 있습니다.</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>

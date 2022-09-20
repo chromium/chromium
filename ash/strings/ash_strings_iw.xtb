@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">הקלטה של מסך מלא</translation>
 <translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
 <translation id="2148716181193084225">היום</translation>
+<translation id="2161132820593978283">אפשר להפעיל את הפריים האוטומטי במצלמה כדי למקם את עצמך במרכז המסך בשיחות וידאו. ניתן להפעיל אותו בהגדרות המהירות.</translation>
 <translation id="2170530631236737939">כדי לצאת מ'מסכים אחרונים', יש להחליק למטה בעזרת שלוש אצבעות</translation>
 <translation id="219905428774326614">מפעיל האפליקציות, כל האפליקציות</translation>
 <translation id="2201071101391734388">תמונה אחרונה: <ph name="INDEX" /> מתוך <ph name="TOTAL_COUNT" />.</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">לא מחובר</translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
 <translation id="2412593942846481727">יש עדכון זמין</translation>
+<translation id="2426051945783024481">פריים המצלמה מורכז באופן אוטומטי</translation>
 <translation id="2427507373259914951">לחיצה שמאלית</translation>
 <translation id="2429753432712299108">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה. לפני מתן אישור, יש לוודא שמפתח הסיסמה הבא מוצג במכשיר הזה: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
@@ -1039,6 +1041,7 @@
 <translation id="6960565108681981554">הרשת לא פעילה. עליך לפנות לספק חבילת הסלולר שלך.</translation>
 <translation id="6961121602502368900">השתקת הטלפון לא זמינה בפרופיל העבודה</translation>
 <translation id="6961840794482373852">‏מקשי הקיצור Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Page Up, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למעלה.</translation>
+<translation id="696267987219125751">הפריים האוטומטי מושבת במצלמה.</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6972754398087986839">תחילת העבודה</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7513922695575567867">יומן, השבוע של <ph name="DATE" />, התאריך שנבחר הוא <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">הפריים האוטומטי פועל במצלמה.</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">‏בשלב הזה, אין תמיכה באפליקציות Linux ובחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
@@ -1149,6 +1153,7 @@
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7609951632080598826">תצוגת היומן, <ph name="DATE" />,‏ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">המצלמה מחוברת שוב.</translation>
+<translation id="761736749114493194">החלפת מצב של הפריים האוטומטי במצלמה. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">‎<ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">הצגה של הרשאות שיתוף בקרבת מקום.</translation>
 <translation id="7634648064048557203">המצלמה מוצמדת לפינה השמאלית התחתונה</translation>
@@ -1309,6 +1314,7 @@
 <translation id="851458219935658693">הצגת חלונות משולחן העבודה הווירטואלי הנוכחי, לחצן הבחירה נבחר</translation>
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>
 <translation id="8535393432370007982">ביטול של סדר המיון לפי צבע</translation>
+<translation id="8541078764854166027">הפריים במצלמה</translation>
 <translation id="8542053257095774575">אין תבניות או שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="8546059259582788728">הביטול של המיון הצליח</translation>
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>

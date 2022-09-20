@@ -69,6 +69,7 @@
 <translation id="1061904396131502319">وقفے کا وقت تقریباً ہو گیا ہے</translation>
 <translation id="1062628064301375934">مزید نجی ویب بنانے میں ہماری مدد کریں</translation>
 <translation id="1067048845568873861">بنائی گئی</translation>
+<translation id="1067661089446014701">‏اضافی حفاظت کے لیے، آپ اپنے آلہ پر پاس ورڈز کو اپنے Google اکاؤنٹ میں محفوظ کرنے سے پہلے مرموز کر سکتے ہیں</translation>
 <translation id="1067922213147265141">‏دیگر Google سروسز</translation>
 <translation id="1069355737714877171">‏<ph name="PROFILE_NAME" /> نام والی eSIM پروفائل کو ہٹائیں</translation>
 <translation id="1070377999570795893">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک ایکسٹینشن شامل کیا ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتا ہے۔
@@ -249,6 +250,7 @@
 <translation id="1223853788495130632">آپ کا منتظم اس ترتیب کیلئے ایک مخصوص قدر کی تجویز کرتا ہے۔</translation>
 <translation id="1225177025209879837">درخواست پر کارروائی کی جا رہی ہے…</translation>
 <translation id="1227507814927581609">"<ph name="DEVICE_NAME" />" سے منسلک کیے جانے کے دوران توثیق ناکام ہو گئی۔</translation>
+<translation id="1227993798763400520">کاسٹ کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="1230417814058465809">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
 <translation id="1231733316453485619">مطابقت پذیری آن کریں؟</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
@@ -1113,6 +1115,7 @@
 <translation id="2031914984822377766">اپنی ترجیحی <ph name="LINK_BEGIN" />ویب سائٹ کی زبانیں<ph name="LINK_END" /> شامل کریں۔ فہرست میں سرفہرست زبان ترجمے کے لیے استعمال کی جائے گی۔</translation>
 <translation id="2033758234986231162">‏آپ کے فون کے ساتھ کنکشن برقرار نہیں رکھا جا سکتا۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے، اور بلوٹوتھ اور Wi-Fi آن ہیں۔</translation>
 <translation id="2034346955588403444">‏دوسرا WiFi نیٹ ورک شامل کریں</translation>
+<translation id="2035211704574173780">سرمئی اسکیل</translation>
 <translation id="203574396658008164">مقفل اسکرین سے نوٹ لینا فعال کریں</translation>
 <translation id="2037445849770872822">‏اس Google اکاؤنٹ کیلئے نگرانی ترتیب دے دی گئی ہے۔ مزید پیرنٹل کنٹرولز ترتیب دینے کیلئے، 'جاری رکھیں' منتخب کریں۔
 
@@ -2542,6 +2545,7 @@
 <translation id="3363202073972776113">آپ کی تنظیم اس نئی پروفائل کا نظم کرے گی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">آپ کے منتظم کی جانب سے: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">‏Ctrl یا Alt کا استعمال کریں</translation>
+<translation id="3368586359109138591">دوسری جگہ استعمال کرنے کے لیے ایک کاپی ڈاؤن لوڈ کریں</translation>
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3369067987974711168">اس پورٹ کے ليے مزید کارروائیاں دکھائیں</translation>
 <translation id="3369624026883419694">میزبان کو حل کیا جا رہا ہے…</translation>
@@ -2730,6 +2734,7 @@
 <translation id="3532273508346491126">مینیجمنٹ کو مطابقت پذیر بنائیں</translation>
 <translation id="3532521178906420528">نیٹ ورک کنکشن تشکیل دیا جا رہا ہے…</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - آڈیو خاموش ہے</translation>
+<translation id="3536492240554502321">ہیو کی گردش</translation>
 <translation id="3537881477201137177">اس کو بعد میں ترتیبات میں تبدیل کیا جا سکتا ہے</translation>
 <translation id="3538066758857505094">‏Linux ان انسٹال کرنے میں خرابی پیش آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="354060433403403521">‏AC اڈاپٹر</translation>
@@ -3055,6 +3060,7 @@
 <translation id="383669374481694771">‏یہ اس آلہ اور اس کے استعمال کیے جانے (جیسے بیٹری کی سطح، سسٹم، ایپ کی سرگرمی اور خرابیوں) کے بارے میں ایک عام معلومات ہے۔ Android کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کیا جائے گا، اور کچھ مجموعی معلومات سے Google ایپس اور پارٹنرز، جیسے کہ Android ڈیولپرز، کو ان کی ایپس اور پروڈکٹس کو بہتر بنانے میں بھی مدد ملے گی۔</translation>
 <translation id="3838085852053358637">ایکسٹیشن لوڈ کرنے میں ناکام</translation>
 <translation id="3838486795898716504">مزید <ph name="PAGE_TITLE" /></translation>
+<translation id="3838487810283346084">‏Google پاس ورڈ مینیجر میں محفوظ کردہ پاس ورڈز شامل کریں</translation>
 <translation id="383891835335927981">کسی بھی سائٹ کو زوم ان یا زوم آؤٹ نہیں کیا گیا ہے</translation>
 <translation id="3839509547554145593">ماؤس کے اسکرول ایکسلریٹر کو فعال کریں</translation>
 <translation id="3839516600093027468">کلپ بورڈ کو دیکھنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں</translation>
@@ -4128,6 +4134,7 @@
 <translation id="4871568871368204250">مطابقت پذیری آف کریں</translation>
 <translation id="4871719318659334896">گروپ بند کریں</translation>
 <translation id="4872192066608821120">‏پاس ورڈز درآمد کرنے کے لیے، ایک CSV فائل منتخب کریں</translation>
+<translation id="4872212987539553601">آلے پر مرموز کاری سیٹ اپ کریں</translation>
 <translation id="4873312501243535625">میڈیا فائل چیکر</translation>
 <translation id="4876273079589074638">ہمارے انجینئروں کو تفتیش اور اس ناکامی کو حل کرنے میں مدد کریں۔ اگر آپ قطعی مراحل کی فہرست بنا سکتے ہیں تو بنائیں۔ کوئی بھی تفصیل بہت چھوٹی نہیں ہے!</translation>
 <translation id="4876895919560854374">اسکرین کو مقفل اور غیر مقفل کریں</translation>
@@ -6425,6 +6432,7 @@
 <translation id="7093220653036489319">فوری جوابات</translation>
 <translation id="7093416310351037609">ڈیٹا کی حفاظت اور سیکیورٹی کے لیے، آپ کی تنظیم کا تقاضا ہے کہ سبھی اہل ڈاؤن لوڈز آپ کی تنظیم کے <ph name="WEB_DRIVE" /> اکاؤنٹ میں محفوظ کیے جائیں۔</translation>
 <translation id="7093866338626856921">نام والے آلات کے ساتھ ڈیٹا کا تبادلہ کریں: <ph name="HOSTNAMES" /></translation>
+<translation id="7094680343477712655">اپنے <ph name="DEVICE_NAME" /> پر کاسٹ کرنے کی درخواست قبول کریں</translation>
 <translation id="7098389117866926363">‏USB-C آلہ (پیچھے موجود بایاں پورٹ)</translation>
 <translation id="7098447629416471489">محفوظ کردہ دیگر سرچ انجن یہاں ظاہر ہوں گے</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ایپ ہٹائیں}other{ایپس ہٹائیں}}</translation>
@@ -6525,6 +6533,7 @@
 <translation id="7212097698621322584">‏PIN تبدیل کرنے کیلئے، اپنا موجودہ PIN درج کریں۔ اگر آپ کو اپنا PIN نہیں معلوم ہے تو آپ کو پہلے اپنی سیکیورٹی کلید دوبارہ ترتیب دینی ہوگی اور پھر ایک نیا PIN تخلیق کرنا ہوگا۔</translation>
 <translation id="7213903639823314449">پتہ بار میں سرچ انجن کا استعمال کیا جاتا ہے</translation>
 <translation id="721490496276866468">پاس ورڈز درآمد کریں</translation>
+<translation id="7218514093816577632">یقینی بنائیں کہ آپ کے <ph name="DEVICE_NAME" /> پر اطلاعات آن ہیں۔</translation>
 <translation id="7219473482981809164">ہمیں ڈاؤن لوڈ کے لیے متعدد دستیاب پروفائلز ملی ہیں۔ آگے بڑھنے سے پہلے اس ایک کو منتخب کریں جسے آپ ڈاؤن لوڈ کرنا چاہتے ہیں۔</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{کوئی کمزور پاس ورڈ نہیں}=1{1 کمزور پاس ورڈ}other{{NUM_WEAK} کمزور پاس ورڈز}}</translation>
 <translation id="7220019174139618249">پاس ورڈ کو "<ph name="FOLDER" />" پر برآمد نہیں کر سکتے</translation>
@@ -6994,6 +7003,7 @@
 <translation id="7664620655576155379">غیر تعاون یافتہ بلوٹوتھ آلہ: "<ph name="DEVICE_NAME" />"۔</translation>
 <translation id="7665082356120621510">سائز ریزرو کریں</translation>
 <translation id="7665369617277396874">اکاؤنٹ شامل کریں</translation>
+<translation id="766635563210446220">پاس ورڈز درآمد کرنے سے قاصر۔ <ph name="FILENAME" /> چیک کریں اور یقینی بنائیں کہ اسے درست طریقے سے فارمیٹ کیا گیا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتے کے اندر واپس کریں}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتوں کے اندر واپس کریں}}</translation>
 <translation id="7668423670802040666">‏<ph name="ACCOUNT" /> کے لیے Google پاس ورڈ مینیجر میں</translation>
 <translation id="7668648754769651616">ایکسیسبیلٹی خصوصیات آپ کے آلے کو استعمال میں آسان تر بناتا ہے۔ فوری ترتیبات تک رسائی حاصل کرنے کے لیے، اپنی اسکرین کے نیچے وقت کا انتخاب کریں۔</translation>
@@ -7523,6 +7533,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{ایک ویڈیو}other{# ویڈیوز}}</translation>
 <translation id="8143442547342702591">غلط ایپلیکیشن</translation>
 <translation id="8143609395536282994">آپ اپنے ڈیٹا کا نظم کیسے کر سکتے ہیں:</translation>
+<translation id="8145170459658034418">میموری سیور</translation>
 <translation id="8146177459103116374">اگر آپ پہلے ہی اس آلہ پر رجسٹر ہو گئے ہیں تو آپ <ph name="LINK2_START" />ایک موجودہ صارف کے بطور سائن ان<ph name="LINK2_END" /> کر سکتے ہیں۔</translation>
 <translation id="8146287226035613638">اپنی ترجیحی زبانیں شامل کریں اور انہیں زمرہ بند کریں۔ ممکن ہونے پر ویب سائٹس آپ کی ترجیحی زبانوں میں دکھائی دیں گی۔ یہ ترجیحات آپ کے براؤزر کی ترتیبات کے ساتھ مطابقت پذیر ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">سائن ان ناکام ہوگیا۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
@@ -7582,6 +7593,7 @@
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
 <translation id="8199300056570174101">نیٹ ورک (سروس) اور آلہ کی خصوصیات</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
+<translation id="8200789660596905522">اپنے <ph name="DEVICE_NAME" /> پر کاسٹ کرنے کی درخواست کو قبول کرنا یقینی بنائیں</translation>
 <translation id="8202160505685531999">اپنا <ph name="DEVICE_TYPE" /> پروفائل اپ ڈيٹ کرنے کیلئے براہ کرم اپنا پاس ورڈ دوبارہ درج کریں۔</translation>
 <translation id="8203152941016626022">قریبی آلات کے ساتھ اشتراک کے آلے کا نام</translation>
 <translation id="8203732864715032075">آپ کو اطلاعات بھیجتی ہے اور "پیغامات" کیلئے اس کمپیوٹر کو یاد رکھنے پر ڈیفالٹ کرتی ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>

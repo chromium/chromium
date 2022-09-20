@@ -32,6 +32,7 @@
 <translation id="1587223624401073077">Google Chrome તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> જોખમી છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="1597911401261118146">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
+<translation id="1599904803480101533">Chrome દ્વારા આ આર્કાઇવ ફાઇલ બ્લૉક કરવામાં આવી કારણ કે તેમાં માલવેર છુપાવેલા હોઈ શકે છે</translation>
 <translation id="1619887657840448962">Chrome ને સુરક્ષિત બનાવવા માટે, અમે નીચેના એક્સ્ટેન્શનને અક્ષમ કર્યું છે કે જે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />તમે તમારો ડેટા કેવી રીતે મેનેજ કરી શકો છો:<ph name="END_BOLD" /> તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, અમે 4 અઠવાડિયા કરતાં જૂની હોય એવી તમારી રુચિઓને ઑટોમૅટિક રીતે ડિલીટ કરીએ છીએ. તમે જેમ જેમ બ્રાઉઝ કરતા રહો છો, તેમ તેમ તમારી રુચિનો વિષય ફરી સૂચિમાં દેખાઈ શકે છે. અથવા તમે તમારી રુચિના એવા વિષયો કાઢી નાખી શકો છો કે જેમને તમે Chromeની સૂચિમાં શામેલ કરવા માગતા નથી.</translation>
 <translation id="1628000112320670027">Chrome સાથે સહાય મેળવો</translation>
@@ -61,6 +62,7 @@
 <translation id="2094648590148273905">ChromeOS Flexની શરતો</translation>
 <translation id="2094919256425865063">છતાં પણ Chrome બંધ કરવું છે?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromeOS Flex વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બન્યું છે.</translation>
+<translation id="2112742052114331084">જ્યારે ચાલુ હોય, તમે જે ટૅબનો સક્રિય રીતે ઉપયોગ ન કરતા હો, Chrome એ ટૅબમાંથી મેમરી પાછી લઈ લે છે. આ તમારા કમ્પ્યુટરના સંસાધનોને અન્ય કાર્યો માટે ઉપલબ્ધ કરે છે અને Chromeની કામગીરી ઝડપી રાખે છે. નિષ્ક્રિય ટૅબ ખાલી દેખાય છે અને જ્યારે તમે તેના પર ક્લિક કરો, ત્યારે તે ઑટોમૅટિક રીતે ફરીથી લોડ થાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /> અથવા <ph name="BEGIN_LINK_2" />પ્રતિસાદ મોકલો<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="2121284319307530122">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromeને બહેતર બનાવવામાં સહાય કરો</translation>
@@ -279,6 +281,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6735387454586646204">ChromeOS Flex સિસ્ટમ</translation>
 <translation id="6739177684496155661">નવી Chrome પ્રોફાઇલમાં બ્રાઉઝિંગ ચાલુ રાખીએ?</translation>
 <translation id="6750954913813541382">જોડણીની ભૂલો સુધારવા માટે, તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Chrome દ્વારા Googleને મોકલવામાં આવે છે</translation>
+<translation id="6756581345161130259">આવશ્યકતા મુજબ, તમે જે ટૅબનો સક્રિય રીતે ઉપયોગ ન કરતા હો, Chrome એ ટૅબમાંથી મેમરી પાછી લઈ લે છે. સેટિંગમાં તમે આને કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="677276454032249905">છતાં પણ Chromeમાંથી બહાર નિકળવું છે?</translation>
 <translation id="6785872064505734160">Google Assistant Chromeમાં, તમારા માટે ઘણી વેબસાઇટમાં અમુક ઍક્શન પૂર્ણ કરી શકે છે</translation>
 <translation id="683440813066116847">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome કૅનેરી માટે ઇનબાઉન્ડ નિયમ.</translation>

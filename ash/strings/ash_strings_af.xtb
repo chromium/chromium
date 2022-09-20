@@ -1158,6 +1158,7 @@ Nuwe installasie</translation>
 <translation id="7633755430369750696">Wys Nabydeling-instellings.</translation>
 <translation id="7634648064048557203">Kamera is geglip na hoek onder regs</translation>
 <translation id="7641938616688887143">Neem op</translation>
+<translation id="7642106959537987271">kleuromkeringmodus</translation>
 <translation id="7642647758716480637">Maak instellings oop vir <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eienaar)</translation>
 <translation id="7647488630410863958">Ontsluit toestel om kennisgewings te bekyk</translation>
@@ -1263,6 +1264,7 @@ Nuwe installasie</translation>
 <translation id="8209010265547628927">Stel terug</translation>
 <translation id="8214996719228530800">Kanarie-kanaal</translation>
 <translation id="8219451629189078428">Jou Chromebook moet in hierdie tyd aangeskakel bly en aan krag gekoppel wees. Maak seker dat die laaier of kragprop se drade behoorlik by sowel jou Chromebook as die kragpunt ingeprop is. Moenie jou Chromebook afskakel nie.</translation>
+<translation id="8230305195727960608">Kleuromkeringmodus</translation>
 <translation id="8236042855478648955">Tyd vir 'n blaaskans</translation>
 <translation id="8246282815785366524">Welkom terug, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>
@@ -1389,6 +1391,7 @@ Nuwe installasie</translation>
 <translation id="8982906748181120328">Naby-sigbaarheid</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Gebruik tans <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Kleuromkeringmodus is geaktiveer. Druk weer Ctrl+Search+H om dit af te skakel.</translation>
 <translation id="899350903320462459">Ontsluit toestel as <ph name="LOGIN_ID" /> om die kennisgewinghandeling uit te voer</translation>
 <translation id="9000771174482730261">BESTUUR BERGING</translation>
 <translation id="9017320285115481645">Voer die Family Link-ouertoegangskode in.</translation>
@@ -1437,6 +1440,7 @@ Nuwe installasie</translation>
 <translation id="921989828232331238">Jou ouer het jou toestel vir die dag gesluit</translation>
 <translation id="9220525904950070496">Verwyder rekening</translation>
 <translation id="923686485342484400">Druk Ctrl Shift Q twee keer om af te meld.</translation>
+<translation id="92580429198593979">Jy het die sleutelbordkortpad vir kleuromkering gedruk? Wil jy dit aanskakel?</translation>
 <translation id="925832987464884575">Versteek voorskoue</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> vereis dat jy onmiddellik jou <ph name="DEVICE_TYPE" /> opdateer</translation>
 <translation id="938963181863597773">Wat is op my kalender?</translation>

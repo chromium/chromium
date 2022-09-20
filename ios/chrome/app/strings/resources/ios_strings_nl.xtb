@@ -23,6 +23,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1104948393051856124">Accepteren en doorgaan</translation>
 <translation id="110724200315609752">Overschakelen naar geopend venster</translation>
 <translation id="1112015203684611006">Afdrukken mislukt.</translation>
+<translation id="1118569444314402022">Welkom terug, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Nieuw tabblad maken.</translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
 <translation id="1135212215217513471">Chrome voor iOS downloaden</translation>
@@ -63,6 +64,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1377255359165588604">Synchronisatie werkt niet meer.</translation>
 <translation id="1377321085342047638">Kaartnummer</translation>
 <translation id="1383876407941801731">Zoeken</translation>
+<translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Afgelopen 4 weken</translation>
 <translation id="1404330357948037222">Je bent uitgelogd</translation>
 <translation id="1407135791313364759">Alles openen</translation>
@@ -176,6 +178,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2421044535038393232">Doorgaan met bewerken</translation>
 <translation id="2434405374328098816">Je hebt al een wachtwoord voor <ph name="USERNAME" /> opgeslagen op <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
+<translation id="2461070143328828326">Wachtwoordinstellingen</translation>
 <translation id="2469960372084740698">Safe Browsing uitzetten?</translation>
 <translation id="2473876017985765807">Je hebt al een wachtwoord opgeslagen voor <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Niet geselecteerd</translation>
@@ -330,6 +333,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3709582977625132201">Markeren als ongelezen</translation>
 <translation id="371230970611282515">Voorspelt en waarschuwt je voor gevaarlijke gebeurtenissen voordat deze plaatsvinden.</translation>
 <translation id="37207012422556617">Trending zoekopdrachten</translation>
+<translation id="3726360487031500941">Log weer in op je account <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Hiermee worden de ingevoerde URL's in Google Chrome geopend in de incognitomodus.</translation>
 <translation id="3762232513783804601">Ontworpen voor je iPad</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
@@ -384,6 +388,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4187450337729239226">Plakken en zoeken</translation>
 <translation id="4223967053752765281">Je organisatie heeft inloggen uitgezet. Je bookmarks, geschiedenis, wachtwoorden en andere instellingen blijven zichtbaar op dit apparaat. Als je wijzigingen aanbrengt, worden deze niet gesynchroniseerd met je account.</translation>
 <translation id="4233831822770018312">Rechten bewerken</translation>
+<translation id="4236584471598725073">Prijs wordt gevolgd</translation>
 <translation id="4237377247299956313">Tik op <ph name="BEGIN_BOLD" />Standaard browser-app<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Wachtwoordzin opgeven</translation>
 <translation id="4249955472157341256">Sorteren op nieuwste</translation>

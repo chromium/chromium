@@ -23,6 +23,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1104948393051856124">Accept &amp; Continue</translation>
 <translation id="110724200315609752">Switch to open window</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
+<translation id="1118569444314402022">Welcome back, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1135212215217513471">Get Chrome for iOS</translation>
@@ -63,6 +64,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card number</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="138618066238211776">Continue as <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Last 4 Weeks</translation>
 <translation id="1404330357948037222">You're signed out</translation>
 <translation id="1407135791313364759">Open all</translation>
@@ -176,6 +178,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2421044535038393232">Keep editing</translation>
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="2461070143328828326">Password Settings</translation>
 <translation id="2469960372084740698">Turn off Safe Browsing?</translation>
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Not selected</translation>
@@ -330,6 +333,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3709582977625132201">Mark as unread</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
 <translation id="37207012422556617">Trending searches</translation>
+<translation id="3726360487031500941">Sign in again to your account <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Opens the inputted URLs in Google Chrome in Incognito.</translation>
 <translation id="3762232513783804601">Built for your iPad</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>

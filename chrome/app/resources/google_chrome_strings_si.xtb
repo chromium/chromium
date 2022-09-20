@@ -60,6 +60,7 @@
 <translation id="2094648590148273905">ChromeOS Flex නියම</translation>
 <translation id="2094919256425865063">කෙසේ වුවත් Chrome වෙතින් ඉවත් වන්න ද?</translation>
 <translation id="2106831557840787829">ChromeOS Flex අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංගය<ph name="END_LINK_CROS_OSS" /> මගින්, <ph name="BEGIN_LINK_LINUX_OSS" />Linux සංවර්ධන පරිසරය<ph name="END_LINK_LINUX_OSS" /> ලෙස හැකියාව ලබා දී ඇත.</translation>
+<translation id="2112742052114331084">ක්‍රියාත්මක විට, Chrome ඔබ සක්‍රියව භාවිතා නොකරන පටිතිවලින් මතකය නැවත ලබා ගනී. මෙය වෙනත් කාර්යයන් සඳහා ඔබේ පරිගණකයේ සම්පත් නිදහස් කරන අතර Chrome වේගවත් කරයි. අක්‍රිය පටිති හිස්ව පෙනෙන අතර ඔබ ඒවා ක්ලික් කළ විට ස්වයංක්‍රීයව නැවත පූරණය වේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /> හෝ <ph name="BEGIN_LINK_2" />ප්‍රතිපෝෂණය යවන්න<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">මෙය අයිතම <ph name="ITEMS_COUNT" /> මෙම උපාංගයෙන් මකනු ඇත. ඔබගේ දත්ත පසුව ලබා ගැනීමට, <ph name="USER_EMAIL" /> ලෙස Chrome වෙත පුරන්න.</translation>
 <translation id="2121284319307530122">&amp;Chrome යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />වත්මන් සැකසීම්<ph name="END_LINK" /> වාර්තා කිරීමෙන් Chrome වඩා යහපත් කිරීමට උදවු වන්න</translation>
@@ -278,6 +279,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6735387454586646204">ChromeOS Flex පද්ධතිය</translation>
 <translation id="6739177684496155661">නව Chrome පැතිකඩක ඉදිරියට යන්නද?</translation>
 <translation id="6750954913813541382">අක්‍ෂර වින්‍යාස දෝෂ නිවැරදි කිරීමට, නිඔබ බ්‍රවුසරය තුළ ටයිප් කරන පාඨය Chrome විසින් Google වෙත යවනු ලැබේ</translation>
+<translation id="6756581345161130259">අවශ්‍ය පරිදි, Chrome ඔබ සක්‍රියව භාවිතා නොකරන පටිතිවලින් මතකය නැවත ලබා ගනී. ඔබට සැකසීම් තුළ මෙය ඕනෑම වේලාවක වෙනස් කළ හැක.</translation>
 <translation id="677276454032249905">කෙසේ වුවත් Chrome වෙතින් ඉවත් වන්න ද?</translation>
 <translation id="6785872064505734160">Chrome තුළ ඇති Google සහකරු ඔබ වෙනුවෙන් වෙබය පුරා කාර්ය ඉටු කළ හැක</translation>
 <translation id="683440813066116847">Google Chrome Canary හි අභ්‍යන්තර නියෝගය වන්නේ   mDNS තදබදයයි.</translation>

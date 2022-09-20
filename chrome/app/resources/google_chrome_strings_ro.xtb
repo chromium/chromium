@@ -56,6 +56,7 @@
 <translation id="2094648590148273905">Condițiile pentru sistemul de operare Chrome Flex</translation>
 <translation id="2094919256425865063">Ieși din Chrome oricum?</translation>
 <translation id="2106831557840787829">Sistemul de operare Chrome Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Când opțiunea este activată, Chrome revendică memoria din filele pe care nu le folosești în mod activ. Acțiunea eliberează resursele computerului pentru alte activități și menține viteza ridicată a browserului Chrome. Filele inactive se afișează goale și se reîncarcă automat când dai clic pe ele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> sau <ph name="BEGIN_LINK_2" />trimite feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Astfel, se vor șterge <ph name="ITEMS_COUNT" /> elemente de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuie la îmbunătățirea browserului Chrome raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>

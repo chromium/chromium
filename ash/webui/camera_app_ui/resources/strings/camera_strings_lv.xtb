@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nekas nav ierakstīts</translation>
+<translation id="169335673490251151">Skenēt papildu lapas</translation>
 <translation id="1838104802459806957">Pavirzīt augšup</translation>
 <translation id="1851169887664797861">Ir pieejamas papildu kameras vadīklas</translation>
 <translation id="1851616744363735765">APTURĒTA</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
 <translation id="4281620174117014503">Vidēja izšķirtspēja</translation>
 <translation id="4329152592498422850">Pārslēgt uz kvadrātveida fotoattēlu uzņemšanu</translation>
+<translation id="4340659173795395806">Tagad varat izveidot PDF failu ar vairākām lapām.</translation>
 <translation id="4383571725254449280">Drukāt veiktspējas žurnālus</translation>
 <translation id="4445542136948522167">Pārtraukt fotoattēla uzņemšanu</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseļi</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5320594929574852403">Pārvietojas pa kreisi</translation>
 <translation id="5444515100983837161">Novietojiet visas dokumenta malas kadrā. Skenēšana darbojas vislabāk, ja dokuments un fons ir atšķirīgā krāsā.</translation>
+<translation id="5662366948659129155">Notiek <ph name="COUNT" />. lapas skenēšana</translation>
 <translation id="5671277269877808209">Kvadrāts</translation>
 <translation id="5746169159649715125">Saglabāt kā PDF failu</translation>
 <translation id="5753488212459587150">Iespējot eksperta režīmu</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">Eksperta režīms</translation>
 <translation id="5860033963881614850">Izsl.</translation>
 <translation id="5869546221129391014">Režģis</translation>
+<translation id="5903928279335207406">Dzēst lapu</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5975083100439434680">Tālināt</translation>
 <translation id="5976160379964388480">Citi</translation>
@@ -158,6 +162,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8167081290930651932">Saglabāt kā fotoattēlu</translation>
 <translation id="8239780215768881278">Uzņemt video momentuzņēmumu</translation>
 <translation id="8261506727792406068">Dzēst</translation>
+<translation id="839162370397157884">Atlasīt lapu</translation>
 <translation id="8425673304802773841">Pavirzīt lejup</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8629662593426079630">360p</translation>

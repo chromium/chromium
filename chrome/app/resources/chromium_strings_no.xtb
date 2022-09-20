@@ -331,6 +331,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8453117565092476964">Installasjonsarkivet er skadet eller ugyldig. Last ned Chromium på nytt.</translation>
 <translation id="8463672209299734063">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til ChromiumOS bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
+<translation id="8522220489792889625">Ved behov tar Chromium tilbake minne fra faner du ikke bruker aktivt. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="8550334526674375523">Denne jobbprofilen er helt separat fra den personlige profilen din.</translation>
 <translation id="8558383651099478961">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å legge til denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">For å få fremtidige Chromium-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker macOS 10.12.</translation>

@@ -1154,6 +1154,7 @@ Nieuwe installatie</translation>
 <translation id="7633755430369750696">Instellingen bekijken voor Dichtbij delen.</translation>
 <translation id="7634648064048557203">Camera uitgelijnd op de rechterbenedenhoek</translation>
 <translation id="7641938616688887143">Opnemen</translation>
+<translation id="7642106959537987271">modus voor kleurinversie</translation>
 <translation id="7642647758716480637">Instellingen openen voor <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigenaar)</translation>
 <translation id="7647488630410863958">Ontgrendel het apparaat om je meldingen te bekijken</translation>
@@ -1259,6 +1260,7 @@ Nieuwe installatie</translation>
 <translation id="8209010265547628927">Resetten</translation>
 <translation id="8214996719228530800">Canary-kanaal</translation>
 <translation id="8219451629189078428">Je Chromebook moet ondertussen aan blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Zet je Chromebook niet uit.</translation>
+<translation id="8230305195727960608">Modus voor kleurinversie</translation>
 <translation id="8236042855478648955">Tijd voor een pauze</translation>
 <translation id="8246282815785366524">Welkom terug, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
@@ -1385,6 +1387,7 @@ Nieuwe installatie</translation>
 <translation id="8982906748181120328">Dichtbij aan</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> gebruiken</translation>
+<translation id="8991617137207906966">Modus voor kleurinversie aangezet. Druk nogmaals op Ctrl+Zoeken+H om dit uit te zetten.</translation>
 <translation id="899350903320462459">Ontgrendel het apparaat als <ph name="LOGIN_ID" /> om de meldingsactie uit te voeren</translation>
 <translation id="9000771174482730261">OPSLAG BEHEREN</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>
@@ -1433,6 +1436,7 @@ Nieuwe installatie</translation>
 <translation id="921989828232331238">Je ouder heeft je apparaat de hele dag vergrendeld</translation>
 <translation id="9220525904950070496">Account verwijderen</translation>
 <translation id="923686485342484400">Druk twee keer op Control+Shift+Q om uit te loggen.</translation>
+<translation id="92580429198593979">Je hebt op de sneltoets voor kleurinversie gedrukt. Wil je dit aanzetten?</translation>
 <translation id="925832987464884575">Voorbeelden verbergen</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> onmiddellijk updatet</translation>
 <translation id="938963181863597773">Wat staat er in mijn agenda?</translation>

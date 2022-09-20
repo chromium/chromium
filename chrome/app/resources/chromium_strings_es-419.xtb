@@ -296,6 +296,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7682601070171973634">Chromium está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos de tus datos</translation>
 <translation id="7686590090926151193">Chromium no es el navegador predeterminado</translation>
 <translation id="7689606757190482937">Sincroniza y personaliza Chromium en todos tus dispositivos</translation>
+<translation id="7714577916146996629">Cuando está activado, Chromium recupera la memoria de las pestañas que no estás usando activamente. Esto libera los recursos de tu computadora para otras tareas y mantiene la velocidad de Chromium. Las pestañas inactivas aparecen vacías y se vuelven a cargar automáticamente cuando haces clic en ellas. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envía comentarios<ph name="END_LINK_2" />.</translation>
 <translation id="7745317241717453663">Esta acción borrará tus datos de navegación de este dispositivo. Si más adelante deseas recuperarlos, accede a tu cuenta en Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">El instalador no pudo crear un directorio temporal. Verifique si hay espacio disponible en el disco y cuenta con permiso para instalar software.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" />: Chromium Canary</translation>
@@ -325,6 +326,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8453117565092476964">El instalador está dañado o no es válido. Descarga Chromium nuevamente.</translation>
 <translation id="8463672209299734063">Opcional: Para ayudarnos a mejorar las funciones y el rendimiento de Chromium OS, envía automáticamente datos de uso y diagnóstico a Google.</translation>
 <translation id="8493179195440786826">Chromium no actualizado</translation>
+<translation id="8522220489792889625">Según sea necesario, Chromium recupera la memoria de las pestañas que no estás usando activamente. Puedes cambiar este parámetro cuando lo desees en Configuración.</translation>
 <translation id="8550334526674375523">Este perfil de trabajo está totalmente separado de tu perfil personal.</translation>
 <translation id="8558383651099478961">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chromium. No se permite agregar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Para obtener próximas actualizaciones de Chromium, necesitarás macOS 10.13 o versiones posteriores. Esta computadora usa macOS 10.12.</translation>

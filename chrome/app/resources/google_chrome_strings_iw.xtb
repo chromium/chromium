@@ -57,6 +57,7 @@
 <translation id="2094648590148273905">‏התנאים של ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏לסגור את Chrome בכל זאת?</translation>
 <translation id="2106831557840787829">‏השימוש ב-ChromeOS Flex מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">‏כשההגדרה מופעלת, מערכת Chrome משתמשת בזיכרון מכרטיסיות שאינן בשימוש באופן פעיל. כך המשאבים של המחשב מתפנים למשימות אחרות, ומערכת Chrome ממשיכה לפעול במהירות. כרטיסיות לא פעילות מופיעות ריקות ונטענות מחדש באופן אוטומטי כשלוחצים עליהן. אפשר <ph name="BEGIN_LINK" />לקבל מידע נוסף<ph name="END_LINK" /> או <ph name="BEGIN_LINK_2" />לשלוח משוב<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">‏הפעלה מחדש לצורך עדכון &amp;Chrome</translation>
 <translation id="2123055963409958220">‏דיווח על <ph name="BEGIN_LINK" />ההגדרות הנוכחיות<ph name="END_LINK" /> יעזור לשפר את Chrome</translation>
@@ -270,6 +271,7 @@
 <translation id="6735387454586646204">‏מערכת ChromeOS Flex</translation>
 <translation id="6739177684496155661">‏להמשיך בפרופיל Chrome חדש?</translation>
 <translation id="6750954913813541382">‏כדי לתקן שגיאות כתיב, הטקסט שהוקלד על ידך בדפדפן נשלח אל Google על ידי Chrome</translation>
+<translation id="6756581345161130259">‏מערכת Chrome משתמשת בזיכרון מכרטיסיות שאינן בשימוש באופן פעיל, לפי הצורך. תמיד אפשר לשנות זאת בהגדרות.</translation>
 <translation id="677276454032249905">‏לסגור את Chrome בכל זאת?</translation>
 <translation id="6785872064505734160">‏Google Assistant ב-Chrome יכולה להשלים עבורך פעולות באתרים</translation>
 <translation id="683440813066116847">‏כלל נכנס עבור הגרסה הניסיונית של Google Chrome על מנת לאפשר תנועת mDNS.</translation>

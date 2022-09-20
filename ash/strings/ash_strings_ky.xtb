@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">Толук экран режиминде жаздыруу</translation>
 <translation id="2135456203358955318">Жалгаштырылган лупа</translation>
 <translation id="2148716181193084225">Бүгүн</translation>
+<translation id="2161132820593978283">Видео чалуу учурунда сиз экрандын борборунда болгудай кылып камеранын алкагын колдонуп көрүңүз. Аны Ыкчам параметрлерден колдонуп көрүңүз.</translation>
 <translation id="2170530631236737939">Жалпы маалыматтан чыгуу үчүн үч манжаңыз менен ылдый сүрүп коюңуз</translation>
 <translation id="219905428774326614">Жүргүзгүч, бардык колдонмолор</translation>
 <translation id="2201071101391734388">Акыркы сүрөт (<ph name="TOTAL_COUNT" /> ичинен <ph name="INDEX" />).</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">Туташкан жок</translation>
 <translation id="2408955596600435184">PIN кодуңузду киргизиңиз</translation>
 <translation id="2412593942846481727">Жаңы версия бар</translation>
+<translation id="2426051945783024481">Камеранын алкагы автоматтык түрдө ортого коюлду</translation>
 <translation id="2427507373259914951">Сол баскычын чыкылдатуу</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат суроодо. Уруксат берүүдөн мурун, төмөнкү купуя сөз айкашы түзмөгүңүздө көрүнүп тургандыгын ырастаңыз: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
@@ -1040,6 +1042,7 @@
 <translation id="6960565108681981554">Жандырылган эмес. Байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="6961121602502368900">Жумуш профилинде телефондун үнүн басууга болбойт</translation>
 <translation id="6961840794482373852">Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Барактын өйдө жагына жылдыруу баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + өйдө жебени басыңыз.</translation>
+<translation id="696267987219125751">Камеранын алкагы өчүк.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Баштоо</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1133,7 @@
 <translation id="7513922695575567867">Жылнаама, <ph name="DATE" /> аптасы, учурда <ph name="SELECTED_DATE" /> тандалып турат.</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Камеранын алкагы күйүк.</translation>
 <translation id="7526573455193969409">Тармак көзөмөлдөнүшү мүмкүн</translation>
 <translation id="7536035074519304529">IP дареги: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux колдонмолору жана жашыруун терезелер учурда колдоого алынбайт. Башка колдонмолор сакталат.</translation>
@@ -1148,6 +1152,7 @@
 <translation id="7607002721634913082">Бир азга токтотулду</translation>
 <translation id="7609951632080598826">Жылнаама, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера кайра туташтырылды.</translation>
+<translation id="761736749114493194">Камеранын алкагын өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Nearby Share жөндөөлөрү көрүнсүн.</translation>
 <translation id="7634648064048557203">Камера төмөнкү оң бурчка кадалды</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">Учурдагы иш тактадагы терезелерди көрсөтүү, радио баскычы тандалды</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> түзмөгүңүз өчүп турганда кубатталбай калышы мүмкүн.</translation>
 <translation id="8535393432370007982">Түсү боюнча иреттөө тартибин артка кайтаруу</translation>
+<translation id="8541078764854166027">Камера алкагы</translation>
 <translation id="8542053257095774575">Сакталган иш такталар же үлгүлөр жок</translation>
 <translation id="8546059259582788728">Иреттөө токтотулду</translation>
 <translation id="8551588720239073785">Күн менен убакыт жөндөөлөрү</translation>

@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ምንም አልተቀረጸም</translation>
+<translation id="169335673490251151">ተጨማሪ ገጾችን ቃኝ</translation>
 <translation id="1838104802459806957">ወደ ላይ አጋድል</translation>
 <translation id="1851169887664797861">ተጨማሪ የካሜራ መቆጣጠሪያዎች ይገኛሉ</translation>
 <translation id="1851616744363735765">ላፍታ ቆሟል</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="4281620174117014503">መካከለኛ ጥራት</translation>
 <translation id="4329152592498422850">የካሬ ፎቶን ለማንሳት ይቀይሩ</translation>
+<translation id="4340659173795395806">አሁን ላይ ባለብዙ ገጽ PDFን መፍጠር ይችላሉ</translation>
 <translation id="4383571725254449280">የህትመት አፈጻጸም መዝገቦች</translation>
 <translation id="4445542136948522167">ፎቶን ማንሳት አቁም</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> ሜጋ ፒክሴል</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5320594929574852403">ወደ ግራ አቅጣጫ በመንቀሳቀስ ላይ</translation>
 <translation id="5444515100983837161">የሰነዱን ሁሉንም ጠርዞች በክፈፉ ውስጥ ያስቀምጡ። ሰነዱ እና ዳራ የተለያዩ ቀለሞች ከሆኑ ቅኝት በተሻለ ሁኔታ ይሠራል።</translation>
+<translation id="5662366948659129155">ገጽ <ph name="COUNT" />ን በመቃኘት ላይ</translation>
 <translation id="5671277269877808209">ካሬ</translation>
 <translation id="5746169159649715125">እንደ PDF አስቀምጥ</translation>
 <translation id="5753488212459587150">የባለሙያ ሁነታን ያንቁ</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">ወደ ውጭ መላክ ሁነታ</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="5869546221129391014">ፍርግርግ</translation>
+<translation id="5903928279335207406">ገጽ ሰርዝ</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5975083100439434680">አሳንስ</translation>
 <translation id="5976160379964388480">ሌሎች</translation>
@@ -158,6 +162,7 @@
 <translation id="8167081290930651932">እንደ ፎቶ አስቀምጥ</translation>
 <translation id="8239780215768881278">የቪዲዮ ቅፅበተ ፎቶን ያንሱ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
+<translation id="839162370397157884">ገጽ ምረጥ</translation>
 <translation id="8425673304802773841">ወደ ታች አጋድል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8629662593426079630">360p</translation>

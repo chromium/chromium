@@ -304,6 +304,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7682601070171973634">Chromium utforskar nya funktioner som gör att webbplatser kan leverera samma upplevelse av webbläsaren med mindre av din data</translation>
 <translation id="7686590090926151193">Chromium är inte din standardwebbläsare</translation>
 <translation id="7689606757190482937">Synkronisera och anpassa Chromium på alla enheter du använder</translation>
+<translation id="7714577916146996629">Om aktiverat återtar Chromium minne från flikar som du inte använder aktivt. Då frigörs datorns resurser för andra uppgifter så Chromium fungerar så snabbt som möjligt. Inaktiva flikar verkar tomma och läses in automatiskt när du klickar på dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> eller <ph name="BEGIN_LINK_2" />skicka feedback<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Webbinformationen raderas från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="7747138024166251722">Det gick inte att skapa en tillfällig katalog för installationsfilen. Kontrollera diskutrymmet och att du har behörighet att installera program.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -333,6 +334,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8453117565092476964">Arkivet för installationsfilen är skadat eller ogiltigt. Ladda ned Chromium igen.</translation>
 <translation id="8463672209299734063">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chromium OS.</translation>
 <translation id="8493179195440786826">Den här versionen av Chromium är inaktuell</translation>
+<translation id="8522220489792889625">Om det behövs återtar Chromium minne från flikar som du inte använder aktivt. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="8550334526674375523">Jobbprofilen hålls helt åtskild från din privata profil.</translation>
 <translation id="8558383651099478961">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium. Det är inte tillåtet att lägga till denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Du behöver macOS 10.13 eller senare för att få kommande uppdateringar av Chromium. På den här datorn används macOS 10.12.</translation>

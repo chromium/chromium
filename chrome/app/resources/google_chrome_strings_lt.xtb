@@ -61,6 +61,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2094648590148273905">„ChromeOS Flex“ sąlygos</translation>
 <translation id="2094919256425865063">Vis tiek išeiti iš „Chrome“?</translation>
 <translation id="2106831557840787829">„ChromeOS Flex“, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="2112742052114331084">Kai įjungta, „Chrome“ iš naujo įtraukia atmintį iš skirtukų, kurių aktyviai nenaudojate. Tai atlaisvina kompiuterio šaltinius kitoms užduotims ir užtikrina „Chrome“ spartą. Neaktyvūs skirtukai rodomi tušti ir automatiškai įkeliami iš naujo juos spustelėjus. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> arba <ph name="BEGIN_LINK_2" />siųskite atsiliepimą<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Atlikus šį veiksmą, iš šio įrenginio bus ištrinta tiek elementų: <ph name="ITEMS_COUNT" />. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Paleisti iš naujo atnaujinant „&amp;Chrome“</translation>
 <translation id="2123055963409958220">Padėkite tobulinti „Chrome“ pateikę ataskaitą apie <ph name="BEGIN_LINK" />dabartinius nustatymus<ph name="END_LINK" /></translation>
@@ -279,6 +280,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6735387454586646204">„ChromeOS Flex“ sistema</translation>
 <translation id="6739177684496155661">Tęsti naudojant naują „Chrome“ profilį?</translation>
 <translation id="6750954913813541382">Kad ištaisytų rašybos klaidas, „Chrome“ tekstą, kurį įvedate naršyklėje, siunčia „Google“</translation>
+<translation id="6756581345161130259">Jei reikia, „Chrome“ iš naujo įtraukia atmintį iš skirtukų, kurių aktyviai nenaudojate. Tai galite bet kada pakeisti skiltyje „Nustatymai“.</translation>
 <translation id="677276454032249905">Vis tiek išeiti iš „Chrome“?</translation>
 <translation id="6785872064505734160">„Google“ padėjėjas naršyklėje „Chrome“ gali atlikti veiksmus svetainėse už jus</translation>
 <translation id="683440813066116847">„Canary“ versijos „Google Chrome“ skirta taisyklė, pagal kurią leidžiamas gaunamas mDNS srautas.</translation>

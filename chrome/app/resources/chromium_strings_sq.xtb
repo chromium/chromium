@@ -303,6 +303,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7682601070171973634">Chromium po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga të dhënat e tua</translation>
 <translation id="7686590090926151193">Chromium nuk është shfletuesi i parazgjedhur</translation>
 <translation id="7689606757190482937">Sinkronizo dhe personalizo Chromium nëpër pajisjet e tua</translation>
+<translation id="7714577916146996629">Kur është aktiv, Chromium rikuperon memorien nga skedat që ti nuk po i përdor në mënyrë aktive. Kjo liron burimet e kompjuterit për detyra të tjera dhe bën që Chromium të jetë i shpejtë. Skedat joaktive shfaqen bosh dhe ringarkohen automatikisht kur klikon tek ato. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> ose <ph name="BEGIN_LINK_2" />dërgo komente<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -332,6 +333,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8453117565092476964">Arkivi i instaluesit është i dëmtuar ose i pavlefshëm. Shkarkoje Chromium përsëri.</translation>
 <translation id="8463672209299734063">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së ChromiumOS duke dërguar automatikisht te Google të dhëna diagnostikuese dhe përdorimi.</translation>
 <translation id="8493179195440786826">Chromium nuk është i përditësuar</translation>
+<translation id="8522220489792889625">Sipas nevojës, Chromium rikuperon memorien nga skedat që ti nuk po i përdor në mënyrë aktive. Këtë mund ta ndryshosh në çdo kohë te cilësimet.</translation>
 <translation id="8550334526674375523">Ky profil pune është plotësisht i veçuar nga profili yt personal.</translation>
 <translation id="8558383651099478961">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chromium. Nuk lejohet shtimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet macOS 10.13 e lart. Ky kompjuter përdor macOS 10.12.</translation>

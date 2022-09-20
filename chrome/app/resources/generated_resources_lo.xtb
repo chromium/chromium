@@ -695,6 +695,7 @@
 <translation id="1640283014264083726">PKCS #1 MD4 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{ບໍ່ໄດ້ນຳເຂົ້າ 1 ລະຫັດຜ່ານເນື່ອງຈາກຮູບແບບຂອງມັນບໍ່ຖືກຕ້ອງ.}other{ບໍ່ໄດ້ນຳເຂົ້າ {NUM_PASSWORDS} ລະຫັດຜ່ານເນື່ອງຈາກຮູບແບບຂອງມັນບໍ່ຖືກຕ້ອງ.}}</translation>
 <translation id="1642492862748815878">ເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /> ແລະ ອີກ <ph name="NUMBER_OF_DEVICES" /> ອຸປະກອນ Bluetooth ແລ້ວ</translation>
 <translation id="1642494467033190216">ການ​ເອົາ​ການ​ປົກ​ປ້ອງ rootfs ອອກ ແລະ​ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ການ​ປິດ​ເປີດ​ໃໝ່ ກ່ອນ​ເປີດ​ໃຊ້​ງານ​ຄຸນສົມບັດ​ການ​ແກ້​ໄຂ​ບັນ​ຫາ​ອື່ນ.</translation>
 <translation id="1643072738649235303">ລາຍເຊັນ X9.62 ECDSA ພ້ອມກັບ SHA-1</translation>
@@ -1846,6 +1847,7 @@
 <translation id="2673135533890720193">ອ່ານປະຫວັດການທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="2674764818721168631">ປິດ</translation>
 <translation id="2678063897982469759">ເປີດໃຊ້ງານຄືນໃໝ່​</translation>
+<translation id="2678100101831051676">ບໍ່ສາມາດສົ່ງສັນຍານໄດ້.</translation>
 <translation id="268053382412112343">ປະຫວັດ</translation>
 <translation id="2681124317993121768">ບໍ່ຮອງຮັບໂປຣໄຟລ໌ແຂກ</translation>
 <translation id="2682498795777673382">ການອັບເດດຈາກພໍ່ແມ່ຂອງທ່ານ</translation>
@@ -3883,6 +3885,7 @@
 <translation id="4617019240346358451">ໂຫຼດໜ້າໃໝ່ເພື່ອໃຊ້ "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4617270414136722281">ຕົວເລືອກສ່ວນຂະຫຍາຍ</translation>
 <translation id="4617880081511131945">ບໍ່ສາມາດເລີ່ມການເຊື່ອມຕໍ່ໄດ້</translation>
+<translation id="4618195822946934889">URL ສາມາດມີຕົວອັກສອນ ASCII ໄດ້ເທົ່ານັ້ນ</translation>
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="4619615317237390068">ແຖບຈາກອຸປະກອນອື່ນ</translation>
 <translation id="4620809267248568679">ການຕັ້ງຄ່ານີ້ຖືກບັງຄັບໂດຍສ່ວນຂະຫຍາຍ.</translation>
@@ -5081,6 +5084,7 @@
 <translation id="5800351251499368110">ປິດການຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ. ເປີດການຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງແລ້ວ.</translation>
 <translation id="5801568494490449797">ຄວາມມັກ</translation>
 <translation id="5804241973901381774">ການ​ອະ​ນຸ​ຍາດ</translation>
+<translation id="5805268472388605531">ກົດປຸ່ມແປ້ນພິມຄ້າງໄວ້ເພື່ອເບິ່ງເຄື່ອງໝາຍສຳນຽງ ແລະ ຕົວອັກສອນພິເສດ</translation>
 <translation id="5805697420284793859">ຕົວຈັດການໜ້າຈໍ</translation>
 <translation id="5806447147478173900">ການໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນທັງໝົດຕາມເວັບໄຊທີ່ສະແດງ: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ຕາມຄ່າເລີ່ມຕົ້ນ)</translation>
@@ -5722,6 +5726,7 @@
 <translation id="642469772702851743">ອຸປະກອນນີ້ (SN: <ph name="SERIAL_NUMBER" />) ຖືກລັອກໄວ້ໂດຍເຈົ້າຂອງ.</translation>
 <translation id="6425556984042222041">ອັດຕາການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="642729974267661262">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຫຼິ້ນສຽງ</translation>
+<translation id="6427608534767366138">ຕ້ອງໃຊ້ການພິສູດຢືນຢັນພຣັອກຊີສຳລັບ "<ph name="NETWORK_ID" />"</translation>
 <translation id="6429384232893414837">ອັບເດດຜິດພາດ</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, ໃບຢັ້ງຢືນດ່ຽວ</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ຈະຕັ້ງການອັບເດດອັດຕະໂນມັດໃຫ້ກັບຜູ້ໃຊ້ຄອມພິວເຕີນີ້ທຸກຄົນ.</translation>
@@ -7853,6 +7858,7 @@
 <translation id="844063558976952706">ຢູ່ໃນເວັບໄຊນີ້ສະເໝີ</translation>
 <translation id="8441313165929432954">ເປີດ/ປິດການປ່ອຍສັນຍານ</translation>
 <translation id="8443795068008423036">ກະລຸນາກວດສອບວ່າອຸປະກອນຂອງທ່ານອັບເດດແລ້ວ ແລະ ລອງໃໝ່ອີກເທື່ອໜຶ່ງ</translation>
+<translation id="8443986842926457191">URL ແມ່ນຫຼາຍກວ່າ 2048 ຕົວອັກສອນ.</translation>
 <translation id="8446884382197647889">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ</translation>
 <translation id="8447409163267621480">ລວມມີ Ctrl ຫຼື Alt</translation>
 <translation id="844850004779619592">ບໍ່ພົບຄຳສັ່ງ</translation>
@@ -7918,6 +7924,7 @@
 <translation id="851263357009351303">​ອະ​ນຸ​ຍາດ​ໃຫ້ <ph name="HOST" /> ສະ​ແດງຮູບທຸກຄັ້ງ</translation>
 <translation id="8513108775083588393">ໝຸນອັດຕະໂນມັດ</translation>
 <translation id="8514746246728959655">ລອງກະແຈຄວາມປອດໄພອື່ນ</translation>
+<translation id="8519895319663397036">ບໍ່ສາມາດນຳເຂົ້າລະຫັດຜ່ານໄດ້. ຂະໜາດໄຟລ໌ຄວນໜ້ອຍກວ່າ 150 KB.</translation>
 <translation id="8523493869875972733">ຮັກສາການປ່ຽນແປງ</translation>
 <translation id="8523849605371521713">ເພີ່ມໂດຍນະໂຍບາຍ</translation>
 <translation id="8524783101666974011">ບັນທຶກບັດຂອງທ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>

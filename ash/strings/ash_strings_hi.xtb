@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">फ़ुल स्क्रीन रिकॉर्ड करें</translation>
 <translation id="2135456203358955318">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="2161132820593978283">ऑटो फ़्रेमिंग की सुविधा आज़माएं, ताकि वीडियो कॉल के दौरान आप स्क्रीन के बीच में रहें. इसे 'फटाफट सेटिंग' में जाकर चालू करें.</translation>
 <translation id="2170530631236737939">खास जानकारी बंद करने के लिए, स्क्रीन पर तीन उंगलियों से नीचे की ओर स्वाइप करें</translation>
 <translation id="219905428774326614">लॉन्चर, सभी ऐप्लिकेशन</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> में से <ph name="INDEX" /> हाल ही की फ़ोटो.</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">कनेक्ट नहीं है</translation>
 <translation id="2408955596600435184">अपना पिन डालें</translation>
 <translation id="2412593942846481727">अपडेट मौजूद है</translation>
+<translation id="2426051945783024481">ऑटो फ़्रेमिंग ने कैमरे के फ़ोकस को अपने-आप बीच में कर दिया है</translation>
 <translation id="2427507373259914951">बायां क्लिक</translation>
 <translation id="2429753432712299108">ब्लूटूथ डिवाइस "<ph name="DEVICE_NAME" />" जोड़ने की अनुमति चाहता है. स्वीकार करने से पहले, कृपया पुष्टि करें कि यह पासकी उस डिवाइस पर दिखाई जा रही है: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
@@ -1041,6 +1043,7 @@
 <translation id="6960565108681981554">यह चालू नहीं है. मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="6961121602502368900">वर्क प्रोफ़ाइल में, फ़ोन को साइलेंट रखने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="6961840794482373852">Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Up बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + अप ऐरो दबाएं.</translation>
+<translation id="696267987219125751">ऑटो फ़्रेमिंग की सुविधा बंद है.</translation>
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="6972754398087986839">शुरू करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1131,6 +1134,7 @@
 <translation id="7513922695575567867"><ph name="DATE" /> वाले हफ़्ते के कैलेंडर में, फ़िलहाल<ph name="SELECTED_DATE" /> को चुना गया है.</translation>
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">ऑटो फ़्रेमिंग की सुविधा चालू है.</translation>
 <translation id="7526573455193969409">नेटवर्क की निगरानी की जा सकती है</translation>
 <translation id="7536035074519304529">आईपी पता: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">फ़िलहाल, Linux ऐप्लिकेशन और गुप्त विंडो काम नहीं कर रही हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
@@ -1149,6 +1153,7 @@
 <translation id="7607002721634913082">रोका गया</translation>
 <translation id="7609951632080598826">कैलेंडर व्यू, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">कैमरा फिर से कनेक्ट हो गया है.</translation>
+<translation id="761736749114493194">ऑटो फ़्रेमिंग की सुविधा टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फ़ैरनहाइट</translation>
 <translation id="7633755430369750696">आस-पास शेयर करने की सेटिंग दिखाएं.</translation>
 <translation id="7634648064048557203">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी</translation>
@@ -1309,6 +1314,7 @@
 <translation id="851458219935658693">मौजूदा डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
 <translation id="8517041960877371778">हो सकता है आपका <ph name="DEVICE_TYPE" /> चालू होने पर चार्ज नहीं होता हो.</translation>
 <translation id="8535393432370007982">रंग के हिसाब से लगाए गए क्रम को पहले जैसा करें</translation>
+<translation id="8541078764854166027">ऑटो फ़्रेमिंग</translation>
 <translation id="8542053257095774575">कोई डेस्क या टेंप्लेट सेव नहीं किया गया है</translation>
 <translation id="8546059259582788728">लगाए गए क्रम को पहले जैसा कर दिया गया है</translation>
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>

@@ -20,6 +20,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">Der er ingen optagelser</translation>
+<translation id="169335673490251151">Scan flere sider</translation>
 <translation id="1838104802459806957">Drej opad</translation>
 <translation id="1851169887664797861">Yderligere styringselementer til kameraet er tilgængelige</translation>
 <translation id="1851616744363735765">SAT PÅ PAUSE</translation>
@@ -80,6 +81,7 @@
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="4281620174117014503">Medium opløsning</translation>
 <translation id="4329152592498422850">Skift for at tage et kvadratisk billede</translation>
+<translation id="4340659173795395806">Du kan nu oprette PDF-filer med flere sider</translation>
 <translation id="4383571725254449280">Effektivitetslogfiler for udskrivning</translation>
 <translation id="4445542136948522167">Stop med at tage billedet</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixels</translation>
@@ -100,6 +102,7 @@
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5320594929574852403">Flyttes mod venstre</translation>
 <translation id="5444515100983837161">Sørg for, at alle dokumentets kanter er inden for rammen. Scanning fungerer bedst, når dokumentet har en anden farve end baggrunden.</translation>
+<translation id="5662366948659129155">Scanner side <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5746169159649715125">Gem som PDF</translation>
 <translation id="5753488212459587150">Aktivér eksperttilstand</translation>
@@ -107,6 +110,7 @@
 <translation id="5775960006311140197">Eksperttilstand</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5869546221129391014">Gitter</translation>
+<translation id="5903928279335207406">Slet side</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5976160379964388480">Andre</translation>
@@ -159,6 +163,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8167081290930651932">Gem som billede</translation>
 <translation id="8239780215768881278">Tag et videoøjebliksbillede</translation>
 <translation id="8261506727792406068">Slet</translation>
+<translation id="839162370397157884">Vælg side</translation>
 <translation id="8425673304802773841">Drej nedad</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8629662593426079630">360p</translation>

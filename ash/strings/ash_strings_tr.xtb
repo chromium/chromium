@@ -215,6 +215,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2132302418721800944">Tam ekran kaydet</translation>
 <translation id="2135456203358955318">Yerleştirilmiş büyüteç</translation>
 <translation id="2148716181193084225">Bugün</translation>
+<translation id="2161132820593978283">Görüntülü görüşmelerde kendinizi ekranın ortasına yerleştirmek için kamera çerçevelemesini deneyin. Bu özelliği Hızlı Ayarlar'dan açın.</translation>
 <translation id="2170530631236737939">Genel Bakış'tan çıkmak için üç parmakla aşağı kaydırın</translation>
 <translation id="219905428774326614">Launcher, tüm uygulamalar</translation>
 <translation id="2201071101391734388">Son <ph name="TOTAL_COUNT" /> fotoğraftan <ph name="INDEX" />. fotoğraf.</translation>
@@ -253,6 +254,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2405664212338326887">Bağlı değil</translation>
 <translation id="2408955596600435184">PIN'inizi girin</translation>
 <translation id="2412593942846481727">Güncelleme var</translation>
+<translation id="2426051945783024481">Kamera çerçevesi otomatik olarak ortalandı</translation>
 <translation id="2427507373259914951">Sol tıklama</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Kabul etmeden önce şu cihazda gösterilen bu parolanın gösterildiğini onaylayın: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
@@ -1040,6 +1042,7 @@ Yeni yüklenmiş</translation>
 <translation id="6960565108681981554">Etkin değil. Operatörünüzle iletişime geçin.</translation>
 <translation id="6961121602502368900">Telefonu sessize alma özelliği, iş profilinde kullanılamaz</translation>
 <translation id="6961840794482373852">Alt + Yukarı Ok klavye kısayolu değişti. Page Up tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Yukarı Ok tuşlarına basın.</translation>
+<translation id="696267987219125751">Kamera çerçevelemesi kapalı.</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6972754398087986839">Başlarken</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1130,6 +1133,7 @@ Yeni yüklenmiş</translation>
 <translation id="7513922695575567867">Takvim, <ph name="DATE" /> haftası, şu anda <ph name="SELECTED_DATE" /> seçili.</translation>
 <translation id="7514365320538308">İndir</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Kamera çerçevelemesi açık.</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux uygulamaları ve gizli pencereler şu anda desteklenmiyor. Diğer uygulamalar kaydedilecek.</translation>
@@ -1148,6 +1152,7 @@ Yeni yüklenmiş</translation>
 <translation id="7607002721634913082">Duraklatıldı</translation>
 <translation id="7609951632080598826">Takvim görünümü, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera yeniden bağlandı.</translation>
+<translation id="761736749114493194">Kamera çerçevelemesini açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Yakındakilerle Paylaşım ayarlarını gösterir.</translation>
 <translation id="7634648064048557203">Kamera sağ alt köşeye tutturuldu</translation>
@@ -1308,6 +1313,7 @@ Yeni yüklenmiş</translation>
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>
 <translation id="8535393432370007982">Renge göre sıralama ölçütünü geri al</translation>
+<translation id="8541078764854166027">Kamera çerçevelemesi</translation>
 <translation id="8542053257095774575">Kayıtlı masa veya şablon yok</translation>
 <translation id="8546059259582788728">Sıralama işlemi başarıyla geri alındı</translation>
 <translation id="8551588720239073785">Tarih ve zaman ayarları</translation>

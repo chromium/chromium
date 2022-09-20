@@ -302,6 +302,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="7682601070171973634">Chromium sedang meneroka ciri baharu yang membolehkan laman menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang data anda</translation>
 <translation id="7686590090926151193">Chromium bukan penyemak imbas lalai anda</translation>
 <translation id="7689606757190482937">Segerakkan dan peribadikan Chromium pada semua peranti anda</translation>
+<translation id="7714577916146996629">Apabila dihidupkan, Chromium memulih guna memori daripada tab yang tidak digunakan secara aktif. Tindakan ini membebaskan sumber komputer anda untuk tugasan lain dan memastikan Chromium sentiasa pantas. Tab tidak aktif kelihatan kosong dan memuat semula secara automatik apabila anda mengkliknya. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> atau <ph name="BEGIN_LINK_2" />hantar maklum balas<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -331,6 +332,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8453117565092476964">Arkib pemasang rosak atau tidak sah. Sila muat turun Chromium sekali lagi.</translation>
 <translation id="8463672209299734063">Pilihan: Bantu kami mempertingkat ciri dan prestasi Chromium OS dengan menghantar data diagnostik dan penggunaan kepada Google secara automatik.</translation>
 <translation id="8493179195440786826">Chromium sudah usang</translation>
+<translation id="8522220489792889625">Seperti yang diperlukan, Chromium menuntut semula memori daripada tab yang anda tidak gunakan secara aktif. Anda boleh menukar pilihan ini pada bila-bila masa dalam tetapan.</translation>
 <translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
 <translation id="8558383651099478961">Ibu/bapa anda telah mematikan "Kebenaran untuk laman web, apl dan sambungan" untuk Chromium. Tindakan menambah <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>
 <translation id="8561285221328166383">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan macOS 10.13 atau yang lebih baharu. Komputer ini menggunakan macOS 10.12.</translation>

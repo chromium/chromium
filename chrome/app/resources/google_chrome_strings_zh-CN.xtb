@@ -56,6 +56,7 @@
 <translation id="2094648590148273905">ChromeOS Flex 条款</translation>
 <translation id="2094919256425865063">仍要退出 Chrome？</translation>
 <translation id="2106831557840787829">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
+<translation id="2112742052114331084">开启此设置后，Chrome 会从您目前未主动使用的标签页回收内存。这样可释放计算机的资源以用于执行其他任务，并使 Chrome 保持快速运行。闲置的标签页会显示为空白，在您点击后才会自动重新加载。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />发送反馈<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="2121284319307530122">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="2123055963409958220">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chrome</translation>
@@ -270,6 +271,7 @@
 <translation id="6735387454586646204">ChromeOS Flex 系统</translation>
 <translation id="6739177684496155661">使用一份新的 Chrome 个人资料继续浏览？</translation>
 <translation id="6750954913813541382">为了修正拼写错误，Chrome 会将您在浏览器中输入的文字发送给 Google</translation>
+<translation id="6756581345161130259">Chrome 会酌情从您目前未主动使用的标签页回收内存。您随时可在“设置”中更改此设置。</translation>
 <translation id="677276454032249905">仍要退出 Chrome？</translation>
 <translation id="6785872064505734160">Chrome 中的 Google 助理可帮您在各网站上完成所需操作</translation>
 <translation id="683440813066116847">Google Chrome Canary版的入站规则，允许mDNS流量。</translation>

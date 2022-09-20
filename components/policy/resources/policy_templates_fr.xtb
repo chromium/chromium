@@ -6013,6 +6013,15 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 <translation id="7200364929485466022">Heure (interprétée dans le fuseau horaire local de l'appareil) où la recherche de mises à jour doit être lancée.</translation>
 <translation id="7202925763179776247">Autoriser les restrictions de téléchargement</translation>
 <translation id="7207095846245296855">Forcer Google SafeSearch</translation>
+<translation id="7208483746373960784">Ce paramètre détermine la quantité de données utilisateur conservées une fois <ph name="LACROS_NAME" /> désactivé.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_NONE" />, la rétromigration des données n'est pas effectuée.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />, toutes les données utilisateur sont supprimées. C'est l'option la plus sûre.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />, la plupart des données utilisateur sont supprimées. Seuls les fichiers indépendants du navigateur (comme les téléchargements) sont conservés.
+
+      Si la règle est définie sur <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />, toutes les données utilisateur sont conservées. Cette option présente un risque élevé d'échec, pour lequel la restauration nécessite d'effectuer un Powerwash.</translation>
 <translation id="7211368186050418507">Ne jamais détecter automatiquement le fuseau horaire</translation>
 <translation id="7216442368414164495">Permettre aux utilisateurs d'activer la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>
 <translation id="721970071627370558">Désactiver les rapports sur l'état de l'alimentation de l'appareil</translation>

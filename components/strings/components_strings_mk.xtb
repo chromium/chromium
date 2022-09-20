@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">Превиткување писмо</translation>
 <translation id="138218114945450791">Светлосина</translation>
 <translation id="1382194467192730611">USB-уред дозволен од администраторот</translation>
+<translation id="1382378825779654399">Ќе добиете известувања по е-пошта ако цената се намали на кој било сајт. Страницава ќе биде зачувана во <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1382912999714108023">Ова не се вашите тековни податоци? Контактирајте со вашата банка за да ги ажурирате.</translation>
 <translation id="1384725838384960382">Лист за проверка на акредитиви за безбедно плаќање</translation>
 <translation id="1386623374109090026">Прибелешки</translation>
@@ -1520,6 +1521,7 @@
 <translation id="5018422839182700155">Не може да се отвори страницава</translation>
 <translation id="5019198164206649151">Продавницата за резервни копии е во лоша состојба</translation>
 <translation id="5020776957610079374">Светска музика</translation>
+<translation id="5021557570875267742">Следете ги цените со Chrome</translation>
 <translation id="5023310440958281426">Проверете ги правилата на вашиот администратор</translation>
 <translation id="5029568752722684782">Исчисти копија</translation>
 <translation id="5030338702439866405">Издадено од</translation>
@@ -2241,6 +2243,7 @@
 <translation id="6993898126790112050">6x9 (плик)</translation>
 <translation id="6996312675313362352">Секогаш преведувај <ph name="ORIGINAL_LANGUAGE" /></translation>
 <translation id="6999969238895751684">Забавна индустрија</translation>
+<translation id="7003335073762455340">Го следите производов. Страницава е зачувана во <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7004583254764674281">Користете Windows Hello за побрзо потврдување на картичките</translation>
 <translation id="7006930604109697472">Сепак испрати</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -2464,6 +2467,7 @@
 <translation id="7564049878696755256">Може да го изгубите пристапот до вашата сметка на <ph name="ORG_NAME" /> или да ви го украдат идентитетот. Chrome препорачува да ја смените лозинката веднаш.</translation>
 <translation id="7564680668369175887">Караван автомобили</translation>
 <translation id="7567204685887185387">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е издаден лажно. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="7568616151991626879">Google Chrome се обидува да ја пополни вашата лозинка на <ph name="APP_NAME" />.</translation>
 <translation id="7569490014721427265">Голф</translation>
 <translation id="7569761772822664555">Управувајте со копчето за пребарувачи, притиснете го копчето Enter за да управувате со стандардниот пребарувач и пребарувањето сајтови</translation>
 <translation id="7569952961197462199">Отстрани ја кредитната картичка од Chrome?</translation>
@@ -3035,6 +3039,7 @@
 <translation id="9174623988242579721">Приспособени возила и возила за изведба</translation>
 <translation id="9174917557437862841">Копче за префрлање помеѓу картички, притиснете Enter за да се префрлите во картичкава</translation>
 <translation id="9179703756951298733">Управувајте со плаќањата и податоците за кредитните картички во поставките за Chrome</translation>
+<translation id="9179907736442194268">Добивајте предупредувања по е-пошта ако цената се намали на кој било сајт</translation>
 <translation id="9183302530794969518">Документи на Google</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> користи неподдржан протокол.</translation>
 <translation id="9187461866967718678">Екстремни спортови</translation>

@@ -301,6 +301,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7682601070171973634">Chromium katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema andmemahu juures samasugust sirvimiskogemust</translation>
 <translation id="7686590090926151193">Chromium ei ole teie vaikebrauser</translation>
 <translation id="7689606757190482937">Sünkroonige ja isikupärastage Chromium kõigis oma seadmetes</translation>
+<translation id="7714577916146996629">Kui see on sisse lülitatud, võtab Chromium mälu tagasi vahelehtedelt, mida te aktiivselt ei kasuta. See võimaldab teie arvuti ressursse muude ülesannete jaoks kasutada ja aitab Chromiumil kiiresti töötada. Passiivsed vahelehed kuvatakse tühjana ja laaditakse automaatselt uuesti, kui nendel klõpsate. <ph name="BEGIN_LINK" />Lugege lisateavet<ph name="END_LINK" /> või <ph name="BEGIN_LINK_2" />saatke tagasisidet<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">See kustutab sellest seadmest teie sirvimisandmed. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
@@ -330,6 +331,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8453117565092476964">Installeri arhiiv on rikutud või kehtetu. Laadige Chromium uuesti alla.</translation>
 <translation id="8463672209299734063">Valikuline. Aidake Chromium OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
 <translation id="8493179195440786826">Chromium on aegunud</translation>
+<translation id="8522220489792889625">Vajaduse korral võtab Chromium mälu tagasi vahelehtedelt, mida te aktiivselt ei kasuta. Saate seda menüüs Seaded alati muuta.</translation>
 <translation id="8550334526674375523">See tööprofiil on teie isiklikust profiilist täielikult eraldi.</translation>
 <translation id="8558383651099478961">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
 <translation id="8561285221328166383">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.13 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.12.</translation>

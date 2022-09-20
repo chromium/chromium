@@ -5986,6 +5986,15 @@ Wenn die Richtlinie <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> kon
 <translation id="7200364929485466022">Zeitpunkt, an dem die Updateprüfung durchgeführt wird, angegeben in der lokalen Zeit des Geräts.</translation>
 <translation id="7202925763179776247">Download-Einschränkungen zulassen</translation>
 <translation id="7207095846245296855">Google SafeSearch erzwingen</translation>
+<translation id="7208483746373960784">Mit dieser Einstellung wird festgelegt, wie viele Nutzerdaten nach der Deaktivierung von <ph name="LACROS_NAME" /> gespeichert werden.
+
+      Wenn die Richtlinie auf <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> gesetzt ist, wird keine umgekehrte Datenmigration ausgeführt.
+
+      Wenn die Richtlinie auf <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" /> gesetzt ist, werden alle Nutzerdaten entfernt. Das ist die sicherste Option.
+
+      Wenn die Richtlinie auf <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" /> gesetzt ist, werden die meisten Nutzerdaten entfernt. Es werden dann nur browserunabhängige Dateien gespeichert, z. B. Downloads.
+
+      Wenn die Richtlinie auf <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" /> gesetzt ist, bleiben alle Nutzerdaten erhalten. Diese Option ist sehr fehleranfällig. Zur Wiederherstellung ist dann ein Zurücksetzen auf die Werkseinstellungen per Powerwash erforderlich.</translation>
 <translation id="7211368186050418507">Zeitzone nie automatisch erkennen</translation>
 <translation id="7216442368414164495">Ermöglicht Nutzern die Aktivierung erweiterter Berichterstellung bei Verwendung von Safe Browsing</translation>
 <translation id="721970071627370558">Melden des Energiestatus auf Geräten deaktivieren</translation>

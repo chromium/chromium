@@ -61,6 +61,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2094648590148273905">Villkor för ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vill du avsluta Chrome ändå?</translation>
 <translation id="2106831557840787829">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Om aktiverat återtar Chrome minne från flikar som du inte använder aktivt. Då frigörs datorns resurser för andra uppgifter så Chrome fungerar så snabbt som möjligt. Inaktiva flikar verkar tomma och läses in automatiskt när du klickar på dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> eller <ph name="BEGIN_LINK_2" />skicka feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> tas bort från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="2121284319307530122">Starta om för att uppdatera &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjälp oss att förbättra Chrome genom att rapportera <ph name="BEGIN_LINK" />dina aktuella inställningar<ph name="END_LINK" /></translation>
@@ -279,6 +280,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6739177684496155661">Vill du fortsätta i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">Text som du skriver i webbläsaren Chrome skickas till Google för att kontrollera stavningen</translation>
+<translation id="6756581345161130259">Om det behövs återtar Chrome minne från flikar som du inte använder aktivt. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="677276454032249905">Vill du avsluta Chrome ändå?</translation>
 <translation id="6785872064505734160">Google-assistenten i Chrome kan slutföra åtgärder åt dig på webbplatser</translation>
 <translation id="683440813066116847">Regel som tillåter inkommande mDNS-trafik för Google Chrome Canary.</translation>

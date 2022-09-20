@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">फुल स्क्रिनको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="2161132820593978283">भिडियो कल गर्दा आफूलाई स्क्रिनको बिचमा राखिराख्न क्यामेरा फ्रेमिङ प्रयोग गरी हेर्नुहोस्। "द्रुत सेटिङ" मा गई यो सुविधा अन गर्नुहोस्।</translation>
 <translation id="2170530631236737939">हालैका स्क्रिन देखाइने मोड बन्द गर्न तीनवटा औँलाले तलतिर स्वाइप गर्नुहोस्</translation>
 <translation id="219905428774326614">लन्चर, सबै एपहरू</translation>
 <translation id="2201071101391734388">हालसालैका <ph name="TOTAL_COUNT" /> वटा फोटोमध्ये <ph name="INDEX" /> औँ फोटो।</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">कनेक्ट गरिएको छैन</translation>
 <translation id="2408955596600435184">आफ्नो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
+<translation id="2426051945783024481">क्यामेराको फ्रेम स्वतः बिच भागमा पारियो</translation>
 <translation id="2427507373259914951">बायाँ क्लिक गर्नुहोस्</translation>
 <translation id="2429753432712299108">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" ले मेल गर्न अनुमति चाहन्छ। स्वीकार गर्नुअघि, कृपया पक्का गर्नुहोस् की यो पासकुञ्जी त्यो यन्त्रमा देखाइएको छ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
@@ -1040,6 +1042,7 @@
 <translation id="6960565108681981554">सक्रिय गरिएको छैन। आफ्नो सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="6961121602502368900">कार्य प्रोफाइल प्रयोग गरिएका बेला फोन साइलेन्ट बनाउने सुविधा उपलब्ध हुँदैन</translation>
 <translation id="6961840794482373852">Alt + अप एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Page Up की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + अप एरो की थिच्नुहोस्।</translation>
+<translation id="696267987219125751">क्यामेरा फ्रेमिङ अफ छ।</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6972754398087986839">सुरु गर्नुहोस्</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
@@ -1130,6 +1133,7 @@
 <translation id="7513922695575567867">पात्रो, <ph name="DATE" /> को हप्ता, हाल चयन गरिएको मिति: <ph name="SELECTED_DATE" />।</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">क्यामेरा फ्रेमिङ अन छ।</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
 <translation id="7536035074519304529">IP एड्रेस: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux एप र इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
@@ -1148,6 +1152,7 @@
 <translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7609951632080598826">पात्रोको भ्यू, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">क्यामेरा पुनः कनेक्ट गरियो।</translation>
+<translation id="761736749114493194">क्यामेरा फ्रेमिङ टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">नजिकैका डिभाइससँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्।</translation>
 <translation id="7634648064048557203">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">हालको डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
 <translation id="8535393432370007982">रङअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
+<translation id="8541078764854166027">क्यामेरा फ्रेमिङ</translation>
 <translation id="8542053257095774575">कुनै पनि डेस्क वा टेम्प्लेट सेभ गरिएको छैन</translation>
 <translation id="8546059259582788728">क्रमबद्ध गर्ने कार्य अन्डू गरियो</translation>
 <translation id="8551588720239073785">मिति र समयसम्बन्धी सेटिङ</translation>

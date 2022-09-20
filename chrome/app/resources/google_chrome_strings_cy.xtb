@@ -61,6 +61,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2094648590148273905">Termau ChromeOS Flex</translation>
 <translation id="2094919256425865063">Gadael Chrome beth bynnag?</translation>
 <translation id="2106831557840787829">Mae ChromeOS Flex yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol, fel y mae <ph name="BEGIN_LINK_LINUX_OSS" />amgylchedd datblygu Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Pan fydd ymlaen, mae Chrome yn adfer cof o dabiau nad ydych yn eu defnyddio'n weithredol. Mae hyn yn rhyddhau adnoddau eich cyfrifiadur ar gyfer tasgau eraill ac yn cadw Chrome yn gyflym. Mae tabiau anweithredol yn ymddangos yn wag ac yn ail-lwytho'n awtomatig pan fyddwch yn clicio arnynt. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> neu <ph name="BEGIN_LINK_2" />anfon adborth<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Bydd hyn yn dileu <ph name="ITEMS_COUNT" /> eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ail-lansiwch i Ddiweddaru &amp;Chrome</translation>
 <translation id="2123055963409958220">Helpwch i wneud Chrome yn well drwy adrodd am <ph name="BEGIN_LINK" />y gosodiadau presennol<ph name="END_LINK" /></translation>
@@ -279,6 +280,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6735387454586646204">System ChromeOS Flex</translation>
 <translation id="6739177684496155661">Parhau mewn proffil Chrome newydd?</translation>
 <translation id="6750954913813541382">I drwsio gwallau sillafu, mae Chrome yn anfon y testun rydych yn ei deipio yn y porwr at Google</translation>
+<translation id="6756581345161130259">Yn ôl yr angen, mae Chrome yn adfer cof o dabiau nad ydych yn eu defnyddio'n weithredol. Gallwch newid hyn unrhyw bryd yn y gosodiadau.</translation>
 <translation id="677276454032249905">Gadael Chrome beth bynnag?</translation>
 <translation id="6785872064505734160">Gall Google Assistant yn Chrome gwblhau gweithredoedd i chi ar draws gwefannau</translation>
 <translation id="683440813066116847">Rheol dod i mewn ar gyfer Google Chrome Canary i ganiatáu traffig mDNS.</translation>

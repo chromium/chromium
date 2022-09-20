@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
 <translation id="2148716181193084225">Сегодня</translation>
+<translation id="2161132820593978283">Используйте автомасштабирование, чтобы во время видеовстреч оставаться в центре экрана. Эту функцию можно включить в быстрых настройках.</translation>
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="219905428774326614">Панель запуска, все приложения</translation>
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">Не подключено</translation>
 <translation id="2408955596600435184">Введите PIN-код</translation>
 <translation id="2412593942846481727">Доступно обновление</translation>
+<translation id="2426051945783024481">Центрировано автоматически.</translation>
 <translation id="2427507373259914951">Нажатие на левую кнопку мыши</translation>
 <translation id="2429753432712299108">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Проверьте, отображается ли на нем код: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
@@ -1040,6 +1042,7 @@
 <translation id="6960565108681981554">Сеть не активирована. Свяжитесь с оператором.</translation>
 <translation id="6961121602502368900">Отключение звука на телефоне недоступно в рабочем профиле</translation>
 <translation id="6961840794482373852">Функция сочетания клавиш Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Page Up, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх.</translation>
+<translation id="696267987219125751">Автомасштабирование отключено</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6979158407327259162">Google Диск</translation>
@@ -1130,6 +1133,7 @@
 <translation id="7513922695575567867">Календарь, неделя с <ph name="DATE" />, сейчас выбрано <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Скачать</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">Автомасштабирование включено</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
@@ -1148,6 +1152,7 @@
 <translation id="7607002721634913082">Приостановлен</translation>
 <translation id="7609951632080598826">Календарь: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="7611213136657090146">Камера переподключена.</translation>
+<translation id="761736749114493194">Включить или отключить автомасштабирование. <ph name="STATE_TEXT" />.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Показать настройки Обмена с окружением</translation>
 <translation id="7634648064048557203">Окно предварительного просмотра камеры привязано к правому нижнему углу</translation>
@@ -1308,6 +1313,7 @@
 <translation id="851458219935658693">Показ окон текущего рабочего стола. Выбран переключатель.</translation>
 <translation id="8517041960877371778">Не удается зарядить устройство <ph name="DEVICE_TYPE" />, пока оно включено.</translation>
 <translation id="8535393432370007982">Отменить упорядочивание по цвету</translation>
+<translation id="8541078764854166027">Автомасштабир.</translation>
 <translation id="8542053257095774575">Нет сохраненных шаблонов или рабочих столов.</translation>
 <translation id="8546059259582788728">Действие "Сортировать" отменено</translation>
 <translation id="8551588720239073785">Настройки даты и времени</translation>

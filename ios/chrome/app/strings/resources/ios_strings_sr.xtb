@@ -23,6 +23,7 @@
 <translation id="1104948393051856124">Прихвати и настави</translation>
 <translation id="110724200315609752">Пређи на отворен прозор</translation>
 <translation id="1112015203684611006">Штампање није успело.</translation>
+<translation id="1118569444314402022">Добро дошли назад, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Направи нову картицу.</translation>
 <translation id="1126809382673880764">Не штити вас од опасних веб-сајтова, преузимања и додатака. У другим Google услугама, као што су Gmail и Претрага, и даље ћете имати заштиту помоћу Безбедног прегледања када је доступна.</translation>
 <translation id="1135212215217513471">Набавите Chrome за iOS</translation>
@@ -63,6 +64,7 @@
 <translation id="1377255359165588604">Синхронизација више не функционише.</translation>
 <translation id="1377321085342047638">Број картице</translation>
 <translation id="1383876407941801731">Претражи</translation>
+<translation id="138618066238211776">Настави као <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Последње 4 недеље</translation>
 <translation id="1404330357948037222">Одјављени сте</translation>
 <translation id="1407135791313364759">Отвори све</translation>
@@ -176,6 +178,7 @@
 <translation id="2421044535038393232">Настави изменe</translation>
 <translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
+<translation id="2461070143328828326">Подешавања лозинке</translation>
 <translation id="2469960372084740698">Желите да искључите Безбедносно прегледање?</translation>
 <translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Није изабрано</translation>
@@ -330,6 +333,7 @@
 <translation id="3709582977625132201">Означи као непрочитано</translation>
 <translation id="371230970611282515">Открива опасне догађаје пре него што се догоде и упозорава вас на њих.</translation>
 <translation id="37207012422556617">Претраге у тренду</translation>
+<translation id="3726360487031500941">Поново се пријавите на налог <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Отвара унете URL-ове у Google Chrome-у у режиму без архивирања.</translation>
 <translation id="3762232513783804601">Направљено за iPad</translation>
 <translation id="3771033907050503522">Картице Без архивирања</translation>

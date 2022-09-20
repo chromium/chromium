@@ -304,6 +304,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7682601070171973634">Chromium은 사용자의 데이터를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="7689606757190482937">모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
+<translation id="7714577916146996629">사용 설정하면 Chromium에서 사용자가 현재 사용하지 않는 탭의 메모리를 회수합니다. 이렇게 하면 다른 작업을 위해 컴퓨터 리소스를 확보하고 Chromium의 속도를 빠르게 유지합니다. 비활성 탭은 비어 있을 때 표시되며 클릭하면 자동으로 새로고침됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /> 또는 <ph name="BEGIN_LINK_2" />의견 보내기<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -333,6 +334,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8453117565092476964">설치 프로그램 아카이브가 손상되었거나 잘못되었습니다. Chromium을 다시 다운로드하세요.</translation>
 <translation id="8463672209299734063">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromiumOS의 기능 및 성능 개선에 참여합니다.</translation>
 <translation id="8493179195440786826">Chromium이 이전 버전임</translation>
+<translation id="8522220489792889625">필요한 경우 Chromium에서는 사용자가 현재 사용하지 않는 탭에서 메모리를 회수합니다. 언제든지 설정에서 변경할 수 있습니다.</translation>
 <translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8558383651099478961">부모님이 Chromium의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 추가가 허용되지 않습니다.</translation>
 <translation id="8561285221328166383">향후 Chromium 업데이트를 받으려면 macOS 10.13 이상이 필요합니다. 이 컴퓨터에서는 macOS X 10.12를 사용하고 있습니다.</translation>

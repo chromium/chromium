@@ -56,6 +56,7 @@
 <translation id="2094648590148273905">ChromeOS Flex şartları</translation>
 <translation id="2094919256425865063">Yine de Chrome'dan çıkılsın mı?</translation>
 <translation id="2106831557840787829">ChromeOS Flex, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
+<translation id="2112742052114331084">Bu ayar etkinleştirildiğinde Chrome, aktif olarak kullanmadığınız sekmelerdeki belleği geri kazanır. Böylece, bilgisayarınızın kaynaklarında diğer görevler için yer açılır ve Chrome hızlı çalışmaya devam eder. Aktif olmayan sekmeler boş görünür ve bunları tıkladığınızda otomatik olarak yeniden yüklenir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /> veya <ph name="BEGIN_LINK_2" />geri bildirim gönderin<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Bu işlem, <ph name="ITEMS_COUNT" /> öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="2121284319307530122">&amp;Chrome'u Güncellemek İçin Yeniden Başlat</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Mevcut ayarlarınızı<ph name="END_LINK" /> bildirerek Chrome'u daha iyi hale getirmemize yardımcı olun</translation>
@@ -272,6 +273,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6735387454586646204">ChromeOS Flex Sistemi</translation>
 <translation id="6739177684496155661">Yeni bir Chrome profilinde devam edilsin mi?</translation>
 <translation id="6750954913813541382">Yazım hatalarını düzeltmek için Chrome, tarayıcıda yazdığınız metni Google'a gönderir</translation>
+<translation id="6756581345161130259">Chrome, aktif olarak kullanmadığınız sekmelerdeki belleği gerektiğinde geri kazanır. İstediğiniz zaman bunu Ayarlar'dan değiştirebilirsiniz.</translation>
 <translation id="677276454032249905">Yine de Chrome'dan çıkılsın mı?</translation>
 <translation id="6785872064505734160">Chrome'daki Google Asistan sizin için web sitelerindeki işlemleri tamamlayabilir</translation>
 <translation id="683440813066116847">Google Chrome Canary'nin mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>

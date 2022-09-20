@@ -694,6 +694,7 @@
 <translation id="1640283014264083726">PKCS #1 MD4 RSA დაშიფვრით</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050">სხვა ქმედებები „<ph name="NETWORK_NAME" />“-სთვის</translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 სხვა პაროლის იმპორტირება ვერ მოხერხდა, რადგან მისი ფორმატი არასწორია}other{{NUM_PASSWORDS} სხვა პაროლის იმპორტირება ვერ მოხერხდა, რადგან მათი ფორმატი არასწორია}}</translation>
 <translation id="1642492862748815878">დაკავშირებულია <ph name="DEVICE" />-თან და <ph name="NUMBER_OF_DEVICES" /> სხვა Bluetooth მოწყობილობასთან</translation>
 <translation id="1642494467033190216">ძირეული დაცვის მოხსნა და გადატვირთვა საჭირო მანამ, სანამ ჩართავთ სხვა გამართვის ფუნქციებს.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ხელმოწერა SHA-1-ით</translation>
@@ -1832,6 +1833,7 @@
 <translation id="2673135533890720193">დათვალიერების ისტორიის წაკითხვა</translation>
 <translation id="2674764818721168631">გამორთული</translation>
 <translation id="2678063897982469759">ხელახლა ჩართვა</translation>
+<translation id="2678100101831051676">ტრანსლირება ვერ ხერხდება.</translation>
 <translation id="268053382412112343">ი&amp;სტორია</translation>
 <translation id="2681124317993121768">სტუმრის პროფილები მხარდაუჭერელია</translation>
 <translation id="2682498795777673382">განახლება თქვენი მშობლისგან</translation>
@@ -3868,6 +3870,7 @@
 <translation id="4617019240346358451">„<ph name="EXTENSION_NAME" />“ რომ გამოიყენოთ, გადატვირთეთ გვერდი</translation>
 <translation id="4617270414136722281">გაფართოებების ვარიანტები</translation>
 <translation id="4617880081511131945">კავშირის დამყარება ვერ ხერხდება</translation>
+<translation id="4618195822946934889">URL უნდა შეიცავდეს მხოლოდ ASCII სიმბოლოებს</translation>
 <translation id="4619564267100705184">ვინაობის დადასტურება</translation>
 <translation id="4619615317237390068">ჩანართები სხვა მოწყობილობებიდან</translation>
 <translation id="4620809267248568679">ეს პატარამეტრი იძულებითაა დაყენებული გაფართოების მიერ.</translation>
@@ -5067,6 +5070,7 @@
 <translation id="5800351251499368110">ძიების დახურვა გვერდით პანელში. ძიება გახსნილია გვერდით პანელში.</translation>
 <translation id="5801568494490449797">პარამეტრები</translation>
 <translation id="5804241973901381774">ნებართვები</translation>
+<translation id="5805268472388605531">ხანგრძლივად დააჭირეთ კლავიატურის კლავიშებს, რომ იხილოთ აქცენტის ნიშნები და საგანგებო სიმბოლოები</translation>
 <translation id="5805697420284793859">ფანჯრების მმართველი</translation>
 <translation id="5806447147478173900">ნაჩვენები საიტების მიერ გამოყენებული მეხსიერების საერთო მოცულობა: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (ნაგულისხმევი)</translation>
@@ -5708,6 +5712,7 @@
 <translation id="642469772702851743">ეს მოწყობილობა (ს/ნ: <ph name="SERIAL_NUMBER" />) ჩაკეტილია მფლობელის მიერ.</translation>
 <translation id="6425556984042222041">ტექსტის გახმოვანების სიჩქარე</translation>
 <translation id="642729974267661262">ხმის დაკვრა დაუშვებელია</translation>
+<translation id="6427608534767366138">„<ph name="NETWORK_ID" />“-ისთვის საჭიროა ავტორიზაცია პროქსი-სერვერზე</translation>
 <translation id="6429384232893414837">განახლებისას წარმოიქმნა შეცდომა</translation>
 <translation id="6430814529589430811">Base64-დაშიფრული ASCII, ერთი სერტიფიკატი</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> დააყენებს ავტომატურ განახლებებს ამ კომპიუტერის ყველა მომხმარებლისთვის.</translation>
@@ -7839,6 +7844,7 @@
 <translation id="844063558976952706">ყოველთვის ამ საიტზე</translation>
 <translation id="8441313165929432954">ტეტერინგის ჩართვა/გათიშვა</translation>
 <translation id="8443795068008423036">დარწმუნდით, რომ თქვენი მოწყობილობა განახლებულია და ცადეთ ხელახლა</translation>
+<translation id="8443986842926457191">URL შედგება 2048-ზე მეტი სიმბოლოსგან</translation>
 <translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
 <translation id="8447409163267621480">დაურთეთ Ctrl ან Alt</translation>
 <translation id="844850004779619592">ბრძანებები ვერ მოიძებნა</translation>
@@ -7904,6 +7910,7 @@
 <translation id="851263357009351303">ყოველთვის მიეცი ნება <ph name="HOST" />-ს, აჩვენოს გამოსახულებები</translation>
 <translation id="8513108775083588393">ავტომატური შეტრიალება</translation>
 <translation id="8514746246728959655">ცადეთ უსაფრთხოების სხვა გასაღები</translation>
+<translation id="8519895319663397036">პაროლების იმპორტირება ვერ მოხერხდა. ფაილის ზომა 150 კბაიტზე ნაკლები უნდა იყოს.</translation>
 <translation id="8523493869875972733">ცვლილებების შენარჩუნება</translation>
 <translation id="8523849605371521713">დამატებულია წესების მიხედვით</translation>
 <translation id="8524783101666974011">შეინახეთ ბარათები თქვენს Google ანგარიშში</translation>

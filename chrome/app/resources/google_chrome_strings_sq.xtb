@@ -60,6 +60,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2094648590148273905">Kushtet e Chrome OS Flex</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
 <translation id="2106831557840787829">ChromeOS Flex mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
+<translation id="2112742052114331084">Kur është aktiv, Chrome rikuperon memorien nga skedat që ti nuk po i përdor në mënyrë aktive. Kjo liron burimet e kompjuterit për detyra të tjera dhe bën që Chrome të jetë i shpejtë. Skedat joaktive shfaqen bosh dhe ringarkohen automatikisht kur klikon tek ato. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> ose <ph name="BEGIN_LINK_2" />dërgo komente<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="2123055963409958220">Ndihmo në përmirësimin e Chrome duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
@@ -278,6 +279,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6735387454586646204">Sistemi Chrome OS Flex</translation>
 <translation id="6739177684496155661">Të vazhdohet te një profil i ri Chrome?</translation>
 <translation id="6750954913813541382">Për të rregulluar gabimet drejtshkrimore, Chrome e dërgon tekstin që shkruan në shfletues te Google</translation>
+<translation id="6756581345161130259">Sipas nevojës, Chrome rikuperon memorien nga skedat që ti nuk po i përdor në mënyrë aktive. Këtë mund ta ndryshosh në çdo kohë te cilësimet.</translation>
 <translation id="677276454032249905">Dëshiron të dalësh nga Chrome gjithsesi?</translation>
 <translation id="6785872064505734160">"Asistenti i Google" në Chrome mund të kryejë veprime nëpër faqe interneti për ty</translation>
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>

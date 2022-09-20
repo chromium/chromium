@@ -174,6 +174,7 @@
 <translation id="1380591466760231819">စာပုံစံ ခေါက်ရန်</translation>
 <translation id="138218114945450791">အပြာနု</translation>
 <translation id="1382194467192730611">သင့်စီမံခန့်ခွဲသူက ခွင့်ပြုထားသော USB ကိရိယာ</translation>
+<translation id="1382378825779654399">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက အီးမေးလ် သတိပေးချက်ရရှိမည်။ ဤစာမျက်နှာကို <ph name="LAST_BOOKMARKS_FOLDER" /> တွင် သိမ်းပါမည်။</translation>
 <translation id="1382912999714108023">လက်ရှိအချက်အလက်ကို မတွေ့ပါက အချက်အလက်သစ်ထည့်ရန် သင့်ဘဏ်ကိုဆက်သွယ်ပါ။</translation>
 <translation id="1384725838384960382">လုံခြုံသောပေးချေမှု အထောက်အထား စိစစ်ခြင်းစာရွက်</translation>
 <translation id="1386623374109090026">မှတ်ချက်များ</translation>
@@ -422,6 +423,7 @@
 <translation id="2034971124472263449">မည်သို့ပင်ဖြစ်စေ သိမ်းရန်</translation>
 <translation id="2035400064145347639">ခရီးသွားလမ်းညွှန်နှင့် ခရီးသွားမှတ်တမ်းများ</translation>
 <translation id="2036983605131262583">အရန်အလိပ်</translation>
+<translation id="2040463897538655645">ဖယ်ရှားနိုင်သည့် သိုလှောင်ခန်း</translation>
 <translation id="2040894699575719559">တည်နေရာကို ပိတ်ပင်ထားသည်</translation>
 <translation id="2042213636306070719">ဗန်း ၇</translation>
 <translation id="204357726431741734">သင့် Google Account တွင် သိမ်းထားသောစကားဝှက်များ အသုံးပြုရန် လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -1520,6 +1522,7 @@
 <translation id="5018422839182700155">ဤစာမျက်နှာကို ဖွင့်မရပါ</translation>
 <translation id="5019198164206649151">နောက်ခံ စတိုး အခြေအနေ ဆိုးနေ</translation>
 <translation id="5020776957610079374">ကမ္ဘာ့ တေးဂီတ</translation>
+<translation id="5021557570875267742">Chrome ဖြင့် ဈေးနှုန်းစောင့်ကြည့်ခြင်း</translation>
 <translation id="5023310440958281426">သင့် စီမံအုပ်ချုပ်သူ၏ မူဝါဒများကို စစ်ဆေးကြည့်ရန်</translation>
 <translation id="5029568752722684782">ကြည်လင်ပြတ်သား မိတ္ထူ</translation>
 <translation id="5030338702439866405">ထုတ်ပေးခဲ့သူ</translation>
@@ -2240,6 +2243,7 @@
 <translation id="6993898126790112050">၆x၉ (စာအိတ်)</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" />ဘာသာကို အမြဲတမ်း ဘာသာပြန်ရန်</translation>
 <translation id="6999969238895751684">ဖျော်ဖြေရေးလုပ်ငန်း</translation>
+<translation id="7003335073762455340">ဤထုန်ကုန်ကို စောင့်ကြည့်နေပါသည်။ ဤစာမျက်နှာကို <ph name="LAST_BOOKMARKS_FOLDER" /> တွင် သိမ်းသည်။</translation>
 <translation id="7004583254764674281">ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုနိုင်ရန် Windows Hello ကို အသုံးပြုပါ</translation>
 <translation id="7006930604109697472">မည်သို့ပင်ဖြစ်စေ ပို့ရန်</translation>
 <translation id="7012363358306927923">တရုတ် UnionPay</translation>
@@ -3036,6 +3040,7 @@
 <translation id="9174623988242579721">စိတ်ကြိုက်နှင့် စွမ်းဆောင်ရည် ယာဉ်များ</translation>
 <translation id="9174917557437862841">ပြောင်းရန်ခလုတ်ကို တို့ပါ၊ ဤတဘ်သို့ ပြောင်းရန် Enter ကို နှိပ်ပါ</translation>
 <translation id="9179703756951298733">သင်၏ ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ်အချက်အလက်ကို Chrome ဆက်တင်များတွင် စီမံပါ</translation>
+<translation id="9179907736442194268">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> သည်ထောက်ပံ့မှုမရှိသည့် ပရိုတိုကောကို အသုံးပြုထားသည်။</translation>
 <translation id="9187461866967718678">ပြင်းထန်သော အားကစား</translation>

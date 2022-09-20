@@ -215,6 +215,7 @@
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="2161132820593978283">试用相机取景功能，使自己在视频通话过程中位于屏幕中央。您可在“快捷设置”中开启此功能。</translation>
 <translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="219905428774326614">启动器，所有应用</translation>
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
@@ -253,6 +254,7 @@
 <translation id="2405664212338326887">未连接</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
+<translation id="2426051945783024481">相机取景画面已自动居中</translation>
 <translation id="2427507373259914951">点击鼠标左键</translation>
 <translation id="2429753432712299108">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。在接受之前，请确保该设备上显示以下配对密钥：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">显示密码</translation>
@@ -1040,6 +1042,7 @@
 <translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
+<translation id="696267987219125751">相机取景功能已关闭。</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
@@ -1127,6 +1130,7 @@
 <translation id="7513922695575567867">日历，<ph name="DATE" />这周，目前所选日期为 <ph name="SELECTED_DATE" />。</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7519206258459640379">相机取景功能已开启。</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">目前不支持 Linux 应用和无痕式窗口。其他应用会被保存。</translation>
@@ -1145,6 +1149,7 @@
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7609951632080598826">日历视图，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新连接相机。</translation>
+<translation id="761736749114493194">开启/关闭相机取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
 <translation id="7633755430369750696">显示“附近分享”设置。</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>
@@ -1305,6 +1310,7 @@
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
+<translation id="8541078764854166027">相机取景</translation>
 <translation id="8542053257095774575">尚未保存任何桌面或模板</translation>
 <translation id="8546059259582788728">已成功撤消排序</translation>
 <translation id="8551588720239073785">日期和时间设置</translation>

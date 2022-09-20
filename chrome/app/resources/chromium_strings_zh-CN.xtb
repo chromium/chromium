@@ -301,6 +301,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7682601070171973634">Chromium 团队正在探索新功能，以便网站只需使用您的较少数据就能提供同样的浏览体验</translation>
 <translation id="7686590090926151193">Chromium 不是您的默认浏览器</translation>
 <translation id="7689606757190482937">在您的所有设备上同步并个性化设置 Chromium</translation>
+<translation id="7714577916146996629">开启此设置后，Chromium 会从您目前未主动使用的标签页回收内存。这样可释放计算机的资源以用于执行其他任务，并使 Chromium 保持快速运行。闲置的标签页会显示为空白，在您点击后才会自动重新加载。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />发送反馈<ph name="END_LINK_2" /></translation>
 <translation id="7745317241717453663">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
@@ -330,6 +331,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
+<translation id="8522220489792889625">Chromium 会酌情从您目前未主动使用的标签页回收内存。您随时可在“设置”中更改此设置。</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8558383651099478961">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法添加该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8561285221328166383">若要接收后续 Chromium 更新，您需使用 macOS 10.13 或更高版本。该计算机目前使用的是 macOS 10.12。</translation>

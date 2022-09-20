@@ -694,6 +694,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1640283014264083726"> PKCS #1 MD4 med RSA-kryptering</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641496881756082050">Flere handlinger for <ph name="NETWORK_NAME" /></translation>
+<translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 annet passord ble ikke importert fordi det er feilformatert}other{{NUM_PASSWORDS} andre passord ble ikke importert fordi de er feilformatert}}</translation>
 <translation id="1642492862748815878">Koblet til <ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> andre Bluetooth-enheter</translation>
 <translation id="1642494467033190216">Fjerning av rootfs-beskyttelse og omstart er nødvendig før du slår på andre feilsøkingsfunksjoner.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-signatur med SHA-1</translation>
@@ -1841,6 +1842,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2673135533890720193">lese nettleserloggen din</translation>
 <translation id="2674764818721168631">Av</translation>
 <translation id="2678063897982469759">Aktiver på nytt</translation>
+<translation id="2678100101831051676">Kan ikke caste.</translation>
 <translation id="268053382412112343">Lo&amp;gg</translation>
 <translation id="2681124317993121768">Gjesteprofiler støttes ikke</translation>
 <translation id="2682498795777673382">Oppdatering fra forelderen din</translation>
@@ -3875,6 +3877,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4617019240346358451">Oppdater siden for å bruke «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="4617270414136722281">Alternativer for utvidelser</translation>
 <translation id="4617880081511131945">Kan ikke opprette forbindelse</translation>
+<translation id="4618195822946934889">Nettadressen kan bare inneholde ASCII-tegn</translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
 <translation id="4619615317237390068">Faner fra andre enheter</translation>
 <translation id="4620809267248568679">Denne innstillingen håndheves av en utvidelse.</translation>
@@ -5073,6 +5076,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5800351251499368110">Lukk søket i sidepanelet. Søket er åpent i sidepanelet.</translation>
 <translation id="5801568494490449797">Innstillinger</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
+<translation id="5805268472388605531">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn</translation>
 <translation id="5805697420284793859">Window Manager</translation>
 <translation id="5806447147478173900">Total mengde lagringsplass som brukes av nettstedene som vises: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (standard)</translation>
@@ -5714,6 +5718,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="642469772702851743">Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst av eieren.</translation>
 <translation id="6425556984042222041">Hastighet for tekst til tale</translation>
 <translation id="642729974267661262">Nettsteder som ikke har lov til å spille av lyd</translation>
+<translation id="6427608534767366138">Proxy-autentisering kreves for «<ph name="NETWORK_ID" />»</translation>
 <translation id="6429384232893414837">Oppdateringsfeil</translation>
 <translation id="6430814529589430811">Base64-kodede ASCII, enkelt sertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> velger automatiske oppdateringer for alle brukerne på datamaskinen.</translation>
@@ -7844,6 +7849,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="844063558976952706">Alltid på dette nettstedet</translation>
 <translation id="8441313165929432954">Slå internettdeling av/på</translation>
 <translation id="8443795068008423036">Sørg for at enheten er oppdatert, og prøv på nytt</translation>
+<translation id="8443986842926457191">Nettadressen er lengre enn 2048 tegn</translation>
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8447409163267621480">Inkluder enten Ctrl eller Alt</translation>
 <translation id="844850004779619592">Fant ingen kommandoer</translation>
@@ -7909,6 +7915,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="851263357009351303">Tillat alltid <ph name="HOST" /> å vise bilder</translation>
 <translation id="8513108775083588393">Autorotasjon</translation>
 <translation id="8514746246728959655">Prøv en annen sikkerhetsnøkkel</translation>
+<translation id="8519895319663397036">Kan ikke importere passordene. Filstørrelsen må være under 150 kB.</translation>
 <translation id="8523493869875972733">Behold endringene</translation>
 <translation id="8523849605371521713">Lagt til som følge av retningslinjer</translation>
 <translation id="8524783101666974011">Lagre kort i Google-kontoen din</translation>

@@ -215,7 +215,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2132302418721800944">Snimanje cijelog ekrana</translation>
 <translation id="2135456203358955318">Priključeno povećalo</translation>
 <translation id="2148716181193084225">Danas</translation>
-<translation id="2161132820593978283">Isprobajte okvir kamere da biste se prikazivali u središtu zaslona tijekom videopoziva. Uključite ga u Brzim postavkama.</translation>
+<translation id="2161132820593978283">Isprobajte kadriranje kamere da budete na sredini ekrana prilikom video poziva. Uključite ga u Brzim postavkama.</translation>
 <translation id="2170530631236737939">Prevucite nadolje s tri prsta da izađete iz Pregleda</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna fotografija od <ph name="TOTAL_COUNT" />.</translation>
@@ -254,7 +254,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Ažuriranje je dostupno</translation>
-<translation id="2426051945783024481">Okvir kamere automatski je centriran</translation>
+<translation id="2426051945783024481">Kadriranje kamere je automatski centrirano</translation>
 <translation id="2427507373259914951">Lijevi klik</translation>
 <translation id="2429753432712299108">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje. Prije prihvaćanja provjerite prikazuje li se na njemu ovaj pristupni ključ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
@@ -1042,7 +1042,7 @@ Nova instalacija</translation>
 <translation id="6960565108681981554">Nije aktivirano. Kontaktirajte mobilnog operatera.</translation>
 <translation id="6961121602502368900">Utišavanje telefona nije dostupno na radnom profilu</translation>
 <translation id="6961840794482373852">Prečica na tastaturi Alt + strelica nagore je promijenjena. Da koristite tipku Page Up, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu nagore.</translation>
-<translation id="696267987219125751">Okvir kamere je isključen.</translation>
+<translation id="696267987219125751">Kadriranje kamere je isključeno.</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6972754398087986839">Započnite</translation>
 <translation id="6979158407327259162">Google Disk</translation>
@@ -1133,7 +1133,7 @@ Nova instalacija</translation>
 <translation id="7513922695575567867">Kalendar, sedmica <ph name="DATE" />, trenutno je odabran datum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
-<translation id="7519206258459640379">Okvir kamere je uključen.</translation>
+<translation id="7519206258459640379">Kadriranje kamere je uključeno.</translation>
 <translation id="7526573455193969409">Mreža može biti nadzirana</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux aplikacije i anonimni prozori trenutno nisu podržani. Druge aplikacije će se sačuvati.</translation>
@@ -1152,11 +1152,12 @@ Nova instalacija</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7609951632080598826">Prikaz kalendara, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
-<translation id="761736749114493194">Uključite ili isključite okvir kamere. <ph name="STATE_TEXT" /></translation>
+<translation id="761736749114493194">Uključite/isključite kadriranje kamere. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Vidite postavke Dijeljenja u blizini.</translation>
 <translation id="7634648064048557203">Kamera se uklopila u donji desni ugao</translation>
 <translation id="7641938616688887143">Snimaj</translation>
+<translation id="7642106959537987271">način inverzije boja</translation>
 <translation id="7642647758716480637">Otvaranje postavki mreže <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
 <translation id="7647488630410863958">Otključajte uređaj da vidite obavještenja</translation>
@@ -1262,6 +1263,7 @@ Nova instalacija</translation>
 <translation id="8209010265547628927">Vrati na zadano</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Za to vrijeme vaš Chromebook mora ostati uključen i priključen na napajanje. Provjerite jesu li kablovi punjača ili adaptera dobro priključeni u Chromebook i utičnicu. Nemojte isključivati Chromebook.</translation>
+<translation id="8230305195727960608">Način inverzije boja</translation>
 <translation id="8236042855478648955">Vrijeme je za odmor</translation>
 <translation id="8246282815785366524">Dobro došli nazad, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, baterija telefona <ph name="BATTERY_STATUS" /></translation>
@@ -1313,7 +1315,7 @@ Nova instalacija</translation>
 <translation id="851458219935658693">Prikazivanje prozora s trenutne radne površine, odabrano je dugme za izbor</translation>
 <translation id="8517041960877371778">Moguće je da se vaš uređaj <ph name="DEVICE_TYPE" /> neće puniti dok je uključen.</translation>
 <translation id="8535393432370007982">Poništavanje načina sortiranja po boji</translation>
-<translation id="8541078764854166027">Okvir kamere</translation>
+<translation id="8541078764854166027">Kadriranje kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina ili šablona</translation>
 <translation id="8546059259582788728">Poništavanje sortiranja je uspjelo</translation>
 <translation id="8551588720239073785">Postavke datuma i vremena</translation>
@@ -1388,6 +1390,7 @@ Nova instalacija</translation>
 <translation id="8982906748181120328">Vid. u blizini</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Koristi se <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">Omogućen je način inverzije boja. Ponovo pritisnite Ctrl + Search + H da biste ga isključili.</translation>
 <translation id="899350903320462459">Otključajte uređaj kao <ph name="LOGIN_ID" /> da izvršite radnju obavještenja</translation>
 <translation id="9000771174482730261">UPRAVLJAJTE POHRANOM</translation>
 <translation id="9017320285115481645">Unesite kôd za pristup roditelja za Family Link.</translation>
@@ -1436,6 +1439,7 @@ Nova instalacija</translation>
 <translation id="921989828232331238">Roditelj je zaključao uređaj za danas</translation>
 <translation id="9220525904950070496">Ukloni račun</translation>
 <translation id="923686485342484400">Dvaput pritisnite Control Shift Q da se odjavite.</translation>
+<translation id="92580429198593979">Pritisnuli ste tipkovni prečac za inverziju boja. Želite li je uključiti?</translation>
 <translation id="925832987464884575">Sakrij preglede</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> zahtijeva da odmah ažurirate uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Šta ima u mom kalendaru?</translation>
