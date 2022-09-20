@@ -68,8 +68,9 @@ IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
       ::extension_misc::kContactCenterInsightsExtensionId));
 }
 
+// TODO(crbug.com/1362037): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
-                       ExtensionUninstalledWhenPrefUnset) {
+                       DISABLED_ExtensionUninstalledWhenPrefUnset) {
   // Set pref to enable extension.
   SetPrefValue(true);
   EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(
