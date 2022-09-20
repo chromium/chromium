@@ -618,7 +618,7 @@ TEST_F(PointerTest, OnPointerMotion) {
 
   EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface.get()))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(delegate, OnPointerFrame()).Times(6);
+  EXPECT_CALL(delegate, OnPointerFrame()).Times(8);
 
   EXPECT_CALL(delegate, OnPointerEnter(surface.get(), gfx::PointF(), 0));
   generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin());
@@ -1374,7 +1374,7 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
 
   EXPECT_CALL(delegate, CanAcceptPointerEventsForSurface(surface.get()))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(delegate, OnPointerFrame()).Times(9);
+  EXPECT_CALL(delegate, OnPointerFrame()).Times(11);
 
   EXPECT_CALL(delegate, OnPointerEnter(surface.get(), gfx::PointF(), 0));
   generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin());
@@ -1549,7 +1549,7 @@ TEST_F(PointerConstraintTest, ConstrainPointer) {
 
   EXPECT_CALL(delegate_, OnPointerLeave(surface_));
   EXPECT_CALL(delegate_, OnPointerEnter(child_surface, gfx::PointF(), 0));
-  EXPECT_CALL(delegate_, OnPointerFrame());
+  EXPECT_CALL(delegate_, OnPointerFrame()).Times(2);
   // Moving the cursor to a different surface should change the focus when
   // the pointer is unconstrained.
   pointer_->UnconstrainPointerByUserAction();

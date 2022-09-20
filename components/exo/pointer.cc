@@ -842,6 +842,7 @@ void Pointer::SetFocus(Surface* surface,
   // First generate a leave event if we currently have a target in focus.
   if (focus_surface_) {
     delegate_->OnPointerLeave(focus_surface_);
+    delegate_->OnPointerFrame();
     // Require SetCursor() to be called and cursor to be re-defined in
     // response to each OnPointerEnter() call.
     Surface* old_surface = focus_surface_;
@@ -852,12 +853,12 @@ void Pointer::SetFocus(Surface* surface,
   // Second generate an enter event if focus moved to a new surface.
   if (surface) {
     delegate_->OnPointerEnter(surface, location, button_flags);
+    delegate_->OnPointerFrame();
     location_ = GetLocationInRoot(surface, location);
     focus_surface_ = surface;
     if (!focus_surface_->HasSurfaceObserver(this))
       focus_surface_->AddSurfaceObserver(this);
   }
-  delegate_->OnPointerFrame();
   UpdateCursor();
 }
 

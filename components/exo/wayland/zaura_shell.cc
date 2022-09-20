@@ -955,6 +955,7 @@ namespace {
 const uint32_t kFixedBugIds[] = {
     1151508,  // Do not remove, used for sanity checks by
               // |wayland_simple_client|
+    1352584,
 };
 
 // Implements aura shell interface and monitors workspace state needed
