@@ -165,6 +165,24 @@
             ]
         }
     ],
+    "AndroidBindingManagerConnectionLimit": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled20Connections",
+                    "params": {
+                        "max_connections": "20"
+                    },
+                    "enable_features": [
+                        "BindingManagerConnectionLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBindingManagerUseNotPerceptibleBinding": [
         {
             "platforms": [
