@@ -963,6 +963,23 @@ public class PartialCustomTabHeightStrategyTest {
         assertFalse(isFullscreen());
     }
 
+    @Test
+    public void dragToTheSameInitialY() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        verifyWindowFlagsSet();
+
+        assertEquals(
+                "mAttributeResults should have exactly 1 element.", 1, mAttributeResults.size());
+
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
+
+        // Drag tab slightly but actionDown and actionUp will be performed at the same Y.
+        // The tab should remain open.
+        assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1450, 1500));
+    }
+
     private boolean isFullscreen() {
         WindowManager.LayoutParams attrs = mAttributeResults.get(mAttributeResults.size() - 1);
         return attrs.isFullscreen();
