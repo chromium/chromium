@@ -31,7 +31,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:textAlignment="center" />
 
-    <include layout="@layout/page_zoom_view" />
+    <include layout="@layout/page_zoom_slider" />
 
     <TextView
         style="@style/PreferenceTitle"

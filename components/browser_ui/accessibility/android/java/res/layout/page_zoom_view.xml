@@ -5,38 +5,23 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/page_zoom_view_container"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/page_zoom_background"
-    android:elevation="@dimen/page_zoom_view_elevation"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="vertical" >
 
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/page_zoom_decrease_zoom_button"
-        android:layout_width="@dimen/min_touch_target_size"
-        android:layout_height="@dimen/min_touch_target_size"
-        android:src="@drawable/ic_remove"
-        android:background="?attr/selectableItemBackground"
-        android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
-        android:tint="@color/default_icon_color_tint_list" />
+    <TextView
+        android:id="@+id/page_zoom_current_zoom_level"
+        style="@style/TextAppearance.TextMedium"
+        android:background="@drawable/page_zoom_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/page_zoom_view_level_margin"
+        android:padding="@dimen/page_zoom_view_level_padding"
+        android:textAlignment="center"
+        android:accessibilityLiveRegion="assertive" />
 
-    <SeekBar
-        android:id="@+id/page_zoom_slider"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content" />
-
-    <org.chromium.ui.widget.ChromeImageButton
-        android:id="@+id/page_zoom_increase_zoom_button"
-        android:layout_width="@dimen/min_touch_target_size"
-        android:layout_height="@dimen/min_touch_target_size"
-        android:src="@drawable/ic_add"
-        android:background="?attr/selectableItemBackground"
-        android:contentDescription="@string/page_zoom_increase_zoom_button_text"
-        android:tint="@color/default_icon_color_tint_list" />
-
+    <include layout="@layout/page_zoom_slider" />
+    
 </LinearLayout>

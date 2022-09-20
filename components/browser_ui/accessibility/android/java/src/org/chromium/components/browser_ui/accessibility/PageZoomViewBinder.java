@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.accessibility;
 
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,6 +19,16 @@ class PageZoomViewBinder {
         if (PageZoomProperties.CURRENT_SEEK_VALUE == propertyKey) {
             ((SeekBar) view.findViewById(R.id.page_zoom_slider))
                     .setProgress(model.get(PageZoomProperties.CURRENT_SEEK_VALUE));
+
+            TextView textView = ((TextView) view.findViewById(R.id.page_zoom_current_zoom_level));
+
+            long zoomLevel = Math.round(100
+                    * PageZoomUtils.convertSeekBarValueToZoomLevel(
+                            model.get(PageZoomProperties.CURRENT_SEEK_VALUE)));
+            textView.setText(view.getContext().getResources().getString(
+                    R.string.page_zoom_level, zoomLevel));
+            textView.setContentDescription(view.getContext().getResources().getString(
+                    R.string.page_zoom_level_label, zoomLevel));
         } else if (PageZoomProperties.MAXIMUM_SEEK_VALUE == propertyKey) {
             ((SeekBar) view.findViewById(R.id.page_zoom_slider))
                     .setMax(model.get(PageZoomProperties.MAXIMUM_SEEK_VALUE));
