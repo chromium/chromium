@@ -5,7 +5,6 @@
 #import "ios/chrome/app/post_restore_app_agent.h"
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/signin/signin_util.h"
@@ -20,9 +19,6 @@
 // The app state for the app.
 @property(nonatomic, weak, readonly) AppState* appState;
 
-// Stores the pre-restore account info, if available.
-@property(nonatomic) absl::optional<AccountInfo> accountInfo;
-
 // Stores whether the IOSNewPostRestoreExperience is enabled, in either
 // variation.
 @property(nonatomic) BOOL featureEnabled;
@@ -30,8 +26,8 @@
 // Stores whether we have pre-restore account info.
 @property(nonatomic) BOOL hasAccountInfo;
 
-// Stores whether this is the first session after a device restore.
-@property(nonatomic) BOOL isFirstSessionAfterDeviceRestore;
+// The PromosManager is used to register promos.
+@property(nonatomic) PromosManager* promosManager;
 
 // Stores the PostRestoreSignInType which can be kAlert, kFullscreen, or
 // kDisabled.
@@ -41,10 +37,6 @@
 // Returns the appropriate post restore sign-in promo, depending on which
 // feature variation is enabled.
 @property(readonly) promos_manager::Promo promoForEnabledFeature;
-
-// Stores the PromosManager, which is used to register the post restore
-// sign-in promo, when appropriate.
-@property(nonatomic) PromosManager* promosManager;
 
 // Returns whether or not a post restore sign-in promo should be registered
 // with the PromosManager.
@@ -86,10 +78,9 @@
   _featureEnabled =
       _postRestoreSignInType !=
       post_restore_signin::features::PostRestoreSignInType::kDisabled;
-  _isFirstSessionAfterDeviceRestore =
-      IsFirstSessionAfterDeviceRestore() == signin::Tribool::kTrue;
   _hasAccountInfo = GetPreRestoreIdentity().has_value();
-  _promosManager = GetApplicationContext()->GetPromosManager();
+  if (_promosManager == nil)
+    _promosManager = GetApplicationContext()->GetPromosManager();
 }
 
 // Returns the correct promo type depending on which feature variation is
@@ -109,8 +100,7 @@
 // Returns whether or not a post restore sign-in promo should be registered
 // with the PromosManager.
 - (BOOL)shouldRegisterPromo {
-  return _isFirstSessionAfterDeviceRestore && _featureEnabled &&
-         _hasAccountInfo && _promosManager;
+  return _featureEnabled && _hasAccountInfo && _promosManager;
 }
 
 // Register the promo with the PromosManager, if the conditions are met.
