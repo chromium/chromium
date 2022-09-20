@@ -1700,6 +1700,9 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
   if (!dawn::native::IsTextureSubresourceInitialized(texture, 0, 1, 0, 1)) {
     // The compositor renders uninitialized textures as red. If the texture is
     // not initialized, we need to explicitly clear its contents to black.
+    // This may not successfully initialize the texture if the texture or device
+    // was explicitly destroyed. TODO(crbug.com/1359106): Some other workaround
+    // will be needed to make the texture black in the destroyed case.
     // TODO(crbug.com/1242712): Use the C++ WebGPU API.
     const auto& procs = dawn::native::GetProcs();
     WGPUTextureView view = procs.textureCreateView(texture, nullptr);
@@ -1725,7 +1728,7 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
         procs.deviceCreateCommandEncoder(device, &command_encoder_desc);
     WGPURenderPassEncoder pass =
         procs.commandEncoderBeginRenderPass(encoder, &render_pass_descriptor);
-    procs.renderPassEncoderEndPass(pass);
+    procs.renderPassEncoderEnd(pass);
     WGPUCommandBuffer command_buffer =
         procs.commandEncoderFinish(encoder, nullptr);
     WGPUQueue queue = procs.deviceGetQueue(device);
@@ -1735,8 +1738,6 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     procs.renderPassEncoderRelease(pass);
     procs.commandEncoderRelease(encoder);
     procs.textureViewRelease(view);
-
-    DCHECK(dawn::native::IsTextureSubresourceInitialized(texture, 0, 1, 0, 1));
   }
 
   associated_shared_image_map_.erase(it);

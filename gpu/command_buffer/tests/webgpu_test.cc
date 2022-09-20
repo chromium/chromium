@@ -7,9 +7,11 @@
 #include <dawn/dawn_proc.h>
 #include <dawn/webgpu.h>
 
-#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/test/bind.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/webgpu_cmd_helper.h"
@@ -198,6 +200,21 @@ void WebGPUTest::WaitForCompletion(wgpu::Device device) {
   }
 }
 
+void WebGPUTest::PollUntilIdle() {
+  webgpu()->FlushCommands();
+  base::WaitableEvent wait;
+  gpu_service_holder_->ScheduleGpuTask(
+      base::BindLambdaForTesting([&wait, decoder = GetDecoder()]() {
+        while (decoder->HasPollingWork()) {
+          base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+          decoder->PerformPollingWork();
+        }
+        wait.Signal();
+      }));
+  wait.Wait();
+  context_->GetTaskRunner()->RunPendingTasks();
+}
+
 wgpu::Device WebGPUTest::GetNewDevice() {
   wgpu::Device device;
   bool done = false;
@@ -217,10 +234,25 @@ wgpu::Device WebGPUTest::GetNewDevice() {
                          callback->AsUserdata());
   webgpu()->FlushCommands();
   while (!done) {
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     RunPendingTasks();
   }
 
   EXPECT_NE(device, nullptr);
+  device.SetDeviceLostCallback(
+      [](WGPUDeviceLostReason reason, const char* message, void*) {
+        if (reason == WGPUDeviceLostReason_Destroyed) {
+          return;
+        }
+        GTEST_FAIL() << "Unexpected device lost (" << reason
+                     << "): " << message;
+      },
+      nullptr);
+  device.SetUncapturedErrorCallback(
+      [](WGPUErrorType type, const char* message, void*) {
+        GTEST_FAIL() << "Unexpected error (" << type << "): " << message;
+      },
+      nullptr);
   return device;
 }
 
