@@ -12,12 +12,12 @@ import {RoutineResult, RoutineResultInfo, RoutineRunnerInterface, RoutineRunnerR
  * @enum {number}
  */
 export const ExecutionProgress = {
-  kNotStarted: 0,
-  kRunning: 1,
-  kCompleted: 2,
-  kCancelled: 3,
-  kSkipped: 4,
-  kWarning: 5,
+  NOT_STARTED: 0,
+  RUNNING: 1,
+  COMPLETED: 2,
+  CANCELLED: 3,
+  SKIPPED: 4,
+  WARNING: 5,
 };
 
 /**
@@ -25,9 +25,9 @@ export const ExecutionProgress = {
  * @enum {number}
  */
 export const TestSuiteStatus = {
-  kNotRunning: 0,
-  kRunning: 1,
-  kCompleted: 2,
+  NOT_RUNNING: 0,
+  RUNNING: 1,
+  COMPLETED: 2,
 };
 
 /**
@@ -35,7 +35,7 @@ export const TestSuiteStatus = {
  * routine-result-list.
  */
 export class ResultStatusItem {
-  constructor(routine, progress = ExecutionProgress.kNotStarted) {
+  constructor(routine, progress = ExecutionProgress.NOT_STARTED) {
     /** @type {!RoutineType} */
     this.routine = routine;
 
@@ -127,10 +127,10 @@ export class RoutineListExecutor {
         // Notify the status callback of the test status.
         if (this.routinesCancelled_) {
           statusCallback(
-              new ResultStatusItem(name, ExecutionProgress.kCancelled));
-          return ExecutionProgress.kCancelled;
+              new ResultStatusItem(name, ExecutionProgress.CANCELLED));
+          return ExecutionProgress.CANCELLED;
         }
-        statusCallback(new ResultStatusItem(name, ExecutionProgress.kRunning));
+        statusCallback(new ResultStatusItem(name, ExecutionProgress.RUNNING));
 
         this.currentExecutionContext_ = new ExecutionContext();
         // Create a new remote and execute the next test.
@@ -143,13 +143,13 @@ export class RoutineListExecutor {
         // result.
         return this.currentExecutionContext_.whenComplete().then((info) => {
           /** @type {!ExecutionProgress} */
-          let progress = ExecutionProgress.kCancelled;
+          let progress = ExecutionProgress.CANCELLED;
           /** @type {?RoutineResultInfo} */
           let result = null;
 
           if (info !== null) {
             assert(info.type === name);
-            progress = ExecutionProgress.kCompleted;
+            progress = ExecutionProgress.COMPLETED;
             result = info.result;
           }
 

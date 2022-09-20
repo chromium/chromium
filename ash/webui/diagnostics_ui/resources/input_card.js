@@ -26,9 +26,9 @@ import {getTemplate} from './input_card.html.js';
  * @enum {string}
  */
 export const InputCardType = {
-  kKeyboard: 'keyboard',
-  kTouchpad: 'touchpad',
-  kTouchscreen: 'touchscreen',
+  KEYBOARD: 'keyboard',
+  TOUCHPAD: 'touchpad',
+  TOUCHSCREEN: 'touchscreen',
 };
 
 /**
@@ -73,9 +73,9 @@ export class InputCardElement extends InputCardElementBase {
 
   computeDeviceIcon_(deviceType) {
     return {
-      [InputCardType.kKeyboard]: 'diagnostics:keyboard',
-      [InputCardType.kTouchpad]: 'diagnostics:touchpad',
-      [InputCardType.kTouchscreen]: 'diagnostics:touchscreen',
+      [InputCardType.KEYBOARD]: 'diagnostics:keyboard',
+      [InputCardType.TOUCHPAD]: 'diagnostics:touchpad',
+      [InputCardType.TOUCHSCREEN]: 'diagnostics:touchscreen',
     }[deviceType];
   }
 
@@ -96,9 +96,9 @@ export class InputCardElement extends InputCardElementBase {
       [ConnectionType.kBluetooth]: 'Bluetooth',
     }[device.connectionType];
     const deviceTypeString = {
-      [InputCardType.kKeyboard]: 'Keyboard',
-      [InputCardType.kTouchpad]: 'Touchpad',
-      [InputCardType.kTouchscreen]: 'Touchscreen',
+      [InputCardType.KEYBOARD]: 'Keyboard',
+      [InputCardType.TOUCHPAD]: 'Touchpad',
+      [InputCardType.TOUCHSCREEN]: 'Touchscreen',
     }[this.deviceType];
     return loadTimeData.getString(
         'inputDescription' + connectionTypeString + deviceTypeString);

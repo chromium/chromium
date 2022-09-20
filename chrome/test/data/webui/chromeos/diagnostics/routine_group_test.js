@@ -14,7 +14,7 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
  * @return {!ResultStatusItem}
  */
 function getRoutineRunningStatusItem(routineType) {
-  return new ResultStatusItem(routineType, ExecutionProgress.kRunning);
+  return new ResultStatusItem(routineType, ExecutionProgress.RUNNING);
 }
 
 /**
@@ -22,7 +22,7 @@ function getRoutineRunningStatusItem(routineType) {
  * @return {!ResultStatusItem}
  */
 function getRoutinedPassedStatusItem(routineType) {
-  const item = new ResultStatusItem(routineType, ExecutionProgress.kCompleted);
+  const item = new ResultStatusItem(routineType, ExecutionProgress.COMPLETED);
   item.result = /** @type {!RoutineResult} */ (
       {simpleResult: StandardRoutineResult.kTestPassed});
   return item;
@@ -33,7 +33,7 @@ function getRoutinedPassedStatusItem(routineType) {
  * @return {!ResultStatusItem}
  */
 function getRoutinedFailedStatusItem(routineType) {
-  const item = new ResultStatusItem(routineType, ExecutionProgress.kCompleted);
+  const item = new ResultStatusItem(routineType, ExecutionProgress.COMPLETED);
   item.result = /** @type {!RoutineResult} */ (
       {simpleResult: StandardRoutineResult.kTestFailed});
   return item;
@@ -65,17 +65,17 @@ export function routineGroupTestSuite() {
         getRoutinedPassedStatusItem(kSignalStrength);
 
     // Progress is initially "Not started".
-    assertEquals(routineGroup.progress, ExecutionProgress.kNotStarted);
+    assertEquals(routineGroup.progress, ExecutionProgress.NOT_STARTED);
 
     // Progress should now be running since the signal strength test is in
     // progress.
     routineGroup.setStatus(signalStrengthRunning);
-    assertEquals(routineGroup.progress, ExecutionProgress.kRunning);
+    assertEquals(routineGroup.progress, ExecutionProgress.RUNNING);
 
     // Progress should still be running despite the signal strength test
     // finishing since their are still unfinished routines in this group.
     routineGroup.setStatus(signalStrengthCompleted);
-    assertEquals(routineGroup.progress, ExecutionProgress.kRunning);
+    assertEquals(routineGroup.progress, ExecutionProgress.RUNNING);
 
     const hasSecureWiFiConnectionRunning =
         getRoutineRunningStatusItem(kHasSecureWiFiConnection);
@@ -84,12 +84,12 @@ export function routineGroupTestSuite() {
 
     // Progress should still be running.
     routineGroup.setStatus(hasSecureWiFiConnectionRunning);
-    assertEquals(routineGroup.progress, ExecutionProgress.kRunning);
+    assertEquals(routineGroup.progress, ExecutionProgress.RUNNING);
 
     // Status should be completed now that all routines in this group
     // have finished running.
     routineGroup.setStatus(hasSecureWiFiConnectionCompleted);
-    assertEquals(routineGroup.progress, ExecutionProgress.kCompleted);
+    assertEquals(routineGroup.progress, ExecutionProgress.COMPLETED);
   });
 
   test('TestFailureHandledCorrectly', () => {

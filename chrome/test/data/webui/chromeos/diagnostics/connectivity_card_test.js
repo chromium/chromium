@@ -173,7 +173,7 @@ export function connectivityCardTestSuite() {
     return initializeConnectivityCard('ethernetGuid', true)
         .then(
             () => assertEquals(
-                TestSuiteStatus.kRunning,
+                TestSuiteStatus.RUNNING,
                 connectivityCardElement.testSuiteStatus));
   });
 
@@ -212,17 +212,17 @@ export function connectivityCardTestSuite() {
     return initializeConnectivityCard('ethernetGuid', true)
         .then(
             () => assertEquals(
-                TestSuiteStatus.kRunning,
+                TestSuiteStatus.RUNNING,
                 connectivityCardElement.testSuiteStatus))
         .then(() => stopTests())
         .then(
             () => assertEquals(
-                TestSuiteStatus.kNotRunning,
+                TestSuiteStatus.NOT_RUNNING,
                 connectivityCardElement.testSuiteStatus))
         .then(() => changeActiveGuid('wifiGuid'))
         .then(
             () => assertEquals(
-                TestSuiteStatus.kRunning,
+                TestSuiteStatus.RUNNING,
                 connectivityCardElement.testSuiteStatus));
   });
 }

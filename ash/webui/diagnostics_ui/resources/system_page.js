@@ -64,7 +64,7 @@ export class SystemPageElement extends SystemPageElementBase {
       /** @type {!TestSuiteStatus} */
       testSuiteStatus: {
         type: Number,
-        value: TestSuiteStatus.kNotRunning,
+        value: TestSuiteStatus.NOT_RUNNING,
       },
 
       /** @type {boolean} */

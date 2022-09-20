@@ -75,7 +75,7 @@ export function inputCardTestSuite() {
   }
 
   test('KeyboardsListedCorrectly', async () => {
-    await initializeInputCard(InputCardType.kKeyboard, keyboards);
+    await initializeInputCard(InputCardType.KEYBOARD, keyboards);
     assertEquals(
         2,
         inputCardElement.shadowRoot.querySelector('dom-repeat').items.length);
@@ -93,7 +93,7 @@ export function inputCardTestSuite() {
   });
 
   test('TestButtonClickEvent', async () => {
-    await initializeInputCard(InputCardType.kKeyboard, keyboards);
+    await initializeInputCard(InputCardType.KEYBOARD, keyboards);
     let listenerCalled = false;
     inputCardElement.addEventListener('test-button-click', (e) => {
       listenerCalled = true;

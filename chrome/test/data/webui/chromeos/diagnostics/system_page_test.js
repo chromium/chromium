@@ -239,12 +239,12 @@ export function systemPageTestSuite() {
           cards = [batteryStatusCard, cpuCard, memoryCard];
 
           memoryRoutinesSection = dx_utils.getRoutineSection(memoryCard);
-          memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.kRunning;
+          memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.RUNNING;
           return flushTasks();
         })
         .then(() => {
           assertRunTestButtonsDisabled(cards);
-          memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.kNotRunning;
+          memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.NOT_RUNNING;
           return flushTasks();
         })
         .then(() => assertRunTestButtonsEnabled(cards));

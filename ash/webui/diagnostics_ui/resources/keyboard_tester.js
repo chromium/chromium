@@ -53,9 +53,9 @@ const topRowKeyMap = {
 
 /** Maps top-right key evdev codes to the corresponding DiagramTopRightKey. */
 const topRightKeyByCode = new Map([
-  [116, DiagramTopRightKey.kPower],
-  [142, DiagramTopRightKey.kLock],
-  [579, DiagramTopRightKey.kControlPanel],
+  [116, DiagramTopRightKey.POWER],
+  [142, DiagramTopRightKey.LOCK],
+  [579, DiagramTopRightKey.CONTROL_PANEL],
 ]);
 
 /** Evdev codes for keys that always appear in the number pad area. */
@@ -211,9 +211,9 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     }
     return {
       [MechanicalLayout.kUnknown]: null,
-      [MechanicalLayout.kAnsi]: DiagramMechanicalLayout.kAnsi,
-      [MechanicalLayout.kIso]: DiagramMechanicalLayout.kIso,
-      [MechanicalLayout.kJis]: DiagramMechanicalLayout.kJis,
+      [MechanicalLayout.kAnsi]: DiagramMechanicalLayout.ANSI,
+      [MechanicalLayout.kIso]: DiagramMechanicalLayout.ISO,
+      [MechanicalLayout.kJis]: DiagramMechanicalLayout.JIS,
     }[keyboardInfo.mechanicalLayout];
   }
 
@@ -229,11 +229,11 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     }
     return {
       [PhysicalLayout.kUnknown]: null,
-      [PhysicalLayout.kChromeOS]: DiagramPhysicalLayout.kChromeOS,
+      [PhysicalLayout.kChromeOS]: DiagramPhysicalLayout.CHROME_OS,
       [PhysicalLayout.kChromeOSDellEnterpriseWilco]:
-          DiagramPhysicalLayout.kChromeOSDellEnterpriseWilco,
+          DiagramPhysicalLayout.CHROME_OS_DELL_ENTERPRISE_WILCO,
       [PhysicalLayout.kChromeOSDellEnterpriseDrallion]:
-          DiagramPhysicalLayout.kChromeOSDellEnterpriseDrallion,
+          DiagramPhysicalLayout.CHROME_OS_DELL_ENTERPRISE_DRALLION,
     }[keyboardInfo.physicalLayout];
   }
 
@@ -249,9 +249,9 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     }
     return {
       [TopRightKey.kUnknown]: null,
-      [TopRightKey.kPower]: DiagramTopRightKey.kPower,
-      [TopRightKey.kLock]: DiagramTopRightKey.kLock,
-      [TopRightKey.kControlPanel]: DiagramTopRightKey.kControlPanel,
+      [TopRightKey.kPower]: DiagramTopRightKey.POWER,
+      [TopRightKey.kLock]: DiagramTopRightKey.LOCK,
+      [TopRightKey.kControlPanel]: DiagramTopRightKey.CONTROL_PANEL,
     }[keyboardInfo.topRightKey];
   }
 
@@ -346,8 +346,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   onKeyEvent(keyEvent) {
     const diagram = this.shadowRoot.querySelector('#diagram');
     const state = keyEvent.type === KeyEventType.kPress ?
-        KeyboardKeyState.kPressed :
-        KeyboardKeyState.kTested;
+        KeyboardKeyState.PRESSED :
+        KeyboardKeyState.TESTED;
     if (keyEvent.topRowPosition !== -1 &&
         keyEvent.topRowPosition < this.keyboard.topRowKeys.length) {
       diagram.setTopRowKeyState(keyEvent.topRowPosition, state);

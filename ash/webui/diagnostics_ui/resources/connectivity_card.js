@@ -49,7 +49,7 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
       /** @type {!TestSuiteStatus} */
       testSuiteStatus: {
         type: Number,
-        value: TestSuiteStatus.kNotRunning,
+        value: TestSuiteStatus.NOT_RUNNING,
         notify: true,
       },
 
@@ -163,7 +163,7 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
     this.networkState_ = getNetworkState(network.state);
     this.macAddress_ = network.macAddress || '';
 
-    if (this.testSuiteStatus === TestSuiteStatus.kNotRunning) {
+    if (this.testSuiteStatus === TestSuiteStatus.NOT_RUNNING) {
       const isArcEnabled =
           loadTimeData.getBoolean('enableArcNetworkDiagnostics');
       this.routineGroups_ = getRoutineGroups(network.type, isArcEnabled);
@@ -191,8 +191,8 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
    * @param {string} activeGuid
    */
   activeGuidChanged_(activeGuid) {
-    if (this.testSuiteStatus === TestSuiteStatus.kCompleted) {
-      this.testSuiteStatus = TestSuiteStatus.kNotRunning;
+    if (this.testSuiteStatus === TestSuiteStatus.COMPLETED) {
+      this.testSuiteStatus = TestSuiteStatus.NOT_RUNNING;
     }
 
     if (!activeGuid) {

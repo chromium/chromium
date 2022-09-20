@@ -63,11 +63,11 @@ import {getTemplate} from './keyboard_key.html.js';
  */
 export const KeyboardKeyState = {
   /** The key has not been pressed during this test session. */
-  kNotPressed: 'not-pressed',
+  NOT_PRESSED: 'not-pressed',
   /** The key is currently pressed. */
-  kPressed: 'pressed',
+  PRESSED: 'pressed',
   /** The key is not currently pressed, but we've seen it pressed previously. */
-  kTested: 'tested',
+  TESTED: 'tested',
 };
 
 /**
@@ -148,7 +148,7 @@ export class KeyboardKeyElement extends KeyboardKeyElementBase {
        */
       state: {
         type: String,
-        value: KeyboardKeyState.kNotPressed,
+        value: KeyboardKeyState.NOT_PRESSED,
         reflectToAttribute: true,
       },
 
@@ -173,9 +173,9 @@ export class KeyboardKeyElement extends KeyboardKeyElementBase {
     const name =
         ariaName || mainGlyph || bottomRightGlyph || bottomLeftGlyph || '';
     const stateStringIds = {
-      [KeyboardKeyState.kNotPressed]: 'keyboardDiagramAriaLabelNotPressed',
-      [KeyboardKeyState.kPressed]: 'keyboardDiagramAriaLabelPressed',
-      [KeyboardKeyState.kTested]: 'keyboardDiagramAriaLabelTested',
+      [KeyboardKeyState.NOT_PRESSED]: 'keyboardDiagramAriaLabelNotPressed',
+      [KeyboardKeyState.PRESSED]: 'keyboardDiagramAriaLabelPressed',
+      [KeyboardKeyState.TESTED]: 'keyboardDiagramAriaLabelTested',
     };
     return this.i18n(stateStringIds[state], name);
   }

@@ -62,11 +62,11 @@ export function fakeRoutineListExecutorTestSuite() {
 
       // Add the "running" callback to the list.
       let status =
-          new ResultStatusItem(routine.type, ExecutionProgress.kRunning);
+          new ResultStatusItem(routine.type, ExecutionProgress.RUNNING);
       expectedCallbacks.push(status);
 
       // Add the "completed" callback to the list.
-      status = new ResultStatusItem(routine.type, ExecutionProgress.kCompleted);
+      status = new ResultStatusItem(routine.type, ExecutionProgress.COMPLETED);
       status.result = routine.result;
       expectedCallbacks.push(status);
     });
@@ -79,7 +79,7 @@ export function fakeRoutineListExecutorTestSuite() {
       assertTrue(upto < expectedCallbacks.length);
       assertEquals(expectedCallbacks[upto].routine, status.routine);
       assertEquals(expectedCallbacks[upto].progress, status.progress);
-      if (status.progress === ExecutionProgress.kRunning) {
+      if (status.progress === ExecutionProgress.RUNNING) {
         assertEquals(null, status.result);
       } else {
         if (expectedCallbacks[upto].result.hasOwnProperty('simpleResult')) {

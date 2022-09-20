@@ -73,7 +73,7 @@ export class CpuCardElement extends CpuCardElementBase {
       /** @type {!TestSuiteStatus} */
       testSuiteStatus: {
         type: Number,
-        value: TestSuiteStatus.kNotRunning,
+        value: TestSuiteStatus.NOT_RUNNING,
         notify: true,
       },
 

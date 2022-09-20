@@ -40,7 +40,7 @@ export function keyboardTesterTestSuite() {
 
     const diagramElement =
         keyboardTesterElement.shadowRoot.querySelector('#diagram');
-    assertEquals(DiagramTopRightKey.kPower, diagramElement.topRightKey);
+    assertEquals(DiagramTopRightKey.POWER, diagramElement.topRightKey);
 
     /** @type {!KeyEvent} */
     const lockKeyEvent = {
@@ -53,7 +53,7 @@ export function keyboardTesterTestSuite() {
     keyboardTesterElement.onKeyEvent(lockKeyEvent);
     await flushTasks();
 
-    assertEquals(DiagramTopRightKey.kLock, diagramElement.topRightKey);
+    assertEquals(DiagramTopRightKey.LOCK, diagramElement.topRightKey);
   });
 
   test('f13Remapping', async () => {
@@ -68,7 +68,7 @@ export function keyboardTesterTestSuite() {
     const mockSetKeyState =
         mockController.createFunctionMock(diagramElement, 'setKeyState');
     mockSetKeyState.addExpectation(
-        142 /* KEY_SLEEP */, KeyboardKeyState.kPressed);
+        142 /* KEY_SLEEP */, KeyboardKeyState.PRESSED);
 
     /** @type {!KeyEvent} */
     const f13Event = {

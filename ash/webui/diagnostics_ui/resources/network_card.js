@@ -26,10 +26,10 @@ const SETTINGS_URL = 'chrome://os-settings/';
  * @enum {number}
  */
 export const TroubleshootingState = {
-  kDisabled: 0,
-  kNotConnected: 1,
-  kMissingIpAddress: 2,
-  kMissingNameServers: 3,
+  DISABLED: 0,
+  NOT_CONNECTED: 1,
+  MISSING_IP_ADDRESS: 2,
+  MISSING_NAME_SERVERS: 3,
 };
 
 /**
@@ -314,11 +314,11 @@ export class NetworkCardElement extends NetworkCardElementBase {
       // seconds or we're missing name servers in which case we'd like
       // to display the bannner to the user.
       if (this.unableToObtainIpAddress_) {
-        troubleshootingState = TroubleshootingState.kMissingIpAddress;
+        troubleshootingState = TroubleshootingState.MISSING_IP_ADDRESS;
       }
 
       if (this.isMissingNameServers_) {
-        troubleshootingState = TroubleshootingState.kMissingNameServers;
+        troubleshootingState = TroubleshootingState.MISSING_NAME_SERVERS;
       }
 
       if (troubleshootingState == null) {
@@ -340,11 +340,11 @@ export class NetworkCardElement extends NetworkCardElementBase {
     // Override the |troubleshootingState| value if necessary since the
     // disabled and not connected states take precedence.
     if (isNotConnected) {
-      troubleshootingState = TroubleshootingState.kNotConnected;
+      troubleshootingState = TroubleshootingState.NOT_CONNECTED;
     }
 
     if (isDisabled) {
-      troubleshootingState = TroubleshootingState.kDisabled;
+      troubleshootingState = TroubleshootingState.DISABLED;
     }
 
     // At this point, |isConnectedOrOnline| was falsy which means
@@ -385,13 +385,13 @@ export class NetworkCardElement extends NetworkCardElementBase {
    */
   getInfoProperties_(state) {
     switch (state) {
-      case TroubleshootingState.kDisabled:
+      case TroubleshootingState.DISABLED:
         return this.getDisabledTroubleshootingInfo_();
-      case TroubleshootingState.kNotConnected:
+      case TroubleshootingState.NOT_CONNECTED:
         return this.getNotConnectedTroubleshootingInfo_();
-      case TroubleshootingState.kMissingIpAddress:
+      case TroubleshootingState.MISSING_IP_ADDRESS:
         return this.getMissingIpAddressInfo_();
-      case TroubleshootingState.kMissingNameServers:
+      case TroubleshootingState.MISSING_NAME_SERVERS:
         return this.getMissingNameServersInfo_();
       default:
         return {

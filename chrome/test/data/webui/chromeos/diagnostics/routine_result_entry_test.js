@@ -73,7 +73,7 @@ export function routineResultEntryTestSuite() {
    * @return {!ResultStatusItem}
    */
   function createCompletedStatus(routine, result) {
-    const status = new ResultStatusItem(routine, ExecutionProgress.kCompleted);
+    const status = new ResultStatusItem(routine, ExecutionProgress.COMPLETED);
     status.result = result;
     return status;
   }
@@ -149,8 +149,8 @@ export function routineResultEntryTestSuite() {
   });
 
   test('RunningTest', () => {
-    const item = new ResultStatusItem(
-        RoutineType.kCpuStress, ExecutionProgress.kRunning);
+    const item =
+        new ResultStatusItem(RoutineType.kCpuStress, ExecutionProgress.RUNNING);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -206,7 +206,7 @@ export function routineResultEntryTestSuite() {
 
   test('StoppedTest', () => {
     const item = new ResultStatusItem(
-        RoutineType.kCpuStress, ExecutionProgress.kCancelled);
+        RoutineType.kCpuStress, ExecutionProgress.CANCELLED);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -261,7 +261,7 @@ export function routineResultEntryTestSuite() {
 
   test('AnnouncesForRunningAndFailure', () => {
     const routine = RoutineType.kLanConnectivity;
-    let item = new ResultStatusItem(routine, ExecutionProgress.kNotStarted);
+    let item = new ResultStatusItem(routine, ExecutionProgress.NOT_STARTED);
     let expectedAnnounceText = '';
 
     return initializeEntryWithItem(item)
@@ -278,28 +278,28 @@ export function routineResultEntryTestSuite() {
         .then(() => {
           assertEquals(expectedAnnounceText, getAnnoucedText());
 
-          item = new ResultStatusItem(routine, ExecutionProgress.kSkipped);
+          item = new ResultStatusItem(routine, ExecutionProgress.SKIPPED);
 
           return updateItem(item);
         })
         .then(() => {
           assertEquals(expectedAnnounceText, getAnnoucedText());
 
-          item = new ResultStatusItem(routine, ExecutionProgress.kCancelled);
+          item = new ResultStatusItem(routine, ExecutionProgress.CANCELLED);
 
           return updateItem(item);
         })
         .then(() => {
           assertEquals(expectedAnnounceText, getAnnoucedText());
 
-          item = new ResultStatusItem(routine, ExecutionProgress.kWarning);
+          item = new ResultStatusItem(routine, ExecutionProgress.WARNING);
 
           return updateItem(item);
         })
         .then(() => {
           assertEquals(expectedAnnounceText, getAnnoucedText());
 
-          item = new ResultStatusItem(routine, ExecutionProgress.kRunning);
+          item = new ResultStatusItem(routine, ExecutionProgress.RUNNING);
           expectedAnnounceText = 'Lan Connectivity test - RUNNING';
 
           return updateItem(item);

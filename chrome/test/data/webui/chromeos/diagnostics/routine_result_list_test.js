@@ -150,19 +150,18 @@ export function routineResultListTestSuite() {
         assertDeepEquals(status, entry.item);
       });
 
-      let status =
-          new ResultStatusItem(routines[0], ExecutionProgress.kRunning);
+      let status = new ResultStatusItem(routines[0], ExecutionProgress.RUNNING);
       routineResultListElement.onStatusUpdate(status);
       return flushTasks()
           .then(() => {
             // Verify first routine is running.
             assertEquals(
-                ExecutionProgress.kRunning, getEntries()[0].item.progress);
+                ExecutionProgress.RUNNING, getEntries()[0].item.progress);
             assertEquals(null, getEntries()[0].item.result);
 
             // Move the first routine to completed state.
             status =
-                new ResultStatusItem(routines[0], ExecutionProgress.kCompleted);
+                new ResultStatusItem(routines[0], ExecutionProgress.COMPLETED);
             status.result = /** @type {!RoutineResult} */ (
                 {simpleResult: StandardRoutineResult.kTestPassed});
             routineResultListElement.onStatusUpdate(status);
@@ -172,14 +171,14 @@ export function routineResultListTestSuite() {
           .then(() => {
             // Verify the first routine is completed.
             assertEquals(
-                ExecutionProgress.kCompleted, getEntries()[0].item.progress);
+                ExecutionProgress.COMPLETED, getEntries()[0].item.progress);
             assertNotEquals(null, getEntries()[0].item.result);
             assertEquals(
                 StandardRoutineResult.kTestPassed,
                 getEntries()[0].item.result.simpleResult);
 
             status =
-                new ResultStatusItem(routines[1], ExecutionProgress.kRunning);
+                new ResultStatusItem(routines[1], ExecutionProgress.RUNNING);
             routineResultListElement.onStatusUpdate(status);
 
             return flushTasks();
@@ -187,12 +186,12 @@ export function routineResultListTestSuite() {
           .then(() => {
             // Verify second routine is running.
             assertEquals(
-                ExecutionProgress.kRunning, getEntries()[1].item.progress);
+                ExecutionProgress.RUNNING, getEntries()[1].item.progress);
             assertEquals(null, getEntries()[1].item.result);
 
             // Move the second routine to completed state.
             status =
-                new ResultStatusItem(routines[1], ExecutionProgress.kCompleted);
+                new ResultStatusItem(routines[1], ExecutionProgress.COMPLETED);
             status.result = /** @type {!RoutineResult} */ (
                 {simpleResult: StandardRoutineResult.kTestPassed});
             routineResultListElement.onStatusUpdate(status);
@@ -202,7 +201,7 @@ export function routineResultListTestSuite() {
           .then(() => {
             // Verify the second routine is completed.
             assertEquals(
-                ExecutionProgress.kCompleted, getEntries()[1].item.progress);
+                ExecutionProgress.COMPLETED, getEntries()[1].item.progress);
             assertNotEquals(null, getEntries()[1].item.result);
             assertEquals(
                 StandardRoutineResult.kTestPassed,

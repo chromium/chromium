@@ -94,7 +94,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
        */
       executionStatus_: {
         type: Number,
-        value: ExecutionProgress.kNotStarted,
+        value: ExecutionProgress.NOT_STARTED,
       },
 
       /**
@@ -109,7 +109,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       /** @type {!TestSuiteStatus} */
       testSuiteStatus: {
         type: Number,
-        value: TestSuiteStatus.kNotRunning,
+        value: TestSuiteStatus.NOT_RUNNING,
         notify: true,
       },
 
@@ -317,7 +317,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     if (this.routines.length === 0) {
       return;
     }
-    this.testSuiteStatus = TestSuiteStatus.kRunning;
+    this.testSuiteStatus = TestSuiteStatus.RUNNING;
     this.failedTest_ = null;
 
     this.systemRoutineController_ = getSystemRoutineController();
@@ -386,14 +386,14 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   /** @param {!ExecutionProgress} status */
   handleRoutinesCompletedStatus_(status) {
     this.executionStatus_ = status;
-    this.testSuiteStatus = status === ExecutionProgress.kCancelled ?
-        TestSuiteStatus.kNotRunning :
-        TestSuiteStatus.kCompleted;
+    this.testSuiteStatus = status === ExecutionProgress.CANCELLED ?
+        TestSuiteStatus.NOT_RUNNING :
+        TestSuiteStatus.COMPLETED;
     this.routineStartTimeMs_ = -1;
     this.runTestsButtonText = loadTimeData.getString('runAgainButtonText');
     this.getResultListElem_().resetIgnoreStatusUpdatesFlag();
     this.cleanUp_();
-    if (status === ExecutionProgress.kCancelled) {
+    if (status === ExecutionProgress.CANCELLED) {
       this.badgeText_ = loadTimeData.getString('testStoppedBadgeText');
     } else {
       this.badgeText_ = this.failedTest_ ?
@@ -425,7 +425,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
 
     // Execution progress is checked here to avoid overwriting
     // the test name shown in the status text.
-    if (status.progress !== ExecutionProgress.kCancelled) {
+    if (status.progress !== ExecutionProgress.CANCELLED) {
       this.currentTestName_ = getRoutineType(status.routine);
     }
 
@@ -472,18 +472,18 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   /** @protected */
   isResultButtonHidden_() {
     return this.shouldHideReportList_() ||
-        this.executionStatus_ === ExecutionProgress.kNotStarted;
+        this.executionStatus_ === ExecutionProgress.NOT_STARTED;
   }
 
   /** @protected */
   isLearnMoreHidden_() {
     return !this.shouldHideReportList_() || !this.isLoggedIn_ ||
-        this.executionStatus_ !== ExecutionProgress.kCompleted;
+        this.executionStatus_ !== ExecutionProgress.COMPLETED;
   }
 
   /** @protected */
   isStatusHidden_() {
-    return this.executionStatus_ === ExecutionProgress.kNotStarted;
+    return this.executionStatus_ === ExecutionProgress.NOT_STARTED;
   }
 
   /**
@@ -527,22 +527,22 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   /** @protected */
   routineStatusChanged_() {
     switch (this.executionStatus_) {
-      case ExecutionProgress.kNotStarted:
+      case ExecutionProgress.NOT_STARTED:
         // Do nothing since status is hidden when tests have not been started.
         break;
-      case ExecutionProgress.kRunning:
+      case ExecutionProgress.RUNNING:
         this.setBadgeAndStatusText_(
             BadgeType.RUNNING,
             loadTimeData.getStringF(
                 'routineNameText', this.currentTestName_.toLowerCase()));
         break;
-      case ExecutionProgress.kCancelled:
+      case ExecutionProgress.CANCELLED:
         this.setBadgeAndStatusText_(
             BadgeType.STOPPED,
             loadTimeData.getStringF(
                 'testCancelledText', this.currentTestName_));
         break;
-      case ExecutionProgress.kCompleted:
+      case ExecutionProgress.COMPLETED:
         const isPowerRoutine = this.isPowerRoutine || this.powerRoutineResult_;
         if (this.failedTest_) {
           this.setBadgeAndStatusText_(
@@ -591,7 +591,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
    * @return {boolean}
    */
   isTestRunning_() {
-    return this.testSuiteStatus === TestSuiteStatus.kRunning;
+    return this.testSuiteStatus === TestSuiteStatus.RUNNING;
   }
 
   /**
@@ -600,7 +600,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
    */
   isRunTestsButtonHidden_() {
     return this.isTestRunning_() &&
-        this.executionStatus_ === ExecutionProgress.kRunning;
+        this.executionStatus_ === ExecutionProgress.RUNNING;
   }
 
   /**
@@ -608,7 +608,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
    * @return {boolean}
    */
   isStopTestsButtonHidden_() {
-    return this.executionStatus_ !== ExecutionProgress.kRunning;
+    return this.executionStatus_ !== ExecutionProgress.RUNNING;
   }
 
   /**
@@ -659,7 +659,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     this.runTestsButtonText = this.initialButtonText_;
     this.hasTestFailure_ = false;
     this.currentTestName_ = '';
-    this.executionStatus_ = ExecutionProgress.kNotStarted;
+    this.executionStatus_ = ExecutionProgress.NOT_STARTED;
     this.$.collapse.hide();
     this.ignoreRoutineStatusUpdates = false;
   }

@@ -198,20 +198,20 @@ export class RoutineResultEntryElement extends PolymerElement {
    */
   entryStatusChanged_() {
     switch (this.item.progress) {
-      case ExecutionProgress.kNotStarted:
+      case ExecutionProgress.NOT_STARTED:
         this.setBadgeTypeAndText_(
             BadgeType.QUEUED, loadTimeData.getString('testQueuedBadgeText'));
         break;
-      case ExecutionProgress.kRunning:
+      case ExecutionProgress.RUNNING:
         this.setBadgeTypeAndText_(
             BadgeType.RUNNING, loadTimeData.getString('testRunningBadgeText'));
         this.announceRoutineStatus_();
         break;
-      case ExecutionProgress.kCancelled:
+      case ExecutionProgress.CANCELLED:
         this.setBadgeTypeAndText_(
             BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'));
         break;
-      case ExecutionProgress.kCompleted:
+      case ExecutionProgress.COMPLETED:
         this.testCompleted_ = true;
         // Prevent warning state from being overridden.
         if (this.item.inWarningState) {
@@ -234,11 +234,11 @@ export class RoutineResultEntryElement extends PolymerElement {
           this.announceRoutineStatus_();
         }
         break;
-      case ExecutionProgress.kSkipped:
+      case ExecutionProgress.SKIPPED:
         this.setBadgeTypeAndText_(
             BadgeType.SKIPPED, loadTimeData.getString('testSkippedBadgeText'));
         break;
-      case ExecutionProgress.kWarning:
+      case ExecutionProgress.WARNING:
         this.setBadgeTypeAndText_(
             BadgeType.WARNING, loadTimeData.getString('testWarningBadgeText'));
         break;

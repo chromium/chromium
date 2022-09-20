@@ -160,8 +160,8 @@ export class RoutineResultListElement extends PolymerElement {
   updateRoutineUIAfterFailure() {
     assert(this.usingRoutineGroups);
     this.results_.forEach((routineGroup, i) => {
-      if (routineGroup.progress === ExecutionProgress.kNotStarted) {
-        routineGroup.progress = ExecutionProgress.kSkipped;
+      if (routineGroup.progress === ExecutionProgress.NOT_STARTED) {
+        routineGroup.progress = ExecutionProgress.SKIPPED;
         this.updateRoutineStatus_(i, routineGroup.clone());
       }
     });

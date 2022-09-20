@@ -26,9 +26,9 @@ const MINIMUM_HEIGHT_PX = 250;
  * @enum {string}
  */
 export const MechanicalLayout = {
-  kAnsi: 'ansi',
-  kIso: 'iso',
-  kJis: 'jis',
+  ANSI: 'ansi',
+  ISO: 'iso',
+  JIS: 'jis',
 };
 
 /**
@@ -36,9 +36,9 @@ export const MechanicalLayout = {
  * @enum {string}
  */
 export const PhysicalLayout = {
-  kChromeOS: 'chrome-os',
-  kChromeOSDellEnterpriseWilco: 'dell-enterprise-wilco',
-  kChromeOSDellEnterpriseDrallion: 'dell-enterprise-drallion',
+  CHROME_OS: 'chrome-os',
+  CHROME_OS_DELL_ENTERPRISE_WILCO: 'dell-enterprise-wilco',
+  CHROME_OS_DELL_ENTERPRISE_DRALLION: 'dell-enterprise-drallion',
 };
 
 /**
@@ -46,9 +46,9 @@ export const PhysicalLayout = {
  * @enum {string}
  */
 export const TopRightKey = {
-  kPower: 'power',
-  kLock: 'lock',
-  kControlPanel: 'control-panel',
+  POWER: 'power',
+  LOCK: 'lock',
+  CONTROL_PANEL: 'control-panel',
 };
 
 /**
@@ -214,7 +214,7 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
        */
       topRightKey: {
         type: String,
-        value: TopRightKey.kLock,
+        value: TopRightKey.LOCK,
       },
 
       /** @protected {number} */
@@ -243,8 +243,8 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
    * @private
    */
   computeShowFnAndGlobeKeys_(physicalLayout) {
-    return physicalLayout == PhysicalLayout.kChromeOSDellEnterpriseWilco ||
-        physicalLayout == PhysicalLayout.kChromeOSDellEnterpriseDrallion;
+    return physicalLayout == PhysicalLayout.CHROME_OS_DELL_ENTERPRISE_WILCO ||
+        physicalLayout == PhysicalLayout.CHROME_OS_DELL_ENTERPRISE_DRALLION;
   }
 
   /**
@@ -254,9 +254,9 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
    */
   computeTopRightKeyCode_(topRightKey) {
     return {
-      [TopRightKey.kPower]: 116,
-      [TopRightKey.kLock]: 142,
-      [TopRightKey.kControlPanel]: 579,
+      [TopRightKey.POWER]: 116,
+      [TopRightKey.LOCK]: 142,
+      [TopRightKey.CONTROL_PANEL]: 579,
     }[topRightKey];
   }
 
@@ -276,9 +276,9 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
    */
   computeTopRightKeyAriaNameI18n_(topRightKey) {
     return {
-      [TopRightKey.kPower]: 'keyboardDiagramAriaNamePower',
-      [TopRightKey.kLock]: 'keyboardDiagramAriaNameLock',
-      [TopRightKey.kControlPanel]: 'keyboardDiagramAriaNameControlPanel',
+      [TopRightKey.POWER]: 'keyboardDiagramAriaNamePower',
+      [TopRightKey.LOCK]: 'keyboardDiagramAriaNameLock',
+      [TopRightKey.CONTROL_PANEL]: 'keyboardDiagramAriaNameControlPanel',
     }[topRightKey];
   }
 
@@ -422,9 +422,9 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
   /** Set any pressed keys to the "tested" state. */
   clearPressedKeys() {
     const keys = this.root.querySelectorAll(
-        `keyboard-key[state="${KeyboardKeyState.kPressed}"]`);
+        `keyboard-key[state="${KeyboardKeyState.PRESSED}"]`);
     for (const key of keys) {
-      key.state = KeyboardKeyState.kTested;
+      key.state = KeyboardKeyState.TESTED;
     }
   }
 }

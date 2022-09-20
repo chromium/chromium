@@ -99,7 +99,7 @@ export class BatteryStatusCardElement extends BatteryStatusCardElementBase {
       /** @type {!TestSuiteStatus} */
       testSuiteStatus: {
         type: Number,
-        value: TestSuiteStatus.kNotRunning,
+        value: TestSuiteStatus.NOT_RUNNING,
         notify: true,
       },
 

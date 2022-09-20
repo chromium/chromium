@@ -45,7 +45,7 @@ export class NetworkListElement extends NetworkListElementBase {
       /** @type {!TestSuiteStatus} */
       testSuiteStatus: {
         type: Number,
-        value: TestSuiteStatus.kNotRunning,
+        value: TestSuiteStatus.NOT_RUNNING,
       },
 
       /** @private {Array<?string>} */
