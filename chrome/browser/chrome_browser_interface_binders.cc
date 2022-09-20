@@ -352,7 +352,7 @@
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
-#include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
+#include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1112,7 +1112,7 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_config::mojom::CrosNetworkConfig,
 #if BUILDFLAG(PLATFORM_CFM)
-      chromeos::cfm::NetworkSettingsDialogUi,
+      ash::cfm::NetworkSettingsDialogUi,
 #endif  // BUILDFLAG(PLATFORM_CFM)
       chromeos::InternetConfigDialogUI, chromeos::InternetDetailDialogUI,
       chromeos::NetworkUI, chromeos::OobeUI, chromeos::settings::OSSettingsUI,

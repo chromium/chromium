@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
+#include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 
 namespace ash::cfm {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -11,8 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
-namespace cfm {
+namespace ash::cfm {
 
 // Dialog for displaying network setting options on CFM.
 class NetworkSettingsDialog : public SystemWebDialogDelegate {
@@ -37,18 +36,13 @@ class NetworkSettingsDialogUi : public ui::MojoWebDialogUI {
   explicit NetworkSettingsDialogUi(content::WebUI* web_ui);
 
   void BindInterface(
-      mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver);
+      mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+          receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash::cfm
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::cfm {
-using ::chromeos::cfm::NetworkSettingsDialog;
-}
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_

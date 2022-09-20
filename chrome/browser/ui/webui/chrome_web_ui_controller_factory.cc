@@ -393,7 +393,7 @@
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
-#include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
+#include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
 using content::WebUI;
@@ -1330,7 +1330,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 
 #if BUILDFLAG(PLATFORM_CFM)
   if (url.host_piece() == chrome::kCfmNetworkSettingsHost)
-    return &NewWebUI<chromeos::cfm::NetworkSettingsDialogUi>;
+    return &NewWebUI<ash::cfm::NetworkSettingsDialogUi>;
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
 #if !BUILDFLAG(IS_ANDROID)

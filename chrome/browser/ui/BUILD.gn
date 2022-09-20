@@ -3332,8 +3332,8 @@ static_library("ui") {
 
   if (is_cfm) {
     sources += [
-      "webui/chromeos/chromebox_for_meetings/network_settings_dialog.cc",
-      "webui/chromeos/chromebox_for_meetings/network_settings_dialog.h",
+      "webui/ash/chromebox_for_meetings/network_settings_dialog.cc",
+      "webui/ash/chromebox_for_meetings/network_settings_dialog.h",
     ]
   }
 

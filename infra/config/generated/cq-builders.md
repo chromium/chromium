@@ -331,7 +331,7 @@ builder.
   * [`//chromeos/ash/services/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/services/chromebox_for_meetings/)
   * [`//chrome/browser/ash/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ash/chromebox_for_meetings/)
   * [`//chrome/browser/resources/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/resources/chromeos/chromebox_for_meetings/)
-  * [`//chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/webui/chromeos/chromebox_for_meetings/)
+  * [`//chrome/browser/ui/webui/ash/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/webui/ash/chromebox_for_meetings/)
   * [`//chrome/test/data/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/test/data/webui/chromeos/chromebox_for_meetings/)
 
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-perfetto-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-perfetto-rel""))

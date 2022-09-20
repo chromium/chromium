@@ -2646,7 +2646,7 @@ if (!is_android) {
     }
 
     if (is_cfm) {
-      sources += [ "../browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog_browsertest.cc" ]
+      sources += [ "../browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog_browsertest.cc" ]
     }
 
     if (!is_chromeos_ash) {

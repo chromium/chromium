@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
+#include "chrome/browser/ui/webui/ash/chromebox_for_meetings/network_settings_dialog.h"
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
@@ -26,8 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
-namespace chromeos {
-namespace cfm {
+namespace ash::cfm {
 
 namespace {
 
@@ -139,11 +138,11 @@ NetworkSettingsDialogUi::NetworkSettingsDialogUi(content::WebUI* web_ui)
 }
 
 void NetworkSettingsDialogUi::BindInterface(
-    mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver) {
-  ash::GetNetworkConfigService(std::move(receiver));
+    mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+        receiver) {
+  GetNetworkConfigService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NetworkSettingsDialogUi)
 
-}  // namespace cfm
-}  // namespace chromeos
+}  // namespace ash::cfm
