@@ -65,7 +65,7 @@ std::unique_ptr<base::Value> ReadHeader(base::StringPiece* data) {
   if (data->size() < header_len)
     return nullptr;
 
-  const base::StringPiece header_bytes(data->data(), header_len);
+  const base::StringPiece header_bytes = data->substr(0, header_len);
   data->remove_prefix(header_len);
 
   std::unique_ptr<base::Value> header = base::JSONReader::ReadDeprecated(
@@ -87,7 +87,7 @@ bool ReadCRL(base::StringPiece* data,
              std::vector<std::string>* out_serials) {
   if (data->size() < crypto::kSHA256Length)
     return false;
-  out_parent_spki_hash->assign(data->data(), crypto::kSHA256Length);
+  *out_parent_spki_hash = std::string(data->substr(0, crypto::kSHA256Length));
   data->remove_prefix(crypto::kSHA256Length);
 
   uint32_t num_serials;
@@ -106,14 +106,14 @@ bool ReadCRL(base::StringPiece* data,
     if (data->size() < sizeof(uint8_t))
       return false;
 
-    uint8_t serial_length = data->data()[0];
+    uint8_t serial_length = (*data)[0];
     data->remove_prefix(sizeof(uint8_t));
 
     if (data->size() < serial_length)
       return false;
 
     out_serials->push_back(std::string());
-    out_serials->back().assign(data->data(), serial_length);
+    out_serials->back() = std::string(data->substr(0, serial_length));
     data->remove_prefix(serial_length);
   }
 

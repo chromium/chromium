@@ -403,7 +403,7 @@ TEST_F(WebSocketEncoderCompressionTest, LongFrame) {
   frame.reserve(length);
   for (int i = 0; i < length; ++i) {
     int64_t j = i;
-    frame += temp.data()[(j * j) % length];
+    frame += temp[(j * j) % length];
   }
 
   int mask = 0;
