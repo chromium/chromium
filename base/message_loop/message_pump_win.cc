@@ -770,7 +770,8 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
                           item.handler->io_handler_location())));
       });
 
-  item.handler->OnIOCompleted(item.context, item.bytes_transfered, item.error);
+  item.handler.ExtractAsDangling()->OnIOCompleted(
+      item.context.ExtractAsDangling(), item.bytes_transfered, item.error);
 
   return true;
 }
