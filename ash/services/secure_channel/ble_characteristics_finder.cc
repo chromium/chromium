@@ -184,7 +184,7 @@ void BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead(
 
   if (error_code.has_value()) {
     PA_LOG(ERROR) << "OnWriteRemoteCharacteristicError() Error code: "
-                  << error_code.value();
+                  << static_cast<int>(error_code.value());
     service_ids_pending_eid_read_.erase(service_id);
     if (!has_callback_been_invoked_)
       NotifyFailureIfNoPendingEidCharReads();

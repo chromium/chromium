@@ -430,7 +430,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop.Quit();
           }));
   SimulateGattCharacteristicWrite(characteristic1_);
@@ -1020,7 +1021,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_WriteRemoteCharacteristic) {
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop.Quit();
           }));
 
@@ -1148,7 +1150,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error" << error_code;
+            ADD_FAILURE() << "unexpected error" << static_cast<int>(error_code);
             loop1.Quit();
           }));
 
@@ -1167,7 +1169,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error" << error_code;
+            ADD_FAILURE() << "unexpected error" << static_cast<int>(error_code);
             loop2.Quit();
           }));
 
@@ -1307,7 +1309,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error" << error_code;
+            ADD_FAILURE() << "unexpected error" << static_cast<int>(error_code);
             loop1.Quit();
           }));
   if (!IsClassicWin()) {
@@ -1326,7 +1328,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error" << error_code;
+            ADD_FAILURE() << "unexpected error" << static_cast<int>(error_code);
             loop2.Quit();
           }));
   if (!IsClassicWin()) {
@@ -1491,7 +1493,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
             }),
             base::BindLambdaForTesting(
                 [&](BluetoothGattService::GattErrorCode error_code) {
-                  ADD_FAILURE() << "unexpected error: " << error_code;
+                  ADD_FAILURE()
+                      << "unexpected error: " << static_cast<int>(error_code);
                   loop.Quit();
                 }));
 
@@ -1499,7 +1502,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop.Quit();
           }));
 
@@ -1590,7 +1594,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         ASSERT_FALSE(error_code.has_value())
-            << "unexpected error: " << error_code.value();
+            << "unexpected error: " << static_cast<int>(error_code.value());
         EXPECT_EQ(1, gatt_read_characteristic_attempts_);
         EXPECT_EQ(0, gatt_write_characteristic_attempts_);
         EXPECT_EQ(test_vector_1, data);
@@ -1606,7 +1610,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
             }),
             base::BindLambdaForTesting(
                 [&](BluetoothGattService::GattErrorCode error_code) {
-                  ADD_FAILURE() << "unexpected error: " << error_code;
+                  ADD_FAILURE()
+                      << "unexpected error: " << static_cast<int>(error_code);
                   loop.Quit();
                 }));
 
@@ -1720,7 +1725,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop.Quit();
           }));
 
@@ -1953,7 +1959,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_WriteSynchronousError) {
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop2.Quit();
           }));
   SimulateGattCharacteristicWrite(characteristic1_);
@@ -2072,7 +2079,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop1.Quit();
           }));
   base::RunLoop loop2;
@@ -2175,7 +2183,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop1.Quit();
           }));
   characteristic1_->ReadRemoteCharacteristic(base::BindLambdaForTesting(
@@ -2436,7 +2445,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
       }),
       base::BindLambdaForTesting(
           [&](BluetoothGattService::GattErrorCode error_code) {
-            ADD_FAILURE() << "unexpected error: " << error_code;
+            ADD_FAILURE() << "unexpected error: "
+                          << static_cast<int>(error_code);
             loop.Quit();
           }));
 

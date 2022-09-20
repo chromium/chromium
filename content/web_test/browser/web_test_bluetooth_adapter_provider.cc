@@ -1315,8 +1315,11 @@ WebTestBluetoothAdapterProvider::GetFailingGATTOperationsAdapter() {
   auto service(
       GetBaseGATTService("Errors Service", device.get(), errorsServiceUUID));
 
-  for (int error = BluetoothGattService::GattErrorCode::kUnknown;
-       error <= BluetoothGattService::GattErrorCode::kNotSupported; error++) {
+  for (int error =
+           static_cast<int>(BluetoothGattService::GattErrorCode::kUnknown);
+       error <=
+       static_cast<int>(BluetoothGattService::GattErrorCode::kMaxValue);
+       error++) {
     service->AddMockCharacteristic(GetErrorCharacteristic(
         service.get(),
         static_cast<BluetoothGattService::GattErrorCode>(error)));
@@ -1753,7 +1756,8 @@ std::unique_ptr<NiceMockBluetoothGattCharacteristic>
 WebTestBluetoothAdapterProvider::GetErrorCharacteristic(
     MockBluetoothGattService* service,
     BluetoothGattService::GattErrorCode error_code) {
-  uint32_t error_alias = error_code + 0xA1;  // Error UUIDs start at 0xA1.
+  // Error UUIDs start at 0xA1.
+  uint32_t error_alias = static_cast<int>(error_code) + 0xA1;
   auto characteristic(GetBaseGATTCharacteristic(
       // Use the UUID to generate unique identifiers.
       "Error Characteristic " + errorUUID(error_alias), service,

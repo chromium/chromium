@@ -645,7 +645,8 @@ void BluetoothLowEnergyWeaveClientConnection::OnNotifySessionError(
       BluetoothRemoteDeviceGattServiceGattErrorCodeToGattServiceOperationResult(
           error));
   PA_LOG(ERROR) << "Cannot start notification session for "
-                << GetDeviceInfoLogString() << ". Error: " << error << ".";
+                << GetDeviceInfoLogString()
+                << ". Error: " << static_cast<int>(error) << ".";
   DestroyConnection(
       BleWeaveConnectionResult::
           BLE_WEAVE_CONNECTION_RESULT_ERROR_STARTING_NOTIFY_SESSION);

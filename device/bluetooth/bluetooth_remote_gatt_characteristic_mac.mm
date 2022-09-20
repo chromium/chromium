@@ -281,7 +281,7 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateValue(NSError* error) {
       DVLOG(1) << *this
                << ": Bluetooth error while reading for characteristic, domain: "
                << BluetoothAdapterMac::String(error)
-               << ", error code: " << error_code;
+               << ", error code: " << static_cast<int>(error_code);
       std::move(read_callback)
           .Run(error_code,
                /*value=*/std::vector<uint8_t>());
@@ -344,7 +344,7 @@ void BluetoothRemoteGattCharacteristicMac::DidWriteValue(NSError* error) {
     DVLOG(1) << *this
              << ": Bluetooth error while writing for characteristic, error: "
              << BluetoothAdapterMac::String(error)
-             << ", error code: " << error_code;
+             << ", error code: " << static_cast<int>(error_code);
     std::move(callbacks.second).Run(error_code);
     return;
   }
@@ -373,7 +373,7 @@ void BluetoothRemoteGattCharacteristicMac::DidUpdateNotificationState(
              << ": Bluetooth error while modifying notification state for "
                 "characteristic, error: "
              << BluetoothAdapterMac::String(error)
-             << ", error code: " << error_code;
+             << ", error code: " << static_cast<int>(error_code);
     std::move(reentrant_safe_callbacks.second).Run(error_code);
     return;
   }

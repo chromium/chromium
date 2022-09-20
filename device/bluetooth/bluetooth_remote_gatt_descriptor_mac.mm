@@ -141,7 +141,7 @@ void BluetoothRemoteGattDescriptorMac::DidUpdateValueForDescriptor(
         BluetoothDeviceMac::GetGattErrorCodeFromNSError(error);
     DVLOG(1) << *this << ": Read value failed with error: "
              << BluetoothAdapterMac::String(error)
-             << ", converted to error code: " << error_code;
+             << ", converted to error code: " << static_cast<int>(error_code);
     std::move(read_value_callback_)
         .Run(error_code,
              /*value=*/std::vector<uint8_t>());
@@ -166,7 +166,7 @@ void BluetoothRemoteGattDescriptorMac::DidWriteValueForDescriptor(
         BluetoothDeviceMac::GetGattErrorCodeFromNSError(error);
     DVLOG(1) << *this << ": Write value failed with error: "
              << BluetoothAdapterMac::String(error)
-             << ", converted to error code: " << error_code;
+             << ", converted to error code: " << static_cast<int>(error_code);
     std::move(callbacks.second).Run(error_code);
     return;
   }

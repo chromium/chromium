@@ -25,7 +25,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattService {
   // numeric values should never be reused. This enum should be kept in sync
   // with the BluetoothGattServiceGattErrorCode enum in
   // src/tools/metrics/histograms/enums.xml.
-  enum GattErrorCode {
+  enum class GattErrorCode {
     kUnknown = 0,
     kFailed = 1,
     kInProgress = 2,

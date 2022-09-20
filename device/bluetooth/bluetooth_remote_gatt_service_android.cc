@@ -102,7 +102,7 @@ int BluetoothRemoteGattServiceAndroid::GetAndroidErrorCode(
     case GattErrorCode::kNotSupported:
       return 0x00000006;  // GATT_REQUEST_NOT_SUPPORTED
   }
-  DVLOG(1) << "Unhandled error_code: " << error_code;
+  DVLOG(1) << "Unhandled error_code: " << static_cast<int>(error_code);
   return 0x00000101;  // GATT_FAILURE. No good match.
 }
 
