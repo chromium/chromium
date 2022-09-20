@@ -8466,6 +8466,7 @@ domain Page
       DataSaverEnabled
       HasEffectiveUrl
       ActivatedBeforeStarted
+      InactivePageRestriction
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

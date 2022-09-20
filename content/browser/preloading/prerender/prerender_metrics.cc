@@ -72,6 +72,23 @@ void RecordPrerenderCancelledInterface(
   }
 }
 
+void RecordPrerenderReasonForInactivePageRestriction(uint16_t reason,
+                                                     RenderFrameHostImpl& rfh) {
+  FrameTreeNode* outermost_frame =
+      rfh.GetOutermostMainFrameOrEmbedder()->frame_tree_node();
+  PrerenderHost* prerender_host =
+      rfh.delegate()->GetPrerenderHostRegistry()->FindNonReservedHostById(
+          outermost_frame->frame_tree_node_id());
+  if (prerender_host) {
+    base::UmaHistogramSparse(
+        GenerateHistogramName("Prerender.CanceledForInactivePageRestriction."
+                              "DisallowActivationReason",
+                              prerender_host->trigger_type(),
+                              prerender_host->embedder_histogram_suffix()),
+        reason);
+  }
+}
+
 void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
   ukm::builders::PrerenderPageLoad(ukm_id).SetTriggeredPrerender(true).Record(
       ukm::UkmRecorder::Get());

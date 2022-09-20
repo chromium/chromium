@@ -84,6 +84,8 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "HasEffectiveUrl";
     case PrerenderHost::FinalStatus::kActivatedBeforeStarted:
       return "ActivatedBeforeStarted";
+    case PrerenderHost::FinalStatus::kInactivePageRestriction:
+      return "InactivePageRestriction";
   }
   NOTREACHED();
   return "";

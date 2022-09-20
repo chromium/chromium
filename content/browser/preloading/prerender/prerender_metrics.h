@@ -9,6 +9,8 @@
 
 #include "base/time/time.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -69,6 +71,9 @@ void RecordPrerenderCancelledInterface(
     const std::string& interface_name,
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
+
+void RecordPrerenderReasonForInactivePageRestriction(uint16_t reason,
+                                                     RenderFrameHostImpl& rfh);
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 

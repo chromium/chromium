@@ -1476,6 +1476,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::HasEffectiveUrl;
     case PrerenderHost::FinalStatus::kActivatedBeforeStarted:
       return Page::PrerenderFinalStatusEnum::ActivatedBeforeStarted;
+    case PrerenderHost::FinalStatus::kInactivePageRestriction:
+      return Page::PrerenderFinalStatusEnum::InactivePageRestriction;
   }
 }
 

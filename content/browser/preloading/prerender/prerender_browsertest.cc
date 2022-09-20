@@ -2281,7 +2281,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnPreferredSizeChanged) {
 
   host_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kDestroyed);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kInactivePageRestriction);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.CanceledForInactivePageRestriction.DisallowActivationReason."
+      "SpeculationRule",
+      DisallowActivationReasonId::kContentsPreferredSizeChanged, 1);
 }
 
 // Tests that prerendering cannot request the browser to create a popup widget.
@@ -4232,7 +4237,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // should issue a request again.
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
-  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kDestroyed);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kInactivePageRestriction);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.CanceledForInactivePageRestriction.DisallowActivationReason."
+      "SpeculationRule",
+      DisallowActivationReasonId::kForTesting, 1);
 }
 
 // Make sure input events are routed to the primary FrameTree not the prerender

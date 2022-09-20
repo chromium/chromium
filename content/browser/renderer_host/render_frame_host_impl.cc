@@ -6342,9 +6342,8 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
     }
       return true;
     case LifecycleStateImpl::kPrerendering:
-      // TODO(https://crbug.com/1126305): Explain why we cancel prerendering
-      // here, then pass a dedicated FinalStatus.
-      CancelPrerendering(PrerenderHost::FinalStatus::kDestroyed);
+      RecordPrerenderReasonForInactivePageRestriction(reason, *this);
+      CancelPrerendering(PrerenderHost::FinalStatus::kInactivePageRestriction);
       return true;
     case LifecycleStateImpl::kSpeculative:
       // We do not expect speculative or pending commit RenderFrameHosts to

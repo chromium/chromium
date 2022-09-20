@@ -303,7 +303,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.DisallowActivationReason"
-    enum="BackForwardCacheDisallowActivationReason" expires_after="2021-11-30">
+    enum="InactiveFrameDisallowActivationReason" expires_after="2021-11-30">
   <owner>carlscab@chromium.org</owner>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -1626,6 +1626,28 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     engaged sites data. Recorded whenever a navigation is deferred waiting for
     engaged sites.
   </summary>
+</histogram>
+
+<histogram
+    name="Prerender.CanceledForInactivePageRestriction.DisallowActivationReason{PrerenderTriggerType}"
+    enum="InactiveFrameDisallowActivationReason" expires_after="2022-11-30">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@chromium.org</owner>
+  <summary>
+    Tracks the prerender cancellations caused by inactive RenderFrameHosts'
+    restrictions, recording the reason passed to
+    RenderFrameHost::IsInactiveAndDisallowActivation calls.
+
+    This metric is recored when a RenderFrameHost is going to perform some
+    actions that are not allowed for a prerendering RenderFrameHost, such as
+    showing context menu. At that time, the detailed reason will be passed to
+    RenderFrameHost::IsInactiveAndDisallowActivation, which will cancel
+    prerendering and record this metric.
+
+    Note: This histogram does not track prerender activation behavior, but to
+    analyze PrerenderHostFinalStatus::kInactivePageRestriction.
+  </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
