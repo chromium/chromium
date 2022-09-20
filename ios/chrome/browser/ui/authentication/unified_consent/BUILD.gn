@@ -47,6 +47,7 @@ source_set("unified_consent_ui") {
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

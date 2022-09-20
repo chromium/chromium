@@ -13,9 +13,9 @@
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
-#import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
+#import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "url/gurl.h"
 

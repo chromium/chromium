@@ -11,8 +11,8 @@
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "url/gurl.h"
 

@@ -6,8 +6,8 @@
 
 #import "components/grit/dev_ui_components_resources.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/user_actions_handler.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 

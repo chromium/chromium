@@ -12,7 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"

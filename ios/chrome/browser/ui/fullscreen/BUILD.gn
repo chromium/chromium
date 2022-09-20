@@ -98,6 +98,7 @@ source_set("internal") {
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common:timing",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",

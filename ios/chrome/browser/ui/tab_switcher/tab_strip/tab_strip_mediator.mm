@@ -6,11 +6,11 @@
 
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"

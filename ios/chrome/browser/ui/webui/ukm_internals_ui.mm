@@ -11,7 +11,7 @@
 #import "components/ukm/ukm_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_resources.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"

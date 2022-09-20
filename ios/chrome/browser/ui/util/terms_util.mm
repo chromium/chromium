@@ -8,7 +8,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"

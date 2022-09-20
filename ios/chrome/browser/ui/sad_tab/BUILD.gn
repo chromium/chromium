@@ -28,6 +28,7 @@ source_set("sad_tab") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

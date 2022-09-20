@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -16,6 +15,7 @@
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"

@@ -65,6 +65,7 @@ source_set("tab_helper") {
     "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/follow:utils",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/url",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ui/base",

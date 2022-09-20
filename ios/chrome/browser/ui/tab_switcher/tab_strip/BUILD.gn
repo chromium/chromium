@@ -43,6 +43,8 @@ source_set("tab_strip_ui") {
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",

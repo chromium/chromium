@@ -11,12 +11,12 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "url/gurl.h"
 

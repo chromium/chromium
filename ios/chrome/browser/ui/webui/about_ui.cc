@@ -20,7 +20,7 @@
 #include "components/grit/components_resources.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/resource/resource_bundle.h"

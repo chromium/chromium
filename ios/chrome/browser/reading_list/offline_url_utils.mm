@@ -11,7 +11,7 @@
 #import "components/reading_list/core/offline_url_utils.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/url_util.h"
 

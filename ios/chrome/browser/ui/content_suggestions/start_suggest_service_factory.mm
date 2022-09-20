@@ -7,8 +7,8 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

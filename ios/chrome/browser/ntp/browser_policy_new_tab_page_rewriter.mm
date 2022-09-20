@@ -7,9 +7,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/browser_state.h"
 

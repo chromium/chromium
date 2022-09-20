@@ -105,6 +105,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/reading_list",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:feature_flags",

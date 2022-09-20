@@ -15,7 +15,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"

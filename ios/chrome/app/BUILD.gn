@@ -49,6 +49,7 @@ source_set("app") {
     "//base",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/url:constants",
     "//net",
     "//url",
   ]

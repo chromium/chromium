@@ -15,6 +15,7 @@ source_set("local_state") {
     "//components/resources",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/url:constants",
     "//ios/web/public/webui",
   ]
 }

@@ -12,7 +12,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/variations/net/variations_http_headers.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"

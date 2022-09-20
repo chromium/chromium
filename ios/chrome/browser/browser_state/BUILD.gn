@@ -31,9 +31,9 @@ source_set("browser_state") {
     "//components/sync_preferences",
     "//components/variations/net",
     "//components/webdata_services",
-    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/net:net_types",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/url:constants",
     "//ios/components/webui:url_constants",
     "//ios/web/public/webui",
   ]
@@ -143,6 +143,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/undo",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
     "//ios/chrome/browser/webdata_services",
     "//ios/components/cookie_util",

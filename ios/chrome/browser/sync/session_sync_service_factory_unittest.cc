@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 
-#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

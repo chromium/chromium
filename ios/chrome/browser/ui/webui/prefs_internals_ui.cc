@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_mediator.h"
 
-#import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
+#import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"

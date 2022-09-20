@@ -116,6 +116,7 @@ source_set("password_ui") {
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/common",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/ui/colors",

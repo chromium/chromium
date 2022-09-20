@@ -48,6 +48,8 @@ source_set("autocomplete") {
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/url",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
