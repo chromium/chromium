@@ -31,6 +31,7 @@
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -61,6 +62,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -1339,6 +1341,8 @@ void DesksController::OnWindowActivating(ActivationReason reason,
   if (!gaining_active)
     return;
 
+  // TODO(crbug.com/1358761): Implement logic to activate an inactive desk when
+  // a floated window belonging to that desk gets activated.
   const Desk* window_desk = FindDeskOfWindow(gaining_active);
   if (!window_desk || window_desk == active_desk_)
     return;
@@ -1717,6 +1721,16 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
 
   std::vector<aura::Window*> app_windows = removed_desk->GetAllAppWindows();
 
+  // Add the floated window that belongs to the removed desk (if any) to the
+  // list of windows that will be closed.
+  aura::Window* floated_window = nullptr;
+  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+      (floated_window =
+           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+               removed_desk))) {
+    app_windows.push_back(floated_window);
+  }
+
   // We use `closing_window_tracker` to track all app windows that should be
   // closed from the removed desk, `WindowTracker` will handle windows that may
   // have already been indirectly closed due to the closure of other windows, as
@@ -1735,7 +1749,10 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     // when `native_widget_->CloseNow()` finishes running, the window will
     // finally be removed from desk. Therefore, to remove the desk now, we have
     // to manually remove the window from desk now.
-    removed_desk->RemoveWindowFromDesk(window);
+    // Since floated window doesn't belong to desk container, handle it
+    // separately.
+    if (window != floated_window)
+      removed_desk->RemoveWindowFromDesk(window);
   }
 
   // Schedules a delayed task to forcefully close all windows that have not

@@ -11,8 +11,13 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/scoped_animation_disabler.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
@@ -29,6 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
@@ -60,6 +66,24 @@ void UpdateWindowBoundsForTablet(aura::Window* window) {
   DCHECK(window_state);
   TabletModeWindowState::UpdateWindowPosition(
       window_state, WindowState::BoundsChangeAnimationType::kAnimate);
+}
+
+// Shows the given floated window.
+void HideFloatedWindow(aura::Window* floated_window) {
+  // Disable the window animation here, because during desk deactivation we
+  // are taking a screenshot of the desk (used for desk switch animations.)
+  // while the `Hide()` animation is still in progress, and this will
+  // introduce a glitch.
+  DCHECK(floated_window);
+  ScopedAnimationDisabler disabler(floated_window);
+  floated_window->Hide();
+}
+
+// Hides the given floated window.
+void ShowFloatedWindow(aura::Window* floated_window) {
+  DCHECK(floated_window);
+  ScopedAnimationDisabler disabler(floated_window);
+  floated_window->Show();
 }
 
 }  // namespace
@@ -127,10 +151,11 @@ class FloatController::ScopedWindowTucker {
 // Represents and stores information used for window's floated state.
 class FloatController::FloatedWindowInfo : public aura::WindowObserver {
  public:
-  explicit FloatedWindowInfo(aura::Window* floated_window)
+  FloatedWindowInfo(aura::Window* floated_window, const Desk* desk)
       : floated_window_(floated_window),
         was_position_auto_managed_(
-            DisableAndGetOriginalPositionAutoManaged(floated_window)) {
+            DisableAndGetOriginalPositionAutoManaged(floated_window)),
+        desk_(desk) {
     DCHECK(floated_window_);
     floated_window_observation_.Observe(floated_window);
   }
@@ -143,6 +168,9 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
       WindowState::Get(floated_window_)->SetWindowPositionManaged(true);
     }
   }
+
+  const Desk* desk() const { return desk_; }
+  void set_desk(const Desk* desk) { desk_ = desk; }
 
   bool is_tucked_for_tablet() const { return !!scoped_window_tucker_; }
 
@@ -188,6 +216,13 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // Scoped object that handles the special tucked window state, which is not a
   // normal window state. Null when  `floated_window_`  is currently not tucked.
   std::unique_ptr<ScopedWindowTucker> scoped_window_tucker_;
+
+  // The desk where floated window belongs to.
+  // When a window is getting floated, it moves from desk container to float
+  // container, this Desk pointer is used to determine floating window's desk
+  // ownership, since floated window should only be shown on the desk it belongs
+  // to.
+  const Desk* desk_;
 
   // The corner the `floated_window_` should be magnetized to.
   // By default it magnetizes to the bottom right when first floated.
@@ -377,6 +412,53 @@ void FloatController::OnFlingOrSwipeForTablet(aura::Window* floated_window,
   floated_window_info->MaybeTuckWindow();
 }
 
+const Desk* FloatController::FindDeskOfFloatedWindow(
+    const aura::Window* window) const {
+  if (auto* info = MaybeGetFloatedWindowInfo(window))
+    return info->desk();
+  return nullptr;
+}
+
+aura::Window* FloatController::FindFloatedWindowOfDesk(const Desk* desk) const {
+  DCHECK(desk);
+  for (const auto& [window, info] : floated_window_info_map_) {
+    if (info->desk() == desk)
+      return window;
+  }
+  return nullptr;
+}
+
+void FloatController::OnMovingAllWindowsOutToDesk(Desk* original_desk,
+                                                  Desk* target_desk) {
+  auto* original_desk_floated_window = FindFloatedWindowOfDesk(original_desk);
+  if (!original_desk_floated_window)
+    return;
+  auto* target_desk_floated_window = FindFloatedWindowOfDesk(target_desk);
+
+  // Float window might have been hidden on purpose and won't show
+  // automatically.
+  ShowFloatedWindow(original_desk_floated_window);
+  // During desk removal/combine, if `target_desk` has a floated window, we
+  // will unfloat the floated window in `original_desk` and re-parent it back
+  // to its desk container.
+  if (target_desk_floated_window) {
+    // Unfloat the floated window at `original_desk` desk.
+    ResetFloatedWindow(original_desk_floated_window);
+  } else {
+    floated_window_info_map_[original_desk_floated_window]->set_desk(
+        target_desk);
+    // Note that other windows that belong to the "same container"
+    //  are being re-sorted at the end of
+    // `Desk::MoveWindowsToDesk`. This ensures windows associated with removed
+    // desk appear as least recent in MRU order, since they get appended at
+    // the end of overview. we are calling it here so the floated window
+    // that's being moved to the target desk is also being sorted for the same
+    // reason.
+    Shell::Get()->mru_window_tracker()->OnWindowMovedOutFromRemovingDesk(
+        original_desk_floated_window);
+  }
+}
+
 void FloatController::OnTabletModeStarting() {
   DCHECK(!floated_window_info_map_.empty());
   // Temporary vector here to avoid mutating the map while iterating it.
@@ -398,6 +480,23 @@ void FloatController::OnTabletModeEnding() {
 
 void FloatController::OnTabletControllerDestroyed() {
   tablet_mode_observation_.Reset();
+}
+
+void FloatController::OnDeskActivationChanged(const Desk* activated,
+                                              const Desk* deactivated) {
+  // Since floated windows are not children of desk containers, switching desks
+  // (which changes the visibility of desks' containers) won't automatically
+  // update the floated windows' visibility. Therefore, here we hide the floated
+  // window belonging to the deactivated desk, and show the one belonging to the
+  // activated desk.
+  if (auto* deactivated_desk_floated_window =
+          FindFloatedWindowOfDesk(deactivated)) {
+    HideFloatedWindow(deactivated_desk_floated_window);
+  }
+  if (auto* activated_desk_floated_window =
+          FindFloatedWindowOfDesk(activated)) {
+    ShowFloatedWindow(activated_desk_floated_window);
+  }
 }
 
 void FloatController::OnDisplayMetricsChanged(const display::Display& display,
@@ -478,12 +577,24 @@ void FloatController::FloatImpl(aura::Window* window) {
   if (floated_window_info_map_.contains(window))
     return;
 
-  // TODO(shidi): Temporary code here to maintain one floated window rule.
-  if (!floated_window_info_map_.empty())
-    ResetFloatedWindow(floated_window_info_map_.begin()->first);
+  // If a floated window already exists at current desk, unfloat it before
+  // floating `window`.
+  auto* desk_controller = DesksController::Get();
+  // Get the active desk where the window belongs to before moving it to float
+  // container.
+  DCHECK(desks_util::BelongsToActiveDesk(window));
+  const Desk* desk = desk_controller->GetTargetActiveDesk();
+  auto* previously_floated_window = FindFloatedWindowOfDesk(desk);
+  // Add floated window to `floated_window_info_map_`.
+  // Note: this has to be called before `ResetFloatedWindow`. Because in the
+  // call sequence of `ResetFloatedWindow` we will access
+  // `floated_window_info_map_`, and hit a corner case where window
+  // `IsFloated()` returns true, but `FindDeskOfFloatedWindow` returns nullptr.
+  floated_window_info_map_.emplace(
+      window, std::make_unique<FloatedWindowInfo>(window, desk));
+  if (previously_floated_window)
+    ResetFloatedWindow(previously_floated_window);
 
-  floated_window_info_map_.emplace(window,
-                                   std::make_unique<FloatedWindowInfo>(window));
   aura::Window* floated_container =
       window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
   DCHECK_NE(window->parent(), floated_container);
@@ -491,6 +602,8 @@ void FloatController::FloatImpl(aura::Window* window) {
 
   if (!tablet_mode_observation_.IsObserving())
     tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
+  if (!desks_controller_observation_.IsObserving())
+    desks_controller_observation_.Observe(desk_controller);
   if (!display_observer_)
     display_observer_.emplace(this);
 }
@@ -507,33 +620,36 @@ void FloatController::UnfloatImpl(aura::Window* window) {
   // active desk container from float container.
   WindowState::Get(window)->SetPreAddedToWorkspaceWindowBounds(
       window->bounds());
-  // Re-parent window to active desk container.
-  desks_util::GetActiveDeskContainerForRoot(window->GetRootWindow())
+  // Re-parent window to the "parent" desk's desk container.
+  floated_window_info->desk()
+      ->GetDeskContainerForRoot(window->GetRootWindow())
       ->AddChild(window);
-
   floated_window_info_map_.erase(window);
   if (floated_window_info_map_.empty()) {
+    desks_controller_observation_.Reset();
     tablet_mode_observation_.Reset();
     display_observer_.reset();
   }
 }
 
 void FloatController::ResetFloatedWindow(aura::Window* floated_window) {
+  DCHECK(floated_window);
   DCHECK(WindowState::Get(floated_window)->IsFloated());
   ToggleFloat(floated_window);
 }
 
 FloatController::FloatedWindowInfo* FloatController::MaybeGetFloatedWindowInfo(
     const aura::Window* window) const {
-  auto info = floated_window_info_map_.find(window);
-  if (info == floated_window_info_map_.end())
+  const auto iter = floated_window_info_map_.find(window);
+  if (iter == floated_window_info_map_.end())
     return nullptr;
-  return info->second.get();
+  return iter->second.get();
 }
 
 void FloatController::OnFloatedWindowDestroying(aura::Window* floated_window) {
   floated_window_info_map_.erase(floated_window);
   if (floated_window_info_map_.empty()) {
+    desks_controller_observation_.Reset();
     tablet_mode_observation_.Reset();
     display_observer_.reset();
   }

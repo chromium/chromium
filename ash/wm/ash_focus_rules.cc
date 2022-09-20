@@ -10,6 +10,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -78,18 +79,29 @@ bool AshFocusRules::SupportsChildActivation(const aura::Window* window) const {
 bool AshFocusRules::IsWindowConsideredVisibleForActivation(
     const aura::Window* window) const {
   DCHECK(window);
+
+  Shell* shell = Shell::Get();
   // If the |window| doesn't belong to the current active user and also doesn't
   // show for the current active user, then it should not be activated.
-  if (!Shell::Get()->shell_delegate()->CanShowWindowForUser(window))
+  if (!shell->shell_delegate()->CanShowWindowForUser(window))
     return false;
 
   if (window->IsVisible())
     return true;
 
+  const WindowState* window_state = WindowState::Get(window);
   // Minimized windows are hidden in their minimized state, but they can always
   // be activated.
-  if (WindowState::Get(window)->IsMinimized())
+  if (window_state->IsMinimized())
     return true;
+
+  // Floated windows are hidden if they belong to inactive desks, but they can
+  // always be activated.
+  if (window_state->IsFloated() &&
+      shell->float_controller()->FindDeskOfFloatedWindow(window) !=
+          DesksController::Get()->active_desk()) {
+    return true;
+  }
 
   if (!window->TargetVisibility())
     return false;
