@@ -142,6 +142,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
+    @Features.DisableFeatures({ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE})
     public void headerTitle_visibilityChangeAltersTopPadding() {
         mModel.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, true);
         verify(mHeaderView, times(1)).setVisibility(eq(View.VISIBLE));
