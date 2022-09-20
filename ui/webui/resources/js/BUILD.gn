@@ -74,7 +74,8 @@ preprocess_if_expr("preprocess_src") {
     "test_loader_util.js",
 
     # Used by security interstitials and ios inspect UI
-    "util.js",
+    "util_deprecated.js",
+    "util.m.js",
     "webui_resource_test.js",
     "webview_manager.js",
   ]
@@ -112,7 +113,6 @@ preprocess_if_expr("preprocess_generated") {
     "assert.m.js",
     "load_time_data.js",
     "promise_resolver.m.js",
-    "util.m.js",
   ]
 }
 
@@ -127,7 +127,7 @@ js_type_check("js_resources") {
     ":cr",
     ":load_time_data",
     ":promise_resolver",
-    ":util",
+    ":util_deprecated",
     ":webui_resource_test",
   ]
 
@@ -165,9 +165,7 @@ js_library("promise_resolver") {
   deps = [ ":assert" ]
 }
 
-js_library("util") {
-  deps = [ ":cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
+js_library("util_deprecated") {
 }
 
 js_library("webview_manager") {
@@ -183,7 +181,6 @@ js_modulizer("modulize") {
   input_files = [
     "assert.js",
     "promise_resolver.js",
-    "util.js",
   ]
 }
 
@@ -266,11 +263,9 @@ js_library("static_types") {
 }
 
 js_library("util.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/util.m.js" ]
   deps = [
     ":assert.m",
     ":cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-  extra_deps = [ ":modulize" ]
 }

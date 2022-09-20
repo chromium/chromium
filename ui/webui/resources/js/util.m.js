@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assertInstanceof} from './assert.m.js';
-// #import {dispatchSimpleEvent} from './cr.m.js';
+import {assertInstanceof} from './assert.m.js';
+import {dispatchSimpleEvent} from './cr.m.js';
 
 /**
  * Alias for document.getElementById. Found elements must be HTMLElements.
  * @param {string} id The ID of the element to find.
  * @return {HTMLElement} The found element or null if not found.
  */
-/* #export */ function $(id) {
+export function $(id) {
   // Disable getElementById restriction here, since we are instructing other
   // places to re-use the $() that is defined here.
   // eslint-disable-next-line no-restricted-properties
@@ -22,7 +22,7 @@
  * @return {?Element} The currently focused element (including elements that are
  *     behind a shadow root), or null if nothing is focused.
  */
-/* #export */ function getDeepActiveElement() {
+export function getDeepActiveElement() {
   let a = document.activeElement;
   while (a && a.shadowRoot && a.shadowRoot.activeElement) {
     a = a.shadowRoot.activeElement;
@@ -32,14 +32,14 @@
 
 // <if expr="chromeos_ash">
 /**
- * DEPRECATED (if using Polymer): Use Polymer.IronA11yAnnouncer instead.
+ * DEPRECATED (if using Polymer): Use IronA11yAnnouncer instead.
  * TODO(crbug.com/985410): Replace all existing usages and remove this function.
  * Add an accessible message to the page that will be announced to
  * users who have spoken feedback on, but will be invisible to all
  * other users. It's removed right away so it doesn't clutter the DOM.
  * @param {string} msg The text to be pronounced.
  */
-/* #export */ function announceAccessibleMessage(msg) {
+export function announceAccessibleMessage(msg) {
   const element = document.createElement('div');
   element.setAttribute('aria-live', 'polite');
   element.style.position = 'fixed';
@@ -61,7 +61,7 @@
  * @param {boolean=} includeShadowHosts
  * @return {Node} The found ancestor or null if not found.
  */
-/* #export */ function findAncestor(node, predicate, includeShadowHosts) {
+export function findAncestor(node, predicate, includeShadowHosts) {
   while (node !== null) {
     if (predicate(node)) {
       break;
@@ -76,7 +76,7 @@
  * Check the directionality of the page.
  * @return {boolean} True if Chrome is running an RTL UI.
  */
-/* #export */ function isRTL() {
+export function isRTL() {
   return document.documentElement.dir === 'rtl';
 }
 
@@ -87,7 +87,7 @@
  * @param {string} id The identifier name.
  * @return {!HTMLElement} the Element.
  */
-/* #export */ function getRequiredElement(id) {
+export function getRequiredElement(id) {
   return assertInstanceof(
       $(id), HTMLElement, 'Missing required element: ' + id);
 }
@@ -100,7 +100,7 @@
  * @param {string} value The value of the param.
  * @return {string} The new URL.
  */
-/* #export */ function appendParam(url, key, value) {
+export function appendParam(url, key, value) {
   const param = encodeURIComponent(key) + '=' + encodeURIComponent(value);
 
   if (url.indexOf('?') === -1) {
@@ -115,7 +115,7 @@
  * @param {string} className The class name to use.
  * @return {Element} The created element.
  */
-/* #export */ function createElementWithClassName(type, className) {
+export function createElementWithClassName(type, className) {
   const elm = document.createElement(type);
   elm.className = className;
   return elm;
@@ -130,7 +130,7 @@
  *     transitionend to happen. If not specified, it is fetched from |el|
  *     using the transitionDuration style value.
  */
-/* #export */ function ensureTransitionEndEvent(el, timeOut) {
+export function ensureTransitionEndEvent(el, timeOut) {
   if (timeOut === undefined) {
     const style = getComputedStyle(el);
     timeOut = parseFloat(style.transitionDuration) * 1000;
@@ -146,7 +146,7 @@
   });
   window.setTimeout(function() {
     if (!fired) {
-      cr.dispatchSimpleEvent(el, 'transitionend', true);
+      dispatchSimpleEvent(el, 'transitionend', true);
     }
   }, timeOut);
 }
@@ -156,7 +156,7 @@
  * @param {string} original The original string.
  * @return {string} The string with all the characters mentioned above replaced.
  */
-/* #export */ function HTMLEscape(original) {
+export function HTMLEscape(original) {
   return original.replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -169,7 +169,7 @@
  * @param {string} str The source string.
  * @return {string} The escaped string.
  */
-/* #export */ function quoteString(str) {
+export function quoteString(str) {
   return str.replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, '\\$1');
 }
 
@@ -182,7 +182,7 @@
  * @param {function(!Event)} callback Called at most once. The
  *     optional return value is passed on by the listener.
  */
-/* #export */ function listenOnce(target, eventNames, callback) {
+export function listenOnce(target, eventNames, callback) {
   if (!Array.isArray(eventNames)) {
     eventNames = eventNames.split(/ +/);
   }
@@ -203,7 +203,7 @@
  * @param {!Event} e
  * @return {boolean} Whether a modifier key was down when processing |e|.
  */
-/* #export */ function hasKeyModifiers(e) {
+export function hasKeyModifiers(e) {
   return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
 }
 
@@ -211,8 +211,7 @@
  * @param {!Element} el
  * @return {boolean} Whether the element is interactive via text input.
  */
-/* #export */ function isTextInputElement(el) {
+export function isTextInputElement(el) {
   return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA';
 }
 
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
