@@ -48,6 +48,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
+import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -178,6 +179,8 @@ public class ReturnToChromeUtilUnitTest {
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithSegmentationReturnTime() {
+        final SegmentId showStartId =
+                SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2;
         Assert.assertTrue(
                 CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_RETURN_TIME));
 
@@ -195,7 +198,7 @@ public class ReturnToChromeUtilUnitTest {
         long returnTimeMs = returnTimeSeconds * DateUtils.SECOND_IN_MILLIS; // One minute
         sharedPreferencesManager = SharedPreferencesManager.getInstance();
         SegmentSelectionResult result =
-                new SegmentSelectionResult(true, null, (float) returnTimeSeconds);
+                new SegmentSelectionResult(true, showStartId, (float) returnTimeSeconds);
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(returnTimeMs, ReturnToChromeUtil.getReturnTimeFromSegmentation());
 
@@ -208,13 +211,13 @@ public class ReturnToChromeUtilUnitTest {
         // returns true:
         TAB_SWITCHER_ON_RETURN_MS.setForTesting(-1);
         Assert.assertEquals(-1, TAB_SWITCHER_ON_RETURN_MS.getValue());
-        result = new SegmentSelectionResult(true, null, (float) 0);
+        result = new SegmentSelectionResult(true, showStartId, (float) 0);
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(0, ReturnToChromeUtil.getReturnTimeFromSegmentation());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
         // Returns false if it isn't immediate return but without last backgrounded time available:
-        result = new SegmentSelectionResult(true, null, (float) 1);
+        result = new SegmentSelectionResult(true, showStartId, (float) 1);
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(
                 1 * DateUtils.SECOND_IN_MILLIS, ReturnToChromeUtil.getReturnTimeFromSegmentation());
@@ -223,13 +226,13 @@ public class ReturnToChromeUtilUnitTest {
         // Verifies returning false if segmentation result is negative (not show).
         TAB_SWITCHER_ON_RETURN_MS.setForTesting(1); // arbitrary time.
         Assert.assertEquals(1, TAB_SWITCHER_ON_RETURN_MS.getValue());
-        result = new SegmentSelectionResult(true, null, (float) -1);
+        result = new SegmentSelectionResult(true, SegmentId.OPTIMIZATION_TARGET_UNKNOWN, null);
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(-1, ReturnToChromeUtil.getReturnTimeFromSegmentation());
         Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(1));
 
         // Tests regular cases with last backgrounded time set:
-        result = new SegmentSelectionResult(true, null, (float) returnTimeSeconds);
+        result = new SegmentSelectionResult(true, showStartId, (float) returnTimeSeconds);
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(returnTimeMs, ReturnToChromeUtil.getReturnTimeFromSegmentation());
 

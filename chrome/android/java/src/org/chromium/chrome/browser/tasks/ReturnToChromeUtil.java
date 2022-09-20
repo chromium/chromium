@@ -755,11 +755,15 @@ public final class ReturnToChromeUtil {
     public static void cacheReturnTimeFromSegmentationImpl(SegmentSelectionResult result) {
         long returnTimeMs = TAB_SWITCHER_ON_RETURN_MS.getDefaultValue();
         if (result.isReady) {
-            // The value of result.rank is in the unit of seconds.
-            returnTimeMs = result.rank.longValue();
-            if (returnTimeMs > 0) {
+            if (result.selectedSegment
+                    != SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2) {
+                // If selected segment is not Start, then don't show.
+                returnTimeMs = -1;
+            } else {
+                // The value of result.rank is in the unit of seconds.
+                assert result.rank >= 0;
                 // Converts to milliseconds.
-                returnTimeMs *= DateUtils.SECOND_IN_MILLIS;
+                returnTimeMs = result.rank.longValue() * DateUtils.SECOND_IN_MILLIS;
             }
         }
         SharedPreferencesManager.getInstance().writeLong(
