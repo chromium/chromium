@@ -100,6 +100,14 @@ export class FileManagerUI {
     this.deleteConfirmDialog.focusCancelButton = true;
 
     /**
+     * Confirm dialog for emptying the trash.
+     * @type {!FilesConfirmDialog}
+     * @const
+     */
+    this.emptyTrashConfirmDialog = new FilesConfirmDialog(this.element);
+    this.emptyTrashConfirmDialog.setOkLabel(str('EMPTY_TRASH_DELETE_FOREVER'));
+
+    /**
      * Confirm dialog for file move operation.
      * @type {!FilesConfirmDialog}
      * @const

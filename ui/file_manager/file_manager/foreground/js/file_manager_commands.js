@@ -1382,11 +1382,18 @@ CommandHandler
  */
 CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
   execute(event, fileManager) {
-    fileManager.ui.deleteConfirmDialog.show(str('CONFIRM_EMPTY_TRASH'), () => {
-      startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH, /*entries=*/[],
-          /*params=*/ {});
-    });
+    const numEntries = fileManager.directoryModel.getFileList().length;
+    if (numEntries === 0) {
+      return;
+    }
+
+    fileManager.ui.emptyTrashConfirmDialog.showWithTitle(
+        str('CONFIRM_EMPTY_TRASH_TITLE'), str('CONFIRM_EMPTY_TRASH_DESC'),
+        () => {
+          startIOTask(
+              chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH, /*entries=*/[],
+              /*params=*/ {});
+        });
   }
 
   /** @override */
