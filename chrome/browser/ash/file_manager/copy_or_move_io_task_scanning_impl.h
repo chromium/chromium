@@ -29,23 +29,20 @@ namespace file_manager::io_task {
 // the OnFileTransferEnterpriseConnector policy.
 // This class performs enterprise connector checks for each source file system
 // url.
-// Scans are performed before the copy/move operation is started. The scanning
-// results are then used during the transfer to block specific files, i.e.,
-// when they contain malware or sensitive data.
+//
+// For `block_until_verdict == kBlock`, scans are performed before the copy/move
+// operation is started. The scanning results are then used during the transfer
+// to block specific files, i.e., when they contain malware or sensitive data.
+//
+// For `block_until_verdict == kNoBlock`, scans are performed after the
+// copy/move operation has completed and the results are only used for
+// reporting. This is done to minimize the influence of the scan to the user
+// experience. As the source might no longer exist after the scan, e.g., because
+// the operation was a move, the files are scanned at the destination.
 class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
   using IsTransferAllowedCallback = base::OnceCallback<void(base::File::Error)>;
 
  public:
-  using FileTransferAnalysisDelegateFactory = base::RepeatingCallback<
-      std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>(
-          safe_browsing::DeepScanAccessPoint access_point,
-          storage::FileSystemURL source_url,
-          storage::FileSystemURL destination_url,
-          Profile* profile,
-          storage::FileSystemContext* file_system_context,
-          enterprise_connectors::AnalysisSettings settings,
-          base::OnceClosure result_callback)>;
-
   // `type` must be either kCopy or kMove.
   // Use this constructor if you require the destination entries to have
   // different file names to the source entries. The size of `source_urls` and
@@ -66,8 +63,8 @@ class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
       bool show_notification = true);
   ~CopyOrMoveIOTaskScanningImpl() override;
 
-  static void SetFileTransferAnalysisDelegateFactoryForTesting(
-      FileTransferAnalysisDelegateFactory factory);
+  void Execute(ProgressCallback progress_callback,
+               CompleteCallback complete_callback) override;
 
  private:
   // Verifies the transfer by performing enterprise connector scans.
@@ -115,6 +112,10 @@ class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
   std::vector<
       std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>>
       file_transfer_analysis_delegates_;
+
+  // Specifies whether scanning should be used only for reporting.
+  // This is set to true if `block_until_verdict` is 0.
+  bool report_only_scans_ = false;
 
   base::WeakPtrFactory<CopyOrMoveIOTaskScanningImpl> weak_ptr_factory_{this};
 };

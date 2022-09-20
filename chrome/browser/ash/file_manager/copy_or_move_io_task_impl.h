@@ -46,8 +46,8 @@ class CopyOrMoveIOTaskImpl {
   virtual ~CopyOrMoveIOTaskImpl();
 
   // Starts the copy or move.
-  void Execute(ProgressCallback progress_callback,
-               CompleteCallback complete_callback);
+  virtual void Execute(ProgressCallback progress_callback,
+                       CompleteCallback complete_callback);
 
   // Cancels the operation.
   void Cancel();

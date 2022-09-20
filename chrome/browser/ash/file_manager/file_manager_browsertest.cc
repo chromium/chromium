@@ -7,9 +7,12 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "base/files/file_path.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_scanning_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -17,15 +20,21 @@
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
+#include "chrome/browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_base.h"
@@ -173,6 +182,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& FileTransferConnectorReportOnlyMode() {
+    options.file_transfer_connector_report_only = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -211,6 +225,9 @@ struct TestCase {
 
     if (options.enable_mirrorsync)
       full_name += "_MirrorSync";
+
+    if (options.file_transfer_connector_report_only)
+      full_name += "_ReportOnly";
 
     return full_name;
   }
@@ -360,7 +377,7 @@ IN_PROC_BROWSER_TEST_P(DlpFilesAppBrowserTest, Test) {
   StartTest();
 }
 
-constexpr char kBlockingScansForDlpAndMalware[] = R"(
+constexpr char kFileTransferConnectorSettingsForDlp[] = R"(
 {
   "service_provider": "google",
   "enable": [
@@ -375,13 +392,18 @@ constexpr char kBlockingScansForDlpAndMalware[] = R"(
           }]
         }
       ],
-      "tags": ["dlp", "malware"]
+      "tags": ["dlp"]
     }
   ],
-  "block_until_verdict": 1
+  "block_until_verdict": %s
 })";
 
 base::TimeDelta kResponseDelay = base::Seconds(0);
+
+const std::set<std::string>* JpgMimeTypes() {
+  static std::set<std::string> set = {"image/jpeg"};
+  return &set;
+}
 
 // A version of FilesAppBrowserTest that supports the file transfer enterprise
 // connector.
@@ -405,12 +427,82 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
 
-    enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
-        base::BindRepeating(
-            &enterprise_connectors::FakeFilesRequestHandler::Create,
-            base::BindRepeating(&FileTransferConnectorFilesAppBrowserTest::
-                                    FakeFileUploadCallback,
-                                base::Unretained(this))));
+    // Enable reporting.
+    safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(),
+                                               /*enabled*/ true,
+                                               /*enabled_event_names*/ {},
+                                               /*enabled_opt_in_events*/ {},
+                                               /*machine_scope*/ false);
+    // Add mock to check reports.
+    cloud_policy_client_ = std::make_unique<policy::MockCloudPolicyClient>();
+    cloud_policy_client_->SetDMToken("dm_token");
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile())
+        ->SetBrowserCloudPolicyClientForTesting(cloud_policy_client_.get());
+    // Add IdentityTestEnvironment to verify user name.
+    identity_test_environment_ =
+        std::make_unique<signin::IdentityTestEnvironment>();
+    identity_test_environment_->MakePrimaryAccountAvailable(
+        kUserName, signin::ConsentLevel::kSync);
+    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+        ->SetIdentityManagerForTesting(
+            identity_test_environment_->identity_manager());
+  }
+
+  std::string GetScanIDForFileName(std::string file_name) {
+    return std::string(kScanId) + file_name;
+  }
+
+  bool IsReportOnlyMode() {
+    return GetOptions().file_transfer_connector_report_only;
+  }
+
+  void ScanningHasCompletedCallback() {
+    DCHECK(run_loop_);
+    ++finished_file_transfer_analysis_delegates_;
+    DCHECK_LE(finished_file_transfer_analysis_delegates_,
+              expected_number_of_file_transfer_analysis_delegates_);
+
+    if (finished_file_transfer_analysis_delegates_ ==
+        expected_number_of_file_transfer_analysis_delegates_) {
+      // If all FileTransferAnalysisDelegates finished, scanning has been
+      // completed.
+      run_loop_->QuitClosure().Run();
+    }
+  }
+
+  // Setup the expectations of the mock.
+  // This function uses the stored expectations from the
+  // `scanning_expectations_` map.
+  void SetupMock(
+      enterprise_connectors::MockFileTransferAnalysisDelegate* delegate) {
+    // Expect one call to UploadData.
+    EXPECT_CALL(*delegate, UploadData(::testing::_))
+        .WillOnce(testing::Invoke([this, delegate](base::OnceClosure callback) {
+          // When scanning is started, start the normal scan.
+          // We modify the callback such that in addition to the normal callback
+          // we also call `ScanningHasCompletedCallback()` to notify the test
+          // that scanning has completed.
+          delegate->FileTransferAnalysisDelegate::UploadData(base::BindOnce(
+              [](base::OnceClosure callback,
+                 base::OnceClosure scanning_has_completed_callback) {
+                // Call the callback
+                std::move(callback).Run();
+                // Notify that scanning of this delegate has completed.
+                std::move(scanning_has_completed_callback).Run();
+              },
+              std::move(callback),
+              base::BindOnce(&FileTransferConnectorFilesAppBrowserTest::
+                                 ScanningHasCompletedCallback,
+                             base::Unretained(this))));
+        }));
+
+    // Call GetAnalysisResultAfterScan from the base class.
+    EXPECT_CALL(*delegate, GetAnalysisResultAfterScan(::testing::_))
+        .WillRepeatedly(testing::Invoke([delegate](storage::FileSystemURL url) {
+          return delegate
+              ->FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(url);
+        }));
   }
 
   bool HandleEnterpriseConnectorCommands(const std::string& name,
@@ -428,13 +520,137 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
                 << " to " << *destination;
       safe_browsing::SetAnalysisConnector(
           profile()->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
-          base::StringPrintf(kBlockingScansForDlpAndMalware, source->c_str(),
-                             destination->c_str()));
+          base::StringPrintf(kFileTransferConnectorSettingsForDlp,
+                             source->c_str(), destination->c_str(),
+                             IsReportOnlyMode() ? "0" : "1"));
+
+      // Create a FakeFilesRequestHandler that intercepts uploads and fakes
+      // responses.
+      enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
+          base::BindRepeating(
+              &enterprise_connectors::FakeFilesRequestHandler::Create,
+              base::BindRepeating(&FileTransferConnectorFilesAppBrowserTest::
+                                      FakeFileUploadCallback,
+                                  base::Unretained(this), *source,
+                                  *destination)));
+
+      // Setup FileTransferAnalysisDelegate mock.
+      enterprise_connectors::FileTransferAnalysisDelegate::SetFactorForTesting(
+          base::BindRepeating(
+              [](base::RepeatingCallback<void(
+                     enterprise_connectors::MockFileTransferAnalysisDelegate*)>
+                     mock_setup_callback,
+                 safe_browsing::DeepScanAccessPoint access_point,
+                 storage::FileSystemURL source_url,
+                 storage::FileSystemURL destination_url, Profile* profile,
+                 storage::FileSystemContext* file_system_context,
+                 enterprise_connectors::AnalysisSettings settings)
+                  -> std::unique_ptr<
+                      enterprise_connectors::FileTransferAnalysisDelegate> {
+                auto delegate = std::make_unique<::testing::StrictMock<
+                    enterprise_connectors::MockFileTransferAnalysisDelegate>>(
+                    access_point, source_url, destination_url, profile,
+                    file_system_context, std::move(settings));
+
+                mock_setup_callback.Run(delegate.get());
+
+                return delegate;
+              },
+              base::BindRepeating(
+                  &FileTransferConnectorFilesAppBrowserTest::SetupMock,
+                  base::Unretained(this))));
+
       return true;
     }
     if (name == "issueFileTransferResponses") {
       // Issue all saved responses and issue all future responses directly.
       IssueResponses();
+      return true;
+    }
+    if (name == "isReportOnlyFileTransferConnector") {
+      *output = IsReportOnlyMode() ? "true" : "false";
+      return true;
+    }
+    if (name == "setupScanningRunLoop") {
+      // Set the number of expected `FileTransferAnalysisDelegate`s. This is
+      // done to correctly notify when scanning has completed.
+      auto maybe_int = value.FindInt("number_of_expected_delegates");
+      DCHECK(maybe_int.has_value());
+      expected_number_of_file_transfer_analysis_delegates_ = maybe_int.value();
+      DCHECK(!run_loop_);
+      run_loop_ = std::make_unique<base::RunLoop>();
+      return true;
+    }
+    if (name == "waitForFileTransferScanningToComplete") {
+      DCHECK(run_loop_);
+      // Wait until the scanning is complete.
+      run_loop_->Run();
+      return true;
+    }
+    if (name == "expectFileTransferReports") {
+      // Setup expectations for the deep scan reports.
+
+      const std::string* source_volume_name = value.FindString("source_volume");
+      CHECK(source_volume_name);
+      const std::string* destination_volume_name =
+          value.FindString("destination_volume");
+      CHECK(destination_volume_name);
+      const base::Value::List* entry_paths = value.FindList("entry_paths");
+      CHECK(entry_paths);
+
+      std::vector<std::string> file_names;
+      std::vector<std::string> shas;
+      std::vector<enterprise_connectors::ContentAnalysisResponse::Result>
+          expected_dlp_verdicts;
+      std::vector<std::string> expected_results;
+      std::vector<std::string> expected_scan_ids;
+
+      for (const auto& path : *entry_paths) {
+        const std::string* path_str = path.GetIfString();
+        CHECK(path_str);
+        auto file_name = base::FilePath(*path_str).BaseName().AsUTF8Unsafe();
+        if (!base::Contains(file_name, "blocked")) {
+          // If a file name does not contain blocked, expect no report.
+          continue;
+        }
+
+        file_names.push_back(file_name);
+        // sha256sum chrome/test/data/chromeos/file_manager/small.jpg |  tr
+        // '[:lower:]' '[:upper:]'
+        shas.push_back(
+            "28F5754447BBA26238B93B820DFFCB6743876F8A82077BA1ABB0F4B2529AE5BE");
+
+        // Get the expected verdict from the ConnectorStatusCallback.
+        expected_dlp_verdicts.push_back(
+            ConnectorStatusCallback(base::FilePath(*path_str)).results()[0]);
+
+        // For report-only mode, the transfer is always allowed. It's blocked,
+        // otherwise.
+        expected_results.push_back(safe_browsing::EventResultToString(
+            IsReportOnlyMode() ? safe_browsing::EventResult::ALLOWED
+                               : safe_browsing::EventResult::BLOCKED));
+        expected_scan_ids.push_back(GetScanIDForFileName(file_name));
+      }
+
+      validator_ = std::make_unique<safe_browsing::EventReportValidator>(
+          cloud_policy_client());
+      validator_->ExpectSensitiveDataEvents(
+          /*url*/ "",
+          /*source*/ *source_volume_name,
+          /*destination*/ *destination_volume_name,
+          /*filenames*/ file_names,
+          /*sha*/
+          shas,
+          /*trigger*/
+          extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+          /*dlp_verdict*/ expected_dlp_verdicts,
+          /*mimetype*/ JpgMimeTypes(),
+          /*size*/ 886,
+          /*result*/
+          expected_results,
+          /*username*/ kUserName,
+          /*scan_ids*/ expected_scan_ids);
+
       return true;
     }
 
@@ -443,6 +659,8 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
 
   // Upload callback to issue responses.
   void FakeFileUploadCallback(
+      const std::string& expected_source,
+      const std::string& expected_destination,
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
@@ -451,6 +669,13 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     EXPECT_FALSE(path.empty());
     EXPECT_EQ(request->device_token(), "dm_token");
+
+    // Verify source and destination of the request.
+    EXPECT_EQ(request->content_analysis_request().request_data().source(),
+              expected_source);
+    EXPECT_EQ(request->content_analysis_request().request_data().destination(),
+              expected_destination);
+
     // Simulate a response.
     base::OnceClosure response =
         base::BindOnce(std::move(callback), path,
@@ -483,29 +708,43 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
 
   enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
       const base::FilePath& path) {
+    enterprise_connectors::ContentAnalysisResponse response;
     // We return a block verdict if the basename contains "blocked".
     if (base::Contains(path.BaseName().value(), "blocked")) {
-      return enterprise_connectors::FakeContentAnalysisDelegate::
-          FakeContentAnalysisDelegate::MalwareAndDlpResponse(
-              enterprise_connectors::TriggeredRule::BLOCK,
+      response = enterprise_connectors::FakeContentAnalysisDelegate::
+          FakeContentAnalysisDelegate::DlpResponse(
               enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
               "rule", enterprise_connectors::TriggeredRule::BLOCK);
     } else {
-      return enterprise_connectors::FakeContentAnalysisDelegate::
-          SuccessfulResponse([]() {
-            std::set<std::string> tags;
-            tags.insert("dlp");
-            tags.insert("malware");
-            return tags;
-          }());
+      response = enterprise_connectors::FakeContentAnalysisDelegate::
+          SuccessfulResponse({"dlp"});
     }
+    response.set_request_token(
+        GetScanIDForFileName(path.BaseName().AsUTF8Unsafe()));
+    return response;
   }
+
+  policy::MockCloudPolicyClient* cloud_policy_client() {
+    return cloud_policy_client_.get();
+  }
+
+  // Used to test reporting.
+  std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
+  std::unique_ptr<safe_browsing::EventReportValidator> validator_;
+  static constexpr char kUserName[] = "test@chromium.org";
+  static constexpr char kScanId[] = "scan id";
 
   // The saved scanning responses.
   std::vector<base::OnceClosure> saved_responses_;
   // Determines whether a current scanning response should be saved for later or
   // issued directly.
   bool save_response_for_later_ = true;
+
+  size_t finished_file_transfer_analysis_delegates_ = 0;
+  size_t expected_number_of_file_transfer_analysis_delegates_ = 0;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_P(FileTransferConnectorFilesAppBrowserTest, Test) {
@@ -1042,11 +1281,19 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         FILE_TRANSFER_TEST_CASE("transferConnectorFromCrostiniToDownloadsDeep"),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromCrostiniToDownloadsFlat"),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsDeep"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsDeep")
+            .FileTransferConnectorReportOnlyMode(),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat")
+            .FileTransferConnectorReportOnlyMode(),
         FILE_TRANSFER_TEST_CASE(
             "transferConnectorFromDriveToDownloadsMoveDeep"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveDeep")
+            .FileTransferConnectorReportOnlyMode(),
         FILE_TRANSFER_TEST_CASE(
             "transferConnectorFromDriveToDownloadsMoveFlat"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveFlat")
+            .FileTransferConnectorReportOnlyMode(),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromMtpToDownloadsDeep"),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromMtpToDownloadsFlat"),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromSmbfsToDownloadsDeep"),

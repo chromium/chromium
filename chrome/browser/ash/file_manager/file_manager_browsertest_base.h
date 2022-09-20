@@ -135,6 +135,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should enable the file transfer connector.
     bool enable_file_transfer_connector = false;
+
+    // Whether test should use report-only mode for the file transfer connector.
+    bool file_transfer_connector_report_only = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;

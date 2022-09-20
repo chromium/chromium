@@ -9,7 +9,10 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_matcher_ash.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -28,6 +31,17 @@
 using safe_browsing::BinaryUploadService;
 
 namespace {
+
+enterprise_connectors::FileTransferAnalysisDelegate::
+    FileTransferAnalysisDelegateFactory&
+    GetFactoryStorage() {
+  static base::NoDestructor<
+      enterprise_connectors::FileTransferAnalysisDelegate::
+          FileTransferAnalysisDelegateFactory>
+      factory;
+  return *factory;
+}
+
 // GetFileURLsDelegate is used to get the `FileSystemURL`s of all files lying
 // within `root`. A vector of these urls is passed to `callback`. If `root` is
 // a file, the vector will only contain `root`. If `root` is a directory all
@@ -142,6 +156,38 @@ bool IsInSameFileSystem(Profile* profile,
 namespace enterprise_connectors {
 
 // static
+std::unique_ptr<FileTransferAnalysisDelegate>
+FileTransferAnalysisDelegate::Create(
+    safe_browsing::DeepScanAccessPoint access_point,
+    storage::FileSystemURL source_url,
+    storage::FileSystemURL destination_url,
+    Profile* profile,
+    storage::FileSystemContext* file_system_context,
+    AnalysisSettings settings) {
+  if (GetFactoryStorage().is_null()) {
+    // This code path is always reached outside of tests.
+    return base::WrapUnique(
+        new enterprise_connectors::FileTransferAnalysisDelegate(
+            access_point, source_url, destination_url, profile,
+            file_system_context, std::move(settings)));
+  } else {
+    // Only in tests, GetFactoryStorage() can be set and this code path can be
+    // reached.
+    // Pass `idx` in addition to the constructor parameters to make testing
+    // easier.
+    return GetFactoryStorage().Run(access_point, source_url, destination_url,
+                                   profile, file_system_context,
+                                   std::move(settings));
+  }
+}
+
+// static
+void FileTransferAnalysisDelegate::SetFactorForTesting(
+    FileTransferAnalysisDelegateFactory factory) {
+  GetFactoryStorage() = factory;
+}
+
+// static
 std::vector<absl::optional<AnalysisSettings>>
 FileTransferAnalysisDelegate::IsEnabledVec(
     Profile* profile,
@@ -182,8 +228,10 @@ FileTransferAnalysisDelegate::IsEnabledVec(
 FileTransferAnalysisDelegate::FileTransferAnalysisResult
 FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(
     storage::FileSystemURL url) {
-  for (size_t i = 0; i < source_urls_.size(); ++i) {
-    if (source_urls_[i] == url) {
+  // Should only be called for blocking scans.
+  DCHECK_EQ(settings_.block_until_verdict, BlockUntilVerdict::kBlock);
+  for (size_t i = 0; i < scanning_urls_.size(); ++i) {
+    if (scanning_urls_[i] == url) {
       // TODO(crbug.com/1340312): Support warning mode.
       return results_[i].complies ? FileTransferAnalysisResult::RESULT_ALLOWED
                                   : FileTransferAnalysisResult::RESULT_BLOCKED;
@@ -192,7 +240,11 @@ FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(
   return FileTransferAnalysisResult::RESULT_UNKNOWN;
 }
 
-void FileTransferAnalysisDelegate::UploadData() {
+void FileTransferAnalysisDelegate::UploadData(
+    base::OnceClosure completion_callback) {
+  callback_ = std::move(completion_callback);
+  DCHECK(!callback_.is_null());
+
   // This will start aggregating the needed file urls and pass them to
   // OnGotFileSourceURLs.
   // The usage of the WeakPtr is only safe if `get_file_urls_delegate_` is
@@ -209,20 +261,25 @@ FileTransferAnalysisDelegate::FileTransferAnalysisDelegate(
     storage::FileSystemURL destination_url,
     Profile* profile,
     storage::FileSystemContext* file_system_context,
-    AnalysisSettings settings,
-    base::OnceClosure callback)
+    AnalysisSettings settings)
     : settings_{std::move(settings)},
       profile_{profile},
       access_point_{access_point},
       source_url_(std::move(source_url)),
-      destination_url_{std::move(destination_url)},
-      callback_{std::move(callback)} {
+      destination_url_{std::move(destination_url)} {
   DCHECK(profile);
-  DCHECK(!callback_.is_null());
+
+  // For blocking scans, scanning is performed before the copy/move and
+  // thus scanning should be performed on the source.
+  // For non-blocking report-only scans, scanning is performed after the
+  // copy/move and thus scanning should be performed on the destination.
+  auto scanning_url = settings_.block_until_verdict == BlockUntilVerdict::kBlock
+                          ? source_url_
+                          : destination_url_;
 
   get_file_urls_delegate_ = std::make_unique<GetFileURLsDelegate>(
-      file_system_context, source_url_,
-      base::BindOnce(&FileTransferAnalysisDelegate::OnGotFileSourceURLs,
+      file_system_context, scanning_url,
+      base::BindOnce(&FileTransferAnalysisDelegate::OnGotFileURLs,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -263,18 +320,18 @@ FileTransferAnalysisDelegate::GetFilesRequestHandlerForTesting() {
   return request_handler_.get();
 }
 
-void FileTransferAnalysisDelegate::OnGotFileSourceURLs(
-    std::vector<storage::FileSystemURL> source_urls) {
+void FileTransferAnalysisDelegate::OnGotFileURLs(
+    std::vector<storage::FileSystemURL> scanning_urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  source_urls_ = std::move(source_urls);
-  if (source_urls_.empty()) {
+  scanning_urls_ = std::move(scanning_urls);
+  if (scanning_urls_.empty()) {
     ContentAnalysisCompleted(std::vector<RequestHandlerResult>());
     return;
   }
 
   std::vector<base::FilePath> paths;
-  for (const storage::FileSystemURL& url : source_urls_) {
+  for (const storage::FileSystemURL& url : scanning_urls_) {
     paths.push_back(url.path());
   }
 

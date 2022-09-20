@@ -22,22 +22,16 @@ class MockFileTransferAnalysisDelegate : public FileTransferAnalysisDelegate {
       storage::FileSystemURL destination_url,
       Profile* profile,
       storage::FileSystemContext* file_system_context,
-      AnalysisSettings settings,
-      base::OnceClosure result_callback);
+      AnalysisSettings settings);
 
   ~MockFileTransferAnalysisDelegate() override;
 
-  MOCK_METHOD(void, UploadData, (), (override));
+  MOCK_METHOD(void, UploadData, (base::OnceClosure callback), (override));
 
   MOCK_METHOD(FileTransferAnalysisResult,
               GetAnalysisResultAfterScan,
               (storage::FileSystemURL url),
               (override));
-
-  void RunCallback() { std::move(callback_).Run(); }
-
- private:
-  base::OnceClosure callback_;
 };
 
 }  // namespace enterprise_connectors

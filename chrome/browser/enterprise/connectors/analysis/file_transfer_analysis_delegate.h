@@ -45,6 +45,15 @@ class FilesRequestHandler;
 // file will be scanned.
 class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
  public:
+  using FileTransferAnalysisDelegateFactory = base::RepeatingCallback<
+      std::unique_ptr<enterprise_connectors::FileTransferAnalysisDelegate>(
+          safe_browsing::DeepScanAccessPoint access_point,
+          storage::FileSystemURL source_url,
+          storage::FileSystemURL destination_url,
+          Profile* profile,
+          storage::FileSystemContext* file_system_context,
+          enterprise_connectors::AnalysisSettings settings)>;
+
   enum FileTransferAnalysisResult {
     RESULT_ALLOWED,
     RESULT_BLOCKED,
@@ -52,6 +61,24 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
   };
 
   ~FileTransferAnalysisDelegate() override;
+
+  // Create the FileTransferAnalysisDelegate. This function uses the factory if
+  // it is set via `SetFactorForTesting()`.
+  //
+  // For `block_until_verdict == 0`, the `destination_url` has to point to the
+  // copied file/directory and not its parent. If it points to the parent, all
+  // files within the destination directory are scanned.
+  static std::unique_ptr<FileTransferAnalysisDelegate> Create(
+      safe_browsing::DeepScanAccessPoint access_point,
+      storage::FileSystemURL source_url,
+      storage::FileSystemURL destination_url,
+      Profile* profile,
+      storage::FileSystemContext* file_system_context,
+      AnalysisSettings settings);
+
+  // Set a factory for the FileTransferAnalysisDelegate.
+  // Can be used in testing to create `MockFileTransferAnalysisDelegate`s.
+  static void SetFactorForTesting(FileTransferAnalysisDelegateFactory factory);
 
   // Returns a vector with the AnalysisSettings for file transfers from the
   // respective source url to the destination_url.
@@ -64,17 +91,9 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
       const std::vector<storage::FileSystemURL>& source_urls,
       storage::FileSystemURL destination_url);
 
-  FileTransferAnalysisDelegate(safe_browsing::DeepScanAccessPoint access_point,
-                               storage::FileSystemURL source_url,
-                               storage::FileSystemURL destination_url,
-                               Profile* profile,
-                               storage::FileSystemContext* file_system_context,
-                               AnalysisSettings settings,
-                               base::OnceClosure result_callback);
-
   // Main entrypoint to start the file uploads.
   // Once scanning is complete `callback_` will be called.
-  virtual void UploadData();
+  virtual void UploadData(base::OnceClosure completion_callback);
 
   // Calling this function is only allowed after the scan is complete!
   virtual FileTransferAnalysisResult GetAnalysisResultAfterScan(
@@ -92,15 +111,26 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   FilesRequestHandler* GetFilesRequestHandlerForTesting();
 
+ protected:
+  // For `block_until_verdict == 0`, the `destination_url` has to point to the
+  // copied file/directory and not its parent. If it points to the parent, all
+  // files within the destination directory are scanned.
+  FileTransferAnalysisDelegate(safe_browsing::DeepScanAccessPoint access_point,
+                               storage::FileSystemURL source_url,
+                               storage::FileSystemURL destination_url,
+                               Profile* profile,
+                               storage::FileSystemContext* file_system_context,
+                               AnalysisSettings settings);
+
  private:
-  void OnGotFileSourceURLs(std::vector<storage::FileSystemURL> source_urls);
+  void OnGotFileURLs(std::vector<storage::FileSystemURL> source_urls);
 
   void ContentAnalysisCompleted(std::vector<RequestHandlerResult> results);
 
   AnalysisSettings settings_;
   Profile* profile_;
   safe_browsing::DeepScanAccessPoint access_point_;
-  std::vector<storage::FileSystemURL> source_urls_;
+  std::vector<storage::FileSystemURL> scanning_urls_;
   storage::FileSystemURL source_url_;
   storage::FileSystemURL destination_url_;
   base::OnceClosure callback_;

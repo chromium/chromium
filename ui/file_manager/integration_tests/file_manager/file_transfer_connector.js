@@ -378,11 +378,29 @@ async function transferBetweenVolumes(
     await sendTestMessage({name: 'mountFakeMtpEmpty'});
   }
 
-  // Setup policy
+  // Setup policy.
   await sendTestMessage({
     name: 'setupFileTransferPolicy',
     source: transferInfo.source.enterpriseConnectorsVolumeIdentifier,
     destination: transferInfo.destination.enterpriseConnectorsVolumeIdentifier,
+  });
+
+  // Setup reporting expectations.
+  await sendTestMessage({
+    name: 'expectFileTransferReports',
+    source_volume: transferInfo.source.enterpriseConnectorsVolumeIdentifier,
+    destination_volume:
+        transferInfo.destination.enterpriseConnectorsVolumeIdentifier,
+    entry_paths: entryTestSet.filter(entry => entry.type === EntryType.FILE)
+                     .map(entry => entry.targetPath),
+  });
+
+  // Setup the scanning closure to be able to wait for the scanning to be
+  // complete.
+  await sendTestMessage({
+    name: 'setupScanningRunLoop',
+    number_of_expected_delegates:
+        entryTestSet.filter(entry => !entry.targetPath.includes('/')).length,
   });
 
   const dstContents = TestEntryInfo.getExpectedRows([ENTRIES.hello]);
@@ -434,6 +452,29 @@ async function transferBetweenVolumes(
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
 
+  const reportOnly =
+      await sendTestMessage({name: 'isReportOnlyFileTransferConnector'}) ===
+      'true';
+  if (reportOnly) {
+    await verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet);
+  } else {
+    await verifyAfterPasteBlocking(
+        appId, transferInfo, entryTestSet, expectedFinalMsg);
+  }
+}
+
+/**
+ * Verify what happens after a paste when scanning can block files.
+ *
+ * @param {string} appId The app id of the files app window.
+ * @param {!TransferInfo} transferInfo Options for the transfer.
+ * @param {!Array<TestEntryInfo>} entryTestSet The set of file and directory
+ *     entries to be used for the test.
+ * @param {string} expectedFinalMsg The final message to expect at the progress
+ *     center.
+ */
+async function verifyAfterPasteBlocking(
+    appId, transferInfo, entryTestSet, expectedFinalMsg) {
   // Check that a scanning label is shown.
   const caller = getCaller();
   await repeatUntil(async () => {
@@ -503,8 +544,48 @@ async function transferBetweenVolumes(
 
   // Check that only one line of text is shown.
   chrome.test.assertFalse(!!element.attributes['secondary-text']);
+}
 
-  return appId;
+/**
+ * Verify what happens after a paste in the case of report-only scans.
+ *
+ * @param {string} appId The app id of the files app window.
+ * @param {!TransferInfo} transferInfo Options for the transfer.
+ * @param {!Array<TestEntryInfo>} entryTestSet The set of file and directory
+ *     entries to be used for the test.
+ */
+async function verifyAfterPasteReportOnly(appId, transferInfo, entryTestSet) {
+  // No check for scanning label, as there shouldn't be one.
+
+  // Wait for the expected files to appear in the file list.
+  // All files should appear, even those marked as 'blocked'.
+  const expectedEntries = entryTestSet.concat([ENTRIES.hello]);
+  await verifyDirectoryRecursively(
+      appId, expectedEntries, transferInfo.destination.breadcrumbsPath);
+
+  // Verify contents of the source directory.
+  await navigateWithDirectoryTree(appId, transferInfo.source.breadcrumbsPath);
+  let expectedSourceEntries = entryTestSet;
+  if (transferInfo.isMove) {
+    // For a move, the source directory should be empty.
+    expectedSourceEntries = [];
+  }
+  // Wait for the expected files to appear in the file list.
+  await verifyDirectoryRecursively(
+      appId, expectedSourceEntries, transferInfo.source.breadcrumbsPath);
+
+  // Check that the status panel automatically vanishes.
+  // This means that there was no error.
+  await remoteCall.waitForElementLost(
+      appId, ['#progress-panel', 'xf-panel-item']);
+
+  // After the transfer completed, we issue scanning responses.
+  // This ensures that scanning does not impact the transfer.
+  await sendTestMessage({name: 'issueFileTransferResponses'});
+
+  // We have to wait for the scanning to be completed to fulfill the report
+  // expectations.
+  await sendTestMessage({name: 'waitForFileTransferScanningToComplete'});
 }
 
 /**

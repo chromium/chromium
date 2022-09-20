@@ -93,6 +93,28 @@ constexpr char kBlockingScansForDlpAndMalware[] = R"(
   "block_large_files": 0
 })";
 
+constexpr char kBlockingScansForDlpAndMalwareReportOnly[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "source_destination_list": [
+        {
+          "sources": [{
+            "file_system_type": "*"
+          }],
+          "destinations": [{
+            "file_system_type": "*"
+          }]
+        }
+      ],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 0,
+  "block_large_files": 0
+})";
+
 constexpr char kBlockingScansForDlp[] = R"(
 {
   "service_provider": "google",
@@ -780,13 +802,11 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     destination_url_ = destination_url;
     // The access point is only used for metrics, so its value doesn't affect
     // the tests in this file and can always be the same.
-    file_transfer_analysis_delegate_ =
-        std::make_unique<FileTransferAnalysisDelegate>(
-            safe_browsing::DeepScanAccessPoint::FILE_TRANSFER, source_url,
-            destination_url, profile_, file_system_context_.get(),
-            GetSettings(), run_loop_.QuitClosure());
+    file_transfer_analysis_delegate_ = FileTransferAnalysisDelegate::Create(
+        safe_browsing::DeepScanAccessPoint::FILE_TRANSFER, source_url,
+        destination_url, profile_, file_system_context_.get(), GetSettings());
 
-    file_transfer_analysis_delegate_->UploadData();
+    file_transfer_analysis_delegate_->UploadData(run_loop_.QuitClosure());
     RunUntilDone();
   }
 
@@ -1030,6 +1050,58 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
   EXPECT_EQ(
       FileTransferAnalysisDelegate::RESULT_BLOCKED,
       file_transfer_analysis_delegate_->GetAnalysisResultAfterScan(source_url));
+  // Checks that some scanning was performed.
+  EXPECT_TRUE(
+      file_transfer_analysis_delegate_->GetFilesRequestHandlerForTesting());
+}
+
+TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
+       SingleFileBlockedDlpReportOnly) {
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
+                                      kBlockingScansForDlpAndMalwareReportOnly);
+
+  // For report-only mode, the destination is scanned, because we perform the
+  // scan after a transfer. So we create the file at the destination.
+  std::vector<base::FilePath> paths = CreateFilesForTest(
+      {FILE_PATH_LITERAL("foo.doc")}, destination_directory_url_.path());
+
+  // Mark all files and text with failed scans.
+  std::string scan_id = "scan_id";
+  ContentAnalysisResponse response = FakeContentAnalysisDelegate::DlpResponse(
+      ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK);
+  response.set_request_token(scan_id);
+
+  SetDLPResponse(response);
+
+  storage::FileSystemURL source_url = PathToFileSystemURL(
+      source_directory_url_.path().Append(FILE_PATH_LITERAL("foo.doc")));
+  storage::FileSystemURL destination_url = PathToFileSystemURL(paths[0]);
+
+  // Check reporting.
+  safe_browsing::EventReportValidator validator(cloud_policy_client());
+  validator.ExpectSensitiveDataEvent(
+      /*url*/ "",
+      /*source*/ kSourceVolumeInfo.fs_config_string,
+      /*destination*/ kDestinationVolumeInfo.fs_config_string,
+      /*filename*/ "foo.doc",
+      // printf "content" | sha256sum  |  tr '[:lower:]' '[:upper:]'
+      /*sha*/
+      "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
+      /*trigger*/
+      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      /*dlp_verdict*/ response.results()[0],
+      /*mimetype*/ DocMimeTypes(),
+      /*size*/ std::string("content").size(),
+      /*result*/
+      safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
+      /*username*/ kUserName,
+      /*scan_id*/ scan_id);
+
+  ScanUpload(source_url, destination_url);
+
+  // No checks for GetAnalysisResultAfterScan, because it's not allowed to be
+  // called for report-only mode.
+
   // Checks that some scanning was performed.
   EXPECT_TRUE(
       file_transfer_analysis_delegate_->GetFilesRequestHandlerForTesting());

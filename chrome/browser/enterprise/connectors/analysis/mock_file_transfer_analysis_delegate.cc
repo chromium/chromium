@@ -19,17 +19,13 @@ MockFileTransferAnalysisDelegate::MockFileTransferAnalysisDelegate(
     storage::FileSystemURL destination_url,
     Profile* profile,
     storage::FileSystemContext* file_system_context,
-    AnalysisSettings settings,
-    base::OnceClosure result_callback)
+    AnalysisSettings settings)
     : FileTransferAnalysisDelegate(access_point,
                                    source_url,
                                    destination_url,
                                    profile,
                                    file_system_context,
-                                   std::move(settings),
-                                   base::DoNothing()) {
-  callback_ = std::move(result_callback);
-}
+                                   std::move(settings)) {}
 
 MockFileTransferAnalysisDelegate::~MockFileTransferAnalysisDelegate() = default;
 

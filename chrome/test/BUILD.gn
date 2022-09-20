@@ -3921,6 +3921,8 @@ if (!is_android) {
         "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
         "../browser/device_api/device_attribute_api_browsertest.cc",
         "../browser/drive/drive_notification_manager_factory_browsertest.cc",
+        "../browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.cc",
+        "../browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h",
         "../browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator_browsertest.cc",
         "../browser/feedback/show_feedback_page_browsertest.cc",
         "../browser/metrics/chromeos_family_link_user_metrics_provider_browsertest.cc",
