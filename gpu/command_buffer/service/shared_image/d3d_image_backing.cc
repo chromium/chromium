@@ -430,7 +430,8 @@ SharedImageBackingType D3DImageBacking::GetType() const {
 }
 
 void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED();
+  // Do nothing since D3DImageBackings are only ever backed by DXGI GMB handles,
+  // which are synonymous with D3D textures, and no explicit update is needed.
 }
 
 bool D3DImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
