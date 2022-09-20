@@ -55,6 +55,11 @@ static bool IsRootFontUnitToken(CSSParserToken token) {
          token.GetUnitType() == CSSPrimitiveValue::UnitType::kRems;
 }
 
+static bool IsLineHeightUnitToken(CSSParserToken token) {
+  return token.GetType() == kDimensionToken &&
+         token.GetUnitType() == CSSPrimitiveValue::UnitType::kLhs;
+}
+
 String CSSVariableData::Serialize() const {
   if (original_text_) {
     if (original_text_.EndsWith('\\')) {
@@ -106,6 +111,7 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
       string_builder.Append(token.Value());
     has_font_units_ |= IsFontUnitToken(token);
     has_root_font_units_ |= IsRootFontUnitToken(token);
+    has_line_height_units_ |= IsLineHeightUnitToken(token);
     ++num_tokens_;
   }
   backing_string_ = string_builder.ToAtomicString();

@@ -3647,4 +3647,29 @@ TEST_F(StyleCascadeTest, InlineStyleLostCascade) {
   EXPECT_TRUE(cascade.InlineStyleLostCascade());
 }
 
+TEST_F(StyleCascadeTest, LhUnitCycle) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("line-height", "var(--x)");
+  cascade.Add("--x", "10lh");
+  cascade.Apply();
+
+  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, SubstitutingLhCycles) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  TestCascade cascade(GetDocument());
+  cascade.Add("line-height", "var(--x)");
+  cascade.Add("--x", "10lh");
+  cascade.Add("--y", "var(--x)");
+  cascade.Add("--z", "var(--x,1px)");
+  cascade.Apply();
+
+  EXPECT_EQ("0px", cascade.ComputedValue("--y"));
+  EXPECT_EQ("0px", cascade.ComputedValue("--z"));
+}
+
 }  // namespace blink

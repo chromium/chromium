@@ -66,6 +66,10 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   // font-size of the root element, e.g. 'rem'.
   bool HasRootFontUnits() const { return has_root_font_units_; }
 
+  // True if the CSSVariableData has tokens with 'lh' units which are relative
+  // to line-height property.
+  bool HasLineHeightUnits() const { return has_line_height_units_; }
+
   const String& BaseURL() const { return base_url_; }
 
   const WTF::TextEncoding& Charset() const { return charset_; }
@@ -114,8 +118,7 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   const bool needs_variable_resolution_ = false;
   bool has_font_units_ = false;
   bool has_root_font_units_ = false;
-  // TODO(crbug.com/937104): Detect lh cycles.
-  bool has_lh_units_ = false;
+  bool has_line_height_units_ = false;
   String base_url_;
   WTF::TextEncoding charset_;
 

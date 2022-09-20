@@ -735,6 +735,7 @@ StyleCascade::TokenSequence::TokenSequence(const CSSVariableData* data)
     : is_animation_tainted_(data->IsAnimationTainted()),
       has_font_units_(data->HasFontUnits()),
       has_root_font_units_(data->HasRootFontUnits()),
+      has_line_height_units_(data->HasLineHeightUnits()),
       base_url_(data->BaseURL()),
       charset_(data->Charset()) {}
 
@@ -755,6 +756,7 @@ bool StyleCascade::TokenSequence::Append(const TokenSequence& sequence,
   is_animation_tainted_ |= sequence.is_animation_tainted_;
   has_font_units_ |= sequence.has_font_units_;
   has_root_font_units_ |= sequence.has_root_font_units_;
+  has_line_height_units_ |= sequence.has_line_height_units_;
   return true;
 }
 
@@ -765,6 +767,7 @@ bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
   is_animation_tainted_ |= data->IsAnimationTainted();
   has_font_units_ |= data->HasFontUnits();
   has_root_font_units_ |= data->HasRootFontUnits();
+  has_line_height_units_ |= data->HasLineHeightUnits();
   return true;
 }
 
@@ -822,6 +825,9 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
 
   if (HasFontSizeDependency(To<CustomProperty>(property), data.get()))
     resolver.DetectCycle(GetCSSPropertyFontSize());
+
+  if (HasLineHeightDependency(To<CustomProperty>(property), data.get()))
+    resolver.DetectCycle(GetCSSPropertyLineHeight());
 
   state_.Style()->SetHasVariableDeclaration();
 
@@ -1131,6 +1137,15 @@ bool StyleCascade::HasFontSizeDependency(const CustomProperty& property,
   if (data->HasFontUnits())
     return true;
   if (data->HasRootFontUnits() && IsRootElement())
+    return true;
+  return false;
+}
+
+bool StyleCascade::HasLineHeightDependency(const CustomProperty& property,
+                                           CSSVariableData* data) const {
+  if (!property.IsRegistered() || !data)
+    return false;
+  if (data->HasLineHeightUnits())
     return true;
   return false;
 }

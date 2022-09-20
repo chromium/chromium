@@ -274,6 +274,7 @@ class CORE_EXPORT StyleCascade {
     // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles
     bool has_font_units_ = false;
     bool has_root_font_units_ = false;
+    bool has_line_height_units_ = false;
 
     // The base URL and charset are currently needed to calculate the computed
     // value of <url>-registered custom properties correctly.
@@ -352,6 +353,9 @@ class CORE_EXPORT StyleCascade {
   //
   // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles
   bool HasFontSizeDependency(const CustomProperty&, CSSVariableData*) const;
+  // Detects if the given property/data depends on the line-height property of
+  // the Element we're calculating style for.
+  bool HasLineHeightDependency(const CustomProperty&, CSSVariableData*) const;
   // The fallback must match the syntax of the custom property, otherwise the
   // the declaration is "invalid at computed-value time".'
   //
