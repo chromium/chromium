@@ -191,15 +191,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool operator==(const CSSValue&) const;
   bool operator!=(const CSSValue& o) const { return !(*this == o); }
 
-  void FinalizeGarbageCollectedObject();
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;
-
-  // ~CSSValue should be public, because non-public ~CSSValue causes C2248
-  // error: 'blink::CSSValue::~CSSValue' : cannot access protected member
-  // declared in class 'blink::CSSValue' when compiling
-  // 'source\wtf\refcounted.h' by using msvc.
-  ~CSSValue() = default;
 
  protected:
   enum ClassType {
